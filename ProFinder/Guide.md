@@ -393,5 +393,22 @@ Refresh   →  JWT ka built-in view use kiya ✅
 
 
 
+ab prfile app bnaege
 
+
+serilizer mn 
+a=class Meta:
+    model = UserProfile
+    fields = [...]
+```
+
+`Meta` class — serializer ko batati hai:
+```
+model  → konsi table use karo
+fields → konse columns Flutter ko bhejo
+
+
+api view mn
+put  →  profile update karna
+partial=True  →  sari fields zaroor nahi — jo bhi bhejo update ho jaye
 
