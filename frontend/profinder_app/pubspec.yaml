@@ -54,7 +54,7 @@ dependencies:
   # release builds during Flutter's dependency/kernel compilation step even
   # though Linux isn't a build target. Pinning to a known-good version
   # avoids pulling in the broken record_linux release.
-  record: 5.0.4
+  record: ^7.1.1
   http: ^1.6.0
 
   # ─── GPS / Location ─────────────────────────
