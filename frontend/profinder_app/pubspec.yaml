@@ -48,7 +48,7 @@ dependencies:
   # ─── Chat: Emoji Picker / Voice Notes ───────
   emoji_picker_flutter: ^3.1.0
   audioplayers: ^6.1.0
-  record: ^5.1.2
+  record: ^5.2.1
   http: ^1.6.0
 
   # ─── GPS / Location ─────────────────────────
@@ -70,3 +70,12 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/icon/icon.png"
   min_sdk_android: 21
+
+# ─── Dependency Overrides ─────────────────────
+# 🐛 FIX: record_linux's implementation didn't fully match the
+# record_platform_interface contract (missing startStream / mismatched
+# hasPermission signature), which broke Android release builds during
+# dependency resolution even though Linux isn't targeted. Pinning a
+# compatible version avoids that mismatch.
+dependency_overrides:
+  record_linux: ^0.7.3
