@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "299423637189",
+    "project_id": "profinder-f3f96",
+    "storage_bucket": "profinder-f3f96.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299423637189:android:a7f75ef582baac4f931aac",
+        "android_client_info": {
+          "package_name": "com.example.profinder_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCs1CAGIhFI-4iyUxTzW-kDMadgTkjckYE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

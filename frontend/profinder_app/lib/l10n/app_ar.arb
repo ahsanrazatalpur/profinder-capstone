@@ -1,0 +1,1913 @@
+{
+  "@@locale": "ar",
+  "navSearch": "بحث",
+  "appName": "ProFinder",
+  "@appName": {
+    "description": "App name — usually kept untranslated across locales"
+  },
+  "appTagline": "اعثر على محترفين موثوقين بالقرب منك",
+  "login": "تسجيل الدخول",
+  "register": "التسجيل",
+  "logout": "تسجيل الخروج",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "fullName": "الاسم الكامل",
+  "forgotPassword": "نسيت كلمة المرور؟",
+  "resetPassword": "إعادة تعيين كلمة المرور",
+  "sendResetLink": "إرسال رابط إعادة التعيين",
+  "noAccount": "ليس لديك حساب؟ ",
+  "hasAccount": "لديك حساب بالفعل؟ ",
+  "selectRole": "التسجيل كـ",
+  "customer": "عميل",
+  "professional": "محترف",
+  "home": "الرئيسية",
+  "findProfessional": "ابحث عن محترف",
+  "nearbyProfessionals": "المحترفون القريبون",
+  "categories": "الفئات",
+  "aiSearch": "بحث بالذكاء الاصطناعي",
+  "searchHint": "ابحث عن خدمة...",
+  "profile": "الملف الشخصي",
+  "editProfile": "تعديل الملف الشخصي",
+  "phone": "رقم الهاتف",
+  "city": "المدينة",
+  "bio": "نبذة",
+  "experience": "سنوات الخبرة",
+  "hourlyRate": "الأجر بالساعة (USD)",
+  "verified": "موثّق",
+  "notVerified": "غير موثّق",
+  "bookings": "الحجوزات",
+  "myBookings": "حجوزاتي",
+  "bookNow": "احجز الآن",
+  "cancel": "إلغاء",
+  "accept": "قبول",
+  "reject": "رفض",
+  "complete": "إكمال",
+  "pending": "قيد الانتظار",
+  "accepted": "مقبول",
+  "rejected": "مرفوض",
+  "completed": "مكتمل",
+  "notifications": "الإشعارات",
+  "markAsRead": "وضع علامة كمقروء",
+  "noNotifications": "لا توجد إشعارات بعد",
+  "reviews": "التقييمات",
+  "writeReview": "اكتب تقييمًا",
+  "rating": "التقييم",
+  "comment": "تعليق",
+  "submitReview": "إرسال التقييم",
+  "noInternet": "لا يوجد اتصال بالإنترنت",
+  "serverError": "حدث خطأ ما. حاول مرة أخرى.",
+  "invalidEmail": "يرجى إدخال بريد إلكتروني صالح",
+  "invalidPassword": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+  "fieldRequired": "هذا الحقل مطلوب",
+  "passwordMismatch": "كلمتا المرور غير متطابقتين",
+  "invalidLoginCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة. حاول مرة أخرى.",
+  "forgotPasswordGenericMessage": "إذا كان هناك حساب بهذا البريد الإلكتروني، فقد أرسلنا رابط إعادة تعيين كلمة المرور.",
+  "requestTimedOut": "انتهت مهلة الطلب. تحقق من اتصالك وحاول مرة أخرى.",
+  "save": "حفظ",
+  "confirm": "تأكيد",
+  "delete": "حذف",
+  "loading": "جارٍ التحميل...",
+  "retry": "إعادة المحاولة",
+  "noData": "لا يوجد شيء لعرضه هنا",
+  "seeAll": "عرض الكل",
+  "ok": "موافق",
+  "selectLanguageTitle": "اختر لغتك",
+  "@selectLanguageTitle": {
+    "description": "Title on the first-launch language selection screen"
+  },
+  "selectLanguageSubtitle": "اختر اللغة التي تريد استخدامها في ProFinder",
+  "continueLabel": "متابعة",
+  "changeLanguage": "تغيير اللغة",
+  "languageChangeNote": "يمكنك تغيير اللغة لاحقًا من الإعدادات.",
+  "languageUpdated": "تم تحديث اللغة",
+  "settingsTitle": "الإعدادات",
+  "notificationsSection": "الإشعارات",
+  "pushNotifications": "الإشعارات الفورية",
+  "pushNotificationsSubtitle": "تحديثات الحجز والرسائل والعروض",
+  "emailNotifications": "إشعارات البريد الإلكتروني",
+  "emailNotificationsSubtitle": "الإيصالات ونشاط الحساب",
+  "preferencesSection": "التفضيلات",
+  "languageLabel": "اللغة",
+  "currencyLabel": "العملة",
+  "darkModeLabel": "الوضع الداكن",
+  "accountSection": "الحساب",
+  "supportSection": "الدعم",
+  "deleteAccount": "حذف الحساب",
+  "deleteAccountSubtitle": "إزالة حسابك نهائيًا",
+  "deleteAccountTitle": "حذف الحساب؟",
+  "deleteAccountMessage": "يجب أن يتم هذا عبر فريق الدعم للتحقق. تواصل مع المساعدة والدعم للمتابعة.",
+  "comingSoon": "{feature} قريبًا",
+  "@comingSoon": {
+    "description": "Placeholder shown for settings not yet implemented",
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      }
+    }
+  },
+  "loginWelcomeBack": "مرحباً بعودتك! يرجى تسجيل الدخول للمتابعة.",
+  "emailHint": "example@email.com",
+  "passwordHint": "أدخل كلمة المرور",
+  "continueAsGuest": "المتابعة كضيف",
+  "unknownRoleContactSupport": "دور غير معروف. يرجى التواصل مع الدعم.",
+  "createAccount": "إنشاء حساب",
+  "joinProFinderSubtitle": "انضم إلى ProFinder وتواصل مع المحترفين.",
+  "chooseAccountType": "اختر نوع الحساب",
+  "customerRoleDescription": "استعن بمحترفين موثوقين.",
+  "professionalRoleDescription": "قدّم خدماتك ونمِّ عملك.",
+  "fullNameHint": "أدخل اسمك الكامل",
+  "countryLabel": "الدولة",
+  "selectCountryHint": "اختر دولتك",
+  "searchCountriesHint": "ابحث عن الدول...",
+  "noCountriesFound": "لم يتم العثور على دول",
+  "selectCountryValidation": "يرجى اختيار دولتك",
+  "selectCityHint": "اختر مدينتك",
+  "selectACountryFirst": "اختر دولة أولاً",
+  "searchCitiesHint": "ابحث عن المدن...",
+  "noCitiesFound": "لم يتم العثور على مدن",
+  "selectCityValidation": "يرجى اختيار مدينتك",
+  "yourProfessionLabel": "مهنتك",
+  "selectCategoryHint": "اختر فئتك",
+  "searchProfessionsHint": "ابحث عن المهن...",
+  "noCategoriesFound": "لم يتم العثور على فئات",
+  "selectProfessionValidation": "يرجى اختيار مهنتك",
+  "selectProfessionCategoryError": "يرجى اختيار فئة مهنتك.",
+  "passwordMinCharsHint": "8 أحرف على الأقل",
+  "confirmPasswordHint": "أعد إدخال كلمة المرور",
+  "capsLockOnHint": "مفتاح Caps Lock مفعّل",
+  "emailAvailable": "البريد الإلكتروني متاح",
+  "emailAlreadyRegistered": "هذا البريد الإلكتروني مسجّل بالفعل.",
+  "signInInstead": "تسجيل الدخول بدلاً من ذلك",
+  "orContinueWith": "أو المتابعة عبر",
+  "continueWithGoogle": "المتابعة عبر جوجل",
+  "facebookLabel": "فيسبوك",
+  "twitterLabel": "X (تويتر)",
+  "forgotPasswordInstructions": "أدخل بريدك الإلكتروني المسجّل. سنرسل رابط إعادة تعيين كلمة المرور.",
+  "checkYourEmail": "تحقق من بريدك الإلكتروني",
+  "checkSpamFolderHint": "إذا لم تصلك الرسالة خلال دقائق، تحقق من مجلد الرسائل غير المرغوب فيها أو حاول مرة أخرى.",
+  "backToLogin": "العودة لتسجيل الدخول",
+  "resendEmail": "إعادة إرسال البريد الإلكتروني",
+  "adminAvgRatingTotal": "متوسط التقييم: {value1} ★ · إجمالي {value2}",
+  "@adminAvgRatingTotal": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminBy": "بواسطة {value1}",
+  "@adminBy": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminDeleteReview": "حذف التقييم",
+  "adminPermanentlyRemovesReviewProvideReasonAudit": "سيؤدي هذا إلى إزالة التقييم نهائيًا. يرجى ذكر سبب لسجل التدقيق.",
+  "adminFailedDeleteReview": "فشل حذف التقييم.",
+  "adminNoReviewsFound": "لم يتم العثور على تقييمات",
+  "adminFailedLoadReviews": "فشل تحميل التقييمات",
+  "adminSearchByProfessionalReviewer": "ابحث حسب المحترف أو المُقيِّم…",
+  "adminReasonRequired": "السبب (مطلوب)",
+  "adminPayments": "المدفوعات",
+  "adminRsShown": "معروض Rs {value1}",
+  "@adminRsShown": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRefund": "استرداد",
+  "adminTxn": "المعاملة: {value1}",
+  "@adminTxn": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRefundPayment": "استرداد الدفعة",
+  "adminRefundRs": "استرداد Rs {value1} إلى {value2}؟",
+  "@adminRefundRs": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminPaymentRefunded": "تم استرداد الدفعة.",
+  "adminRefundFailed": "فشل الاسترداد.",
+  "adminNoPaymentsFound": "لم يتم العثور على مدفوعات",
+  "adminFailedLoadPayments": "فشل تحميل المدفوعات",
+  "adminSearchByNameEmailTransactionId": "ابحث بالاسم أو البريد الإلكتروني أو رقم المعاملة…",
+  "adminBlockedUsers": "المستخدمون المحظورون",
+  "adminCurrentlyBlocked": "{value1} محظور حاليًا",
+  "@adminCurrentlyBlocked": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUnblock": "إلغاء الحظر",
+  "adminUnblockUser": "إلغاء حظر المستخدم؟",
+  "adminRestoreAccessTheyAbleLogAgain": "سيعيد هذا الوصول لـ {value1}. سيتمكن من تسجيل الدخول مرة أخرى.",
+  "@adminRestoreAccessTheyAbleLogAgain": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminHasBeenUnblocked": "تم إلغاء حظر {value1}.",
+  "@adminHasBeenUnblocked": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminFailedUnblockUser": "فشل إلغاء حظر المستخدم.",
+  "adminNoBlockedUsersAllClear": "لا يوجد مستخدمون محظورون — كل شيء بخير! 🎉",
+  "adminFailedLoadBlockedUsers": "فشل تحميل المستخدمين المحظورين",
+  "adminSearchByNameEmailReason": "ابحث بالاسم أو البريد الإلكتروني أو السبب…",
+  "adminExportProfessionals": "تصدير ({value1} محترف)",
+  "@adminExportProfessionals": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminClose": "إغلاق",
+  "adminCopyClipboard": "نسخ إلى الحافظة",
+  "adminProfessionals": "المحترفون",
+  "adminRatingHighLow": "التقييم (من الأعلى إلى الأقل)",
+  "adminMostBookings": "الأكثر حجزًا",
+  "adminNameZ": "الاسم (أ-ي)",
+  "adminNewestFirst": "الأحدث أولاً",
+  "adminSelected": "تم اختيار {value1}",
+  "@adminSelected": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminVerify": "توثيق",
+  "adminRemind": "تذكير",
+  "adminExport": "تصدير",
+  "adminFailedLoadProfessionals": "فشل تحميل المحترفين",
+  "adminSearchByNameEmailCategory": "ابحث بالاسم أو البريد الإلكتروني أو الفئة…",
+  "adminSort": "ترتيب",
+  "adminRefresh": "تحديث",
+  "adminVerifyProfessional": "توثيق المحترف؟",
+  "adminVerifyProfessionals": "توثيق {value1} محترف؟",
+  "@adminVerifyProfessionals": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminGetVerifiedBadgeVisibleAllCustomers": "سيحصل {value1} على شارة موثّقة تظهر لجميع العملاء.",
+  "@adminGetVerifiedBadgeVisibleAllCustomers": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminAllSelectedProfessionalsGetVerifiedBadge": "سيحصل جميع المحترفين المختارين على شارة موثّقة.",
+  "adminProfinderAdmin": "إدارة ProFinder",
+  "adminAdminPanel": "لوحة التحكم",
+  "adminMore": "المزيد",
+  "adminLogout2": "تسجيل الخروج؟",
+  "adminLoggedOutAdminPanel": "سيتم تسجيل خروجك من لوحة التحكم.",
+  "adminAnalytics": "التحليلات",
+  "adminD": "{value1} يوم",
+  "@adminD": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRs": "Rs {value1}",
+  "@adminRs": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminLastDays": "آخر {value1} يوم",
+  "@adminLastDays": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminLast12Months": "آخر 12 شهرًا",
+  "adminDailyBookings": "الحجوزات اليومية",
+  "adminMonthlyBookings12mo": "الحجوزات الشهرية (12 شهرًا)",
+  "adminTopSearches": "أهم عمليات البحث",
+  "adminNoDataYet": "لا توجد بيانات بعد",
+  "adminFailedLoadAnalytics": "فشل تحميل التحليلات",
+  "adminCountries": "الدول",
+  "adminTopCities": "أهم المدن",
+  "adminTopCategories": "أهم الفئات",
+  "adminActivityLogs": "سجلات النشاط",
+  "adminLogs": "{value1} سجل",
+  "@adminLogs": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminTotal": "الإجمالي: {value1}",
+  "@adminTotal": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminAdminActionsAppearHere": "ستظهر إجراءات المسؤول هنا",
+  "adminFailedLoadLogs": "فشل تحميل السجلات",
+  "adminSearchByAdminTargetUser": "ابحث حسب المسؤول أو المستخدم المستهدف…",
+  "adminClearAll": "مسح الكل",
+  "adminDeleteLog": "حذف هذا السجل؟",
+  "adminClearAllLogs": "مسح جميع السجلات؟",
+  "adminActionCannotUndone": "لا يمكن التراجع عن هذا الإجراء.",
+  "adminAllActivityLogsPermanentlyDeleted": "سيتم حذف جميع سجلات النشاط البالغ عددها {value1} نهائيًا.",
+  "@adminAllActivityLogsPermanentlyDeleted": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminWelcome": "مرحبًا، {value1} 👋",
+  "@adminWelcome": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminCustomersProfessionals": "{value1} عميل · {value2} محترف",
+  "@adminCustomersProfessionals": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSearch": "بحث",
+  "adminGlobalSearchUiReadyConnectUsers": "واجهة البحث الشامل جاهزة — سيتم ربطها بالمستخدمين/الحجوزات بعد إعادة بناء تلك الوحدة.",
+  "adminReview": "مراجعة",
+  "adminFailedLoadDashboard": "فشل تحميل لوحة التحكم",
+  "adminSearchUsersProfessionalsBookings": "ابحث عن المستخدمين، المحترفين، الحجوزات…",
+  "adminTotalUsers": "إجمالي المستخدمين",
+  "adminCustomers": "العملاء",
+  "adminRevenue": "الإيرادات",
+  "adminTodaySBookings": "حجوزات اليوم",
+  "adminPendingVerification": "بانتظار التوثيق",
+  "adminReportedUsers": "المستخدمون المُبلَّغ عنهم",
+  "adminExportUsers": "تصدير ({value1} مستخدم)",
+  "@adminExportUsers": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUsers": "المستخدمون",
+  "adminNameZ2": "الاسم (ي-أ)",
+  "adminOldestFirst": "الأقدم أولاً",
+  "adminShown": "معروض {value1}",
+  "@adminShown": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminBlock": "حظر",
+  "adminJoined": "انضم في {value1}",
+  "@adminJoined": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminFailedLoadUsers": "فشل تحميل المستخدمين",
+  "adminSearchByNameEmail": "ابحث بالاسم أو البريد الإلكتروني…",
+  "adminFailedUpdate": "فشل التحديث.",
+  "adminFailedDelete": "فشل الحذف.",
+  "adminAddCountry": "إضافة دولة",
+  "adminFailedAddMayAlreadyExist": "فشلت الإضافة — قد تكون موجودة بالفعل.",
+  "adminAdd": "إضافة",
+  "adminMergeInto": "دمج في \"{value1}\"",
+  "@adminMergeInto": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminEnterTypoVariantSpellingsFoundUser": "أدخل الأخطاء الإملائية أو الصيغ البديلة الموجودة في ملفات المستخدمين، مفصولة بفواصل (مثال: pakistan, Pakistn).",
+  "adminMergeFailed": "فشل الدمج.",
+  "adminMerge": "دمج",
+  "adminActive": "{value1} نشط",
+  "@adminActive": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminViewCities": "عرض المدن",
+  "adminNoCountriesAddedYet": "لم تتم إضافة دول بعد",
+  "adminFailedLoadCountries": "فشل تحميل الدول",
+  "adminCountryName": "اسم الدولة",
+  "adminVariant1Variant2": "صيغة1، صيغة2، ...",
+  "adminRevenueByCategory": "الإيرادات حسب الفئة",
+  "adminVsPreviousDays": "{value1}٪ مقارنة بالـ {value2} يوم السابقة",
+  "@adminVsPreviousDays": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNoCategoryDataYet": "لا توجد بيانات فئة بعد",
+  "adminRs2": "Rs {value1} ({value2})",
+  "@adminRs2": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminFailedLoadRevenueData": "فشل تحميل بيانات الإيرادات",
+  "adminDeleteBanner": "حذف هذا الشريط الإعلاني؟",
+  "adminPermanentlyDeleted": "سيتم حذف \"{value1}\" نهائيًا.",
+  "@adminPermanentlyDeleted": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminPreviewMode": "👁 وضع المعاينة",
+  "adminActive2": "نشط",
+  "adminTurningOffHidesBannerFromEveryone": "إيقاف هذا يخفي الشريط الإعلاني عن الجميع",
+  "adminPromoBanners": "الشرائط الترويجية",
+  "adminFailedLoadBanners": "فشل تحميل الشرائط الإعلانية",
+  "adminNoBannersYet": "لا توجد شرائط إعلانية بعد",
+  "adminTapCreateNewBanner": "اضغط على \"+\" لإنشاء شريط إعلاني جديد",
+  "adminPreview": "معاينة",
+  "adminEdit": "تعديل",
+  "adminFailedGenerateReport": "فشل إنشاء التقرير.",
+  "adminNoDataRange": "لا توجد بيانات في هذا النطاق.",
+  "adminCopiedClipboardStyleExportCsvReady": "تم النسخ بصيغة تصدير (CSV) — جاهز للمشاركة.",
+  "adminExportCsv": "تصدير CSV",
+  "adminReports": "التقارير",
+  "adminQuickGenerate": "إنشاء سريع",
+  "adminLast30Days": "آخر 30 يومًا",
+  "adminGenerationHistory": "سجل الإنشاء",
+  "adminNoReportsGeneratedYetSession": "لم يتم إنشاء تقارير بعد في هذه الجلسة.",
+  "adminRows": "{value1} صف · {value2}",
+  "@adminRows": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminProsBookingsSubcategories": "{value1} محترف · {value2} حجز · {value3} فئة فرعية",
+  "@adminProsBookingsSubcategories": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      },
+      "value3": {
+        "type": "String"
+      }
+    }
+  },
+  "adminFeatured": "مميز",
+  "adminShowGuestHomeSFeaturedCategories": "إظهار في الفئات المميزة للصفحة الرئيسية للضيوف (بحد أقصى 6)",
+  "adminAddSubcategory": "إضافة فئة فرعية",
+  "adminFailedLoad": "فشل التحميل",
+  "adminName": "الاسم",
+  "adminIconOptional": "الأيقونة (اختياري)",
+  "adminParentCategory": "الفئة الرئيسية",
+  "adminAddNew": "إضافة جديد",
+  "adminCancelSubscription": "إلغاء الاشتراك؟",
+  "adminCancelSSubscription": "إلغاء اشتراك {value1} في {value2}؟",
+  "@adminCancelSSubscription": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNo": "لا",
+  "adminCancelSubscription2": "إلغاء الاشتراك",
+  "adminFailedCancel": "فشل الإلغاء.",
+  "adminExtendedBy30Days": "تم التمديد لمدة 30 يومًا.",
+  "adminFailedExtend": "فشل التمديد.",
+  "adminSubscriptions": "الاشتراكات",
+  "adminRs3": "{value1} · Rs {value2}/{value3}",
+  "@adminRs3": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      },
+      "value3": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRenews": "التجديد: {value1}",
+  "@adminRenews": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminExtend30d": "تمديد 30 يومًا",
+  "adminNoSubscriptionsFound": "لم يتم العثور على اشتراكات",
+  "adminFailedLoadSubscriptions": "فشل تحميل الاشتراكات",
+  "adminExportCustomers": "تصدير ({value1} عميل)",
+  "@adminExportCustomers": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminTotalSpentHighLow": "إجمالي الإنفاق (من الأعلى إلى الأقل)",
+  "adminFailedLoadCustomers": "فشل تحميل العملاء",
+  "adminAddLanguage": "إضافة لغة",
+  "adminRightLeftRtl": "من اليمين إلى اليسار (RTL)",
+  "adminFailedAddCodeMayAlreadyExist": "فشلت الإضافة — قد يكون الرمز موجودًا بالفعل.",
+  "adminFailedUpdateStatus": "فشل تحديث الحالة.",
+  "adminChangeStatus": "تغيير الحالة",
+  "adminDeleteLanguage": "حذف اللغة؟",
+  "adminPermanentlyRemoveAllItsTranslations": "سيتم حذف \"{value1}\" وجميع ترجماتها نهائيًا.",
+  "@adminPermanentlyRemoveAllItsTranslations": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminFailedDeleteLanguage": "فشل حذف اللغة.",
+  "adminLanguages": "اللغات",
+  "adminActiveTotal": "{value1} نشط · {value2} إجمالي",
+  "@adminActiveTotal": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRtl": "RTL",
+  "adminEditTranslations": "تعديل الترجمات",
+  "adminNoLanguagesAddedYet": "لم تتم إضافة لغات بعد",
+  "adminFailedLoadLanguages": "فشل تحميل اللغات",
+  "adminLanguageNameEGUrdu": "اسم اللغة (مثال: الأردية)",
+  "adminCodeEGUr": "الرمز (مثال: ur)",
+  "adminDeleteArticle": "حذف المقال؟",
+  "adminNewArticle": "مقال جديد",
+  "adminTipsMagazine": "مجلة النصائح",
+  "adminNoArticlesHereYet": "لا توجد مقالات هنا بعد.",
+  "adminMinReadViews": "{value1} دقيقة قراءة · {value2} مشاهدة",
+  "@adminMinReadViews": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSelect": "اختر…",
+  "adminManageCategories": "إدارة الفئات",
+  "adminNoCategoriesYet": "لا توجد فئات بعد.",
+  "adminArticles": "{value1} مقال",
+  "@adminArticles": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminAddNewCategory": "إضافة فئة جديدة",
+  "adminAddCategory": "إضافة فئة",
+  "adminCategoryName": "اسم الفئة",
+  "adminNoChangesSave": "لا توجد تغييرات للحفظ.",
+  "adminFailedSaveTranslations": "فشل حفظ الترجمات.",
+  "adminAddTranslationKey": "إضافة مفتاح ترجمة",
+  "adminFailedAddKeyMayAlreadyExist": "فشلت الإضافة — قد يكون المفتاح موجودًا بالفعل.",
+  "adminDiscardChanges": "تجاهل التغييرات؟",
+  "adminHaveUnsavedTranslationS": "لديك {value1} ترجمة غير محفوظة.",
+  "@adminHaveUnsavedTranslationS": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminKeepEditing": "متابعة التعديل",
+  "adminDiscard": "تجاهل",
+  "adminAddKey": "إضافة مفتاح",
+  "adminTranslate": "ترجمة — {value1}",
+  "@adminTranslate": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminKeysUnsaved": "{value1} مفتاح · {value2} غير محفوظ",
+  "@adminKeysUnsaved": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminMissing": "مفقود",
+  "adminNoTranslationKeysYet": "لا توجد مفاتيح ترجمة بعد",
+  "adminTapAddKeyCreateFirstOne": "اضغط على \"إضافة مفتاح\" لإنشاء الأول.",
+  "adminFailedLoadTranslations": "فشل تحميل الترجمات",
+  "adminKeyEGHomeWelcomeTitle": "المفتاح (مثال: home.welcome_title)",
+  "adminDescriptionOptional": "الوصف (اختياري)",
+  "adminSearchKeys": "ابحث عن المفاتيح…",
+  "adminTranslatedText": "النص المترجم…",
+  "adminAddCity": "إضافة مدينة إلى {value1}",
+  "@adminAddCity": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminEnterTypoVariantSpellingsCommaSeparated": "أدخل الأخطاء الإملائية أو الصيغ البديلة، مفصولة بفواصل.",
+  "adminAddCity2": "إضافة مدينة",
+  "adminNoCitiesAddedYet": "لم تتم إضافة مدن بعد",
+  "adminFailedLoadCities": "فشل تحميل المدن",
+  "adminCityName": "اسم المدينة",
+  "adminPendingReview": "{value1} بانتظار المراجعة",
+  "@adminPendingReview": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminBlocked": "محظور",
+  "adminReportedBy": "أُبلغ عنه من قبل {value1} ({value2})",
+  "@adminReportedBy": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminFailedLoadReports": "فشل تحميل البلاغات",
+  "adminReportOn": "بلاغ عن {value1}",
+  "@adminReportOn": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminAlsoBanUser": "حظر هذا المستخدم أيضًا",
+  "adminDismiss": "تجاهل",
+  "adminMarkReviewed": "وضع علامة كمُراجَع",
+  "adminTakeAction": "اتخاذ إجراء",
+  "adminFailedUpdateReport": "فشل تحديث البلاغ.",
+  "adminSearchByUserReporterReason": "ابحث حسب المستخدم أو المُبلِّغ أو السبب…",
+  "adminAdminNoteOptional": "ملاحظة المسؤول (اختياري)…",
+  "adminPortfolioApproval": "الموافقة على معرض الأعمال",
+  "adminApprove": "موافقة",
+  "adminAllPortfoliosReviewed": "تمت مراجعة جميع معارض الأعمال!",
+  "adminFailedLoadPortfolios": "فشل تحميل معارض الأعمال",
+  "adminSkip": "تخطي",
+  "adminWriteReasonOptional": "اكتب السبب (اختياري)…",
+  "adminApprovePortfolio": "الموافقة على معرض الأعمال؟",
+  "adminVisibleAllCustomers": "سيكون \"{value1}\" مرئيًا لجميع العملاء.",
+  "@adminVisibleAllCustomers": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminBookings2": "{value1} حجز",
+  "@adminBookings2": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminCreated": "أُنشئ في {value1}",
+  "@adminCreated": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminForceCancel": "إلغاء إجباري",
+  "adminFailedLoadBookings": "فشل تحميل الحجوزات",
+  "adminYesCancel": "نعم، إلغاء",
+  "adminSearchCustomerProfessional": "ابحث عن عميل أو محترف…",
+  "adminCancelBooking": "إلغاء الحجز رقم {value1}؟",
+  "@adminCancelBooking": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReflectBothCustomerProfessional": "{value1} ← {value2} سينعكس هذا على كل من العميل والمحترف.",
+  "@adminReflectBothCustomerProfessional": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminVerificationRequests": "طلبات التوثيق",
+  "adminPendingOldestFirst": "{value1} بانتظار المراجعة · الأقدم أولاً",
+  "@adminPendingOldestFirst": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminOldest": "الأقدم",
+  "adminApproveVerification": "الموافقة على التوثيق؟",
+  "adminMarkedAsVerifiedProfessional": "سيتم وضع علامة على {value1} كمحترف موثّق.",
+  "@adminMarkedAsVerifiedProfessional": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRejectSRequest": "رفض طلب {value1}؟",
+  "@adminRejectSRequest": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReasonSentProfessionalSoTheyCan": "سيُرسل هذا السبب إلى المحترف حتى يتمكن من إعادة التقديم.",
+  "adminFailedRequest": "فشل {value1} الطلب.",
+  "@adminFailedRequest": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNoPendingVerificationRequests": "لا توجد طلبات توثيق معلّقة 🎉",
+  "adminFailedLoadVerificationRequests": "فشل تحميل طلبات التوثيق",
+  "adminSearchByNameEmailCategory2": "ابحث بالاسم أو البريد الإلكتروني أو الفئة…",
+  "adminEGCnicImageBlurryPlease": "مثال: صورة الهوية غير واضحة، يرجى إعادة الرفع…",
+  "adminFailedCancelItMayHaveAlready": "فشل الإلغاء — ربما تم إرسالها بالفعل.",
+  "adminCompose": "إنشاء",
+  "adminScheduledFor": "مجدول لـ: {value1}",
+  "@adminScheduledFor": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSentUsersOpenRate": "أُرسل إلى {value1} مستخدم · معدل الفتح: {value2}٪",
+  "@adminSentUsersOpenRate": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminComposeNotification": "إنشاء إشعار",
+  "adminAudience": "الجمهور",
+  "adminScheduleLater": "الجدولة لوقت لاحق",
+  "adminFailedSendNotification": "فشل إرسال الإشعار.",
+  "adminFailedLoadNotifications": "فشل تحميل الإشعارات",
+  "adminTitle": "العنوان",
+  "adminMessage": "الرسالة",
+  "adminUserId": "معرّف المستخدم",
+  "adminDeleteAnnouncement": "حذف الإعلان؟",
+  "adminRemove": "إزالة \"{value1}\"؟",
+  "@adminRemove": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNewAnnouncement": "إعلان جديد",
+  "adminAnnouncements": "الإعلانات",
+  "adminType": "النوع",
+  "adminFailedCreate": "فشل الإنشاء.",
+  "adminPublish": "نشر",
+  "adminNoAnnouncementsYet": "لا توجد إعلانات بعد",
+  "adminFailedLoadAnnouncements": "فشل تحميل الإعلانات",
+  "adminMagazineAnalytics": "تحليلات المجلة",
+  "adminViews": "{value1} مشاهدة",
+  "@adminViews": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminOfTotal": "{value1}٪ من الإجمالي",
+  "@adminOfTotal": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNoViewsYet": "لا توجد مشاهدات بعد.",
+  "adminRecentViewers": "المشاهدون الأخيرون",
+  "adminComplaints": "الشكاوى",
+  "adminVs": "{value1} مقابل {value2}",
+  "@adminVs": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "adminAssignedTo": "مُسند إلى: {value1}",
+  "@adminAssignedTo": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "adminAssignMe": "إسناد لي",
+  "adminResolve": "حل",
+  "adminFailedAssign": "فشل الإسناد.",
+  "adminFailedLoadComplaints": "فشل تحميل الشكاوى",
+  "adminResolutionNote": "ملاحظة الحل",
+  "authWelcomeProfinder": "مرحبًا بك في ProFinder!",
+  "authPleaseVerifyEmailActivateAccount": "يرجى تفعيل بريدك الإلكتروني لتنشيط حسابك.",
+  "authContinueLogin": "المتابعة لتسجيل الدخول",
+  "profileNoPaymentsYet": "لا توجد مدفوعات بعد",
+  "profileTransactionHistoryAppearHere": "سيظهر سجل معاملاتك هنا",
+  "profileWallet": "المحفظة",
+  "profileTotalSpent": "إجمالي الإنفاق",
+  "profileAcrossTransaction": "عبر {value1} معاملة{value2}",
+  "@profileAcrossTransaction": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCurrentPlan": "الخطة الحالية: {value1}",
+  "@profileCurrentPlan": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "profilePaymentHistory": "سجل المدفوعات",
+  "profileViewAllTransactions": "عرض جميع معاملاتك",
+  "profileSavedProfessionals": "المحترفون المحفوظون",
+  "profileNoSavedProfessionalsYet": "لا يوجد محترفون محفوظون بعد",
+  "profileTapHeartAnyProfessionalSaveThem": "اضغط على أيقونة القلب لأي محترف لحفظه هنا",
+  "profileHr": "{value1} • ${value2}/ساعة",
+  "@profileHr": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "profileBook": "حجز",
+  "profileRemoveFromSaved": "إزالة من المحفوظات",
+  "profileChangeProfilePhoto": "تغيير صورة الملف الشخصي",
+  "profileChooseFromGallery": "اختيار من المعرض",
+  "profileTakePhoto": "التقاط صورة",
+  "profileMyProfile": "ملفي الشخصي",
+  "profileNewPhotoSelectedTapSaveUpload": "تم اختيار صورة جديدة — اضغط على حفظ للرفع",
+  "profilePersonalInformation": "المعلومات الشخصية",
+  "profileSureWantLogout": "هل أنت متأكد من رغبتك في تسجيل الخروج؟",
+  "profileMyReviews": "تقييماتي",
+  "profileNoReviewsWrittenYet": "لم تتم كتابة تقييمات بعد",
+  "profileCompleteBookingLeaveFirstReview": "أكمل حجزًا لترك تقييمك الأول",
+  "profileSecurity": "الأمان",
+  "profileWeLlEmailSecureResetLink": "سنرسل رابط إعادة تعيين آمن إلى {value1}.",
+  "@profileWeLlEmailSecureResetLink": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSignOutDevice": "تسجيل الخروج من هذا الجهاز",
+  "profileHelpSupport": "المساعدة والدعم",
+  "profileNeedHand": "بحاجة إلى مساعدة؟",
+  "profileReachOurSupportTeamAnytime": "تواصل مع فريق الدعم في أي وقت",
+  "profileFrequentlyAskedQuestions": "الأسئلة الشائعة",
+  "profileComingSoon": "{value1} قريبًا",
+  "@profileComingSoon": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "profileBrowsingAsGuest": "أنت تتصفح كضيف",
+  "profileLoginBookSaveManageRequests": "سجّل الدخول للحجز والحفظ وإدارة طلباتك",
+  "profileProfinderV100": "ProFinder الإصدار 1.0.0",
+  "profileAboutProfinder": "حول ProFinder",
+  "profileProfinderHelpsFindHireTrustedProfessionals": "يساعدك ProFinder في العثور على محترفين موثوقين والاستعانة بهم — أطباء، محامون، مدرّسون، مهندسون، سباكون وغيرهم — بالقرب منك.",
+  "profileAccessBookingsProfile": "الوصول إلى حجوزاتك وملفك الشخصي",
+  "profileCreateFreeCustomerAccount": "إنشاء حساب عميل مجاني",
+  "profileBecomeProfessional": "كن محترفًا",
+  "profileListServicesGetHired": "أدرج خدماتك واحصل على فرص عمل",
+  "profileEnglish": "الإنجليزية",
+  "profileComingSoon2": "قريبًا",
+  "profilePrivacyPolicy": "سياسة الخصوصية",
+  "searchNoReviewsYet": "لا توجد تقييمات بعد",
+  "searchFirstReview": "كن أول من يقيّم!",
+  "searchNoPortfolioYet": "لا يوجد معرض أعمال بعد",
+  "searchProfessionalHasNoApprovedWorkYet": "لا يملك هذا المحترف أعمالًا معتمدة بعد",
+  "searchHourlyRate": "الأجر بالساعة",
+  "searchHr": "${value1}/ساعة",
+  "@searchHr": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchLoginBook": "سجّل الدخول للحجز",
+  "searchLoginRequired": "تسجيل الدخول مطلوب",
+  "searchPleaseLoginUseAiSearch": "يرجى تسجيل الدخول لاستخدام البحث الذكي.",
+  "searchSearchHistory": "سجل البحث",
+  "searchNoSearchHistoryYet": "لا يوجد سجل بحث بعد",
+  "searchPriceHr": "السعر: ${value1} — ${value2}/ساعة",
+  "@searchPriceHr": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "searchMinRating": "الحد الأدنى للتقييم: {value1} ★",
+  "@searchMinRating": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchVerifiedOnly": "الموثّقون فقط",
+  "searchPreferredGender": "الجنس المفضّل",
+  "searchAny": "أي",
+  "searchFemale": "أنثى",
+  "searchMale": "ذكر",
+  "searchMinExperienceYrs": "الحد الأدنى للخبرة: {value1}+ سنوات",
+  "@searchMinExperienceYrs": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchPreferredLanguage": "اللغة المفضّلة",
+  "searchNeedSomeoneNowUrgent": "بحاجة لشخص الآن / عاجل",
+  "searchServiceMode": "طريقة تقديم الخدمة",
+  "searchOnline": "عبر الإنترنت",
+  "searchHomeVisit": "زيارة منزلية",
+  "searchInOffice": "في المكتب",
+  "searchReset": "إعادة تعيين",
+  "searchApply": "تطبيق",
+  "searchNoResults": "لا توجد نتائج لـ \"{value1}\"",
+  "@searchNoResults": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchHereSomeAlternativesMightLike": "إليك بعض البدائل التي قد تعجبك",
+  "searchClearSearch": "مسح البحث",
+  "searchKm": "{value1} كم",
+  "@searchKm": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "عن: \"{value1}\"",
+  "@searchFor": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchToday": "{value1}/{value2} اليوم",
+  "@searchToday": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "searchAlsoShowNormalResults": "إظهار النتائج العادية أيضًا",
+  "searchNoExactMatch": "لا توجد مطابقة تامة لـ \"{value1}\"",
+  "@searchNoExactMatch": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchHereSomeRelevantAlternatives": "إليك بعض البدائل ذات الصلة",
+  "searchAiAgentLive": "وكيل الذكاء الاصطناعي نشط",
+  "searchFindingBestMatch": "جارٍ إيجاد أفضل تطابق لـ \"{value1}\"",
+  "@searchFindingBestMatch": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchRecentSearches": "عمليات البحث الأخيرة",
+  "searchSeeAll": "عرض الكل ({value1})",
+  "@searchSeeAll": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchClear": "مسح",
+  "searchPopularSearches": "عمليات البحث الشائعة",
+  "searchBrowseByCategory": "تصفح حسب الفئة",
+  "searchResultFor": "{value1} نتيجة{value2} لـ \"{value3}\"",
+  "@searchResultFor": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      },
+      "value3": {
+        "type": "String"
+      }
+    }
+  },
+  "searchGettingLocation": "جارٍ تحديد الموقع...",
+  "searchSortedByDistance": "مرتّب حسب المسافة",
+  "searchEnableLocation": "تفعيل الموقع",
+  "searchPro": "احترافي",
+  "searchEGKarachiLahore": "مثال: كراتشي، لاهور",
+  "searchEGUrduEnglish": "مثال: الأردية، الإنجليزية",
+  "magazineHealthLegalHomeLifestyle": "الصحة · القانون · المنزل ونمط الحياة",
+  "magazineCouldNotLoadArticles": "تعذر تحميل المقالات",
+  "magazineNoArticlesYet": "لا توجد مقالات بعد",
+  "magazineCheckBackSoonTipsAdvice": "تحقق مرة أخرى قريبًا للحصول على النصائح والإرشادات.",
+  "magazineSearchArticles": "ابحث في المقالات…",
+  "magazineMinRead": "{value1} دقيقة قراءة",
+  "@magazineMinRead": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "magazineProfinderTipsMagazine": "مجلة نصائح ProFinder",
+  "magazineGoBack": "العودة",
+  "magazineMin": "{value1} دقيقة",
+  "@magazineMin": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatSharedMedia": "الوسائط المشتركة",
+  "chatNoSharedMediaYet": "لا توجد وسائط مشتركة بعد",
+  "chatPhotos": "الصور ({value1})",
+  "@chatPhotos": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatVoiceMessages": "الرسائل الصوتية ({value1})",
+  "@chatVoiceMessages": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatS": "{value1}ث",
+  "@chatS": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatSharedMedia2": "الوسائط المشتركة",
+  "chatBlockUser": "حظر المستخدم",
+  "chatReportUser": "الإبلاغ عن المستخدم",
+  "chatBlock": "حظر {value1}؟",
+  "@chatBlock": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatTheyNoLongerAbleSendMessages": "لن يتمكن من إرسال رسائل إليك بعد الآن.",
+  "chatSayHello": "قل مرحبًا 👋",
+  "chatSearchChat": "ابحث في المحادثة",
+  "chatCouldNotLoadMessages": "تعذر تحميل الرسائل",
+  "chatMessages": "الرسائل",
+  "chatNoConversationsYet": "لا توجد محادثات بعد",
+  "chatSearchMessages": "ابحث في الرسائل...",
+  "chatMicrophonePermissionRequiredVoiceMessages": "إذن الميكروفون مطلوب للرسائل الصوتية.",
+  "chatEmoji": "الرموز التعبيرية",
+  "chatSendPhoto": "إرسال صورة",
+  "chatReportSubmittedThank": "تم إرسال البلاغ. شكرًا لك.",
+  "chatCouldNotSubmitReportTryAgain": "تعذر إرسال البلاغ. حاول مرة أخرى.",
+  "chatReport": "الإبلاغ عن {value1}",
+  "@chatReport": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatSubmit": "إرسال",
+  "chatAdditionalDetailsOptional": "تفاصيل إضافية (اختياري)",
+  "chatMessageWasDeleted": "تم حذف هذه الرسالة",
+  "chatEdited": "مُعدَّلة ·",
+  "chatReply": "رد",
+  "chatDeleteMe": "حذف لدي فقط",
+  "chatDeleteEveryone": "حذف للجميع",
+  "chatEditMessage": "تعديل الرسالة",
+  "notificationsMarkAllRead": "وضع علامة مقروء على الكل",
+  "notificationsNoNotificationsYet": "لا توجد إشعارات بعد",
+  "notificationsBookingUpdatesAurAlertsYahanDikhenge": "ستظهر تحديثات الحجوزات والتنبيهات هنا",
+  "professionalDelete": "حذف؟",
+  "professionalDelete2": "حذف \"{value1}\"؟",
+  "@professionalDelete2": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "professionalAddPortfolioItem": "إضافة عنصر إلى معرض الأعمال",
+  "professionalTapAddImage": "اضغط لإضافة صورة",
+  "professionalPortfolioReviewedByAdminOnceApproved": "ستتم مراجعة معرض أعمالك من قبل المسؤول. عند الموافقة، ستحصل على شارة موثّقة.",
+  "professionalSubmitReview": "إرسال للمراجعة",
+  "professionalMyPortfolio": "معرض أعمالي",
+  "professionalNoPortfolioItemsYet": "لا توجد عناصر في معرض الأعمال بعد",
+  "professionalAddWorkGetVerified": "أضف أعمالك للحصول على التوثيق",
+  "professionalAddFirstItem": "إضافة العنصر الأول",
+  "professionalNote": "ملاحظة: {value1}",
+  "@professionalNote": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "professionalTitle": "العنوان *",
+  "professionalEGHouseConstructionProject": "مثال: مشروع بناء منزل",
+  "professionalBriefDescriptionWork": "وصف موجز لهذا العمل...",
+  "professionalAddPortfolio": "إضافة معرض أعمال",
+  "professionalTypeMessage": "اكتب رسالة...",
+  "professionalDeletePhoto": "حذف الصورة؟",
+  "professionalPhotoRemovedFromGallery": "ستتم إزالة هذه الصورة من معرضك.",
+  "professionalGallery": "المعرض",
+  "professionalNoPhotosYet": "لا توجد صور بعد",
+  "professionalAddPhotosShowcaseWorkEnvironment": "أضف صورًا لعرض بيئة عملك",
+  "professionalAddPhoto": "إضافة صورة",
+  "professionalWorkingHours": "ساعات العمل",
+  "professionalProfessionalDetails": "التفاصيل المهنية",
+  "professionalSkills": "المهارات",
+  "professionalNoSkillsAddedYet": "لم تتم إضافة مهارات بعد",
+  "professionalBankDetails": "بيانات الحساب البنكي",
+  "professionalCertificates": "الشهادات",
+  "professionalWalletEarnings": "المحفظة والأرباح",
+  "professionalSubscriptionUpgradePremium": "الاشتراك / الترقية إلى بريميوم",
+  "professionalChangePassword": "تغيير كلمة المرور",
+  "professionalAddSkill": "+ إضافة مهارة",
+  "professionalAddLanguage": "+ إضافة لغة",
+  "professionalNeedMoreHelp": "بحاجة إلى مساعدة إضافية؟",
+  "professionalOurSupportTeamRepliesWithin24": "يرد فريق الدعم لدينا خلال 24 ساعة",
+  "professionalContact": "التواصل",
+  "professionalContactSupport": "التواصل مع الدعم",
+  "professionalSupportProfinderCom": "support@profinder.com",
+  "professionalEmailUsAnytime": "راسلنا في أي وقت",
+  "professionalLiveChat": "محادثة مباشرة",
+  "professionalAvailable9Am6Pm": "متاح من 9 صباحًا حتى 6 مساءً",
+  "professionalRePlan": "أنت مشترك في خطة {value1}",
+  "@professionalRePlan": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "professionalUpgradeMoreBookingsFeaturedProfilePriority": "قم بالترقية لمزيد من الحجوزات، وملف شخصي مميز، وأولوية في الترتيب",
+  "professionalUpgrade": "ترقية",
+  "professionalProfileCompletion": "اكتمال الملف الشخصي",
+  "professionalCompleteProfileGetMoreBookings": "أكمل ملفك الشخصي للحصول على حجوزات أكثر",
+  "professionalNoClientsFound": "لم يتم العثور على عملاء لـ \"{value1}\"",
+  "@professionalNoClientsFound": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "professionalQuickActions": "إجراءات سريعة",
+  "professionalEarnings": "الأرباح",
+  "professionalViewWallet": "عرض المحفظة",
+  "professionalPerformance": "الأداء",
+  "professionalTodaySSchedule": "جدول اليوم",
+  "professionalNoBookingsScheduledToday": "لا توجد حجوزات مجدولة اليوم",
+  "professionalRecentMessages": "الرسائل الأخيرة",
+  "professionalSeeAll": "عرض الكل",
+  "professionalNoMessagesYet": "لا توجد رسائل بعد",
+  "professionalSkillsPricing": "المهارات والأسعار",
+  "professionalManage": "إدارة",
+  "professionalAddWorkSamples": "أضف نماذج من أعمالك",
+  "professionalGetVerifiedByAddingPortfolio": "احصل على التوثيق بإضافة معرض أعمال",
+  "professionalRecentReviews": "التقييمات الأخيرة",
+  "professionalRecentBookings": "الحجوزات الأخيرة",
+  "professionalNoBookingsYet": "لا توجد حجوزات بعد",
+  "professionalBookingDetails": "تفاصيل الحجز",
+  "professionalMarkAsCompleted": "وضع علامة كمكتمل",
+  "professionalCancelBooking": "إلغاء الحجز",
+  "professionalSearchBookingsByClientName": "ابحث في الحجوزات باسم العميل...",
+  "professionalPortfolio": "معرض الأعمال",
+  "professionalAddCertificate": "إضافة شهادة",
+  "professionalTapAddCertificateImage": "اضغط لإضافة صورة الشهادة",
+  "professionalSaveCertificate": "حفظ الشهادة",
+  "professionalNoCertificatesYet": "لا توجد شهادات بعد",
+  "professionalAddCertificationsBuildTrust": "أضف الشهادات لبناء الثقة",
+  "professionalAddFirstCertificate": "إضافة الشهادة الأولى",
+  "professionalCertificateTitle": "عنوان الشهادة *",
+  "professionalIssuingOrganization": "الجهة المانحة",
+  "professionalEGCertifiedElectrician": "مثال: كهربائي معتمد",
+  "professionalEGTevtaCoursera": "مثال: TEVTA / Coursera",
+  "professionalCustomerConversationsShowUpHere": "ستظهر محادثات العملاء هنا",
+  "professionalCancelBooking2": "إلغاء الحجز؟",
+  "professionalSureWantCancelBooking": "هل أنت متأكد من رغبتك في إلغاء هذا الحجز؟",
+  "professionalReasonCancellingOptional": "سبب الإلغاء (اختياري)",
+  "professionalYesCancelIt": "نعم، إلغاء",
+  "professionalNoBookings": "لا توجد حجوزات {value1}",
+  "@professionalNoBookings": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "professionalDecline": "رفض",
+  "professionalEGNotAvailableThatDay": "مثال: غير متاح في ذلك اليوم، طرأ أمر طارئ...",
+  "professionalReview": "{value1} تقييم{value2}",
+  "@professionalReview": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "professionalWithdrawEarnings": "سحب الأرباح",
+  "professionalAvailable": "المتاح: ${value1}",
+  "@professionalAvailable": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "professionalMinimumWithdrawal": "الحد الأدنى للسحب: ${value1}",
+  "@professionalMinimumWithdrawal": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "professionalRequestWithdrawal": "طلب سحب",
+  "professionalBankDetailsRequired": "بيانات الحساب البنكي مطلوبة",
+  "professionalPleaseAddBankAccountDetailsProfile": "يرجى إضافة بيانات حسابك البنكي في الملف الشخصي قبل طلب السحب.",
+  "professionalAvailableBalance": "الرصيد المتاح",
+  "professionalWithdraw": "سحب",
+  "professionalNoTransactionsYet": "لا توجد معاملات بعد",
+  "professionalEnterAmount": "أدخل المبلغ",
+  "professionalPerformanceScore": "درجة الأداء",
+  "professionalOut100": "من أصل 100",
+  "professionalPerformanceScore40Rating30Acceptance": "درجة الأداء = 40٪ التقييم + 30٪ معدل القبول + 30٪ معدل الاستجابة.",
+  "professionalDashboard": "لوحة التحكم",
+  "professionalMagazine": "المجلة",
+  "professionalEnterCurrentPasswordNewPassword": "أدخل كلمة المرور الحالية وكلمة مرور جديدة.",
+  "professionalUpdate": "تحديث",
+  "professionalCurrentPassword": "كلمة المرور الحالية",
+  "professionalNewPassword": "كلمة المرور الجديدة",
+  "professionalConfirmNewPassword": "تأكيد كلمة المرور الجديدة",
+  "homeBecomePro": "كن محترفًا",
+  "homeLoginRequired": "تسجيل الدخول مطلوب",
+  "homeCreateAccount": "إنشاء حساب",
+  "homeWelcomeGuest": "مرحبًا، أيها الضيف",
+  "homeHireRightExpertMinutes": "استعن بالخبير المناسب، في دقائق.",
+  "homeSearchDoctorsLawyersPlumbers": "ابحث عن أطباء، محامين، سباكين…",
+  "homeViewAll": "عرض الكل",
+  "homeAllCategories": "جميع الفئات",
+  "homeFeatured": "مميز",
+  "homeExploreExperts": "استكشف الخبراء ←",
+  "homeProfessional": "هل أنت محترف؟",
+  "homeJoinProfinderGetDiscoveredByThousands": "انضم إلى ProFinder واكتشفك آلاف العملاء.",
+  "homeUnlockFullExperience": "افتح التجربة الكاملة",
+  "homeBookProfessionalsSaveFavouritesTrackRequests": "احجز المحترفين، احفظ المفضلة وتتبّع طلباتك.",
+  "homeNoProfessionalsNearbyYet": "لا يوجد محترفون بالقرب منك بعد",
+  "homeTrySearchingCategoryCheckBackSoon": "جرّب البحث في فئة أو تحقق مرة أخرى قريبًا.",
+  "homeSearchNow": "ابحث الآن",
+  "homeFilter": "تصفية",
+  "homePrice": "السعر: ${value1} — {value2}",
+  "@homePrice": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "homeVerifiedOnly": "الموثّقون فقط",
+  "homeNoProfessionalsAvailableCity": "لا يوجد محترفون متاحون في مدينتك.",
+  "homeTrySearchingNearbyCities": "جرّب البحث في مدن قريبة.",
+  "homeHi": "مرحبًا، {value1} 👋",
+  "@homeHi": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGetPersonalizedPicks": "احصل على اقتراحات مخصصة",
+  "homeBookFirstServiceWeLlStart": "احجز أول خدمة لك وسنبدأ بتخصيص هذا القسم لك.",
+  "homeBrowse": "تصفح",
+  "homeAiPick": "✨ اختيار الذكاء الاصطناعي لك",
+  "homeBookAgain": "احجز مرة أخرى",
+  "homeClearAll": "مسح الكل",
+  "homeNoUpcomingBookings": "لا توجد حجوزات قادمة",
+  "homeBrowseProfessionals": "تصفح المحترفين",
+  "homeViewDetails": "عرض التفاصيل",
+  "homeCancelledBy": "أُلغي بواسطة {value1}: {value2}",
+  "@homeCancelledBy": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "homeRateExperience": "قيّم تجربتك ⭐",
+  "homePlan": "الخطة: {value1}",
+  "@homePlan": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeRecentChats": "المحادثات الأخيرة",
+  "homeNoMessagesYet": "لا توجد رسائل بعد.",
+  "homeStartConversationAfterBookingProfessional": "ابدأ محادثة بعد حجز محترف.",
+  "homeNotifications": "الإشعارات{value1}",
+  "@homeNotifications": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeAiSuggestions": "اقتراحات الذكاء الاصطناعي",
+  "homeUnlimited": "غير محدود ✨",
+  "homeUsedToday": "تم استخدام {value1} من {value2} اليوم",
+  "@homeUsedToday": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "homeJustTellUsWhatNeedWe": "فقط أخبرنا بما تحتاجه، وسنقوم فورًا بمطابقتك مع المحترف الموثّق المناسب.",
+  "homeDailyLimitReachedResetsMidnight": "تم بلوغ الحد اليومي — يُعاد التعيين عند منتصف الليل",
+  "homeNeedHelpWeReHere": "بحاجة إلى مساعدة؟ نحن هنا من أجلك",
+  "homeGetResponseWithin24Hours": "احصل على رد خلال 24 ساعة",
+  "homeHelpCenter": "مركز المساعدة",
+  "homeEGINeedPlumberLeaking": "مثال: أحتاج سباكًا لإصلاح تسريب في الأنبوب…",
+  "homePopularCategories": "الفئات الشائعة",
+  "homeUpcomingBookings": "الحجوزات القادمة",
+  "bookingsBookProfessionalFromHomeScreen": "احجز محترفًا من الصفحة الرئيسية",
+  "bookingsEGScheduleChangedNoLonger": "مثال: تغيّر الموعد، لم تعد هناك حاجة...",
+  "bookingsBookingSent": "تم إرسال الحجز!",
+  "bookingsRequestSentNotifiedOnceTheyRespond": "تم إرسال الطلب إلى {value1}. سيتم إعلامك فور رده.",
+  "@bookingsRequestSentNotifiedOnceTheyRespond": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingsViewMyBookings": "عرض حجوزاتي",
+  "bookingsBackHome": "العودة إلى الرئيسية",
+  "bookingsBookAppointment": "حجز موعد",
+  "bookingsSummary": "الملخص",
+  "bookingsConfirmBooking": "تأكيد الحجز",
+  "bookingsDescribeIssueRequirements": "صف مشكلتك أو متطلباتك...",
+  "bookingsShareExperience": "شارك تجربتك",
+  "bookingsYourRating": "تقييمك",
+  "bookingsCommentOptional": "تعليقك (اختياري)",
+  "bookingsReviewSubmitted": "تم إرسال التقييم! 🎉",
+  "bookingsThankReviewingFeedbackHelpsOthersMake": "شكرًا لتقييمك {value1}. ملاحظاتك تساعد الآخرين على اتخاذ قرارات أفضل.",
+  "@bookingsThankReviewingFeedbackHelpsOthersMake": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingsBackBookings": "العودة إلى الحجوزات",
+  "bookingsDescribeExperience": "صف تجربتك مع {value1}...",
+  "@bookingsDescribeExperience": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionConfirmSubscription": "تأكيد الاشتراك",
+  "subscriptionSubscribe": "اشترك في {value1} مقابل {value2} {value3}",
+  "@subscriptionSubscribe": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      },
+      "value3": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionSubscribe2": "اشترك",
+  "subscriptionChoosePlan": "اختر خطتك",
+  "subscriptionAvailablePlans": "الخطط المتاحة",
+  "subscriptionCurrentPlan": "الخطة الحالية: {value1}",
+  "@subscriptionCurrentPlan": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionValidUntil": "صالحة حتى: {value1}",
+  "@subscriptionValidUntil": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionUpgradeUnlockPremiumFeatures": "قم بالترقية لفتح الميزات المميزة",
+  "subscriptionRecommended": "موصى بها",
+  "subscriptionCurrentPlan2": "الخطة الحالية",
+  "subscriptionCurrentPlan3": "الخطة الحالية",
+  "subscriptionBasicPlan": "الخطة الأساسية",
+  "subscriptionGet": "احصل على {value1}",
+  "@subscriptionGet": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionCancelAnytimeSecurePayment": "إلغاء في أي وقت • دفع آمن",
+  "subscriptionBookingLimitReached": "تم بلوغ حد الحجوزات!",
+  "subscriptionVeUsedBookingsMonthFreePlan": "لقد استخدمت {value1}/{value2} حجوزات هذا الشهر في خطتك المجانية.",
+  "@subscriptionVeUsedBookingsMonthFreePlan": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionUpgradePremium": "الترقية إلى بريميوم",
+  "subscriptionMaybeLater": "ربما لاحقًا",
+  "subscriptionMonthlyBookings": "الحجوزات الشهرية",
+  "subscriptionPremiumIncludes": "تتضمن بريميوم:",
+  "subscriptionAiSearchLimitReached": "تم بلوغ حد بحث الذكاء الاصطناعي!",
+  "subscriptionVeUsedAiSearchesTodayAi": "لقد استخدمت {value1}/{value2} عمليات بحث بالذكاء الاصطناعي اليوم. محادثة الذكاء الاصطناعي مقفلة حتى يُعاد تعيين حدّك.",
+  "@subscriptionVeUsedAiSearchesTodayAi": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionAiSearchesToday": "عمليات بحث الذكاء الاصطناعي اليوم",
+  "subscriptionGetPremium20AiDay": "احصل على بريميوم — 20 بحثًا ذكيًا/يوم",
+  "subscriptionContinueNormalSearch": "المتابعة بالبحث العادي",
+  "subscriptionPremiumAiFeatures": "ميزات الذكاء الاصطناعي المميزة:",
+  "subscriptionProfinderPremium": "ProFinder بريميوم",
+  "sharedYExp": "{value1} سنوات خبرة",
+  "@sharedYExp": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "sharedViewProfile": "عرض الملف الشخصي",
+  "homeNotificationsSignInMessage": "الإشعارات متاحة بعد تسجيل الدخول. سجّل الدخول أو أنشئ حسابًا لرؤية تحديثات الحجز والتنبيهات الشخصية.",
+  "homeSetUpProfileMessage": "سجّل الدخول أو أنشئ حسابًا لإعداد ملفك الشخصي.",
+  "homeLoginToSaveFavourites": "سجّل الدخول لحفظ المحترفين في المفضلة.",
+  "homeLoginToBookName": "سجّل الدخول لحجز {value1} وإدارة مواعيدك.",
+  "@homeLoginToBookName": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWhatAreYouLookingForToday": "عمّاذا تبحث اليوم؟",
+  "homeTrendingLabel": "الرائج",
+  "homeFeaturedCategoriesSection": "الفئات المميزة",
+  "homeTopRatedProfessionals": "المحترفون الأعلى تقييمًا",
+  "homeTopRatedLabel": "الأعلى تقييمًا",
+  "homeTrendingThisWeek": "الرائج هذا الأسبوع",
+  "homePopularProfessionals": "المحترفون الأكثر شهرة",
+  "homePopularLabel": "الأكثر شهرة",
+  "homeRecentlyAdded": "أُضيف مؤخرًا",
+  "homeNewLabel": "جديد",
+  "homeFromTheMagazine": "من المجلة",
+  "homeNearLocation": "بالقرب من {value1}",
+  "@homeNearLocation": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeProfessionalsInLocation": "محترفون في {value1}",
+  "@homeProfessionalsInLocation": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeClosestProfessionals": "أقرب المحترفين",
+  "homeTopRatedProfessionalsNationwide": "الأعلى تقييمًا على مستوى الدولة",
+  "homeNearbyLabel": "قريب",
+  "homeArticleLabel": "مقال",
+  "homeGoodMorning": "صباح الخير",
+  "homeGoodAfternoon": "نهارك سعيد",
+  "homeGoodEvening": "مساء الخير",
+  "homeSetYourLocation": "حدد موقعك",
+  "homeCityHint": "مثلاً كراتشي، لاهور",
+  "homeNoLimit": "بدون حد",
+  "homeMinRatingLabel": "أدنى تقييم: {value1} ★",
+  "@homeMinRatingLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeResetButton": "إعادة تعيين",
+  "homeApplyButton": "تطبيق",
+  "homeFilteredResults": "النتائج المُصفّاة",
+  "homeRecommendedForYou": "موصى به لك",
+  "homeRecommendedLabel": "موصى به",
+  "homeSavedQuickAction": "المحفوظات",
+  "homeWalletQuickAction": "المحفظة",
+  "homeHelpQuickAction": "المساعدة",
+  "homeRecentSearches": "عمليات البحث الأخيرة",
+  "homeRecentBookingsTitle": "الحجوزات الأخيرة",
+  "homeConfirmedStatus": "مؤكد",
+  "homeDeclinedStatus": "مرفوض",
+  "homeCancelledStatus": "ملغى",
+  "homeSystemLabel": "النظام",
+  "homeTotalSpent": "إجمالي الإنفاق",
+  "homeAcrossTransaction": "عبر {value1} معاملة",
+  "@homeAcrossTransaction": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeAcrossTransactions": "عبر {value1} معاملات",
+  "@homeAcrossTransactions": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeManageButton": "إدارة",
+  "homeUpgradeButton": "ترقية",
+  "homePaymentHistoryTitle": "سجل المدفوعات",
+  "homeTotalLabel": "الإجمالي",
+  "homeSayHello": "قل مرحبًا 👋",
+  "homeMagazineNavLabel": "المجلة",
+  "homeMessagesNavLabel": "الرسائل",
+  "homeTipsMagazineTitle": "مجلة النصائح",
+  "homeFeaturedArticlesTitle": "مقالات مميزة",
+  "homeContactButton": "تواصل",
+  "homeAiPickForYou": "اختيار الذكاء الاصطناعي لك",
+  "homeMessagingComingSoonTitle": "المراسلة",
+  "homeMessagingComingSoonMessage": "ستتمكن من الدردشة مباشرة مع المحترفين هنا.",
+  "commonOn": "تشغيل",
+  "commonOff": "إيقاف",
+  "profileVersionLabel": "الإصدار 1.0.0",
+  "searchAiSearchFailedTryNormal": "فشل البحث بالذكاء الاصطناعي. جرّب البحث العادي.",
+  "searchFailedCheckConnection": "فشل البحث. يرجى التحقق من اتصالك والمحاولة مرة أخرى.",
+  "searchClearAll": "مسح الكل",
+  "searchDistanceAny": "المسافة: أي",
+  "searchWithinKm": "ضمن {value1} كم",
+  "@searchWithinKm": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchSortPriceLowHigh": "السعر: من الأقل إلى الأعلى",
+  "searchSortPriceHighLow": "السعر: من الأعلى إلى الأقل",
+  "searchAiSearchesLeft": "{value1} متبقٍ",
+  "@searchAiSearchesLeft": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchSimilarProfessionals": "محترفون مشابهون",
+  "searchProfessionalsNearYou": "محترفون بالقرب منك",
+  "searchTrendingCategories": "الفئات الرائجة",
+  "searchAiPremiumResults": "نتائج بريميوم بالذكاء الاصطناعي",
+  "searchAiSearchResultsTitle": "نتائج البحث بالذكاء الاصطناعي",
+  "searchNoMatchingProfessionalsFound": "لم يتم العثور على محترفين مطابقين.",
+  "searchRelatedProfessions": "مهن ذات صلة",
+  "searchTrendingProfessionals": "المحترفون الرائجون",
+  "searchPopularNearby": "الأقرب شهرة",
+  "searchShowingResultsFor": "عرض النتائج لـ: ",
+  "searchMetersAway": "على بعد {value1} متر",
+  "@searchMetersAway": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchKmNearYou": "{value1} كم · بالقرب منك",
+  "@searchKmNearYou": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchKmAway": "على بعد {value1} كم",
+  "@searchKmAway": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchApproxKm": "~{value1} كم",
+  "@searchApproxKm": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchApproxKmNearbyCity": "~{value1} كم · مدينة قريبة",
+  "@searchApproxKmNearbyCity": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchDifferentArea": "منطقة مختلفة",
+  "searchAiHintPlaceholder": "اسأل الذكاء الاصطناعي: ابحث لي عن سباك...",
+  "searchNameCityProfessionHint": "الاسم، المدينة، المهنة...",
+  "searchAiSearchOnTapDisable": "البحث بالذكاء الاصطناعي مفعّل — اضغط للتعطيل",
+  "searchTryAiSearchSmarterResults": "جرّب البحث بالذكاء الاصطناعي — نتائج أذكى",
+  "subscriptionFailedToLoadPlans": "فشل تحميل الخطط.",
+  "subscriptionSubscribedTo": "تم الاشتراك في {value1}!",
+  "@subscriptionSubscribedTo": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionSubscriptionFailed": "فشل الاشتراك.",
+  "subscriptionPerMonth": "/شهريًا",
+  "subscriptionPerYear": "/سنويًا",
+  "subscriptionFreeForever": "مجاني للأبد",
+  "subscriptionBilledMonthly": "فوترة شهرية",
+  "subscriptionBilledYearly": "فوترة سنوية",
+  "subscriptionFree": "مجاني",
+  "subscriptionUnlimited": "غير محدود",
+  "subscriptionUpgradeUnlimitedAiSearches": "قم بالترقية للحصول على بحث ذكاء اصطناعي غير محدود والمزيد",
+  "subscriptionUpgradeUnlimitedBookings": "قم بالترقية للحصول على حجوزات غير محدودة وترتيب أولوية",
+  "subscriptionFeatureAiSearchesDay": "عمليات بحث الذكاء الاصطناعي/يوم",
+  "subscriptionFeatureMessagesDay": "الرسائل/يوم",
+  "subscriptionFeatureUnlimitedBookings": "حجوزات غير محدودة",
+  "subscriptionFeaturePrioritySupport": "دعم ذو أولوية",
+  "subscriptionFeaturePremiumBadge": "شارة مميزة",
+  "subscriptionFeatureNoAds": "بدون إعلانات",
+  "subscriptionFeatureBookingsMonth": "الحجوزات/شهر",
+  "subscriptionFeaturePortfolioImages": "صور المعرض",
+  "subscriptionFeatureServicesListed": "الخدمات المدرجة",
+  "subscriptionFeatureFeaturedProfile": "ملف شخصي مميز",
+  "subscriptionFeaturePriorityRanking": "ترتيب أولوية",
+  "subscriptionLimitResetsOn": "سيتم إعادة تعيين حدك في {value1}",
+  "@subscriptionLimitResetsOn": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionLimitResetsNextMonth": "سيتم إعادة تعيين حدك في بداية الشهر القادم",
+  "subscriptionFeatureUnlimitedBookingsMonth": "حجوزات غير محدودة كل شهر",
+  "subscriptionFeatureFeaturedProfileSearch": "ملف شخصي مميز في نتائج البحث",
+  "subscriptionFeaturePriorityAiRanking": "ترتيب أولوية بالذكاء الاصطناعي",
+  "subscriptionFeatureNoAdsProfile": "بدون إعلانات على ملفك الشخصي",
+  "subscriptionAiResetsTomorrowMidnight": "ستُعاد عمليات بحثك بالذكاء الاصطناعي غدًا عند منتصف الليل",
+  "subscriptionResetsAt": "إعادة التعيين {value1} عند {value2}",
+  "@subscriptionResetsAt": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "commonToday": "اليوم",
+  "commonTomorrow": "غدًا",
+  "subscriptionBenefit20AiSearchesDay": "20 عملية بحث بالذكاء الاصطناعي يوميًا",
+  "subscriptionBenefitAdvancedAiRecommendations": "توصيات ذكاء اصطناعي متقدمة",
+  "subscriptionBenefitSearchByBudgetLocationHistory": "البحث حسب الميزانية والموقع والسجل",
+  "subscriptionBenefitPriorityMatchingResults": "نتائج مطابقة ذات أولوية",
+  "subscriptionNoThanksMaybeLater": "لا شكراً، ربما لاحقًا",
+  "subscriptionPleaseWaitSeconds": "يرجى الانتظار {value1} ثانية...",
+  "@subscriptionPleaseWaitSeconds": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPhotoReplyPlaceholder": "📷 صورة",
+  "chatMuteConversation": "كتم المحادثة",
+  "chatUnmuteConversation": "إلغاء كتم المحادثة",
+  "chatTyping": "يكتب…",
+  "chatLastSeen": "آخر ظهور {value1}",
+  "@chatLastSeen": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatReasonSpam": "بريد عشوائي",
+  "chatReasonHarassmentBullying": "مضايقة أو تنمر",
+  "chatReasonInappropriateContent": "محتوى غير لائق",
+  "chatReasonScamFraud": "احتيال أو نصب",
+  "chatReasonOther": "أخرى"
+}

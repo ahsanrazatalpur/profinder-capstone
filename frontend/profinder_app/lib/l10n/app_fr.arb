@@ -1,0 +1,1913 @@
+{
+    "@@locale": "fr",
+    "navSearch": "Rechercher",
+    "appName": "ProFinder",
+    "@appName": {
+        "description": "App name — usually kept untranslated across locales"
+    },
+    "appTagline": "Trouvez des professionnels de confiance près de chez vous",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "logout": "Déconnexion",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "fullName": "Nom complet",
+    "forgotPassword": "Mot de passe oublié ?",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "sendResetLink": "Envoyer le lien de réinitialisation",
+    "noAccount": "Vous n'avez pas de compte ? ",
+    "hasAccount": "Vous avez déjà un compte ? ",
+    "selectRole": "S'inscrire en tant que",
+    "customer": "Client",
+    "professional": "Professionnel",
+    "home": "Accueil",
+    "findProfessional": "Trouver un professionnel",
+    "nearbyProfessionals": "Professionnels à proximité",
+    "categories": "Catégories",
+    "aiSearch": "Recherche IA",
+    "searchHint": "Rechercher un service...",
+    "profile": "Profil",
+    "editProfile": "Modifier le profil",
+    "phone": "Numéro de téléphone",
+    "city": "Ville",
+    "bio": "Bio",
+    "experience": "Années d'expérience",
+    "hourlyRate": "Tarif horaire (USD)",
+    "verified": "Vérifié",
+    "notVerified": "Non vérifié",
+    "bookings": "Réservations",
+    "myBookings": "Mes réservations",
+    "bookNow": "Réserver",
+    "cancel": "Annuler",
+    "accept": "Accepter",
+    "reject": "Refuser",
+    "complete": "Terminer",
+    "pending": "En attente",
+    "accepted": "Accepté",
+    "rejected": "Refusé",
+    "completed": "Terminé",
+    "notifications": "Notifications",
+    "markAsRead": "Marquer comme lu",
+    "noNotifications": "Aucune notification pour le moment",
+    "reviews": "Avis",
+    "writeReview": "Écrire un avis",
+    "rating": "Note",
+    "comment": "Commentaire",
+    "submitReview": "Envoyer l'avis",
+    "noInternet": "Pas de connexion internet",
+    "serverError": "Une erreur s'est produite. Réessayez.",
+    "invalidEmail": "Veuillez saisir un e-mail valide",
+    "invalidPassword": "Le mot de passe doit contenir au moins 8 caractères",
+    "fieldRequired": "Ce champ est requis",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "invalidLoginCredentials": "E-mail ou mot de passe incorrect. Veuillez réessayer.",
+    "forgotPasswordGenericMessage": "Si un compte existe avec cet e-mail, nous avons envoyé un lien de réinitialisation.",
+    "requestTimedOut": "Délai d'attente dépassé. Vérifiez votre connexion et réessayez.",
+    "save": "Enregistrer",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "loading": "Chargement...",
+    "retry": "Réessayer",
+    "noData": "Rien à afficher ici",
+    "seeAll": "Tout voir",
+    "ok": "OK",
+    "selectLanguageTitle": "Choisissez votre langue",
+    "@selectLanguageTitle": {
+        "description": "Title on the first-launch language selection screen"
+    },
+    "selectLanguageSubtitle": "Choisissez la langue à utiliser dans ProFinder",
+    "continueLabel": "Continuer",
+    "changeLanguage": "Changer de langue",
+  "languageChangeNote": "Vous pourrez changer de langue plus tard dans les paramètres.",
+    "languageUpdated": "Langue mise à jour",
+    "settingsTitle": "Paramètres",
+    "notificationsSection": "Notifications",
+    "pushNotifications": "Notifications push",
+    "pushNotificationsSubtitle": "Mises à jour de réservation, messages et offres",
+    "emailNotifications": "Notifications par e-mail",
+    "emailNotificationsSubtitle": "Reçus et activité du compte",
+    "preferencesSection": "Préférences",
+    "languageLabel": "Langue",
+    "currencyLabel": "Devise",
+    "darkModeLabel": "Mode sombre",
+    "accountSection": "Compte",
+    "supportSection": "Assistance",
+    "deleteAccount": "Supprimer le compte",
+    "deleteAccountSubtitle": "Supprimer définitivement votre compte",
+    "deleteAccountTitle": "Supprimer le compte ?",
+    "deleteAccountMessage": "Cela doit passer par notre équipe d'assistance pour vérification. Contactez l'aide pour continuer.",
+    "comingSoon": "{feature} arrive bientôt",
+    "@comingSoon": {
+        "description": "Placeholder shown for settings not yet implemented",
+        "placeholders": {
+            "feature": {
+                "type": "String"
+            }
+        }
+    },
+    "loginWelcomeBack": "Bon retour ! Veuillez vous connecter pour continuer.",
+    "emailHint": "exemple@email.com",
+    "passwordHint": "Entrez votre mot de passe",
+    "continueAsGuest": "Continuer en tant qu'invité",
+    "unknownRoleContactSupport": "Rôle inconnu. Veuillez contacter le support.",
+    "createAccount": "Créer un compte",
+    "joinProFinderSubtitle": "Rejoignez ProFinder et connectez-vous avec des professionnels.",
+    "chooseAccountType": "Choisissez le type de compte",
+    "customerRoleDescription": "Engagez des professionnels de confiance.",
+    "professionalRoleDescription": "Proposez vos services et développez votre activité.",
+    "fullNameHint": "Entrez votre nom complet",
+    "countryLabel": "Pays",
+    "selectCountryHint": "Sélectionnez votre pays",
+    "searchCountriesHint": "Rechercher des pays...",
+    "noCountriesFound": "Aucun pays trouvé",
+    "selectCountryValidation": "Veuillez sélectionner votre pays",
+    "selectCityHint": "Sélectionnez votre ville",
+    "selectACountryFirst": "Sélectionnez d'abord un pays",
+    "searchCitiesHint": "Rechercher des villes...",
+    "noCitiesFound": "Aucune ville trouvée",
+    "selectCityValidation": "Veuillez sélectionner votre ville",
+    "yourProfessionLabel": "Votre profession",
+    "selectCategoryHint": "Sélectionnez votre catégorie",
+    "searchProfessionsHint": "Rechercher des professions...",
+    "noCategoriesFound": "Aucune catégorie trouvée",
+    "selectProfessionValidation": "Veuillez sélectionner votre profession",
+    "selectProfessionCategoryError": "Veuillez sélectionner votre catégorie de profession.",
+    "passwordMinCharsHint": "Min. 8 caractères",
+    "confirmPasswordHint": "Ressaisissez votre mot de passe",
+    "capsLockOnHint": "Verr. Maj est activé",
+    "emailAvailable": "E-mail disponible",
+    "emailAlreadyRegistered": "Cet e-mail est déjà enregistré.",
+    "signInInstead": "Se connecter à la place",
+    "orContinueWith": "ou continuer avec",
+    "continueWithGoogle": "Continuer avec Google",
+    "facebookLabel": "Facebook",
+    "twitterLabel": "X (Twitter)",
+    "forgotPasswordInstructions": "Entrez votre e-mail enregistré. Nous vous enverrons un lien de réinitialisation.",
+    "checkYourEmail": "Vérifiez votre e-mail",
+    "checkSpamFolderHint": "S'il n'arrive pas dans quelques minutes, vérifiez votre dossier spam ou réessayez.",
+    "backToLogin": "Retour à la connexion",
+    "resendEmail": "Renvoyer l'e-mail",
+    "adminAvgRatingTotal": "Note moy. : {value1} ★ · {value2} au total",
+    "@adminAvgRatingTotal": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminBy": "par {value1}",
+    "@adminBy": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteReview": "Supprimer l'avis",
+    "adminPermanentlyRemovesReviewProvideReasonAudit": "Cela supprime définitivement l'avis. Indiquez un motif pour le journal d'audit.",
+    "adminFailedDeleteReview": "Échec de la suppression de l'avis.",
+    "adminNoReviewsFound": "Aucun avis trouvé",
+    "adminFailedLoadReviews": "Échec du chargement des avis",
+    "adminSearchByProfessionalReviewer": "Rechercher par professionnel ou évaluateur…",
+    "adminReasonRequired": "Motif (obligatoire)",
+    "adminPayments": "Paiements",
+    "adminRsShown": "{value1} Rs affichées",
+    "@adminRsShown": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefund": "Rembourser",
+    "adminTxn": "Trans. : {value1}",
+    "@adminTxn": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefundPayment": "Rembourser le paiement",
+    "adminRefundRs": "Rembourser {value1} Rs à {value2} ?",
+    "@adminRefundRs": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminPaymentRefunded": "Paiement remboursé.",
+    "adminRefundFailed": "Échec du remboursement.",
+    "adminNoPaymentsFound": "Aucun paiement trouvé",
+    "adminFailedLoadPayments": "Échec du chargement des paiements",
+    "adminSearchByNameEmailTransactionId": "Rechercher par nom, e-mail ou ID de transaction…",
+    "adminBlockedUsers": "Utilisateurs bloqués",
+    "adminCurrentlyBlocked": "{value1} actuellement bloqué(s)",
+    "@adminCurrentlyBlocked": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminUnblock": "Débloquer",
+    "adminUnblockUser": "Débloquer l'utilisateur ?",
+    "adminRestoreAccessTheyAbleLogAgain": "Cela restaurera l'accès de {value1}. Il pourra se reconnecter.",
+    "@adminRestoreAccessTheyAbleLogAgain": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminHasBeenUnblocked": "{value1} a été débloqué.",
+    "@adminHasBeenUnblocked": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFailedUnblockUser": "Échec du déblocage de l'utilisateur.",
+    "adminNoBlockedUsersAllClear": "Aucun utilisateur bloqué — tout est en ordre ! 🎉",
+    "adminFailedLoadBlockedUsers": "Échec du chargement des utilisateurs bloqués",
+    "adminSearchByNameEmailReason": "Rechercher par nom, e-mail ou motif…",
+    "adminExportProfessionals": "Exporter ({value1} professionnels)",
+    "@adminExportProfessionals": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminClose": "Fermer",
+    "adminCopyClipboard": "Copier dans le presse-papiers",
+    "adminProfessionals": "Professionnels",
+    "adminRatingHighLow": "Note (décroissant)",
+    "adminMostBookings": "Le plus de réservations",
+    "adminNameZ": "Nom (A-Z)",
+    "adminNewestFirst": "Plus récent d'abord",
+    "adminSelected": "{value1} sélectionné(s)",
+    "@adminSelected": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminVerify": "Vérifier",
+    "adminRemind": "Rappeler",
+    "adminExport": "Exporter",
+    "adminFailedLoadProfessionals": "Échec du chargement des professionnels",
+    "adminSearchByNameEmailCategory": "Rechercher par nom, e-mail, catégorie…",
+    "adminSort": "Trier",
+    "adminRefresh": "Actualiser",
+    "adminVerifyProfessional": "Vérifier le professionnel ?",
+    "adminVerifyProfessionals": "Vérifier {value1} professionnels ?",
+    "@adminVerifyProfessionals": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminGetVerifiedBadgeVisibleAllCustomers": "{value1} recevra un badge vérifié visible par tous les clients.",
+    "@adminGetVerifiedBadgeVisibleAllCustomers": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAllSelectedProfessionalsGetVerifiedBadge": "Tous les professionnels sélectionnés recevront un badge vérifié.",
+    "adminProfinderAdmin": "ProFinder Admin",
+    "adminAdminPanel": "Panneau d'administration",
+    "adminMore": "Plus",
+    "adminLogout2": "Se déconnecter ?",
+    "adminLoggedOutAdminPanel": "Vous serez déconnecté du panneau d'administration.",
+    "adminAnalytics": "Analytique",
+    "adminD": "{value1}J",
+    "@adminD": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRs": "Rs {value1}",
+    "@adminRs": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLastDays": "{value1} derniers jours",
+    "@adminLastDays": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLast12Months": "12 derniers mois",
+    "adminDailyBookings": "Réservations quotidiennes",
+    "adminMonthlyBookings12mo": "Réservations mensuelles (12 mois)",
+    "adminTopSearches": "Recherches les plus fréquentes",
+    "adminNoDataYet": "Aucune donnée pour l'instant",
+    "adminFailedLoadAnalytics": "Échec du chargement des analyses",
+    "adminCountries": "Pays",
+    "adminTopCities": "Villes principales",
+    "adminTopCategories": "Catégories principales",
+    "adminActivityLogs": "Journaux d'activité",
+    "adminLogs": "{value1} journaux",
+    "@adminLogs": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminTotal": "Total : {value1}",
+    "@adminTotal": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAdminActionsAppearHere": "Les actions d'administration apparaîtront ici",
+    "adminFailedLoadLogs": "Échec du chargement des journaux",
+    "adminSearchByAdminTargetUser": "Rechercher par administrateur ou utilisateur cible…",
+    "adminClearAll": "Tout effacer",
+    "adminDeleteLog": "Supprimer ce journal ?",
+    "adminClearAllLogs": "Effacer tous les journaux ?",
+    "adminActionCannotUndone": "Cette action est irréversible.",
+    "adminAllActivityLogsPermanentlyDeleted": "Les {value1} journaux d'activité seront définitivement supprimés.",
+    "@adminAllActivityLogsPermanentlyDeleted": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminWelcome": "Bienvenue, {value1} 👋",
+    "@adminWelcome": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminCustomersProfessionals": "{value1} clients · {value2} professionnels",
+    "@adminCustomersProfessionals": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminSearch": "Rechercher",
+    "adminGlobalSearchUiReadyConnectUsers": "L'interface de recherche globale est prête — elle sera connectée à Utilisateurs/Réservations une fois ce module reconstruit.",
+    "adminReview": "Avis",
+    "adminFailedLoadDashboard": "Échec du chargement du tableau de bord",
+    "adminSearchUsersProfessionalsBookings": "Rechercher utilisateurs, professionnels, réservations…",
+    "adminTotalUsers": "Utilisateurs au total",
+    "adminCustomers": "Clients",
+    "adminRevenue": "Revenu",
+    "adminTodaySBookings": "Réservations du jour",
+    "adminPendingVerification": "Vérification en attente",
+    "adminReportedUsers": "Utilisateurs signalés",
+    "adminExportUsers": "Exporter ({value1} utilisateurs)",
+    "@adminExportUsers": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminUsers": "Utilisateurs",
+    "adminNameZ2": "Nom (Z-A)",
+    "adminOldestFirst": "Plus ancien d'abord",
+    "adminShown": "{value1} affiché(s)",
+    "@adminShown": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminBlock": "Bloquer",
+    "adminJoined": "Inscrit le {value1}",
+    "@adminJoined": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFailedLoadUsers": "Échec du chargement des utilisateurs",
+    "adminSearchByNameEmail": "Rechercher par nom ou e-mail…",
+    "adminFailedUpdate": "Échec de la mise à jour.",
+    "adminFailedDelete": "Échec de la suppression.",
+    "adminAddCountry": "Ajouter un pays",
+    "adminFailedAddMayAlreadyExist": "Échec de l'ajout — existe peut-être déjà.",
+    "adminAdd": "Ajouter",
+    "adminMergeInto": "Fusionner dans « {value1} »",
+    "@adminMergeInto": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminEnterTypoVariantSpellingsFoundUser": "Entrez les fautes/variantes d'orthographe trouvées dans les profils utilisateurs, séparées par des virgules (ex. pakistan, Pakistn).",
+    "adminMergeFailed": "Échec de la fusion.",
+    "adminMerge": "Fusionner",
+    "adminActive": "{value1} actif(s)",
+    "@adminActive": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminViewCities": "Voir les villes",
+    "adminNoCountriesAddedYet": "Aucun pays ajouté pour l'instant",
+    "adminFailedLoadCountries": "Échec du chargement des pays",
+    "adminCountryName": "Nom du pays",
+    "adminVariant1Variant2": "variante1, variante2, ...",
+    "adminRevenueByCategory": "Revenu par catégorie",
+    "adminVsPreviousDays": "{value1} % vs les {value2} jours précédents",
+    "@adminVsPreviousDays": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminNoCategoryDataYet": "Aucune donnée de catégorie pour l'instant",
+    "adminRs2": "Rs {value1} ({value2})",
+    "@adminRs2": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFailedLoadRevenueData": "Échec du chargement des données de revenu",
+    "adminDeleteBanner": "Supprimer cette bannière ?",
+    "adminPermanentlyDeleted": "« {value1} » sera définitivement supprimé.",
+    "@adminPermanentlyDeleted": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminPreviewMode": "👁 MODE APERÇU",
+    "adminActive2": "Actif",
+    "adminTurningOffHidesBannerFromEveryone": "Désactiver ceci masque la bannière pour tout le monde",
+    "adminPromoBanners": "Bannières promotionnelles",
+    "adminFailedLoadBanners": "Échec du chargement des bannières",
+    "adminNoBannersYet": "Aucune bannière pour l'instant",
+    "adminTapCreateNewBanner": "Appuyez sur « + » pour créer une nouvelle bannière",
+    "adminPreview": "Aperçu",
+    "adminEdit": "Modifier",
+    "adminFailedGenerateReport": "Échec de la génération du rapport.",
+    "adminNoDataRange": "Aucune donnée dans cette période.",
+    "adminCopiedClipboardStyleExportCsvReady": "Copié au format export (CSV) — prêt à partager.",
+    "adminExportCsv": "Exporter en CSV",
+    "adminReports": "Rapports",
+    "adminQuickGenerate": "Génération rapide",
+    "adminLast30Days": "30 derniers jours",
+    "adminGenerationHistory": "Historique de génération",
+    "adminNoReportsGeneratedYetSession": "Aucun rapport généré pour l'instant dans cette session.",
+    "adminRows": "{value1} lignes · {value2}",
+    "@adminRows": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminProsBookingsSubcategories": "{value1} pros · {value2} réservations · {value3} sous-catégories",
+    "@adminProsBookingsSubcategories": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            },
+            "value3": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFeatured": "En vedette",
+    "adminShowGuestHomeSFeaturedCategories": "Afficher dans les catégories en vedette de l'accueil invité (max 6)",
+    "adminAddSubcategory": "Ajouter une sous-catégorie",
+    "adminFailedLoad": "Échec du chargement",
+    "adminName": "Nom",
+    "adminIconOptional": "Icône (facultatif)",
+    "adminParentCategory": "Catégorie parente",
+    "adminAddNew": "Ajouter",
+    "adminCancelSubscription": "Annuler l'abonnement ?",
+    "adminCancelSSubscription": "Annuler l'abonnement {value2} de {value1} ?",
+    "@adminCancelSSubscription": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminNo": "Non",
+    "adminCancelSubscription2": "Annuler l'abonnement",
+    "adminFailedCancel": "Échec de l'annulation.",
+    "adminExtendedBy30Days": "Prolongé de 30 jours.",
+    "adminFailedExtend": "Échec de la prolongation.",
+    "adminSubscriptions": "Abonnements",
+    "adminRs3": "{value1} · Rs {value2}/{value3}",
+    "@adminRs3": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            },
+            "value3": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRenews": "Renouvellement : {value1}",
+    "@adminRenews": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminExtend30d": "Prolonger de 30j",
+    "adminNoSubscriptionsFound": "Aucun abonnement trouvé",
+    "adminFailedLoadSubscriptions": "Échec du chargement des abonnements",
+    "adminExportCustomers": "Exporter ({value1} clients)",
+    "@adminExportCustomers": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminTotalSpentHighLow": "Total dépensé (décroissant)",
+    "adminFailedLoadCustomers": "Échec du chargement des clients",
+    "adminAddLanguage": "Ajouter une langue",
+    "adminRightLeftRtl": "De droite à gauche (RTL)",
+    "adminFailedAddCodeMayAlreadyExist": "Échec de l'ajout — le code existe peut-être déjà.",
+    "adminFailedUpdateStatus": "Échec de la mise à jour du statut.",
+    "adminChangeStatus": "Changer le statut",
+    "adminDeleteLanguage": "Supprimer la langue ?",
+    "adminPermanentlyRemoveAllItsTranslations": "Cela supprimera définitivement « {value1} » et toutes ses traductions.",
+    "@adminPermanentlyRemoveAllItsTranslations": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFailedDeleteLanguage": "Échec de la suppression de la langue.",
+    "adminLanguages": "Langues",
+    "adminActiveTotal": "{value1} actives · {value2} au total",
+    "@adminActiveTotal": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRtl": "RTL",
+    "adminEditTranslations": "Modifier les traductions",
+    "adminNoLanguagesAddedYet": "Aucune langue ajoutée pour l'instant",
+    "adminFailedLoadLanguages": "Échec du chargement des langues",
+    "adminLanguageNameEGUrdu": "Nom de la langue (ex. Ourdou)",
+    "adminCodeEGUr": "Code (ex. ur)",
+    "adminDeleteArticle": "Supprimer l'article ?",
+    "adminNewArticle": "Nouvel article",
+    "adminTipsMagazine": "Magazine de conseils",
+    "adminNoArticlesHereYet": "Aucun article ici pour l'instant.",
+    "adminMinReadViews": "{value1} min de lecture · {value2} vues",
+    "@adminMinReadViews": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminSelect": "Sélectionner…",
+    "adminManageCategories": "Gérer les catégories",
+    "adminNoCategoriesYet": "Aucune catégorie pour l'instant.",
+    "adminArticles": "{value1} articles",
+    "@adminArticles": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAddNewCategory": "Ajouter une nouvelle catégorie",
+    "adminAddCategory": "Ajouter une catégorie",
+    "adminCategoryName": "Nom de la catégorie",
+    "adminNoChangesSave": "Aucun changement à enregistrer.",
+    "adminFailedSaveTranslations": "Échec de l'enregistrement des traductions.",
+    "adminAddTranslationKey": "Ajouter une clé de traduction",
+    "adminFailedAddKeyMayAlreadyExist": "Échec de l'ajout — la clé existe peut-être déjà.",
+    "adminDiscardChanges": "Annuler les modifications ?",
+    "adminHaveUnsavedTranslationS": "Vous avez {value1} traduction(s) non enregistrée(s).",
+    "@adminHaveUnsavedTranslationS": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminKeepEditing": "Continuer à modifier",
+    "adminDiscard": "Annuler",
+    "adminAddKey": "Ajouter la clé",
+    "adminTranslate": "Traduire — {value1}",
+    "@adminTranslate": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminKeysUnsaved": "{value1} clés · {value2} non enregistrées",
+    "@adminKeysUnsaved": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminMissing": "Manquant",
+    "adminNoTranslationKeysYet": "Aucune clé de traduction pour l'instant",
+    "adminTapAddKeyCreateFirstOne": "Appuyez sur « Ajouter la clé » pour créer la première.",
+    "adminFailedLoadTranslations": "Échec du chargement des traductions",
+    "adminKeyEGHomeWelcomeTitle": "Clé (ex. home.welcome_title)",
+    "adminDescriptionOptional": "Description (facultatif)",
+    "adminSearchKeys": "Rechercher des clés…",
+    "adminTranslatedText": "Texte traduit…",
+    "adminAddCity": "Ajouter une ville à {value1}",
+    "@adminAddCity": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminEnterTypoVariantSpellingsCommaSeparated": "Entrez les fautes/variantes d'orthographe, séparées par des virgules.",
+    "adminAddCity2": "Ajouter une ville",
+    "adminNoCitiesAddedYet": "Aucune ville ajoutée pour l'instant",
+    "adminFailedLoadCities": "Échec du chargement des villes",
+    "adminCityName": "Nom de la ville",
+    "adminPendingReview": "{value1} en attente d'examen",
+    "@adminPendingReview": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminBlocked": "BLOQUÉ",
+    "adminReportedBy": "Signalé par {value1} ({value2})",
+    "@adminReportedBy": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFailedLoadReports": "Échec du chargement des signalements",
+    "adminReportOn": "Signalement sur {value1}",
+    "@adminReportOn": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAlsoBanUser": "Bannir également cet utilisateur",
+    "adminDismiss": "Rejeter",
+    "adminMarkReviewed": "Marquer comme examiné",
+    "adminTakeAction": "Agir",
+    "adminFailedUpdateReport": "Échec de la mise à jour du signalement.",
+    "adminSearchByUserReporterReason": "Rechercher par utilisateur, rapporteur ou motif…",
+    "adminAdminNoteOptional": "Note de l'administrateur (facultatif)…",
+    "adminPortfolioApproval": "Approbation du portfolio",
+    "adminApprove": "Approuver",
+    "adminAllPortfoliosReviewed": "Tous les portfolios ont été examinés !",
+    "adminFailedLoadPortfolios": "Échec du chargement des portfolios",
+    "adminSkip": "Passer",
+    "adminWriteReasonOptional": "Écrire un motif (facultatif)…",
+    "adminApprovePortfolio": "Approuver le portfolio ?",
+    "adminVisibleAllCustomers": "« {value1} » sera visible par tous les clients.",
+    "@adminVisibleAllCustomers": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminBookings2": "{value1} réservations",
+    "@adminBookings2": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminCreated": "Créé le {value1}",
+    "@adminCreated": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminForceCancel": "Forcer l'annulation",
+    "adminFailedLoadBookings": "Échec du chargement des réservations",
+    "adminYesCancel": "Oui, annuler",
+    "adminSearchCustomerProfessional": "Rechercher un client ou un professionnel…",
+    "adminCancelBooking": "Annuler la réservation n° {value1} ?",
+    "@adminCancelBooking": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminReflectBothCustomerProfessional": "{value1} → {value2} Cela affectera à la fois le client et le professionnel.",
+    "@adminReflectBothCustomerProfessional": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminVerificationRequests": "Demandes de vérification",
+    "adminPendingOldestFirst": "{value1} en attente · plus ancien d'abord",
+    "@adminPendingOldestFirst": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminOldest": "PLUS ANCIEN",
+    "adminApproveVerification": "Approuver la vérification ?",
+    "adminMarkedAsVerifiedProfessional": "{value1} sera marqué comme professionnel vérifié.",
+    "@adminMarkedAsVerifiedProfessional": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRejectSRequest": "Rejeter la demande de {value1} ?",
+    "@adminRejectSRequest": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminReasonSentProfessionalSoTheyCan": "Ce motif sera envoyé au professionnel afin qu'il puisse soumettre à nouveau.",
+    "adminFailedRequest": "Échec de la demande {value1}.",
+    "@adminFailedRequest": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminNoPendingVerificationRequests": "Aucune demande de vérification en attente 🎉",
+    "adminFailedLoadVerificationRequests": "Échec du chargement des demandes de vérification",
+    "adminSearchByNameEmailCategory2": "Rechercher par nom, e-mail ou catégorie…",
+    "adminEGCnicImageBlurryPlease": "ex. l'image CNIC est floue, veuillez la retélécharger…",
+    "adminFailedCancelItMayHaveAlready": "Échec de l'annulation — elle a peut-être déjà été envoyée.",
+    "adminCompose": "Composer",
+    "adminScheduledFor": "Programmé pour : {value1}",
+    "@adminScheduledFor": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminSentUsersOpenRate": "Envoyé à {value1} utilisateurs · Taux d'ouverture : {value2} %",
+    "@adminSentUsersOpenRate": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminComposeNotification": "Composer une notification",
+    "adminAudience": "Audience",
+    "adminScheduleLater": "Programmer plus tard",
+    "adminFailedSendNotification": "Échec de l'envoi de la notification.",
+    "adminFailedLoadNotifications": "Échec du chargement des notifications",
+    "adminTitle": "Titre",
+    "adminMessage": "Message",
+    "adminUserId": "ID utilisateur",
+    "adminDeleteAnnouncement": "Supprimer l'annonce ?",
+    "adminRemove": "Supprimer « {value1} » ?",
+    "@adminRemove": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminNewAnnouncement": "Nouvelle annonce",
+    "adminAnnouncements": "Annonces",
+    "adminType": "Type",
+    "adminFailedCreate": "Échec de la création.",
+    "adminPublish": "Publier",
+    "adminNoAnnouncementsYet": "Aucune annonce pour l'instant",
+    "adminFailedLoadAnnouncements": "Échec du chargement des annonces",
+    "adminMagazineAnalytics": "Analytique du magazine",
+    "adminViews": "{value1} vues",
+    "@adminViews": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminOfTotal": "{value1} % du total",
+    "@adminOfTotal": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminNoViewsYet": "Aucune vue pour l'instant.",
+    "adminRecentViewers": "Lecteurs récents",
+    "adminComplaints": "Réclamations",
+    "adminVs": "{value1} vs {value2}",
+    "@adminVs": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAssignedTo": "Assigné à : {value1}",
+    "@adminAssignedTo": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAssignMe": "M'assigner",
+    "adminResolve": "Résoudre",
+    "adminFailedAssign": "Échec de l'attribution.",
+    "adminFailedLoadComplaints": "Échec du chargement des réclamations",
+    "adminResolutionNote": "Note de résolution",
+    "authWelcomeProfinder": "Bienvenue sur ProFinder !",
+    "authPleaseVerifyEmailActivateAccount": "Veuillez vérifier votre e-mail pour activer votre compte.",
+    "authContinueLogin": "Continuer vers la connexion",
+    "profileNoPaymentsYet": "Aucun paiement pour l'instant",
+    "profileTransactionHistoryAppearHere": "Votre historique de transactions apparaîtra ici",
+    "profileWallet": "Portefeuille",
+    "profileTotalSpent": "Total dépensé",
+    "profileAcrossTransaction": "Sur {value1} transaction{value2}",
+    "@profileAcrossTransaction": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "profileCurrentPlan": "Plan actuel : {value1}",
+    "@profileCurrentPlan": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "profilePaymentHistory": "Historique des paiements",
+    "profileViewAllTransactions": "Voir toutes vos transactions",
+    "profileSavedProfessionals": "Professionnels enregistrés",
+    "profileNoSavedProfessionalsYet": "Aucun professionnel enregistré pour l'instant",
+    "profileTapHeartAnyProfessionalSaveThem": "Appuyez sur le cœur de n'importe quel professionnel pour l'enregistrer ici",
+    "profileHr": "{value1} • {value2} $/h",
+    "@profileHr": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "profileBook": "Réserver",
+    "profileRemoveFromSaved": "Retirer des enregistrés",
+    "profileChangeProfilePhoto": "Changer la photo de profil",
+    "profileChooseFromGallery": "Choisir dans la galerie",
+    "profileTakePhoto": "Prendre une photo",
+    "profileMyProfile": "Mon profil",
+    "profileNewPhotoSelectedTapSaveUpload": "Nouvelle photo sélectionnée — appuyez sur Enregistrer pour la téléverser",
+    "profilePersonalInformation": "Informations personnelles",
+    "profileSureWantLogout": "Êtes-vous sûr de vouloir vous déconnecter ?",
+    "profileMyReviews": "Mes avis",
+    "profileNoReviewsWrittenYet": "Aucun avis rédigé pour l'instant",
+    "profileCompleteBookingLeaveFirstReview": "Terminez une réservation pour laisser votre premier avis",
+    "profileSecurity": "Sécurité",
+    "profileWeLlEmailSecureResetLink": "Nous enverrons un lien de réinitialisation sécurisé à {value1}.",
+    "@profileWeLlEmailSecureResetLink": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "profileSignOutDevice": "Se déconnecter de cet appareil",
+    "profileHelpSupport": "Aide et support",
+    "profileNeedHand": "Besoin d'aide ?",
+    "profileReachOurSupportTeamAnytime": "Contactez notre équipe de support à tout moment",
+    "profileFrequentlyAskedQuestions": "Questions fréquentes",
+    "profileComingSoon": "{value1} arrive bientôt",
+    "@profileComingSoon": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "profileBrowsingAsGuest": "Vous naviguez en tant qu'invité",
+    "profileLoginBookSaveManageRequests": "Connectez-vous pour réserver, enregistrer et gérer vos demandes",
+    "profileProfinderV100": "ProFinder v1.0.0",
+    "profileAboutProfinder": "À propos de ProFinder",
+    "profileProfinderHelpsFindHireTrustedProfessionals": "ProFinder vous aide à trouver et engager des professionnels de confiance — médecins, avocats, tuteurs, ingénieurs, plombiers et plus encore — près de chez vous.",
+    "profileAccessBookingsProfile": "Accédez à vos réservations et votre profil",
+    "profileCreateFreeCustomerAccount": "Créez un compte client gratuit",
+    "profileBecomeProfessional": "Devenir professionnel",
+    "profileListServicesGetHired": "Répertoriez vos services et faites-vous engager",
+    "profileEnglish": "Anglais",
+    "profileComingSoon2": "Bientôt disponible",
+    "profilePrivacyPolicy": "Politique de confidentialité",
+    "searchNoReviewsYet": "Aucun avis pour l'instant",
+    "searchFirstReview": "Soyez le premier à donner votre avis !",
+    "searchNoPortfolioYet": "Aucun portfolio pour l'instant",
+    "searchProfessionalHasNoApprovedWorkYet": "Ce professionnel n'a pas encore de travail approuvé",
+    "searchHourlyRate": "Tarif horaire",
+    "searchHr": "{value1} $/h",
+    "@searchHr": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchLoginBook": "Se connecter pour réserver",
+    "searchLoginRequired": "Connexion requise",
+    "searchPleaseLoginUseAiSearch": "Veuillez vous connecter pour utiliser la recherche IA.",
+    "searchSearchHistory": "Historique de recherche",
+    "searchNoSearchHistoryYet": "Aucun historique de recherche pour l'instant",
+    "searchPriceHr": "Prix : {value1} $ — {value2} $/h",
+    "@searchPriceHr": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "searchMinRating": "Note min. : {value1} ★",
+    "@searchMinRating": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchVerifiedOnly": "Vérifiés uniquement",
+    "searchPreferredGender": "Genre préféré",
+    "searchAny": "Peu importe",
+    "searchFemale": "Femme",
+    "searchMale": "Homme",
+    "searchMinExperienceYrs": "Expérience min. : {value1}+ ans",
+    "@searchMinExperienceYrs": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchPreferredLanguage": "Langue préférée",
+    "searchNeedSomeoneNowUrgent": "Besoin de quelqu'un maintenant / Urgent",
+    "searchServiceMode": "Mode de service",
+    "searchOnline": "En ligne",
+    "searchHomeVisit": "Visite à domicile",
+    "searchInOffice": "Au bureau",
+    "searchReset": "Réinitialiser",
+    "searchApply": "Appliquer",
+    "searchNoResults": "Aucun résultat pour « {value1} »",
+    "@searchNoResults": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchHereSomeAlternativesMightLike": "Voici quelques alternatives qui pourraient vous plaire",
+    "searchClearSearch": "Effacer la recherche",
+    "searchKm": "{value1} km",
+    "@searchKm": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchFor": "Pour : « {value1} »",
+    "@searchFor": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchToday": "{value1}/{value2} aujourd'hui",
+    "@searchToday": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "searchAlsoShowNormalResults": "Afficher aussi les résultats normaux",
+    "searchNoExactMatch": "Aucune correspondance exacte pour « {value1} »",
+    "@searchNoExactMatch": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchHereSomeRelevantAlternatives": "Voici quelques alternatives pertinentes",
+    "searchAiAgentLive": "L'agent IA est en ligne",
+    "searchFindingBestMatch": "Recherche de la meilleure correspondance pour « {value1} »",
+    "@searchFindingBestMatch": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchRecentSearches": "Recherches récentes",
+    "searchSeeAll": "Voir tout ({value1})",
+    "@searchSeeAll": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchClear": "Effacer",
+    "searchPopularSearches": "Recherches populaires",
+    "searchBrowseByCategory": "Parcourir par catégorie",
+    "searchResultFor": "{value1} résultat{value2} pour « {value3} »",
+    "@searchResultFor": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            },
+            "value3": {
+                "type": "String"
+            }
+        }
+    },
+    "searchGettingLocation": "Obtention de la position...",
+    "searchSortedByDistance": "Trié par distance",
+    "searchEnableLocation": "Activer la localisation",
+    "searchPro": "PRO",
+    "searchEGKarachiLahore": "ex. Karachi, Lahore",
+    "searchEGUrduEnglish": "ex. Ourdou, Anglais",
+    "magazineHealthLegalHomeLifestyle": "Santé · Juridique · Maison & Style de vie",
+    "magazineCouldNotLoadArticles": "Impossible de charger les articles",
+    "magazineNoArticlesYet": "Aucun article pour l'instant",
+    "magazineCheckBackSoonTipsAdvice": "Revenez bientôt pour des conseils et astuces.",
+    "magazineSearchArticles": "Rechercher des articles…",
+    "magazineMinRead": "{value1} min de lecture",
+    "@magazineMinRead": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "magazineProfinderTipsMagazine": "Magazine de conseils ProFinder",
+    "magazineGoBack": "Retour",
+    "magazineMin": "{value1} min",
+    "@magazineMin": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatSharedMedia": "Médias partagés",
+    "chatNoSharedMediaYet": "Aucun média partagé pour l'instant",
+    "chatPhotos": "Photos ({value1})",
+    "@chatPhotos": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatVoiceMessages": "Messages vocaux ({value1})",
+    "@chatVoiceMessages": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatS": "{value1}s",
+    "@chatS": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatSharedMedia2": "Médias partagés",
+    "chatBlockUser": "Bloquer l'utilisateur",
+    "chatReportUser": "Signaler l'utilisateur",
+    "chatBlock": "Bloquer {value1} ?",
+    "@chatBlock": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatTheyNoLongerAbleSendMessages": "Il ne pourra plus vous envoyer de messages.",
+    "chatSayHello": "Dites bonjour 👋",
+    "chatSearchChat": "Rechercher dans la conversation",
+    "chatCouldNotLoadMessages": "Impossible de charger les messages",
+    "chatMessages": "Messages",
+    "chatNoConversationsYet": "Aucune conversation pour l'instant",
+    "chatSearchMessages": "Rechercher des messages...",
+    "chatMicrophonePermissionRequiredVoiceMessages": "L'autorisation du microphone est requise pour les messages vocaux.",
+    "chatEmoji": "Emoji",
+    "chatSendPhoto": "Envoyer une photo",
+    "chatReportSubmittedThank": "Signalement envoyé. Merci.",
+    "chatCouldNotSubmitReportTryAgain": "Impossible d'envoyer le signalement. Réessayez.",
+    "chatReport": "Signaler {value1}",
+    "@chatReport": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatSubmit": "Envoyer",
+    "chatAdditionalDetailsOptional": "Détails supplémentaires (facultatif)",
+    "chatMessageWasDeleted": "Ce message a été supprimé",
+    "chatEdited": "modifié ·",
+    "chatReply": "Répondre",
+    "chatDeleteMe": "Supprimer pour moi",
+    "chatDeleteEveryone": "Supprimer pour tout le monde",
+    "chatEditMessage": "Modifier le message",
+    "notificationsMarkAllRead": "Tout marquer comme lu",
+    "notificationsNoNotificationsYet": "Aucune notification pour l'instant",
+    "notificationsBookingUpdatesAurAlertsYahanDikhenge": "Les mises à jour de réservation et les alertes s'afficheront ici",
+    "professionalDelete": "Supprimer ?",
+    "professionalDelete2": "Supprimer « {value1} » ?",
+    "@professionalDelete2": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalAddPortfolioItem": "Ajouter un élément au portfolio",
+    "professionalTapAddImage": "Appuyez pour ajouter une image",
+    "professionalPortfolioReviewedByAdminOnceApproved": "Votre portfolio sera examiné par un administrateur. Une fois approuvé, vous recevrez un badge vérifié.",
+    "professionalSubmitReview": "Soumettre pour examen",
+    "professionalMyPortfolio": "Mon portfolio",
+    "professionalNoPortfolioItemsYet": "Aucun élément de portfolio pour l'instant",
+    "professionalAddWorkGetVerified": "Ajoutez votre travail pour être vérifié",
+    "professionalAddFirstItem": "Ajouter le premier élément",
+    "professionalNote": "Remarque : {value1}",
+    "@professionalNote": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalTitle": "Titre *",
+    "professionalEGHouseConstructionProject": "ex. Projet de construction de maison",
+    "professionalBriefDescriptionWork": "Brève description de ce travail...",
+    "professionalAddPortfolio": "Ajouter au portfolio",
+    "professionalTypeMessage": "Écrivez un message...",
+    "professionalDeletePhoto": "Supprimer la photo ?",
+    "professionalPhotoRemovedFromGallery": "Cette photo sera retirée de votre galerie.",
+    "professionalGallery": "Galerie",
+    "professionalNoPhotosYet": "Aucune photo pour l'instant",
+    "professionalAddPhotosShowcaseWorkEnvironment": "Ajoutez des photos pour présenter votre environnement de travail",
+    "professionalAddPhoto": "Ajouter une photo",
+    "professionalWorkingHours": "Heures de travail",
+    "professionalProfessionalDetails": "Détails professionnels",
+    "professionalSkills": "Compétences",
+    "professionalNoSkillsAddedYet": "Aucune compétence ajoutée pour l'instant",
+    "professionalBankDetails": "Coordonnées bancaires",
+    "professionalCertificates": "Certificats",
+    "professionalWalletEarnings": "Portefeuille et revenus",
+    "professionalSubscriptionUpgradePremium": "Abonnement / Passer à Premium",
+    "professionalChangePassword": "Changer le mot de passe",
+    "professionalAddSkill": "+ Ajouter une compétence",
+    "professionalAddLanguage": "+ Ajouter une langue",
+    "professionalNeedMoreHelp": "Besoin d'aide supplémentaire ?",
+    "professionalOurSupportTeamRepliesWithin24": "Notre équipe de support répond sous 24 heures",
+    "professionalContact": "Contact",
+    "professionalContactSupport": "Contacter le support",
+    "professionalSupportProfinderCom": "support@profinder.com",
+    "professionalEmailUsAnytime": "Écrivez-nous à tout moment",
+    "professionalLiveChat": "Chat en direct",
+    "professionalAvailable9Am6Pm": "Disponible de 9h à 18h",
+    "professionalRePlan": "Vous êtes sur le plan {value1}",
+    "@professionalRePlan": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalUpgradeMoreBookingsFeaturedProfilePriority": "Passez à un plan supérieur pour plus de réservations, un profil en vedette et un classement prioritaire",
+    "professionalUpgrade": "Mettre à niveau",
+    "professionalProfileCompletion": "Complétion du profil",
+    "professionalCompleteProfileGetMoreBookings": "Complétez votre profil pour obtenir plus de réservations",
+    "professionalNoClientsFound": "Aucun client trouvé pour « {value1} »",
+    "@professionalNoClientsFound": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalQuickActions": "Actions rapides",
+    "professionalEarnings": "Revenus",
+    "professionalViewWallet": "Voir le portefeuille",
+    "professionalPerformance": "Performance",
+    "professionalTodaySSchedule": "Programme du jour",
+    "professionalNoBookingsScheduledToday": "Aucune réservation prévue aujourd'hui",
+    "professionalRecentMessages": "Messages récents",
+    "professionalSeeAll": "Voir tout",
+    "professionalNoMessagesYet": "Aucun message pour l'instant",
+    "professionalSkillsPricing": "Compétences et tarifs",
+    "professionalManage": "Gérer",
+    "professionalAddWorkSamples": "Ajoutez des échantillons de votre travail",
+    "professionalGetVerifiedByAddingPortfolio": "Faites-vous vérifier en ajoutant un portfolio",
+    "professionalRecentReviews": "Avis récents",
+    "professionalRecentBookings": "Réservations récentes",
+    "professionalNoBookingsYet": "Aucune réservation pour l'instant",
+    "professionalBookingDetails": "Détails de la réservation",
+    "professionalMarkAsCompleted": "Marquer comme terminé",
+    "professionalCancelBooking": "Annuler la réservation",
+    "professionalSearchBookingsByClientName": "Rechercher des réservations par nom de client...",
+    "professionalPortfolio": "Portfolio",
+    "professionalAddCertificate": "Ajouter un certificat",
+    "professionalTapAddCertificateImage": "Appuyez pour ajouter une image de certificat",
+    "professionalSaveCertificate": "Enregistrer le certificat",
+    "professionalNoCertificatesYet": "Aucun certificat pour l'instant",
+    "professionalAddCertificationsBuildTrust": "Ajoutez des certifications pour renforcer la confiance",
+    "professionalAddFirstCertificate": "Ajouter le premier certificat",
+    "professionalCertificateTitle": "Titre du certificat *",
+    "professionalIssuingOrganization": "Organisme émetteur",
+    "professionalEGCertifiedElectrician": "ex. Électricien certifié",
+    "professionalEGTevtaCoursera": "ex. TEVTA / Coursera",
+    "professionalCustomerConversationsShowUpHere": "Les conversations avec les clients apparaîtront ici",
+    "professionalCancelBooking2": "Annuler la réservation ?",
+    "professionalSureWantCancelBooking": "Êtes-vous sûr de vouloir annuler cette réservation ?",
+    "professionalReasonCancellingOptional": "Motif de l'annulation (facultatif)",
+    "professionalYesCancelIt": "Oui, l'annuler",
+    "professionalNoBookings": "Aucune réservation {value1}",
+    "@professionalNoBookings": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalDecline": "Refuser",
+    "professionalEGNotAvailableThatDay": "ex. non disponible ce jour-là, urgence survenue...",
+    "professionalReview": "{value1} avis{value2}",
+    "@professionalReview": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalWithdrawEarnings": "Retirer les revenus",
+    "professionalAvailable": "Disponible : {value1} $",
+    "@professionalAvailable": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalMinimumWithdrawal": "Retrait minimum : {value1} $",
+    "@professionalMinimumWithdrawal": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalRequestWithdrawal": "Demander un retrait",
+    "professionalBankDetailsRequired": "Coordonnées bancaires requises",
+    "professionalPleaseAddBankAccountDetailsProfile": "Veuillez ajouter vos coordonnées bancaires dans le profil avant de demander un retrait.",
+    "professionalAvailableBalance": "Solde disponible",
+    "professionalWithdraw": "Retirer",
+    "professionalNoTransactionsYet": "Aucune transaction pour l'instant",
+    "professionalEnterAmount": "Entrez le montant",
+    "professionalPerformanceScore": "Score de performance",
+    "professionalOut100": "sur 100",
+    "professionalPerformanceScore40Rating30Acceptance": "Score de performance = 40 % note + 30 % taux d'acceptation + 30 % taux de réponse.",
+    "professionalDashboard": "Tableau de bord",
+    "professionalMagazine": "Magazine",
+    "professionalEnterCurrentPasswordNewPassword": "Entrez votre mot de passe actuel et un nouveau mot de passe.",
+    "professionalUpdate": "Mettre à jour",
+    "professionalCurrentPassword": "Mot de passe actuel",
+    "professionalNewPassword": "Nouveau mot de passe",
+    "professionalConfirmNewPassword": "Confirmer le nouveau mot de passe",
+    "homeBecomePro": "Devenir Pro",
+    "homeLoginRequired": "Connexion requise",
+    "homeCreateAccount": "Créer un compte",
+    "homeWelcomeGuest": "Bienvenue, Invité",
+    "homeHireRightExpertMinutes": "Engagez le bon expert, en quelques minutes.",
+    "homeSearchDoctorsLawyersPlumbers": "Rechercher médecins, avocats, plombiers…",
+    "homeViewAll": "Voir tout",
+    "homeAllCategories": "Toutes les catégories",
+    "homeFeatured": "EN VEDETTE",
+    "homeExploreExperts": "Explorer les experts →",
+    "homeProfessional": "Êtes-vous un professionnel ?",
+    "homeJoinProfinderGetDiscoveredByThousands": "Rejoignez ProFinder et faites-vous découvrir par des milliers de clients.",
+    "homeUnlockFullExperience": "Débloquez l'expérience complète",
+    "homeBookProfessionalsSaveFavouritesTrackRequests": "Réservez des professionnels, enregistrez vos favoris et suivez vos demandes.",
+    "homeNoProfessionalsNearbyYet": "Aucun professionnel à proximité pour l'instant",
+    "homeTrySearchingCategoryCheckBackSoon": "Essayez de rechercher une catégorie ou revenez bientôt.",
+    "homeSearchNow": "Rechercher maintenant",
+    "homeFilter": "Filtrer",
+    "homePrice": "Prix : {value1} $ — {value2}",
+    "@homePrice": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "homeVerifiedOnly": "Vérifiés uniquement",
+    "homeNoProfessionalsAvailableCity": "Aucun professionnel disponible dans votre ville.",
+    "homeTrySearchingNearbyCities": "Essayez de rechercher dans les villes voisines.",
+    "homeHi": "Bonjour, {value1} 👋",
+    "@homeHi": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "homeGetPersonalizedPicks": "Obtenez des recommandations personnalisées",
+    "homeBookFirstServiceWeLlStart": "Réservez votre premier service et nous commencerons à personnaliser cela pour vous.",
+    "homeBrowse": "Parcourir",
+    "homeAiPick": "✨ SÉLECTION IA POUR VOUS",
+    "homeBookAgain": "Réserver à nouveau",
+    "homeClearAll": "Tout effacer",
+    "homeNoUpcomingBookings": "Aucune réservation à venir",
+    "homeBrowseProfessionals": "Parcourir les professionnels",
+    "homeViewDetails": "Voir les détails",
+    "homeCancelledBy": "Annulé par {value1} : {value2}",
+    "@homeCancelledBy": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRateExperience": "Évaluez votre expérience ⭐",
+    "homePlan": "Plan : {value1}",
+    "@homePlan": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRecentChats": "Discussions récentes",
+    "homeNoMessagesYet": "Aucun message pour l'instant.",
+    "homeStartConversationAfterBookingProfessional": "Démarrez une conversation après avoir réservé un professionnel.",
+    "homeNotifications": "Notifications{value1}",
+    "@homeNotifications": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "homeAiSuggestions": "Suggestions IA",
+    "homeUnlimited": "Illimité ✨",
+    "homeUsedToday": "{value1} sur {value2} utilisé aujourd'hui",
+    "@homeUsedToday": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "homeJustTellUsWhatNeedWe": "Dites-nous simplement de quoi vous avez besoin, et nous vous mettrons instantanément en relation avec le bon professionnel vérifié.",
+    "homeDailyLimitReachedResetsMidnight": "Limite quotidienne atteinte — réinitialisation à minuit",
+    "homeNeedHelpWeReHere": "Besoin d'aide ? Nous sommes là pour vous",
+    "homeGetResponseWithin24Hours": "Recevez une réponse sous 24 heures",
+    "homeHelpCenter": "Centre d'aide",
+    "homeEGINeedPlumberLeaking": "ex. J'ai besoin d'un plombier pour une fuite…",
+    "homePopularCategories": "Catégories populaires",
+    "homeUpcomingBookings": "Réservations à venir",
+    "bookingsBookProfessionalFromHomeScreen": "Réservez un professionnel depuis l'écran d'accueil",
+    "bookingsEGScheduleChangedNoLonger": "ex. changement d'horaire, plus nécessaire...",
+    "bookingsBookingSent": "Réservation envoyée !",
+    "bookingsRequestSentNotifiedOnceTheyRespond": "Demande envoyée à {value1}. Vous serez averti dès qu'il répondra.",
+    "@bookingsRequestSentNotifiedOnceTheyRespond": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "bookingsViewMyBookings": "Voir mes réservations",
+    "bookingsBackHome": "Retour à l'accueil",
+    "bookingsBookAppointment": "Prendre rendez-vous",
+    "bookingsSummary": "Résumé",
+    "bookingsConfirmBooking": "Confirmer la réservation",
+    "bookingsDescribeIssueRequirements": "Décrivez votre problème ou vos exigences...",
+    "bookingsShareExperience": "Partagez votre expérience",
+    "bookingsYourRating": "Votre note",
+    "bookingsCommentOptional": "Votre commentaire (facultatif)",
+    "bookingsReviewSubmitted": "Avis envoyé ! 🎉",
+    "bookingsThankReviewingFeedbackHelpsOthersMake": "Merci d'avoir évalué {value1}. Votre avis aide les autres à faire de meilleurs choix.",
+    "@bookingsThankReviewingFeedbackHelpsOthersMake": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "bookingsBackBookings": "Retour aux réservations",
+    "bookingsDescribeExperience": "Décrivez votre expérience avec {value1}...",
+    "@bookingsDescribeExperience": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionConfirmSubscription": "Confirmer l'abonnement",
+    "subscriptionSubscribe": "S'abonner à {value1} pour {value2} {value3}",
+    "@subscriptionSubscribe": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            },
+            "value3": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionSubscribe2": "S'abonner",
+    "subscriptionChoosePlan": "Choisissez votre plan",
+    "subscriptionAvailablePlans": "Plans disponibles",
+    "subscriptionCurrentPlan": "Plan actuel : {value1}",
+    "@subscriptionCurrentPlan": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionValidUntil": "Valide jusqu'au : {value1}",
+    "@subscriptionValidUntil": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionUpgradeUnlockPremiumFeatures": "Passez à un plan supérieur pour débloquer les fonctionnalités premium",
+    "subscriptionRecommended": "RECOMMANDÉ",
+    "subscriptionCurrentPlan2": "PLAN ACTUEL",
+    "subscriptionCurrentPlan3": "Plan actuel",
+    "subscriptionBasicPlan": "Plan de base",
+    "subscriptionGet": "Obtenir {value1}",
+    "@subscriptionGet": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionCancelAnytimeSecurePayment": "Annulez à tout moment • Paiement sécurisé",
+    "subscriptionBookingLimitReached": "Limite de réservations atteinte !",
+    "subscriptionVeUsedBookingsMonthFreePlan": "Vous avez utilisé {value1}/{value2} réservations ce mois-ci sur votre plan Gratuit.",
+    "@subscriptionVeUsedBookingsMonthFreePlan": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionUpgradePremium": "Passer à Premium",
+    "subscriptionMaybeLater": "Peut-être plus tard",
+    "subscriptionMonthlyBookings": "Réservations mensuelles",
+    "subscriptionPremiumIncludes": "Premium inclut :",
+    "subscriptionAiSearchLimitReached": "Limite de recherches IA atteinte !",
+    "subscriptionVeUsedAiSearchesTodayAi": "Vous avez utilisé {value1}/{value2} recherches IA aujourd'hui. Le chat IA est verrouillé jusqu'à la réinitialisation de votre limite.",
+    "@subscriptionVeUsedAiSearchesTodayAi": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionAiSearchesToday": "Recherches IA aujourd'hui",
+    "subscriptionGetPremium20AiDay": "Obtenir Premium — 20 IA/jour",
+    "subscriptionContinueNormalSearch": "Continuer avec la recherche normale",
+    "subscriptionPremiumAiFeatures": "Fonctionnalités IA Premium :",
+    "subscriptionProfinderPremium": "ProFinder Premium",
+    "sharedYExp": "{value1} an(s) d'exp.",
+    "@sharedYExp": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "sharedViewProfile": "Voir le profil",
+  "homeNotificationsSignInMessage": "Les notifications sont disponibles après connexion. Connectez-vous ou créez un compte pour voir les mises à jour de réservation et les alertes personnalisées.",
+  "homeSetUpProfileMessage": "Connectez-vous ou créez un compte pour configurer votre profil.",
+  "homeLoginToSaveFavourites": "Connectez-vous pour ajouter des professionnels à vos favoris.",
+  "homeLoginToBookName": "Connectez-vous pour réserver {value1} et gérer vos rendez-vous.",
+  "@homeLoginToBookName": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWhatAreYouLookingForToday": "Que recherchez-vous aujourd'hui ?",
+  "homeTrendingLabel": "Tendance",
+  "homeFeaturedCategoriesSection": "Catégories en vedette",
+  "homeTopRatedProfessionals": "Professionnels les mieux notés",
+  "homeTopRatedLabel": "Les mieux notés",
+  "homeTrendingThisWeek": "Tendance cette semaine",
+  "homePopularProfessionals": "Professionnels populaires",
+  "homePopularLabel": "Populaire",
+  "homeRecentlyAdded": "Récemment ajoutés",
+  "homeNewLabel": "Nouveau",
+  "homeFromTheMagazine": "Extrait du magazine",
+  "homeNearLocation": "Près de {value1}",
+  "@homeNearLocation": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeProfessionalsInLocation": "Professionnels à {value1}",
+  "@homeProfessionalsInLocation": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeClosestProfessionals": "Professionnels les plus proches",
+  "homeTopRatedProfessionalsNationwide": "Professionnels les mieux notés dans tout le pays",
+  "homeNearbyLabel": "À proximité",
+  "homeArticleLabel": "Article",
+  "homeGoodMorning": "Bonjour",
+  "homeGoodAfternoon": "Bon après-midi",
+  "homeGoodEvening": "Bonsoir",
+  "homeSetYourLocation": "Définissez votre position",
+  "homeCityHint": "ex. Karachi, Lahore",
+  "homeNoLimit": "Sans limite",
+  "homeMinRatingLabel": "Note minimale : {value1} ★",
+  "@homeMinRatingLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeResetButton": "Réinitialiser",
+  "homeApplyButton": "Appliquer",
+  "homeFilteredResults": "Résultats filtrés",
+  "homeRecommendedForYou": "Recommandé pour vous",
+  "homeRecommendedLabel": "Recommandé",
+  "homeSavedQuickAction": "Favoris",
+  "homeWalletQuickAction": "Portefeuille",
+  "homeHelpQuickAction": "Aide",
+  "homeRecentSearches": "Recherches récentes",
+  "homeRecentBookingsTitle": "Réservations récentes",
+  "homeConfirmedStatus": "Confirmée",
+  "homeDeclinedStatus": "Refusée",
+  "homeCancelledStatus": "Annulée",
+  "homeSystemLabel": "système",
+  "homeTotalSpent": "Total dépensé",
+  "homeAcrossTransaction": "Sur {value1} transaction",
+  "@homeAcrossTransaction": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeAcrossTransactions": "Sur {value1} transactions",
+  "@homeAcrossTransactions": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeManageButton": "Gérer",
+  "homeUpgradeButton": "Mettre à niveau",
+  "homePaymentHistoryTitle": "Historique des paiements",
+  "homeTotalLabel": "Total",
+  "homeSayHello": "Dites bonjour 👋",
+  "homeMagazineNavLabel": "Magazine",
+  "homeMessagesNavLabel": "Messages",
+  "homeTipsMagazineTitle": "Magazine de conseils",
+  "homeFeaturedArticlesTitle": "Articles en vedette",
+  "homeContactButton": "Contacter",
+  "homeAiPickForYou": "SÉLECTION IA POUR VOUS",
+  "homeMessagingComingSoonTitle": "Messagerie",
+  "homeMessagingComingSoonMessage": "Vous pourrez discuter directement avec des professionnels ici.",
+  "commonOn": "Activé",
+  "commonOff": "Désactivé",
+  "profileVersionLabel": "Version 1.0.0",
+  "searchAiSearchFailedTryNormal": "La recherche IA a échoué. Essayez la recherche normale.",
+  "searchFailedCheckConnection": "Échec de la recherche. Vérifiez votre connexion et réessayez.",
+  "searchClearAll": "Tout effacer",
+  "searchDistanceAny": "Distance : Toutes",
+  "searchWithinKm": "Dans un rayon de {value1} km",
+  "@searchWithinKm": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchSortPriceLowHigh": "Prix : croissant",
+  "searchSortPriceHighLow": "Prix : décroissant",
+  "searchAiSearchesLeft": "{value1} restantes",
+  "@searchAiSearchesLeft": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchSimilarProfessionals": "Professionnels similaires",
+  "searchProfessionalsNearYou": "Professionnels près de vous",
+  "searchTrendingCategories": "Catégories tendance",
+  "searchAiPremiumResults": "Résultats IA Premium",
+  "searchAiSearchResultsTitle": "Résultats de recherche IA",
+  "searchNoMatchingProfessionalsFound": "Aucun professionnel correspondant trouvé.",
+  "searchRelatedProfessions": "Métiers connexes",
+  "searchTrendingProfessionals": "Professionnels tendance",
+  "searchPopularNearby": "Populaires à proximité",
+  "searchShowingResultsFor": "Affichage des résultats pour : ",
+  "searchMetersAway": "à {value1} m",
+  "@searchMetersAway": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchKmNearYou": "{value1} km · près de vous",
+  "@searchKmNearYou": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchKmAway": "à {value1} km",
+  "@searchKmAway": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchApproxKm": "~{value1} km",
+  "@searchApproxKm": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchApproxKmNearbyCity": "~{value1} km · ville voisine",
+  "@searchApproxKmNearbyCity": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchDifferentArea": "Zone différente",
+  "searchAiHintPlaceholder": "Demandez à l'IA : trouve-moi un plombier...",
+  "searchNameCityProfessionHint": "Nom, ville, profession...",
+  "searchAiSearchOnTapDisable": "Recherche IA activée — Touchez pour désactiver",
+  "searchTryAiSearchSmarterResults": "Essayez la recherche IA — résultats plus intelligents",
+  "subscriptionFailedToLoadPlans": "Échec du chargement des forfaits.",
+  "subscriptionSubscribedTo": "Abonné à {value1} !",
+  "@subscriptionSubscribedTo": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionSubscriptionFailed": "Échec de l'abonnement.",
+  "subscriptionPerMonth": "/mois",
+  "subscriptionPerYear": "/an",
+  "subscriptionFreeForever": "Gratuit pour toujours",
+  "subscriptionBilledMonthly": "Facturation mensuelle",
+  "subscriptionBilledYearly": "Facturation annuelle",
+  "subscriptionFree": "GRATUIT",
+  "subscriptionUnlimited": "Illimité",
+  "subscriptionUpgradeUnlimitedAiSearches": "Passez à un forfait supérieur pour des recherches IA illimitées et plus",
+  "subscriptionUpgradeUnlimitedBookings": "Passez à un forfait supérieur pour des réservations illimitées et un classement prioritaire",
+  "subscriptionFeatureAiSearchesDay": "Recherches IA/jour",
+  "subscriptionFeatureMessagesDay": "Messages/jour",
+  "subscriptionFeatureUnlimitedBookings": "Réservations illimitées",
+  "subscriptionFeaturePrioritySupport": "Support prioritaire",
+  "subscriptionFeaturePremiumBadge": "Badge Premium",
+  "subscriptionFeatureNoAds": "Sans publicité",
+  "subscriptionFeatureBookingsMonth": "Réservations/mois",
+  "subscriptionFeaturePortfolioImages": "Images du portfolio",
+  "subscriptionFeatureServicesListed": "Services proposés",
+  "subscriptionFeatureFeaturedProfile": "Profil en vedette",
+  "subscriptionFeaturePriorityRanking": "Classement prioritaire",
+  "subscriptionLimitResetsOn": "Votre limite sera réinitialisée le {value1}",
+  "@subscriptionLimitResetsOn": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionLimitResetsNextMonth": "Votre limite sera réinitialisée au début du mois prochain",
+  "subscriptionFeatureUnlimitedBookingsMonth": "Réservations illimitées chaque mois",
+  "subscriptionFeatureFeaturedProfileSearch": "Profil en vedette dans les résultats de recherche",
+  "subscriptionFeaturePriorityAiRanking": "Classement IA prioritaire",
+  "subscriptionFeatureNoAdsProfile": "Pas de publicité sur votre profil",
+  "subscriptionAiResetsTomorrowMidnight": "Vos recherches IA seront réinitialisées demain à minuit",
+  "subscriptionResetsAt": "Réinitialisation {value1} à {value2}",
+  "@subscriptionResetsAt": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "commonToday": "aujourd'hui",
+  "commonTomorrow": "demain",
+  "subscriptionBenefit20AiSearchesDay": "20 recherches IA par jour",
+  "subscriptionBenefitAdvancedAiRecommendations": "Recommandations IA avancées",
+  "subscriptionBenefitSearchByBudgetLocationHistory": "Recherche par budget, lieu et historique",
+  "subscriptionBenefitPriorityMatchingResults": "Résultats de correspondance prioritaires",
+  "subscriptionNoThanksMaybeLater": "Non merci, plus tard",
+  "subscriptionPleaseWaitSeconds": "Veuillez patienter {value1} secondes...",
+  "@subscriptionPleaseWaitSeconds": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPhotoReplyPlaceholder": "📷 Photo",
+  "chatMuteConversation": "Mettre la conversation en sourdine",
+  "chatUnmuteConversation": "Réactiver le son de la conversation",
+  "chatTyping": "est en train d'écrire…",
+  "chatLastSeen": "Vu pour la dernière fois {value1}",
+  "@chatLastSeen": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatReasonSpam": "Spam",
+  "chatReasonHarassmentBullying": "Harcèlement ou intimidation",
+  "chatReasonInappropriateContent": "Contenu inapproprié",
+  "chatReasonScamFraud": "Arnaque ou fraude",
+  "chatReasonOther": "Autre"
+}

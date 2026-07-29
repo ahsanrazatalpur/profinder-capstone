@@ -1,0 +1,1913 @@
+{
+    "@@locale": "hi",
+    "navSearch": "खोजें",
+    "appName": "ProFinder",
+    "@appName": {
+        "description": "App name — usually kept untranslated across locales"
+    },
+    "appTagline": "अपने पास भरोसेमंद पेशेवरों को खोजें",
+    "login": "लॉग इन",
+    "register": "रजिस्टर करें",
+    "logout": "लॉग आउट",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "confirmPassword": "पासवर्ड की पुष्टि करें",
+    "fullName": "पूरा नाम",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "resetPassword": "पासवर्ड रीसेट करें",
+    "sendResetLink": "रीसेट लिंक भेजें",
+    "noAccount": "खाता नहीं है? ",
+    "hasAccount": "पहले से खाता है? ",
+    "selectRole": "इस रूप में रजिस्टर करें",
+    "customer": "ग्राहक",
+    "professional": "पेशेवर",
+    "home": "होम",
+    "findProfessional": "पेशेवर खोजें",
+    "nearbyProfessionals": "आस-पास के पेशेवर",
+    "categories": "श्रेणियाँ",
+    "aiSearch": "AI खोज",
+    "searchHint": "सेवा खोजें...",
+    "profile": "प्रोफ़ाइल",
+    "editProfile": "प्रोफ़ाइल संपादित करें",
+    "phone": "फ़ोन नंबर",
+    "city": "शहर",
+    "bio": "बायो",
+    "experience": "अनुभव के वर्ष",
+    "hourlyRate": "प्रति घंटा दर (USD)",
+    "verified": "सत्यापित",
+    "notVerified": "असत्यापित",
+    "bookings": "बुकिंग्स",
+    "myBookings": "मेरी बुकिंग्स",
+    "bookNow": "अभी बुक करें",
+    "cancel": "रद्द करें",
+    "accept": "स्वीकार करें",
+    "reject": "अस्वीकार करें",
+    "complete": "पूर्ण करें",
+    "pending": "लंबित",
+    "accepted": "स्वीकृत",
+    "rejected": "अस्वीकृत",
+    "completed": "पूर्ण",
+    "notifications": "सूचनाएँ",
+    "markAsRead": "पढ़ा हुआ चिह्नित करें",
+    "noNotifications": "अभी कोई सूचना नहीं",
+    "reviews": "समीक्षाएँ",
+    "writeReview": "समीक्षा लिखें",
+    "rating": "रेटिंग",
+    "comment": "टिप्पणी",
+    "submitReview": "समीक्षा सबमिट करें",
+    "noInternet": "इंटरनेट कनेक्शन नहीं है",
+    "serverError": "कुछ गलत हो गया। फिर से कोशिश करें।",
+    "invalidEmail": "कृपया एक मान्य ईमेल दर्ज करें",
+    "invalidPassword": "पासवर्ड कम से कम 8 अक्षरों का होना चाहिए",
+    "fieldRequired": "यह फ़ील्ड आवश्यक है",
+    "passwordMismatch": "पासवर्ड मेल नहीं खाते",
+    "invalidLoginCredentials": "गलत ईमेल या पासवर्ड। कृपया पुनः प्रयास करें।",
+    "forgotPasswordGenericMessage": "अगर इस ईमेल से खाता मौजूद है, तो हमने पासवर्ड रीसेट लिंक भेज दिया है।",
+    "requestTimedOut": "अनुरोध का समय समाप्त हो गया। कृपया अपना कनेक्शन जांचें और पुनः प्रयास करें।",
+    "save": "सहेजें",
+    "confirm": "पुष्टि करें",
+    "delete": "हटाएँ",
+    "loading": "लोड हो रहा है...",
+    "retry": "पुनः प्रयास करें",
+    "noData": "दिखाने के लिए कुछ नहीं",
+    "seeAll": "सभी देखें",
+    "ok": "ठीक है",
+    "selectLanguageTitle": "अपनी भाषा चुनें",
+    "@selectLanguageTitle": {
+        "description": "Title on the first-launch language selection screen"
+    },
+    "selectLanguageSubtitle": "ProFinder में उपयोग के लिए भाषा चुनें",
+    "continueLabel": "जारी रखें",
+    "changeLanguage": "भाषा बदलें",
+  "languageChangeNote": "आप बाद में सेटिंग्स से भाषा बदल सकते हैं।",
+    "languageUpdated": "भाषा अपडेट हो गई",
+    "settingsTitle": "सेटिंग्स",
+    "notificationsSection": "सूचनाएँ",
+    "pushNotifications": "पुश सूचनाएँ",
+    "pushNotificationsSubtitle": "बुकिंग अपडेट, संदेश और ऑफ़र",
+    "emailNotifications": "ईमेल सूचनाएँ",
+    "emailNotificationsSubtitle": "रसीदें और खाता गतिविधि",
+    "preferencesSection": "प्राथमिकताएँ",
+    "languageLabel": "भाषा",
+    "currencyLabel": "मुद्रा",
+    "darkModeLabel": "डार्क मोड",
+    "accountSection": "खाता",
+    "supportSection": "सहायता",
+    "deleteAccount": "खाता हटाएँ",
+    "deleteAccountSubtitle": "अपना खाता स्थायी रूप से हटाएँ",
+    "deleteAccountTitle": "खाता हटाएँ?",
+    "deleteAccountMessage": "इसके लिए सत्यापन हेतु हमारी सपोर्ट टीम से संपर्क करना ज़रूरी है। आगे बढ़ने के लिए हेल्प एंड सपोर्ट से संपर्क करें।",
+    "comingSoon": "{feature} जल्द आ रहा है",
+    "@comingSoon": {
+        "description": "Placeholder shown for settings not yet implemented",
+        "placeholders": {
+            "feature": {
+                "type": "String"
+            }
+        }
+    },
+    "loginWelcomeBack": "वापसी पर स्वागत है! जारी रखने के लिए साइन इन करें।",
+    "emailHint": "example@email.com",
+    "passwordHint": "अपना पासवर्ड दर्ज करें",
+    "continueAsGuest": "गेस्ट के रूप में जारी रखें",
+    "unknownRoleContactSupport": "अज्ञात भूमिका। कृपया सपोर्ट से संपर्क करें।",
+    "createAccount": "खाता बनाएं",
+    "joinProFinderSubtitle": "ProFinder से जुड़ें और पेशेवरों से संपर्क करें।",
+    "chooseAccountType": "खाता प्रकार चुनें",
+    "customerRoleDescription": "विश्वसनीय पेशेवरों को हायर करें।",
+    "professionalRoleDescription": "अपनी सेवाएं दें और अपना व्यवसाय बढ़ाएं।",
+    "fullNameHint": "अपना पूरा नाम दर्ज करें",
+    "countryLabel": "देश",
+    "selectCountryHint": "अपना देश चुनें",
+    "searchCountriesHint": "देश खोजें...",
+    "noCountriesFound": "कोई देश नहीं मिला",
+    "selectCountryValidation": "कृपया अपना देश चुनें",
+    "selectCityHint": "अपना शहर चुनें",
+    "selectACountryFirst": "पहले एक देश चुनें",
+    "searchCitiesHint": "शहर खोजें...",
+    "noCitiesFound": "कोई शहर नहीं मिला",
+    "selectCityValidation": "कृपया अपना शहर चुनें",
+    "yourProfessionLabel": "आपका पेशा",
+    "selectCategoryHint": "अपनी श्रेणी चुनें",
+    "searchProfessionsHint": "पेशे खोजें...",
+    "noCategoriesFound": "कोई श्रेणी नहीं मिली",
+    "selectProfessionValidation": "कृपया अपना पेशा चुनें",
+    "selectProfessionCategoryError": "कृपया अपनी पेशा श्रेणी चुनें।",
+    "passwordMinCharsHint": "न्यूनतम 8 अक्षर",
+    "confirmPasswordHint": "अपना पासवर्ड फिर से दर्ज करें",
+    "capsLockOnHint": "Caps Lock चालू है",
+    "emailAvailable": "ईमेल उपलब्ध है",
+    "emailAlreadyRegistered": "यह ईमेल पहले से रजिस्टर्ड है।",
+    "signInInstead": "इसके बजाय साइन इन करें",
+    "orContinueWith": "या इसके साथ जारी रखें",
+    "continueWithGoogle": "Google के साथ जारी रखें",
+    "facebookLabel": "Facebook",
+    "twitterLabel": "X (Twitter)",
+    "forgotPasswordInstructions": "अपना रजिस्टर्ड ईमेल दर्ज करें। हम आपको पासवर्ड रीसेट लिंक भेजेंगे।",
+    "checkYourEmail": "अपना ईमेल जांचें",
+    "checkSpamFolderHint": "अगर कुछ मिनटों में न आए, तो अपना स्पैम फ़ोल्डर जांचें या फिर से प्रयास करें।",
+    "backToLogin": "लॉगिन पर वापस जाएं",
+    "resendEmail": "ईमेल फिर से भेजें",
+    "adminAvgRatingTotal": "औसत रेटिंग: {value1} ★ · कुल {value2}",
+    "@adminAvgRatingTotal": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminBy": "{value1} द्वारा",
+    "@adminBy": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteReview": "समीक्षा हटाएं",
+    "adminPermanentlyRemovesReviewProvideReasonAudit": "यह समीक्षा को स्थायी रूप से हटा देता है। ऑडिट लॉग के लिए कारण दें।",
+    "adminFailedDeleteReview": "समीक्षा हटाने में विफल।",
+    "adminNoReviewsFound": "कोई समीक्षा नहीं मिली",
+    "adminFailedLoadReviews": "समीक्षाएं लोड करने में विफल",
+    "adminSearchByProfessionalReviewer": "पेशेवर या समीक्षक द्वारा खोजें…",
+    "adminReasonRequired": "कारण (आवश्यक)",
+    "adminPayments": "भुगतान",
+    "adminRsShown": "Rs {value1} दिखाया गया",
+    "@adminRsShown": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefund": "रिफंड",
+    "adminTxn": "लेनदेन: {value1}",
+    "@adminTxn": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefundPayment": "भुगतान रिफंड करें",
+    "adminRefundRs": "{value2} को Rs {value1} रिफंड करें?",
+    "@adminRefundRs": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminPaymentRefunded": "भुगतान रिफंड कर दिया गया।",
+    "adminRefundFailed": "रिफंड विफल रहा।",
+    "adminNoPaymentsFound": "कोई भुगतान नहीं मिला",
+    "adminFailedLoadPayments": "भुगतान लोड करने में विफल",
+    "adminSearchByNameEmailTransactionId": "नाम, ईमेल या ट्रांज़ैक्शन आईडी द्वारा खोजें…",
+    "adminBlockedUsers": "ब्लॉक किए गए उपयोगकर्ता",
+    "adminCurrentlyBlocked": "{value1} वर्तमान में ब्लॉक",
+    "@adminCurrentlyBlocked": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminUnblock": "अनब्लॉक करें",
+    "adminUnblockUser": "उपयोगकर्ता को अनब्लॉक करें?",
+    "adminRestoreAccessTheyAbleLogAgain": "इससे {value1} की एक्सेस बहाल हो जाएगी। वे फिर से लॉग इन कर सकेंगे।",
+    "@adminRestoreAccessTheyAbleLogAgain": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminHasBeenUnblocked": "{value1} को अनब्लॉक कर दिया गया है।",
+    "@adminHasBeenUnblocked": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFailedUnblockUser": "उपयोगकर्ता को अनब्लॉक करने में विफल।",
+    "adminNoBlockedUsersAllClear": "कोई ब्लॉक किया गया उपयोगकर्ता नहीं — सब ठीक है! 🎉",
+    "adminFailedLoadBlockedUsers": "ब्लॉक किए गए उपयोगकर्ता लोड करने में विफल",
+    "adminSearchByNameEmailReason": "नाम, ईमेल या कारण द्वारा खोजें…",
+    "adminExportProfessionals": "एक्सपोर्ट करें ({value1} पेशेवर)",
+    "@adminExportProfessionals": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminClose": "बंद करें",
+    "adminCopyClipboard": "क्लिपबोर्ड पर कॉपी करें",
+    "adminProfessionals": "पेशेवर",
+    "adminRatingHighLow": "रेटिंग (उच्च-निम्न)",
+    "adminMostBookings": "सबसे अधिक बुकिंग",
+    "adminNameZ": "नाम (A-Z)",
+    "adminNewestFirst": "नवीनतम पहले",
+    "adminSelected": "{value1} चयनित",
+    "@adminSelected": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminVerify": "सत्यापित करें",
+    "adminRemind": "याद दिलाएं",
+    "adminExport": "एक्सपोर्ट करें",
+    "adminFailedLoadProfessionals": "पेशेवर लोड करने में विफल",
+    "adminSearchByNameEmailCategory": "नाम, ईमेल, श्रेणी द्वारा खोजें…",
+    "adminSort": "क्रमबद्ध करें",
+    "adminRefresh": "रिफ्रेश करें",
+    "adminVerifyProfessional": "पेशेवर को सत्यापित करें?",
+    "adminVerifyProfessionals": "{value1} पेशेवरों को सत्यापित करें?",
+    "@adminVerifyProfessionals": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminGetVerifiedBadgeVisibleAllCustomers": "{value1} को एक सत्यापित बैज मिलेगा जो सभी ग्राहकों को दिखेगा।",
+    "@adminGetVerifiedBadgeVisibleAllCustomers": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAllSelectedProfessionalsGetVerifiedBadge": "सभी चयनित पेशेवरों को सत्यापित बैज मिलेगा।",
+    "adminProfinderAdmin": "ProFinder Admin",
+    "adminAdminPanel": "एडमिन पैनल",
+    "adminMore": "अधिक",
+    "adminLogout2": "लॉग आउट करें?",
+    "adminLoggedOutAdminPanel": "आप एडमिन पैनल से लॉग आउट हो जाएंगे।",
+    "adminAnalytics": "एनालिटिक्स",
+    "adminD": "{value1}दिन",
+    "@adminD": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRs": "Rs {value1}",
+    "@adminRs": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLastDays": "पिछले {value1} दिनों में",
+    "@adminLastDays": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLast12Months": "पिछले 12 महीने",
+    "adminDailyBookings": "दैनिक बुकिंग",
+    "adminMonthlyBookings12mo": "मासिक बुकिंग (12 महीने)",
+    "adminTopSearches": "टॉप सर्च",
+    "adminNoDataYet": "अभी तक कोई डेटा नहीं",
+    "adminFailedLoadAnalytics": "एनालिटिक्स लोड करने में विफल",
+    "adminCountries": "देश",
+    "adminTopCities": "टॉप शहर",
+    "adminTopCategories": "टॉप श्रेणियां",
+    "adminActivityLogs": "गतिविधि लॉग",
+    "adminLogs": "{value1} लॉग",
+    "@adminLogs": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminTotal": "कुल: {value1}",
+    "@adminTotal": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAdminActionsAppearHere": "एडमिन एक्शन यहां दिखाई देंगे",
+    "adminFailedLoadLogs": "लॉग लोड करने में विफल",
+    "adminSearchByAdminTargetUser": "एडमिन या लक्षित उपयोगकर्ता द्वारा खोजें…",
+    "adminClearAll": "सभी साफ करें",
+    "adminDeleteLog": "इस लॉग को हटाएं?",
+    "adminClearAllLogs": "सभी लॉग साफ करें?",
+    "adminActionCannotUndone": "यह कार्रवाई वापस नहीं ली जा सकती।",
+    "adminAllActivityLogsPermanentlyDeleted": "सभी {value1} गतिविधि लॉग स्थायी रूप से हटा दिए जाएंगे।",
+    "@adminAllActivityLogsPermanentlyDeleted": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminWelcome": "स्वागत है, {value1} 👋",
+    "@adminWelcome": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminCustomersProfessionals": "{value1} ग्राहक · {value2} पेशेवर",
+    "@adminCustomersProfessionals": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminSearch": "खोजें",
+    "adminGlobalSearchUiReadyConnectUsers": "ग्लोबल सर्च यूआई तैयार है — यह मॉड्यूल फिर से बनने पर उपयोगकर्ताओं/बुकिंग से जुड़ जाएगा।",
+    "adminReview": "समीक्षा",
+    "adminFailedLoadDashboard": "डैशबोर्ड लोड करने में विफल",
+    "adminSearchUsersProfessionalsBookings": "उपयोगकर्ता, पेशेवर, बुकिंग खोजें…",
+    "adminTotalUsers": "कुल उपयोगकर्ता",
+    "adminCustomers": "ग्राहक",
+    "adminRevenue": "राजस्व",
+    "adminTodaySBookings": "आज की बुकिंग",
+    "adminPendingVerification": "सत्यापन लंबित",
+    "adminReportedUsers": "रिपोर्ट किए गए उपयोगकर्ता",
+    "adminExportUsers": "एक्सपोर्ट करें ({value1} उपयोगकर्ता)",
+    "@adminExportUsers": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminUsers": "उपयोगकर्ता",
+    "adminNameZ2": "नाम (Z-A)",
+    "adminOldestFirst": "सबसे पुराना पहले",
+    "adminShown": "{value1} दिखाया गया",
+    "@adminShown": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminBlock": "ब्लॉक करें",
+    "adminJoined": "{value1} को शामिल हुए",
+    "@adminJoined": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFailedLoadUsers": "उपयोगकर्ता लोड करने में विफल",
+    "adminSearchByNameEmail": "नाम या ईमेल द्वारा खोजें…",
+    "adminFailedUpdate": "अपडेट करने में विफल।",
+    "adminFailedDelete": "हटाने में विफल।",
+    "adminAddCountry": "देश जोड़ें",
+    "adminFailedAddMayAlreadyExist": "जोड़ने में विफल — शायद पहले से मौजूद है।",
+    "adminAdd": "जोड़ें",
+    "adminMergeInto": "\"{value1}\" में मर्ज करें",
+    "@adminMergeInto": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminEnterTypoVariantSpellingsFoundUser": "उपयोगकर्ता प्रोफाइल में मिली टाइपो/वेरिएंट स्पेलिंग दर्ज करें, कॉमा से अलग करके (जैसे pakistan, Pakistn)।",
+    "adminMergeFailed": "मर्ज करने में विफल।",
+    "adminMerge": "मर्ज करें",
+    "adminActive": "{value1} सक्रिय",
+    "@adminActive": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminViewCities": "शहर देखें",
+    "adminNoCountriesAddedYet": "अभी तक कोई देश नहीं जोड़ा गया",
+    "adminFailedLoadCountries": "देश लोड करने में विफल",
+    "adminCountryName": "देश का नाम",
+    "adminVariant1Variant2": "वेरिएंट1, वेरिएंट2, ...",
+    "adminRevenueByCategory": "श्रेणी अनुसार राजस्व",
+    "adminVsPreviousDays": "पिछले {value2} दिनों की तुलना में {value1}%",
+    "@adminVsPreviousDays": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminNoCategoryDataYet": "अभी तक कोई श्रेणी डेटा नहीं",
+    "adminRs2": "Rs {value1} ({value2})",
+    "@adminRs2": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFailedLoadRevenueData": "राजस्व डेटा लोड करने में विफल",
+    "adminDeleteBanner": "इस बैनर को हटाएं?",
+    "adminPermanentlyDeleted": "\"{value1}\" स्थायी रूप से हटा दिया जाएगा।",
+    "@adminPermanentlyDeleted": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminPreviewMode": "👁 प्रीव्यू मोड",
+    "adminActive2": "सक्रिय",
+    "adminTurningOffHidesBannerFromEveryone": "इसे बंद करने से बैनर सभी से छिप जाएगा",
+    "adminPromoBanners": "प्रोमो बैनर",
+    "adminFailedLoadBanners": "बैनर लोड करने में विफल",
+    "adminNoBannersYet": "अभी तक कोई बैनर नहीं",
+    "adminTapCreateNewBanner": "नया बैनर बनाने के लिए \"+\" पर टैप करें",
+    "adminPreview": "प्रीव्यू",
+    "adminEdit": "संपादित करें",
+    "adminFailedGenerateReport": "रिपोर्ट जनरेट करने में विफल।",
+    "adminNoDataRange": "इस अवधि में कोई डेटा नहीं।",
+    "adminCopiedClipboardStyleExportCsvReady": "एक्सपोर्ट (CSV) फॉर्मेट में कॉपी किया गया — शेयर करने के लिए तैयार।",
+    "adminExportCsv": "CSV एक्सपोर्ट करें",
+    "adminReports": "रिपोर्ट",
+    "adminQuickGenerate": "क्विक जनरेट",
+    "adminLast30Days": "पिछले 30 दिन",
+    "adminGenerationHistory": "जनरेशन इतिहास",
+    "adminNoReportsGeneratedYetSession": "इस सेशन में अभी तक कोई रिपोर्ट जनरेट नहीं हुई।",
+    "adminRows": "{value1} पंक्तियां · {value2}",
+    "@adminRows": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminProsBookingsSubcategories": "{value1} पेशेवर · {value2} बुकिंग · {value3} उप-श्रेणियां",
+    "@adminProsBookingsSubcategories": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            },
+            "value3": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFeatured": "फीचर्ड",
+    "adminShowGuestHomeSFeaturedCategories": "गेस्ट होम की फीचर्ड श्रेणियों में दिखाएं (अधिकतम 6)",
+    "adminAddSubcategory": "उप-श्रेणी जोड़ें",
+    "adminFailedLoad": "लोड करने में विफल",
+    "adminName": "नाम",
+    "adminIconOptional": "आइकन (वैकल्पिक)",
+    "adminParentCategory": "मूल श्रेणी",
+    "adminAddNew": "नया जोड़ें",
+    "adminCancelSubscription": "सदस्यता रद्द करें?",
+    "adminCancelSSubscription": "{value1} की {value2} सदस्यता रद्द करें?",
+    "@adminCancelSSubscription": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminNo": "नहीं",
+    "adminCancelSubscription2": "सदस्यता रद्द करें",
+    "adminFailedCancel": "रद्द करने में विफल।",
+    "adminExtendedBy30Days": "30 दिनों के लिए बढ़ा दिया गया।",
+    "adminFailedExtend": "बढ़ाने में विफल।",
+    "adminSubscriptions": "सदस्यताएं",
+    "adminRs3": "{value1} · Rs {value2}/{value3}",
+    "@adminRs3": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            },
+            "value3": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRenews": "नवीनीकरण: {value1}",
+    "@adminRenews": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminExtend30d": "30 दिन बढ़ाएं",
+    "adminNoSubscriptionsFound": "कोई सदस्यता नहीं मिली",
+    "adminFailedLoadSubscriptions": "सदस्यताएं लोड करने में विफल",
+    "adminExportCustomers": "एक्सपोर्ट करें ({value1} ग्राहक)",
+    "@adminExportCustomers": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminTotalSpentHighLow": "कुल खर्च (उच्च-निम्न)",
+    "adminFailedLoadCustomers": "ग्राहक लोड करने में विफल",
+    "adminAddLanguage": "भाषा जोड़ें",
+    "adminRightLeftRtl": "दाएं से बाएं (RTL)",
+    "adminFailedAddCodeMayAlreadyExist": "जोड़ने में विफल — कोड शायद पहले से मौजूद है।",
+    "adminFailedUpdateStatus": "स्टेटस अपडेट करने में विफल।",
+    "adminChangeStatus": "स्टेटस बदलें",
+    "adminDeleteLanguage": "भाषा हटाएं?",
+    "adminPermanentlyRemoveAllItsTranslations": "इससे \"{value1}\" और इसके सभी अनुवाद स्थायी रूप से हट जाएंगे।",
+    "@adminPermanentlyRemoveAllItsTranslations": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFailedDeleteLanguage": "भाषा हटाने में विफल।",
+    "adminLanguages": "भाषाएं",
+    "adminActiveTotal": "{value1} सक्रिय · कुल {value2}",
+    "@adminActiveTotal": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRtl": "RTL",
+    "adminEditTranslations": "अनुवाद संपादित करें",
+    "adminNoLanguagesAddedYet": "अभी तक कोई भाषा नहीं जोड़ी गई",
+    "adminFailedLoadLanguages": "भाषाएं लोड करने में विफल",
+    "adminLanguageNameEGUrdu": "भाषा का नाम (जैसे Urdu)",
+    "adminCodeEGUr": "कोड (जैसे ur)",
+    "adminDeleteArticle": "आर्टिकल हटाएं?",
+    "adminNewArticle": "नया आर्टिकल",
+    "adminTipsMagazine": "टिप्स मैगज़ीन",
+    "adminNoArticlesHereYet": "यहां अभी तक कोई आर्टिकल नहीं है।",
+    "adminMinReadViews": "{value1} मिनट रीड · {value2} व्यूज़",
+    "@adminMinReadViews": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminSelect": "चुनें…",
+    "adminManageCategories": "श्रेणियां प्रबंधित करें",
+    "adminNoCategoriesYet": "अभी तक कोई श्रेणी नहीं है।",
+    "adminArticles": "{value1} आर्टिकल",
+    "@adminArticles": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAddNewCategory": "नई श्रेणी जोड़ें",
+    "adminAddCategory": "श्रेणी जोड़ें",
+    "adminCategoryName": "श्रेणी का नाम",
+    "adminNoChangesSave": "सेव करने के लिए कोई बदलाव नहीं।",
+    "adminFailedSaveTranslations": "अनुवाद सेव करने में विफल।",
+    "adminAddTranslationKey": "अनुवाद कुंजी जोड़ें",
+    "adminFailedAddKeyMayAlreadyExist": "जोड़ने में विफल — कुंजी शायद पहले से मौजूद है।",
+    "adminDiscardChanges": "बदलाव रद्द करें?",
+    "adminHaveUnsavedTranslationS": "आपके पास {value1} असेव्ड अनुवाद हैं।",
+    "@adminHaveUnsavedTranslationS": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminKeepEditing": "संपादन जारी रखें",
+    "adminDiscard": "रद्द करें",
+    "adminAddKey": "कुंजी जोड़ें",
+    "adminTranslate": "अनुवाद करें — {value1}",
+    "@adminTranslate": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminKeysUnsaved": "{value1} कुंजियां · {value2} असेव्ड",
+    "@adminKeysUnsaved": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminMissing": "गायब",
+    "adminNoTranslationKeysYet": "अभी तक कोई अनुवाद कुंजी नहीं",
+    "adminTapAddKeyCreateFirstOne": "पहली कुंजी बनाने के लिए \"कुंजी जोड़ें\" पर टैप करें।",
+    "adminFailedLoadTranslations": "अनुवाद लोड करने में विफल",
+    "adminKeyEGHomeWelcomeTitle": "कुंजी (जैसे home.welcome_title)",
+    "adminDescriptionOptional": "विवरण (वैकल्पिक)",
+    "adminSearchKeys": "कुंजियां खोजें…",
+    "adminTranslatedText": "अनुवादित टेक्स्ट…",
+    "adminAddCity": "{value1} में शहर जोड़ें",
+    "@adminAddCity": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminEnterTypoVariantSpellingsCommaSeparated": "टाइपो/वेरिएंट स्पेलिंग दर्ज करें, कॉमा से अलग करके।",
+    "adminAddCity2": "शहर जोड़ें",
+    "adminNoCitiesAddedYet": "अभी तक कोई शहर नहीं जोड़ा गया",
+    "adminFailedLoadCities": "शहर लोड करने में विफल",
+    "adminCityName": "शहर का नाम",
+    "adminPendingReview": "{value1} समीक्षा के लिए लंबित",
+    "@adminPendingReview": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminBlocked": "ब्लॉक किया गया",
+    "adminReportedBy": "{value1} ({value2}) द्वारा रिपोर्ट किया गया",
+    "@adminReportedBy": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminFailedLoadReports": "रिपोर्ट लोड करने में विफल",
+    "adminReportOn": "{value1} पर रिपोर्ट",
+    "@adminReportOn": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAlsoBanUser": "इस उपयोगकर्ता को भी बैन करें",
+    "adminDismiss": "खारिज करें",
+    "adminMarkReviewed": "समीक्षित के रूप में चिह्नित करें",
+    "adminTakeAction": "कार्रवाई करें",
+    "adminFailedUpdateReport": "रिपोर्ट अपडेट करने में विफल।",
+    "adminSearchByUserReporterReason": "उपयोगकर्ता, रिपोर्टर या कारण द्वारा खोजें…",
+    "adminAdminNoteOptional": "एडमिन नोट (वैकल्पिक)…",
+    "adminPortfolioApproval": "पोर्टफोलियो अनुमोदन",
+    "adminApprove": "स्वीकृत करें",
+    "adminAllPortfoliosReviewed": "सभी पोर्टफोलियो की समीक्षा हो चुकी है!",
+    "adminFailedLoadPortfolios": "पोर्टफोलियो लोड करने में विफल",
+    "adminSkip": "छोड़ें",
+    "adminWriteReasonOptional": "कारण लिखें (वैकल्पिक)…",
+    "adminApprovePortfolio": "पोर्टफोलियो स्वीकृत करें?",
+    "adminVisibleAllCustomers": "\"{value1}\" सभी ग्राहकों को दिखेगा।",
+    "@adminVisibleAllCustomers": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminBookings2": "{value1} बुकिंग",
+    "@adminBookings2": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminCreated": "{value1} को बनाया गया",
+    "@adminCreated": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminForceCancel": "बलपूर्वक रद्द करें",
+    "adminFailedLoadBookings": "बुकिंग लोड करने में विफल",
+    "adminYesCancel": "हां, रद्द करें",
+    "adminSearchCustomerProfessional": "ग्राहक या पेशेवर खोजें…",
+    "adminCancelBooking": "बुकिंग #{value1} रद्द करें?",
+    "@adminCancelBooking": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminReflectBothCustomerProfessional": "{value1} → {value2} यह ग्राहक और पेशेवर दोनों पर लागू होगा।",
+    "@adminReflectBothCustomerProfessional": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminVerificationRequests": "सत्यापन अनुरोध",
+    "adminPendingOldestFirst": "{value1} लंबित · सबसे पुराना पहले",
+    "@adminPendingOldestFirst": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminOldest": "सबसे पुराना",
+    "adminApproveVerification": "सत्यापन स्वीकृत करें?",
+    "adminMarkedAsVerifiedProfessional": "{value1} को सत्यापित पेशेवर के रूप में चिह्नित किया जाएगा।",
+    "@adminMarkedAsVerifiedProfessional": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRejectSRequest": "{value1} का अनुरोध अस्वीकार करें?",
+    "@adminRejectSRequest": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminReasonSentProfessionalSoTheyCan": "यह कारण पेशेवर को भेजा जाएगा ताकि वे फिर से सबमिट कर सकें।",
+    "adminFailedRequest": "{value1} अनुरोध विफल रहा।",
+    "@adminFailedRequest": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminNoPendingVerificationRequests": "कोई लंबित सत्यापन अनुरोध नहीं 🎉",
+    "adminFailedLoadVerificationRequests": "सत्यापन अनुरोध लोड करने में विफल",
+    "adminSearchByNameEmailCategory2": "नाम, ईमेल या श्रेणी द्वारा खोजें…",
+    "adminEGCnicImageBlurryPlease": "जैसे CNIC इमेज धुंधली है, कृपया फिर से अपलोड करें…",
+    "adminFailedCancelItMayHaveAlready": "रद्द करने में विफल — यह शायद पहले ही भेजा जा चुका है।",
+    "adminCompose": "लिखें",
+    "adminScheduledFor": "इसके लिए शेड्यूल किया गया: {value1}",
+    "@adminScheduledFor": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminSentUsersOpenRate": "{value1} उपयोगकर्ताओं को भेजा गया · ओपन रेट: {value2}%",
+    "@adminSentUsersOpenRate": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminComposeNotification": "नोटिफिकेशन लिखें",
+    "adminAudience": "ऑडियंस",
+    "adminScheduleLater": "बाद के लिए शेड्यूल करें",
+    "adminFailedSendNotification": "नोटिफिकेशन भेजने में विफल।",
+    "adminFailedLoadNotifications": "नोटिफिकेशन लोड करने में विफल",
+    "adminTitle": "शीर्षक",
+    "adminMessage": "संदेश",
+    "adminUserId": "यूज़र आईडी",
+    "adminDeleteAnnouncement": "घोषणा हटाएं?",
+    "adminRemove": "\"{value1}\" हटाएं?",
+    "@adminRemove": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminNewAnnouncement": "नई घोषणा",
+    "adminAnnouncements": "घोषणाएं",
+    "adminType": "प्रकार",
+    "adminFailedCreate": "बनाने में विफल।",
+    "adminPublish": "प्रकाशित करें",
+    "adminNoAnnouncementsYet": "अभी तक कोई घोषणा नहीं",
+    "adminFailedLoadAnnouncements": "घोषणाएं लोड करने में विफल",
+    "adminMagazineAnalytics": "मैगज़ीन एनालिटिक्स",
+    "adminViews": "{value1} व्यूज़",
+    "@adminViews": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminOfTotal": "कुल का {value1}%",
+    "@adminOfTotal": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminNoViewsYet": "अभी तक कोई व्यू नहीं।",
+    "adminRecentViewers": "हाल के दर्शक",
+    "adminComplaints": "शिकायतें",
+    "adminVs": "{value1} बनाम {value2}",
+    "@adminVs": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAssignedTo": "इसे सौंपा गया: {value1}",
+    "@adminAssignedTo": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "adminAssignMe": "मुझे सौंपें",
+    "adminResolve": "हल करें",
+    "adminFailedAssign": "सौंपने में विफल।",
+    "adminFailedLoadComplaints": "शिकायतें लोड करने में विफल",
+    "adminResolutionNote": "समाधान नोट",
+    "authWelcomeProfinder": "ProFinder में आपका स्वागत है!",
+    "authPleaseVerifyEmailActivateAccount": "अपना खाता सक्रिय करने के लिए कृपया अपना ईमेल सत्यापित करें।",
+    "authContinueLogin": "लॉगिन पर जारी रखें",
+    "profileNoPaymentsYet": "अभी तक कोई भुगतान नहीं",
+    "profileTransactionHistoryAppearHere": "आपका लेनदेन इतिहास यहां दिखेगा",
+    "profileWallet": "वॉलेट",
+    "profileTotalSpent": "कुल खर्च",
+    "profileAcrossTransaction": "{value1} लेनदेन{value2} में",
+    "@profileAcrossTransaction": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "profileCurrentPlan": "वर्तमान प्लान: {value1}",
+    "@profileCurrentPlan": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "profilePaymentHistory": "भुगतान इतिहास",
+    "profileViewAllTransactions": "अपने सभी लेनदेन देखें",
+    "profileSavedProfessionals": "सेव किए गए पेशेवर",
+    "profileNoSavedProfessionalsYet": "अभी तक कोई सेव किया गया पेशेवर नहीं",
+    "profileTapHeartAnyProfessionalSaveThem": "किसी भी पेशेवर को यहां सेव करने के लिए हार्ट पर टैप करें",
+    "profileHr": "{value1} • ${value2}/घंटा",
+    "@profileHr": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "profileBook": "बुक करें",
+    "profileRemoveFromSaved": "सेव से हटाएं",
+    "profileChangeProfilePhoto": "प्रोफाइल फोटो बदलें",
+    "profileChooseFromGallery": "गैलरी से चुनें",
+    "profileTakePhoto": "फोटो लें",
+    "profileMyProfile": "मेरी प्रोफाइल",
+    "profileNewPhotoSelectedTapSaveUpload": "नई फोटो चुनी गई — अपलोड करने के लिए सेव पर टैप करें",
+    "profilePersonalInformation": "व्यक्तिगत जानकारी",
+    "profileSureWantLogout": "क्या आप वाकई लॉगआउट करना चाहते हैं?",
+    "profileMyReviews": "मेरी समीक्षाएं",
+    "profileNoReviewsWrittenYet": "अभी तक कोई समीक्षा नहीं लिखी गई",
+    "profileCompleteBookingLeaveFirstReview": "अपनी पहली समीक्षा देने के लिए एक बुकिंग पूरी करें",
+    "profileSecurity": "सुरक्षा",
+    "profileWeLlEmailSecureResetLink": "हम {value1} पर एक सुरक्षित रीसेट लिंक ईमेल करेंगे।",
+    "@profileWeLlEmailSecureResetLink": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "profileSignOutDevice": "इस डिवाइस से साइन आउट करें",
+    "profileHelpSupport": "मदद और सपोर्ट",
+    "profileNeedHand": "मदद चाहिए?",
+    "profileReachOurSupportTeamAnytime": "कभी भी हमारी सपोर्ट टीम से संपर्क करें",
+    "profileFrequentlyAskedQuestions": "अक्सर पूछे जाने वाले सवाल",
+    "profileComingSoon": "{value1} जल्द आ रहा है",
+    "@profileComingSoon": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "profileBrowsingAsGuest": "आप गेस्ट के रूप में ब्राउज़ कर रहे हैं",
+    "profileLoginBookSaveManageRequests": "बुक करने, सेव करने और अपने अनुरोध प्रबंधित करने के लिए लॉगिन करें",
+    "profileProfinderV100": "ProFinder v1.0.0",
+    "profileAboutProfinder": "ProFinder के बारे में",
+    "profileProfinderHelpsFindHireTrustedProfessionals": "ProFinder आपको आपके नज़दीक विश्वसनीय पेशेवर — डॉक्टर, वकील, ट्यूटर, इंजीनियर, प्लंबर और अधिक — ढूंढने और हायर करने में मदद करता है।",
+    "profileAccessBookingsProfile": "अपनी बुकिंग और प्रोफाइल तक पहुंचें",
+    "profileCreateFreeCustomerAccount": "एक मुफ्त ग्राहक खाता बनाएं",
+    "profileBecomeProfessional": "पेशेवर बनें",
+    "profileListServicesGetHired": "अपनी सेवाएं सूचीबद्ध करें और हायर हों",
+    "profileEnglish": "अंग्रेज़ी",
+    "profileComingSoon2": "जल्द आ रहा है",
+    "profilePrivacyPolicy": "गोपनीयता नीति",
+    "searchNoReviewsYet": "अभी तक कोई समीक्षा नहीं",
+    "searchFirstReview": "समीक्षा देने वाले पहले व्यक्ति बनें!",
+    "searchNoPortfolioYet": "अभी तक कोई पोर्टफोलियो नहीं",
+    "searchProfessionalHasNoApprovedWorkYet": "इस पेशेवर का अभी तक कोई स्वीकृत कार्य नहीं है",
+    "searchHourlyRate": "प्रति घंटा दर",
+    "searchHr": "${value1}/घंटा",
+    "@searchHr": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchLoginBook": "बुक करने के लिए लॉगिन करें",
+    "searchLoginRequired": "लॉगिन आवश्यक",
+    "searchPleaseLoginUseAiSearch": "AI सर्च का उपयोग करने के लिए कृपया लॉगिन करें।",
+    "searchSearchHistory": "खोज इतिहास",
+    "searchNoSearchHistoryYet": "अभी तक कोई खोज इतिहास नहीं",
+    "searchPriceHr": "मूल्य: ${value1} — ${value2}/घंटा",
+    "@searchPriceHr": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "searchMinRating": "न्यूनतम रेटिंग: {value1} ★",
+    "@searchMinRating": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchVerifiedOnly": "केवल सत्यापित",
+    "searchPreferredGender": "पसंदीदा लिंग",
+    "searchAny": "कोई भी",
+    "searchFemale": "महिला",
+    "searchMale": "पुरुष",
+    "searchMinExperienceYrs": "न्यूनतम अनुभव: {value1}+ वर्ष",
+    "@searchMinExperienceYrs": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchPreferredLanguage": "पसंदीदा भाषा",
+    "searchNeedSomeoneNowUrgent": "अभी किसी की ज़रूरत है / अत्यावश्यक",
+    "searchServiceMode": "सेवा मोड",
+    "searchOnline": "ऑनलाइन",
+    "searchHomeVisit": "होम विज़िट",
+    "searchInOffice": "ऑफिस में",
+    "searchReset": "रीसेट करें",
+    "searchApply": "लागू करें",
+    "searchNoResults": "\"{value1}\" के लिए कोई परिणाम नहीं",
+    "@searchNoResults": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchHereSomeAlternativesMightLike": "यहां कुछ विकल्प दिए गए हैं जो आपको पसंद आ सकते हैं",
+    "searchClearSearch": "खोज साफ करें",
+    "searchKm": "{value1} किमी",
+    "@searchKm": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchFor": "के लिए: \"{value1}\"",
+    "@searchFor": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchToday": "आज {value1}/{value2}",
+    "@searchToday": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "searchAlsoShowNormalResults": "सामान्य परिणाम भी दिखाएं",
+    "searchNoExactMatch": "\"{value1}\" के लिए कोई सटीक मिलान नहीं",
+    "@searchNoExactMatch": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchHereSomeRelevantAlternatives": "यहां कुछ प्रासंगिक विकल्प दिए गए हैं",
+    "searchAiAgentLive": "AI एजेंट लाइव है",
+    "searchFindingBestMatch": "\"{value1}\" के लिए सबसे अच्छा मैच ढूंढा जा रहा है",
+    "@searchFindingBestMatch": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchRecentSearches": "हाल की खोजें",
+    "searchSeeAll": "सभी देखें ({value1})",
+    "@searchSeeAll": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "searchClear": "साफ करें",
+    "searchPopularSearches": "लोकप्रिय खोजें",
+    "searchBrowseByCategory": "श्रेणी के अनुसार ब्राउज़ करें",
+    "searchResultFor": "\"{value3}\" के लिए {value1} परिणाम{value2}",
+    "@searchResultFor": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            },
+            "value3": {
+                "type": "String"
+            }
+        }
+    },
+    "searchGettingLocation": "स्थान प्राप्त किया जा रहा है...",
+    "searchSortedByDistance": "दूरी के अनुसार क्रमबद्ध",
+    "searchEnableLocation": "स्थान सक्षम करें",
+    "searchPro": "PRO",
+    "searchEGKarachiLahore": "जैसे Karachi, Lahore",
+    "searchEGUrduEnglish": "जैसे Urdu, English",
+    "magazineHealthLegalHomeLifestyle": "स्वास्थ्य · कानूनी · घर और जीवनशैली",
+    "magazineCouldNotLoadArticles": "आर्टिकल लोड नहीं हो सके",
+    "magazineNoArticlesYet": "अभी तक कोई आर्टिकल नहीं",
+    "magazineCheckBackSoonTipsAdvice": "टिप्स और सलाह के लिए जल्द वापस देखें।",
+    "magazineSearchArticles": "आर्टिकल खोजें…",
+    "magazineMinRead": "{value1} मिनट रीड",
+    "@magazineMinRead": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "magazineProfinderTipsMagazine": "ProFinder टिप्स मैगज़ीन",
+    "magazineGoBack": "वापस जाएं",
+    "magazineMin": "{value1} मिनट",
+    "@magazineMin": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatSharedMedia": "शेयर किया गया मीडिया",
+    "chatNoSharedMediaYet": "अभी तक कोई शेयर किया गया मीडिया नहीं",
+    "chatPhotos": "फोटो ({value1})",
+    "@chatPhotos": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatVoiceMessages": "वॉइस मैसेज ({value1})",
+    "@chatVoiceMessages": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatS": "{value1}से",
+    "@chatS": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatSharedMedia2": "शेयर किया गया मीडिया",
+    "chatBlockUser": "उपयोगकर्ता को ब्लॉक करें",
+    "chatReportUser": "उपयोगकर्ता की रिपोर्ट करें",
+    "chatBlock": "{value1} को ब्लॉक करें?",
+    "@chatBlock": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatTheyNoLongerAbleSendMessages": "वे अब आपको संदेश नहीं भेज सकेंगे।",
+    "chatSayHello": "नमस्ते कहें 👋",
+    "chatSearchChat": "चैट में खोजें",
+    "chatCouldNotLoadMessages": "संदेश लोड नहीं हो सके",
+    "chatMessages": "संदेश",
+    "chatNoConversationsYet": "अभी तक कोई बातचीत नहीं",
+    "chatSearchMessages": "संदेश खोजें...",
+    "chatMicrophonePermissionRequiredVoiceMessages": "वॉइस मैसेज के लिए माइक्रोफोन अनुमति आवश्यक है।",
+    "chatEmoji": "इमोजी",
+    "chatSendPhoto": "फोटो भेजें",
+    "chatReportSubmittedThank": "रिपोर्ट सबमिट कर दी गई। धन्यवाद।",
+    "chatCouldNotSubmitReportTryAgain": "रिपोर्ट सबमिट नहीं हो सकी। फिर से प्रयास करें।",
+    "chatReport": "{value1} की रिपोर्ट करें",
+    "@chatReport": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "chatSubmit": "सबमिट करें",
+    "chatAdditionalDetailsOptional": "अतिरिक्त विवरण (वैकल्पिक)",
+    "chatMessageWasDeleted": "यह संदेश हटा दिया गया था",
+    "chatEdited": "संपादित ·",
+    "chatReply": "जवाब दें",
+    "chatDeleteMe": "मेरे लिए हटाएं",
+    "chatDeleteEveryone": "सभी के लिए हटाएं",
+    "chatEditMessage": "संदेश संपादित करें",
+    "notificationsMarkAllRead": "सभी को पढ़ा हुआ चिह्नित करें",
+    "notificationsNoNotificationsYet": "अभी तक कोई सूचना नहीं",
+    "notificationsBookingUpdatesAurAlertsYahanDikhenge": "बुकिंग अपडेट और अलर्ट यहां दिखेंगे",
+    "professionalDelete": "हटाएं?",
+    "professionalDelete2": "\"{value1}\" हटाएं?",
+    "@professionalDelete2": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalAddPortfolioItem": "पोर्टफोलियो आइटम जोड़ें",
+    "professionalTapAddImage": "इमेज जोड़ने के लिए टैप करें",
+    "professionalPortfolioReviewedByAdminOnceApproved": "आपके पोर्टफोलियो की समीक्षा एडमिन द्वारा की जाएगी। स्वीकृत होने पर आपको सत्यापित बैज मिलेगा।",
+    "professionalSubmitReview": "समीक्षा के लिए सबमिट करें",
+    "professionalMyPortfolio": "मेरा पोर्टफोलियो",
+    "professionalNoPortfolioItemsYet": "अभी तक कोई पोर्टफोलियो आइटम नहीं",
+    "professionalAddWorkGetVerified": "सत्यापित होने के लिए अपना काम जोड़ें",
+    "professionalAddFirstItem": "पहला आइटम जोड़ें",
+    "professionalNote": "नोट: {value1}",
+    "@professionalNote": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalTitle": "शीर्षक *",
+    "professionalEGHouseConstructionProject": "जैसे House Construction Project",
+    "professionalBriefDescriptionWork": "इस काम का संक्षिप्त विवरण...",
+    "professionalAddPortfolio": "पोर्टफोलियो जोड़ें",
+    "professionalTypeMessage": "संदेश टाइप करें...",
+    "professionalDeletePhoto": "फोटो हटाएं?",
+    "professionalPhotoRemovedFromGallery": "यह फोटो आपकी गैलरी से हटा दी जाएगी।",
+    "professionalGallery": "गैलरी",
+    "professionalNoPhotosYet": "अभी तक कोई फोटो नहीं",
+    "professionalAddPhotosShowcaseWorkEnvironment": "अपना कार्य वातावरण दिखाने के लिए फोटो जोड़ें",
+    "professionalAddPhoto": "फोटो जोड़ें",
+    "professionalWorkingHours": "कार्य समय",
+    "professionalProfessionalDetails": "पेशेवर विवरण",
+    "professionalSkills": "कौशल",
+    "professionalNoSkillsAddedYet": "अभी तक कोई कौशल नहीं जोड़ा गया",
+    "professionalBankDetails": "बैंक विवरण",
+    "professionalCertificates": "प्रमाणपत्र",
+    "professionalWalletEarnings": "वॉलेट और कमाई",
+    "professionalSubscriptionUpgradePremium": "सदस्यता / प्रीमियम में अपग्रेड करें",
+    "professionalChangePassword": "पासवर्ड बदलें",
+    "professionalAddSkill": "+ कौशल जोड़ें",
+    "professionalAddLanguage": "+ भाषा जोड़ें",
+    "professionalNeedMoreHelp": "और मदद चाहिए?",
+    "professionalOurSupportTeamRepliesWithin24": "हमारी सपोर्ट टीम 24 घंटे के भीतर जवाब देती है",
+    "professionalContact": "संपर्क",
+    "professionalContactSupport": "सपोर्ट से संपर्क करें",
+    "professionalSupportProfinderCom": "support@profinder.com",
+    "professionalEmailUsAnytime": "कभी भी हमें ईमेल करें",
+    "professionalLiveChat": "लाइव चैट",
+    "professionalAvailable9Am6Pm": "सुबह 9 से शाम 6 बजे तक उपलब्ध",
+    "professionalRePlan": "आप {value1} प्लान पर हैं",
+    "@professionalRePlan": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalUpgradeMoreBookingsFeaturedProfilePriority": "अधिक बुकिंग, फीचर्ड प्रोफाइल और प्राथमिकता रैंकिंग के लिए अपग्रेड करें",
+    "professionalUpgrade": "अपग्रेड करें",
+    "professionalProfileCompletion": "प्रोफाइल पूर्णता",
+    "professionalCompleteProfileGetMoreBookings": "अधिक बुकिंग पाने के लिए अपनी प्रोफाइल पूरी करें",
+    "professionalNoClientsFound": "\"{value1}\" के लिए कोई ग्राहक नहीं मिला",
+    "@professionalNoClientsFound": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalQuickActions": "त्वरित कार्रवाई",
+    "professionalEarnings": "कमाई",
+    "professionalViewWallet": "वॉलेट देखें",
+    "professionalPerformance": "प्रदर्शन",
+    "professionalTodaySSchedule": "आज का शेड्यूल",
+    "professionalNoBookingsScheduledToday": "आज कोई बुकिंग शेड्यूल नहीं है",
+    "professionalRecentMessages": "हाल के संदेश",
+    "professionalSeeAll": "सभी देखें",
+    "professionalNoMessagesYet": "अभी तक कोई संदेश नहीं",
+    "professionalSkillsPricing": "कौशल और मूल्य निर्धारण",
+    "professionalManage": "प्रबंधित करें",
+    "professionalAddWorkSamples": "अपने काम के नमूने जोड़ें",
+    "professionalGetVerifiedByAddingPortfolio": "पोर्टफोलियो जोड़कर सत्यापित हों",
+    "professionalRecentReviews": "हाल की समीक्षाएं",
+    "professionalRecentBookings": "हाल की बुकिंग",
+    "professionalNoBookingsYet": "अभी तक कोई बुकिंग नहीं",
+    "professionalBookingDetails": "बुकिंग विवरण",
+    "professionalMarkAsCompleted": "पूर्ण के रूप में चिह्नित करें",
+    "professionalCancelBooking": "बुकिंग रद्द करें",
+    "professionalSearchBookingsByClientName": "ग्राहक के नाम से बुकिंग खोजें...",
+    "professionalPortfolio": "पोर्टफोलियो",
+    "professionalAddCertificate": "प्रमाणपत्र जोड़ें",
+    "professionalTapAddCertificateImage": "प्रमाणपत्र इमेज जोड़ने के लिए टैप करें",
+    "professionalSaveCertificate": "प्रमाणपत्र सेव करें",
+    "professionalNoCertificatesYet": "अभी तक कोई प्रमाणपत्र नहीं",
+    "professionalAddCertificationsBuildTrust": "विश्वास बढ़ाने के लिए प्रमाणन जोड़ें",
+    "professionalAddFirstCertificate": "पहला प्रमाणपत्र जोड़ें",
+    "professionalCertificateTitle": "प्रमाणपत्र शीर्षक *",
+    "professionalIssuingOrganization": "जारीकर्ता संस्था",
+    "professionalEGCertifiedElectrician": "जैसे Certified Electrician",
+    "professionalEGTevtaCoursera": "जैसे TEVTA / Coursera",
+    "professionalCustomerConversationsShowUpHere": "ग्राहकों की बातचीत यहां दिखेगी",
+    "professionalCancelBooking2": "बुकिंग रद्द करें?",
+    "professionalSureWantCancelBooking": "क्या आप वाकई इस बुकिंग को रद्द करना चाहते हैं?",
+    "professionalReasonCancellingOptional": "रद्द करने का कारण (वैकल्पिक)",
+    "professionalYesCancelIt": "हां, इसे रद्द करें",
+    "professionalNoBookings": "कोई {value1} बुकिंग नहीं",
+    "@professionalNoBookings": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalDecline": "अस्वीकार करें",
+    "professionalEGNotAvailableThatDay": "जैसे उस दिन उपलब्ध नहीं, इमरजेंसी आ गई...",
+    "professionalReview": "{value1} समीक्षा{value2}",
+    "@professionalReview": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalWithdrawEarnings": "कमाई निकालें",
+    "professionalAvailable": "उपलब्ध: ${value1}",
+    "@professionalAvailable": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalMinimumWithdrawal": "न्यूनतम निकासी: ${value1}",
+    "@professionalMinimumWithdrawal": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "professionalRequestWithdrawal": "निकासी का अनुरोध करें",
+    "professionalBankDetailsRequired": "बैंक विवरण आवश्यक",
+    "professionalPleaseAddBankAccountDetailsProfile": "निकासी का अनुरोध करने से पहले कृपया प्रोफाइल में अपने बैंक खाते का विवरण जोड़ें।",
+    "professionalAvailableBalance": "उपलब्ध बैलेंस",
+    "professionalWithdraw": "निकालें",
+    "professionalNoTransactionsYet": "अभी तक कोई लेनदेन नहीं",
+    "professionalEnterAmount": "राशि दर्ज करें",
+    "professionalPerformanceScore": "परफॉर्मेंस स्कोर",
+    "professionalOut100": "100 में से",
+    "professionalPerformanceScore40Rating30Acceptance": "परफॉर्मेंस स्कोर = 40% रेटिंग + 30% स्वीकृति दर + 30% प्रतिक्रिया दर।",
+    "professionalDashboard": "डैशबोर्ड",
+    "professionalMagazine": "मैगज़ीन",
+    "professionalEnterCurrentPasswordNewPassword": "अपना वर्तमान पासवर्ड और नया पासवर्ड दर्ज करें।",
+    "professionalUpdate": "अपडेट करें",
+    "professionalCurrentPassword": "वर्तमान पासवर्ड",
+    "professionalNewPassword": "नया पासवर्ड",
+    "professionalConfirmNewPassword": "नए पासवर्ड की पुष्टि करें",
+    "homeBecomePro": "Pro बनें",
+    "homeLoginRequired": "लॉगिन आवश्यक",
+    "homeCreateAccount": "खाता बनाएं",
+    "homeWelcomeGuest": "स्वागत है, गेस्ट",
+    "homeHireRightExpertMinutes": "सही विशेषज्ञ को मिनटों में हायर करें।",
+    "homeSearchDoctorsLawyersPlumbers": "डॉक्टर, वकील, प्लंबर खोजें…",
+    "homeViewAll": "सभी देखें",
+    "homeAllCategories": "सभी श्रेणियां",
+    "homeFeatured": "फीचर्ड",
+    "homeExploreExperts": "विशेषज्ञ देखें →",
+    "homeProfessional": "क्या आप एक पेशेवर हैं?",
+    "homeJoinProfinderGetDiscoveredByThousands": "ProFinder से जुड़ें और हज़ारों ग्राहकों तक पहुंचें।",
+    "homeUnlockFullExperience": "पूरा अनुभव अनलॉक करें",
+    "homeBookProfessionalsSaveFavouritesTrackRequests": "पेशेवरों को बुक करें, पसंदीदा सेव करें और अपने अनुरोध ट्रैक करें।",
+    "homeNoProfessionalsNearbyYet": "अभी तक आस-पास कोई पेशेवर नहीं",
+    "homeTrySearchingCategoryCheckBackSoon": "एक श्रेणी खोजें या जल्द वापस देखें।",
+    "homeSearchNow": "अभी खोजें",
+    "homeFilter": "फ़िल्टर",
+    "homePrice": "मूल्य: ${value1} — {value2}",
+    "@homePrice": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "homeVerifiedOnly": "केवल सत्यापित",
+    "homeNoProfessionalsAvailableCity": "आपके शहर में कोई पेशेवर उपलब्ध नहीं है।",
+    "homeTrySearchingNearbyCities": "आस-पास के शहरों में खोजने का प्रयास करें।",
+    "homeHi": "नमस्ते, {value1} 👋",
+    "@homeHi": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "homeGetPersonalizedPicks": "व्यक्तिगत सुझाव पाएं",
+    "homeBookFirstServiceWeLlStart": "अपनी पहली सेवा बुक करें और हम आपके लिए इसे पर्सनलाइज़ करना शुरू करेंगे।",
+    "homeBrowse": "ब्राउज़ करें",
+    "homeAiPick": "✨ आपके लिए AI पसंद",
+    "homeBookAgain": "फिर से बुक करें",
+    "homeClearAll": "सभी साफ करें",
+    "homeNoUpcomingBookings": "कोई आगामी बुकिंग नहीं",
+    "homeBrowseProfessionals": "पेशेवर ब्राउज़ करें",
+    "homeViewDetails": "विवरण देखें",
+    "homeCancelledBy": "{value1} द्वारा रद्द: {value2}",
+    "@homeCancelledBy": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRateExperience": "अपने अनुभव को रेट करें ⭐",
+    "homePlan": "प्लान: {value1}",
+    "@homePlan": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRecentChats": "हाल की चैट",
+    "homeNoMessagesYet": "अभी तक कोई संदेश नहीं।",
+    "homeStartConversationAfterBookingProfessional": "किसी पेशेवर को बुक करने के बाद बातचीत शुरू करें।",
+    "homeNotifications": "सूचनाएं{value1}",
+    "@homeNotifications": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "homeAiSuggestions": "AI सुझाव",
+    "homeUnlimited": "असीमित ✨",
+    "homeUsedToday": "आज {value2} में से {value1} इस्तेमाल हुआ",
+    "@homeUsedToday": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "homeJustTellUsWhatNeedWe": "बस हमें बताएं कि आपको क्या चाहिए, और हम तुरंत आपको सही सत्यापित पेशेवर से जोड़ देंगे।",
+    "homeDailyLimitReachedResetsMidnight": "दैनिक सीमा पूरी हो गई — आधी रात को रीसेट होगी",
+    "homeNeedHelpWeReHere": "मदद चाहिए? हम यहां हैं",
+    "homeGetResponseWithin24Hours": "24 घंटे के भीतर जवाब पाएं",
+    "homeHelpCenter": "सहायता केंद्र",
+    "homeEGINeedPlumberLeaking": "जैसे मुझे लीक हो रहे पाइप के लिए प्लंबर चाहिए…",
+    "homePopularCategories": "लोकप्रिय श्रेणियां",
+    "homeUpcomingBookings": "आगामी बुकिंग",
+    "bookingsBookProfessionalFromHomeScreen": "होम स्क्रीन से एक पेशेवर बुक करें",
+    "bookingsEGScheduleChangedNoLonger": "जैसे शेड्यूल बदल गया, अब ज़रूरत नहीं...",
+    "bookingsBookingSent": "बुकिंग भेज दी गई!",
+    "bookingsRequestSentNotifiedOnceTheyRespond": "{value1} को अनुरोध भेज दिया गया। जवाब देने पर आपको सूचित किया जाएगा।",
+    "@bookingsRequestSentNotifiedOnceTheyRespond": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "bookingsViewMyBookings": "मेरी बुकिंग देखें",
+    "bookingsBackHome": "होम पर वापस जाएं",
+    "bookingsBookAppointment": "अपॉइंटमेंट बुक करें",
+    "bookingsSummary": "सारांश",
+    "bookingsConfirmBooking": "बुकिंग की पुष्टि करें",
+    "bookingsDescribeIssueRequirements": "अपनी समस्या या आवश्यकताओं का वर्णन करें...",
+    "bookingsShareExperience": "अपना अनुभव साझा करें",
+    "bookingsYourRating": "आपकी रेटिंग",
+    "bookingsCommentOptional": "आपकी टिप्पणी (वैकल्पिक)",
+    "bookingsReviewSubmitted": "समीक्षा सबमिट कर दी गई! 🎉",
+    "bookingsThankReviewingFeedbackHelpsOthersMake": "{value1} की समीक्षा करने के लिए धन्यवाद। आपकी प्रतिक्रिया दूसरों को बेहतर निर्णय लेने में मदद करती है।",
+    "@bookingsThankReviewingFeedbackHelpsOthersMake": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "bookingsBackBookings": "बुकिंग पर वापस जाएं",
+    "bookingsDescribeExperience": "{value1} के साथ अपने अनुभव का वर्णन करें...",
+    "@bookingsDescribeExperience": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionConfirmSubscription": "सदस्यता की पुष्टि करें",
+    "subscriptionSubscribe": "{value2} {value3} के लिए {value1} की सदस्यता लें",
+    "@subscriptionSubscribe": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            },
+            "value3": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionSubscribe2": "सदस्यता लें",
+    "subscriptionChoosePlan": "अपना प्लान चुनें",
+    "subscriptionAvailablePlans": "उपलब्ध प्लान",
+    "subscriptionCurrentPlan": "वर्तमान प्लान: {value1}",
+    "@subscriptionCurrentPlan": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionValidUntil": "इस तक मान्य: {value1}",
+    "@subscriptionValidUntil": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionUpgradeUnlockPremiumFeatures": "प्रीमियम सुविधाएं अनलॉक करने के लिए अपग्रेड करें",
+    "subscriptionRecommended": "अनुशंसित",
+    "subscriptionCurrentPlan2": "वर्तमान प्लान",
+    "subscriptionCurrentPlan3": "वर्तमान प्लान",
+    "subscriptionBasicPlan": "बेसिक प्लान",
+    "subscriptionGet": "{value1} प्राप्त करें",
+    "@subscriptionGet": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionCancelAnytimeSecurePayment": "कभी भी रद्द करें • सुरक्षित भुगतान",
+    "subscriptionBookingLimitReached": "बुकिंग सीमा पूरी हो गई!",
+    "subscriptionVeUsedBookingsMonthFreePlan": "आपने अपने फ्री प्लान पर इस महीने {value1}/{value2} बुकिंग का उपयोग किया है।",
+    "@subscriptionVeUsedBookingsMonthFreePlan": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionUpgradePremium": "प्रीमियम में अपग्रेड करें",
+    "subscriptionMaybeLater": "शायद बाद में",
+    "subscriptionMonthlyBookings": "मासिक बुकिंग",
+    "subscriptionPremiumIncludes": "प्रीमियम में शामिल है:",
+    "subscriptionAiSearchLimitReached": "AI सर्च सीमा पूरी हो गई!",
+    "subscriptionVeUsedAiSearchesTodayAi": "आपने आज {value1}/{value2} AI सर्च का उपयोग किया है। आपकी सीमा रीसेट होने तक AI चैट लॉक है।",
+    "@subscriptionVeUsedAiSearchesTodayAi": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            },
+            "value2": {
+                "type": "String"
+            }
+        }
+    },
+    "subscriptionAiSearchesToday": "आज की AI सर्च",
+    "subscriptionGetPremium20AiDay": "प्रीमियम प्राप्त करें — 20 AI/दिन",
+    "subscriptionContinueNormalSearch": "सामान्य खोज के साथ जारी रखें",
+    "subscriptionPremiumAiFeatures": "प्रीमियम AI सुविधाएं:",
+    "subscriptionProfinderPremium": "ProFinder प्रीमियम",
+    "sharedYExp": "{value1} वर्ष का अनुभव",
+    "@sharedYExp": {
+        "placeholders": {
+            "value1": {
+                "type": "String"
+            }
+        }
+    },
+    "sharedViewProfile": "प्रोफाइल देखें",
+  "homeNotificationsSignInMessage": "साइन इन करने के बाद सूचनाएं उपलब्ध होती हैं। बुकिंग अपडेट और व्यक्तिगत अलर्ट देखने के लिए लॉग इन करें या खाता बनाएं।",
+  "homeSetUpProfileMessage": "अपनी प्रोफ़ाइल सेट करने के लिए लॉग इन करें या खाता बनाएं।",
+  "homeLoginToSaveFavourites": "पेशेवरों को अपने पसंदीदा में सहेजने के लिए लॉग इन करें।",
+  "homeLoginToBookName": "{value1} को बुक करने और अपॉइंटमेंट प्रबंधित करने के लिए लॉग इन करें।",
+  "@homeLoginToBookName": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWhatAreYouLookingForToday": "आज आप क्या ढूंढ रहे हैं?",
+  "homeTrendingLabel": "ट्रेंडिंग",
+  "homeFeaturedCategoriesSection": "फीचर्ड श्रेणियाँ",
+  "homeTopRatedProfessionals": "टॉप रेटेड पेशेवर",
+  "homeTopRatedLabel": "टॉप रेटेड",
+  "homeTrendingThisWeek": "इस हफ़्ते ट्रेंडिंग",
+  "homePopularProfessionals": "लोकप्रिय पेशेवर",
+  "homePopularLabel": "लोकप्रिय",
+  "homeRecentlyAdded": "हाल ही में जोड़े गए",
+  "homeNewLabel": "नया",
+  "homeFromTheMagazine": "मैगज़ीन से",
+  "homeNearLocation": "{value1} के पास",
+  "@homeNearLocation": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeProfessionalsInLocation": "{value1} में पेशेवर",
+  "@homeProfessionalsInLocation": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeClosestProfessionals": "निकटतम पेशेवर",
+  "homeTopRatedProfessionalsNationwide": "देशभर में टॉप रेटेड पेशेवर",
+  "homeNearbyLabel": "नज़दीकी",
+  "homeArticleLabel": "लेख",
+  "homeGoodMorning": "सुप्रभात",
+  "homeGoodAfternoon": "शुभ दोपहर",
+  "homeGoodEvening": "शुभ संध्या",
+  "homeSetYourLocation": "अपना स्थान सेट करें",
+  "homeCityHint": "जैसे कराची, लाहौर",
+  "homeNoLimit": "कोई सीमा नहीं",
+  "homeMinRatingLabel": "न्यूनतम रेटिंग: {value1} ★",
+  "@homeMinRatingLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeResetButton": "रीसेट",
+  "homeApplyButton": "लागू करें",
+  "homeFilteredResults": "फ़िल्टर किए गए परिणाम",
+  "homeRecommendedForYou": "आपके लिए अनुशंसित",
+  "homeRecommendedLabel": "अनुशंसित",
+  "homeSavedQuickAction": "सहेजे गए",
+  "homeWalletQuickAction": "वॉलेट",
+  "homeHelpQuickAction": "मदद",
+  "homeRecentSearches": "हाल की खोजें",
+  "homeRecentBookingsTitle": "हाल की बुकिंग",
+  "homeConfirmedStatus": "पुष्टि की गई",
+  "homeDeclinedStatus": "अस्वीकृत",
+  "homeCancelledStatus": "रद्द",
+  "homeSystemLabel": "सिस्टम",
+  "homeTotalSpent": "कुल खर्च",
+  "homeAcrossTransaction": "{value1} लेनदेन में",
+  "@homeAcrossTransaction": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeAcrossTransactions": "{value1} लेनदेन में",
+  "@homeAcrossTransactions": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "homeManageButton": "प्रबंधित करें",
+  "homeUpgradeButton": "अपग्रेड",
+  "homePaymentHistoryTitle": "भुगतान इतिहास",
+  "homeTotalLabel": "कुल",
+  "homeSayHello": "नमस्ते कहें 👋",
+  "homeMagazineNavLabel": "मैगज़ीन",
+  "homeMessagesNavLabel": "संदेश",
+  "homeTipsMagazineTitle": "टिप्स मैगज़ीन",
+  "homeFeaturedArticlesTitle": "विशेष लेख",
+  "homeContactButton": "संपर्क करें",
+  "homeAiPickForYou": "आपके लिए एआई पिक",
+  "homeMessagingComingSoonTitle": "मैसेजिंग",
+  "homeMessagingComingSoonMessage": "यहां आप पेशेवरों के साथ सीधे चैट कर सकेंगे।",
+  "commonOn": "चालू",
+  "commonOff": "बंद",
+  "profileVersionLabel": "वर्शन 1.0.0",
+  "searchAiSearchFailedTryNormal": "एआई खोज विफल रही। सामान्य खोज आज़माएं।",
+  "searchFailedCheckConnection": "खोज विफल रही। कृपया अपना कनेक्शन जांचें और पुनः प्रयास करें।",
+  "searchClearAll": "सभी साफ़ करें",
+  "searchDistanceAny": "दूरी: कोई भी",
+  "searchWithinKm": "{value1} किमी के भीतर",
+  "@searchWithinKm": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchSortPriceLowHigh": "कीमत: कम से ज़्यादा",
+  "searchSortPriceHighLow": "कीमत: ज़्यादा से कम",
+  "searchAiSearchesLeft": "{value1} शेष",
+  "@searchAiSearchesLeft": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchSimilarProfessionals": "मिलते-जुलते पेशेवर",
+  "searchProfessionalsNearYou": "आपके पास के पेशेवर",
+  "searchTrendingCategories": "ट्रेंडिंग श्रेणियाँ",
+  "searchAiPremiumResults": "एआई प्रीमियम परिणाम",
+  "searchAiSearchResultsTitle": "एआई खोज परिणाम",
+  "searchNoMatchingProfessionalsFound": "कोई मिलान करने वाला पेशेवर नहीं मिला।",
+  "searchRelatedProfessions": "संबंधित पेशे",
+  "searchTrendingProfessionals": "ट्रेंडिंग पेशेवर",
+  "searchPopularNearby": "लोकप्रिय आस-पास",
+  "searchShowingResultsFor": "इसके लिए परिणाम दिखाए जा रहे हैं: ",
+  "searchMetersAway": "{value1} मीटर दूर",
+  "@searchMetersAway": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchKmNearYou": "{value1} किमी · आपके पास",
+  "@searchKmNearYou": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchKmAway": "{value1} किमी दूर",
+  "@searchKmAway": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchApproxKm": "~{value1} किमी",
+  "@searchApproxKm": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchApproxKmNearbyCity": "~{value1} किमी · नज़दीकी शहर",
+  "@searchApproxKmNearbyCity": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "searchDifferentArea": "अलग क्षेत्र",
+  "searchAiHintPlaceholder": "एआई से पूछें: मुझे एक प्लंबर ढूंढें...",
+  "searchNameCityProfessionHint": "नाम, शहर, पेशा...",
+  "searchAiSearchOnTapDisable": "एआई खोज चालू — बंद करने के लिए टैप करें",
+  "searchTryAiSearchSmarterResults": "एआई खोज आज़माएं — बेहतर परिणाम",
+  "subscriptionFailedToLoadPlans": "प्लान लोड करने में विफल।",
+  "subscriptionSubscribedTo": "{value1} की सदस्यता ले ली गई!",
+  "@subscriptionSubscribedTo": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionSubscriptionFailed": "सदस्यता विफल रही।",
+  "subscriptionPerMonth": "/माह",
+  "subscriptionPerYear": "/वर्ष",
+  "subscriptionFreeForever": "हमेशा के लिए मुफ़्त",
+  "subscriptionBilledMonthly": "मासिक बिलिंग",
+  "subscriptionBilledYearly": "वार्षिक बिलिंग",
+  "subscriptionFree": "मुफ़्त",
+  "subscriptionUnlimited": "असीमित",
+  "subscriptionUpgradeUnlimitedAiSearches": "असीमित एआई खोजों और अधिक के लिए अपग्रेड करें",
+  "subscriptionUpgradeUnlimitedBookings": "असीमित बुकिंग और प्राथमिकता रैंकिंग के लिए अपग्रेड करें",
+  "subscriptionFeatureAiSearchesDay": "एआई खोजें/दिन",
+  "subscriptionFeatureMessagesDay": "संदेश/दिन",
+  "subscriptionFeatureUnlimitedBookings": "असीमित बुकिंग",
+  "subscriptionFeaturePrioritySupport": "प्राथमिकता सहायता",
+  "subscriptionFeaturePremiumBadge": "प्रीमियम बैज",
+  "subscriptionFeatureNoAds": "कोई विज्ञापन नहीं",
+  "subscriptionFeatureBookingsMonth": "बुकिंग/माह",
+  "subscriptionFeaturePortfolioImages": "पोर्टफोलियो छवियाँ",
+  "subscriptionFeatureServicesListed": "सूचीबद्ध सेवाएँ",
+  "subscriptionFeatureFeaturedProfile": "फीचर्ड प्रोफ़ाइल",
+  "subscriptionFeaturePriorityRanking": "प्राथमिकता रैंकिंग",
+  "subscriptionLimitResetsOn": "आपकी सीमा {value1} को रीसेट होगी",
+  "@subscriptionLimitResetsOn": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionLimitResetsNextMonth": "आपकी सीमा अगले महीने की शुरुआत में रीसेट होगी",
+  "subscriptionFeatureUnlimitedBookingsMonth": "हर महीने असीमित बुकिंग",
+  "subscriptionFeatureFeaturedProfileSearch": "खोज परिणामों में फीचर्ड प्रोफ़ाइल",
+  "subscriptionFeaturePriorityAiRanking": "प्राथमिकता एआई रैंकिंग",
+  "subscriptionFeatureNoAdsProfile": "आपकी प्रोफ़ाइल पर कोई विज्ञापन नहीं",
+  "subscriptionAiResetsTomorrowMidnight": "आपकी एआई खोजें कल आधी रात को रीसेट होंगी",
+  "subscriptionResetsAt": "{value1} को {value2} पर रीसेट होगा",
+  "@subscriptionResetsAt": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "commonToday": "आज",
+  "commonTomorrow": "कल",
+  "subscriptionBenefit20AiSearchesDay": "प्रतिदिन 20 एआई खोजें",
+  "subscriptionBenefitAdvancedAiRecommendations": "उन्नत एआई सिफारिशें",
+  "subscriptionBenefitSearchByBudgetLocationHistory": "बजट, स्थान और इतिहास के अनुसार खोजें",
+  "subscriptionBenefitPriorityMatchingResults": "प्राथमिकता मिलान परिणाम",
+  "subscriptionNoThanksMaybeLater": "नहीं धन्यवाद, बाद में",
+  "subscriptionPleaseWaitSeconds": "कृपया {value1} सेकंड प्रतीक्षा करें...",
+  "@subscriptionPleaseWaitSeconds": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPhotoReplyPlaceholder": "📷 फ़ोटो",
+  "chatMuteConversation": "बातचीत म्यूट करें",
+  "chatUnmuteConversation": "बातचीत अनम्यूट करें",
+  "chatTyping": "टाइप कर रहे हैं…",
+  "chatLastSeen": "अंतिम बार {value1} को देखा गया",
+  "@chatLastSeen": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatReasonSpam": "स्पैम",
+  "chatReasonHarassmentBullying": "उत्पीड़न या धमकाना",
+  "chatReasonInappropriateContent": "अनुचित सामग्री",
+  "chatReasonScamFraud": "धोखाधड़ी या घोटाला",
+  "chatReasonOther": "अन्य"
+}
