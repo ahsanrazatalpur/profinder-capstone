@@ -120,15 +120,22 @@ CHANNEL_LAYERS = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'ProFinder'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
+# ─── Postgres (commented out — enable when available on hosting) ─────
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME', 'ProFinder'),
+#         'USER': os.getenv('DB_USER', 'postgres'),
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
+#         'HOST': os.getenv('DB_HOST', 'localhost'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+# }
 # ─── Password Validators ─────────────────────────────────────────────
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -148,6 +155,11 @@ USE_TZ = True
 # ─── Static / Media ───────────────────────────────────────────────────
 
 STATIC_URL = 'static/'
+# ✅ FIX: required by collectstatic (and Django in general once DEBUG=False
+# or the staticfiles app is used outside runserver) — this is the on-disk
+# folder collectstatic copies every app's static files into.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 MEDIA_URL = '/media/'
 # 🐛 FIX: MEDIA_ROOT was never set, so Django had no defined disk location
 # for uploaded files (chat images, profile photos, portfolios, ...) — and

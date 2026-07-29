@@ -7,15 +7,15 @@ class AppConstants {
   AppConstants._();
 
   static String get baseUrl {
-  return 'https://ahsanrazatalpur.pythonanywhere.com/api';
-}
+    return 'https://ahsanrazatalpur.pythonanywhere.com/api';
+  }
 
   // ✅ NEW — WebSocket base (same host as baseUrl, ws:// scheme, no /api
   // suffix since Channels routing is mounted at the ASGI root — see
   // backend/apps/messaging/routing.py: `ws/chat/<id>/`).
   static String get wsBaseUrl {
-  return 'wss://ahsanrazatalpur.pythonanywhere.com';
-}
+    return 'wss://ahsanrazatalpur.pythonanywhere.com';
+  }
 
   // ─── Auth ────────────────────────────────────────────────
   static const String register       = '/users/register/';
