@@ -169,6 +169,21 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
 
   @override
   Widget build(BuildContext context) {
+    // 🐛 FIX: PopupMenuButton opens its menu via `showMenu`, which inserts
+    // the menu into the Navigator's Overlay — a route detached from this
+    // screen's local widget subtree. A Consumer<ChatProvider> placed
+    // inside a PopupMenuItem can't find the (locally-scoped) ChatProvider
+    // from there and throws "Could not find the correct Provider". Fix:
+    // read the values HERE, in the normal build(), where the provider
+    // scope is valid — then use the captured plain values inside the menu.
+    final chatProvider = context.watch<ChatProvider>();
+    final listProvider = context.watch<ConversationListProvider>();
+    ConversationEntity? currentConv;
+    for (final c in listProvider.conversations) {
+      if (c.id == widget.conversationId) { currentConv = c; break; }
+    }
+    final isMutedNow = currentConv?.isMuted == true;
+
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: AppBar(
@@ -230,18 +245,16 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
               PopupMenuItem(value: 'media', child: Text(AppLocalizations.of(menuContext)!.chatSharedMedia2)),
               PopupMenuItem(
                 value: 'mute',
-                child: Consumer<ConversationListProvider>(
-                  builder: (context, listProvider, _) {
-                    ConversationEntity? conv;
-                    for (final c in listProvider.conversations) {
-                      if (c.id == widget.conversationId) { conv = c; break; }
-                    }
-                    final t = AppLocalizations.of(context)!;
-                    return Text(conv?.isMuted == true ? t.chatUnmuteConversation : t.chatMuteConversation);
-                  },
-                ),
+                child: Text(isMutedNow
+                    ? AppLocalizations.of(menuContext)!.chatUnmuteConversation
+                    : AppLocalizations.of(menuContext)!.chatMuteConversation),
               ),
-              PopupMenuItem(value: 'block', child: Text(AppLocalizations.of(menuContext)!.chatBlockUser)),
+              PopupMenuItem(
+                value: 'block',
+                child: Text(chatProvider.isBlockedByMe
+                    ? AppLocalizations.of(menuContext)!.chatUnblockUser
+                    : AppLocalizations.of(menuContext)!.chatBlockUser),
+              ),
               PopupMenuItem(value: 'report', child: Text(AppLocalizations.of(menuContext)!.chatReportUser)),
             ],
           ),
@@ -271,22 +284,25 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
                 ),
               if (provider.replyingTo != null)
                 ReplyPreviewBar(replyingTo: provider.replyingTo!, onCancel: provider.clearReply),
-              ChatInputBar(
-                initialText: provider.initialDraftText,
-                onChanged: provider.onComposerChanged,
-                onSendText: (text) {
-                  provider.stopTypingOnSend();
-                  provider.sendText(text);
-                },
-                onSendImage: (file, {caption}) {
-                  provider.stopTypingOnSend();
-                  provider.sendImage(file, caption: caption);
-                },
-                onSendVoice: (file, duration) {
-                  provider.stopTypingOnSend();
-                  provider.sendVoice(file, duration);
-                },
-              ),
+              if (!provider.canMessage)
+                _buildBlockedBanner(context, provider)
+              else
+                ChatInputBar(
+                  initialText: provider.initialDraftText,
+                  onChanged: provider.onComposerChanged,
+                  onSendText: (text) {
+                    provider.stopTypingOnSend();
+                    provider.sendText(text);
+                  },
+                  onSendImage: (file, {caption}) {
+                    provider.stopTypingOnSend();
+                    provider.sendImage(file, caption: caption);
+                  },
+                  onSendVoice: (file, duration) {
+                    provider.stopTypingOnSend();
+                    provider.sendVoice(file, duration);
+                  },
+                ),
             ],
           );
         },
@@ -305,10 +321,24 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
         for (final c in listProvider.conversations) {
           if (c.id == widget.conversationId) { conv = c; break; }
         }
-        if (conv != null) listProvider.toggleMute(conv);
+        if (conv != null) {
+          final willBeMuted = !conv.isMuted;
+          listProvider.toggleMute(conv);
+          final t = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(willBeMuted ? t.chatConversationMuted : t.chatConversationUnmuted),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
         break;
       case 'block':
-        _confirmBlock(context);
+        if (context.read<ChatProvider>().isBlockedByMe) {
+          context.read<ChatProvider>().unblockOtherUser();
+        } else {
+          _confirmBlock(context);
+        }
         break;
       case 'report':
         showDialog(context: context, builder: (_) => ReportUserDialog(userId: widget.otherUserId, userName: widget.otherUserName));
@@ -328,13 +358,71 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
           TextButton(
             onPressed: () async {
               Navigator.pop(dialogContext);
+              // Stay in the chat — the blocked banner + disabled input
+              // below now reflect the new state immediately (Instagram-style),
+              // rather than kicking the user out of the conversation.
               await context.read<ChatProvider>().blockOtherUser();
-              if (context.mounted) Navigator.pop(context); // leave the chat after blocking
             },
             child: Text(t.adminBlock, style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
+    );
+  }
+
+  // ✅ NEW — replaces the input bar whenever `canMessage` is false.
+  // Two distinct views:
+  //  - I blocked them: explicit "You blocked X" + an Unblock action
+  //    (safe to show — it's my own action, Instagram shows this too).
+  //  - They blocked me (or role/account issue): a generic "message
+  //    unavailable" notice that never confirms who blocked whom.
+  Widget _buildBlockedBanner(BuildContext context, ChatProvider provider) {
+    final t = AppLocalizations.of(context)!;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(16, 14, 16, MediaQuery.of(context).padding.bottom + 14),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: Border(top: BorderSide(color: context.colors.divider)),
+      ),
+      child: provider.isBlockedByMe
+          ? Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        t.chatYouBlockedUser(widget.otherUserName),
+                        style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        t.chatBlockedBannerSubtitle,
+                        style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                TextButton(
+                  onPressed: () => context.read<ChatProvider>().unblockOtherUser(),
+                  child: Text(t.chatUnblockAction),
+                ),
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.block_rounded, size: 16, color: context.colors.textSecondary),
+                const SizedBox(width: 8),
+                Text(
+                  t.chatMessageUnavailable,
+                  style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                ),
+              ],
+            ),
     );
   }
 

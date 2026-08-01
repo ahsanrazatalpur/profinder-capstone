@@ -3374,6 +3374,48 @@ abstract class AppLocalizations {
   /// **'They will no longer be able to send you messages.'**
   String get chatTheyNoLongerAbleSendMessages;
 
+  /// No description provided for @chatUnblockUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock user'**
+  String get chatUnblockUser;
+
+  /// No description provided for @chatYouBlockedUser.
+  ///
+  /// In en, this message translates to:
+  /// **'You blocked {value1}'**
+  String chatYouBlockedUser(String value1);
+
+  /// No description provided for @chatBlockedBannerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'They can\'t call or message you. Unblock to resume the conversation.'**
+  String get chatBlockedBannerSubtitle;
+
+  /// No description provided for @chatUnblockAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock'**
+  String get chatUnblockAction;
+
+  /// No description provided for @chatConversationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation is unavailable'**
+  String get chatConversationUnavailable;
+
+  /// No description provided for @chatConversationUnavailableSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t send messages here right now.'**
+  String get chatConversationUnavailableSubtitle;
+
+  /// No description provided for @chatMessageUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Message unavailable'**
+  String get chatMessageUnavailable;
+
   /// No description provided for @chatSayHello.
   ///
   /// In en, this message translates to:
@@ -5516,6 +5558,18 @@ abstract class AppLocalizations {
   /// **'Unmute conversation'**
   String get chatUnmuteConversation;
 
+  /// No description provided for @chatConversationMuted.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation muted'**
+  String get chatConversationMuted;
+
+  /// No description provided for @chatConversationUnmuted.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation unmuted'**
+  String get chatConversationUnmuted;
+
   /// No description provided for @chatTyping.
   ///
   /// In en, this message translates to:
@@ -5551,6 +5605,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scam or fraud'**
   String get chatReasonScamFraud;
+
+  /// No description provided for @chatReasonFakeProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake profile'**
+  String get chatReasonFakeProfile;
 
   /// No description provided for @chatReasonOther.
   ///

@@ -1863,6 +1863,31 @@ class AppLocalizationsAr extends AppLocalizations {
       'لن يتمكن من إرسال رسائل إليك بعد الآن.';
 
   @override
+  String get chatUnblockUser => 'إلغاء حظر المستخدم';
+
+  @override
+  String chatYouBlockedUser(String value1) {
+    return 'لقد قمت بحظر $value1';
+  }
+
+  @override
+  String get chatBlockedBannerSubtitle =>
+      'لا يمكنهم الاتصال بك أو مراسلتك. قم بإلغاء الحظر لاستئناف المحادثة.';
+
+  @override
+  String get chatUnblockAction => 'إلغاء الحظر';
+
+  @override
+  String get chatConversationUnavailable => 'هذه المحادثة غير متاحة';
+
+  @override
+  String get chatConversationUnavailableSubtitle =>
+      'لا يمكنك إرسال رسائل هنا الآن.';
+
+  @override
+  String get chatMessageUnavailable => 'الرسالة غير متاحة';
+
+  @override
   String get chatSayHello => 'قل مرحبًا 👋';
 
   @override
@@ -3078,6 +3103,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chatUnmuteConversation => 'إلغاء كتم المحادثة';
 
   @override
+  String get chatConversationMuted => 'تم كتم المحادثة';
+
+  @override
+  String get chatConversationUnmuted => 'تم إلغاء كتم المحادثة';
+
+  @override
   String get chatTyping => 'يكتب…';
 
   @override
@@ -3096,6 +3127,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chatReasonScamFraud => 'احتيال أو نصب';
+
+  @override
+  String get chatReasonFakeProfile => 'ملف تعريف مزيف';
 
   @override
   String get chatReasonOther => 'أخرى';

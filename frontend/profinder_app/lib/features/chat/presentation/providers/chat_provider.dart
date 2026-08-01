@@ -27,6 +27,13 @@ class ChatProvider extends ChangeNotifier {
   final int currentUserId;
   int? _otherUserId; // ✅ NEW — for the "Block user" menu action
 
+  // ✅ NEW — block/unblock visibility. `isBlockedByMe` drives the "You
+  // blocked X" banner + swaps the menu action to "Unblock". `canMessage`
+  // covers BOTH directions (mine or theirs) and gates the input bar —
+  // it never reveals which side did the blocking if it was the other user.
+  bool isBlockedByMe = false;
+  bool canMessage = true;
+
   ChatProvider({
     required this.conversationId,
     required this.currentUserId,
@@ -38,6 +45,8 @@ class ChatProvider extends ChangeNotifier {
       otherUserLastSeen = initialSnapshot.otherUserLastSeen;
       initialDraftText = initialSnapshot.draftText;
       _otherUserId = initialSnapshot.otherUserId; // ✅ NEW
+      isBlockedByMe = initialSnapshot.isBlockedByMe;
+      canMessage = initialSnapshot.canMessage;
     }
   }
 
@@ -45,6 +54,31 @@ class ChatProvider extends ChangeNotifier {
   Future<void> blockOtherUser() async {
     if (_otherUserId == null) return;
     await _repo.blockUser(_otherUserId!);
+    isBlockedByMe = true;
+    canMessage = false;
+    notifyListeners();
+  }
+
+  // ✅ NEW — Instagram-style unblock, straight from the chat itself.
+  Future<void> unblockOtherUser() async {
+    if (_otherUserId == null) return;
+    await _repo.unblockUser(_otherUserId!);
+    isBlockedByMe = false;
+    // Optimistic: if the other side had *also* blocked me independently,
+    // the next send attempt will still 403 with code 'blocked' and
+    // _handleBlockedError below will flip this back and show the banner.
+    canMessage = true;
+    notifyListeners();
+  }
+
+  // ✅ NEW — central place any send path calls on a blocked-send failure,
+  // so the input locks immediately without needing to reopen the chat.
+  void _handleBlockedError(Object error) {
+    final msg = error.toString();
+    if (msg.contains('"code":"blocked"') || msg.contains("'code': 'blocked'") || msg.contains('code: blocked')) {
+      canMessage = false;
+      notifyListeners();
+    }
   }
 
   // ✅ NEW — pre-fills the input bar when the screen first opens
@@ -142,7 +176,7 @@ class ChatProvider extends ChangeNotifier {
   // ── Sending (optimistic UI) ──────────────────────────────────────────
   Future<void> sendText(String text) async {
     final trimmed = text.trim();
-    if (trimmed.isEmpty) return;
+    if (trimmed.isEmpty || !canMessage) return;
 
     final tempId = 'temp_${DateTime.now().microsecondsSinceEpoch}';
     final replyPreview = replyingTo == null
@@ -179,6 +213,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<void> sendImage(File image, {String? caption}) async {
+    if (!canMessage) return;
     final tempId = 'temp_${DateTime.now().microsecondsSinceEpoch}';
     final replyToId = replyingTo?.id;
     clearReply();
@@ -197,13 +232,15 @@ class ChatProvider extends ChangeNotifier {
     try {
       final sent = await _repo.sendMessage(conversationId, text: caption, replyToId: replyToId, image: image);
       _replaceOptimistic(tempId, sent);
-    } catch (_) {
+    } catch (e) {
       _markFailed(tempId);
+      _handleBlockedError(e);
     }
   }
 
   // ✅ NEW — voice messages, same optimistic pattern as sendImage
   Future<void> sendVoice(File audio, int durationSeconds) async {
+    if (!canMessage) return;
     final tempId = 'temp_${DateTime.now().microsecondsSinceEpoch}';
     final replyToId = replyingTo?.id;
     clearReply();
@@ -228,8 +265,9 @@ class ChatProvider extends ChangeNotifier {
         replyToId: replyToId,
       );
       _replaceOptimistic(tempId, sent);
-    } catch (_) {
+    } catch (e) {
       _markFailed(tempId);
+      _handleBlockedError(e);
     }
   }
 
@@ -237,8 +275,9 @@ class ChatProvider extends ChangeNotifier {
     try {
       final sent = await _repo.sendMessage(conversationId, text: text, replyToId: replyToId);
       _replaceOptimistic(tempId, sent);
-    } catch (_) {
+    } catch (e) {
       _markFailed(tempId);
+      _handleBlockedError(e);
     }
   }
 
@@ -514,6 +553,8 @@ class ChatProvider extends ChangeNotifier {
       lastMessageStatus: last.status.name,
       unreadCount: 0,
       updatedAt: DateTime.now(),
+      isBlockedByMe: isBlockedByMe,
+      canMessage: canMessage,
     );
   }
 }

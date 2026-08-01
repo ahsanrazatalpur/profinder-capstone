@@ -22,6 +22,8 @@ class ConversationModel extends ConversationEntity {
     super.isArchived,
     super.isMuted,
     super.draftText,
+    super.isBlockedByMe,
+    super.canMessage,
   });
 
   factory ConversationModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,11 @@ class ConversationModel extends ConversationEntity {
       isArchived: json['is_archived'] == true,
       isMuted: json['is_muted'] == true,
       draftText: json['draft_text']?.toString() ?? '',
+      isBlockedByMe: json['is_blocked_by_me'] == true,
+      // Absent (e.g. an older cached response) defaults to true — never
+      // silently lock someone out of a conversation the backend didn't
+      // flag as blocked.
+      canMessage: json['can_message'] != false,
     );
   }
 }

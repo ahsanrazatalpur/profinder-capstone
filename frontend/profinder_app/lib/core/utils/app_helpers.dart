@@ -1,8 +1,8 @@
 // lib/core/utils/app_helpers.dart
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
 import '../theme/theme_context_ext.dart';
 
@@ -37,9 +37,16 @@ class AppHelpers {
     // Pehle se full URL hai — kuch mat karo
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
 
-    // Web aur emulator ke liye alag base URL
-    // (same logic jo AppConstants.baseUrl mein hai)
-    final base = kIsWeb ? 'http://127.0.0.1:8000' : 'http://10.0.2.2:8000';
+    // ✅ FIX: pehle yahan hardcoded 'http://127.0.0.1:8000' (web) /
+    // 'http://10.0.2.2:8000' (Android emulator) tha — sirf local dev
+    // server ke liye kaam karta tha. Production backend (PythonAnywhere
+    // waghera) se connect hote hi images/voice notes 404 dete the kyunki
+    // app hamesha localhost se file maangta rehta tha.
+    // Ab AppConstants.baseUrl (jo asal backend host hai, e.g.
+    // https://ahsanrazatalpur.pythonanywhere.com/api) se hi '/api' hata
+    // kar media base nikal lete hain — jahan bhi backend point ho, images
+    // wahin se load hongi.
+    final base = AppConstants.baseUrl.replaceFirst(RegExp(r'/api/?$'), '');
 
     // Leading slash ensure karo
     final path = url.startsWith('/') ? url : '/$url';

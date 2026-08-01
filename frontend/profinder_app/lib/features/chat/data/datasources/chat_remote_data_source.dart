@@ -189,11 +189,15 @@ class ChatRemoteDataSource {
   }
 
   Future<void> reportUser(int userId, String reason, String details, {String? messageId}) async {
+    // 🐛 FIX: field names now match apps.admin_panel's CreateUserReportSerializer
+    // ({reported_user, reason, description}), not messaging's UserReport
+    // ({reported, reason, details, message}) — see AppConstants.reportUser.
+    // That serializer has no message-link field, so `messageId` (still
+    // accepted for API compatibility with call sites) isn't sent.
     await _api.post(AppConstants.reportUser, {
-      'reported': userId,
+      'reported_user': userId,
       'reason': reason,
-      'details': details,
-      if (messageId != null) 'message': messageId,
+      'description': details,
     });
   }
 }

@@ -64,6 +64,11 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
   Map<String, dynamic>? _fullProfile;
   List<dynamic> _reviews      = [];
+  // ✅ FIX: /reviews/professionals/<id>/reviews/ returns a paginated object
+  // ({summary, results, page, has_more}), not a bare list — _reviews only
+  // ever holds the current page (max 10), so the true total (used for the
+  // header/tab/pill counts and the Top Rated badge) is tracked separately.
+  int _reviewsTotal = 0;
   List<dynamic> _portfolio    = [];
   List<dynamic> _certificates = [];
   List<dynamic> _related      = [];
@@ -173,7 +178,22 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         try {
           if (results[1]['success'] == true) {
             final data = results[1]['data'];
-            _reviews = data is List ? data : [];
+            if (data is Map) {
+              // Paginated shape: {summary: {total_reviews, ...}, results: [...]}
+              final list = data['results'];
+              _reviews = list is List ? list : [];
+              final summary = data['summary'];
+              _reviewsTotal = summary is Map
+                  ? (int.tryParse(summary['total_reviews']?.toString() ?? '') ?? _reviews.length)
+                  : _reviews.length;
+            } else if (data is List) {
+              // Backward-compat, in case an older/unpaginated response shape is ever hit
+              _reviews = data;
+              _reviewsTotal = data.length;
+            } else {
+              _reviews = [];
+              _reviewsTotal = 0;
+            }
           }
         } catch (e, st) {
           debugPrint('[ProfessionalDetail] reviews parse error: $e\n$st');
@@ -225,7 +245,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   String get _photoUrl  => (_get('photo_url') ?? '').toString();
   bool   get _verified  => _get('is_verified') == true;
   double get _rating    => double.tryParse(_get('average_rating')?.toString() ?? '0') ?? 0.0;
-  bool   get _isTopRated => _rating >= 4.5 && _reviews.length >= 5;
+  bool   get _isTopRated => _rating >= 4.5 && _reviewsTotal >= 5;
   int    get _completedJobs => int.tryParse(_get('completed_jobs')?.toString() ?? '0') ?? 0;
   bool   get _isAvailable   => _get('is_available') != false;
   // ✅ Real-time presence from the chat WebSocket (UserPresence), NOT the
@@ -495,7 +515,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     const Icon(Icons.star_rounded, color: AppColors.badgeTopRated, size: 16),
                     const SizedBox(width: 4),
                     Text(
-                      '${_rating.toStringAsFixed(1)} (${_reviews.length} Reviews)',
+                      '${_rating.toStringAsFixed(1)} (${_reviewsTotal} Reviews)',
                       style: TextStyle(fontSize: ResponsiveUtils.sp(12.5, scale, min: 11.5, max: 15), color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -545,7 +565,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     children: [
                       Expanded(child: _heroStatPill(Icons.star_rounded, _rating.toStringAsFixed(1), 'Rating', scale)),
                       SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
-                      Expanded(child: _heroStatPill(Icons.forum_outlined, '${_reviews.length}', 'Reviews', scale)),
+                      Expanded(child: _heroStatPill(Icons.forum_outlined, '${_reviewsTotal}', 'Reviews', scale)),
                       SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
                       Expanded(child: _heroStatPill(Icons.work_outline_rounded, '$_completedJobs', 'Jobs Done', scale)),
                       SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
@@ -685,7 +705,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           tabs: [
             const Tab(text: 'Overview'),
             Tab(text: 'Portfolio (${_portfolio.length})'),
-            Tab(text: 'Reviews (${_reviews.length})'),
+            Tab(text: 'Reviews (${_reviewsTotal})'),
             const Tab(text: 'Services'),
             const Tab(text: 'Availability'),
           ],

@@ -1218,6 +1218,20 @@
         }
     },
     "chatTheyNoLongerAbleSendMessages": "वे अब आपको संदेश नहीं भेज सकेंगे।",
+    "chatUnblockUser": "उपयोगकर्ता को अनब्लॉक करें",
+    "chatYouBlockedUser": "आपने {value1} को ब्लॉक कर दिया है",
+    "@chatYouBlockedUser": {
+      "placeholders": {
+        "value1": {
+          "type": "String"
+        }
+      }
+    },
+    "chatBlockedBannerSubtitle": "वे आपको कॉल या मैसेज नहीं कर सकते। बातचीत जारी रखने के लिए अनब्लॉक करें।",
+    "chatUnblockAction": "अनब्लॉक करें",
+    "chatConversationUnavailable": "यह बातचीत उपलब्ध नहीं है",
+    "chatConversationUnavailableSubtitle": "आप अभी यहां संदेश नहीं भेज सकते।",
+    "chatMessageUnavailable": "संदेश उपलब्ध नहीं है",
     "chatSayHello": "नमस्ते कहें 👋",
     "chatSearchChat": "चैट में खोजें",
     "chatCouldNotLoadMessages": "संदेश लोड नहीं हो सके",
@@ -1896,6 +1910,8 @@
   "chatPhotoReplyPlaceholder": "📷 फ़ोटो",
   "chatMuteConversation": "बातचीत म्यूट करें",
   "chatUnmuteConversation": "बातचीत अनम्यूट करें",
+  "chatConversationMuted": "बातचीत म्यूट कर दी गई",
+  "chatConversationUnmuted": "बातचीत अनम्यूट कर दी गई",
   "chatTyping": "टाइप कर रहे हैं…",
   "chatLastSeen": "अंतिम बार {value1} को देखा गया",
   "@chatLastSeen": {
@@ -1909,5 +1925,6 @@
   "chatReasonHarassmentBullying": "उत्पीड़न या धमकाना",
   "chatReasonInappropriateContent": "अनुचित सामग्री",
   "chatReasonScamFraud": "धोखाधड़ी या घोटाला",
+  "chatReasonFakeProfile": "फर्जी प्रोफ़ाइल",
   "chatReasonOther": "अन्य"
 }

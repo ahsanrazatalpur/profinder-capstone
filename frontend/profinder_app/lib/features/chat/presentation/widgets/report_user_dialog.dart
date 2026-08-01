@@ -6,7 +6,11 @@ import '../../data/repositories/chat_repository_impl.dart';
 import '../../../../core/theme/theme_context_ext.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 
-const _reasonKeys = ['spam', 'harassment', 'inappropriate', 'scam', 'other'];
+// 🐛 FIX: these must exactly match apps.admin_panel.models.UserReport
+// .REASON_CHOICES — the endpoint we now submit to (see AppConstants
+// .reportUser). The old list ('inappropriate', 'scam') matched a
+// different, unrelated model and would 400 against this one.
+const _reasonKeys = ['spam', 'harassment', 'fraud', 'fake_profile', 'inappropriate_content', 'other'];
 
 class ReportUserDialog extends StatefulWidget {
   final int userId;
@@ -50,8 +54,9 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
     switch (key) {
       case 'spam': return t.chatReasonSpam;
       case 'harassment': return t.chatReasonHarassmentBullying;
-      case 'inappropriate': return t.chatReasonInappropriateContent;
-      case 'scam': return t.chatReasonScamFraud;
+      case 'fraud': return t.chatReasonScamFraud;
+      case 'fake_profile': return t.chatReasonFakeProfile;
+      case 'inappropriate_content': return t.chatReasonInappropriateContent;
       default: return t.chatReasonOther;
     }
   }

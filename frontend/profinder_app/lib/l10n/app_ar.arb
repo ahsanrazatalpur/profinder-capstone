@@ -1218,6 +1218,20 @@
     }
   },
   "chatTheyNoLongerAbleSendMessages": "لن يتمكن من إرسال رسائل إليك بعد الآن.",
+  "chatUnblockUser": "إلغاء حظر المستخدم",
+  "chatYouBlockedUser": "لقد قمت بحظر {value1}",
+  "@chatYouBlockedUser": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatBlockedBannerSubtitle": "لا يمكنهم الاتصال بك أو مراسلتك. قم بإلغاء الحظر لاستئناف المحادثة.",
+  "chatUnblockAction": "إلغاء الحظر",
+  "chatConversationUnavailable": "هذه المحادثة غير متاحة",
+  "chatConversationUnavailableSubtitle": "لا يمكنك إرسال رسائل هنا الآن.",
+  "chatMessageUnavailable": "الرسالة غير متاحة",
   "chatSayHello": "قل مرحبًا 👋",
   "chatSearchChat": "ابحث في المحادثة",
   "chatCouldNotLoadMessages": "تعذر تحميل الرسائل",
@@ -1896,6 +1910,8 @@
   "chatPhotoReplyPlaceholder": "📷 صورة",
   "chatMuteConversation": "كتم المحادثة",
   "chatUnmuteConversation": "إلغاء كتم المحادثة",
+  "chatConversationMuted": "تم كتم المحادثة",
+  "chatConversationUnmuted": "تم إلغاء كتم المحادثة",
   "chatTyping": "يكتب…",
   "chatLastSeen": "آخر ظهور {value1}",
   "@chatLastSeen": {
@@ -1909,5 +1925,6 @@
   "chatReasonHarassmentBullying": "مضايقة أو تنمر",
   "chatReasonInappropriateContent": "محتوى غير لائق",
   "chatReasonScamFraud": "احتيال أو نصب",
+  "chatReasonFakeProfile": "ملف تعريف مزيف",
   "chatReasonOther": "أخرى"
 }

@@ -1218,6 +1218,20 @@
         }
     },
     "chatTheyNoLongerAbleSendMessages": "Il ne pourra plus vous envoyer de messages.",
+    "chatUnblockUser": "Débloquer l'utilisateur",
+    "chatYouBlockedUser": "Vous avez bloqué {value1}",
+    "@chatYouBlockedUser": {
+      "placeholders": {
+        "value1": {
+          "type": "String"
+        }
+      }
+    },
+    "chatBlockedBannerSubtitle": "Il ne peut plus vous appeler ni vous envoyer de messages. Débloquez-le pour reprendre la conversation.",
+    "chatUnblockAction": "Débloquer",
+    "chatConversationUnavailable": "Cette conversation n'est pas disponible",
+    "chatConversationUnavailableSubtitle": "Vous ne pouvez pas envoyer de messages ici pour le moment.",
+    "chatMessageUnavailable": "Message indisponible",
     "chatSayHello": "Dites bonjour 👋",
     "chatSearchChat": "Rechercher dans la conversation",
     "chatCouldNotLoadMessages": "Impossible de charger les messages",
@@ -1896,6 +1910,8 @@
   "chatPhotoReplyPlaceholder": "📷 Photo",
   "chatMuteConversation": "Mettre la conversation en sourdine",
   "chatUnmuteConversation": "Réactiver le son de la conversation",
+  "chatConversationMuted": "Conversation mise en sourdine",
+  "chatConversationUnmuted": "Son de la conversation réactivé",
   "chatTyping": "est en train d'écrire…",
   "chatLastSeen": "Vu pour la dernière fois {value1}",
   "@chatLastSeen": {
@@ -1909,5 +1925,6 @@
   "chatReasonHarassmentBullying": "Harcèlement ou intimidation",
   "chatReasonInappropriateContent": "Contenu inapproprié",
   "chatReasonScamFraud": "Arnaque ou fraude",
+  "chatReasonFakeProfile": "Faux profil",
   "chatReasonOther": "Autre"
 }

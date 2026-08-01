@@ -1872,6 +1872,31 @@ class AppLocalizationsHi extends AppLocalizations {
       'वे अब आपको संदेश नहीं भेज सकेंगे।';
 
   @override
+  String get chatUnblockUser => 'उपयोगकर्ता को अनब्लॉक करें';
+
+  @override
+  String chatYouBlockedUser(String value1) {
+    return 'आपने $value1 को ब्लॉक कर दिया है';
+  }
+
+  @override
+  String get chatBlockedBannerSubtitle =>
+      'वे आपको कॉल या मैसेज नहीं कर सकते। बातचीत जारी रखने के लिए अनब्लॉक करें।';
+
+  @override
+  String get chatUnblockAction => 'अनब्लॉक करें';
+
+  @override
+  String get chatConversationUnavailable => 'यह बातचीत उपलब्ध नहीं है';
+
+  @override
+  String get chatConversationUnavailableSubtitle =>
+      'आप अभी यहां संदेश नहीं भेज सकते।';
+
+  @override
+  String get chatMessageUnavailable => 'संदेश उपलब्ध नहीं है';
+
+  @override
   String get chatSayHello => 'नमस्ते कहें 👋';
 
   @override
@@ -3090,6 +3115,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get chatUnmuteConversation => 'बातचीत अनम्यूट करें';
 
   @override
+  String get chatConversationMuted => 'बातचीत म्यूट कर दी गई';
+
+  @override
+  String get chatConversationUnmuted => 'बातचीत अनम्यूट कर दी गई';
+
+  @override
   String get chatTyping => 'टाइप कर रहे हैं…';
 
   @override
@@ -3108,6 +3139,9 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get chatReasonScamFraud => 'धोखाधड़ी या घोटाला';
+
+  @override
+  String get chatReasonFakeProfile => 'फर्जी प्रोफ़ाइल';
 
   @override
   String get chatReasonOther => 'अन्य';

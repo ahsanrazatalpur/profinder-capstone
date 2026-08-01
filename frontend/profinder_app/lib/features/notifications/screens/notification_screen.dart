@@ -404,6 +404,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       'payment'      => const Color(0xFF10B981),
       'subscription' => const Color(0xFF8B5CF6),
       'booking'       => context.colors.primary,
+      'report'       => const Color(0xFFEF4444), // warning/moderation red
       _              => context.colors.primary,
     };
   }
@@ -414,6 +415,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       'payment'      => Icons.payments_outlined,
       'subscription' => Icons.workspace_premium_rounded,
       'booking'      => Icons.event_available_rounded,
+      'report'       => Icons.shield_outlined,
       _              => Icons.notifications_outlined,
     };
   }

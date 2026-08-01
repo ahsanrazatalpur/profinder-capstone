@@ -74,7 +74,12 @@ class AppConstants {
   static String deleteForMe(String messageId) => '/messaging/messages/$messageId/?for=me';
   static const String blockedUsers = '/messaging/blocked-users/';
   static String unblockUser(int userId) => '/messaging/blocked-users/$userId/';
-  static const String reportUser = '/messaging/reports/';
+  // 🐛 FIX: was '/messaging/reports/', which writes into apps.messaging's
+  // OWN UserReport table. The Admin Panel's "Reported Users" screen reads
+  // from a completely different, unrelated UserReport model over in
+  // apps.admin_panel — so reports were submitting successfully but never
+  // showing up for admins. This is the endpoint admin_panel actually reads.
+  static const String reportUser = '/admin-panel/reports/create/';
 
   // ✅ NEW — Analytics
   static const String professionalAnalytics = '/profiles/professional/analytics/';

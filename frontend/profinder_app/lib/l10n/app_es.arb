@@ -1218,6 +1218,20 @@
     }
   },
   "chatTheyNoLongerAbleSendMessages": "Ya no podrá enviarte mensajes.",
+  "chatUnblockUser": "Desbloquear usuario",
+  "chatYouBlockedUser": "Bloqueaste a {value1}",
+  "@chatYouBlockedUser": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatBlockedBannerSubtitle": "No pueden llamarte ni enviarte mensajes. Desbloquea para continuar la conversación.",
+  "chatUnblockAction": "Desbloquear",
+  "chatConversationUnavailable": "Esta conversación no está disponible",
+  "chatConversationUnavailableSubtitle": "No puedes enviar mensajes aquí en este momento.",
+  "chatMessageUnavailable": "Mensaje no disponible",
   "chatSayHello": "Saluda 👋",
   "chatSearchChat": "Buscar en el chat",
   "chatCouldNotLoadMessages": "No se pudieron cargar los mensajes",
@@ -1896,6 +1910,8 @@
   "chatPhotoReplyPlaceholder": "📷 Foto",
   "chatMuteConversation": "Silenciar conversación",
   "chatUnmuteConversation": "Activar sonido de conversación",
+  "chatConversationMuted": "Conversación silenciada",
+  "chatConversationUnmuted": "Sonido de conversación activado",
   "chatTyping": "escribiendo…",
   "chatLastSeen": "Última vez visto {value1}",
   "@chatLastSeen": {
@@ -1909,5 +1925,6 @@
   "chatReasonHarassmentBullying": "Acoso o intimidación",
   "chatReasonInappropriateContent": "Contenido inapropiado",
   "chatReasonScamFraud": "Estafa o fraude",
+  "chatReasonFakeProfile": "Perfil falso",
   "chatReasonOther": "Otro"
 }

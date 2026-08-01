@@ -1873,6 +1873,31 @@ class AppLocalizationsUr extends AppLocalizations {
       'وہ اب آپ کو پیغامات نہیں بھیج سکیں گے۔';
 
   @override
+  String get chatUnblockUser => 'صارف کو ان بلاک کریں';
+
+  @override
+  String chatYouBlockedUser(String value1) {
+    return 'آپ نے $value1 کو بلاک کر دیا ہے';
+  }
+
+  @override
+  String get chatBlockedBannerSubtitle =>
+      'وہ آپ کو کال یا میسج نہیں کر سکتے۔ گفتگو دوبارہ شروع کرنے کے لیے ان بلاک کریں۔';
+
+  @override
+  String get chatUnblockAction => 'ان بلاک کریں';
+
+  @override
+  String get chatConversationUnavailable => 'یہ گفتگو دستیاب نہیں ہے';
+
+  @override
+  String get chatConversationUnavailableSubtitle =>
+      'آپ ابھی یہاں پیغام نہیں بھیج سکتے۔';
+
+  @override
+  String get chatMessageUnavailable => 'پیغام دستیاب نہیں';
+
+  @override
   String get chatSayHello => 'سلام کہیں 👋';
 
   @override
@@ -3088,6 +3113,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get chatUnmuteConversation => 'بات چیت کی آواز بحال کریں';
 
   @override
+  String get chatConversationMuted => 'بات چیت خاموش کر دی گئی';
+
+  @override
+  String get chatConversationUnmuted => 'بات چیت کی آواز بحال کر دی گئی';
+
+  @override
   String get chatTyping => 'ٹائپ کر رہا ہے…';
 
   @override
@@ -3106,6 +3137,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get chatReasonScamFraud => 'دھوکہ دہی یا فراڈ';
+
+  @override
+  String get chatReasonFakeProfile => 'جعلی پروفائل';
 
   @override
   String get chatReasonOther => 'دیگر';

@@ -19,6 +19,12 @@ class ConversationEntity {
   final bool isMuted;
   final String draftText;
 
+  // ✅ NEW — block visibility. `isBlockedByMe` is safe to show explicitly
+  // ("You blocked X"); `canMessage` covers both directions but never
+  // reveals whether it was the OTHER user who blocked me.
+  final bool isBlockedByMe;
+  final bool canMessage;
+
   const ConversationEntity({
     required this.id,
     required this.otherUserId,
@@ -35,6 +41,8 @@ class ConversationEntity {
     this.isArchived = false,
     this.isMuted = false,
     this.draftText = '',
+    this.isBlockedByMe = false,
+    this.canMessage = true,
   });
 
   bool get hasDraft => draftText.isNotEmpty;
@@ -51,6 +59,8 @@ class ConversationEntity {
     bool? isArchived,
     bool? isMuted,
     String? draftText,
+    bool? isBlockedByMe,
+    bool? canMessage,
   }) {
     return ConversationEntity(
       id: id,
@@ -68,6 +78,8 @@ class ConversationEntity {
       isArchived: isArchived ?? this.isArchived,
       isMuted: isMuted ?? this.isMuted,
       draftText: draftText ?? this.draftText,
+      isBlockedByMe: isBlockedByMe ?? this.isBlockedByMe,
+      canMessage: canMessage ?? this.canMessage,
     );
   }
 }

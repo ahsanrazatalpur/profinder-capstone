@@ -1218,6 +1218,20 @@
     }
   },
   "chatTheyNoLongerAbleSendMessages": "وہ اب آپ کو پیغامات نہیں بھیج سکیں گے۔",
+  "chatUnblockUser": "صارف کو ان بلاک کریں",
+  "chatYouBlockedUser": "آپ نے {value1} کو بلاک کر دیا ہے",
+  "@chatYouBlockedUser": {
+    "placeholders": {
+      "value1": {
+        "type": "String"
+      }
+    }
+  },
+  "chatBlockedBannerSubtitle": "وہ آپ کو کال یا میسج نہیں کر سکتے۔ گفتگو دوبارہ شروع کرنے کے لیے ان بلاک کریں۔",
+  "chatUnblockAction": "ان بلاک کریں",
+  "chatConversationUnavailable": "یہ گفتگو دستیاب نہیں ہے",
+  "chatConversationUnavailableSubtitle": "آپ ابھی یہاں پیغام نہیں بھیج سکتے۔",
+  "chatMessageUnavailable": "پیغام دستیاب نہیں",
   "chatSayHello": "سلام کہیں 👋",
   "chatSearchChat": "چیٹ میں تلاش کریں",
   "chatCouldNotLoadMessages": "پیغامات لوڈ نہیں ہو سکے",
@@ -1896,6 +1910,8 @@
   "chatPhotoReplyPlaceholder": "📷 تصویر",
   "chatMuteConversation": "بات چیت خاموش کریں",
   "chatUnmuteConversation": "بات چیت کی آواز بحال کریں",
+  "chatConversationMuted": "بات چیت خاموش کر دی گئی",
+  "chatConversationUnmuted": "بات چیت کی آواز بحال کر دی گئی",
   "chatTyping": "ٹائپ کر رہا ہے…",
   "chatLastSeen": "آخری بار {value1} کو دیکھا گیا",
   "@chatLastSeen": {
@@ -1909,5 +1925,6 @@
   "chatReasonHarassmentBullying": "ہراسانی یا غنڈہ گردی",
   "chatReasonInappropriateContent": "نامناسب مواد",
   "chatReasonScamFraud": "دھوکہ دہی یا فراڈ",
+  "chatReasonFakeProfile": "جعلی پروفائل",
   "chatReasonOther": "دیگر"
 }

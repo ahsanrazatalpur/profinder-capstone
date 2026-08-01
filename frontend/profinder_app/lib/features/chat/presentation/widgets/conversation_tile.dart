@@ -47,14 +47,27 @@ class ConversationTile extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          conversation.otherUserName,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15.5,
-                            fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
-                            color: context.colors.textPrimary,
-                          ),
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                conversation.otherUserName,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 15.5,
+                                  fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
+                                  color: context.colors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            // ✅ NEW — the only visible confirmation that
+                            // "Mute" actually did something; previously
+                            // muting changed nothing anyone could see.
+                            if (conversation.isMuted) ...[
+                              const SizedBox(width: 5),
+                              Icon(Icons.notifications_off_rounded, size: 14, color: context.colors.textSecondary),
+                            ],
+                          ],
                         ),
                       ),
                       if (conversation.lastMessageAt != null)
@@ -86,7 +99,12 @@ class ConversationTile extends StatelessWidget {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                          decoration: BoxDecoration(color: context.colors.primary, borderRadius: BorderRadius.circular(10)),
+                          decoration: BoxDecoration(
+                            // Muted + unread still shows a count, just not
+                            // in the "look at me" primary color.
+                            color: conversation.isMuted ? context.colors.textSecondary : context.colors.primary,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           child: Text(
                             conversation.unreadCount > 99 ? '99+' : '${conversation.unreadCount}',
                             style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w700),

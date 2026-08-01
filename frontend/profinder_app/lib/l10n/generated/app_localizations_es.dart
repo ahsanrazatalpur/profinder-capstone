@@ -1887,6 +1887,32 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ya no podrá enviarte mensajes.';
 
   @override
+  String get chatUnblockUser => 'Desbloquear usuario';
+
+  @override
+  String chatYouBlockedUser(String value1) {
+    return 'Bloqueaste a $value1';
+  }
+
+  @override
+  String get chatBlockedBannerSubtitle =>
+      'No pueden llamarte ni enviarte mensajes. Desbloquea para continuar la conversación.';
+
+  @override
+  String get chatUnblockAction => 'Desbloquear';
+
+  @override
+  String get chatConversationUnavailable =>
+      'Esta conversación no está disponible';
+
+  @override
+  String get chatConversationUnavailableSubtitle =>
+      'No puedes enviar mensajes aquí en este momento.';
+
+  @override
+  String get chatMessageUnavailable => 'Mensaje no disponible';
+
+  @override
   String get chatSayHello => 'Saluda 👋';
 
   @override
@@ -3112,6 +3138,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get chatUnmuteConversation => 'Activar sonido de conversación';
 
   @override
+  String get chatConversationMuted => 'Conversación silenciada';
+
+  @override
+  String get chatConversationUnmuted => 'Sonido de conversación activado';
+
+  @override
   String get chatTyping => 'escribiendo…';
 
   @override
@@ -3130,6 +3162,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get chatReasonScamFraud => 'Estafa o fraude';
+
+  @override
+  String get chatReasonFakeProfile => 'Perfil falso';
 
   @override
   String get chatReasonOther => 'Otro';
