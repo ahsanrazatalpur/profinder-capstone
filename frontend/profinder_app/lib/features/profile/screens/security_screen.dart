@@ -8,11 +8,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_provider.dart';
-import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class SecurityScreen extends StatefulWidget {
   const SecurityScreen({super.key});
@@ -48,10 +49,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
     try {
       await _api.post(AppConstants.forgotPassword, {'email': _email});
       if (!mounted) return;
-      AppHelpers.showSuccess(context, 'Password reset link sent to $_email');
+      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.resetLinkSent(_email!));
     } catch (_) {
       if (!mounted) return;
-      AppHelpers.showError(context, 'Could not send reset link. Try again later.');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.resetLinkError);
     }
     if (!mounted) return;
     setState(() => _sending = false);
@@ -60,69 +61,226 @@ class _SecurityScreenState extends State<SecurityScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > 600;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: context.colors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.colors.surface,
         elevation: 0,
-        title: const Text('Security', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Color(0xFF374151)), onPressed: () => Navigator.pop(context)),
+        title: Text(
+          AppLocalizations.of(context)!.securityTitle,
+          style: TextStyle(
+            fontSize: isTablet ? 18.0 : 16.0,
+            fontWeight: FontWeight.w700,
+            color: context.colors.textPrimary,
+            letterSpacing: -0.3,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: context.colors.textPrimary,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE5E7EB))),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(children: [
-                        Container(
-                          width: 40, height: 40,
-                          decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(10)),
-                          child: Icon(Icons.lock_reset_rounded, color: context.colors.primary, size: 20),
-                        ),
-                        const SizedBox(width: 10),
-                        const Expanded(child: Text('Reset Password', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700))),
-                      ]),
-                      const SizedBox(height: 10),
-                      Text("We'll email a secure reset link to ${_email ?? 'your account email'}.",
-                          style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary, height: 1.4)),
-                      const SizedBox(height: 14),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _sending ? null : _sendResetLink,
-                          child: _sending
-                              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : const Text('Send Reset Link'),
-                        ),
-                      ),
-                    ],
-                  ),
+          ? Center(
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  color: AppColors.customerColor,
+                  strokeWidth: 3,
                 ),
-                const SizedBox(height: 14),
-                Material(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE5E7EB))),
-                    child: ListTile(
-                      leading: const Icon(Icons.logout_rounded, color: AppColors.error),
-                      title: const Text('Logout', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.error)),
-                      subtitle: Text('Sign out of this device', style: TextStyle(fontSize: 11.5, color: context.colors.textSecondary)),
-                      onTap: () async {
-                        await auth.logout();
-                        if (!mounted) return;
-                        Navigator.pushNamedAndRemoveUntil(context, '/login', (_) => false);
-                      },
+              ),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  // ── Reset Password Card ──────────────────
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeOut,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: context.colors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.white.withOpacity(0.08)
+                            : const Color(0xFFE5E7EB),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: isDark
+                              ? Colors.black.withOpacity(0.12)
+                              : Colors.grey.withOpacity(0.06),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? AppColors.customerColor.withOpacity(0.15)
+                                    : context.colors.primaryLight,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Icon(
+                                Icons.lock_reset_rounded,
+                                color: AppColors.customerColor,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                AppLocalizations.of(context)!.resetPasswordLabel,
+                                style: TextStyle(
+                                  fontSize: isTablet ? 15.5 : 14.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: context.colors.textPrimary,
+                                  letterSpacing: -0.1,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          AppLocalizations.of(context)!.resetPasswordDescription(_email ?? AppLocalizations.of(context)!.yourAccountEmailPlaceholder),
+                          style: TextStyle(
+                            fontSize: isTablet ? 13.0 : 12.5,
+                            color: context.colors.textSecondary,
+                            height: 1.4,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _sending ? null : _sendResetLink,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.customerColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: _sending
+                                ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    AppLocalizations.of(context)!.sendResetLinkCta,
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 15.0 : 14.0,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 14),
+
+                  // ── Logout Card ─────────────────────────
+                  Material(
+                    color: context.colors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.white.withOpacity(0.08)
+                              : const Color(0xFFE5E7EB),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isDark
+                                ? Colors.black.withOpacity(0.12)
+                                : Colors.grey.withOpacity(0.06),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        leading: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            Icons.logout_rounded,
+                            color: AppColors.error,
+                            size: 20,
+                          ),
+                        ),
+                        title: Text(
+                          AppLocalizations.of(context)!.logoutActionLabel,
+                          style: TextStyle(
+                            fontSize: isTablet ? 15.0 : 14.0,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.error,
+                            letterSpacing: -0.1,
+                          ),
+                        ),
+                        subtitle: Text(
+                          AppLocalizations.of(context)!.logoutActionSubtitle,
+                          style: TextStyle(
+                            fontSize: isTablet ? 12.0 : 11.5,
+                            color: context.colors.textSecondary,
+                          ),
+                        ),
+                        trailing: Icon(
+                          Icons.chevron_right_rounded,
+                          color: context.colors.textSecondary,
+                          size: 20,
+                        ),
+                        onTap: () async {
+                          await auth.logout();
+                          if (!mounted) return;
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/login',
+                            (_) => false,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
     );
   }

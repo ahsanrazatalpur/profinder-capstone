@@ -26,7 +26,7 @@ class AboutImagePickerField extends StatefulWidget {
     required this.label,
     required this.imageUrl,
     required this.onChanged,
-    this.height = 140,
+    this.height = 190,
   });
 
   @override
@@ -86,9 +86,12 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
             fit: StackFit.expand,
             children: [
               if (widget.imageUrl.isNotEmpty)
-                CachedNetworkImage(
-                  imageUrl: widget.imageUrl, fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => Icon(Icons.broken_image_outlined, color: context.colors.textSecondary),
+                Container(
+                  color: context.colors.background,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.imageUrl, fit: BoxFit.contain,
+                    errorWidget: (_, __, ___) => Icon(Icons.broken_image_outlined, color: context.colors.textSecondary),
+                  ),
                 )
               else
                 Center(

@@ -225,6 +225,15 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       floatingActionButton: FloatingActionButton.extended(
+        // Unique tag — this screen lives inside AdminMainScreen's
+        // IndexedStack, which keeps every admin tab (and its FAB) mounted
+        // at once. Without a distinct tag, this Hero collides with any
+        // other untagged admin FAB mounted at the same time (e.g. the
+        // Announcements FAB on wider screens), and Flutter's "multiple
+        // heroes share the same tag" crash breaks hit-testing for the
+        // whole admin panel — taps stop reacting anywhere, dialogs never
+        // open, only the barrier dim shows.
+        heroTag: 'admin_languages_fab',
         backgroundColor: AppColors.adminColor,
         onPressed: _addDialog,
         icon: const Icon(Icons.add_rounded, color: Colors.white),

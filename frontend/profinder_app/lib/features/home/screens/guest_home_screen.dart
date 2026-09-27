@@ -13,6 +13,7 @@ import '../../../shared/widgets/professional_card.dart';
 import '../../../shared/widgets/featured_category_card.dart';
 import '../../../shared/widgets/category_card.dart';
 import '../../../shared/widgets/cta_banner.dart';
+import '../../../shared/widgets/announcement_banner.dart';
 import '../../../core/constants/category_style.dart';
 import '../../search/screens/professional_detail_screen.dart';
 import '../../search/screens/search_screen.dart';
@@ -254,6 +255,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           onRefresh: _refresh,
           child: CustomScrollView(
             slivers: [
+              const SliverToBoxAdapter(child: AnnouncementBanner(audience: 'guest')),
               SliverToBoxAdapter(child: _buildHeader(nearby, isDark)),
               SliverToBoxAdapter(child: _buildHeroSearch(isDark)),
               SliverToBoxAdapter(child: _buildQuickActionChips(home.categories ?? [], isDark)),

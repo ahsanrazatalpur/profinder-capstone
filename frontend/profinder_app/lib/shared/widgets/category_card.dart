@@ -10,7 +10,9 @@
 
 import 'package:flutter/material.dart';
 import '../../core/constants/category_style.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_context_ext.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class PremiumCategoryCard extends StatelessWidget {
   final Map category;
@@ -39,7 +41,9 @@ class PremiumCategoryCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -52,14 +56,18 @@ class PremiumCategoryCard extends StatelessWidget {
           border: Border.all(
             color: selected
                 ? color
-                : (isDark ? Colors.white.withOpacity(0.06) : color.withOpacity(0.15)),
+                : (isDark
+                    ? Colors.white.withOpacity(0.06)
+                    : color.withOpacity(0.15)),
             width: selected ? 2 : 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: isDark ? Colors.black.withOpacity(0.3) : color.withOpacity(0.08),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
+              color: isDark
+                  ? Colors.black.withOpacity(0.3)
+                  : color.withOpacity(0.08),
+              blurRadius: selected ? 20 : 16,
+              offset: Offset(0, selected ? 8 : 6),
             ),
           ],
         ),
@@ -69,7 +77,9 @@ class PremiumCategoryCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
@@ -81,9 +91,9 @@ class PremiumCategoryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+                      color: color.withOpacity(selected ? 0.4 : 0.3),
+                      blurRadius: selected ? 16 : 12,
+                      offset: Offset(0, selected ? 6 : 4),
                     ),
                   ],
                 ),
@@ -100,16 +110,20 @@ class PremiumCategoryCard extends StatelessWidget {
                   softWrap: true,
                   style: TextStyle(
                     fontSize: 11,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                     height: 1.15,
-                    color: context.colors.textPrimary,
+                    color: selected
+                        ? color
+                        : context.colors.textPrimary,
                     letterSpacing: -0.2,
                   ),
                 ),
               ),
               const SizedBox(height: 4),
-              Container(
-                width: 20,
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                width: selected ? 28 : 20,
                 height: 3,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: gradient),
@@ -185,79 +199,112 @@ void showAllCategoriesSheet(
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: isDark ? context.colors.background : context.colors.surface,
+    backgroundColor: Colors.transparent,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
     ),
-    builder: (_) => DraggableScrollableSheet(
-      initialChildSize: 0.85,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      expand: false,
-      builder: (_, scrollCtrl) => Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'All Categories',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: context.colors.textPrimary,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withOpacity(0.05)
-                        : context.colors.divider.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Icon(
-                      Icons.close_rounded,
-                      color: context.colors.textPrimary,
-                      size: 22,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: GridView.builder(
-              controller: scrollCtrl,
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
-              itemCount: categories.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 14,
-                childAspectRatio: 0.85,
-              ),
-              itemBuilder: (_, i) {
-                final cat = categories[i] as Map;
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    onCategoryTap(cat);
-                  },
-                  child: PremiumCategoryCard(
-                    category: cat,
-                    fallbackIndex: i,
-                    isDark: isDark,
-                  ),
-                );
-              },
-            ),
+    builder: (_) => Container(
+      decoration: BoxDecoration(
+        color: isDark
+            ? const Color(0xFF0F172A)
+            : context.colors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(0.3)
+                : Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
           ),
         ],
+      ),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (_, scrollCtrl) => Column(
+          children: [
+            // ── Drag Handle ──────────────────────────────
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.15)
+                      : const Color(0xFFE5E7EB),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // ── Header ──────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.allCategoriesTitle,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: context.colors.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withOpacity(0.05)
+                          : context.colors.divider.withOpacity(0.3),
+                      shape: BoxShape.circle,
+                    ),
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Icon(
+                        Icons.close_rounded,
+                        color: context.colors.textPrimary,
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // ── Grid ──────────────────────────────────
+            Expanded(
+              child: GridView.builder(
+                controller: scrollCtrl,
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
+                itemCount: categories.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 14,
+                  childAspectRatio: 0.85,
+                ),
+                itemBuilder: (_, i) {
+                  final cat = categories[i] as Map;
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      onCategoryTap(cat);
+                    },
+                    child: PremiumCategoryCard(
+                      category: cat,
+                      fallbackIndex: i,
+                      isDark: isDark,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );

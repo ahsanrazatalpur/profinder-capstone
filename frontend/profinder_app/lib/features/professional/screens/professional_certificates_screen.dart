@@ -17,6 +17,7 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalCertificatesScreen extends StatefulWidget {
   const ProfessionalCertificatesScreen({super.key});
@@ -50,6 +51,9 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+      if (mounted) {
+        AppHelpers.showError(context, AppLocalizations.of(context)!.loadCertificatesError);
+      }
     }
   }
 
@@ -57,11 +61,11 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
     try {
       await _api.delete('${AppConstants.certificates}$id/');
       if (!mounted) return;
-      AppHelpers.showSuccess(context, 'Deleted');
+      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.deleteSuccess);
       _load();
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, 'Could not delete');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.deleteError);
     }
   }
 
@@ -70,14 +74,23 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete?', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-        content: Text('Delete "${item['title']}"?', style: TextStyle(fontSize: 13, color: context.colors.textSecondary)),
+        title: Text(
+          AppLocalizations.of(context)!.deleteDialogTitle,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        ),
+        content: Text(
+          AppLocalizations.of(context)!.deleteDialogContent(item['title']?.toString() ?? ''),
+          style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)!.cancelCta),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () { Navigator.pop(context); _delete(item['id']); },
-            child: const Text('Delete'),
+            child: Text(AppLocalizations.of(context)!.deleteCta),
           ),
         ],
       ),
@@ -111,7 +124,10 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                 ),
               ),
               const SizedBox(height: 16),
-              Text('Add Certificate', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+              Text(
+                AppLocalizations.of(context)!.addCertificateTitle,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+              ),
               const SizedBox(height: 16),
 
               GestureDetector(
@@ -125,12 +141,18 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                     setSheetState(() { pickedXFile = picked; pickedFile = File(picked.path); });
                   }
                 },
-                child: Container(
-                  width: double.infinity, height: 140,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
+                  width: double.infinity,
+                  height: 140,
                   decoration: BoxDecoration(
-                    color:        const Color(0xFFF9FAFB),
+                    color: context.colors.background,
                     borderRadius: BorderRadius.circular(12),
-                    border:       Border.all(color: context.colors.divider),
+                    border: Border.all(
+                      color: pickedXFile != null ? AppColors.professionalColor : context.colors.divider,
+                      width: pickedXFile != null ? 2 : 1,
+                    ),
                   ),
                   child: pickedXFile != null
                       ? ClipRRect(
@@ -144,7 +166,10 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                           children: [
                             Icon(Icons.card_membership_outlined, size: 32, color: AppColors.professionalColor),
                             const SizedBox(height: 6),
-                            Text('Tap to add certificate image', style: TextStyle(fontSize: 13, color: AppColors.professionalColor, fontWeight: FontWeight.w500)),
+                            Text(
+                              AppLocalizations.of(context)!.addCertificateImageLabel,
+                              style: TextStyle(fontSize: 13, color: AppColors.professionalColor, fontWeight: FontWeight.w500),
+                            ),
                           ],
                         ),
                 ),
@@ -155,9 +180,10 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                 controller: titleCtrl,
                 style: const TextStyle(fontSize: 14),
                 decoration: InputDecoration(
-                  labelText: 'Certificate Title *',
-                  hintText:  'e.g. Certified Electrician',
-                  filled: true, fillColor: const Color(0xFFF9FAFB),
+                  labelText: AppLocalizations.of(context)!.certificateTitleLabelRequired,
+                  hintText: AppLocalizations.of(context)!.certificateTitleHint,
+                  filled: true,
+                  fillColor: context.colors.background,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
                   enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
                   focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5)),
@@ -169,9 +195,10 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                 controller: orgCtrl,
                 style: const TextStyle(fontSize: 14),
                 decoration: InputDecoration(
-                  labelText: 'Issuing Organization',
-                  hintText:  'e.g. TEVTA / Coursera',
-                  filled: true, fillColor: const Color(0xFFF9FAFB),
+                  labelText: AppLocalizations.of(context)!.issuingOrganizationLabel,
+                  hintText: AppLocalizations.of(context)!.issuingOrganizationHint,
+                  filled: true,
+                  fillColor: context.colors.background,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
                   enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
                   focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5)),
@@ -192,7 +219,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF9FAFB),
+                    color: context.colors.background,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: context.colors.divider),
                   ),
@@ -201,8 +228,13 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                       Icon(Icons.calendar_today_outlined, size: 16, color: context.colors.textSecondary),
                       const SizedBox(width: 8),
                       Text(
-                        issueDate == null ? 'Issue Date (optional)' : '${issueDate!.year}-${issueDate!.month.toString().padLeft(2, '0')}-${issueDate!.day.toString().padLeft(2, '0')}',
-                        style: TextStyle(fontSize: 13.5, color: issueDate == null ? context.colors.textSecondary : context.colors.textPrimary),
+                        issueDate == null
+                            ? AppLocalizations.of(context)!.issueDateLabelOptional
+                            : '${issueDate!.year}-${issueDate!.month.toString().padLeft(2, '0')}-${issueDate!.day.toString().padLeft(2, '0')}',
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          color: issueDate == null ? context.colors.textSecondary : context.colors.textPrimary,
+                        ),
                       ),
                     ],
                   ),
@@ -215,7 +247,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                 child: ElevatedButton(
                   onPressed: isSaving ? null : () async {
                     if (titleCtrl.text.trim().isEmpty) {
-                      AppHelpers.showError(ctx, 'Title is required');
+                      AppHelpers.showError(ctx, AppLocalizations.of(context)!.titleValidationError);
                       return;
                     }
                     setSheetState(() => isSaving = true);
@@ -234,11 +266,11 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                       }));
                       if (!mounted) return;
                       Navigator.pop(ctx);
-                      AppHelpers.showSuccess(context, 'Certificate added');
+                      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.certificateAddSuccess);
                       _load();
                     } catch (e) {
                       setSheetState(() => isSaving = false);
-                      AppHelpers.showError(ctx, 'Could not add certificate');
+                      AppHelpers.showError(ctx, AppLocalizations.of(context)!.certificateAddError);
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -249,7 +281,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                   ),
                   child: isSaving
                       ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Text('Save Certificate', style: TextStyle(fontWeight: FontWeight.w700)),
+                      : Text(AppLocalizations.of(context)!.saveCertificateCta, style: const TextStyle(fontWeight: FontWeight.w700)),
                 ),
               ),
             ],
@@ -261,48 +293,91 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > 600;
+
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: AppBar(
         backgroundColor: context.colors.surface,
         elevation: 0,
-        title: Text('Certificates', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
-        leading: IconButton(icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: context.colors.textPrimary), onPressed: () => Navigator.pop(context)),
+        title: Text(
+          AppLocalizations.of(context)!.certificatesTitle,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: context.colors.textPrimary),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.add_circle_outline_rounded, color: AppColors.professionalColor),
             onPressed: _showAddSheet,
-            tooltip: 'Add Certificate',
+            tooltip: AppLocalizations.of(context)!.addCertificateTooltip,
           ),
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  color: AppColors.professionalColor,
+                  strokeWidth: 3,
+                ),
+              ),
+            )
           : RefreshIndicator(
               onRefresh: _load,
               color: AppColors.professionalColor,
               child: _items.isEmpty
                   ? ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       children: [
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.6,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.card_membership_outlined, size: 64, color: context.colors.textDisabled),
-                              const SizedBox(height: 12),
-                              Text('No certificates yet', style: TextStyle(fontSize: 15, color: context.colors.textSecondary)),
+                              Container(
+                                width: 88,
+                                height: 88,
+                                decoration: BoxDecoration(
+                                  color: AppColors.professionalColor.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.card_membership_outlined,
+                                  size: 40,
+                                  color: AppColors.professionalColor,
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              Text(
+                                AppLocalizations.of(context)!.emptyCertificatesTitle,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: context.colors.textPrimary,
+                                ),
+                              ),
                               const SizedBox(height: 6),
-                              Text('Add certifications to build trust', style: TextStyle(fontSize: 12, color: context.colors.textSecondary)),
-                              const SizedBox(height: 20),
+                              Text(
+                                AppLocalizations.of(context)!.emptyCertificatesSubtitle,
+                                style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                              ),
+                              const SizedBox(height: 22),
                               ElevatedButton.icon(
                                 onPressed: _showAddSheet,
                                 icon: const Icon(Icons.add_rounded, size: 18),
-                                label: const Text('Add First Certificate'),
+                                label: Text(AppLocalizations.of(context)!.addFirstCertificateCta),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.professionalColor,
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                 ),
                               ),
                             ],
@@ -311,13 +386,14 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                       ],
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(isTablet ? 20 : 16),
                       itemCount: _items.length,
-                      itemBuilder: (_, i) => _buildTile(_items[i]),
+                      itemBuilder: (_, i) => _buildTile(_items[i], isDark, isTablet),
                     ),
             ),
       floatingActionButton: _items.isNotEmpty
           ? FloatingActionButton(
+              heroTag: 'professional_certificates_fab',
               onPressed: _showAddSheet,
               backgroundColor: AppColors.professionalColor,
               child: const Icon(Icons.add_rounded, color: Colors.white),
@@ -326,44 +402,112 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
     );
   }
 
-  Widget _buildTile(dynamic item) {
+  Widget _buildTile(dynamic item, bool isDark, bool isTablet) {
     final imageUrl = item['certificate_image']?.toString() ?? item['image_url']?.toString();
     final org      = item['issuing_organization']?.toString() ?? '';
     final date     = item['issue_date']?.toString() ?? '';
 
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOut,
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(isTablet ? 16 : 12),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: context.colors.divider),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? Colors.white.withOpacity(0.08) : Colors.grey.withOpacity(0.1),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black.withOpacity(0.12) : Colors.grey.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: imageUrl != null && imageUrl.isNotEmpty
-                ? Image.network(imageUrl, width: 56, height: 56, fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(width: 56, height: 56, color: context.colors.divider,
-                        child: Icon(Icons.card_membership_outlined, color: context.colors.textDisabled)))
-                : Container(width: 56, height: 56, color: context.colors.divider,
-                    child: Icon(Icons.card_membership_outlined, color: context.colors.textDisabled)),
+                ? Image.network(
+                    imageUrl,
+                    width: isTablet ? 64 : 56,
+                    height: isTablet ? 64 : 56,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: isTablet ? 64 : 56,
+                      height: isTablet ? 64 : 56,
+                      color: context.colors.divider,
+                      child: Icon(
+                        Icons.card_membership_outlined,
+                        color: context.colors.textDisabled,
+                        size: isTablet ? 28 : 24,
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: isTablet ? 64 : 56,
+                    height: isTablet ? 64 : 56,
+                    color: context.colors.divider,
+                    child: Icon(
+                      Icons.card_membership_outlined,
+                      color: context.colors.textDisabled,
+                      size: isTablet ? 28 : 24,
+                    ),
+                  ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item['title']?.toString() ?? '', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
-                if (org.isNotEmpty) Text(org, style: TextStyle(fontSize: 11.5, color: context.colors.textSecondary)),
-                if (date.isNotEmpty) Text(date, style: TextStyle(fontSize: 10.5, color: context.colors.textSecondary)),
+                Text(
+                  item['title']?.toString() ?? '',
+                  style: TextStyle(
+                    fontSize: isTablet ? 14.5 : 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
+                if (org.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    org,
+                    style: TextStyle(
+                      fontSize: isTablet ? 12 : 11.5,
+                      color: context.colors.textSecondary,
+                    ),
+                  ),
+                ],
+                if (date.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    date,
+                    style: TextStyle(
+                      fontSize: isTablet ? 11 : 10.5,
+                      color: context.colors.textSecondary.withOpacity(0.7),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
-          GestureDetector(
-            onTap: () => _confirmDelete(item),
-            child: const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.error),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () => _confirmDelete(item),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: Icon(
+                  Icons.delete_outline_rounded,
+                  size: isTablet ? 20 : 18,
+                  color: AppColors.error,
+                ),
+              ),
+            ),
           ),
         ],
       ),

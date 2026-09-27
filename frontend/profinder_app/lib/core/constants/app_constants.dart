@@ -20,6 +20,7 @@ class AppConstants {
   // ─── Auth ────────────────────────────────────────────────
   static const String register       = '/users/register/';
   static const String login          = '/users/login/';
+  static const String googleLogin    = '/users/google/'; // ✅ Google Sign-In
   static const String tokenRefresh   = '/users/token/refresh/';
   static const String me             = '/users/me/';
   static const String forgotPassword = '/users/forgot-password/';
@@ -80,6 +81,16 @@ class AppConstants {
   // apps.admin_panel — so reports were submitting successfully but never
   // showing up for admins. This is the endpoint admin_panel actually reads.
   static const String reportUser = '/admin-panel/reports/create/';
+
+  // ─── Trust & Safety (user-facing — Part 8) ──────────────────────────────
+  // Reports the CURRENT user submitted (never anyone else's).
+  static const String myReports = '/admin-panel/reports/mine/';
+  // The CURRENT user's own live moderation status — always re-derived
+  // server-side, never trusted from cached/local state.
+  static const String myModerationStatus = '/admin-panel/moderation-status/mine/';
+  // Appeal one of the current user's OWN moderation actions.
+  static const String appealCreate = '/admin-panel/appeals/create/';
+  static const String myAppeals    = '/admin-panel/appeals/mine/';
 
   // ✅ NEW — Analytics
   static const String professionalAnalytics = '/profiles/professional/analytics/';

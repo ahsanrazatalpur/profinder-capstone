@@ -228,41 +228,94 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
     );
   }
 
+  // Shows the "delete with reason" confirmation dialog.
+  //
+  // ✅ FIX: Previously, pressing Delete with an empty reason silently
+  // returned with no feedback — the dialog just sat there and looked
+  // "stuck", with nothing telling the admin why. This now shows an
+  // inline validation message instead, and also surfaces the *actual*
+  // backend error (via `e.toString()`) if the delete request fails,
+  // instead of a generic message that hid what really went wrong.
   void _deleteDialog(dynamic review) {
     final reasonCtrl = TextEditingController();
+    // Declared OUTSIDE the StatefulBuilder's builder callback on purpose —
+    // that callback re-runs on every setDialogState() call, so any state
+    // declared inside it would reset to its initial value on each rebuild.
+    String? validationError;
+    bool submitting = false;
+
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Review'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('This permanently removes the review. Provide a reason for the audit log.',
-                style: TextStyle(fontSize: 12.5)),
-            const SizedBox(height: 10),
-            TextField(controller: reasonCtrl, decoration: const InputDecoration(hintText: 'Reason (required)'), maxLines: 2),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            onPressed: () async {
-              if (reasonCtrl.text.trim().isEmpty) return;
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          Future<void> handleDelete() async {
+            final reason = reasonCtrl.text.trim();
+            if (reason.isEmpty) {
+              setDialogState(() => validationError = 'Reason is required.');
+              return;
+            }
+            setDialogState(() { submitting = true; validationError = null; });
+            try {
+              await _api.deleteWithBody(
+                '/admin-panel/reviews/${review['id']}/',
+                {'reason': reason},
+              );
+              if (!mounted) return;
               Navigator.pop(dialogContext);
-              try {
-                await _api.deleteWithBody('/admin-panel/reviews/${review['id']}/',
-                    {'reason': reasonCtrl.text.trim()});
-                _load();
-              } catch (e) {
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to delete review.')));
-              }
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
-          ),
-        ],
+              _load();
+            } catch (e) {
+              // Surface the real failure reason instead of a generic
+              // message, so permission/validation errors are visible.
+              setDialogState(() {
+                submitting = false;
+                validationError = 'Failed to delete: ${e.toString()}';
+              });
+            }
+          }
+
+          return AlertDialog(
+            title: const Text('Delete Review'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('This permanently removes the review. Provide a reason for the audit log.',
+                    style: TextStyle(fontSize: 12.5)),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: reasonCtrl,
+                  decoration: InputDecoration(
+                    hintText: 'Reason (required)',
+                    errorText: validationError,
+                  ),
+                  maxLines: 2,
+                  onChanged: (_) {
+                    if (validationError != null) {
+                      setDialogState(() => validationError = null);
+                    }
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: submitting ? null : () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                onPressed: submitting ? null : handleDelete,
+                child: submitting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Text('Delete', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

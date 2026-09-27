@@ -11,6 +11,7 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../../../services/auth_provider.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -49,7 +50,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       // endpoint can never be used to confirm whether an email exists.
       AppHelpers.showError(
         context,
-        auth.errorMessage ?? AppStrings.serverError,
+        auth.errorMessage ?? AppLocalizations.of(context)!.serverError,
       );
     }
   }
@@ -57,15 +58,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final width = MediaQuery.sizeOf(context).width;
     final contentMaxWidth = width > 520 ? 480.0 : width;
 
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: AppBar(
-        title:   Text(AppStrings.resetPass),
+        backgroundColor: context.colors.surface,
+        elevation: 0,
+        title: Text(
+          AppLocalizations.of(context)!.resetPassTitle,
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: context.colors.textPrimary,
+            letterSpacing: -0.3,
+          ),
+        ),
         leading: IconButton(
-          icon:      const Icon(Icons.arrow_back_ios),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: context.colors.textPrimary,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -79,7 +94,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 horizontal: ResponsiveUtils.screenPadding(width),
                 vertical:   AppSizes.lg,
               ),
-              child: _emailSent ? _buildSuccessView() : _buildFormView(auth),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOut,
+                child: _emailSent ? _buildSuccessView(isDark) : _buildFormView(auth, isDark),
+              ),
             ),
           ),
         ),
@@ -88,7 +107,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   // Form view — shown before sending email
-  Widget _buildFormView(AuthProvider auth) {
+  Widget _buildFormView(AuthProvider auth, bool isDark) {
     return Form(
       key: _formKey,
       child: Column(
@@ -101,24 +120,33 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               width:  80,
               height: 80,
               decoration: BoxDecoration(
-                color:        context.colors.primaryLight,
+                color: isDark
+                    ? AppColors.professionalColor.withOpacity(0.15)
+                    : context.colors.primaryLight,
                 borderRadius: BorderRadius.circular(AppSizes.radiusXl),
               ),
               child: Icon(
                 Icons.lock_reset_outlined,
                 size:  40,
-                color: context.colors.primary,
+                color: AppColors.professionalColor,
               ),
             ),
           ),
 
           const SizedBox(height: AppSizes.lg),
 
-          Text(AppStrings.resetPass, style: context.textStyles.h2),
+          Text(
+            AppLocalizations.of(context)!.resetPassTitle,
+            style: context.textStyles.h2.copyWith(
+              color: context.colors.textPrimary,
+            ),
+          ),
           const SizedBox(height: AppSizes.xs),
           Text(
-            'Enter your registered email. We will send a password reset link.',
-            style: context.textStyles.bodyMedium,
+            AppLocalizations.of(context)!.resetPassSubtitle,
+            style: context.textStyles.bodyMedium.copyWith(
+              color: context.colors.textSecondary,
+            ),
           ),
 
           const SizedBox(height: AppSizes.xl),
@@ -127,29 +155,51 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             controller:   _emailController,
             keyboardType: TextInputType.emailAddress,
             autocorrect:  false,
-            style:        context.textStyles.inputText,
+            style:        context.textStyles.inputText.copyWith(
+              color: context.colors.textPrimary,
+            ),
             decoration: InputDecoration(
               labelText:  AppStrings.email,
-              hintText:   'example@email.com',
-              prefixIcon: Icon(Icons.email_outlined),
+              hintText:   AppLocalizations.of(context)!.emailHint,
+              prefixIcon: Icon(
+                Icons.email_outlined,
+                color: isDark
+                    ? context.colors.textSecondary.withOpacity(0.6)
+                    : null,
+              ),
             ),
             validator: AppValidators.email,
           ),
 
           const SizedBox(height: AppSizes.xl),
 
-          ElevatedButton(
-            onPressed: auth.isLoading ? null : _onSendPressed,
-            child: auth.isLoading
-                ? const SizedBox(
-                    height: 22,
-                    width:  22,
-                    child:  CircularProgressIndicator(
-                      color:       AppColors.white,
-                      strokeWidth: 2.5,
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: auth.isLoading ? null : _onSendPressed,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: auth.isLoading
+                  ? const SizedBox(
+                      height: 22,
+                      width:  22,
+                      child:  CircularProgressIndicator(
+                        color:       AppColors.white,
+                        strokeWidth: 2.5,
+                      ),
+                    )
+                  : Text(
+                      AppLocalizations.of(context)!.sendResetLinkCta,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  )
-                : Text(AppStrings.sendResetLink),
+            ),
           ),
         ],
       ),
@@ -157,7 +207,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   // Success view — shown after email is sent
-  Widget _buildSuccessView() {
+  Widget _buildSuccessView(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -167,7 +217,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           width:  100,
           height: 100,
           decoration: BoxDecoration(
-            color:        context.colors.accentLight,
+            color: isDark
+                ? const Color(0xFF10B981).withOpacity(0.15)
+                : context.colors.accentLight,
             borderRadius: BorderRadius.circular(AppSizes.radiusFull),
           ),
           child: Icon(
@@ -179,35 +231,69 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
         const SizedBox(height: AppSizes.lg),
 
-        Text('Check Your Email', style: context.textStyles.h2),
+        Text(
+          AppLocalizations.of(context)!.checkEmailTitle,
+          style: context.textStyles.h2.copyWith(
+            color: context.colors.textPrimary,
+          ),
+        ),
         const SizedBox(height: AppSizes.sm),
 
         Text(
-          AppStrings.forgotPasswordGenericMessage,
-          style:     context.textStyles.bodyMedium,
+          AppLocalizations.of(context)!.checkEmailMessage,
+          style: context.textStyles.bodyMedium.copyWith(
+            color: context.colors.textSecondary,
+          ),
           textAlign: TextAlign.center,
         ),
 
         const SizedBox(height: AppSizes.xs),
 
         Text(
-          'If it doesn\'t arrive in a few minutes, check your spam folder or try again.',
-          style:     AppTextStyles.bodySmall,
+          AppLocalizations.of(context)!.checkEmailHint,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: context.colors.textSecondary.withOpacity(0.6),
+          ),
           textAlign: TextAlign.center,
         ),
 
         const SizedBox(height: AppSizes.xxl),
 
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child:     Text(AppStrings.backToLogin),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              AppLocalizations.of(context)!.backToLoginCta,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ),
 
         const SizedBox(height: AppSizes.md),
 
         TextButton(
           onPressed: () => setState(() => _emailSent = false),
-          child:     Text(AppStrings.resendEmail),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          ),
+          child: Text(
+            AppLocalizations.of(context)!.resendEmailCta,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.professionalColor,
+            ),
+          ),
         ),
       ],
     );

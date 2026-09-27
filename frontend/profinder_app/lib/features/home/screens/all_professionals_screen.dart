@@ -1,23 +1,10 @@
 // lib/features/home/screens/all_professionals_screen.dart
 //
-// Full-screen "See All Professionals" — replaces the old 85%-height
-// DraggableScrollableSheet used from the Customer Dashboard's section
-// "See all" links (Recommended / Nearby / Top Rated / Trending /
-// Recently Added / Category).
-//
-// 🚨 UI/UX ONLY. This screen does NOT call any API, does NOT change what
-// data a section shows, and does NOT touch favourites/booking/detail
-// logic — it renders exactly the `professionals` list the caller already
-// fetched (same as the old sheet did), using the same ProfessionalCard,
-// FavoritesStore, ProfessionalDetailScreen, and BookingScreen the rest
-// of the app already uses.
-//
-// FILTER CHIPS ARE CONTEXT-AWARE (see `ProSection` + `_optionsFor` below):
-// each section (Recommended / Nearby / Top Rated / Trending / Recently
-// Added / Category) gets its own relevant chip set instead of one
-// universal filter bar shared by every screen. All filtering/sorting is
-// still a client-side, presentation-only transform of the already-fetched
-// `professionals` list — never a new backend query.
+// Full-screen "See All Professionals" list, opened from the Customer
+// Dashboard's "See all" links (Recommended / Nearby / Top Rated /
+// Trending / Recently Added / Category). Presentation-only: it never
+// calls the API itself, it just filters/sorts the `professionals`
+// list the caller already fetched.
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/theme_context_ext.dart';
@@ -26,108 +13,103 @@ import '../../../shared/widgets/professional_card.dart';
 import '../../../services/favorites_store.dart';
 import '../../search/screens/professional_detail_screen.dart';
 import '../../bookings/screens/booking_screen.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
-// ── Which dashboard section opened this "See all" page. Every value here
-// gets its OWN filter-chip set in `_optionsFor()` below — a marketplace
-// never shows one universal filter bar on every screen (Fiverr / Airbnb /
-// Thumbtack all scope filters to what the section actually means), so this
-// is the single source of truth the chip bar reads from instead of
-// guessing from which data fields happen to be present.
+/// Which dashboard section opened this screen. Each value gets its own
+/// filter-chip set from [_optionsFor] instead of one shared filter bar.
 enum ProSection { recommended, nearby, topRated, trending, recentlyAdded, category }
 
-// ── One filter/sort chip: a label plus a pure function that turns the
-// original (already-fetched) list into the filtered/reordered view. This
-// is presentation only — same as the sort this screen already did before —
-// no new query, no backend call, nothing here changes what data exists.
+/// A single filter/sort chip: a display [label] plus a pure function
+/// that turns the original list into the filtered/reordered view.
+/// Presentation-only — never triggers a new backend query.
 class _FilterOption {
   const _FilterOption(this.label, this.apply);
   final String label;
   final List<dynamic> Function(List<dynamic> source) apply;
 }
 
+// ── Field readers: pull a typed value out of a professional's raw map,
+// with the same fallback conventions used elsewhere in the app.
 double _num(dynamic v) => double.tryParse(v?.toString() ?? '') ?? 0.0;
-bool _availNow(Map p)  => p['is_available'] != false; // same default-true convention as professional_detail_screen
-bool _verified(Map p)  => p['is_verified'] == true;
-double _rating(Map p)   => _num(p['average_rating']);
+bool _availNow(Map p) => p['is_available'] != false;
+bool _verified(Map p) => p['is_verified'] == true;
+double _rating(Map p) => _num(p['average_rating']);
 double _distanceKm(Map p) => _num(p['distance_km']);
-double _price(Map p)    => _num(p['hourly_rate']);
+double _price(Map p) => _num(p['hourly_rate']);
 double _experience(Map p) => _num(p['experience_years']);
 int _reviewsCount(Map p) => int.tryParse(p['reviews_count']?.toString() ?? '') ?? 0;
 int _completedJobs(Map p) => int.tryParse(p['completed_jobs']?.toString() ?? '') ?? 0;
-// Same "fast responder" threshold professional_detail_screen already uses
-// (<=1hr), and the same 24hr fallback when the backend hasn't sent a value.
 double _responseHrs(Map p) => double.tryParse(p['response_time_hrs']?.toString() ?? '24') ?? 24.0;
 DateTime? _createdAt(Map p) => DateTime.tryParse(p['created_at']?.toString() ?? '');
 
+// ── Small list helpers used to build each filter's `apply` function.
 List<dynamic> _where(List<dynamic> src, bool Function(Map) test) => src.where((p) => test(p as Map)).toList();
 List<dynamic> _sortDesc(List<dynamic> src, num Function(Map) key) => (List<dynamic>.from(src)..sort((a, b) => key(b as Map).compareTo(key(a as Map))));
-List<dynamic> _sortAsc(List<dynamic> src, num Function(Map) key)  => (List<dynamic>.from(src)..sort((a, b) => key(a as Map).compareTo(key(b as Map))));
+List<dynamic> _sortAsc(List<dynamic> src, num Function(Map) key) => (List<dynamic>.from(src)..sort((a, b) => key(a as Map).compareTo(key(b as Map))));
 
-// ── Context-aware filter chips, one set per section — this is the actual
-// fix. Each section only exposes filters that make sense for *that*
-// section's purpose; nothing is shared or reused across sections.
-List<_FilterOption> _optionsFor(ProSection section) {
-  final all = _FilterOption('All', (src) => List<dynamic>.from(src));
+/// Builds the filter-chip set for a given [section]. Each section only
+/// exposes filters that make sense for it — nothing is shared across
+/// sections. Needs [t] (the current [AppLocalizations]) to label chips.
+List<_FilterOption> _optionsFor(ProSection section, AppLocalizations t) {
+  final all = _FilterOption(t.homeFilterAll, (src) => List<dynamic>.from(src));
   switch (section) {
     case ProSection.recommended:
       return [
         all,
-        _FilterOption('Available Now', (src) => _where(src, _availNow)),
-        _FilterOption('Top Rated', (src) => _sortDesc(src, _rating)),
-        _FilterOption('Verified', (src) => _where(src, _verified)),
-        _FilterOption('Fast Response', (src) => _where(src, (p) => _responseHrs(p) <= 1)),
-        _FilterOption('Lowest Price', (src) => _sortAsc(src, _price)),
+        _FilterOption(t.homeFilterAvailableNow, (src) => _where(src, _availNow)),
+        _FilterOption(t.homeFilterTopRated, (src) => _sortDesc(src, _rating)),
+        _FilterOption(t.homeFilterVerified, (src) => _where(src, _verified)),
+        _FilterOption(t.homeFilterFastResponse, (src) => _where(src, (p) => _responseHrs(p) <= 1)),
+        _FilterOption(t.homeFilterLowestPrice, (src) => _sortAsc(src, _price)),
       ];
     case ProSection.nearby:
       return [
         all,
-        _FilterOption('Within 2 km', (src) => _where(src, (p) => _distanceKm(p) <= 2)),
-        _FilterOption('Within 5 km', (src) => _where(src, (p) => _distanceKm(p) <= 5)),
-        _FilterOption('Within 10 km', (src) => _where(src, (p) => _distanceKm(p) <= 10)),
-        _FilterOption('Available Now', (src) => _where(src, _availNow)),
-        _FilterOption('Verified', (src) => _where(src, _verified)),
+        _FilterOption(t.homeFilterWithin2Km, (src) => _where(src, (p) => _distanceKm(p) <= 2)),
+        _FilterOption(t.homeFilterWithin5Km, (src) => _where(src, (p) => _distanceKm(p) <= 5)),
+        _FilterOption(t.homeFilterWithin10Km, (src) => _where(src, (p) => _distanceKm(p) <= 10)),
+        _FilterOption(t.homeFilterAvailableNow, (src) => _where(src, _availNow)),
+        _FilterOption(t.homeFilterVerified, (src) => _where(src, _verified)),
       ];
     case ProSection.topRated:
       return [
         all,
-        _FilterOption('5+', (src) => _where(src, (p) => _rating(p) >= 5)),
-        _FilterOption('4+', (src) => _where(src, (p) => _rating(p) >= 4)),
-        _FilterOption('3+', (src) => _where(src, (p) => _rating(p) >= 3)),
-        _FilterOption('2+', (src) => _where(src, (p) => _rating(p) >= 2)),
-        _FilterOption('1+', (src) => _where(src, (p) => _rating(p) >= 1)),
-        _FilterOption('Most Reviews', (src) => _sortDesc(src, _reviewsCount)),
-        _FilterOption('Verified', (src) => _where(src, _verified)),
+        _FilterOption(t.homeFilterRating5Plus, (src) => _where(src, (p) => _rating(p) >= 5)),
+        _FilterOption(t.homeFilterRating4Plus, (src) => _where(src, (p) => _rating(p) >= 4)),
+        _FilterOption(t.homeFilterRating3Plus, (src) => _where(src, (p) => _rating(p) >= 3)),
+        _FilterOption(t.homeFilterRating2Plus, (src) => _where(src, (p) => _rating(p) >= 2)),
+        _FilterOption(t.homeFilterRating1Plus, (src) => _where(src, (p) => _rating(p) >= 1)),
+        _FilterOption(t.homeFilterMostReviews, (src) => _sortDesc(src, _reviewsCount)),
+        _FilterOption(t.homeFilterVerified, (src) => _where(src, _verified)),
       ];
     case ProSection.trending:
-      // NOTE: "Most Viewed" / "Fast Growing" from the spec need view-count
-      // / growth-rate fields the backend doesn't send today. Per the "no
-      // backend changes" constraint, these are left out rather than faked
-      // on top of an unrelated field — flag this to backend if you want
-      // them wired up for real.
+      // "Most Viewed" / "Fast Growing" need view-count / growth-rate
+      // fields the backend doesn't send yet — left out rather than
+      // faked on top of an unrelated field.
       return [
         all,
-        _FilterOption('Most Booked', (src) => _sortDesc(src, _completedJobs)),
-        _FilterOption('Available Now', (src) => _where(src, _availNow)),
-        _FilterOption('Verified', (src) => _where(src, _verified)),
+        _FilterOption(t.homeFilterMostBooked, (src) => _sortDesc(src, _completedJobs)),
+        _FilterOption(t.homeFilterAvailableNow, (src) => _where(src, _availNow)),
+        _FilterOption(t.homeFilterVerified, (src) => _where(src, _verified)),
       ];
     case ProSection.recentlyAdded:
       final now = DateTime.now();
       return [
         all,
-        _FilterOption('Today', (src) => _where(src, (p) { final d = _createdAt(p); return d != null && now.difference(d).inHours < 24; })),
-        _FilterOption('This Week', (src) => _where(src, (p) { final d = _createdAt(p); return d != null && now.difference(d).inDays < 7; })),
-        _FilterOption('This Month', (src) => _where(src, (p) { final d = _createdAt(p); return d != null && now.difference(d).inDays < 30; })),
-        _FilterOption('Available Now', (src) => _where(src, _availNow)),
+        _FilterOption(t.homeFilterToday, (src) => _where(src, (p) { final d = _createdAt(p); return d != null && now.difference(d).inHours < 24; })),
+        _FilterOption(t.homeFilterThisWeek, (src) => _where(src, (p) { final d = _createdAt(p); return d != null && now.difference(d).inDays < 7; })),
+        _FilterOption(t.homeFilterThisMonth, (src) => _where(src, (p) { final d = _createdAt(p); return d != null && now.difference(d).inDays < 30; })),
+        _FilterOption(t.homeFilterAvailableNow, (src) => _where(src, _availNow)),
       ];
     case ProSection.category:
       return [
         all,
-        _FilterOption('Available Now', (src) => _where(src, _availNow)),
-        _FilterOption('Top Rated', (src) => _sortDesc(src, _rating)),
-        _FilterOption('Verified', (src) => _where(src, _verified)),
-        _FilterOption('Lowest Price', (src) => _sortAsc(src, _price)),
-        _FilterOption('Highest Price', (src) => _sortDesc(src, _price)),
-        _FilterOption('Most Experienced', (src) => _sortDesc(src, _experience)),
+        _FilterOption(t.homeFilterAvailableNow, (src) => _where(src, _availNow)),
+        _FilterOption(t.homeFilterTopRated, (src) => _sortDesc(src, _rating)),
+        _FilterOption(t.homeFilterVerified, (src) => _where(src, _verified)),
+        _FilterOption(t.homeFilterLowestPrice, (src) => _sortAsc(src, _price)),
+        _FilterOption(t.homeFilterHighestPrice, (src) => _sortDesc(src, _price)),
+        _FilterOption(t.homeFilterMostExperienced, (src) => _sortDesc(src, _experience)),
       ];
   }
 }
@@ -141,21 +123,18 @@ class AllProfessionalsScreen extends StatefulWidget {
     this.onRefresh,
   });
 
-  /// Dynamic — whatever section header the caller passed in
-  /// ("Nearby Professionals", "Top Rated", "Electricians", "Search
-  /// Results", etc). Never hardcoded here.
+  /// Header text passed in by the caller (e.g. "Nearby Professionals",
+  /// "Top Rated", "Electricians", "Search Results"). Never hardcoded here.
   final String title;
 
   final List<dynamic> professionals;
 
   /// Which dashboard section opened this screen — drives which filter
-  /// chips get shown. Required so a caller can never forget to say which
-  /// section this is and accidentally fall back to a generic chip set.
+  /// chips are shown.
   final ProSection section;
 
-  /// Optional — if the caller can re-fetch (e.g. from a live search),
-  /// pull-to-refresh calls this. If null, pull-to-refresh is disabled
-  /// rather than faking a refresh that does nothing.
+  /// Optional re-fetch hook used by pull-to-refresh. If null,
+  /// pull-to-refresh is disabled rather than faking a no-op refresh.
   final Future<void> Function()? onRefresh;
 
   @override
@@ -166,7 +145,8 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
   final _favStore = FavoritesStore();
   final Map<String, Future<bool>> _favCache = {};
 
-  late final List<_FilterOption> _options = _optionsFor(widget.section);
+  late final List<_FilterOption> _options =
+      _optionsFor(widget.section, AppLocalizations.of(context)!);
   int _selectedIndex = 0;
   late List<dynamic> _list;
 
@@ -176,6 +156,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
     _list = _options[_selectedIndex].apply(widget.professionals);
   }
 
+  /// Applies the chip at [index] and re-renders the list from it.
   void _applyFilter(int index) {
     setState(() {
       _selectedIndex = index;
@@ -183,10 +164,13 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
     });
   }
 
+  /// Looks up (and caches) whether a professional is already favorited.
   Future<bool> _favFuture(String id) {
     return _favCache.putIfAbsent(id, () => _favStore.isFavorite(id));
   }
 
+  /// Pull-to-refresh handler: re-fetches via [AllProfessionalsScreen.onRefresh],
+  /// then re-applies the currently selected filter and clears the favorite cache.
   Future<void> _handleRefresh() async {
     if (widget.onRefresh == null) return;
     await widget.onRefresh!();
@@ -203,7 +187,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
       backgroundColor: context.colors.background,
       appBar: AppBar(
         backgroundColor: context.colors.surface,
-        elevation:       0,
+        elevation: 0,
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
         title: Text(widget.title,
@@ -221,20 +205,13 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
           Expanded(
             child: _list.isEmpty
                 ? _buildEmpty()
-                // 🔧 FIX: always the SAME global ProfessionalCard, in the
-                // same fullWidth form it already uses in every other
-                // full-list place in the app (old "See all" sheet,
-                // Saved Professionals, etc). Previously this switched to
-                // a 2-column GridView with fullWidth:false on wide
-                // screens — that's the card's narrow *carousel* mode
-                // (fixed ~230px width), which doesn't stretch to fill a
-                // grid cell, so it visually read as a different card.
-                // One card, one rendering, everywhere.
+                // Always the same global ProfessionalCard in fullWidth
+                // form, matching every other full-list place in the app.
                 : RefreshIndicator(
-                    color:     context.colors.primary,
+                    color: context.colors.primary,
                     onRefresh: widget.onRefresh != null ? _handleRefresh : () async {},
                     child: ListView.separated(
-                      padding:  const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                       itemCount: _list.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 14),
                       itemBuilder: (_, i) => _buildCard(_list[i] as Map),
@@ -246,15 +223,11 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
     );
   }
 
-  // ── Sticky filter bar — chips are entirely driven by `widget.section`
-  // (see `_optionsFor`), so Recommended / Nearby / Top Rated / Trending /
-  // Recently Added / Category each show their own relevant chips instead
-  // of one shared universal set. Still presentation-only reorder/filter
-  // of the already-fetched list — no new query.
+  /// Horizontal, sticky row of filter chips for the current section.
   Widget _buildSortBar() {
     return Container(
       decoration: BoxDecoration(
-        color:  context.colors.surface,
+        color: context.colors.surface,
         border: Border(bottom: BorderSide(color: context.colors.divider)),
       ),
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -268,7 +241,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
               padding: const EdgeInsets.only(right: 8),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                curve:    Curves.easeOut,
+                curve: Curves.easeOut,
                 child: ChoiceChip(
                   label: Text(_options[i].label,
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
@@ -292,6 +265,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
     );
   }
 
+  /// Renders one professional's row using the shared [ProfessionalCard].
   Widget _buildCard(Map pro, {bool fullWidth = true}) {
     final id = pro['id']?.toString() ?? pro['user_id']?.toString() ?? '';
     return RepaintBoundary(
@@ -299,9 +273,9 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
         future: _favFuture(id),
         builder: (context, snap) {
           return ProfessionalCard(
-            pro:              pro,
-            fullWidth:        fullWidth,
-            isFavorite:       snap.data ?? false,
+            pro: pro,
+            fullWidth: fullWidth,
+            isFavorite: snap.data ?? false,
             onFavoriteToggle: () async {
               await _favStore.toggle(Map<String, dynamic>.from(pro));
               _favCache.remove(id);
@@ -317,7 +291,9 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
     );
   }
 
+  /// Empty-state shown when the current filter yields no results.
   Widget _buildEmpty() {
+    final t = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -330,10 +306,10 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
               child: Icon(Icons.person_search_rounded, size: 40, color: context.colors.primary),
             ),
             const SizedBox(height: 20),
-            Text('No professionals found',
+            Text(t.homeNoProfessionalsFound,
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
             const SizedBox(height: 8),
-            Text('Try a different category or check back later',
+            Text(t.homeNoProfessionalsFoundHint,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: context.colors.textSecondary)),
             const SizedBox(height: 24),
@@ -344,7 +320,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 side: BorderSide(color: context.colors.primary),
               ),
-              child: Text('Go Back', style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.w600)),
+              child: Text(t.homeGoBack, style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.w600)),
             ),
           ],
         ),

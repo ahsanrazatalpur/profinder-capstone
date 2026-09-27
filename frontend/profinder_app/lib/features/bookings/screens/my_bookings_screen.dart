@@ -7,6 +7,7 @@ import '../../../services/booking_service.dart';
 import 'write_review_screen.dart';
 import '../../subscription/widgets/promo_banner_mixin.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -136,7 +137,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
         backgroundColor: context.colors.surface,
         elevation:       0,
         toolbarHeight:   56,
-        title: Text('My Bookings',
+        title: Text(AppLocalizations.of(context)!.myBookings,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700,
                 letterSpacing: -0.3, color: context.colors.textPrimary)),
         leading: IconButton(
@@ -191,11 +192,11 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           Icon(Icons.calendar_today_outlined, size: 64, color: context.colors.textDisabled),
           const SizedBox(height: 16),
           Text(
-            tab == 'All' ? 'No bookings yet' : 'No $tab bookings',
+            tab == 'All' ? AppLocalizations.of(context)!.professionalNoBookingsYet : AppLocalizations.of(context)!.professionalNoBookings(tab),
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
           ),
           const SizedBox(height: 8),
-          Text('Book a professional from home screen',
+          Text(AppLocalizations.of(context)!.bookingsBookProfessionalFromHomeScreen,
               style: TextStyle(fontSize: 14, color: context.colors.textSecondary)),
         ],
       ),
@@ -291,7 +292,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                                     color: context.colors.textPrimary)),
                             if (reviewCount > 0) ...[
                               const SizedBox(width: 4),
-                              Text('($reviewCount reviews)',
+                              Text('($reviewCount ${AppLocalizations.of(context)!.reviews})',
                                   style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary)),
                             ],
                           ],
@@ -584,8 +585,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
         child: OutlinedButton.icon(
           onPressed: () => _confirmCancel((booking['id'] as num).toInt()),
           icon:  const Icon(Icons.cancel_outlined, size: 19, color: AppColors.error),
-          label: const Text('Cancel Booking',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.error)),
+          label: Text(AppLocalizations.of(context)!.professionalCancelBooking,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.error)),
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: AppColors.error, width: 1.4),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -617,8 +618,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           if (result == true) _loadBookings();
         },
         icon:  const Icon(Icons.star_rounded, size: 19, color: Colors.white),
-        label: const Text('Write a Review',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+        label: Text(AppLocalizations.of(context)!.writeReview,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFF59E0B),
           elevation: 0,
@@ -636,25 +637,25 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
-            SizedBox(width: 8),
-            Text('Cancel Booking?',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            const Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context)!.professionalCancelBooking + '?',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Are you sure you want to cancel this booking?',
-              style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+            Text(
+              AppLocalizations.of(context)!.professionalSureWantCancelBooking,
+              style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
             ),
             const SizedBox(height: 14),
-            const Text('Reason for cancelling (optional)',
-                style: TextStyle(
+            Text(AppLocalizations.of(context)!.professionalReasonCancellingOptional,
+                style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF374151))),
@@ -664,7 +665,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
               maxLines:   3,
               style: const TextStyle(fontSize: 13),
               decoration: InputDecoration(
-                hintText:  'e.g. schedule changed, no longer needed...',
+                hintText:  AppLocalizations.of(context)!.bookingsEGScheduleChangedNoLonger,
                 hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
                 filled:    true,
                 fillColor: const Color(0xFFF9FAFB),
@@ -685,8 +686,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Go Back',
-                style: TextStyle(color: Color(0xFF9CA3AF))),
+            child: Text(AppLocalizations.of(context)!.magazineGoBack,
+                style: const TextStyle(color: Color(0xFF9CA3AF))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -694,8 +695,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8))),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Yes, Cancel It',
-                style: TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.of(context)!.professionalYesCancelIt,
+                style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),

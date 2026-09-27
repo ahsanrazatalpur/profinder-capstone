@@ -44,6 +44,7 @@ import '../../subscription/widgets/promo_banner_mixin.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../chat/presentation/screens/chat_screen.dart';
 import '../../chat/data/models/conversation_model.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalBookingsScreen extends StatefulWidget {
   final bool isVisible;
@@ -120,7 +121,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, 'Could not load bookings');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.loadBookingsError);
     }
   }
 
@@ -221,11 +222,11 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       await _api.patch('${AppConstants.professionalBookings}$id/', body);
       if (!mounted) return;
       await _clearSuggestedTime(id.toString());
-      AppHelpers.showSuccess(context, 'Booking ${AppHelpers.capitalize(newStatus)}');
+      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.bookingStatusUpdated(newStatus));
       _loadBookings();
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, 'Failed to update booking');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.updateBookingError);
     }
   }
 
@@ -237,11 +238,11 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
-            SizedBox(width: 8),
-            Text('Cancel Booking?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            const Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context)!.cancelBookingTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
           ],
         ),
         content: Column(
@@ -249,19 +250,21 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Are you sure you want to cancel this booking?',
+              AppLocalizations.of(context)!.cancelConfirmationMessage,
               style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
             ),
             const SizedBox(height: 14),
-            Text('Reason for cancelling (optional)',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
+            Text(
+              AppLocalizations.of(context)!.cancelReasonLabel,
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.colors.textPrimary),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: reasonCtrl,
               maxLines: 3,
               style: const TextStyle(fontSize: 13),
               decoration: InputDecoration(
-                hintText: 'e.g. not available that day, emergency came up...',
+                hintText: AppLocalizations.of(context)!.cancelReasonHint,
                 hintStyle: TextStyle(fontSize: 12, color: context.colors.textSecondary),
                 filled: true,
                 fillColor: context.colors.background,
@@ -279,13 +282,13 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Go Back', style: TextStyle(color: context.colors.textSecondary)),
+            child: Text(AppLocalizations.of(context)!.goBackCta, style: TextStyle(color: context.colors.textSecondary)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Yes, Cancel It', style: TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.of(context)!.yesCancelCta, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -309,23 +312,26 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
 
     await _saveSuggestedTime(booking['id'].toString(), date, time);
     if (!mounted) return;
-    AppHelpers.showSuccess(context, 'New time suggested — moved to Rescheduled');
+    AppHelpers.showSuccess(context, AppLocalizations.of(context)!.suggestTimeSuccess);
 
     final openChat = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Let the customer know?', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+        title: Text(AppLocalizations.of(context)!.notifyCustomerTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
         content: Text(
-          'Open chat to share the new time — ${DateFormat('EEE, MMM d').format(date)} at ${time.format(context)}.',
+          AppLocalizations.of(context)!.notifyCustomerMessage(
+            DateFormat('EEE, MMM d').format(date),
+            time.format(context),
+          ),
           style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Later')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context)!.laterCta)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.professionalColor, foregroundColor: Colors.white),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Open Chat'),
+            child: Text(AppLocalizations.of(context)!.openChatCta),
           ),
         ],
       ),
@@ -339,7 +345,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     setState(() => _isStartingChat = true);
     try {
       final customerId = booking['customer'];
-      final customerName = (booking['customer_name'] ?? booking['customer'] ?? 'Customer').toString();
+      final customerName = (booking['customer_name'] ?? booking['customer'] ?? AppLocalizations.of(context)!.customerDefault).toString();
       final results = await Future.wait([
         _api.post(AppConstants.conversations, {'other_user_id': customerId}),
         _api.get(AppConstants.me),
@@ -362,7 +368,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       );
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, 'Could not open chat');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.openChatError);
     } finally {
       if (mounted) setState(() => _isStartingChat = false);
     }
@@ -401,7 +407,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   }
 
   String _statusLabel(dynamic b) {
-    if (_isSuggested(b)) return 'Rescheduled';
+    if (_isSuggested(b)) return AppLocalizations.of(context)!.rescheduledLabel;
     return AppHelpers.capitalize(_statusOf(b));
   }
 
@@ -411,8 +417,8 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     final isPending = status == 'pending';
     final isAccepted = status == 'accepted';
     final isCancellable = isPending || isAccepted;
-    final customerName = (b['customer_name'] ?? b['customer'] ?? 'Customer').toString();
-    final date = b['date']?.toString() ?? 'Not set';
+    final customerName = (b['customer_name'] ?? b['customer'] ?? AppLocalizations.of(context)!.customerDefault).toString();
+    final date = b['date']?.toString() ?? AppLocalizations.of(context)!.dateNotSet;
     final time = b['time']?.toString() ?? '';
     final split = _splitNote(b['note']?.toString() ?? '');
     final location = split['location'] ?? '';
@@ -454,7 +460,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                 children: [
                   Expanded(
                     child: Text(
-                      'Booking Details',
+                      AppLocalizations.of(context)!.bookingDetailsTitle,
                       style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: context.colors.textPrimary),
                     ),
                   ),
@@ -462,18 +468,18 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                 ],
               ),
               const SizedBox(height: 18),
-              _detailRow(Icons.person_outline_rounded, 'Customer', customerName),
-              if (_myServiceCategory.isNotEmpty) _detailRow(Icons.design_services_rounded, 'Service', _myServiceCategory),
-              _detailRow(Icons.calendar_today_outlined, 'Date', date),
-              if (time.isNotEmpty) _detailRow(Icons.access_time_rounded, 'Time', time),
-              _detailRow(Icons.location_on_outlined, 'Location', location.isNotEmpty ? location : 'Not specified'),
-              if (notes.isNotEmpty) _detailRow(Icons.notes_rounded, 'Notes', notes),
+              _detailRow(Icons.person_outline_rounded, AppLocalizations.of(context)!.customerLabel, customerName),
+              if (_myServiceCategory.isNotEmpty) _detailRow(Icons.design_services_rounded, AppLocalizations.of(context)!.serviceLabel, _myServiceCategory),
+              _detailRow(Icons.calendar_today_outlined, AppLocalizations.of(context)!.dateLabel, date),
+              if (time.isNotEmpty) _detailRow(Icons.access_time_rounded, AppLocalizations.of(context)!.timeLabel, time),
+              _detailRow(Icons.location_on_outlined, AppLocalizations.of(context)!.locationLabel, location.isNotEmpty ? location : AppLocalizations.of(context)!.locationNotSpecified),
+              if (notes.isNotEmpty) _detailRow(Icons.notes_rounded, AppLocalizations.of(context)!.notesLabel, notes),
               if (suggested != null)
-                _detailRow(Icons.update_rounded, 'Suggested Time', '${suggested['date']} · ${suggested['time']}'),
+                _detailRow(Icons.update_rounded, AppLocalizations.of(context)!.suggestedTimeLabel, '${suggested['date']} · ${suggested['time']}'),
               if (status == 'cancelled' && cancelReason.isNotEmpty)
                 _detailRow(
                   Icons.info_outline_rounded,
-                  cancelledBy == 'customer' ? 'Cancelled by customer' : 'Cancelled by you',
+                  cancelledBy == 'customer' ? AppLocalizations.of(context)!.cancelledByCustomerLabel : AppLocalizations.of(context)!.cancelledByYouLabel,
                   cancelReason,
                 ),
               const SizedBox(height: 18),
@@ -487,7 +493,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                           _updateStatus(b, 'rejected');
                         },
                         icon: const Icon(Icons.close_rounded, size: 16),
-                        label: const Text('Decline'),
+                        label: Text(AppLocalizations.of(context)!.declineCta),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.error,
                           side: BorderSide(color: AppColors.error.withOpacity(0.4)),
@@ -504,7 +510,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                           _updateStatus(b, 'accepted');
                         },
                         icon: const Icon(Icons.check_rounded, size: 16),
-                        label: const Text('Accept'),
+                        label: Text(AppLocalizations.of(context)!.acceptCta),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.accent,
                           foregroundColor: Colors.white,
@@ -525,7 +531,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       _suggestNewTime(b);
                     },
                     icon: const Icon(Icons.update_rounded, size: 16),
-                    label: const Text('Suggest New Time'),
+                    label: Text(AppLocalizations.of(context)!.suggestTimeCta),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.info,
                       side: BorderSide(color: AppColors.info.withOpacity(0.4)),
@@ -543,7 +549,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       _updateStatus(b, 'completed');
                     },
                     icon: const Icon(Icons.done_all_rounded, size: 16),
-                    label: const Text('Mark as Completed'),
+                    label: Text(AppLocalizations.of(context)!.markCompletedCta),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.colors.primary,
                       foregroundColor: Colors.white,
@@ -562,7 +568,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     _openChat(b);
                   },
                   icon: const Icon(Icons.chat_bubble_outline_rounded, size: 16),
-                  label: const Text('Open Chat'),
+                  label: Text(AppLocalizations.of(context)!.openChatCta),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.professionalColor,
                     side: BorderSide(color: AppColors.professionalColor.withOpacity(0.4)),
@@ -581,7 +587,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       _confirmCancel(b);
                     },
                     icon: const Icon(Icons.cancel_outlined, size: 16),
-                    label: const Text('Cancel Booking'),
+                    label: Text(AppLocalizations.of(context)!.cancelBookingCta),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: context.colors.textSecondary,
                       side: BorderSide(color: context.colors.divider),
@@ -652,7 +658,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
         backgroundColor: context.colors.surface,
         elevation: 0,
         title: Text(
-          'Booking Management',
+          AppLocalizations.of(context)!.bookingManagementTitle,
           style: TextStyle(
             fontSize: isTablet ? 19 : 17,
             fontWeight: FontWeight.w700,
@@ -717,6 +723,30 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       default:
         icon = Icons.calendar_today_outlined;
     }
+    // Get localized empty state text
+    String emptyText;
+    switch (tab) {
+      case 'All':
+        emptyText = AppLocalizations.of(context)!.noBookingsAll;
+        break;
+      case 'Pending':
+        emptyText = AppLocalizations.of(context)!.noBookingsPending;
+        break;
+      case 'Rescheduled':
+        emptyText = AppLocalizations.of(context)!.noBookingsRescheduled;
+        break;
+      case 'Accepted':
+        emptyText = AppLocalizations.of(context)!.noBookingsAccepted;
+        break;
+      case 'Completed':
+        emptyText = AppLocalizations.of(context)!.noBookingsCompleted;
+        break;
+      case 'Cancelled':
+        emptyText = AppLocalizations.of(context)!.noBookingsCancelled;
+        break;
+      default:
+        emptyText = AppLocalizations.of(context)!.noBookingsDefault;
+    }
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
@@ -725,7 +755,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
         const SizedBox(height: 12),
         Center(
           child: Text(
-            'No ${tab == 'All' ? '' : tab.toLowerCase()} bookings',
+            emptyText,
             style: TextStyle(fontSize: 14, color: context.colors.textSecondary, fontWeight: FontWeight.w500),
           ),
         ),
@@ -736,7 +766,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   // ── Booking card ─────────────────────────────────────────
   Widget _buildBookingCard(dynamic b, bool isTablet) {
     final status = _statusOf(b);
-    final customerName = (b['customer_name'] ?? b['customer'] ?? 'Customer').toString();
+    final customerName = (b['customer_name'] ?? b['customer'] ?? AppLocalizations.of(context)!.customerDefault).toString();
     final date = b['date']?.toString() ?? '';
     final time = b['time']?.toString() ?? '';
     final split = _splitNote(b['note']?.toString() ?? '');
@@ -751,7 +781,9 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () => _showBookingDetail(b),
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
           margin: const EdgeInsets.only(bottom: 12),
           padding: EdgeInsets.all(isTablet ? 18 : 15),
           decoration: BoxDecoration(
@@ -829,7 +861,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                         Expanded(
                           child: _infoChip(
                             Icons.calendar_today_outlined,
-                            date.isNotEmpty ? date : 'Not set',
+                            date.isNotEmpty ? date : AppLocalizations.of(context)!.dateNotSetShort,
                             isTablet,
                           ),
                         ),
@@ -854,7 +886,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       child: OutlinedButton.icon(
                         onPressed: () => _updateStatus(b, 'rejected'),
                         icon: const Icon(Icons.close_rounded, size: 15),
-                        label: const Text('Decline', style: TextStyle(fontSize: 12.5)),
+                        label: Text(AppLocalizations.of(context)!.declineCta, style: const TextStyle(fontSize: 12.5)),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.error,
                           side: BorderSide(color: AppColors.error.withOpacity(0.35)),
@@ -868,7 +900,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       child: ElevatedButton.icon(
                         onPressed: () => _updateStatus(b, 'accepted'),
                         icon: const Icon(Icons.check_rounded, size: 15),
-                        label: const Text('Accept', style: TextStyle(fontSize: 12.5)),
+                        label: Text(AppLocalizations.of(context)!.acceptCta, style: const TextStyle(fontSize: 12.5)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.accent,
                           foregroundColor: Colors.white,
@@ -886,7 +918,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     Expanded(
                       child: _secondaryActionButton(
                         icon: Icons.update_rounded,
-                        label: 'Suggest Time',
+                        label: AppLocalizations.of(context)!.suggestTimeCtaShort,
                         color: AppColors.info,
                         onTap: () => _suggestNewTime(b),
                       ),
@@ -895,7 +927,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     Expanded(
                       child: _secondaryActionButton(
                         icon: Icons.chat_bubble_outline_rounded,
-                        label: 'Open Chat',
+                        label: AppLocalizations.of(context)!.openChatCtaShort,
                         color: AppColors.professionalColor,
                         onTap: () => _openChat(b),
                       ),
@@ -909,7 +941,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     Expanded(
                       child: _secondaryActionButton(
                         icon: Icons.chat_bubble_outline_rounded,
-                        label: 'Open Chat',
+                        label: AppLocalizations.of(context)!.openChatCtaShort,
                         color: AppColors.professionalColor,
                         onTap: () => _openChat(b),
                       ),
@@ -920,7 +952,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       child: ElevatedButton.icon(
                         onPressed: () => _updateStatus(b, 'completed'),
                         icon: const Icon(Icons.done_all_rounded, size: 15),
-                        label: const Text('Mark Completed', style: TextStyle(fontSize: 12.5)),
+                        label: Text(AppLocalizations.of(context)!.markCompletedCtaShort, style: const TextStyle(fontSize: 12.5)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: Colors.white,

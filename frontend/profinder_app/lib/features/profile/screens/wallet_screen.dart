@@ -6,11 +6,13 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/api_service.dart';
 import '../../subscription/screens/subscription_screen.dart';
 import 'payments_screen.dart';
-import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/cta_banner.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -57,76 +59,215 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > 600;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: context.colors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.colors.surface,
         elevation: 0,
-        title: const Text('Wallet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Color(0xFF374151)), onPressed: () => Navigator.pop(context)),
+        title: Text(
+          AppLocalizations.of(context)!.walletTitle,
+          style: TextStyle(
+            fontSize: isTablet ? 18.0 : 16.0,
+            fontWeight: FontWeight.w700,
+            color: context.colors.textPrimary,
+            letterSpacing: -0.3,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: context.colors.textPrimary,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  color: AppColors.customerColor,
+                  strokeWidth: 3,
+                ),
+              ),
+            )
           : RefreshIndicator(
               onRefresh: _load,
-              color: context.colors.primary,
-              child: ListView(
+              color: AppColors.customerColor,
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF059669), Color(0xFF10B981)]),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(children: [
-                          Container(
-                            width: 44, height: 44,
-                            decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), shape: BoxShape.circle),
-                            child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white),
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    // ── Balance Card ──────────────────────────
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeOut,
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFF059669), Color(0xFF10B981)],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF10B981).withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           ),
-                          const SizedBox(width: 10),
-                          const Text('Total Spent', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                        ]),
-                        const SizedBox(height: 14),
-                        Text('\$${_totalSpent.toStringAsFixed(2)}',
-                            style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 4),
-                        Text('Across $_txCount transaction${_txCount == 1 ? '' : 's'}',
-                            style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  CtaBanner(
-                    isDark: false,
-                    title: 'Current plan: $_planName',
-                    subtitle: _isPremium ? 'You have premium benefits active' : 'Upgrade for premium perks',
-                    ctaLabel: _isPremium ? 'Manage' : 'Upgrade',
-                    icon: Icons.workspace_premium_rounded,
-                    accentStart: const Color(0xFFA78BFA),
-                    accentEnd: const Color(0xFF8B5CF6),
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen(userRole: 'customer'))),
-                  ),
-                  const SizedBox(height: 14),
-                  Material(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE5E7EB))),
-                      child: ListTile(
-                        leading: Icon(Icons.receipt_long_rounded, color: context.colors.primary),
-                        title: const Text('Payment History', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                        subtitle: Text('View all your transactions', style: TextStyle(fontSize: 11.5, color: context.colors.textSecondary)),
-                        trailing: const Icon(Icons.chevron_right_rounded),
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentsScreen())),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.15),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.account_balance_wallet_rounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                AppLocalizations.of(context)!.totalSpentLabel,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          Text(
+                            '\$${_totalSpent.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            AppLocalizations.of(context)!.transactionCountLabel(_txCount),
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.75),
+                              fontSize: 12,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 14),
+
+                    // ── Subscription Banner ──────────────────
+                    CtaBanner(
+                      isDark: isDark,
+                      title: AppLocalizations.of(context)!.currentPlanLabel(_planName),
+                      subtitle: _isPremium
+                          ? AppLocalizations.of(context)!.premiumActiveSubtitle
+                          : AppLocalizations.of(context)!.premiumUpgradeSubtitle,
+                      ctaLabel: _isPremium ? AppLocalizations.of(context)!.manageCta : AppLocalizations.of(context)!.upgradeCta,
+                      icon: Icons.workspace_premium_rounded,
+                      accentStart: const Color(0xFFA78BFA),
+                      accentEnd: const Color(0xFF8B5CF6),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SubscriptionScreen(userRole: 'customer'),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    // ── Payment History Tile ──────────────────
+                    Material(
+                      color: context.colors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isDark
+                                ? Colors.white.withOpacity(0.08)
+                                : const Color(0xFFE5E7EB),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDark
+                                  ? Colors.black.withOpacity(0.1)
+                                  : Colors.grey.withOpacity(0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          leading: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: AppColors.customerColor.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              Icons.receipt_long_rounded,
+                              color: AppColors.customerColor,
+                              size: 20,
+                            ),
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.paymentHistoryLabel,
+                            style: TextStyle(
+                              fontSize: isTablet ? 15.0 : 14.0,
+                              fontWeight: FontWeight.w600,
+                              color: context.colors.textPrimary,
+                              letterSpacing: -0.1,
+                            ),
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(context)!.paymentHistorySubtitle,
+                            style: TextStyle(
+                              fontSize: isTablet ? 12.0 : 11.5,
+                              color: context.colors.textSecondary,
+                            ),
+                          ),
+                          trailing: Icon(
+                            Icons.chevron_right_rounded,
+                            color: context.colors.textSecondary,
+                            size: 20,
+                          ),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const PaymentsScreen()),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );

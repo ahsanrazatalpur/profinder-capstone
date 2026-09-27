@@ -20,6 +20,26 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
 
+  <!-- ✅ NEW — Google Sign-In (Flutter Web). Required for google_sign_in
+       package to work in the browser — without it, GoogleSignIn().signIn()
+       throws and it looks like a generic failure with no real error. -->
+  <meta name="google-signin-client_id" content="405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com">
+
+  <!-- ✅ NEW — Facebook Sign-In (Flutter Web). Required for
+       flutter_facebook_auth to work in the browser. -->
+  <div id="fb-root"></div>
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId: 'PASTE_YOUR_FACEBOOK_APP_ID_HERE',
+        cookie: true,
+        xfbml: true,
+        version: 'v19.0'
+      });
+    };
+  </script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">

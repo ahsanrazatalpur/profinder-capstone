@@ -6,6 +6,7 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalAnalyticsScreen extends StatefulWidget {
   const ProfessionalAnalyticsScreen({super.key});
@@ -42,7 +43,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _error = 'Could not load analytics. Pull down to retry.';
+        _error = AppLocalizations.of(context)!.analyticsLoadError;
       });
     }
   }
@@ -69,7 +70,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
         leadingWidth: isDesktop ? 60 : null,
         leading: isDesktop ? const SizedBox(width: 8) : null,
         title: Text(
-          'Analytics',
+          AppLocalizations.of(context)!.analyticsTitle,
           style: TextStyle(
             fontSize: isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0),
             fontWeight: FontWeight.w700,
@@ -86,7 +87,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
               color: context.colors.textSecondary,
               size: isDesktop ? 24.0 : 20.0,
             ),
-            tooltip: 'Refresh',
+            tooltip: AppLocalizations.of(context)!.refreshTooltip,
           ),
           const SizedBox(width: 8),
         ],
@@ -106,7 +107,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading analytics...',
+                    AppLocalizations.of(context)!.loadingAnalyticsText,
                     style: TextStyle(
                       fontSize: isDesktop ? 16.0 : 14.0,
                       color: context.colors.textSecondary,
@@ -204,7 +205,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
             ),
             const SizedBox(height: 20),
             Text(
-              'Unable to Load Analytics',
+              AppLocalizations.of(context)!.analyticsErrorTitle,
               style: TextStyle(
                 fontSize: isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0),
                 fontWeight: FontWeight.w700,
@@ -229,7 +230,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
               onPressed: _load,
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: Text(
-                'Try Again',
+                AppLocalizations.of(context)!.tryAgainCta,
                 style: TextStyle(
                   fontSize: isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0),
                   fontWeight: FontWeight.w600,
@@ -278,7 +279,9 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
     
     final padding = isDesktop ? 28.0 : (isTablet ? 24.0 : 20.0);
 
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOut,
       width: double.infinity,
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
@@ -317,7 +320,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
               ),
               const SizedBox(width: 10),
               Text(
-                'Performance Score',
+                AppLocalizations.of(context)!.performanceScoreLabel,
                 style: TextStyle(
                   fontSize: isDesktop ? 16.0 : (isTablet ? 14.0 : 13.0),
                   fontWeight: FontWeight.w600,
@@ -339,7 +342,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
           ),
           const SizedBox(height: 4),
           Text(
-            'out of 100',
+            AppLocalizations.of(context)!.performanceScoreOutOf(score.toStringAsFixed(0)),
             style: TextStyle(
               fontSize: isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0),
               color: Colors.white.withOpacity(0.8),
@@ -396,39 +399,39 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
   ) {
     final stats = [
       {
-        'label': 'Profile Views',
+        'label': AppLocalizations.of(context)!.profileViewsLabel,
         'value': '${a['profile_views'] ?? 0}',
         'icon': Icons.visibility_outlined,
         'color': const Color(0xFF3B82F6),
-        'subtext': 'Total views',
+        'subtext': AppLocalizations.of(context)!.profileViewsSubtext,
       },
       {
-        'label': 'Visitors',
+        'label': AppLocalizations.of(context)!.visitorsLabel,
         'value': '${a['visitors'] ?? 0}',
         'icon': Icons.people_outline_rounded,
         'color': const Color(0xFF8B5CF6),
-        'subtext': 'Unique visitors',
+        'subtext': AppLocalizations.of(context)!.visitorsSubtext,
       },
       {
-        'label': 'Acceptance Rate',
+        'label': AppLocalizations.of(context)!.acceptanceRateLabel,
         'value': '${a['acceptance_rate'] ?? 0}%',
         'icon': Icons.check_circle_outline_rounded,
         'color': const Color(0xFF10B981),
-        'subtext': 'Bookings accepted',
+        'subtext': AppLocalizations.of(context)!.acceptanceRateSubtext,
       },
       {
-        'label': 'Response Rate',
+        'label': AppLocalizations.of(context)!.responseRateLabel,
         'value': '${a['response_rate'] ?? 0}%',
         'icon': Icons.reply_rounded,
         'color': const Color(0xFFF59E0B),
-        'subtext': 'Messages replied',
+        'subtext': AppLocalizations.of(context)!.responseRateSubtext,
       },
       {
-        'label': 'Average Rating',
+        'label': AppLocalizations.of(context)!.averageRatingLabel,
         'value': '${a['average_rating'] ?? 0} / 5',
         'icon': Icons.star_rounded,
         'color': const Color(0xFFEF4444),
-        'subtext': 'From reviews',
+        'subtext': AppLocalizations.of(context)!.averageRatingSubtext,
       },
     ];
 
@@ -486,7 +489,9 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
     
     final padding = isDesktop ? 18.0 : (isTablet ? 16.0 : 14.0);
 
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOut,
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         color: context.colors.surface,
@@ -573,7 +578,9 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
   Widget _buildInfoNote(bool isDark, bool isDesktop, bool isTablet) {
     final padding = isDesktop ? 18.0 : (isTablet ? 16.0 : 14.0);
     
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -608,7 +615,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Performance Score = 40% rating + 30% acceptance rate + 30% response rate.',
+              AppLocalizations.of(context)!.performanceScoreInfo,
               style: TextStyle(
                 fontSize: isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0),
                 color: isDark 
@@ -629,7 +636,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
   Widget _buildLastUpdated(bool isDark, bool isDesktop, bool isTablet) {
     return Center(
       child: Text(
-        'Last updated: ${DateTime.now().toString().substring(0, 16)}',
+        AppLocalizations.of(context)!.lastUpdatedLabel(DateTime.now().toString().substring(0, 16)),
         style: TextStyle(
           fontSize: isDesktop ? 12.0 : (isTablet ? 11.0 : 10.0),
           color: context.colors.textSecondary.withOpacity(0.4),

@@ -76,19 +76,29 @@ class _SocialAuthButtonState extends State<SocialAuthButton> {
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               onTap: widget.onTap,
               onHighlightChanged: (v) => setState(() => _pressed = v),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  widget.logo,
-                  const SizedBox(width: AppSizes.sm),
-                  Text(
-                    widget.label,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color:      widget.textColor,
-                      fontWeight: FontWeight.w600,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    widget.logo,
+                    const SizedBox(width: AppSizes.sm),
+                    // Flexible + ellipsis — so on narrow buttons (Facebook/
+                    // Twitter share half the row width) the label shrinks
+                    // gracefully instead of overflowing past the button.
+                    Flexible(
+                      child: Text(
+                        widget.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color:      widget.textColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

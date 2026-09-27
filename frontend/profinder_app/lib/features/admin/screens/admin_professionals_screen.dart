@@ -2,8 +2,8 @@
 //
 // Professionals Management
 // Features: search, verification/status filter, category filter, sorting
-// (rating/bookings/name/date), multi-select + bulk verify/remind/export,
-// rating + total-bookings display, single verify/ban actions.
+// (rating/bookings/name/date), multi-select + bulk verify/ban-unban/remind/
+// export, rating + total-bookings display, single verify/ban actions.
 //
 // Backend endpoints:
 //   GET   /api/users/?role=professional          → list all professionals
@@ -225,6 +225,47 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
     _applyFilters();
     setState(() { _selectionMode = false; _selectedIds.clear(); });
     _showSnack('$success professional(s) verified', context.colors.accent);
+  }
+
+  // NOTE: This bulk ban/unban action was missing entirely — the bulk
+  // action bar only had Verify, Remind and Export, so once you selected
+  // multiple professionals there was no way to block/unblock them as a
+  // batch (unlike the Customers/Users screens, which both have this).
+  // Adding it here mirrors _bulkSetStatus() from admin_customers_screen.dart.
+  Future<void> _bulkBan({required bool ban}) async {
+    if (_selectedIds.isEmpty) return;
+    final confirmed = await _confirmDialog(
+      title: ban
+          ? 'Ban ${_selectedIds.length} professionals?'
+          : 'Unban ${_selectedIds.length} professionals?',
+      message: ban
+          ? 'Selected professionals will be blocked from logging in.'
+          : 'Selected professionals will be able to login and receive bookings again.',
+      confirmLabel: ban ? 'Ban All' : 'Unban All',
+      confirmColor: ban ? AppColors.error : context.colors.accent,
+      icon: ban ? Icons.block_rounded : Icons.lock_open_rounded,
+    );
+    if (!confirmed) return;
+
+    int success = 0;
+    for (final id in _selectedIds.toList()) {
+      final idx = _all.indexWhere((u) => u['id'] == id);
+      if (idx == -1) continue;
+      final isBanned = _all[idx]['is_active'] == false;
+      if (ban && isBanned) continue;
+      if (!ban && !isBanned) continue;
+      try {
+        await _api.patch('/admin-panel/users/$id/ban/', {'action': ban ? 'ban' : 'unban'});
+        setState(() => _all[idx]['is_active'] = !ban);
+        success++;
+      } catch (_) {}
+    }
+    _applyFilters();
+    setState(() { _selectionMode = false; _selectedIds.clear(); });
+    _showSnack(
+      '$success professional(s) ${ban ? 'banned' : 'unbanned'}',
+      ban ? AppColors.error : context.colors.accent,
+    );
   }
 
   Future<void> _bulkRemind() async {
@@ -530,7 +571,20 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
   }
 
   // ── Bulk Action Bar ───────────────────────────────────────
+  // NOTE: Wrapped in a SingleChildScrollView(horizontal) + used TextButton.icon
+  // consistently, and added Ban/Unban actions. Previously there was no way
+  // to bulk-ban/unban here even though the underlying capability
+  // (_toggleBan / the /ban/ endpoint) already existed for single items.
   Widget _buildBulkActionBar() {
+    final anyBanned = _selectedIds.any((id) {
+      final idx = _all.indexWhere((u) => u['id'] == id);
+      return idx != -1 && _all[idx]['is_active'] == false;
+    });
+    final anyActive = _selectedIds.any((id) {
+      final idx = _all.indexWhere((u) => u['id'] == id);
+      return idx != -1 && _all[idx]['is_active'] != false;
+    });
+
     return Container(
       color: AppColors.adminColor.withOpacity(0.06),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -538,21 +592,43 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
         children: [
           Text('${_selectedIds.length} selected',
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
-          const Spacer(),
-          TextButton.icon(
-            onPressed: _selectedIds.isEmpty ? null : _bulkVerify,
-            icon: Icon(Icons.verified_rounded, size: 16, color: context.colors.accent),
-            label: Text('Verify', style: TextStyle(color: context.colors.accent, fontSize: 12)),
-          ),
-          TextButton.icon(
-            onPressed: _selectedIds.isEmpty ? null : _bulkRemind,
-            icon: const Icon(Icons.notifications_active_outlined, size: 16, color: AppColors.info),
-            label: const Text('Remind', style: TextStyle(color: AppColors.info, fontSize: 12)),
-          ),
-          TextButton.icon(
-            onPressed: _selectedIds.isEmpty ? null : _exportCsv,
-            icon: const Icon(Icons.download_rounded, size: 16, color: Color(0xFF6B7280)),
-            label: const Text('Export', style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
+          const SizedBox(width: 4),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              reverse: true,
+              child: Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: _selectedIds.isEmpty ? null : _bulkVerify,
+                    icon: Icon(Icons.verified_rounded, size: 16, color: context.colors.accent),
+                    label: Text('Verify', style: TextStyle(color: context.colors.accent, fontSize: 12)),
+                  ),
+                  TextButton.icon(
+                    onPressed: _selectedIds.isEmpty ? null : _bulkRemind,
+                    icon: const Icon(Icons.notifications_active_outlined, size: 16, color: AppColors.info),
+                    label: const Text('Remind', style: TextStyle(color: AppColors.info, fontSize: 12)),
+                  ),
+                  if (anyActive)
+                    TextButton.icon(
+                      onPressed: _selectedIds.isEmpty ? null : () => _bulkBan(ban: true),
+                      icon: const Icon(Icons.block_rounded, size: 16, color: AppColors.error),
+                      label: const Text('Ban', style: TextStyle(color: AppColors.error, fontSize: 12)),
+                    ),
+                  if (anyBanned)
+                    TextButton.icon(
+                      onPressed: _selectedIds.isEmpty ? null : () => _bulkBan(ban: false),
+                      icon: Icon(Icons.lock_open_rounded, size: 16, color: context.colors.accent),
+                      label: Text('Unban', style: TextStyle(color: context.colors.accent, fontSize: 12)),
+                    ),
+                  TextButton.icon(
+                    onPressed: _selectedIds.isEmpty ? null : _exportCsv,
+                    icon: const Icon(Icons.download_rounded, size: 16, color: Color(0xFF6B7280)),
+                    label: const Text('Export', style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

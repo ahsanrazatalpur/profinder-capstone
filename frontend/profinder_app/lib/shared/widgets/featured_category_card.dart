@@ -16,6 +16,8 @@
 
 import 'package:flutter/material.dart';
 import '../../core/constants/app_sizes.dart';
+import '../../core/theme/theme_context_ext.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class FeaturedCategoryCard extends StatelessWidget {
   final String title;
@@ -37,14 +39,17 @@ class FeaturedCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final softenedGradient = [
       ...gradient.take(gradient.length - 1),
-      Color.lerp(gradient.last, Colors.white, 0.3)!,
+      Color.lerp(gradient.last, isDark ? Colors.black : Colors.white, 0.3)!,
     ];
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
         width: width,
         height: height,
         clipBehavior: Clip.antiAlias,
@@ -57,9 +62,19 @@ class FeaturedCategoryCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: gradient.last.withOpacity(0.35),
+              color: (isDark
+                      ? Colors.black.withOpacity(0.4)
+                      : gradient.last.withOpacity(0.35))
+                  .withOpacity(0.35),
               blurRadius: 16,
               offset: const Offset(0, 8),
+            ),
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withOpacity(0.15)
+                  : gradient.last.withOpacity(0.15),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -76,7 +91,9 @@ class FeaturedCategoryCard extends StatelessWidget {
               child: Icon(
                 icon,
                 size: height * 0.7,
-                color: Colors.white.withOpacity(0.45),
+                color: isDark
+                    ? Colors.white.withOpacity(0.3)
+                    : Colors.white.withOpacity(0.45),
               ),
             ),
             Padding(
@@ -102,11 +119,14 @@ class FeaturedCategoryCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Explore experts',
+                    AppLocalizations.of(context)!.exploreExpertsLabel,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.92),
+                      color: isDark
+                          ? Colors.white.withOpacity(0.85)
+                          : Colors.white.withOpacity(0.92),
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
                     ),
                   ),
                 ],

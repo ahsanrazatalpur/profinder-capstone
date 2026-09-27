@@ -7,6 +7,7 @@ import '../../../../core/utils/app_helpers.dart';
 import '../../data/repositories/chat_repository_impl.dart';
 import '../../domain/entities/message_entity.dart';
 import '../../../../core/theme/theme_context_ext.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class MessageSearchSheet extends StatefulWidget {
   final int conversationId;
@@ -69,7 +70,7 @@ class _MessageSearchSheetState extends State<MessageSearchSheet> {
                 autofocus: true,
                 onChanged: _onChanged,
                 decoration: InputDecoration(
-                  hintText: 'Search messages...',
+                  hintText: AppLocalizations.of(context)!.chatSearchMessagesHint,
                   prefixIcon: const Icon(Icons.search_rounded),
                   filled: true,
                   fillColor: const Color(0xFFF1F5F9),
@@ -82,7 +83,9 @@ class _MessageSearchSheetState extends State<MessageSearchSheet> {
               child: _results.isEmpty
                   ? Center(
                       child: Text(
-                        _controller.text.isEmpty ? 'Type to search this conversation' : 'No messages found',
+                        _controller.text.isEmpty
+                            ? AppLocalizations.of(context)!.chatTypeToSearchConversation
+                            : AppLocalizations.of(context)!.chatNoMessagesFound,
                         style: TextStyle(fontSize: 13, color: Colors.grey[400]),
                       ),
                     )

@@ -34,6 +34,7 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../services/api_service.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Status model
@@ -250,7 +251,7 @@ class _ProfessionalAvailabilityScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, 'Could not load availability');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.availabilityLoadError);
     }
   }
 
@@ -284,11 +285,11 @@ class _ProfessionalAvailabilityScreenState
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_prefsStatusKey, status.name);
       if (!mounted) return;
-      AppHelpers.showSuccess(context, 'Status updated to ${status.label}');
+      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.availabilityStatusUpdated(status.label));
     } catch (e) {
       if (!mounted) return;
       setState(() => _status = previous);
-      AppHelpers.showError(context, 'Could not update status');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.availabilityStatusUpdateError);
     } finally {
       if (mounted) setState(() => _isSavingStatus = false);
     }
@@ -355,11 +356,11 @@ class _ProfessionalAvailabilityScreenState
         _scheduleDirty = false;
         _isSavingSchedule = false;
       });
-      AppHelpers.showSuccess(context, 'Weekly schedule saved');
+      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.availabilityScheduleSaved);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSavingSchedule = false);
-      AppHelpers.showError(context, 'Could not save schedule');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.availabilityScheduleSaveError);
     }
   }
 
@@ -398,7 +399,7 @@ class _ProfessionalAvailabilityScreenState
         backgroundColor: context.colors.surface,
         elevation: 0,
         title: Text(
-          'Availability & Schedule',
+          AppLocalizations.of(context)!.availabilityTitle,
           style: TextStyle(
             fontSize: isTablet ? 19.0 : 17.0,
             fontWeight: FontWeight.w700,
@@ -409,9 +410,13 @@ class _ProfessionalAvailabilityScreenState
       ),
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(
-                color: AppColors.professionalColor,
-                strokeWidth: 3,
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  color: AppColors.professionalColor,
+                  strokeWidth: 3,
+                ),
               ),
             )
           : RefreshIndicator(
@@ -425,8 +430,8 @@ class _ProfessionalAvailabilityScreenState
                   SizedBox(height: isTablet ? 24 : 20),
                   _sectionHeader(
                     icon: Icons.calendar_view_week_rounded,
-                    title: 'Weekly Working Schedule',
-                    subtitle: 'Set the hours you take bookings, day by day',
+                    title: AppLocalizations.of(context)!.availabilityWeeklyTitle,
+                    subtitle: AppLocalizations.of(context)!.availabilityWeeklySubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -434,8 +439,8 @@ class _ProfessionalAvailabilityScreenState
                   SizedBox(height: isTablet ? 24 : 20),
                   _sectionHeader(
                     icon: Icons.event_available_rounded,
-                    title: 'Working Hours Summary',
-                    subtitle: 'How your week currently looks to customers',
+                    title: AppLocalizations.of(context)!.availabilitySummaryTitle,
+                    subtitle: AppLocalizations.of(context)!.availabilitySummarySubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -718,7 +723,7 @@ class _ProfessionalAvailabilityScreenState
                     ],
                   )
                 : Text(
-                    'Closed',
+                    AppLocalizations.of(context)!.availabilityClosedLabel,
                     style: TextStyle(
                       fontSize: isTablet ? 14 : 13,
                       fontWeight: FontWeight.w500,
@@ -840,7 +845,7 @@ class _ProfessionalAvailabilityScreenState
                   ),
                 ),
                 Text(
-                  g.enabled ? '${g.start.format(context)} – ${g.end.format(context)}' : 'Closed',
+                  g.enabled ? '${g.start.format(context)} – ${g.end.format(context)}' : AppLocalizations.of(context)!.availabilityClosedLabel,
                   style: TextStyle(
                     fontSize: isTablet ? 13.5 : 12.5,
                     fontWeight: FontWeight.w500,
@@ -887,7 +892,7 @@ class _ProfessionalAvailabilityScreenState
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: Text(
-                  'Discard',
+                  AppLocalizations.of(context)!.discardCta,
                   style: TextStyle(fontWeight: FontWeight.w600, color: context.colors.textSecondary),
                 ),
               ),
@@ -910,7 +915,10 @@ class _ProfessionalAvailabilityScreenState
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2.2, color: Colors.white),
                       )
-                    : const Text('Save Schedule', style: TextStyle(fontWeight: FontWeight.w700)),
+                    : Text(
+                        AppLocalizations.of(context)!.saveScheduleCta,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
               ),
             ),
           ],

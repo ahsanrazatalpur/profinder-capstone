@@ -120,6 +120,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
           : '$name will not be able to login until unblocked.',
       confirmLabel: isBanned ? 'Unblock' : 'Block',
       confirmColor: isBanned ? context.colors.accent : AppColors.error,
+      icon: isBanned ? Icons.lock_open_rounded : Icons.block_rounded,
     );
     if (!confirmed) return;
 
@@ -131,11 +132,12 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
       });
       _applyFilters();
       _showSnack(
-        isBanned ? '$name unblocked ✓' : '$name blocked',
+        isBanned ? '$name unblocked' : '$name blocked',
         isBanned ? context.colors.accent : AppColors.error,
+        icon: isBanned ? Icons.check_circle_rounded : Icons.block_rounded,
       );
     } catch (e) {
-      _showSnack('Action failed. Try again.', AppColors.error);
+      _showSnack('Action failed. Try again.', AppColors.error, icon: Icons.error_outline_rounded);
     }
   }
 
@@ -149,6 +151,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
           : 'Selected customers will be able to login again.',
       confirmLabel: block ? 'Block All' : 'Unblock All',
       confirmColor: block ? AppColors.error : context.colors.accent,
+      icon: block ? Icons.block_rounded : Icons.lock_open_rounded,
     );
     if (!confirmed) return;
 
@@ -167,8 +170,11 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
     }
     _applyFilters();
     setState(() { _selectionMode = false; _selectedIds.clear(); });
-    _showSnack('$success customer(s) ${block ? 'blocked' : 'unblocked'}',
-        block ? AppColors.error : context.colors.accent);
+    _showSnack(
+      '$success customer(s) ${block ? 'blocked' : 'unblocked'}',
+      block ? AppColors.error : context.colors.accent,
+      icon: block ? Icons.block_rounded : Icons.lock_open_rounded,
+    );
   }
 
   // ── Export (CSV → clipboard) ──────────────────────────────
@@ -178,7 +184,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         : _filtered;
 
     if (rows.isEmpty) {
-      _showSnack('Nothing to export', AppColors.warning);
+      _showSnack('Nothing to export', AppColors.warning, icon: Icons.info_outline_rounded);
       return;
     }
 
@@ -195,34 +201,69 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
       buffer.writeln('$name,$email,$city,$bookings,$spent,$status,$joined');
     }
 
+    // NOTE: Converted from a custom Dialog(Column(...)) to AlertDialog.
+    // The old custom Dialog + unconstrained Row/ElevatedButton layout
+    // caused "BoxConstraints forces an infinite width" crashes on
+    // Flutter Web, which silently broke button taps (and therefore the
+    // whole block/unban flow triggered from this screen).
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Export (${rows.length} customers)',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  color: AppColors.adminColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+              child: const Icon(Icons.download_rounded, color: AppColors.adminColor, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text('Export (${rows.length} customers)',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF111827))),
+            ),
+          ],
+        ),
         content: SizedBox(
-          width: double.maxFinite,
+          width: 440,
           height: 260,
-          child: SingleChildScrollView(
-            child: SelectableText(buffer.toString(),
-                style: const TextStyle(fontSize: 11, fontFamily: 'monospace')),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF9FAFB),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: SingleChildScrollView(
+              child: SelectableText(buffer.toString(),
+                  style: const TextStyle(fontSize: 11, fontFamily: 'monospace', height: 1.5)),
+            ),
           ),
         ),
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Close', style: TextStyle(color: Color(0xFF9CA3AF))),
           ),
           ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.adminColor,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            ),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: buffer.toString()));
               Navigator.pop(context);
-              _showSnack('CSV copied to clipboard — paste into Excel/Sheets', AppColors.success);
+              _showSnack('CSV copied to clipboard — paste into Excel/Sheets', AppColors.success,
+                  icon: Icons.check_circle_rounded);
             },
-            icon: const Icon(Icons.copy_rounded, size: 16, color: Colors.white),
-            label: const Text('Copy to Clipboard', style: TextStyle(color: Colors.white)),
+            icon: const Icon(Icons.copy_rounded, size: 16),
+            label: const Text('Copy to Clipboard'),
           ),
         ],
       ),
@@ -251,24 +292,43 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: _buildAppBar(),
-      body: _loading
-          ? _buildLoader()
-          : _error != null
-              ? _buildError()
-              : Column(
-                  children: [
-                    _buildSearchBar(),
-                    _buildStatusChips(),
-                    _buildCountBar(),
-                    if (_selectionMode) _buildBulkActionBar(),
-                    Expanded(child: _buildList()),
-                  ],
-                ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Wide layout (tablet/desktop) shows text labels beside action
+          // icons and centers content with a readable max width.
+          final isWide = constraints.maxWidth >= 900;
+
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 260),
+            child: _loading
+                ? _buildLoader(key: const ValueKey('loading'))
+                : _error != null
+                    ? _buildError(key: const ValueKey('error'))
+                    : Column(
+                        key: const ValueKey('content'),
+                        children: [
+                          _buildSearchBar(),
+                          _buildStatusChips(),
+                          _buildCountBar(),
+                          // Bulk action bar animates in/out with selection mode
+                          // instead of abruptly appearing.
+                          AnimatedSize(
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeOut,
+                            child: _selectionMode ? _buildBulkActionBar() : const SizedBox(width: double.infinity),
+                          ),
+                          Expanded(child: _buildList(isWide)),
+                        ],
+                      ),
+          );
+        },
+      ),
     );
   }
 
   // ── AppBar ────────────────────────────────────────────────
   PreferredSizeWidget _buildAppBar() {
+    final isWide = MediaQuery.of(context).size.width >= 900;
     return AppBar(
       backgroundColor: AppColors.adminColor,
       elevation: 0,
@@ -281,35 +341,44 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         ],
       ),
       actions: [
-        PopupMenuButton<_SortOption>(
-          icon: const Icon(Icons.sort_rounded, color: Colors.white),
+        _AppBarPopupAction<_SortOption>(
+          icon: Icons.sort_rounded,
+          label: 'Sort',
+          showLabel: isWide,
           tooltip: 'Sort',
           onSelected: (v) {
             setState(() => _sortOption = v);
             _applyFilters();
           },
-          itemBuilder: (_) => const [
+          items: const [
             PopupMenuItem(value: _SortOption.spentHigh,    child: Text('Total Spent (High-Low)')),
             PopupMenuItem(value: _SortOption.bookingsHigh, child: Text('Most Bookings')),
             PopupMenuItem(value: _SortOption.nameAsc,      child: Text('Name (A-Z)')),
             PopupMenuItem(value: _SortOption.dateNew,      child: Text('Newest First')),
           ],
         ),
-        IconButton(
-          icon: Icon(_selectionMode ? Icons.close_rounded : Icons.checklist_rounded, color: Colors.white),
+        _AppBarAction(
+          icon: _selectionMode ? Icons.close_rounded : Icons.checklist_rounded,
+          label: _selectionMode ? 'Cancel' : 'Select',
+          showLabel: isWide,
           tooltip: _selectionMode ? 'Cancel selection' : 'Select multiple',
           onPressed: _toggleSelectionMode,
         ),
-        IconButton(
-          icon: const Icon(Icons.download_rounded, color: Colors.white),
+        _AppBarAction(
+          icon: Icons.download_rounded,
+          label: 'Export',
+          showLabel: isWide,
           tooltip: 'Export',
           onPressed: _exportCsv,
         ),
-        IconButton(
-          icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-          onPressed: _load,
+        _AppBarAction(
+          icon: Icons.refresh_rounded,
+          label: 'Refresh',
+          showLabel: isWide,
           tooltip: 'Refresh',
+          onPressed: _load,
         ),
+        const SizedBox(width: 4),
       ],
     );
   }
@@ -319,28 +388,37 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-      child: TextField(
-        controller: _searchCtrl,
-        onChanged: (_) => _applyFilters(),
-        style: const TextStyle(fontSize: 13),
-        decoration: InputDecoration(
-          hintText:   'Search by name or email…',
-          hintStyle:  const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
-          prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF9CA3AF)),
-          suffixIcon: _searchCtrl.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear, size: 16, color: Color(0xFF9CA3AF)),
-                  onPressed: () {
-                    _searchCtrl.clear();
-                    _applyFilters();
-                  },
-                )
-              : null,
-          filled:         true,
-          fillColor:      const Color(0xFFF3F4F6),
-          contentPadding: const EdgeInsets.symmetric(vertical: 10),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: TextField(
+            controller: _searchCtrl,
+            onChanged: (_) => _applyFilters(),
+            style: const TextStyle(fontSize: 13),
+            decoration: InputDecoration(
+              hintText:   'Search by name or email…',
+              hintStyle:  const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
+              prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF9CA3AF)),
+              suffixIcon: _searchCtrl.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, size: 16, color: Color(0xFF9CA3AF)),
+                      onPressed: () {
+                        _searchCtrl.clear();
+                        _applyFilters();
+                      },
+                    )
+                  : null,
+              filled:         true,
+              fillColor:      const Color(0xFFF3F4F6),
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: AppColors.adminColor, width: 1.4),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -361,24 +439,14 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
           final isActive = _statusFilter == f.$1;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: GestureDetector(
+            child: _StatusChip(
+              label: f.$2,
+              color: f.$3,
+              isActive: isActive,
               onTap: () {
                 setState(() => _statusFilter = f.$1);
                 _applyFilters();
               },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-                decoration: BoxDecoration(
-                  color: isActive ? f.$3 : const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(f.$2,
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: isActive ? Colors.white : const Color(0xFF6B7280))),
-              ),
             ),
           );
         }).toList(),
@@ -399,51 +467,65 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            _countPill('$total Total',     const Color(0xFF374151)),
+            _countPill(Icons.groups_rounded, '$total Total',     const Color(0xFF374151)),
             const SizedBox(width: 8),
-            _countPill('$active Active',   context.colors.accent),
+            _countPill(Icons.check_circle_outline_rounded, '$active Active',   context.colors.accent),
             const SizedBox(width: 8),
-            _countPill('$blocked Blocked', AppColors.error),
+            _countPill(Icons.block_rounded, '$blocked Blocked', AppColors.error),
             const SizedBox(width: 8),
-            _countPill('Rs ${totalSpent.toStringAsFixed(0)} Spent', const Color(0xFF16A34A)),
+            _countPill(Icons.payments_rounded, 'Rs ${totalSpent.toStringAsFixed(0)} Spent', const Color(0xFF16A34A)),
           ],
         ),
       ),
     );
   }
 
-  Widget _countPill(String label, Color color) {
+  Widget _countPill(IconData icon, String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
-      child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+        ],
+      ),
     );
   }
 
   // ── Bulk Action Bar ───────────────────────────────────────
   Widget _buildBulkActionBar() {
     return Container(
+      width: double.infinity,
       color: AppColors.adminColor.withOpacity(0.06),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Row(
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.spaceBetween,
+        spacing: 8,
         children: [
           Text('${_selectedIds.length} selected',
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
-          const Spacer(),
-          TextButton.icon(
-            onPressed: _selectedIds.isEmpty ? null : () => _bulkSetStatus(block: true),
-            icon: const Icon(Icons.block_rounded, size: 16, color: AppColors.error),
-            label: const Text('Block', style: TextStyle(color: AppColors.error, fontSize: 12)),
-          ),
-          TextButton.icon(
-            onPressed: _selectedIds.isEmpty ? null : () => _bulkSetStatus(block: false),
-            icon: Icon(Icons.lock_open_rounded, size: 16, color: context.colors.accent),
-            label: Text('Unblock', style: TextStyle(color: context.colors.accent, fontSize: 12)),
-          ),
-          TextButton.icon(
-            onPressed: _selectedIds.isEmpty ? null : _exportCsv,
-            icon: const Icon(Icons.download_rounded, size: 16, color: Color(0xFF6B7280)),
-            label: const Text('Export', style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
+          Wrap(
+            children: [
+              TextButton.icon(
+                onPressed: _selectedIds.isEmpty ? null : () => _bulkSetStatus(block: true),
+                icon: const Icon(Icons.block_rounded, size: 16, color: AppColors.error),
+                label: const Text('Block', style: TextStyle(color: AppColors.error, fontSize: 12)),
+              ),
+              TextButton.icon(
+                onPressed: _selectedIds.isEmpty ? null : () => _bulkSetStatus(block: false),
+                icon: Icon(Icons.lock_open_rounded, size: 16, color: context.colors.accent),
+                label: Text('Unblock', style: TextStyle(color: context.colors.accent, fontSize: 12)),
+              ),
+              TextButton.icon(
+                onPressed: _selectedIds.isEmpty ? null : _exportCsv,
+                icon: const Icon(Icons.download_rounded, size: 16, color: Color(0xFF6B7280)),
+                label: const Text('Export', style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
+              ),
+            ],
           ),
         ],
       ),
@@ -451,7 +533,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
   }
 
   // ── List ──────────────────────────────────────────────────
-  Widget _buildList() {
+  Widget _buildList(bool isWide) {
     if (_filtered.isEmpty) {
       return Center(
         child: Column(
@@ -471,152 +553,33 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
     return RefreshIndicator(
       onRefresh: _load,
       color: AppColors.adminColor,
-      child: ListView.builder(
-        padding:     const EdgeInsets.all(12),
-        itemCount:   _filtered.length,
-        itemBuilder: (_, i) => _buildCustomerCard(_filtered[i]),
-      ),
-    );
-  }
-
-  // ── Customer Card ─────────────────────────────────────────
-  Widget _buildCustomerCard(dynamic user) {
-    final id       = user['id'];
-    final name     = user['name']?.toString()      ?? 'Customer';
-    final email    = user['email']?.toString()     ?? '';
-    final city     = user['city']?.toString()      ?? '';
-    final joined   = user['joined']?.toString()    ?? '';
-    final photoUrl = user['photo_url']?.toString() ?? '';
-    final bookings = user['total_bookings']?.toString() ?? '0';
-    final spent    = user['total_spent']?.toString()    ?? '0.00';
-    final isBanned = user['is_active'] == false;
-    final isSelected = _selectedIds.contains(id);
-
-    return GestureDetector(
-      onTap: _selectionMode ? () => _toggleSelect(id) : () => _showCustomerDetails(user),
-      onLongPress: () {
-        if (!_selectionMode) {
-          setState(() { _selectionMode = true; _selectedIds.add(id); });
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.adminColor.withOpacity(0.06) : Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isSelected
-                ? AppColors.adminColor
-                : isBanned
-                    ? AppColors.error.withOpacity(0.3)
-                    : const Color(0xFFE5E7EB),
+      child: Center(
+        child: ConstrainedBox(
+          // Keeps rows readable on very wide desktop windows instead of
+          // stretching each card edge to edge.
+          constraints: const BoxConstraints(maxWidth: 1100),
+          child: ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: _filtered.length,
+            itemBuilder: (_, i) => _AnimatedListEntry(
+              index: i,
+              child: _CustomerCard(
+                user: _filtered[i],
+                selectionMode: _selectionMode,
+                isSelected: _selectedIds.contains(_filtered[i]['id']),
+                onTap: _selectionMode
+                    ? () => _toggleSelect(_filtered[i]['id'])
+                    : () => _showCustomerDetails(_filtered[i]),
+                onLongPress: () {
+                  if (!_selectionMode) {
+                    setState(() { _selectionMode = true; _selectedIds.add(_filtered[i]['id']); });
+                  }
+                },
+                onToggleSelect: () => _toggleSelect(_filtered[i]['id']),
+                onToggleBan: () => _toggleBan(_filtered[i]),
+              ),
+            ),
           ),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 6, offset: const Offset(0, 1)),
-          ],
-        ),
-        child: Row(
-          children: [
-            if (_selectionMode) ...[
-              Checkbox(
-                value: isSelected,
-                activeColor: AppColors.adminColor,
-                onChanged: (_) => _toggleSelect(id),
-              ),
-              const SizedBox(width: 4),
-            ],
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: context.colors.primaryLight,
-                  backgroundImage: photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null,
-                  child: photoUrl.isEmpty
-                      ? Text(AppHelpers.getInitials(name),
-                          style: TextStyle(
-                              color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: 13))
-                      : null,
-                ),
-                if (isBanned)
-                  Positioned(
-                    right: 0, bottom: 0,
-                    child: Container(
-                      width: 14, height: 14,
-                      decoration: BoxDecoration(
-                          color: AppColors.error,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 1.5)),
-                      child: const Icon(Icons.block, color: Colors.white, size: 8),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(name,
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
-                            maxLines: 1, overflow: TextOverflow.ellipsis),
-                      ),
-                      isBanned
-                          ? _statusBadge('BLOCKED', AppColors.error)
-                          : _statusBadge('ACTIVE', context.colors.accent),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(email,
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 4),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 4,
-                    children: [
-                      _infoChip(Icons.event_available_rounded, '$bookings bookings'),
-                      _infoChip(Icons.payments_rounded, 'Rs $spent spent', color: const Color(0xFF16A34A)),
-                      if (city.isNotEmpty) _infoChip(Icons.location_on_outlined, city),
-                      if (joined.isNotEmpty) _infoChip(Icons.calendar_today_outlined, 'Joined $joined'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            if (!_selectionMode)
-              GestureDetector(
-                onTap: () => _toggleBan(user),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isBanned ? context.colors.accent.withOpacity(0.1) : AppColors.error.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: isBanned ? context.colors.accent.withOpacity(0.3) : AppColors.error.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(isBanned ? Icons.lock_open_rounded : Icons.block_rounded,
-                          size: 16, color: isBanned ? context.colors.accent : AppColors.error),
-                      const SizedBox(height: 2),
-                      Text(isBanned ? 'Unban' : 'Block',
-                          style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              color: isBanned ? context.colors.accent : AppColors.error)),
-                    ],
-                  ),
-                ),
-              ),
-          ],
         ),
       ),
     );
@@ -678,8 +641,8 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
                         Text(email, style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
                         const SizedBox(height: 6),
                         isBanned
-                            ? _statusBadge('BLOCKED', AppColors.error)
-                            : _statusBadge('ACTIVE', context.colors.accent),
+                            ? statusBadge('BLOCKED', AppColors.error)
+                            : statusBadge('ACTIVE', context.colors.accent),
                       ],
                     ),
                   ),
@@ -688,16 +651,19 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
               const SizedBox(height: 20),
               const Divider(height: 1),
               const SizedBox(height: 16),
-              _detailRow(Icons.event_available_rounded, 'Total Bookings', bookings),
-              _detailRow(Icons.payments_rounded, 'Total Spent', 'Rs $spent'),
-              _detailRow(Icons.location_on_outlined, 'City', city.isEmpty ? '—' : city),
-              _detailRow(Icons.calendar_today_outlined, 'Joined', joined.isEmpty ? '—' : joined),
+              detailRow(Icons.event_available_rounded, 'Total Bookings', bookings),
+              detailRow(Icons.payments_rounded, 'Total Spent', 'Rs $spent'),
+              detailRow(Icons.location_on_outlined, 'City', city.isEmpty ? '—' : city),
+              detailRow(Icons.calendar_today_outlined, 'Joined', joined.isEmpty ? '—' : joined),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isBanned ? context.colors.accent : AppColors.error,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   onPressed: () {
@@ -717,81 +683,86 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
     );
   }
 
-  Widget _detailRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: const Color(0xFF9CA3AF)),
-          const SizedBox(width: 10),
-          Text(label, style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
-          const Spacer(),
-          Text(value,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF111827))),
-        ],
-      ),
-    );
+  Widget _buildLoader({Key? key}) {
+    return Center(key: key, child: const CircularProgressIndicator(color: AppColors.adminColor, strokeWidth: 2.5));
   }
 
-  // ── Helpers ───────────────────────────────────────────────
-  Widget _statusBadge(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
-      child: Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: color)),
-    );
-  }
-
-  Widget _infoChip(IconData icon, String text, {Color color = const Color(0xFF9CA3AF)}) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 11, color: color),
-        const SizedBox(width: 2),
-        Text(text, style: const TextStyle(fontSize: 11, color: Color(0xFF6B7280))),
-      ],
-    );
-  }
-
-  Widget _buildLoader() {
-    return const Center(
-      child: CircularProgressIndicator(color: AppColors.adminColor, strokeWidth: 2.5),
-    );
-  }
-
-  Widget _buildError() {
+  Widget _buildError({Key? key}) {
     return Center(
+      key: key,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 56, color: AppColors.error),
-          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(color: AppColors.error.withOpacity(0.08), shape: BoxShape.circle),
+            child: const Icon(Icons.error_outline_rounded, size: 44, color: AppColors.error),
+          ),
+          const SizedBox(height: 14),
           const Text('Failed to load customers',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF374151))),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF374151))),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: _load,
             icon: const Icon(Icons.refresh_rounded),
             label: const Text('Retry'),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.adminColor,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
           ),
         ],
       ),
     );
   }
 
+  // ── Confirm Dialog ─────────────────────────────────────────
+  // NOTE: This was previously a custom `Dialog` widget with a manual
+  // `Column` -> `Row` -> `ElevatedButton` layout. On Flutter Web that
+  // layout threw "BoxConstraints forces an infinite width" because the
+  // ElevatedButton inside the unconstrained Row had no bounded width.
+  // The crash silently broke the dialog's render tree, so tapping
+  // Block/Unblock never actually completed the Navigator.pop(true) —
+  // meaning _toggleBan() / _bulkSetStatus() never ran and the API call
+  // never fired. Switching to AlertDialog (same as admin_users_screen.dart,
+  // which works fine) fixes this because AlertDialog handles its own
+  // width/height constraints correctly.
   Future<bool> _confirmDialog({
     required String title,
     required String message,
     required String confirmLabel,
     required Color confirmColor,
+    required IconData icon,
   }) async {
     return await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-            content: Text(message, style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: confirmColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(icon, color: confirmColor, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(title,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF111827))),
+                ),
+              ],
+            ),
+            content: Text(message,
+                style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280), height: 1.4)),
+            actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -799,10 +770,14 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: confirmColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                  backgroundColor: confirmColor,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(confirmLabel, style: const TextStyle(color: Colors.white)),
+                child: Text(confirmLabel),
               ),
             ],
           ),
@@ -810,15 +785,444 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         false;
   }
 
-  void _showSnack(String msg, Color color) {
+  void _showSnack(String msg, Color color, {IconData? icon}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        content: Row(children: [
+          if (icon != null) ...[
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 10),
+          ],
+          Expanded(child: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600))),
+        ]),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(14),
         duration: const Duration(seconds: 2),
       ),
+    );
+  }
+}
+
+// ── Shared small-piece helpers (no state dependency) ─────────
+
+Widget statusBadge(String label, Color color) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+    decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
+    child: Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: color)),
+  );
+}
+
+Widget infoChip(IconData icon, String text, {Color color = const Color(0xFF9CA3AF)}) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(icon, size: 11, color: color),
+      const SizedBox(width: 2),
+      Text(text, style: const TextStyle(fontSize: 11, color: Color(0xFF6B7280))),
+    ],
+  );
+}
+
+Widget detailRow(IconData icon, String label, String value) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Row(
+      children: [
+        Icon(icon, size: 16, color: const Color(0xFF9CA3AF)),
+        const SizedBox(width: 10),
+        Text(label, style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+        const Spacer(),
+        Text(value,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF111827))),
+      ],
+    ),
+  );
+}
+
+/// AppBar icon action that reveals a text label next to the icon on wide
+/// (tablet/desktop) layouts, and shows a hover tint on desktop/web.
+class _AppBarAction extends StatefulWidget {
+  final IconData icon;
+  final String label;
+  final bool showLabel;
+  final String tooltip;
+  final VoidCallback onPressed;
+  const _AppBarAction({
+    required this.icon,
+    required this.label,
+    required this.showLabel,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  @override
+  State<_AppBarAction> createState() => _AppBarActionState();
+}
+
+class _AppBarActionState extends State<_AppBarAction> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: Tooltip(
+        message: widget.tooltip,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: widget.onPressed,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 140),
+            margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: widget.showLabel ? 10 : 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: _hovered ? Colors.white.withOpacity(0.16) : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                Icon(widget.icon, color: Colors.white, size: 20),
+                if (widget.showLabel) ...[
+                  const SizedBox(width: 6),
+                  Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Same visual chrome as `_AppBarAction`, but drives a `PopupMenuButton`
+/// (used for the Sort menu) instead of a direct tap callback.
+class _AppBarPopupAction<T> extends StatefulWidget {
+  final IconData icon;
+  final String label;
+  final bool showLabel;
+  final String tooltip;
+  final ValueChanged<T> onSelected;
+  final List<PopupMenuEntry<T>> items;
+  const _AppBarPopupAction({
+    required this.icon,
+    required this.label,
+    required this.showLabel,
+    required this.tooltip,
+    required this.onSelected,
+    required this.items,
+  });
+
+  @override
+  State<_AppBarPopupAction<T>> createState() => _AppBarPopupActionState<T>();
+}
+
+class _AppBarPopupActionState<T> extends State<_AppBarPopupAction<T>> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: Tooltip(
+        message: widget.tooltip,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: widget.showLabel ? 6 : 4, vertical: 2),
+          decoration: BoxDecoration(
+            color: _hovered ? Colors.white.withOpacity(0.16) : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: PopupMenuButton<T>(
+            icon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(widget.icon, color: Colors.white, size: 20),
+                if (widget.showLabel) ...[
+                  const SizedBox(width: 6),
+                  Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+                ],
+              ],
+            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            onSelected: widget.onSelected,
+            itemBuilder: (_) => widget.items,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Status filter chip with an animated selection transition.
+class _StatusChip extends StatefulWidget {
+  final String label;
+  final Color color;
+  final bool isActive;
+  final VoidCallback onTap;
+  const _StatusChip({required this.label, required this.color, required this.isActive, required this.onTap});
+
+  @override
+  State<_StatusChip> createState() => _StatusChipState();
+}
+
+class _StatusChipState extends State<_StatusChip> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+          decoration: BoxDecoration(
+            color: widget.isActive
+                ? widget.color
+                : (_hovered ? const Color(0xFFEAECEF) : const Color(0xFFF3F4F6)),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(widget.label,
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: widget.isActive ? Colors.white : const Color(0xFF6B7280))),
+        ),
+      ),
+    );
+  }
+}
+
+/// A single customer row card. Presentation only — tap/long-press/checkbox
+/// and the ban/unban trailing button all forward to the parent's existing
+/// handlers; selection highlighting mirrors the original conditions.
+class _CustomerCard extends StatefulWidget {
+  final dynamic user;
+  final bool selectionMode;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
+  final VoidCallback onToggleSelect;
+  final VoidCallback onToggleBan;
+
+  const _CustomerCard({
+    required this.user,
+    required this.selectionMode,
+    required this.isSelected,
+    required this.onTap,
+    required this.onLongPress,
+    required this.onToggleSelect,
+    required this.onToggleBan,
+  });
+
+  @override
+  State<_CustomerCard> createState() => _CustomerCardState();
+}
+
+class _CustomerCardState extends State<_CustomerCard> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final user = widget.user;
+    final name     = user['name']?.toString()      ?? 'Customer';
+    final email    = user['email']?.toString()     ?? '';
+    final city     = user['city']?.toString()      ?? '';
+    final joined   = user['joined']?.toString()    ?? '';
+    final photoUrl = user['photo_url']?.toString() ?? '';
+    final bookings = user['total_bookings']?.toString() ?? '0';
+    final spent    = user['total_spent']?.toString()    ?? '0.00';
+    final isBanned = user['is_active'] == false;
+    final isSelected = widget.isSelected;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        onLongPress: widget.onLongPress,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.adminColor.withOpacity(0.06) : Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected
+                  ? AppColors.adminColor
+                  : isBanned
+                      ? AppColors.error.withOpacity(0.3)
+                      : (_hovered ? const Color(0xFFD1D5DB) : const Color(0xFFE5E7EB)),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: _hovered ? Colors.black.withOpacity(0.06) : Colors.black.withOpacity(0.03),
+                blurRadius: _hovered ? 12 : 6,
+                offset: Offset(0, _hovered ? 3 : 1),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              if (widget.selectionMode) ...[
+                Checkbox(
+                  value: isSelected,
+                  activeColor: AppColors.adminColor,
+                  onChanged: (_) => widget.onToggleSelect(),
+                ),
+                const SizedBox(width: 4),
+              ],
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor: context.colors.primaryLight,
+                    backgroundImage: photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null,
+                    child: photoUrl.isEmpty
+                        ? Text(AppHelpers.getInitials(name),
+                            style: TextStyle(
+                                color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: 13))
+                        : null,
+                  ),
+                  if (isBanned)
+                    Positioned(
+                      right: 0, bottom: 0,
+                      child: Container(
+                        width: 14, height: 14,
+                        decoration: BoxDecoration(
+                            color: AppColors.error,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 1.5)),
+                        child: const Icon(Icons.block, color: Colors.white, size: 8),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(name,
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ),
+                        isBanned
+                            ? statusBadge('BLOCKED', AppColors.error)
+                            : statusBadge('ACTIVE', context.colors.accent),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(email,
+                        style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 4),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 4,
+                      children: [
+                        infoChip(Icons.event_available_rounded, '$bookings bookings'),
+                        infoChip(Icons.payments_rounded, 'Rs $spent spent', color: const Color(0xFF16A34A)),
+                        if (city.isNotEmpty) infoChip(Icons.location_on_outlined, city),
+                        if (joined.isNotEmpty) infoChip(Icons.calendar_today_outlined, 'Joined $joined'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              if (!widget.selectionMode)
+                _BanToggleButton(isBanned: isBanned, onTap: widget.onToggleBan),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Trailing Block/Unban button. Hover-tints on desktop/web; the tap
+/// forwards straight to the parent's `_toggleBan`.
+class _BanToggleButton extends StatefulWidget {
+  final bool isBanned;
+  final VoidCallback onTap;
+  const _BanToggleButton({required this.isBanned, required this.onTap});
+
+  @override
+  State<_BanToggleButton> createState() => _BanToggleButtonState();
+}
+
+class _BanToggleButtonState extends State<_BanToggleButton> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = widget.isBanned ? context.colors.accent : AppColors.error;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(_hovered ? 0.16 : 0.1),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: color.withOpacity(_hovered ? 0.5 : 0.3)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(widget.isBanned ? Icons.lock_open_rounded : Icons.block_rounded, size: 16, color: color),
+              const SizedBox(height: 2),
+              Text(widget.isBanned ? 'Unban' : 'Block',
+                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: color)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Staggered fade + slide-up entrance for list items. Purely visual — runs
+/// once per build using the item's index to offset its start delay, so the
+/// list feels populated rather than static.
+class _AnimatedListEntry extends StatelessWidget {
+  final int index;
+  final Widget child;
+  const _AnimatedListEntry({required this.index, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final delay = (index.clamp(0, 12)) * 30;
+    return TweenAnimationBuilder<double>(
+      key: ValueKey('entry_$index'),
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 280 + delay),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) => Opacity(
+        opacity: value,
+        child: Transform.translate(offset: Offset(0, (1 - value) * 12), child: child),
+      ),
+      child: child,
     );
   }
 }

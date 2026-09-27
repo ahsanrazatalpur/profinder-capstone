@@ -24,6 +24,9 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../shared/widgets/profile_header_card.dart';
 import '../../about/screens/about_screen.dart';
+import '../../../l10n/generated/app_localizations.dart';
+import '../../trust_safety/screens/my_reports_screen.dart';
+import '../../trust_safety/screens/account_status_screen.dart';
 
 class ProfessionalProfileScreen extends StatefulWidget {
   const ProfessionalProfileScreen({super.key});
@@ -135,7 +138,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, 'Could not load profile');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.profileLoadError);
     }
   }
 
@@ -161,7 +164,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, 'Could not pick image');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.imagePickError);
     }
   }
 
@@ -178,12 +181,12 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
       if (!mounted) return;
       AppHelpers.showSuccess(
         context,
-        value ? 'You are now available for bookings' : 'You are now marked unavailable',
+        value ? AppLocalizations.of(context)!.availabilityOnSuccess : AppLocalizations.of(context)!.availabilityOffSuccess,
       );
     } catch (e) {
       if (!mounted) return;
       setState(() => _isAvailable = !value);
-      AppHelpers.showError(context, 'Could not update availability');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.availabilityUpdateError);
     } finally {
       if (mounted) setState(() => _isTogglingAvailability = false);
     }
@@ -297,12 +300,12 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
         _webBytes = null;
         _pickedImage = null;
       });
-      AppHelpers.showSuccess(context, 'Profile updated!');
+      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.profileUpdateSuccess);
       _loadProfile();
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      AppHelpers.showError(context, 'Failed to save profile');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.profileUpdateError);
     }
   }
 
@@ -363,7 +366,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading profile...',
+                    AppLocalizations.of(context)!.profileLoadingText,
                     style: TextStyle(
                       fontSize: isDesktop ? 16.0 : 14.0,
                       color: context.colors.textSecondary,
@@ -415,7 +418,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
       leadingWidth: isDesktop ? 60 : null,
       leading: isDesktop ? const SizedBox(width: 8) : null,
       title: Text(
-        'My Profile',
+        AppLocalizations.of(context)!.profileTitle,
         style: TextStyle(
           fontSize: isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0),
           fontWeight: FontWeight.w700,
@@ -433,7 +436,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               color: AppColors.professionalColor,
             ),
             label: Text(
-              'Edit',
+              AppLocalizations.of(context)!.editCta,
               style: TextStyle(
                 color: AppColors.professionalColor,
                 fontWeight: FontWeight.w600,
@@ -446,7 +449,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
           TextButton(
             onPressed: _isSaving ? null : _cancelEdit,
             child: Text(
-              'Cancel',
+              AppLocalizations.of(context)!.cancelCta,
               style: TextStyle(
                 color: isDark ? Colors.grey[400] : Colors.grey[600],
                 fontSize: isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0),
@@ -470,7 +473,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             TextButton(
               onPressed: _saveProfile,
               child: Text(
-                'Save',
+                AppLocalizations.of(context)!.saveCta,
                 style: TextStyle(
                   color: AppColors.professionalColor,
                   fontWeight: FontWeight.w700,
@@ -490,7 +493,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
   Widget _buildAvatarSection(bool isDark, bool isTablet, bool isDesktop) {
     final isVerified = _profile?['is_verified'] ?? false;
     final avatar = _getAvatar();
-    final categoryName = (_profile?['category_name'] ?? 'Professional').toString();
+    final categoryName = (_profile?['category_name'] ?? AppLocalizations.of(context)!.professionalDefaultName).toString();
     final rating = double.tryParse(_profile?['average_rating']?.toString() ?? '0') ?? 0.0;
     final exp = _profile?['experience_years'] ?? 0;
     final rate = _profile?['hourly_rate'] ?? 0;
@@ -526,23 +529,25 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             )
           : null,
       statusIcon: isVerified ? Icons.verified_rounded : Icons.workspace_premium_rounded,
-      statusText: isVerified ? '$categoryName • Verified' : categoryName,
+      statusText: isVerified
+          ? AppLocalizations.of(context)!.verifiedStatusLabel(categoryName)
+          : categoryName,
       description: (_user?['email'] as String?)?.isNotEmpty == true ? _user!['email'] as String : null,
       stats: [
         ProfileHeaderStat(
           icon: Icons.star_rounded,
           value: rating > 0 ? rating.toStringAsFixed(1) : '—',
-          label: 'Rating',
+          label: AppLocalizations.of(context)!.ratingLabel,
         ),
         ProfileHeaderStat(
           icon: Icons.work_history_rounded,
-          value: '$exp yrs',
-          label: 'Experience',
+          value: AppLocalizations.of(context)!.yearsLabel(exp),
+          label: AppLocalizations.of(context)!.experienceLabel,
         ),
         ProfileHeaderStat(
           icon: Icons.attach_money_rounded,
           value: '\$$rate/hr',
-          label: 'Rate',
+          label: AppLocalizations.of(context)!.rateLabel,
         ),
       ],
     );
@@ -606,7 +611,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _isAvailable ? 'Available for Bookings' : 'Not Available',
+                  _isAvailable ? AppLocalizations.of(context)!.availableForBookingsLabel : AppLocalizations.of(context)!.notAvailableLabel,
                   style: TextStyle(
                     fontSize: isDesktop ? 16.0 : (isTablet ? 15.0 : 14.0),
                     fontWeight: FontWeight.w700,
@@ -617,8 +622,8 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 const SizedBox(height: 2),
                 Text(
                   _isAvailable
-                      ? 'Customers can book you right now'
-                      : 'You won\'t appear in new booking requests',
+                      ? AppLocalizations.of(context)!.availableSubtitle
+                      : AppLocalizations.of(context)!.notAvailableSubtitle,
                   style: TextStyle(
                     fontSize: isDesktop ? 13.0 : (isTablet ? 12.0 : 11.0),
                     color: context.colors.textSecondary,
@@ -690,7 +695,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Working Hours',
+                AppLocalizations.of(context)!.workingHoursLabel,
                 style: TextStyle(
                   fontSize: isDesktop ? 16.0 : (isTablet ? 15.0 : 14.0),
                   fontWeight: FontWeight.w700,
@@ -705,7 +710,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             children: [
               Expanded(
                 child: _buildTimeField(
-                  'Start Time',
+                  AppLocalizations.of(context)!.startTimeLabel,
                   _workStart,
                   isStart: true,
                   isDark: isDark,
@@ -716,7 +721,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildTimeField(
-                  'End Time',
+                  AppLocalizations.of(context)!.endTimeLabel,
                   _workEnd,
                   isStart: false,
                   isDark: isDark,
@@ -835,7 +840,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Professional Details',
+                AppLocalizations.of(context)!.professionalDetailsLabel,
                 style: TextStyle(
                   fontSize: isDesktop ? 16.0 : (isTablet ? 15.0 : 14.0),
                   fontWeight: FontWeight.w700,
@@ -846,22 +851,22 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          _buildField('Bio / About', _bioController, Icons.description_outlined,
+          _buildField(AppLocalizations.of(context)!.bioLabel, _bioController, Icons.description_outlined,
               maxLines: 3, isDark: isDark, isTablet: isTablet, isDesktop: isDesktop),
           const SizedBox(height: 14),
-          _buildField('City', _cityController, Icons.location_city_outlined,
+          _buildField(AppLocalizations.of(context)!.cityLabel, _cityController, Icons.location_city_outlined,
               isDark: isDark, isTablet: isTablet, isDesktop: isDesktop),
           const SizedBox(height: 14),
-          _buildField('Phone', _phoneController, Icons.phone_outlined,
+          _buildField(AppLocalizations.of(context)!.phoneLabel, _phoneController, Icons.phone_outlined,
               type: TextInputType.phone, isDark: isDark, isTablet: isTablet, isDesktop: isDesktop),
           const SizedBox(height: 14),
-          _buildField('Hourly Rate (\$)', _rateController, Icons.attach_money_rounded,
+          _buildField(AppLocalizations.of(context)!.hourlyRateLabel, _rateController, Icons.attach_money_rounded,
               type: TextInputType.number, isDark: isDark, isTablet: isTablet, isDesktop: isDesktop),
           const SizedBox(height: 14),
-          _buildField('Experience (yrs)', _expController, Icons.work_history_outlined,
+          _buildField(AppLocalizations.of(context)!.experienceLabel, _expController, Icons.work_history_outlined,
               type: TextInputType.number, isDark: isDark, isTablet: isTablet, isDesktop: isDesktop),
           const SizedBox(height: 14),
-          _buildField('Education', _educationController, Icons.school_outlined,
+          _buildField(AppLocalizations.of(context)!.educationLabel, _educationController, Icons.school_outlined,
               maxLines: 2, isDark: isDark, isTablet: isTablet, isDesktop: isDesktop),
           const SizedBox(height: 16),
           _buildSkillsSection(isDark, isTablet, isDesktop),
@@ -950,7 +955,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      controller.text.isEmpty ? 'Not set' : controller.text,
+                      controller.text.isEmpty ? AppLocalizations.of(context)!.notSetPlaceholder : controller.text,
                       style: TextStyle(
                         fontSize: isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0),
                         color: controller.text.isEmpty
@@ -973,7 +978,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Skills',
+          AppLocalizations.of(context)!.skillsLabel,
           style: TextStyle(
             fontSize: isDesktop ? 12.0 : (isTablet ? 11.0 : 10.0),
             color: context.colors.textSecondary,
@@ -984,7 +989,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
         const SizedBox(height: 8),
         if (_skills.isEmpty && !_isEditing)
           Text(
-            'No skills added yet',
+            AppLocalizations.of(context)!.noSkillsAdded,
             style: TextStyle(
               fontSize: isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0),
               color: context.colors.textSecondary.withOpacity(0.5),
@@ -1034,7 +1039,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                       color: context.colors.textPrimary,
                     ),
                     decoration: InputDecoration(
-                      hintText: '+ Add skill',
+                      hintText: AppLocalizations.of(context)!.addSkillHint,
                       hintStyle: TextStyle(
                         fontSize: isDesktop ? 13.0 : (isTablet ? 12.0 : 11.0),
                         color: context.colors.textSecondary.withOpacity(0.5),
@@ -1091,7 +1096,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Languages',
+          AppLocalizations.of(context)!.languagesLabel,
           style: TextStyle(
             fontSize: isDesktop ? 12.0 : (isTablet ? 11.0 : 10.0),
             color: context.colors.textSecondary,
@@ -1102,7 +1107,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
         const SizedBox(height: 8),
         if (_languages.isEmpty && !_isEditing)
           Text(
-            'No languages added yet',
+            AppLocalizations.of(context)!.noLanguagesAdded,
             style: TextStyle(
               fontSize: isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0),
               color: context.colors.textSecondary.withOpacity(0.5),
@@ -1152,7 +1157,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                       color: context.colors.textPrimary,
                     ),
                     decoration: InputDecoration(
-                      hintText: '+ Add language',
+                      hintText: AppLocalizations.of(context)!.addLanguageHint,
                       hintStyle: TextStyle(
                         fontSize: isDesktop ? 13.0 : (isTablet ? 12.0 : 11.0),
                         color: context.colors.textSecondary.withOpacity(0.5),
@@ -1239,7 +1244,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Bank Details',
+                AppLocalizations.of(context)!.bankDetailsLabel,
                 style: TextStyle(
                   fontSize: isDesktop ? 16.0 : (isTablet ? 15.0 : 14.0),
                   fontWeight: FontWeight.w700,
@@ -1259,7 +1264,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
           const SizedBox(height: 4),
           if (!_isEditing)
             Text(
-              hasBankDetails ? 'Used for withdrawal payouts' : 'Add bank details to enable withdrawals',
+              hasBankDetails ? AppLocalizations.of(context)!.bankDetailsSubtitle : AppLocalizations.of(context)!.bankDetailsEmpty,
               style: TextStyle(
                 fontSize: isDesktop ? 13.0 : (isTablet ? 12.0 : 11.0),
                 color: context.colors.textSecondary,
@@ -1268,16 +1273,16 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               ),
             ),
           const SizedBox(height: 16),
-          _buildField('Bank Name', _bankNameController, Icons.business_outlined,
+          _buildField(AppLocalizations.of(context)!.bankNameLabel, _bankNameController, Icons.business_outlined,
               isDark: isDark, isTablet: isTablet, isDesktop: isDesktop),
           const SizedBox(height: 14),
-          _buildField('Account Holder', _bankAccountNameController, Icons.person_outline_rounded,
+          _buildField(AppLocalizations.of(context)!.accountHolderLabel, _bankAccountNameController, Icons.person_outline_rounded,
               isDark: isDark, isTablet: isTablet, isDesktop: isDesktop),
           const SizedBox(height: 14),
           _isEditing
-              ? _buildField('Account Number', _bankAccountNumberController, Icons.numbers_rounded,
+              ? _buildField(AppLocalizations.of(context)!.accountNumberLabel, _bankAccountNumberController, Icons.numbers_rounded,
                   type: TextInputType.number, isDark: isDark, isTablet: isTablet, isDesktop: isDesktop)
-              : _buildMaskedField('Account Number', _bankAccountNumberController.text, Icons.numbers_rounded,
+              : _buildMaskedField(AppLocalizations.of(context)!.accountNumberLabel, _bankAccountNumberController.text, Icons.numbers_rounded,
                   isDark: isDark, isTablet: isTablet, isDesktop: isDesktop),
         ],
       ),
@@ -1294,7 +1299,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
   }) {
     final masked = value.length > 4
         ? '•••• •••• ${value.substring(value.length - 4)}'
-        : (value.isEmpty ? 'Not set' : value);
+        : (value.isEmpty ? AppLocalizations.of(context)!.notSetPlaceholder : value);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1370,7 +1375,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                       color: AppColors.professionalColor,
                     ),
                     title: Text(
-                      'Dark Mode',
+                      AppLocalizations.of(context)!.darkModeLabel,
                       style: TextStyle(
                         fontSize: isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0),
                         fontWeight: FontWeight.w500,
@@ -1379,7 +1384,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                       ),
                     ),
                     subtitle: Text(
-                      themeProvider.isDarkMode ? 'On' : 'Off',
+                      themeProvider.isDarkMode ? AppLocalizations.of(context)!.darkModeOnLabel : AppLocalizations.of(context)!.darkModeOffLabel,
                       style: TextStyle(
                         fontSize: isDesktop ? 13.0 : (isTablet ? 12.0 : 11.0),
                         color: context.colors.textSecondary,
@@ -1401,7 +1406,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             }),
             _buildMenuItem(
               icon: Icons.photo_library_outlined,
-              title: 'My Portfolio',
+              title: AppLocalizations.of(context)!.myPortfolioLabel,
               color: AppColors.professionalColor,
               isDark: isDark,
               isTablet: isTablet,
@@ -1414,7 +1419,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             Divider(height: 1, indent: 56, color: context.colors.divider),
             _buildMenuItem(
               icon: Icons.card_membership_outlined,
-              title: 'Certificates',
+              title: AppLocalizations.of(context)!.certificatesLabel,
               isDark: isDark,
               isTablet: isTablet,
               isDesktop: isDesktop,
@@ -1426,7 +1431,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             Divider(height: 1, indent: 56, color: context.colors.divider),
             _buildMenuItem(
               icon: Icons.photo_outlined,
-              title: 'Gallery',
+              title: AppLocalizations.of(context)!.galleryLabel,
               isDark: isDark,
               isTablet: isTablet,
               isDesktop: isDesktop,
@@ -1438,7 +1443,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             Divider(height: 1, indent: 56, color: context.colors.divider),
             _buildMenuItem(
               icon: Icons.account_balance_wallet_outlined,
-              title: 'Wallet & Earnings',
+              title: AppLocalizations.of(context)!.walletEarningsLabel,
               color: const Color(0xFF059669),
               isDark: isDark,
               isTablet: isTablet,
@@ -1451,7 +1456,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             Divider(height: 1, indent: 56, color: context.colors.divider),
             _buildMenuItem(
               icon: Icons.workspace_premium_rounded,
-              title: 'Subscription / Upgrade to Premium',
+              title: AppLocalizations.of(context)!.subscriptionUpgradeLabel,
               isDark: isDark,
               isTablet: isTablet,
               isDesktop: isDesktop,
@@ -1463,7 +1468,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             Divider(height: 1, indent: 56, color: context.colors.divider),
             _buildMenuItem(
               icon: Icons.lock_outline_rounded,
-              title: 'Change Password',
+              title: AppLocalizations.of(context)!.changePasswordLabel,
               isDark: isDark,
               isTablet: isTablet,
               isDesktop: isDesktop,
@@ -1473,9 +1478,34 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               ),
             ),
             Divider(height: 1, indent: 56, color: context.colors.divider),
+            // ✅ Trust & Safety Part 8 — user-facing account status + reports.
+            _buildMenuItem(
+              icon: Icons.shield_outlined,
+              title: AppLocalizations.of(context)!.myTsAccountStatusTitle,
+              isDark: isDark,
+              isTablet: isTablet,
+              isDesktop: isDesktop,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AccountStatusScreen()),
+              ),
+            ),
+            Divider(height: 1, indent: 56, color: context.colors.divider),
+            _buildMenuItem(
+              icon: Icons.outlined_flag_rounded,
+              title: AppLocalizations.of(context)!.myTsMyReportsTitle,
+              isDark: isDark,
+              isTablet: isTablet,
+              isDesktop: isDesktop,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MyReportsScreen()),
+              ),
+            ),
+            Divider(height: 1, indent: 56, color: context.colors.divider),
             _buildMenuItem(
               icon: Icons.help_outline_rounded,
-              title: 'Help & Support',
+              title: AppLocalizations.of(context)!.helpSupportLabel,
               isDark: isDark,
               isTablet: isTablet,
               isDesktop: isDesktop,
@@ -1487,7 +1517,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             Divider(height: 1, indent: 56, color: context.colors.divider),
             _buildMenuItem(
               icon: Icons.info_outline_rounded,
-              title: 'About',
+              title: AppLocalizations.of(context)!.aboutLabel,
               isDark: isDark,
               isTablet: isTablet,
               isDesktop: isDesktop,
@@ -1499,7 +1529,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             Divider(height: 1, indent: 56, color: context.colors.divider),
             _buildMenuItem(
               icon: Icons.logout_rounded,
-              title: 'Logout',
+              title: AppLocalizations.of(context)!.logoutActionLabel,
               color: AppColors.error,
               isDark: isDark,
               isTablet: isTablet,
@@ -1562,7 +1592,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
         ),
         backgroundColor: context.colors.surface,
         title: Text(
-          'Logout?',
+          AppLocalizations.of(context)!.logoutDialogTitle,
           style: TextStyle(
             fontSize: 17.0,
             fontWeight: FontWeight.w700,
@@ -1571,7 +1601,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
           ),
         ),
         content: Text(
-          'Are you sure you want to logout?',
+          AppLocalizations.of(context)!.logoutDialogContent,
           style: TextStyle(
             fontSize: 14.0,
             color: context.colors.textSecondary,
@@ -1583,7 +1613,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              AppLocalizations.of(context)!.cancelCta,
               style: TextStyle(
                 color: context.colors.textSecondary,
                 fontWeight: FontWeight.w500,
@@ -1606,7 +1636,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               // ✅ FIX: pushNamedAndRemoveUntil clears the whole stack.
               Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
             },
-            child: const Text('Logout'),
+            child: Text(AppLocalizations.of(context)!.logoutCta),
           ),
         ],
       ),

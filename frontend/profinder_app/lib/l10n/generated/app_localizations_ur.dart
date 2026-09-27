@@ -3143,4 +3143,3290 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get chatReasonOther => 'دیگر';
+
+  @override
+  String get aboutActionLabel => 'About';
+
+  @override
+  String get aboutActionSubtitle => 'About this app';
+
+  @override
+  String get aboutAppStoreLabel => 'App Store';
+
+  @override
+  String get aboutDisabledBadgeLabel => 'Unavailable';
+
+  @override
+  String get aboutEmptyStateMessage =>
+      'We couldn\'t find any information to show right now.';
+
+  @override
+  String get aboutEmptyStateTitle => 'Nothing to Show';
+
+  @override
+  String get aboutGooglePlayLabel => 'Google Play';
+
+  @override
+  String get aboutLabel => 'About';
+
+  @override
+  String aboutLinkCouldNotOpen(Object value1) {
+    return 'Could not open this link $value1';
+  }
+
+  @override
+  String aboutLinkError(Object value1) {
+    return 'Something went wrong while opening the link $value1';
+  }
+
+  @override
+  String aboutLinkNoAppFound(Object value1) {
+    return 'No app found to open this link $value1';
+  }
+
+  @override
+  String get aboutLoadError => 'Failed to load this page';
+
+  @override
+  String get aboutLoadingText => 'Loading...';
+
+  @override
+  String get aboutTitle => 'About';
+
+  @override
+  String get acceptCta => 'Accept';
+
+  @override
+  String get acceptDescription => 'Accept this booking';
+
+  @override
+  String get acceptLabel => 'Accept';
+
+  @override
+  String get acceptanceRateLabel => 'Acceptance Rate';
+
+  @override
+  String get acceptanceRateSubtext => 'Of bookings you accept';
+
+  @override
+  String get acceptedLabel => 'Accepted';
+
+  @override
+  String get acceptingBookingsLabel => 'Accepting Bookings';
+
+  @override
+  String get accountGroupLabel => 'Account';
+
+  @override
+  String get accountHolderLabel => 'Account Holder Name';
+
+  @override
+  String get accountNumberLabel => 'Account Number';
+
+  @override
+  String get accountSectionLabel => 'Account';
+
+  @override
+  String get accountTypeLabel => 'Account Type';
+
+  @override
+  String get addBankBannerSubtitle =>
+      'Add your bank details to receive withdrawals';
+
+  @override
+  String get addBankBannerTitle => 'Add Bank Details';
+
+  @override
+  String get addBankCta => 'Add Bank Account';
+
+  @override
+  String get addCertificateImageLabel => 'Certificate Image';
+
+  @override
+  String get addCertificateTitle => 'Add Certificate';
+
+  @override
+  String get addCertificateTooltip => 'Add a certificate';
+
+  @override
+  String get addCta => 'Add';
+
+  @override
+  String get addFirstCertificateCta => 'Add Your First Certificate';
+
+  @override
+  String get addFirstItemCta => 'Add Your First Item';
+
+  @override
+  String get addImageLabel => 'Add Image';
+
+  @override
+  String get addLanguageHint => 'Type a language and press enter';
+
+  @override
+  String get addPhotoCta => 'Add Photo';
+
+  @override
+  String get addPhotoTooltip => 'Add a photo';
+
+  @override
+  String get addPortfolioHint =>
+      'Showcase your best work to attract more customers';
+
+  @override
+  String get addPortfolioTitle => 'Add Portfolio Item';
+
+  @override
+  String get addPortfolioTooltip => 'Add portfolio item';
+
+  @override
+  String get addSkillHint => 'Type a skill and press enter';
+
+  @override
+  String get addWorkSamplesLabel => 'Add work samples';
+
+  @override
+  String get adjustSearchTerms => 'Try adjusting your search terms';
+
+  @override
+  String get adminNoteLabel => 'Admin Note';
+
+  @override
+  String get allCategoriesTitle => 'All Categories';
+
+  @override
+  String get analyticsErrorTitle => 'Couldn\'t load analytics';
+
+  @override
+  String get analyticsLoadError => 'Failed to load analytics';
+
+  @override
+  String get analyticsTitle => 'Analytics';
+
+  @override
+  String get applyCta => 'Apply';
+
+  @override
+  String get approvalSubtitle => 'Pending admin approval';
+
+  @override
+  String get approvalTitle => 'Approval Status';
+
+  @override
+  String get articleFooterMagazineLabel => 'More from Magazine';
+
+  @override
+  String get articleLoadingText => 'Loading article...';
+
+  @override
+  String get articleNotFoundError => 'Article not found';
+
+  @override
+  String get articleNotFoundMessage =>
+      'This article may have been removed or doesn\'t exist';
+
+  @override
+  String articleReadTime(Object value1) {
+    return '$value1 min read';
+  }
+
+  @override
+  String articleReadTimeLabel(Object value1) {
+    return '$value1 min read';
+  }
+
+  @override
+  String get automaticDescription =>
+      'Automatically accept bookings that meet your criteria';
+
+  @override
+  String get automaticLabel => 'Automatic';
+
+  @override
+  String get availabilityClosedLabel => 'Closed';
+
+  @override
+  String get availabilityLabel => 'Availability';
+
+  @override
+  String get availabilityLoadError => 'Failed to load availability';
+
+  @override
+  String get availabilityOffSuccess => 'You\'re now marked as unavailable';
+
+  @override
+  String get availabilityOnSuccess => 'You\'re now marked as available';
+
+  @override
+  String get availabilityScheduleSaveError => 'Failed to save schedule';
+
+  @override
+  String get availabilityScheduleSaved => 'Schedule saved successfully';
+
+  @override
+  String get availabilityStatusUpdateError =>
+      'Failed to update availability status';
+
+  @override
+  String availabilityStatusUpdated(Object value1) {
+    return 'Availability set to $value1';
+  }
+
+  @override
+  String get availabilitySummarySubtitle =>
+      'Your weekly working hours at a glance';
+
+  @override
+  String get availabilitySummaryTitle => 'Availability Summary';
+
+  @override
+  String get availabilityTitle => 'Availability';
+
+  @override
+  String get availabilityUpdateError => 'Failed to update availability';
+
+  @override
+  String get availabilityWeeklySubtitle =>
+      'Set your working hours for each day';
+
+  @override
+  String get availabilityWeeklyTitle => 'Weekly Schedule';
+
+  @override
+  String availableBalanceLabel(Object value1) {
+    return 'Available balance: Rs $value1';
+  }
+
+  @override
+  String get availableBalanceTitle => 'Available Balance';
+
+  @override
+  String get availableForBookingsLabel => 'Available for Bookings';
+
+  @override
+  String get availableLabel => 'Available';
+
+  @override
+  String get availableNowLabel => 'Available Now';
+
+  @override
+  String get availableSubtitle => 'Ready to accept new bookings';
+
+  @override
+  String get averageRatingLabel => 'Average Rating';
+
+  @override
+  String get averageRatingSubtext => 'Based on customer reviews';
+
+  @override
+  String get backCta => 'Back';
+
+  @override
+  String get backToBookingsCta => 'Back to Bookings';
+
+  @override
+  String get backToHomeCta => 'Back to Home';
+
+  @override
+  String get backToLoginCta => 'Back to Login';
+
+  @override
+  String get bankDetailsEmpty => 'No bank details added yet';
+
+  @override
+  String get bankDetailsLabel => 'Bank Details';
+
+  @override
+  String get bankDetailsRequiredMessage =>
+      'Please add your bank details before requesting a withdrawal';
+
+  @override
+  String get bankDetailsRequiredTitle => 'Bank Details Required';
+
+  @override
+  String get bankDetailsSubtitle => 'Used for withdrawals to your account';
+
+  @override
+  String get bankNameLabel => 'Bank Name';
+
+  @override
+  String get bioLabel => 'Bio';
+
+  @override
+  String get bookAppointmentTitle => 'Book Appointment';
+
+  @override
+  String get bookCta => 'Book';
+
+  @override
+  String get bookNowCta => 'Book Now';
+
+  @override
+  String get bookingConfigurationTitle => 'Booking Configuration';
+
+  @override
+  String get bookingDateRequired => 'Please select a date';
+
+  @override
+  String get bookingDetailsTitle => 'Booking Details';
+
+  @override
+  String get bookingFailed => 'Booking failed. Please try again.';
+
+  @override
+  String get bookingManagementTitle => 'Manage Bookings';
+
+  @override
+  String get bookingSoFarLabel => 'Bookings so far';
+
+  @override
+  String bookingStatusUpdated(Object value1) {
+    return 'Booking marked as $value1';
+  }
+
+  @override
+  String bookingSuccessMessage(Object value1) {
+    return 'Your booking request with $value1 has been sent';
+  }
+
+  @override
+  String get bookingSuccessTitle => 'Booking Requested';
+
+  @override
+  String get bookingTimeRequired => 'Please select a time';
+
+  @override
+  String get bookingTipText =>
+      'You can cancel for free up to 24 hours before the appointment';
+
+  @override
+  String get bookingUpdateError => 'Failed to update booking';
+
+  @override
+  String bookingUpdatedToast(Object value1) {
+    return 'Booking updated to $value1';
+  }
+
+  @override
+  String get bookingsActionLabel => 'Bookings';
+
+  @override
+  String get bookingsActionSubtitle => 'View your booking history';
+
+  @override
+  String get bookingsLabel => 'Bookings';
+
+  @override
+  String get bookingsStatLabel => 'Bookings';
+
+  @override
+  String bufferMinLabel(Object value1) {
+    return '$value1 min buffer';
+  }
+
+  @override
+  String get bufferNoneLabel => 'No buffer';
+
+  @override
+  String get bufferTimeSubtitle => 'Time between consecutive bookings';
+
+  @override
+  String get bufferTimeTitle => 'Buffer Time';
+
+  @override
+  String get calendarWeekDays => 'S,M,T,W,T,F,S';
+
+  @override
+  String get cameraOptionLabel => 'Camera';
+
+  @override
+  String get cancelBookingCta => 'Cancel Booking';
+
+  @override
+  String get cancelBookingTitle => 'Cancel Booking';
+
+  @override
+  String get cancelConfirmationMessage =>
+      'Are you sure you want to cancel this booking?';
+
+  @override
+  String get cancelCta => 'Cancel';
+
+  @override
+  String get cancelReasonHint => 'Let us know why you are cancelling';
+
+  @override
+  String get cancelReasonLabel => 'Reason for cancellation';
+
+  @override
+  String get cancellationPolicyLabel => 'Cancellation Policy';
+
+  @override
+  String get cancelledByCustomerLabel => 'Cancelled by customer';
+
+  @override
+  String get cancelledByYouLabel => 'Cancelled by you';
+
+  @override
+  String get categoryLabel => 'Category';
+
+  @override
+  String get certificateAddError => 'Failed to add certificate';
+
+  @override
+  String get certificateAddSuccess => 'Certificate added successfully';
+
+  @override
+  String get certificateTitleHint => 'e.g. Certified Plumbing Technician';
+
+  @override
+  String get certificateTitleLabelRequired => 'Certificate Title';
+
+  @override
+  String get certificatesLabel => 'Certificates';
+
+  @override
+  String get certificatesTitle => 'Certificates';
+
+  @override
+  String get certificationsLabel => 'Certifications';
+
+  @override
+  String get changePasswordLabel => 'Change Password';
+
+  @override
+  String get changePasswordSubtitle => 'Update your account password';
+
+  @override
+  String get changePasswordTitle => 'Change Password';
+
+  @override
+  String get changeProfilePhotoTitle => 'Change Profile Photo';
+
+  @override
+  String get chatMicPermissionRequired =>
+      'Microphone permission is required to record voice messages';
+
+  @override
+  String get chatNoMessagesFound => 'No messages found';
+
+  @override
+  String get chatSearchMessagesHint => 'Search messages';
+
+  @override
+  String get chatTypeToSearchConversation => 'Type to search this conversation';
+
+  @override
+  String get checkEmailHint => 'Didn\'t receive it? Check your spam folder.';
+
+  @override
+  String get checkEmailMessage =>
+      'We\'ve sent a password reset link to your email';
+
+  @override
+  String get checkEmailTitle => 'Check Your Email';
+
+  @override
+  String get cityDisabledHint => 'Select a country first';
+
+  @override
+  String get cityEmptyMessage => 'No cities found';
+
+  @override
+  String get cityHint => 'Select city';
+
+  @override
+  String get cityLabel => 'City';
+
+  @override
+  String get cityRequiredError => 'Please select a city';
+
+  @override
+  String get citySearchHint => 'Search city';
+
+  @override
+  String get clearCta => 'Clear';
+
+  @override
+  String get clientsLabel => 'Clients';
+
+  @override
+  String get closeCta => 'Close';
+
+  @override
+  String comingSoonMessage(Object value1) {
+    return '$value1 is coming soon';
+  }
+
+  @override
+  String commentHint(Object value1) {
+    return 'Share your experience with $value1';
+  }
+
+  @override
+  String get commentOptionalLabel => 'Comment Optional';
+
+  @override
+  String get completedLabel => 'Completed';
+
+  @override
+  String get confirmBookingCta => 'Confirm Booking';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get contactChatLabel => 'Chat with us';
+
+  @override
+  String get contactChatSubtitle => 'Get a quick response in chat';
+
+  @override
+  String get contactChatTitle => 'Chat Support';
+
+  @override
+  String get contactCta => 'Contact';
+
+  @override
+  String get contactEmailLabel => 'Email us';
+
+  @override
+  String get contactEmailSubtitle => 'We\'ll get back to you within 24 hours';
+
+  @override
+  String get contactEmailTitle => 'Email Support';
+
+  @override
+  String get contactSupportTitle => 'Contact Support';
+
+  @override
+  String get continueAsGuestCta => 'Continue as Guest';
+
+  @override
+  String get countryEmptyMessage => 'No countries found';
+
+  @override
+  String get countryHint => 'Select country';
+
+  @override
+  String get countryRequiredError => 'Please select a country';
+
+  @override
+  String get countrySearchHint => 'Search country';
+
+  @override
+  String get currencyFeatureName => 'Currency';
+
+  @override
+  String get currentPasswordLabel => 'Current Password';
+
+  @override
+  String currentPlanLabel(Object value1) {
+    return 'Current plan: $value1';
+  }
+
+  @override
+  String get currentlyBusyLabel => 'Currently Busy';
+
+  @override
+  String get customLocationHint => 'Enter a custom location';
+
+  @override
+  String get customLocationOption => 'Custom Location';
+
+  @override
+  String get customLocationSubtitle => 'Enter an address manually';
+
+  @override
+  String get customSlotDefaultLabel => 'Custom';
+
+  @override
+  String get customSlotHint => 'Enter duration in minutes';
+
+  @override
+  String customSlotLabel(Object value1) {
+    return 'Custom ($value1)';
+  }
+
+  @override
+  String get customSlotTitle => 'Custom Slot Duration';
+
+  @override
+  String get customSlotValidation => 'Please enter a valid duration';
+
+  @override
+  String get customerAccountDescription =>
+      'Book trusted professionals near you';
+
+  @override
+  String get customerDefault => 'Customer';
+
+  @override
+  String get customerLabel => 'Customer';
+
+  @override
+  String get dailyHoursLabel => 'Daily Hours';
+
+  @override
+  String get darkModeOffLabel => 'Light Mode';
+
+  @override
+  String get darkModeOnLabel => 'Dark Mode';
+
+  @override
+  String get dashboardLoadError => 'Failed to load dashboard';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get dateNotSet => 'Date not set';
+
+  @override
+  String get dateNotSetShort => 'No date';
+
+  @override
+  String get dateRequiredMessage => 'Please select a date';
+
+  @override
+  String get dateTipText => 'Choose a date that works best for you';
+
+  @override
+  String daysLabel(Object value1) {
+    return '${value1}d';
+  }
+
+  @override
+  String get declineCta => 'Decline';
+
+  @override
+  String get declineDescription => 'Decline this booking';
+
+  @override
+  String get declineLabel => 'Decline';
+
+  @override
+  String get deleteAccountDialogContent =>
+      'This will permanently delete your account and all associated data. This action cannot be undone.';
+
+  @override
+  String get deleteAccountDialogTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountLabel => 'Delete Account';
+
+  @override
+  String get deleteConfirmationTitle => 'Delete this item?';
+
+  @override
+  String get deleteCta => 'Delete';
+
+  @override
+  String deleteDialogContent(Object value1) {
+    return 'Are you sure you want to delete \"$value1\"?';
+  }
+
+  @override
+  String get deleteDialogTitle => 'Delete Item';
+
+  @override
+  String get deleteError => 'Failed to delete';
+
+  @override
+  String get deleteGalleryDialogContent =>
+      'Are you sure you want to delete this photo?';
+
+  @override
+  String get deleteGalleryDialogTitle => 'Delete Photo';
+
+  @override
+  String get deleteReviewConfirmationMessage =>
+      'Are you sure you want to delete this review?';
+
+  @override
+  String get deleteSuccess => 'Deleted successfully';
+
+  @override
+  String get descriptionHint => 'Add a description';
+
+  @override
+  String get descriptionLabelOptional => 'Description (optional)';
+
+  @override
+  String get detailsLabel => 'Details';
+
+  @override
+  String get directChatLabel => 'Message';
+
+  @override
+  String get discardCta => 'Discard';
+
+  @override
+  String get doneCta => 'Done';
+
+  @override
+  String get earningsLabel => 'Earnings';
+
+  @override
+  String get editCta => 'Edit';
+
+  @override
+  String get editLabel => 'Edit';
+
+  @override
+  String get editProfileActionLabel => 'Edit Profile';
+
+  @override
+  String get editProfileActionSubtitle => 'Update your personal information';
+
+  @override
+  String get editReviewHint => 'Update your comment';
+
+  @override
+  String get editReviewSubtitle => 'Update your rating and comment';
+
+  @override
+  String get editReviewTitle => 'Edit Review';
+
+  @override
+  String get editorHeadingPlaceholder => 'Heading';
+
+  @override
+  String get editorHintText => 'Start writing...';
+
+  @override
+  String get editorInsertCta => 'Insert';
+
+  @override
+  String get editorInsertLinkTitle => 'Insert Link';
+
+  @override
+  String get editorLinkHint => 'https://example.com';
+
+  @override
+  String get editorLinkPlaceholder => 'Link text';
+
+  @override
+  String get educationLabel => 'Education';
+
+  @override
+  String get emailAvailableLabel => 'Email is available';
+
+  @override
+  String get emailNotificationsLabel => 'Email Notifications';
+
+  @override
+  String get emailTakenLabel => 'This email is already registered';
+
+  @override
+  String get emptyCertificatesSubtitle =>
+      'Add your certifications to build trust with customers';
+
+  @override
+  String get emptyCertificatesTitle => 'No Certificates Yet';
+
+  @override
+  String get emptyGallerySubtitle => 'Add photos to showcase your work';
+
+  @override
+  String get emptyGalleryTitle => 'No Photos Yet';
+
+  @override
+  String get emptyPortfolioSubtitle =>
+      'Add your best work to attract more customers';
+
+  @override
+  String get emptyPortfolioTitle => 'No Portfolio Items Yet';
+
+  @override
+  String get endTimeLabel => 'End Time';
+
+  @override
+  String get enterAmountHint => 'Enter amount';
+
+  @override
+  String get exceedsBalanceError => 'Amount exceeds your available balance';
+
+  @override
+  String get exceptionsAddRange => 'Add Date Range';
+
+  @override
+  String get exceptionsCalendarSubtitle => 'Tap a date to set an exception';
+
+  @override
+  String get exceptionsCalendarTitle => 'Calendar';
+
+  @override
+  String get exceptionsCustomChip => 'Custom';
+
+  @override
+  String get exceptionsEndDate => 'End Date';
+
+  @override
+  String get exceptionsIntroText =>
+      'Mark dates when your availability differs from your usual schedule';
+
+  @override
+  String get exceptionsLegendClosed => 'Closed';
+
+  @override
+  String get exceptionsLegendCustom => 'Custom Hours';
+
+  @override
+  String get exceptionsLegendUnavailable => 'Unavailable';
+
+  @override
+  String get exceptionsLegendVacation => 'Vacation';
+
+  @override
+  String get exceptionsLegendWorking => 'Working';
+
+  @override
+  String get exceptionsLoadError => 'Failed to load exceptions';
+
+  @override
+  String get exceptionsNoOverrides => 'No exceptions set';
+
+  @override
+  String get exceptionsOverridesSubtitle => 'Dates with custom availability';
+
+  @override
+  String get exceptionsOverridesTitle => 'Overrides';
+
+  @override
+  String get exceptionsReasonLabel => 'Reason (optional)';
+
+  @override
+  String get exceptionsSelectDate => 'Select a date';
+
+  @override
+  String get exceptionsSetVacation => 'Set Vacation';
+
+  @override
+  String get exceptionsStartDate => 'Start Date';
+
+  @override
+  String get exceptionsTimeError => 'End time must be after start time';
+
+  @override
+  String get exceptionsTitle => 'Availability Exceptions';
+
+  @override
+  String get exceptionsUnavailableChip => 'Unavailable';
+
+  @override
+  String get exceptionsUnavailableLabel => 'Mark as unavailable';
+
+  @override
+  String get exceptionsUpdateVacation => 'Update Vacation';
+
+  @override
+  String get exceptionsVacationActive => 'Vacation is currently active';
+
+  @override
+  String exceptionsVacationScheduled(Object value1) {
+    return 'Vacation scheduled from $value1';
+  }
+
+  @override
+  String get exceptionsVacationSubtitle => 'Set a date range when you are away';
+
+  @override
+  String get exceptionsVacationTitle => 'Vacation Mode';
+
+  @override
+  String get experienceLabel => 'Experience';
+
+  @override
+  String experienceYearsLabel(Object value1) {
+    return '$value1 years experience';
+  }
+
+  @override
+  String get exploreExpertsLabel => 'Explore Experts';
+
+  @override
+  String get facebookSignInLabel => 'Continue with Facebook';
+
+  @override
+  String get faqBookingPendingA =>
+      'It may take a little time for the professional to respond. You will be notified once they accept or decline.';
+
+  @override
+  String get faqBookingPendingQ => 'Why is my booking still pending?';
+
+  @override
+  String get faqChangeAvailabilityA =>
+      'Go to your Availability settings from your profile to update your working hours.';
+
+  @override
+  String get faqChangeAvailabilityQ => 'How do I change my availability?';
+
+  @override
+  String get faqGetVerifiedA =>
+      'Complete your profile and submit the required documents from your profile settings to request verification.';
+
+  @override
+  String get faqGetVerifiedQ => 'How do I get verified?';
+
+  @override
+  String get faqHowToBookA =>
+      'Search for a professional, view their profile, and tap Book Now to select a date and time.';
+
+  @override
+  String get faqHowToBookQ => 'How do I book a professional?';
+
+  @override
+  String get faqHowToCancelA =>
+      'Open the booking from My Bookings and tap Cancel. Cancellations made in time are free.';
+
+  @override
+  String get faqHowToCancelQ => 'How do I cancel a booking?';
+
+  @override
+  String get faqImproveProfileA =>
+      'Add a profile photo, portfolio samples, and certificates to build trust with customers.';
+
+  @override
+  String get faqImproveProfileQ => 'How can I improve my profile?';
+
+  @override
+  String get faqPaymentSecureA =>
+      'Yes, all payments are processed securely and your details are never shared.';
+
+  @override
+  String get faqPaymentSecureQ => 'Is my payment information secure?';
+
+  @override
+  String get faqRefundsA =>
+      'Refunds are processed automatically for eligible cancellations within a few business days.';
+
+  @override
+  String get faqRefundsQ => 'How do refunds work?';
+
+  @override
+  String get faqSectionLabel => 'FAQ';
+
+  @override
+  String get faqSectionTitle => 'Frequently Asked Questions';
+
+  @override
+  String get faqWithdrawEarningsA =>
+      'Go to your Wallet and tap Withdraw to transfer your earnings to your bank account.';
+
+  @override
+  String get faqWithdrawEarningsQ => 'How do I withdraw my earnings?';
+
+  @override
+  String get fastResponseLabel => 'Fast Response';
+
+  @override
+  String get flexibleTimingLabel => 'Flexible Timing';
+
+  @override
+  String get freeToCancelLabel => 'Free to Cancel';
+
+  @override
+  String get fullNameLabel => 'Full Name';
+
+  @override
+  String get galleryLabel => 'Gallery';
+
+  @override
+  String get galleryOptionLabel => 'Gallery';
+
+  @override
+  String get galleryTitle => 'Gallery';
+
+  @override
+  String get galleryUploadError => 'Failed to upload photo';
+
+  @override
+  String get galleryUploadSuccess => 'Photo uploaded successfully';
+
+  @override
+  String get goBackCta => 'Go Back';
+
+  @override
+  String get goodAfternoon => 'Good afternoon';
+
+  @override
+  String get goodAfternoonComma => 'Good afternoon,';
+
+  @override
+  String get goodEvening => 'Good evening';
+
+  @override
+  String get goodEveningComma => 'Good evening,';
+
+  @override
+  String get goodMorning => 'Good morning';
+
+  @override
+  String get goodMorningComma => 'Good morning,';
+
+  @override
+  String get goodToKnowLabel => 'Good to Know';
+
+  @override
+  String get googleSignInLabel => 'Continue with Google';
+
+  @override
+  String get helpActionLabel => 'Help & Support';
+
+  @override
+  String get helpActionSubtitle => 'Get help or contact us';
+
+  @override
+  String get helpSupportLabel => 'Help & Support';
+
+  @override
+  String get helpSupportTitle => 'Help & Support';
+
+  @override
+  String get helpTitle => 'Help';
+
+  @override
+  String get homeDefaultPlanFree => 'Free';
+
+  @override
+  String get homeDefaultProfessionalName => 'Professional';
+
+  @override
+  String get homeFilterAll => 'All';
+
+  @override
+  String get homeFilterAvailableNow => 'Available Now';
+
+  @override
+  String get homeFilterFastResponse => 'Fast Response';
+
+  @override
+  String get homeFilterHighestPrice => 'Highest Price';
+
+  @override
+  String get homeFilterLowestPrice => 'Lowest Price';
+
+  @override
+  String get homeFilterMostBooked => 'Most Booked';
+
+  @override
+  String get homeFilterMostExperienced => 'Most Experienced';
+
+  @override
+  String get homeFilterMostReviews => 'Most Reviews';
+
+  @override
+  String get homeFilterRating1Plus => '1+ Stars';
+
+  @override
+  String get homeFilterRating2Plus => '2+ Stars';
+
+  @override
+  String get homeFilterRating3Plus => '3+ Stars';
+
+  @override
+  String get homeFilterRating4Plus => '4+ Stars';
+
+  @override
+  String get homeFilterRating5Plus => '5 Stars';
+
+  @override
+  String get homeFilterThisMonth => 'This Month';
+
+  @override
+  String get homeFilterThisWeek => 'This Week';
+
+  @override
+  String get homeFilterToday => 'Today';
+
+  @override
+  String get homeFilterTopRated => 'Top Rated';
+
+  @override
+  String get homeFilterVerified => 'Verified';
+
+  @override
+  String get homeFilterWithin10Km => 'Within 10 km';
+
+  @override
+  String get homeFilterWithin2Km => 'Within 2 km';
+
+  @override
+  String get homeFilterWithin5Km => 'Within 5 km';
+
+  @override
+  String get homeGoBack => 'Go Back';
+
+  @override
+  String get homeNoProfessionalsFound => 'No professionals found';
+
+  @override
+  String get homeNoProfessionalsFoundHint =>
+      'Try adjusting your filters or search a different area';
+
+  @override
+  String get hour => 'hour';
+
+  @override
+  String get hourlyRateLabel => 'Hourly Rate';
+
+  @override
+  String hoursDecimalLabel(Object value1) {
+    return '${value1}h';
+  }
+
+  @override
+  String hoursLabel(Object value1) {
+    return '${value1}h';
+  }
+
+  @override
+  String hoursMinutesShort(Object value1, Object value2) {
+    return '${value1}h ${value2}m';
+  }
+
+  @override
+  String hoursShort(Object value1) {
+    return '${value1}h';
+  }
+
+  @override
+  String get idVerifiedLabel => 'ID Verified';
+
+  @override
+  String get imagePickError => 'Failed to select image';
+
+  @override
+  String get instantLabel => 'Instant';
+
+  @override
+  String get issueDateLabelOptional => 'Issue Date (optional)';
+
+  @override
+  String get issuingOrganizationHint => 'e.g. National Skills Board';
+
+  @override
+  String get issuingOrganizationLabel => 'Issuing Organization';
+
+  @override
+  String get jobsDoneLabel => 'Jobs Done';
+
+  @override
+  String get languagesLabel => 'Languages';
+
+  @override
+  String lastUpdatedLabel(Object value1) {
+    return 'Last updated: $value1';
+  }
+
+  @override
+  String get laterCta => 'Later';
+
+  @override
+  String get loadBookingsError => 'Failed to load bookings';
+
+  @override
+  String get loadCertificatesError => 'Failed to load certificates';
+
+  @override
+  String get loadGalleryError => 'Failed to load gallery';
+
+  @override
+  String get loadPortfolioError => 'Failed to load portfolio';
+
+  @override
+  String get loadSettingsError => 'Failed to load settings';
+
+  @override
+  String get loadWalletError => 'Failed to load wallet';
+
+  @override
+  String get loadingAnalyticsText => 'Loading analytics...';
+
+  @override
+  String get loadingDashboard => 'Loading dashboard...';
+
+  @override
+  String get locationLabel => 'Location';
+
+  @override
+  String get locationNotSpecified => 'Location not specified';
+
+  @override
+  String get locationTipText => 'Enable location for more accurate results';
+
+  @override
+  String get loginCta => 'Login';
+
+  @override
+  String get loginSubtitle => 'Welcome back! Please sign in to continue';
+
+  @override
+  String get loginTitle => 'Login';
+
+  @override
+  String get loginToBookCta => 'Login to Book';
+
+  @override
+  String get logoutActionLabel => 'Logout';
+
+  @override
+  String get logoutActionSubtitle => 'Sign out of your account';
+
+  @override
+  String get logoutCta => 'Logout';
+
+  @override
+  String get logoutDialogContent => 'Are you sure you want to log out?';
+
+  @override
+  String get logoutDialogTitle => 'Logout';
+
+  @override
+  String get magazineAllCategoriesLabel => 'All';
+
+  @override
+  String magazineArticleCountPlural(Object value1) {
+    return '$value1 articles';
+  }
+
+  @override
+  String get magazineArticleCountSingle => '1 article';
+
+  @override
+  String get magazineClearSearchCta => 'Clear Search';
+
+  @override
+  String get magazineEmptyMessage => 'No articles available right now';
+
+  @override
+  String get magazineEmptySearchMessage => 'Try a different search term';
+
+  @override
+  String get magazineEmptySearchTitle => 'No Results Found';
+
+  @override
+  String get magazineEmptyTitle => 'No Articles Yet';
+
+  @override
+  String get magazineErrorMessage =>
+      'Something went wrong while loading the magazine';
+
+  @override
+  String get magazineErrorTitle => 'Failed to Load';
+
+  @override
+  String get magazineLoadError => 'Failed to load magazine';
+
+  @override
+  String get magazineLoadingText => 'Loading articles...';
+
+  @override
+  String get magazineSearchHint => 'Search articles';
+
+  @override
+  String get magazineSearchResultsLabel => 'Search Results';
+
+  @override
+  String get magazineSubtitle => 'Tips and stories for professionals';
+
+  @override
+  String get magazineTitle => 'Magazine';
+
+  @override
+  String get manageCta => 'Manage';
+
+  @override
+  String get manageLabel => 'Manage';
+
+  @override
+  String get manualDescription => 'Review and accept bookings yourself';
+
+  @override
+  String get manualInfoFooter => 'You can change this anytime in settings';
+
+  @override
+  String get manualInfoTitle => 'Manual Approval';
+
+  @override
+  String get manualLabel => 'Manual';
+
+  @override
+  String get markCompletedCta => 'Mark as Completed';
+
+  @override
+  String get markCompletedCtaShort => 'Complete';
+
+  @override
+  String get maxAdvanceSubtitle => 'How far in advance customers can book';
+
+  @override
+  String get maxAdvanceTitle => 'Max Advance Booking';
+
+  @override
+  String get memberSinceLabel => 'Member Since';
+
+  @override
+  String get messagesEmptySubtitle =>
+      'Start a conversation with a professional or customer';
+
+  @override
+  String get messagesEmptyTitle => 'No Messages Yet';
+
+  @override
+  String get messagesLoadError => 'Failed to load messages';
+
+  @override
+  String get messagesLoadingText => 'Loading messages...';
+
+  @override
+  String get messagesTitle => 'Messages';
+
+  @override
+  String minAmountError(Object value1) {
+    return 'Minimum withdrawal amount is Rs $value1';
+  }
+
+  @override
+  String get minNoticeSubtitle => 'Minimum time before a booking can start';
+
+  @override
+  String get minNoticeTitle => 'Minimum Notice';
+
+  @override
+  String minWithdrawalLabel(Object value1) {
+    return 'Minimum withdrawal: Rs $value1';
+  }
+
+  @override
+  String get minute => 'minute';
+
+  @override
+  String minutesLabel(Object value1) {
+    return '${value1}m';
+  }
+
+  @override
+  String minutesShort(Object value1) {
+    return '${value1}m';
+  }
+
+  @override
+  String get minutesZero => '0 minutes';
+
+  @override
+  String get myPortfolioLabel => 'My Portfolio';
+
+  @override
+  String get myPortfolioTitle => 'My Portfolio';
+
+  @override
+  String get myReviewsEmptySubtitle => 'Reviews you write will appear here';
+
+  @override
+  String get myReviewsEmptyTitle => 'No Reviews Yet';
+
+  @override
+  String get myReviewsTitle => 'My Reviews';
+
+  @override
+  String get navAnalytics => 'Analytics';
+
+  @override
+  String get navBookings => 'Bookings';
+
+  @override
+  String get navDashboard => 'Dashboard';
+
+  @override
+  String get navMagazine => 'Magazine';
+
+  @override
+  String get navMessages => 'Messages';
+
+  @override
+  String get navProfile => 'Profile';
+
+  @override
+  String get nearbyLabel => 'Nearby';
+
+  @override
+  String get needMoreHelpLabel => 'Need more help?';
+
+  @override
+  String get newPasswordLabel => 'New Password';
+
+  @override
+  String get newPhotoSelectedHint => 'New photo selected';
+
+  @override
+  String get nextCta => 'Next';
+
+  @override
+  String get noBookingsAccepted => 'No accepted bookings';
+
+  @override
+  String get noBookingsAll => 'No bookings yet';
+
+  @override
+  String get noBookingsCancelled => 'No cancelled bookings';
+
+  @override
+  String get noBookingsCompleted => 'No completed bookings';
+
+  @override
+  String get noBookingsDefault => 'No bookings found';
+
+  @override
+  String get noBookingsPending => 'No pending bookings';
+
+  @override
+  String get noBookingsRescheduled => 'No rescheduled bookings';
+
+  @override
+  String get noBookingsToday => 'No bookings today';
+
+  @override
+  String get noBookingsYet => 'No bookings yet';
+
+  @override
+  String get noClientsFound => 'No clients found';
+
+  @override
+  String get noLanguagesAdded => 'No languages added yet';
+
+  @override
+  String get noMessagesPlaceholder => 'No messages yet';
+
+  @override
+  String get noMessagesYet => 'No messages yet';
+
+  @override
+  String get noPaymentsSubtitle => 'Your payment history will appear here';
+
+  @override
+  String get noPaymentsTitle => 'No Payments Yet';
+
+  @override
+  String get noPortfolioSubtitle => 'Portfolio items will appear here';
+
+  @override
+  String get noPortfolioTitle => 'No Portfolio Items';
+
+  @override
+  String get noReviewsSubtitle =>
+      'Reviews will appear here once customers rate you';
+
+  @override
+  String get noReviewsTitle => 'No Reviews Yet';
+
+  @override
+  String get noReviewsYet => 'No reviews yet';
+
+  @override
+  String get noServicesSubtitle =>
+      'Add services you offer to attract customers';
+
+  @override
+  String get noServicesTitle => 'No Services Added';
+
+  @override
+  String get noSkillsAdded => 'No skills added yet';
+
+  @override
+  String get noTransactionsLabel => 'No transactions yet';
+
+  @override
+  String get noWorkingHoursMessage => 'No working hours set for this day';
+
+  @override
+  String get notAcceptingBookingsLabel => 'Not Accepting Bookings';
+
+  @override
+  String get notAvailableLabel => 'Not Available';
+
+  @override
+  String get notAvailableSubtitle => 'Not accepting bookings right now';
+
+  @override
+  String get notSetPlaceholder => 'Not set';
+
+  @override
+  String get notSpecifiedLabel => 'Not specified';
+
+  @override
+  String get notVerifiedLabel => 'Not Verified';
+
+  @override
+  String get notesHintText => 'Add any notes here';
+
+  @override
+  String get notesInfoText => 'Notes are only visible to you';
+
+  @override
+  String get notesLabel => 'Notes';
+
+  @override
+  String get notesTipText => 'Add any special requests or details';
+
+  @override
+  String get notificationsActionLabel => 'Notifications';
+
+  @override
+  String get notificationsActionSubtitle => 'Manage notification preferences';
+
+  @override
+  String notificationsDaysAgo(Object value1) {
+    return '${value1}d ago';
+  }
+
+  @override
+  String get notificationsEmptyMessage => 'You\'re all caught up!';
+
+  @override
+  String get notificationsEmptyTitle => 'No Notifications';
+
+  @override
+  String get notificationsErrorTitle => 'Couldn\'t load notifications';
+
+  @override
+  String notificationsHoursAgo(Object value1) {
+    return '${value1}h ago';
+  }
+
+  @override
+  String get notificationsJustNow => 'Just now';
+
+  @override
+  String get notificationsLoadError => 'Failed to load notifications';
+
+  @override
+  String get notificationsLoadingText => 'Loading notifications...';
+
+  @override
+  String get notificationsMarkAllReadCta => 'Mark all as read';
+
+  @override
+  String get notificationsMarkAllReadSuccess =>
+      'All notifications marked as read';
+
+  @override
+  String notificationsMinutesAgo(Object value1) {
+    return '${value1}m ago';
+  }
+
+  @override
+  String get notificationsSectionLabel => 'Notifications';
+
+  @override
+  String get notificationsSectionThisMonth => 'This Month';
+
+  @override
+  String get notificationsSectionThisWeek => 'This Week';
+
+  @override
+  String get notificationsSectionToday => 'Today';
+
+  @override
+  String get notificationsSectionYesterday => 'Yesterday';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String notifyCustomerMessage(Object value1, Object value2) {
+    return 'Notify the customer about the new time: $value1 at $value2?';
+  }
+
+  @override
+  String get notifyCustomerTitle => 'Notify Customer';
+
+  @override
+  String get offlineLabel => 'Offline';
+
+  @override
+  String get okCta => 'OK';
+
+  @override
+  String get onlineLabel => 'Online';
+
+  @override
+  String get openChatCta => 'Open Chat';
+
+  @override
+  String get openChatCtaShort => 'Chat';
+
+  @override
+  String get openChatError => 'Failed to open chat';
+
+  @override
+  String get orContinueWithLabel => 'Or continue with';
+
+  @override
+  String get overrideRemoved => 'Exception removed';
+
+  @override
+  String overrideSaved(Object value1) {
+    return 'Exception saved for $value1';
+  }
+
+  @override
+  String get passwordChangeError => 'Failed to change password';
+
+  @override
+  String get passwordChangeSuccess => 'Password changed successfully';
+
+  @override
+  String get passwordHelperText => 'Must be at least 8 characters';
+
+  @override
+  String get passwordMinLengthError => 'Password must be at least 8 characters';
+
+  @override
+  String get passwordMismatchError => 'Passwords do not match';
+
+  @override
+  String get passwordRequiredError => 'Password is required';
+
+  @override
+  String get paymentHistoryLabel => 'Payment History';
+
+  @override
+  String get paymentHistorySubtitle => 'View all your past payments';
+
+  @override
+  String get paymentStatusCompleted => 'Completed';
+
+  @override
+  String get paymentStatusFailed => 'Failed';
+
+  @override
+  String get paymentStatusPending => 'Pending';
+
+  @override
+  String get paymentStatusRefunded => 'Refunded';
+
+  @override
+  String get paymentsActionLabel => 'Payments';
+
+  @override
+  String get paymentsActionSubtitle => 'View your payment history';
+
+  @override
+  String get paymentsTitle => 'Payments';
+
+  @override
+  String get pendingLabel => 'Pending';
+
+  @override
+  String get perHourLabel => '/hr';
+
+  @override
+  String get performanceLabel => 'Performance';
+
+  @override
+  String get performanceScoreInfo =>
+      'Based on your ratings, response time, and completed bookings';
+
+  @override
+  String get performanceScoreLabel => 'Performance Score';
+
+  @override
+  String performanceScoreOutOf(Object value1) {
+    return '$value1 out of 100';
+  }
+
+  @override
+  String get personalInfoLabel => 'Personal Information';
+
+  @override
+  String get phoneLabel => 'Phone';
+
+  @override
+  String photoLimitReached(Object value1) {
+    return 'You can add up to $value1 photos';
+  }
+
+  @override
+  String get photoPickError => 'Failed to select photo';
+
+  @override
+  String get photosOptionalLabel => 'Photos (optional)';
+
+  @override
+  String get planStatLabel => 'Plan';
+
+  @override
+  String get planUpgradeSubtitle =>
+      'Unlock more features and grow your business';
+
+  @override
+  String planUpgradeTitle(Object value1) {
+    return 'Upgrade from $value1';
+  }
+
+  @override
+  String get portfolioInfoNote =>
+      'Showcase your best work to attract more customers';
+
+  @override
+  String get portfolioLabel => 'Portfolio';
+
+  @override
+  String get postReplyCta => 'Post Reply';
+
+  @override
+  String get preferencesGroupLabel => 'Preferences';
+
+  @override
+  String get preferencesSectionLabel => 'Preferences';
+
+  @override
+  String get premiumActiveSubtitle => 'You have access to all premium features';
+
+  @override
+  String get premiumMemberLabel => 'Premium Member';
+
+  @override
+  String get premiumUpgradeSubtitle => 'Get unlimited AI searches and more';
+
+  @override
+  String get proBadgeLabel => 'PRO';
+
+  @override
+  String get professionEmptyMessage => 'No professions found';
+
+  @override
+  String get professionHint => 'Select profession';
+
+  @override
+  String get professionLabel => 'Profession';
+
+  @override
+  String get professionRequiredError => 'Please select a profession';
+
+  @override
+  String get professionSearchHint => 'Search profession';
+
+  @override
+  String get professionalAccountDescription =>
+      'Offer your services to customers';
+
+  @override
+  String get professionalDefaultName => 'Professional';
+
+  @override
+  String get professionalDetailLoadError =>
+      'Failed to load professional details';
+
+  @override
+  String get professionalDetailsLabel => 'Professional Details';
+
+  @override
+  String get professionalLabel => 'Professional';
+
+  @override
+  String get professionalLocationLabel => 'Professional\'s Location';
+
+  @override
+  String get professionalLocationOption => 'Professional\'s Location';
+
+  @override
+  String get professionalReviewsLabel => 'Reviews';
+
+  @override
+  String get professionalReviewsSubtitle => 'What customers are saying';
+
+  @override
+  String get profileCompletionHint =>
+      'Complete your profile to attract more customers';
+
+  @override
+  String get profileCompletionLabel => 'Profile Completion';
+
+  @override
+  String get profileEditProfile => 'Edit Profile';
+
+  @override
+  String get profileLabel => 'Profile';
+
+  @override
+  String get profileLoadError => 'Failed to load profile';
+
+  @override
+  String get profileLoadingText => 'Loading profile...';
+
+  @override
+  String get profileNotAvailable => 'Profile not available';
+
+  @override
+  String get profileOff => 'Off';
+
+  @override
+  String get profileOn => 'On';
+
+  @override
+  String get profileReviewsLabel => 'Reviews';
+
+  @override
+  String get profileSavedLabel => 'Saved';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileUpdateError => 'Failed to update profile';
+
+  @override
+  String get profileUpdateSuccess => 'Profile updated successfully';
+
+  @override
+  String get profileViewsLabel => 'Profile Views';
+
+  @override
+  String get profileViewsSubtext => 'People who viewed your profile';
+
+  @override
+  String get profileWalletLabel => 'Wallet';
+
+  @override
+  String get pushNotificationsLabel => 'Push Notifications';
+
+  @override
+  String get quickActionsLabel => 'Quick Actions';
+
+  @override
+  String get quickAddLabel => 'Quick Add';
+
+  @override
+  String get rateLabel => 'Rate';
+
+  @override
+  String get ratingLabel => 'Rating';
+
+  @override
+  String get ratingRequiredError => 'Please select a rating';
+
+  @override
+  String get recentBookingsLabel => 'Recent Bookings';
+
+  @override
+  String get recentMessagesLabel => 'Recent Messages';
+
+  @override
+  String get recentReviewsLabel => 'Recent Reviews';
+
+  @override
+  String get refreshTooltip => 'Refresh';
+
+  @override
+  String get registerCategoryRequired => 'Please select a category';
+
+  @override
+  String get registerCta => 'Register';
+
+  @override
+  String get registerServerError => 'Registration failed. Please try again.';
+
+  @override
+  String get registerSubtitle => 'Sign up to get started';
+
+  @override
+  String get registerTitle => 'Create Account';
+
+  @override
+  String get rejectCta => 'Reject';
+
+  @override
+  String get relatedProfessionalsLabel => 'You May Also Like';
+
+  @override
+  String get removeCta => 'Remove';
+
+  @override
+  String get replyHint => 'Write a reply';
+
+  @override
+  String get replySubtitle => 'Your reply is public and visible to everyone';
+
+  @override
+  String get replyTitle => 'Reply to Review';
+
+  @override
+  String get reportNoteHint => 'Add any additional details';
+
+  @override
+  String get reportSubtitle => 'Help us understand what went wrong';
+
+  @override
+  String get reportTitle => 'Report an Issue';
+
+  @override
+  String get requestSentLabel => 'Request Sent';
+
+  @override
+  String requestSentSubtitle(Object value1) {
+    return 'Your request has been sent to $value1';
+  }
+
+  @override
+  String get requestWithdrawCta => 'Request Withdrawal';
+
+  @override
+  String get rescheduledLabel => 'Rescheduled';
+
+  @override
+  String get resendEmailCta => 'Resend Email';
+
+  @override
+  String get resetLinkError => 'Failed to send reset link';
+
+  @override
+  String resetLinkSent(Object value1) {
+    return 'Password reset link sent to $value1';
+  }
+
+  @override
+  String get resetPassSubtitle =>
+      'Enter your email and we\'ll send you a reset link';
+
+  @override
+  String get resetPassTitle => 'Reset Password';
+
+  @override
+  String resetPasswordDescription(Object value1) {
+    return 'We\'ll send a password reset link to $value1';
+  }
+
+  @override
+  String get resetPasswordLabel => 'Reset Password';
+
+  @override
+  String get responseLabel => 'Response';
+
+  @override
+  String get responseRateLabel => 'Response Rate';
+
+  @override
+  String get responseRateSubtext => 'How often you respond to messages';
+
+  @override
+  String get responseTimeLabel => 'Response Time';
+
+  @override
+  String get retryCta => 'Retry';
+
+  @override
+  String get reviewBookingLabel => 'Review Booking';
+
+  @override
+  String get reviewSubmitErrorDefault => 'Failed to submit review';
+
+  @override
+  String reviewSubmittedSuccessMessage(Object value1) {
+    return 'Your review for $value1 has been submitted';
+  }
+
+  @override
+  String get reviewSubmittedSuccessTitle => 'Review Submitted';
+
+  @override
+  String get reviewUpdateErrorDefault => 'Failed to update review';
+
+  @override
+  String reviewUpdatedSuccessMessage(Object value1) {
+    return 'Your review for $value1 has been updated';
+  }
+
+  @override
+  String get reviewUpdatedSuccessTitle => 'Review Updated';
+
+  @override
+  String get reviewsActionLabel => 'Reviews';
+
+  @override
+  String get reviewsActionSubtitle => 'Reviews you have written';
+
+  @override
+  String reviewsCountLabel(Object value1) {
+    return '$value1 reviews';
+  }
+
+  @override
+  String get reviewsLabel => 'Reviews';
+
+  @override
+  String get saveCertificateCta => 'Save Certificate';
+
+  @override
+  String get saveChangesCta => 'Save Changes';
+
+  @override
+  String get saveCta => 'Save';
+
+  @override
+  String get saveScheduleCta => 'Save Schedule';
+
+  @override
+  String get saveSettingsError => 'Failed to save settings';
+
+  @override
+  String get saveSettingsSuccess => 'Settings saved successfully';
+
+  @override
+  String get savedProfessionalsActionLabel => 'Saved Professionals';
+
+  @override
+  String get savedProfessionalsActionSubtitle => 'Professionals you have saved';
+
+  @override
+  String get savedProfessionalsEmptySubtitle =>
+      'Professionals you save will appear here';
+
+  @override
+  String get savedProfessionalsEmptyTitle => 'No Saved Professionals';
+
+  @override
+  String get savedProfessionalsTitle => 'Saved Professionals';
+
+  @override
+  String get savedStatLabel => 'Saved';
+
+  @override
+  String get searchAiPremiumActive => 'AI Search Premium Active';
+
+  @override
+  String searchAiRemainingToday(Object value1) {
+    return '$value1 AI searches remaining today';
+  }
+
+  @override
+  String get searchBookingsHint => 'Search bookings';
+
+  @override
+  String get searchCategories => 'Categories';
+
+  @override
+  String get searchPopular => 'Popular';
+
+  @override
+  String get searchPopularCleaners => 'Cleaners';
+
+  @override
+  String get searchPopularDoctors => 'Doctors';
+
+  @override
+  String get searchPopularElectricians => 'Electricians';
+
+  @override
+  String get searchPopularEngineers => 'Engineers';
+
+  @override
+  String get searchPopularLawyers => 'Lawyers';
+
+  @override
+  String get searchPopularPlumbers => 'Plumbers';
+
+  @override
+  String get searchProfessionals => 'Professionals';
+
+  @override
+  String get searchProfessions => 'Professions';
+
+  @override
+  String get searchRecent => 'Recent';
+
+  @override
+  String searchResultsLabel(Object value1, Object value2) {
+    return '$value1 results for \"$value2\"';
+  }
+
+  @override
+  String get searchingLabel => 'Searching...';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get securityActionLabel => 'Security';
+
+  @override
+  String get securityActionSubtitle => 'Password and account security';
+
+  @override
+  String get securityBannerSubtitle => 'Keep your account safe and secure';
+
+  @override
+  String get securityBannerTitle => 'Account Security';
+
+  @override
+  String get securityFooterText =>
+      'If you didn\'t request this change, please contact support immediately';
+
+  @override
+  String get securityTitle => 'Security';
+
+  @override
+  String get seeAllLabel => 'See All';
+
+  @override
+  String get selectedLabel => 'Selected';
+
+  @override
+  String get sendResetLinkCta => 'Send Reset Link';
+
+  @override
+  String get serviceLabel => 'Service';
+
+  @override
+  String get serviceProfessionalLabel => 'Service Professional';
+
+  @override
+  String get settingsActionLabel => 'Settings';
+
+  @override
+  String get settingsActionSubtitle => 'App preferences';
+
+  @override
+  String get shareExperienceLabel => 'Share your experience';
+
+  @override
+  String get signInInsteadLabel => 'Sign in instead';
+
+  @override
+  String get skillsLabel => 'Skills';
+
+  @override
+  String get skillsPricingLabel => 'Skills & Pricing';
+
+  @override
+  String get slotDurationSubtitle => 'Default length of each booking slot';
+
+  @override
+  String get slotDurationTitle => 'Slot Duration';
+
+  @override
+  String get startConversationError => 'Failed to start conversation';
+
+  @override
+  String get startTimeLabel => 'Start Time';
+
+  @override
+  String get startingFromLabel => 'Starting from';
+
+  @override
+  String get statusApproved => 'Approved';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusRejected => 'Rejected';
+
+  @override
+  String get submitReportCta => 'Submit Report';
+
+  @override
+  String get submitReviewCta => 'Submit Review';
+
+  @override
+  String get subscriptionActionLabel => 'Subscription';
+
+  @override
+  String subscriptionActiveStatus(Object value1) {
+    return '$value1 plan active';
+  }
+
+  @override
+  String get subscriptionUpgradeLabel => 'Upgrade Plan';
+
+  @override
+  String get subscriptionUpgradeStatus => 'Upgrade to premium';
+
+  @override
+  String get suggestTimeCta => 'Suggest a Different Time';
+
+  @override
+  String get suggestTimeCtaShort => 'Suggest Time';
+
+  @override
+  String get suggestTimeDescription =>
+      'Propose a new date and time for this booking';
+
+  @override
+  String get suggestTimeLabel => 'Suggest a Time';
+
+  @override
+  String get suggestTimeSuccess => 'New time suggested to customer';
+
+  @override
+  String get suggestedTimeLabel => 'Suggested Time';
+
+  @override
+  String get supportBannerSubtitle => 'We\'re here to help, 24/7';
+
+  @override
+  String get supportBannerTitle => 'Need Help?';
+
+  @override
+  String get supportTeamReplyLabel => 'Support Team';
+
+  @override
+  String get tapStarToRateLabel => 'Tap a star to rate';
+
+  @override
+  String get thisMonthLabel => 'This Month';
+
+  @override
+  String get timeLabel => 'Time';
+
+  @override
+  String get timeSlotsLabel => 'Time Slots';
+
+  @override
+  String get timeTipText => 'Choose a time that works best for you';
+
+  @override
+  String get titleHint => 'Enter a title';
+
+  @override
+  String get titleLabelRequired => 'Title';
+
+  @override
+  String get titleValidationError => 'Please enter a title';
+
+  @override
+  String get todayLabel => 'Today';
+
+  @override
+  String get todaysEarningsLabel => 'Today\'s Earnings';
+
+  @override
+  String get todaysScheduleLabel => 'Today\'s Schedule';
+
+  @override
+  String get topRatedLabel => 'Top Rated';
+
+  @override
+  String get totalBookingsLabel => 'Total Bookings';
+
+  @override
+  String get totalEarnedLabel => 'Total Earned';
+
+  @override
+  String get totalSpentLabel => 'Total Spent';
+
+  @override
+  String transactionCountLabel(Object value1) {
+    return '$value1 transactions';
+  }
+
+  @override
+  String get transactionHistoryTitle => 'Transaction History';
+
+  @override
+  String get tryAgainCta => 'Try Again';
+
+  @override
+  String get twitterSignInLabel => 'Continue with Twitter';
+
+  @override
+  String get typicallyRepliesLabel => 'Typically replies';
+
+  @override
+  String get unavailableLabel => 'Unavailable';
+
+  @override
+  String get unknownRoleError => 'Unknown account type';
+
+  @override
+  String get updateBookingError => 'Failed to update booking';
+
+  @override
+  String get updateCta => 'Update';
+
+  @override
+  String get updateReviewCta => 'Update Review';
+
+  @override
+  String get upgradeCta => 'Upgrade';
+
+  @override
+  String get uploadError => 'Upload failed';
+
+  @override
+  String get uploadSuccess => 'Uploaded successfully';
+
+  @override
+  String get userLabel => 'User';
+
+  @override
+  String get vacationCleared => 'Vacation cleared';
+
+  @override
+  String get vacationDateRequired => 'Please select a vacation date range';
+
+  @override
+  String get vacationSet => 'Vacation set successfully';
+
+  @override
+  String get validAmountError => 'Please enter a valid amount';
+
+  @override
+  String get verificationAddPortfolio =>
+      'Add portfolio items to help get verified';
+
+  @override
+  String get verificationLabel => 'Verification';
+
+  @override
+  String get verificationPending => 'Verification pending';
+
+  @override
+  String get verifiedLabel => 'Verified';
+
+  @override
+  String get verifiedProfessionalLabel => 'Professional';
+
+  @override
+  String verifiedStatusLabel(Object value1) {
+    return 'Verified $value1';
+  }
+
+  @override
+  String get viewMyBookingsCta => 'View My Bookings';
+
+  @override
+  String get viewProfileCta => 'View Profile';
+
+  @override
+  String get viewWalletLabel => 'View Wallet';
+
+  @override
+  String get visitorsLabel => 'Visitors';
+
+  @override
+  String get visitorsSubtext => 'People who viewed your profile';
+
+  @override
+  String get walletActionLabel => 'Wallet';
+
+  @override
+  String get walletActionSubtitle => 'View balance and transactions';
+
+  @override
+  String get walletEarningsLabel => 'Earnings';
+
+  @override
+  String get walletLabel => 'Wallet';
+
+  @override
+  String get walletTitle => 'Wallet';
+
+  @override
+  String get whatHappensNextLabel => 'What happens next?';
+
+  @override
+  String get whyBookHereLabel => 'Why book with us?';
+
+  @override
+  String get withdrawCta => 'Withdraw';
+
+  @override
+  String get withdrawErrorDefault => 'Withdrawal failed. Please try again.';
+
+  @override
+  String get withdrawSuccess => 'Withdrawal requested successfully';
+
+  @override
+  String get withdrawTitle => 'Withdraw Funds';
+
+  @override
+  String get withdrawnLabel => 'Withdrawn';
+
+  @override
+  String get workingHoursLabel => 'Working Hours';
+
+  @override
+  String get writeReviewTitle => 'Write a Review';
+
+  @override
+  String yearsLabel(Object value1) {
+    return '$value1 years';
+  }
+
+  @override
+  String get yesCancelCta => 'Yes, Cancel';
+
+  @override
+  String get youAreNotifiedLabel => 'You\'ll be notified';
+
+  @override
+  String get youAreNotifiedSubtitle =>
+      'We\'ll notify you as soon as there\'s a response';
+
+  @override
+  String get yourAccountEmailPlaceholder => 'your account email';
+
+  @override
+  String get tsErrForbidden =>
+      'You do not have permission to perform this action.';
+
+  @override
+  String get tsErrNetwork =>
+      'Network problem. Check your connection and try again.';
+
+  @override
+  String get tsErrGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get tsRetry => 'Retry';
+
+  @override
+  String get tsCopy => 'Copy';
+
+  @override
+  String get tsCopied => 'Copied to clipboard';
+
+  @override
+  String get tsOpenLink => 'Open link';
+
+  @override
+  String get tsLinkOpenFailed => 'This link could not be opened.';
+
+  @override
+  String get tsCancel => 'Cancel';
+
+  @override
+  String get tsClose => 'Close';
+
+  @override
+  String get tsRefresh => 'Refresh';
+
+  @override
+  String get tsAll => 'All';
+
+  @override
+  String get tsCatSpam => 'Spam';
+
+  @override
+  String get tsCatHarassment => 'Harassment';
+
+  @override
+  String get tsCatFraud => 'Fraud or scam';
+
+  @override
+  String get tsCatFakeProfile => 'Fake profile';
+
+  @override
+  String get tsCatInappropriate => 'Inappropriate content';
+
+  @override
+  String get tsCatPaymentFraud => 'Payment fraud';
+
+  @override
+  String get tsCatOffPlatform => 'Off-platform payment';
+
+  @override
+  String get tsCatThreats => 'Threats or safety concern';
+
+  @override
+  String get tsCatDiscrimination => 'Discrimination';
+
+  @override
+  String get tsCatMisconduct => 'Service misconduct';
+
+  @override
+  String get tsCatOther => 'Other';
+
+  @override
+  String get tsStatusPending => 'Pending';
+
+  @override
+  String get tsStatusReviewed => 'Reviewed';
+
+  @override
+  String get tsStatusActionTaken => 'Action taken';
+
+  @override
+  String get tsStatusDismissed => 'Dismissed';
+
+  @override
+  String get tsSevLow => 'Low';
+
+  @override
+  String get tsSevMedium => 'Medium';
+
+  @override
+  String get tsSevHigh => 'High';
+
+  @override
+  String get tsSevCritical => 'Critical';
+
+  @override
+  String get tsRoleCustomer => 'Customer';
+
+  @override
+  String get tsRoleProfessional => 'Professional';
+
+  @override
+  String get tsRoleAdmin => 'Admin';
+
+  @override
+  String get tsActWarning => 'Warning';
+
+  @override
+  String get tsActRestrictMessaging => 'Messaging restriction';
+
+  @override
+  String get tsActRestrictBooking => 'Booking restriction';
+
+  @override
+  String get tsActSuspendTemporary => 'Temporary suspension';
+
+  @override
+  String get tsActSuspendPermanent => 'Permanent suspension';
+
+  @override
+  String get tsActWarningDesc =>
+      'Records a formal warning. Does not limit the account.';
+
+  @override
+  String get tsActRestrictMessagingDesc =>
+      'Marks the account as restricted from messaging.';
+
+  @override
+  String get tsActRestrictBookingDesc =>
+      'Marks the account as restricted from creating bookings.';
+
+  @override
+  String get tsActSuspendTemporaryDesc =>
+      'Marks the account as suspended until the date you choose.';
+
+  @override
+  String get tsActSuspendPermanentDesc =>
+      'Marks the account as permanently suspended. No expiry; only an admin can reverse it.';
+
+  @override
+  String get tsStateActive => 'Active';
+
+  @override
+  String get tsStateScheduled => 'Scheduled';
+
+  @override
+  String get tsStateExpired => 'Expired';
+
+  @override
+  String get tsStateReversed => 'Reversed';
+
+  @override
+  String get tsAppealPending => 'Pending';
+
+  @override
+  String get tsAppealApproved => 'Approved';
+
+  @override
+  String get tsAppealRejected => 'Rejected';
+
+  @override
+  String get tsReportsTitle => 'Reported Users';
+
+  @override
+  String tsPendingReview(String count) {
+    return '$count pending review';
+  }
+
+  @override
+  String get tsSearchReportsHint => 'Search by user, reporter, category or ID';
+
+  @override
+  String get tsFilterSeverity => 'Severity';
+
+  @override
+  String get tsFilterCategory => 'Category';
+
+  @override
+  String get tsFilterDate => 'Date';
+
+  @override
+  String get tsDateAny => 'Any time';
+
+  @override
+  String get tsDateToday => 'Today';
+
+  @override
+  String get tsDate7 => 'Last 7 days';
+
+  @override
+  String get tsDate30 => 'Last 30 days';
+
+  @override
+  String get tsDateCustom => 'Custom range';
+
+  @override
+  String get tsSortNewest => 'Newest first';
+
+  @override
+  String get tsSortSeverity => 'Highest severity first';
+
+  @override
+  String get tsClearFilters => 'Clear filters';
+
+  @override
+  String get tsNoReports => 'No reports yet';
+
+  @override
+  String get tsNoReportsHint => 'Reports submitted by users will appear here.';
+
+  @override
+  String get tsNoMatches => 'No reports match your filters';
+
+  @override
+  String get tsNoMatchesHint => 'Try changing or clearing the filters.';
+
+  @override
+  String get tsSelectReport => 'Select a report';
+
+  @override
+  String get tsSelectReportHint =>
+      'Choose a report from the list to review it and take action.';
+
+  @override
+  String get tsIndBooking => 'Booking';
+
+  @override
+  String get tsIndMessage => 'Message';
+
+  @override
+  String get tsIndEvidence => 'Evidence';
+
+  @override
+  String tsReportedBy(String name) {
+    return 'Reported by $name';
+  }
+
+  @override
+  String get tsAccountBlocked => 'Account blocked';
+
+  @override
+  String tsReportNumber(String id) {
+    return 'Report #$id';
+  }
+
+  @override
+  String tsSubmittedOn(String date) {
+    return 'Submitted $date';
+  }
+
+  @override
+  String get tsTakeAction => 'Take action';
+
+  @override
+  String get tsMarkReviewed => 'Mark reviewed';
+
+  @override
+  String get tsDismiss => 'Dismiss';
+
+  @override
+  String get tsSecDescription => 'Report description';
+
+  @override
+  String get tsNoDescription => 'No description was provided.';
+
+  @override
+  String get tsSecEvidence => 'Evidence and context';
+
+  @override
+  String get tsEvidenceLabel => 'EVIDENCE / REFERENCE';
+
+  @override
+  String get tsNoEvidence => 'No evidence link provided.';
+
+  @override
+  String get tsBookingLabel => 'RELATED BOOKING';
+
+  @override
+  String tsBookingNumber(String id) {
+    return 'Booking #$id';
+  }
+
+  @override
+  String get tsMessageLabel => 'RELATED MESSAGE';
+
+  @override
+  String tsMessageNumber(String id) {
+    return 'Message #$id';
+  }
+
+  @override
+  String get tsMessageDeleted =>
+      'This message was deleted. Its content is not available.';
+
+  @override
+  String tsMessageAttachments(String count) {
+    return 'Attachments: $count';
+  }
+
+  @override
+  String get tsNoRelated => 'None linked to this report.';
+
+  @override
+  String get tsFieldWhen => 'When';
+
+  @override
+  String get tsFieldParties => 'Parties';
+
+  @override
+  String get tsFieldSender => 'Sender';
+
+  @override
+  String tsBookingWith(String customer, String professional) {
+    return '$customer with $professional';
+  }
+
+  @override
+  String get tsSecPeople => 'People';
+
+  @override
+  String get tsReportedUser => 'REPORTED USER';
+
+  @override
+  String get tsReporterLabel => 'REPORTER';
+
+  @override
+  String get tsReporterAdminOnly =>
+      'Visible to admins only. Never shown to the reported user.';
+
+  @override
+  String get tsAccountBlockedNote =>
+      'This account is currently blocked (see the Blocked tab). Blocking is separate from moderation actions.';
+
+  @override
+  String get tsSecActive => 'Active restrictions and suspension';
+
+  @override
+  String get tsNoActive => 'No active restrictions or suspension.';
+
+  @override
+  String get tsSecTimeline => 'Report history';
+
+  @override
+  String get tsSecHistory => 'Moderation history';
+
+  @override
+  String get tsSecOtherReports => 'Other reports about this user';
+
+  @override
+  String get tsHistoryLoadError => 'Could not load moderation history.';
+
+  @override
+  String get tsHistoryEmpty => 'No moderation actions on record for this user.';
+
+  @override
+  String get tsTlSubmitted => 'Report submitted';
+
+  @override
+  String tsTlReviewed(String status, String admin) {
+    return 'Marked $status by $admin';
+  }
+
+  @override
+  String tsTlInternalNote(String note) {
+    return 'Internal note: $note';
+  }
+
+  @override
+  String tsTlActionApplied(String action, String admin) {
+    return '$action applied by $admin';
+  }
+
+  @override
+  String tsTlActionReversed(String action, String admin) {
+    return '$action reversed by $admin';
+  }
+
+  @override
+  String get tsThisReport => 'This report';
+
+  @override
+  String tsHistPerformedBy(String admin, String date) {
+    return 'By $admin on $date';
+  }
+
+  @override
+  String tsStartsOn(String date) {
+    return 'Starts $date';
+  }
+
+  @override
+  String tsExpiresOn(String date) {
+    return 'Expires $date';
+  }
+
+  @override
+  String get tsNoExpiryPermanent => 'Permanent, no expiry';
+
+  @override
+  String get tsNoExpiryOpen => 'No end date, active until lifted';
+
+  @override
+  String get tsReasonShownToUser => 'REASON (SHOWN TO THE USER)';
+
+  @override
+  String get tsInternalNoteLabel => 'Internal note (admin only)';
+
+  @override
+  String tsHistReversedBy(String admin, String date) {
+    return 'Reversed by $admin on $date';
+  }
+
+  @override
+  String get tsReverse => 'Reverse';
+
+  @override
+  String get tsAdminUnknown => 'Unknown admin';
+
+  @override
+  String get tsReviewTitle => 'Mark report as reviewed';
+
+  @override
+  String get tsReviewMessage =>
+      'Confirm that you have reviewed this report. You can add an internal note.';
+
+  @override
+  String get tsReviewConfirm => 'Mark reviewed';
+
+  @override
+  String get tsDismissTitle => 'Dismiss report';
+
+  @override
+  String get tsDismissMessage =>
+      'Dismiss this report if it does not break the rules. No action is taken against the reported user.';
+
+  @override
+  String get tsDismissConfirm => 'Dismiss report';
+
+  @override
+  String get tsResolveReporterNote =>
+      'The reporter receives a generic outcome notification. The reported user is not notified.';
+
+  @override
+  String get tsReportUpdated => 'Report updated';
+
+  @override
+  String get tsTakeActionTitle => 'Take moderation action';
+
+  @override
+  String tsRegardingReport(String id) {
+    return 'Regarding report #$id';
+  }
+
+  @override
+  String get tsChooseAction => 'Choose an action';
+
+  @override
+  String get tsChooseActionError => 'Select an action to continue.';
+
+  @override
+  String get tsAlreadyActive => 'Already active for this user.';
+
+  @override
+  String get tsAlreadyPermanentlySuspended =>
+      'This user is already permanently suspended.';
+
+  @override
+  String get tsDurationTitle => 'Duration';
+
+  @override
+  String get tsDurationUntilLifted => 'Until lifted';
+
+  @override
+  String get tsDurationPermanent => 'Permanent';
+
+  @override
+  String tsDurationDays(String n) {
+    return '$n days';
+  }
+
+  @override
+  String get tsDurationCustom => 'Custom date';
+
+  @override
+  String tsEndsAt(String when) {
+    return 'Ends $when';
+  }
+
+  @override
+  String tsUntilDate(String date) {
+    return 'Until $date';
+  }
+
+  @override
+  String get tsExpiryRequired => 'Choose when this ends.';
+
+  @override
+  String get tsExpiryMustBeFuture => 'The end time must be in the future.';
+
+  @override
+  String get tsReasonLabel => 'Reason';
+
+  @override
+  String get tsReasonHint => 'Explain why this action is being taken';
+
+  @override
+  String get tsReasonUserVisibleNote =>
+      'Shown to the user in their notification. Do not mention the reporter or other users.';
+
+  @override
+  String tsReasonTooShort(String min) {
+    return 'Please enter a reason of at least $min characters.';
+  }
+
+  @override
+  String get tsInternalNoteHint => 'Optional context for other admins';
+
+  @override
+  String get tsInternalNoteNote => 'Internal only. Never shown to the user.';
+
+  @override
+  String get tsMarkReportTaken => 'Mark this report as Action taken';
+
+  @override
+  String get tsMarkReportTakenHint =>
+      'The reporter receives a generic outcome notification only.';
+
+  @override
+  String get tsApplyAction => 'Apply action';
+
+  @override
+  String tsConfirmTitle(String action) {
+    return 'Apply $action?';
+  }
+
+  @override
+  String tsConfirmBody(String user) {
+    return 'This is recorded in the moderation history of $user and the user is notified.';
+  }
+
+  @override
+  String get tsConfirmPermanentAck =>
+      'I understand this suspension has no expiry and can only be reversed by an admin.';
+
+  @override
+  String get tsFieldUser => 'User';
+
+  @override
+  String get tsFieldAction => 'Action';
+
+  @override
+  String get tsFieldDuration => 'Duration';
+
+  @override
+  String get tsFieldReason => 'Reason';
+
+  @override
+  String get tsActionApplied => 'Moderation action applied';
+
+  @override
+  String get tsActionAppliedReportFailed =>
+      'The action was applied, but the report status could not be updated.';
+
+  @override
+  String get tsCannotActOnAdmin =>
+      'Moderation actions cannot target admin accounts.';
+
+  @override
+  String get tsFieldPerformedBy => 'Performed by';
+
+  @override
+  String get tsFieldCreated => 'Created';
+
+  @override
+  String get tsFieldExpires => 'Expires';
+
+  @override
+  String get tsFieldReport => 'Report';
+
+  @override
+  String get tsFieldDecidedBy => 'Decided by';
+
+  @override
+  String get tsFieldDecidedOn => 'Decided on';
+
+  @override
+  String get tsReverseTitle => 'Reverse moderation action';
+
+  @override
+  String tsReverseMessage(String action) {
+    return 'Reverse the $action? It is lifted and the record stays in the history.';
+  }
+
+  @override
+  String get tsReversalReasonLabel => 'Reason for reversal';
+
+  @override
+  String get tsReversalReasonHint => 'Why is this action being lifted?';
+
+  @override
+  String get tsReverseConfirm => 'Reverse action';
+
+  @override
+  String get tsReverseAuditNote =>
+      'Your reason is internal. It is recorded in the moderation history and never shown to the user.';
+
+  @override
+  String get tsReverseNotifyNote =>
+      'The user is notified that this action was lifted.';
+
+  @override
+  String get tsReverseLegacyNote =>
+      'This action came from the legacy ban flow. Reversing it also re-enables the account.';
+
+  @override
+  String get tsActionReversed => 'Moderation action reversed';
+
+  @override
+  String get tsAppealsTitle => 'Appeals';
+
+  @override
+  String tsPendingAppeals(String count) {
+    return '$count pending appeals';
+  }
+
+  @override
+  String get tsSearchAppealsHint => 'Search by user, email or appeal text';
+
+  @override
+  String get tsNoAppeals => 'No appeals here';
+
+  @override
+  String get tsNoAppealsHint =>
+      'Appeals against moderation actions will appear here.';
+
+  @override
+  String get tsSelectAppeal => 'Select an appeal';
+
+  @override
+  String get tsSelectAppealHint =>
+      'Choose an appeal from the list to review it.';
+
+  @override
+  String tsAppealNumber(String id) {
+    return 'Appeal #$id';
+  }
+
+  @override
+  String get tsSecAppealReason => 'Appeal';
+
+  @override
+  String get tsSecAppealedAction => 'Appealed action';
+
+  @override
+  String get tsSecDecision => 'Decision';
+
+  @override
+  String get tsAppealApprove => 'Approve';
+
+  @override
+  String get tsAppealReject => 'Reject';
+
+  @override
+  String get tsApproveTitle => 'Approve appeal';
+
+  @override
+  String get tsApproveMessage =>
+      'Approving this appeal lifts the moderation action.';
+
+  @override
+  String get tsApproveConfirm => 'Approve appeal';
+
+  @override
+  String get tsRejectTitle => 'Reject appeal';
+
+  @override
+  String get tsRejectMessage =>
+      'Rejecting keeps the moderation action in place.';
+
+  @override
+  String get tsRejectConfirm => 'Reject appeal';
+
+  @override
+  String get tsDecisionNoteLabel => 'Decision note';
+
+  @override
+  String get tsDecisionNoteHint => 'Explain your decision';
+
+  @override
+  String get tsDecisionNoteNote => 'Internal only. Never shown to the user.';
+
+  @override
+  String get tsAppealApproveNote =>
+      'The action is reversed and the user is notified.';
+
+  @override
+  String get tsAppealApproveInactive =>
+      'This action is no longer in effect, so approving only closes the appeal. The user is notified.';
+
+  @override
+  String get tsAppealRejectNote =>
+      'The action stays in place and the user is notified of the outcome.';
+
+  @override
+  String get tsAppealApprovedSnack => 'Appeal approved';
+
+  @override
+  String get tsAppealRejectedSnack => 'Appeal rejected';
+
+  @override
+  String get tsNoDecisionNote => 'No note was recorded.';
+
+  @override
+  String get tsEvidenceLinkOptional => 'ثبوت کا لنک (اختیاری)';
+
+  @override
+  String get tsInvalidHttpUrl => 'ایک درست http یا https یو آر ایل درج کریں۔';
+
+  @override
+  String get myTsMyReportsTitle => 'میری رپورٹس';
+
+  @override
+  String get myTsMyReportsActionSubtitle => 'آپ کی جمع کرائی گئی رپورٹس';
+
+  @override
+  String get myTsReportsEmptyTitle => 'ابھی تک کوئی رپورٹ نہیں';
+
+  @override
+  String get myTsReportsEmptyMessage =>
+      'دوسرے صارفین کے بارے میں آپ کی جمع کرائی گئی رپورٹس یہاں ظاہر ہوں گی۔';
+
+  @override
+  String get myTsReportsLoadError =>
+      'آپ کی رپورٹس لوڈ نہیں ہو سکیں۔ دوبارہ کوشش کرنے کے لیے نیچے کھینچیں۔';
+
+  @override
+  String get myTsCategoryLabel => 'زمرہ';
+
+  @override
+  String get myTsSubmittedLabel => 'جمع کرایا گیا';
+
+  @override
+  String get myTsStatusLabel => 'حیثیت';
+
+  @override
+  String get myTsOutcomeLabel => 'نتیجہ';
+
+  @override
+  String get myTsYourDescriptionLabel => 'آپ کی تفصیل';
+
+  @override
+  String get myTsOutcomePending => 'ہماری ٹیم نے ابھی تک اس کا جائزہ نہیں لیا۔';
+
+  @override
+  String get myTsOutcomeReviewedNoAction =>
+      'جائزہ لیا گیا — مزید کسی کارروائی کی ضرورت نہیں تھی۔';
+
+  @override
+  String get myTsOutcomeActionTaken =>
+      'جائزہ لیا گیا — آپ کی رپورٹ کی بنیاد پر کارروائی کی گئی۔';
+
+  @override
+  String get myTsOutcomeDismissed => 'جائزہ لیا گیا — کوئی خلاف ورزی نہیں ملی۔';
+
+  @override
+  String get myTsAccountStatusTitle => 'اکاؤنٹ کی حیثیت';
+
+  @override
+  String get myTsAccountStatusActionSubtitle => 'انتباہات، پابندیاں اور معطلی';
+
+  @override
+  String get myTsGoodStandingTitle => 'کوئی فعال پابندی نہیں';
+
+  @override
+  String get myTsGoodStandingMessage => 'آپ کا اکاؤنٹ اچھی حالت میں ہے۔';
+
+  @override
+  String get myTsStatusLoadError =>
+      'آپ کے اکاؤنٹ کی حیثیت لوڈ نہیں ہو سکی۔ دوبارہ کوشش کرنے کے لیے نیچے کھینچیں۔';
+
+  @override
+  String get myTsStartTimeLabel => 'شروع کا وقت';
+
+  @override
+  String get myTsExpirationTimeLabel => 'میعاد ختم ہونے کا وقت';
+
+  @override
+  String get myTsAffectedFeatureLabel => 'متاثرہ خصوصیت';
+
+  @override
+  String get myTsFeatureMessaging => 'پیغام رسانی';
+
+  @override
+  String get myTsFeatureBooking => 'بکنگز';
+
+  @override
+  String get myTsWarningInfoNote =>
+      'یہ صرف ایک انتباہ ہے۔ یہ آپ کے اکاؤنٹ کو محدود نہیں کرتا، لیکن بار بار خلاف ورزی مزید کارروائی کا باعث بن سکتی ہے۔';
+
+  @override
+  String get myTsAppealAvailableNote => 'آپ اس فیصلے کے خلاف اپیل کر سکتے ہیں۔';
+
+  @override
+  String get myTsAppealButtonLabel => 'اس فیصلے کے خلاف اپیل کریں';
+
+  @override
+  String get myTsAppealPendingNote => 'آپ کی اپیل جائزے کے لیے زیر التوا ہے۔';
+
+  @override
+  String get myTsMyAppealsTitle => 'میری اپیلیں';
+
+  @override
+  String get myTsMyAppealsEmpty => 'آپ نے کوئی اپیل جمع نہیں کرائی۔';
+
+  @override
+  String get myTsAppealsLoadError =>
+      'آپ کی اپیلیں لوڈ نہیں ہو سکیں۔ دوبارہ کوشش کرنے کے لیے نیچے کھینچیں۔';
+
+  @override
+  String get myTsAppealDecidedNote => 'اس اپیل کا فیصلہ ہو چکا ہے۔';
+
+  @override
+  String get myTsSubmitAppealTitle => 'اس فیصلے کے خلاف اپیل کریں';
+
+  @override
+  String get myTsAppealReasonLabel => 'اس کا جائزہ کیوں لیا جانا چاہیے؟';
+
+  @override
+  String get myTsAppealReasonHint =>
+      'بتائیں کہ آپ کے خیال میں اس فیصلے پر نظرثانی کیوں کی جانی چاہیے';
+
+  @override
+  String get myTsAppealReasonRequired =>
+      'براہ کرم بتائیں کہ اس کا جائزہ کیوں لیا جانا چاہیے۔';
+
+  @override
+  String get myTsAppealSubmitCta => 'اپیل جمع کرائیں';
+
+  @override
+  String get myTsAppealSubmitSuccess => 'آپ کی اپیل جمع کرا دی گئی ہے۔';
+
+  @override
+  String get myTsAppealSubmitError =>
+      'آپ کی اپیل جمع نہیں ہو سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get myTsAppealAlreadyPending =>
+      'اس کے لیے آپ کی پہلے سے ایک اپیل زیر التوا ہے۔';
+
+  @override
+  String get myTsAppealNotEligible =>
+      'اس کارروائی کے خلاف مزید اپیل نہیں کی جا سکتی۔';
+
+  @override
+  String myTsAppealForLabel(String action) {
+    return '$action کے لیے اپیل';
+  }
 }

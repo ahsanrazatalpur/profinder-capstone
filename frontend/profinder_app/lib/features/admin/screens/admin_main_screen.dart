@@ -14,6 +14,7 @@ import 'admin_logs_screen.dart';
 import 'admin_promo_banners_screen.dart';
 import 'admin_articles_screen.dart';
 import 'admin_reported_users_screen.dart';
+import 'admin_appeals_screen.dart';
 import 'admin_analytics_screen.dart';
 import 'admin_categories_screen.dart';
 import 'admin_payments_screen.dart';
@@ -44,34 +45,66 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
 
   int _currentIndex = 0;
 
-  late final List<Widget> _screens = [
-    AdminDashboardScreen(onNavigateToTab: _goTo),
-    const AdminUsersScreen(),
-    const AdminCustomersScreen(),
-    const AdminProfessionalsScreen(),
-    const AdminPortfolioScreen(),
-    const AdminBookingsScreen(),
-    const AdminLogsScreen(),
-    const AdminPromoBannersScreen(),
-    const AdminArticlesScreen(),
-    const AdminReportedUsersScreen(),
-    const AdminAnalyticsScreen(),
-    const AdminBlockedUsersScreen(),
-    const AdminVerificationRequestsScreen(),
-    const AdminCategoriesScreen(),
-    const AdminPaymentsScreen(),
-    const AdminRevenueScreen(),
-    const AdminSubscriptionsScreen(),
-    const AdminReviewsScreen(),
-    const AdminComplaintsScreen(),
-    const AdminReportsHubScreen(),
-    const AdminNotificationsScreen(),
-    const AdminLanguagesScreen(),
-    const AdminCountriesScreen(),
-    const AdminCitiesScreen(),
-    const AdminAnnouncementsScreen(),
-    const AdminAboutPageScreen(),
+  // ✅ FIX — lazy tab loading (was: `late final List<Widget> _screens = [...]`
+  // built eagerly, all 26 at once, then handed straight to IndexedStack).
+  //
+  // IndexedStack keeps every child in the tree permanently — including the
+  // 25 you never opened — so all 26 screens were mounted and laying out on
+  // every frame from the moment the admin panel opened. If ANY one of them
+  // has a layout bug (unbounded Row/Column, a bad RenderBox, an animation
+  // leak, etc.), the exception corrupts hit-testing for the ENTIRE
+  // IndexedStack, not just that tab — which is exactly what caused taps
+  // and dialogs on Countries (a perfectly fine screen) to silently stop
+  // responding: some other, unrelated tab was throwing in the background.
+  //
+  // Fix: build each tab's screen only the first time it's actually opened,
+  // then cache and reuse that instance (so scroll position/state still
+  // survives switching tabs, same as before) — a screen you never visit
+  // never gets a chance to break the ones you're using.
+  late final List<Widget? Function()> _screenBuilders = _buildScreenBuilders();
+  late final List<Widget?> _builtScreens =
+      List<Widget?>.filled(_screenBuilders.length, null, growable: false);
+
+  List<Widget? Function()> _buildScreenBuilders() => [
+    () => AdminDashboardScreen(onNavigateToTab: _goTo),
+    () => const AdminUsersScreen(),
+    () => const AdminCustomersScreen(),
+    () => const AdminProfessionalsScreen(),
+    () => const AdminPortfolioScreen(),
+    () => const AdminBookingsScreen(),
+    () => const AdminLogsScreen(),
+    () => const AdminPromoBannersScreen(),
+    () => const AdminArticlesScreen(),
+    () => const AdminReportedUsersScreen(),
+    () => const AdminAnalyticsScreen(),
+    () => const AdminBlockedUsersScreen(),
+    () => const AdminVerificationRequestsScreen(),
+    () => const AdminCategoriesScreen(),
+    () => const AdminPaymentsScreen(),
+    () => const AdminRevenueScreen(),
+    () => const AdminSubscriptionsScreen(),
+    () => const AdminReviewsScreen(),
+    () => const AdminComplaintsScreen(),
+    () => const AdminReportsHubScreen(),
+    () => const AdminNotificationsScreen(),
+    () => const AdminLanguagesScreen(),
+    () => const AdminCountriesScreen(),
+    () => const AdminCitiesScreen(),
+    () => const AdminAnnouncementsScreen(),
+    () => const AdminAboutPageScreen(),
+    () => const AdminAppealsScreen(), // index 26 — appended, keeps existing indices stable
   ];
+
+  // Returns the widget for tab [i], building (and caching) it on first
+  // visit only. Unvisited tabs stay as a cheap SizedBox.shrink() inside
+  // the IndexedStack instead of a fully mounted, laying-out screen.
+  Widget _screenAt(int i) {
+    final cached = _builtScreens[i];
+    if (cached != null) return cached;
+    final built = _screenBuilders[i]();
+    _builtScreens[i] = built;
+    return built!;
+  }
 
   static const _navItems = [
     _NavItem(Icons.dashboard_rounded,     Icons.dashboard_outlined,       'Dashboard'),
@@ -100,6 +133,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
     _NavItem(Icons.location_city_rounded, Icons.location_city_outlined, 'Cities'),
     _NavItem(Icons.campaign_rounded, Icons.campaign_outlined, 'Announcements'),
     _NavItem(Icons.info_rounded, Icons.info_outline_rounded, 'About Page'),
+    _NavItem(Icons.gavel_rounded, Icons.gavel_outlined, 'Appeals'),
   ];
 
   void _goTo(int index) {
@@ -119,7 +153,18 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
       child: Scaffold(
         key:    _scaffoldKey, // ✅ GlobalKey attach
         drawer: _buildDrawer(),
-        body:   IndexedStack(index: _currentIndex, children: _screens),
+        body:   IndexedStack(
+          index: _currentIndex,
+          // Only the current tab (and any previously-visited ones, cached
+          // in _builtScreens) are real widgets here — everything else is
+          // a cheap placeholder, see _screenAt() above.
+          children: List.generate(
+            _screenBuilders.length,
+            (i) => i == _currentIndex
+                ? _screenAt(i)
+                : (_builtScreens[i] ?? const SizedBox.shrink()),
+          ),
+        ),
         bottomNavigationBar: _buildBottomNav(),
       ), // Scaffold
     );

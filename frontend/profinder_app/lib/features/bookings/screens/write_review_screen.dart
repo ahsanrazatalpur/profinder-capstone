@@ -19,9 +19,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
-import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class _PickedPhoto {
   final XFile file;
@@ -96,7 +97,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
   Future<void> _addPhoto() async {
     if (_photos.length >= _maxPhotos) {
-      AppHelpers.showInfo(context, 'You can attach up to $_maxPhotos photos');
+      AppHelpers.showInfo(context, AppLocalizations.of(context)!.photoLimitReached(_maxPhotos));
       return;
     }
     try {
@@ -109,7 +110,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
       setState(() => _photos.add(_PickedPhoto(file: picked, webBytes: bytes)));
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, 'Could not pick photo');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.photoPickError);
     }
   }
 
@@ -119,7 +120,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
   Future<void> _submit() async {
     if (_rating == 0) {
-      AppHelpers.showError(context, 'Please select a star rating');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.ratingRequiredError);
       return;
     }
 
@@ -166,8 +167,8 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
       // Already reviewed check
       String msg = widget.isEditMode
-          ? 'Failed to update review. Try again.'
-          : 'Failed to submit review. Try again.';
+          ? AppLocalizations.of(context)!.reviewUpdateErrorDefault
+          : AppLocalizations.of(context)!.reviewSubmitErrorDefault;
       try {
         final err = (e as dynamic).response?.data;
         if (err is Map && err['error'] != null) {
@@ -181,53 +182,83 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > 600;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: context.colors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation:       0,
-        title: Text(widget.isEditMode ? 'Edit Review' : 'Write a Review',
-            style: const TextStyle(
-                fontSize:   16,
-                fontWeight: FontWeight.w700,
-                color:      Color(0xFF111827))),
+        backgroundColor: context.colors.surface,
+        elevation: 0,
+        title: Text(
+          widget.isEditMode ? AppLocalizations.of(context)!.editReviewTitle : AppLocalizations.of(context)!.writeReviewTitle,
+          style: TextStyle(
+            fontSize: isTablet ? 18.0 : 16.0,
+            fontWeight: FontWeight.w700,
+            color: context.colors.textPrimary,
+            letterSpacing: -0.3,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              size: 20, color: Color(0xFF374151)),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: context.colors.textPrimary,
+          ),
           onPressed: () => Navigator.pop(context, _submitted),
         ),
       ),
-      body: _submitted ? _buildSuccessState() : _buildForm(),
+      body: _submitted ? _buildSuccessState(isDark, isTablet) : _buildForm(isDark, isTablet),
     );
   }
 
   // ── Form ──────────────────────────────────────────────────
-  Widget _buildForm() {
+  Widget _buildForm(bool isDark, bool isTablet) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isTablet ? 20 : 16),
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
           // ── Professional banner ───────────────────────
-          Container(
-            padding: const EdgeInsets.all(16),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOut,
+            padding: EdgeInsets.all(isTablet ? 18 : 16),
             decoration: BoxDecoration(
-              color:        Colors.white,
+              color: context.colors.surface,
               borderRadius: BorderRadius.circular(16),
-              border:       Border.all(color: const Color(0xFFE5E7EB)),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.08)
+                    : const Color(0xFFE5E7EB),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark
+                      ? Colors.black.withOpacity(0.06)
+                      : Colors.grey.withOpacity(0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Row(
               children: [
                 CircleAvatar(
-                  radius:          26,
-                  backgroundColor: context.colors.primaryLight,
+                  radius: isTablet ? 30 : 26,
+                  backgroundColor: isDark
+                      ? Colors.white.withOpacity(0.08)
+                      : context.colors.primaryLight,
                   child: Text(
                     AppHelpers.getInitials(widget.professionalName),
                     style: TextStyle(
-                        color:      context.colors.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize:   14),
+                      color: AppColors.customerColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: isTablet ? 16 : 14,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -235,16 +266,23 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.professionalName,
-                          style: const TextStyle(
-                              fontSize:   15,
-                              fontWeight: FontWeight.w700,
-                              color:      Color(0xFF111827))),
+                      Text(
+                        widget.professionalName,
+                        style: TextStyle(
+                          fontSize: isTablet ? 16 : 15,
+                          fontWeight: FontWeight.w700,
+                          color: context.colors.textPrimary,
+                          letterSpacing: -0.1,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      const Text('Share your experience',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color:    Color(0xFF9CA3AF))),
+                      Text(
+                        AppLocalizations.of(context)!.shareExperienceLabel,
+                        style: TextStyle(
+                          fontSize: isTablet ? 13 : 12,
+                          color: context.colors.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -255,19 +293,38 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
           const SizedBox(height: 24),
 
           // ── Stars ─────────────────────────────────────
-          const Text('Your Rating',
-              style: TextStyle(
-                  fontSize:   14,
-                  fontWeight: FontWeight.w700,
-                  color:      Color(0xFF111827))),
+          Text(
+            AppLocalizations.of(context)!.ratingLabel,
+            style: TextStyle(
+              fontSize: isTablet ? 15 : 14,
+              fontWeight: FontWeight.w700,
+              color: context.colors.textPrimary,
+              letterSpacing: -0.1,
+            ),
+          ),
           const SizedBox(height: 12),
 
-          Container(
-            padding: const EdgeInsets.all(20),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            padding: EdgeInsets.all(isTablet ? 24 : 20),
             decoration: BoxDecoration(
-              color:        Colors.white,
+              color: context.colors.surface,
               borderRadius: BorderRadius.circular(16),
-              border:       Border.all(color: const Color(0xFFE5E7EB)),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.08)
+                    : const Color(0xFFE5E7EB),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark
+                      ? Colors.black.withOpacity(0.06)
+                      : Colors.grey.withOpacity(0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Column(
               children: [
@@ -275,22 +332,26 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(5, (i) {
-                    final star     = i + 1;
+                    final star = i + 1;
                     final isActive = star <= _rating;
                     return GestureDetector(
                       onTap: () => setState(() => _rating = star),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         child: Icon(
                           isActive
                               ? Icons.star_rounded
                               : Icons.star_outline_rounded,
                           color: isActive
                               ? const Color(0xFFF59E0B)
-                              : const Color(0xFFD1D5DB),
-                          size: 40,
+                              : (isDark
+                                  ? Colors.white.withOpacity(0.2)
+                                  : const Color(0xFFD1D5DB)),
+                          size: isTablet ? 48 : 40,
                         ),
                       ),
                     );
@@ -302,14 +363,16 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
                   child: Text(
-                    _rating > 0 ? _ratingLabels[_rating] : 'Tap a star to rate',
-                    key:   ValueKey(_rating),
+                    _rating > 0
+                        ? _ratingLabels[_rating]
+                        : AppLocalizations.of(context)!.tapStarToRateLabel,
+                    key: ValueKey(_rating),
                     style: TextStyle(
-                      fontSize:   14,
+                      fontSize: isTablet ? 15 : 14,
                       fontWeight: FontWeight.w600,
-                      color:      _rating > 0
+                      color: _rating > 0
                           ? const Color(0xFFF59E0B)
-                          : const Color(0xFF9CA3AF),
+                          : context.colors.textSecondary,
                     ),
                   ),
                 ),
@@ -320,36 +383,54 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
           const SizedBox(height: 20),
 
           // ── Comment ───────────────────────────────────
-          const Text('Your Comment (Optional)',
-              style: TextStyle(
-                  fontSize:   14,
-                  fontWeight: FontWeight.w700,
-                  color:      Color(0xFF111827))),
+          Text(
+            AppLocalizations.of(context)!.commentOptionalLabel,
+            style: TextStyle(
+              fontSize: isTablet ? 15 : 14,
+              fontWeight: FontWeight.w700,
+              color: context.colors.textPrimary,
+              letterSpacing: -0.1,
+            ),
+          ),
           const SizedBox(height: 8),
 
           TextFormField(
             controller: _commentCtrl,
-            maxLines:   4,
-            maxLength:  500,
-            style: const TextStyle(fontSize: 13),
+            maxLines: 4,
+            maxLength: 500,
+            style: TextStyle(
+              fontSize: isTablet ? 14 : 13,
+              color: context.colors.textPrimary,
+            ),
             decoration: InputDecoration(
-              hintText:  'Describe your experience with ${widget.professionalName}...',
-              hintStyle: const TextStyle(
-                  fontSize: 13, color: Color(0xFF9CA3AF)),
-              filled:    true,
-              fillColor: Colors.white,
+              hintText: AppLocalizations.of(context)!.commentHint(widget.professionalName),
+              hintStyle: TextStyle(
+                fontSize: isTablet ? 14 : 13,
+                color: context.colors.textSecondary,
+              ),
+              filled: true,
+              fillColor: isDark
+                  ? Colors.white.withOpacity(0.04)
+                  : Colors.white,
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:   const BorderSide(color: Color(0xFFE5E7EB))),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: context.colors.divider),
+              ),
               enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:   const BorderSide(color: Color(0xFFE5E7EB))),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: context.colors.divider),
+              ),
               focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                      color: context.colors.primary, width: 1.5)),
-              counterStyle: const TextStyle(
-                  fontSize: 11, color: Color(0xFF9CA3AF)),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: AppColors.customerColor,
+                  width: 1.5,
+                ),
+              ),
+              counterStyle: TextStyle(
+                fontSize: 11,
+                color: context.colors.textSecondary,
+              ),
             ),
           ),
 
@@ -359,55 +440,83 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
           // Not shown in edit mode — the edit endpoint only accepts
           // rating/comment, matching customer-permission rules.
           if (!widget.isEditMode) ...[
-          Row(
-            children: [
-              const Text('Add Photos (Optional)',
+            Row(
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.photosOptionalLabel,
                   style: TextStyle(
-                      fontSize:   14,
-                      fontWeight: FontWeight.w700,
-                      color:      Color(0xFF111827))),
-              const SizedBox(width: 6),
-              Text('${_photos.length}/$_maxPhotos',
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF))),
-            ],
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            height: 84,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: _photos.length + (_photos.length < _maxPhotos ? 1 : 0),
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (context, index) {
-                if (index == _photos.length) {
-                  return _AddPhotoTile(onTap: _addPhoto);
-                }
-                return _PhotoThumb(
-                  photo: _photos[index],
-                  onRemove: () => _removePhoto(index),
-                );
-              },
+                    fontSize: isTablet ? 15 : 14,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                    letterSpacing: -0.1,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '${_photos.length}/$_maxPhotos',
+                  style: TextStyle(
+                    fontSize: isTablet ? 13 : 12,
+                    color: context.colors.textSecondary,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 84,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _photos.length + (_photos.length < _maxPhotos ? 1 : 0),
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  if (index == _photos.length) {
+                    return _AddPhotoTile(onTap: _addPhoto, isDark: isDark);
+                  }
+                  return _PhotoThumb(
+                    photo: _photos[index],
+                    onRemove: () => _removePhoto(index),
+                    isDark: isDark,
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
           ],
 
           // ── Submit ────────────────────────────────────
-          ElevatedButton(
-            onPressed: _isLoading ? null : _submit,
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 52),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14)),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _submit,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.customerColor,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                elevation: 0,
+              ),
+              child: _isLoading
+                  ? SizedBox(
+                      height: 22,
+                      width: 22,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                      ),
+                    )
+                  : Text(
+                      widget.isEditMode
+                          ? AppLocalizations.of(context)!.updateReviewCta
+                          : AppLocalizations.of(context)!.submitReviewCta,
+                      style: TextStyle(
+                        fontSize: isTablet ? 16 : 15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
             ),
-            child: _isLoading
-                ? const SizedBox(
-                    height: 22, width: 22,
-                    child: CircularProgressIndicator(
-                        color: Colors.white, strokeWidth: 2.5))
-                : Text(widget.isEditMode ? 'Update Review' : 'Submit Review',
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -415,7 +524,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
   }
 
   // ── Success State ─────────────────────────────────────────
-  Widget _buildSuccessState() {
+  Widget _buildSuccessState(bool isDark, bool isTablet) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -423,29 +532,43 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 80, height: 80,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
-                color:        context.colors.accentLight,
-                shape:        BoxShape.circle,
+                color: isDark
+                    ? const Color(0xFF10B981).withOpacity(0.15)
+                    : context.colors.accentLight,
+                shape: BoxShape.circle,
               ),
-              child: Icon(Icons.check_circle_outline_rounded,
-                  size: 44, color: context.colors.accent),
+              child: Icon(
+                Icons.check_circle_outline_rounded,
+                size: 44,
+                color: context.colors.accent,
+              ),
             ),
             const SizedBox(height: 20),
-            Text(widget.isEditMode ? 'Review Updated! 🎉' : 'Review Submitted! 🎉',
-                style: const TextStyle(
-                    fontSize:   20,
-                    fontWeight: FontWeight.w700,
-                    color:      Color(0xFF111827))),
+            Text(
+              widget.isEditMode
+                  ? AppLocalizations.of(context)!.reviewUpdatedSuccessTitle
+                  : AppLocalizations.of(context)!.reviewSubmittedSuccessTitle,
+              style: TextStyle(
+                fontSize: isTablet ? 22 : 20,
+                fontWeight: FontWeight.w700,
+                color: context.colors.textPrimary,
+                letterSpacing: -0.3,
+              ),
+            ),
             const SizedBox(height: 8),
             Text(
               widget.isEditMode
-                  ? 'Your review for ${widget.professionalName} has been updated.'
-                  : 'Thank you for reviewing ${widget.professionalName}. Your feedback helps others make better decisions.',
-              style: const TextStyle(
-                  fontSize:   13,
-                  color:      Color(0xFF6B7280),
-                  height:     1.6),
+                  ? AppLocalizations.of(context)!.reviewUpdatedSuccessMessage(widget.professionalName)
+                  : AppLocalizations.of(context)!.reviewSubmittedSuccessMessage(widget.professionalName),
+              style: TextStyle(
+                fontSize: isTablet ? 14 : 13,
+                color: context.colors.textSecondary,
+                height: 1.6,
+                letterSpacing: 0.2,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -458,28 +581,42 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                     ? Icons.star_rounded
                     : Icons.star_outline_rounded,
                 color: const Color(0xFFF59E0B),
-                size:  28,
+                size: isTablet ? 32 : 28,
               )),
             ),
             const SizedBox(height: 8),
-            Text(_ratingLabels[_rating],
-                style: const TextStyle(
-                    fontSize:   14,
-                    fontWeight: FontWeight.w600,
-                    color:      Color(0xFFF59E0B))),
+            Text(
+              _ratingLabels[_rating],
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFFF59E0B),
+              ),
+            ),
 
             const SizedBox(height: 32),
 
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
               style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.customerColor,
+                foregroundColor: Colors.white,
                 minimumSize: const Size(200, 48),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                elevation: 0,
               ),
-              child: Text(widget.isEditMode ? 'Done' : 'Back to Bookings',
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w700)),
+              child: Text(
+                widget.isEditMode
+                    ? AppLocalizations.of(context)!.doneCta
+                    : AppLocalizations.of(context)!.backToBookingsCta,
+                style: TextStyle(
+                  fontSize: isTablet ? 15 : 14,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
+              ),
             ),
           ],
         ),
@@ -490,20 +627,34 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
 class _AddPhotoTile extends StatelessWidget {
   final VoidCallback onTap;
-  const _AddPhotoTile({required this.onTap});
+  final bool isDark;
+  const _AddPhotoTile({required this.onTap, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 84, height: 84,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 84,
+        height: 84,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark
+              ? Colors.white.withOpacity(0.04)
+              : Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFD1D5DB), style: BorderStyle.solid),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withOpacity(0.15)
+                : const Color(0xFFD1D5DB),
+            style: BorderStyle.solid,
+          ),
         ),
-        child: Icon(Icons.add_a_photo_outlined, color: context.colors.primary, size: 24),
+        child: Icon(
+          Icons.add_a_photo_outlined,
+          color: AppColors.customerColor,
+          size: 24,
+        ),
       ),
     );
   }
@@ -512,7 +663,8 @@ class _AddPhotoTile extends StatelessWidget {
 class _PhotoThumb extends StatelessWidget {
   final _PickedPhoto photo;
   final VoidCallback onRemove;
-  const _PhotoThumb({required this.photo, required this.onRemove});
+  final bool isDark;
+  const _PhotoThumb({required this.photo, required this.onRemove, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -525,13 +677,24 @@ class _PhotoThumb extends StatelessWidget {
               : Image.file(File(photo.file.path), width: 84, height: 84, fit: BoxFit.cover),
         ),
         Positioned(
-          top: 4, right: 4,
+          top: 4,
+          right: 4,
           child: GestureDetector(
             onTap: onRemove,
             child: Container(
-              width: 20, height: 20,
-              decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
-              child: const Icon(Icons.close_rounded, size: 13, color: Colors.white),
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.black.withOpacity(0.7)
+                    : Colors.black54,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 13,
+                color: Colors.white,
+              ),
             ),
           ),
         ),

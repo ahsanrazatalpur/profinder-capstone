@@ -5,3 +5,8 @@ backend/firebase-credentials.json
 *.pyc
 backend.zip
 lib.zip
+
+# ProFinder generated/archive files
+*.zip
+**/__pycache__/
+

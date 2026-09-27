@@ -66,8 +66,9 @@ class ApiService {
     _dio = Dio(
       BaseOptions(
         baseUrl:        AppConstants.baseUrl,
-        connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        sendTimeout:    const Duration(seconds: 60),  // file uploads (images/voice) need more room
         // Note: Content-Type is NOT set here as a default
         // For JSON calls: Dio sets it automatically
         // For multipart (FormData): Dio sets it to multipart/form-data automatically
@@ -202,7 +203,16 @@ class ApiService {
   // Dio's plain delete() has no `data` param exposed the same way as
   // post/patch — some backends (e.g. review deletion with a required
   // `reason`) expect a JSON body on DELETE. This keeps that payload.
+  //
+  // ✅ FIX: Content-Type header ab explicitly set kiya, jaisa post/put/patch
+  // mein hota hai. Pehle ye header set nahi hota tha, isliye backend
+  // (DRF's JSONParser) request body ko parse nahi kar pata tha aur
+  // 'reason' field missing/empty maan ke request reject kar deta tha.
   Future<Response> deleteWithBody(String endpoint, Map<String, dynamic> body) async {
-    return await _dio.delete(endpoint, data: body);
+    return await _dio.delete(
+      endpoint,
+      data: body,
+      options: Options(headers: {'Content-Type': 'application/json'}),
+    );
   }
 }

@@ -133,13 +133,15 @@ class _SearchScreenState extends State<SearchScreen>
   static const int _historyLimit = 10;
   static const String _historyPrefsKey = 'normal_search_recent_history';
 
-  final List<Map<String, dynamic>> _popularSearches = [
-    {'label': 'Doctors',      'icon': Icons.medical_services_outlined},
-    {'label': 'Lawyers',      'icon': Icons.gavel_outlined},
-    {'label': 'Engineers',    'icon': Icons.engineering_outlined},
-    {'label': 'Plumbers',     'icon': Icons.plumbing_outlined},
-    {'label': 'Electricians', 'icon': Icons.electrical_services},
-    {'label': 'Cleaners',     'icon': Icons.cleaning_services},
+  /// Quick-pick category chips shown above search results. Built from
+  /// [t] (not a hardcoded field) so the labels follow the active locale.
+  List<Map<String, dynamic>> _popularSearches(AppLocalizations t) => [
+    {'label': t.searchPopularDoctors,      'icon': Icons.medical_services_outlined},
+    {'label': t.searchPopularLawyers,      'icon': Icons.gavel_outlined},
+    {'label': t.searchPopularEngineers,    'icon': Icons.engineering_outlined},
+    {'label': t.searchPopularPlumbers,     'icon': Icons.plumbing_outlined},
+    {'label': t.searchPopularElectricians, 'icon': Icons.electrical_services},
+    {'label': t.searchPopularCleaners,     'icon': Icons.cleaning_services},
   ];
 
   @override
@@ -525,12 +527,12 @@ class _SearchScreenState extends State<SearchScreen>
     if (!_isLoggedIn) { _showLoginPrompt(); return; }
     setState(() { _aiMode = !_aiMode; _aiResult = null; _aiMatchedPros = []; _aiAvailabilityMessage = null; _aiRecommendations = {}; });
     if (_aiMode) {
+      final t = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: [
           const Icon(Icons.auto_awesome, color: Colors.white, size: 16),
           const SizedBox(width: 8),
-          Text(_isPremium ? 'AI Search ON — Premium mode active'
-              : 'AI Search ON — ${_aiLimit - _aiUsed} searches remaining today'),
+          Text(_isPremium ? t.searchAiPremiumActive : t.searchAiRemainingToday(_aiLimit - _aiUsed)),
         ]),
         backgroundColor: context.colors.primary,
         behavior: SnackBarBehavior.floating,
@@ -596,6 +598,7 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   void _showFilterSheet() {
+    final t = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context, isScrollControlled: true, backgroundColor: context.colors.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
@@ -608,7 +611,6 @@ class _SearchScreenState extends State<SearchScreen>
       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
       builder: (_) => StatefulBuilder(
         builder: (ctx, setSheet) {
-          final t = AppLocalizations.of(ctx)!;
           final scale = ResponsiveUtils.scaleOf(ctx);
           final hPad = ResponsiveUtils.screenPadding(MediaQuery.sizeOf(ctx).width, base: 20);
           final labelStyle = TextStyle(fontSize: ResponsiveUtils.sp(14, scale, min: 13, max: 17), fontWeight: FontWeight.w600, color: context.colors.textPrimary);
@@ -1123,13 +1125,14 @@ class _SearchScreenState extends State<SearchScreen>
 
   // ── Suggestion Panel ──────────────────────────────────────────────────────
   Widget _buildSuggestionPanel() {
+    final t = AppLocalizations.of(context)!;
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       children: [
 
         // Recent Searches
         if (_searchHistory.isNotEmpty) ...[
-          _suggestionHeader('Recent', Icons.history_rounded),
+          _suggestionHeader(t.searchRecent, Icons.history_rounded),
           const SizedBox(height: 6),
           Wrap(spacing: 8, runSpacing: 6,
             children: _searchHistory.take(5).map((q) =>
@@ -1143,7 +1146,7 @@ class _SearchScreenState extends State<SearchScreen>
 
         // Popular Searches
         if (_suggestPopular.isNotEmpty) ...[
-          _suggestionHeader('Popular', Icons.trending_up_rounded),
+          _suggestionHeader(t.searchPopular, Icons.trending_up_rounded),
           const SizedBox(height: 6),
           Wrap(spacing: 8, runSpacing: 6,
             children: _suggestPopular.map((q) =>
@@ -1157,7 +1160,7 @@ class _SearchScreenState extends State<SearchScreen>
 
         // Matching Professions
         if (_suggestProfessions.isNotEmpty) ...[
-          _suggestionHeader('Professions', Icons.work_outline_rounded),
+          _suggestionHeader(t.searchProfessions, Icons.work_outline_rounded),
           const SizedBox(height: 6),
           Wrap(spacing: 8, runSpacing: 6,
             children: _suggestProfessions.map((p) =>
@@ -1171,7 +1174,7 @@ class _SearchScreenState extends State<SearchScreen>
 
         // Matching Categories
         if (_suggestCategories.isNotEmpty) ...[
-          _suggestionHeader('Categories', Icons.category_outlined),
+          _suggestionHeader(t.searchCategories, Icons.category_outlined),
           const SizedBox(height: 6),
           ..._suggestCategories.map((cat) => GestureDetector(
             onTap: () {
@@ -1207,7 +1210,7 @@ class _SearchScreenState extends State<SearchScreen>
 
         // Matching Professionals
         if (_suggestPros.isNotEmpty) ...[
-          _suggestionHeader('Professionals', Icons.person_outline_rounded),
+          _suggestionHeader(t.searchProfessionals, Icons.person_outline_rounded),
           const SizedBox(height: 6),
           ..._suggestPros.map((pro) => GestureDetector(
             onTap: () {
@@ -1524,7 +1527,7 @@ class _SearchScreenState extends State<SearchScreen>
         const SizedBox(height: 10),
         Wrap(
           spacing: 8, runSpacing: 8,
-          children: _popularSearches.map((p) => GestureDetector(
+          children: _popularSearches(t).map((p) => GestureDetector(
             onTap: () { _controller.text = p['label']; _search(p['label']); },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -1569,10 +1572,10 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Widget _buildResults() {
+    final t = AppLocalizations.of(context)!;
     if (_results.isEmpty) {
       return _buildEmptyState();
     }
-    final t = AppLocalizations.of(context)!;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // GPS Status bar
@@ -1755,6 +1758,7 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Widget _buildResultCard(dynamic pro) {
+    final t          = AppLocalizations.of(context)!;
     final name       = pro['name']            ?? '';
     final city       = pro['city']            ?? '';
     final category   = pro['category_name']   ?? '';
@@ -1807,7 +1811,7 @@ class _SearchScreenState extends State<SearchScreen>
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
                     Icon(Icons.workspace_premium, color: Colors.amber, size: ResponsiveUtils.sp(10, scale, min: 9, max: 13)),
                     const SizedBox(width: 2),
-                    Text(AppLocalizations.of(context)!.searchPro, style: TextStyle(color: Colors.white, fontSize: ResponsiveUtils.sp(9, scale, min: 8, max: 12), fontWeight: FontWeight.bold)),
+                    Text(t.searchPro, style: TextStyle(color: Colors.white, fontSize: ResponsiveUtils.sp(9, scale, min: 8, max: 12), fontWeight: FontWeight.bold)),
                   ]),
                 ),
               ],
@@ -1839,7 +1843,7 @@ class _SearchScreenState extends State<SearchScreen>
                 ]),
               ),
               SizedBox(width: ResponsiveUtils.sp(8, scale, min: 6, max: 12)),
-              Text(AppLocalizations.of(context)!.searchHr('$rate'), style: TextStyle(fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 15), fontWeight: FontWeight.w700, color: context.colors.primary)),
+              Text(t.searchHr('$rate'), style: TextStyle(fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 15), fontWeight: FontWeight.w700, color: context.colors.primary)),
             ]),
           ])),
           SizedBox(width: ResponsiveUtils.sp(8, scale, min: 6, max: 12)),

@@ -1926,5 +1926,1572 @@
   "chatReasonInappropriateContent": "Inappropriate content",
   "chatReasonScamFraud": "Scam or fraud",
   "chatReasonFakeProfile": "Fake profile",
-  "chatReasonOther": "Other"
+  "chatReasonOther": "Other",
+  "aboutActionLabel": "About",
+  "aboutActionSubtitle": "About this app",
+  "aboutAppStoreLabel": "App Store",
+  "aboutDisabledBadgeLabel": "Unavailable",
+  "aboutEmptyStateMessage": "We couldn't find any information to show right now.",
+  "aboutEmptyStateTitle": "Nothing to Show",
+  "aboutGooglePlayLabel": "Google Play",
+  "aboutLabel": "About",
+  "aboutLinkCouldNotOpen": "Could not open this link {value1}",
+  "@aboutLinkCouldNotOpen": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLinkError": "Something went wrong while opening the link {value1}",
+  "@aboutLinkError": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLinkNoAppFound": "No app found to open this link {value1}",
+  "@aboutLinkNoAppFound": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLoadError": "Failed to load this page",
+  "aboutLoadingText": "Loading...",
+  "aboutTitle": "About",
+  "acceptCta": "Accept",
+  "acceptDescription": "Accept this booking",
+  "acceptLabel": "Accept",
+  "acceptanceRateLabel": "Acceptance Rate",
+  "acceptanceRateSubtext": "Of bookings you accept",
+  "acceptedLabel": "Accepted",
+  "acceptingBookingsLabel": "Accepting Bookings",
+  "accountGroupLabel": "Account",
+  "accountHolderLabel": "Account Holder Name",
+  "accountNumberLabel": "Account Number",
+  "accountSectionLabel": "Account",
+  "accountTypeLabel": "Account Type",
+  "addBankBannerSubtitle": "Add your bank details to receive withdrawals",
+  "addBankBannerTitle": "Add Bank Details",
+  "addBankCta": "Add Bank Account",
+  "addCertificateImageLabel": "Certificate Image",
+  "addCertificateTitle": "Add Certificate",
+  "addCertificateTooltip": "Add a certificate",
+  "addCta": "Add",
+  "addFirstCertificateCta": "Add Your First Certificate",
+  "addFirstItemCta": "Add Your First Item",
+  "addImageLabel": "Add Image",
+  "addLanguageHint": "Type a language and press enter",
+  "addPhotoCta": "Add Photo",
+  "addPhotoTooltip": "Add a photo",
+  "addPortfolioHint": "Showcase your best work to attract more customers",
+  "addPortfolioTitle": "Add Portfolio Item",
+  "addPortfolioTooltip": "Add portfolio item",
+  "addSkillHint": "Type a skill and press enter",
+  "addWorkSamplesLabel": "Add work samples",
+  "adjustSearchTerms": "Try adjusting your search terms",
+  "adminNoteLabel": "Admin Note",
+  "allCategoriesTitle": "All Categories",
+  "analyticsErrorTitle": "Couldn't load analytics",
+  "analyticsLoadError": "Failed to load analytics",
+  "analyticsTitle": "Analytics",
+  "applyCta": "Apply",
+  "approvalSubtitle": "Pending admin approval",
+  "approvalTitle": "Approval Status",
+  "articleFooterMagazineLabel": "More from Magazine",
+  "articleLoadingText": "Loading article...",
+  "articleNotFoundError": "Article not found",
+  "articleNotFoundMessage": "This article may have been removed or doesn't exist",
+  "articleReadTime": "{value1} min read",
+  "@articleReadTime": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "articleReadTimeLabel": "{value1} min read",
+  "@articleReadTimeLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "automaticDescription": "Automatically accept bookings that meet your criteria",
+  "automaticLabel": "Automatic",
+  "availabilityClosedLabel": "Closed",
+  "availabilityLabel": "Availability",
+  "availabilityLoadError": "Failed to load availability",
+  "availabilityOffSuccess": "You're now marked as unavailable",
+  "availabilityOnSuccess": "You're now marked as available",
+  "availabilityScheduleSaveError": "Failed to save schedule",
+  "availabilityScheduleSaved": "Schedule saved successfully",
+  "availabilityStatusUpdateError": "Failed to update availability status",
+  "availabilityStatusUpdated": "Availability set to {value1}",
+  "@availabilityStatusUpdated": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "availabilitySummarySubtitle": "Your weekly working hours at a glance",
+  "availabilitySummaryTitle": "Availability Summary",
+  "availabilityTitle": "Availability",
+  "availabilityUpdateError": "Failed to update availability",
+  "availabilityWeeklySubtitle": "Set your working hours for each day",
+  "availabilityWeeklyTitle": "Weekly Schedule",
+  "availableBalanceLabel": "Available balance: Rs {value1}",
+  "@availableBalanceLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "availableBalanceTitle": "Available Balance",
+  "availableForBookingsLabel": "Available for Bookings",
+  "availableLabel": "Available",
+  "availableNowLabel": "Available Now",
+  "availableSubtitle": "Ready to accept new bookings",
+  "averageRatingLabel": "Average Rating",
+  "averageRatingSubtext": "Based on customer reviews",
+  "backCta": "Back",
+  "backToBookingsCta": "Back to Bookings",
+  "backToHomeCta": "Back to Home",
+  "backToLoginCta": "Back to Login",
+  "bankDetailsEmpty": "No bank details added yet",
+  "bankDetailsLabel": "Bank Details",
+  "bankDetailsRequiredMessage": "Please add your bank details before requesting a withdrawal",
+  "bankDetailsRequiredTitle": "Bank Details Required",
+  "bankDetailsSubtitle": "Used for withdrawals to your account",
+  "bankNameLabel": "Bank Name",
+  "bioLabel": "Bio",
+  "bookAppointmentTitle": "Book Appointment",
+  "bookCta": "Book",
+  "bookNowCta": "Book Now",
+  "bookingConfigurationTitle": "Booking Configuration",
+  "bookingDateRequired": "Please select a date",
+  "bookingDetailsTitle": "Booking Details",
+  "bookingFailed": "Booking failed. Please try again.",
+  "bookingManagementTitle": "Manage Bookings",
+  "bookingSoFarLabel": "Bookings so far",
+  "bookingStatusUpdated": "Booking marked as {value1}",
+  "@bookingStatusUpdated": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingSuccessMessage": "Your booking request with {value1} has been sent",
+  "@bookingSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingSuccessTitle": "Booking Requested",
+  "bookingTimeRequired": "Please select a time",
+  "bookingTipText": "You can cancel for free up to 24 hours before the appointment",
+  "bookingUpdateError": "Failed to update booking",
+  "bookingUpdatedToast": "Booking updated to {value1}",
+  "@bookingUpdatedToast": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingsActionLabel": "Bookings",
+  "bookingsActionSubtitle": "View your booking history",
+  "bookingsLabel": "Bookings",
+  "bookingsStatLabel": "Bookings",
+  "bufferMinLabel": "{value1} min buffer",
+  "@bufferMinLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bufferNoneLabel": "No buffer",
+  "bufferTimeSubtitle": "Time between consecutive bookings",
+  "bufferTimeTitle": "Buffer Time",
+  "calendarWeekDays": "S,M,T,W,T,F,S",
+  "cameraOptionLabel": "Camera",
+  "cancelBookingCta": "Cancel Booking",
+  "cancelBookingTitle": "Cancel Booking",
+  "cancelConfirmationMessage": "Are you sure you want to cancel this booking?",
+  "cancelCta": "Cancel",
+  "cancelReasonHint": "Let us know why you are cancelling",
+  "cancelReasonLabel": "Reason for cancellation",
+  "cancellationPolicyLabel": "Cancellation Policy",
+  "cancelledByCustomerLabel": "Cancelled by customer",
+  "cancelledByYouLabel": "Cancelled by you",
+  "categoryLabel": "Category",
+  "certificateAddError": "Failed to add certificate",
+  "certificateAddSuccess": "Certificate added successfully",
+  "certificateTitleHint": "e.g. Certified Plumbing Technician",
+  "certificateTitleLabelRequired": "Certificate Title",
+  "certificatesLabel": "Certificates",
+  "certificatesTitle": "Certificates",
+  "certificationsLabel": "Certifications",
+  "changePasswordLabel": "Change Password",
+  "changePasswordSubtitle": "Update your account password",
+  "changePasswordTitle": "Change Password",
+  "changeProfilePhotoTitle": "Change Profile Photo",
+  "chatMicPermissionRequired": "Microphone permission is required to record voice messages",
+  "chatNoMessagesFound": "No messages found",
+  "chatSearchMessagesHint": "Search messages",
+  "chatTypeToSearchConversation": "Type to search this conversation",
+  "checkEmailHint": "Didn't receive it? Check your spam folder.",
+  "checkEmailMessage": "We've sent a password reset link to your email",
+  "checkEmailTitle": "Check Your Email",
+  "cityDisabledHint": "Select a country first",
+  "cityEmptyMessage": "No cities found",
+  "cityHint": "Select city",
+  "cityLabel": "City",
+  "cityRequiredError": "Please select a city",
+  "citySearchHint": "Search city",
+  "clearCta": "Clear",
+  "clientsLabel": "Clients",
+  "closeCta": "Close",
+  "comingSoonMessage": "{value1} is coming soon",
+  "@comingSoonMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "commentHint": "Share your experience with {value1}",
+  "@commentHint": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "commentOptionalLabel": "Comment Optional",
+  "completedLabel": "Completed",
+  "confirmBookingCta": "Confirm Booking",
+  "confirmPasswordLabel": "Confirm Password",
+  "contactChatLabel": "Chat with us",
+  "contactChatSubtitle": "Get a quick response in chat",
+  "contactChatTitle": "Chat Support",
+  "contactCta": "Contact",
+  "contactEmailLabel": "Email us",
+  "contactEmailSubtitle": "We'll get back to you within 24 hours",
+  "contactEmailTitle": "Email Support",
+  "contactSupportTitle": "Contact Support",
+  "continueAsGuestCta": "Continue as Guest",
+  "countryEmptyMessage": "No countries found",
+  "countryHint": "Select country",
+  "countryRequiredError": "Please select a country",
+  "countrySearchHint": "Search country",
+  "currencyFeatureName": "Currency",
+  "currentPasswordLabel": "Current Password",
+  "currentPlanLabel": "Current plan: {value1}",
+  "@currentPlanLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "currentlyBusyLabel": "Currently Busy",
+  "customLocationHint": "Enter a custom location",
+  "customLocationOption": "Custom Location",
+  "customLocationSubtitle": "Enter an address manually",
+  "customSlotDefaultLabel": "Custom",
+  "customSlotHint": "Enter duration in minutes",
+  "customSlotLabel": "Custom ({value1})",
+  "@customSlotLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "customSlotTitle": "Custom Slot Duration",
+  "customSlotValidation": "Please enter a valid duration",
+  "customerAccountDescription": "Book trusted professionals near you",
+  "customerDefault": "Customer",
+  "customerLabel": "Customer",
+  "dailyHoursLabel": "Daily Hours",
+  "darkModeOffLabel": "Light Mode",
+  "darkModeOnLabel": "Dark Mode",
+  "dashboardLoadError": "Failed to load dashboard",
+  "dateLabel": "Date",
+  "dateNotSet": "Date not set",
+  "dateNotSetShort": "No date",
+  "dateRequiredMessage": "Please select a date",
+  "dateTipText": "Choose a date that works best for you",
+  "daysLabel": "{value1}d",
+  "@daysLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "declineCta": "Decline",
+  "declineDescription": "Decline this booking",
+  "declineLabel": "Decline",
+  "deleteAccountDialogContent": "This will permanently delete your account and all associated data. This action cannot be undone.",
+  "deleteAccountDialogTitle": "Delete Account",
+  "deleteAccountLabel": "Delete Account",
+  "deleteConfirmationTitle": "Delete this item?",
+  "deleteCta": "Delete",
+  "deleteDialogContent": "Are you sure you want to delete \"{value1}\"?",
+  "@deleteDialogContent": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "deleteDialogTitle": "Delete Item",
+  "deleteError": "Failed to delete",
+  "deleteGalleryDialogContent": "Are you sure you want to delete this photo?",
+  "deleteGalleryDialogTitle": "Delete Photo",
+  "deleteReviewConfirmationMessage": "Are you sure you want to delete this review?",
+  "deleteSuccess": "Deleted successfully",
+  "descriptionHint": "Add a description",
+  "descriptionLabelOptional": "Description (optional)",
+  "detailsLabel": "Details",
+  "directChatLabel": "Message",
+  "discardCta": "Discard",
+  "doneCta": "Done",
+  "earningsLabel": "Earnings",
+  "editCta": "Edit",
+  "editLabel": "Edit",
+  "editProfileActionLabel": "Edit Profile",
+  "editProfileActionSubtitle": "Update your personal information",
+  "editReviewHint": "Update your comment",
+  "editReviewSubtitle": "Update your rating and comment",
+  "editReviewTitle": "Edit Review",
+  "editorHeadingPlaceholder": "Heading",
+  "editorHintText": "Start writing...",
+  "editorInsertCta": "Insert",
+  "editorInsertLinkTitle": "Insert Link",
+  "editorLinkHint": "https://example.com",
+  "editorLinkPlaceholder": "Link text",
+  "educationLabel": "Education",
+  "emailAvailableLabel": "Email is available",
+  "emailNotificationsLabel": "Email Notifications",
+  "emailTakenLabel": "This email is already registered",
+  "emptyCertificatesSubtitle": "Add your certifications to build trust with customers",
+  "emptyCertificatesTitle": "No Certificates Yet",
+  "emptyGallerySubtitle": "Add photos to showcase your work",
+  "emptyGalleryTitle": "No Photos Yet",
+  "emptyPortfolioSubtitle": "Add your best work to attract more customers",
+  "emptyPortfolioTitle": "No Portfolio Items Yet",
+  "endTimeLabel": "End Time",
+  "enterAmountHint": "Enter amount",
+  "exceedsBalanceError": "Amount exceeds your available balance",
+  "exceptionsAddRange": "Add Date Range",
+  "exceptionsCalendarSubtitle": "Tap a date to set an exception",
+  "exceptionsCalendarTitle": "Calendar",
+  "exceptionsCustomChip": "Custom",
+  "exceptionsEndDate": "End Date",
+  "exceptionsIntroText": "Mark dates when your availability differs from your usual schedule",
+  "exceptionsLegendClosed": "Closed",
+  "exceptionsLegendCustom": "Custom Hours",
+  "exceptionsLegendUnavailable": "Unavailable",
+  "exceptionsLegendVacation": "Vacation",
+  "exceptionsLegendWorking": "Working",
+  "exceptionsLoadError": "Failed to load exceptions",
+  "exceptionsNoOverrides": "No exceptions set",
+  "exceptionsOverridesSubtitle": "Dates with custom availability",
+  "exceptionsOverridesTitle": "Overrides",
+  "exceptionsReasonLabel": "Reason (optional)",
+  "exceptionsSelectDate": "Select a date",
+  "exceptionsSetVacation": "Set Vacation",
+  "exceptionsStartDate": "Start Date",
+  "exceptionsTimeError": "End time must be after start time",
+  "exceptionsTitle": "Availability Exceptions",
+  "exceptionsUnavailableChip": "Unavailable",
+  "exceptionsUnavailableLabel": "Mark as unavailable",
+  "exceptionsUpdateVacation": "Update Vacation",
+  "exceptionsVacationActive": "Vacation is currently active",
+  "exceptionsVacationScheduled": "Vacation scheduled from {value1}",
+  "@exceptionsVacationScheduled": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "exceptionsVacationSubtitle": "Set a date range when you are away",
+  "exceptionsVacationTitle": "Vacation Mode",
+  "experienceLabel": "Experience",
+  "experienceYearsLabel": "{value1} years experience",
+  "@experienceYearsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "exploreExpertsLabel": "Explore Experts",
+  "facebookSignInLabel": "Continue with Facebook",
+  "faqBookingPendingA": "It may take a little time for the professional to respond. You will be notified once they accept or decline.",
+  "faqBookingPendingQ": "Why is my booking still pending?",
+  "faqChangeAvailabilityA": "Go to your Availability settings from your profile to update your working hours.",
+  "faqChangeAvailabilityQ": "How do I change my availability?",
+  "faqGetVerifiedA": "Complete your profile and submit the required documents from your profile settings to request verification.",
+  "faqGetVerifiedQ": "How do I get verified?",
+  "faqHowToBookA": "Search for a professional, view their profile, and tap Book Now to select a date and time.",
+  "faqHowToBookQ": "How do I book a professional?",
+  "faqHowToCancelA": "Open the booking from My Bookings and tap Cancel. Cancellations made in time are free.",
+  "faqHowToCancelQ": "How do I cancel a booking?",
+  "faqImproveProfileA": "Add a profile photo, portfolio samples, and certificates to build trust with customers.",
+  "faqImproveProfileQ": "How can I improve my profile?",
+  "faqPaymentSecureA": "Yes, all payments are processed securely and your details are never shared.",
+  "faqPaymentSecureQ": "Is my payment information secure?",
+  "faqRefundsA": "Refunds are processed automatically for eligible cancellations within a few business days.",
+  "faqRefundsQ": "How do refunds work?",
+  "faqSectionLabel": "FAQ",
+  "faqSectionTitle": "Frequently Asked Questions",
+  "faqWithdrawEarningsA": "Go to your Wallet and tap Withdraw to transfer your earnings to your bank account.",
+  "faqWithdrawEarningsQ": "How do I withdraw my earnings?",
+  "fastResponseLabel": "Fast Response",
+  "flexibleTimingLabel": "Flexible Timing",
+  "freeToCancelLabel": "Free to Cancel",
+  "fullNameLabel": "Full Name",
+  "galleryLabel": "Gallery",
+  "galleryOptionLabel": "Gallery",
+  "galleryTitle": "Gallery",
+  "galleryUploadError": "Failed to upload photo",
+  "galleryUploadSuccess": "Photo uploaded successfully",
+  "goBackCta": "Go Back",
+  "goodAfternoon": "Good afternoon",
+  "goodAfternoonComma": "Good afternoon,",
+  "goodEvening": "Good evening",
+  "goodEveningComma": "Good evening,",
+  "goodMorning": "Good morning",
+  "goodMorningComma": "Good morning,",
+  "goodToKnowLabel": "Good to Know",
+  "googleSignInLabel": "Continue with Google",
+  "helpActionLabel": "Help & Support",
+  "helpActionSubtitle": "Get help or contact us",
+  "helpSupportLabel": "Help & Support",
+  "helpSupportTitle": "Help & Support",
+  "helpTitle": "Help",
+  "homeDefaultPlanFree": "Free",
+  "homeDefaultProfessionalName": "Professional",
+  "homeFilterAll": "All",
+  "homeFilterAvailableNow": "Available Now",
+  "homeFilterFastResponse": "Fast Response",
+  "homeFilterHighestPrice": "Highest Price",
+  "homeFilterLowestPrice": "Lowest Price",
+  "homeFilterMostBooked": "Most Booked",
+  "homeFilterMostExperienced": "Most Experienced",
+  "homeFilterMostReviews": "Most Reviews",
+  "homeFilterRating1Plus": "1+ Stars",
+  "homeFilterRating2Plus": "2+ Stars",
+  "homeFilterRating3Plus": "3+ Stars",
+  "homeFilterRating4Plus": "4+ Stars",
+  "homeFilterRating5Plus": "5 Stars",
+  "homeFilterThisMonth": "This Month",
+  "homeFilterThisWeek": "This Week",
+  "homeFilterToday": "Today",
+  "homeFilterTopRated": "Top Rated",
+  "homeFilterVerified": "Verified",
+  "homeFilterWithin10Km": "Within 10 km",
+  "homeFilterWithin2Km": "Within 2 km",
+  "homeFilterWithin5Km": "Within 5 km",
+  "homeGoBack": "Go Back",
+  "homeNoProfessionalsFound": "No professionals found",
+  "homeNoProfessionalsFoundHint": "Try adjusting your filters or search a different area",
+  "hour": "hour",
+  "hourlyRateLabel": "Hourly Rate",
+  "hoursDecimalLabel": "{value1}h",
+  "@hoursDecimalLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursLabel": "{value1}h",
+  "@hoursLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursMinutesShort": "{value1}h {value2}m",
+  "@hoursMinutesShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursShort": "{value1}h",
+  "@hoursShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "idVerifiedLabel": "ID Verified",
+  "imagePickError": "Failed to select image",
+  "instantLabel": "Instant",
+  "issueDateLabelOptional": "Issue Date (optional)",
+  "issuingOrganizationHint": "e.g. National Skills Board",
+  "issuingOrganizationLabel": "Issuing Organization",
+  "jobsDoneLabel": "Jobs Done",
+  "languagesLabel": "Languages",
+  "lastUpdatedLabel": "Last updated: {value1}",
+  "@lastUpdatedLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "laterCta": "Later",
+  "loadBookingsError": "Failed to load bookings",
+  "loadCertificatesError": "Failed to load certificates",
+  "loadGalleryError": "Failed to load gallery",
+  "loadPortfolioError": "Failed to load portfolio",
+  "loadSettingsError": "Failed to load settings",
+  "loadWalletError": "Failed to load wallet",
+  "loadingAnalyticsText": "Loading analytics...",
+  "loadingDashboard": "Loading dashboard...",
+  "locationLabel": "Location",
+  "locationNotSpecified": "Location not specified",
+  "locationTipText": "Enable location for more accurate results",
+  "loginCta": "Login",
+  "loginSubtitle": "Welcome back! Please sign in to continue",
+  "loginTitle": "Login",
+  "loginToBookCta": "Login to Book",
+  "logoutActionLabel": "Logout",
+  "logoutActionSubtitle": "Sign out of your account",
+  "logoutCta": "Logout",
+  "logoutDialogContent": "Are you sure you want to log out?",
+  "logoutDialogTitle": "Logout",
+  "magazineAllCategoriesLabel": "All",
+  "magazineArticleCountPlural": "{value1} articles",
+  "@magazineArticleCountPlural": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "magazineArticleCountSingle": "1 article",
+  "magazineClearSearchCta": "Clear Search",
+  "magazineEmptyMessage": "No articles available right now",
+  "magazineEmptySearchMessage": "Try a different search term",
+  "magazineEmptySearchTitle": "No Results Found",
+  "magazineEmptyTitle": "No Articles Yet",
+  "magazineErrorMessage": "Something went wrong while loading the magazine",
+  "magazineErrorTitle": "Failed to Load",
+  "magazineLoadError": "Failed to load magazine",
+  "magazineLoadingText": "Loading articles...",
+  "magazineSearchHint": "Search articles",
+  "magazineSearchResultsLabel": "Search Results",
+  "magazineSubtitle": "Tips and stories for professionals",
+  "magazineTitle": "Magazine",
+  "manageCta": "Manage",
+  "manageLabel": "Manage",
+  "manualDescription": "Review and accept bookings yourself",
+  "manualInfoFooter": "You can change this anytime in settings",
+  "manualInfoTitle": "Manual Approval",
+  "manualLabel": "Manual",
+  "markCompletedCta": "Mark as Completed",
+  "markCompletedCtaShort": "Complete",
+  "maxAdvanceSubtitle": "How far in advance customers can book",
+  "maxAdvanceTitle": "Max Advance Booking",
+  "memberSinceLabel": "Member Since",
+  "messagesEmptySubtitle": "Start a conversation with a professional or customer",
+  "messagesEmptyTitle": "No Messages Yet",
+  "messagesLoadError": "Failed to load messages",
+  "messagesLoadingText": "Loading messages...",
+  "messagesTitle": "Messages",
+  "minAmountError": "Minimum withdrawal amount is Rs {value1}",
+  "@minAmountError": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minNoticeSubtitle": "Minimum time before a booking can start",
+  "minNoticeTitle": "Minimum Notice",
+  "minWithdrawalLabel": "Minimum withdrawal: Rs {value1}",
+  "@minWithdrawalLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minute": "minute",
+  "minutesLabel": "{value1}m",
+  "@minutesLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minutesShort": "{value1}m",
+  "@minutesShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minutesZero": "0 minutes",
+  "myPortfolioLabel": "My Portfolio",
+  "myPortfolioTitle": "My Portfolio",
+  "myReviewsEmptySubtitle": "Reviews you write will appear here",
+  "myReviewsEmptyTitle": "No Reviews Yet",
+  "myReviewsTitle": "My Reviews",
+  "navAnalytics": "Analytics",
+  "navBookings": "Bookings",
+  "navDashboard": "Dashboard",
+  "navMagazine": "Magazine",
+  "navMessages": "Messages",
+  "navProfile": "Profile",
+  "nearbyLabel": "Nearby",
+  "needMoreHelpLabel": "Need more help?",
+  "newPasswordLabel": "New Password",
+  "newPhotoSelectedHint": "New photo selected",
+  "nextCta": "Next",
+  "noBookingsAccepted": "No accepted bookings",
+  "noBookingsAll": "No bookings yet",
+  "noBookingsCancelled": "No cancelled bookings",
+  "noBookingsCompleted": "No completed bookings",
+  "noBookingsDefault": "No bookings found",
+  "noBookingsPending": "No pending bookings",
+  "noBookingsRescheduled": "No rescheduled bookings",
+  "noBookingsToday": "No bookings today",
+  "noBookingsYet": "No bookings yet",
+  "noClientsFound": "No clients found",
+  "noLanguagesAdded": "No languages added yet",
+  "noMessagesPlaceholder": "No messages yet",
+  "noMessagesYet": "No messages yet",
+  "noPaymentsSubtitle": "Your payment history will appear here",
+  "noPaymentsTitle": "No Payments Yet",
+  "noPortfolioSubtitle": "Portfolio items will appear here",
+  "noPortfolioTitle": "No Portfolio Items",
+  "noReviewsSubtitle": "Reviews will appear here once customers rate you",
+  "noReviewsTitle": "No Reviews Yet",
+  "noReviewsYet": "No reviews yet",
+  "noServicesSubtitle": "Add services you offer to attract customers",
+  "noServicesTitle": "No Services Added",
+  "noSkillsAdded": "No skills added yet",
+  "noTransactionsLabel": "No transactions yet",
+  "noWorkingHoursMessage": "No working hours set for this day",
+  "notAcceptingBookingsLabel": "Not Accepting Bookings",
+  "notAvailableLabel": "Not Available",
+  "notAvailableSubtitle": "Not accepting bookings right now",
+  "notSetPlaceholder": "Not set",
+  "notSpecifiedLabel": "Not specified",
+  "notVerifiedLabel": "Not Verified",
+  "notesHintText": "Add any notes here",
+  "notesInfoText": "Notes are only visible to you",
+  "notesLabel": "Notes",
+  "notesTipText": "Add any special requests or details",
+  "notificationsActionLabel": "Notifications",
+  "notificationsActionSubtitle": "Manage notification preferences",
+  "notificationsDaysAgo": "{value1}d ago",
+  "@notificationsDaysAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsEmptyMessage": "You're all caught up!",
+  "notificationsEmptyTitle": "No Notifications",
+  "notificationsErrorTitle": "Couldn't load notifications",
+  "notificationsHoursAgo": "{value1}h ago",
+  "@notificationsHoursAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsJustNow": "Just now",
+  "notificationsLoadError": "Failed to load notifications",
+  "notificationsLoadingText": "Loading notifications...",
+  "notificationsMarkAllReadCta": "Mark all as read",
+  "notificationsMarkAllReadSuccess": "All notifications marked as read",
+  "notificationsMinutesAgo": "{value1}m ago",
+  "@notificationsMinutesAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsSectionLabel": "Notifications",
+  "notificationsSectionThisMonth": "This Month",
+  "notificationsSectionThisWeek": "This Week",
+  "notificationsSectionToday": "Today",
+  "notificationsSectionYesterday": "Yesterday",
+  "notificationsTitle": "Notifications",
+  "notifyCustomerMessage": "Notify the customer about the new time: {value1} at {value2}?",
+  "@notifyCustomerMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "notifyCustomerTitle": "Notify Customer",
+  "offlineLabel": "Offline",
+  "okCta": "OK",
+  "onlineLabel": "Online",
+  "openChatCta": "Open Chat",
+  "openChatCtaShort": "Chat",
+  "openChatError": "Failed to open chat",
+  "orContinueWithLabel": "Or continue with",
+  "overrideRemoved": "Exception removed",
+  "overrideSaved": "Exception saved for {value1}",
+  "@overrideSaved": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "passwordChangeError": "Failed to change password",
+  "passwordChangeSuccess": "Password changed successfully",
+  "passwordHelperText": "Must be at least 8 characters",
+  "passwordMinLengthError": "Password must be at least 8 characters",
+  "passwordMismatchError": "Passwords do not match",
+  "passwordRequiredError": "Password is required",
+  "paymentHistoryLabel": "Payment History",
+  "paymentHistorySubtitle": "View all your past payments",
+  "paymentStatusCompleted": "Completed",
+  "paymentStatusFailed": "Failed",
+  "paymentStatusPending": "Pending",
+  "paymentStatusRefunded": "Refunded",
+  "paymentsActionLabel": "Payments",
+  "paymentsActionSubtitle": "View your payment history",
+  "paymentsTitle": "Payments",
+  "pendingLabel": "Pending",
+  "perHourLabel": "/hr",
+  "performanceLabel": "Performance",
+  "performanceScoreInfo": "Based on your ratings, response time, and completed bookings",
+  "performanceScoreLabel": "Performance Score",
+  "performanceScoreOutOf": "{value1} out of 100",
+  "personalInfoLabel": "Personal Information",
+  "phoneLabel": "Phone",
+  "photoLimitReached": "You can add up to {value1} photos",
+  "@photoLimitReached": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "photoPickError": "Failed to select photo",
+  "photosOptionalLabel": "Photos (optional)",
+  "planStatLabel": "Plan",
+  "planUpgradeSubtitle": "Unlock more features and grow your business",
+  "planUpgradeTitle": "Upgrade from {value1}",
+  "@planUpgradeTitle": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "portfolioInfoNote": "Showcase your best work to attract more customers",
+  "portfolioLabel": "Portfolio",
+  "postReplyCta": "Post Reply",
+  "preferencesGroupLabel": "Preferences",
+  "preferencesSectionLabel": "Preferences",
+  "premiumActiveSubtitle": "You have access to all premium features",
+  "premiumMemberLabel": "Premium Member",
+  "premiumUpgradeSubtitle": "Get unlimited AI searches and more",
+  "proBadgeLabel": "PRO",
+  "professionEmptyMessage": "No professions found",
+  "professionHint": "Select profession",
+  "professionLabel": "Profession",
+  "professionRequiredError": "Please select a profession",
+  "professionSearchHint": "Search profession",
+  "professionalAccountDescription": "Offer your services to customers",
+  "professionalDefaultName": "Professional",
+  "professionalDetailLoadError": "Failed to load professional details",
+  "professionalDetailsLabel": "Professional Details",
+  "professionalLabel": "Professional",
+  "professionalLocationLabel": "Professional's Location",
+  "professionalLocationOption": "Professional's Location",
+  "professionalReviewsLabel": "Reviews",
+  "professionalReviewsSubtitle": "What customers are saying",
+  "profileCompletionHint": "Complete your profile to attract more customers",
+  "profileCompletionLabel": "Profile Completion",
+  "profileEditProfile": "Edit Profile",
+  "profileLabel": "Profile",
+  "profileLoadError": "Failed to load profile",
+  "profileLoadingText": "Loading profile...",
+  "profileNotAvailable": "Profile not available",
+  "profileOff": "Off",
+  "profileOn": "On",
+  "profileReviewsLabel": "Reviews",
+  "profileSavedLabel": "Saved",
+  "profileTitle": "Profile",
+  "profileUpdateError": "Failed to update profile",
+  "profileUpdateSuccess": "Profile updated successfully",
+  "profileViewsLabel": "Profile Views",
+  "profileViewsSubtext": "People who viewed your profile",
+  "profileWalletLabel": "Wallet",
+  "pushNotificationsLabel": "Push Notifications",
+  "quickActionsLabel": "Quick Actions",
+  "quickAddLabel": "Quick Add",
+  "rateLabel": "Rate",
+  "ratingLabel": "Rating",
+  "ratingRequiredError": "Please select a rating",
+  "recentBookingsLabel": "Recent Bookings",
+  "recentMessagesLabel": "Recent Messages",
+  "recentReviewsLabel": "Recent Reviews",
+  "refreshTooltip": "Refresh",
+  "registerCategoryRequired": "Please select a category",
+  "registerCta": "Register",
+  "registerServerError": "Registration failed. Please try again.",
+  "registerSubtitle": "Sign up to get started",
+  "registerTitle": "Create Account",
+  "rejectCta": "Reject",
+  "relatedProfessionalsLabel": "You May Also Like",
+  "removeCta": "Remove",
+  "replyHint": "Write a reply",
+  "replySubtitle": "Your reply is public and visible to everyone",
+  "replyTitle": "Reply to Review",
+  "reportNoteHint": "Add any additional details",
+  "reportSubtitle": "Help us understand what went wrong",
+  "reportTitle": "Report an Issue",
+  "requestSentLabel": "Request Sent",
+  "requestSentSubtitle": "Your request has been sent to {value1}",
+  "@requestSentSubtitle": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "requestWithdrawCta": "Request Withdrawal",
+  "rescheduledLabel": "Rescheduled",
+  "resendEmailCta": "Resend Email",
+  "resetLinkError": "Failed to send reset link",
+  "resetLinkSent": "Password reset link sent to {value1}",
+  "@resetLinkSent": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "resetPassSubtitle": "Enter your email and we'll send you a reset link",
+  "resetPassTitle": "Reset Password",
+  "resetPasswordDescription": "We'll send a password reset link to {value1}",
+  "@resetPasswordDescription": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "resetPasswordLabel": "Reset Password",
+  "responseLabel": "Response",
+  "responseRateLabel": "Response Rate",
+  "responseRateSubtext": "How often you respond to messages",
+  "responseTimeLabel": "Response Time",
+  "retryCta": "Retry",
+  "reviewBookingLabel": "Review Booking",
+  "reviewSubmitErrorDefault": "Failed to submit review",
+  "reviewSubmittedSuccessMessage": "Your review for {value1} has been submitted",
+  "@reviewSubmittedSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewSubmittedSuccessTitle": "Review Submitted",
+  "reviewUpdateErrorDefault": "Failed to update review",
+  "reviewUpdatedSuccessMessage": "Your review for {value1} has been updated",
+  "@reviewUpdatedSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewUpdatedSuccessTitle": "Review Updated",
+  "reviewsActionLabel": "Reviews",
+  "reviewsActionSubtitle": "Reviews you have written",
+  "reviewsCountLabel": "{value1} reviews",
+  "@reviewsCountLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewsLabel": "Reviews",
+  "saveCertificateCta": "Save Certificate",
+  "saveChangesCta": "Save Changes",
+  "saveCta": "Save",
+  "saveScheduleCta": "Save Schedule",
+  "saveSettingsError": "Failed to save settings",
+  "saveSettingsSuccess": "Settings saved successfully",
+  "savedProfessionalsActionLabel": "Saved Professionals",
+  "savedProfessionalsActionSubtitle": "Professionals you have saved",
+  "savedProfessionalsEmptySubtitle": "Professionals you save will appear here",
+  "savedProfessionalsEmptyTitle": "No Saved Professionals",
+  "savedProfessionalsTitle": "Saved Professionals",
+  "savedStatLabel": "Saved",
+  "searchAiPremiumActive": "AI Search Premium Active",
+  "searchAiRemainingToday": "{value1} AI searches remaining today",
+  "@searchAiRemainingToday": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "searchBookingsHint": "Search bookings",
+  "searchCategories": "Categories",
+  "searchPopular": "Popular",
+  "searchPopularCleaners": "Cleaners",
+  "searchPopularDoctors": "Doctors",
+  "searchPopularElectricians": "Electricians",
+  "searchPopularEngineers": "Engineers",
+  "searchPopularLawyers": "Lawyers",
+  "searchPopularPlumbers": "Plumbers",
+  "searchProfessionals": "Professionals",
+  "searchProfessions": "Professions",
+  "searchRecent": "Recent",
+  "searchResultsLabel": "{value1} results for \"{value2}\"",
+  "@searchResultsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "searchingLabel": "Searching...",
+  "security": "Security",
+  "securityActionLabel": "Security",
+  "securityActionSubtitle": "Password and account security",
+  "securityBannerSubtitle": "Keep your account safe and secure",
+  "securityBannerTitle": "Account Security",
+  "securityFooterText": "If you didn't request this change, please contact support immediately",
+  "securityTitle": "Security",
+  "seeAllLabel": "See All",
+  "selectedLabel": "Selected",
+  "sendResetLinkCta": "Send Reset Link",
+  "serviceLabel": "Service",
+  "serviceProfessionalLabel": "Service Professional",
+  "settingsActionLabel": "Settings",
+  "settingsActionSubtitle": "App preferences",
+  "shareExperienceLabel": "Share your experience",
+  "signInInsteadLabel": "Sign in instead",
+  "skillsLabel": "Skills",
+  "skillsPricingLabel": "Skills & Pricing",
+  "slotDurationSubtitle": "Default length of each booking slot",
+  "slotDurationTitle": "Slot Duration",
+  "startConversationError": "Failed to start conversation",
+  "startTimeLabel": "Start Time",
+  "startingFromLabel": "Starting from",
+  "statusApproved": "Approved",
+  "statusCompleted": "Completed",
+  "statusPending": "Pending",
+  "statusRejected": "Rejected",
+  "submitReportCta": "Submit Report",
+  "submitReviewCta": "Submit Review",
+  "subscriptionActionLabel": "Subscription",
+  "subscriptionActiveStatus": "{value1} plan active",
+  "@subscriptionActiveStatus": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "subscriptionUpgradeLabel": "Upgrade Plan",
+  "subscriptionUpgradeStatus": "Upgrade to premium",
+  "suggestTimeCta": "Suggest a Different Time",
+  "suggestTimeCtaShort": "Suggest Time",
+  "suggestTimeDescription": "Propose a new date and time for this booking",
+  "suggestTimeLabel": "Suggest a Time",
+  "suggestTimeSuccess": "New time suggested to customer",
+  "suggestedTimeLabel": "Suggested Time",
+  "supportBannerSubtitle": "We're here to help, 24/7",
+  "supportBannerTitle": "Need Help?",
+  "supportTeamReplyLabel": "Support Team",
+  "tapStarToRateLabel": "Tap a star to rate",
+  "thisMonthLabel": "This Month",
+  "timeLabel": "Time",
+  "timeSlotsLabel": "Time Slots",
+  "timeTipText": "Choose a time that works best for you",
+  "titleHint": "Enter a title",
+  "titleLabelRequired": "Title",
+  "titleValidationError": "Please enter a title",
+  "todayLabel": "Today",
+  "todaysEarningsLabel": "Today's Earnings",
+  "todaysScheduleLabel": "Today's Schedule",
+  "topRatedLabel": "Top Rated",
+  "totalBookingsLabel": "Total Bookings",
+  "totalEarnedLabel": "Total Earned",
+  "totalSpentLabel": "Total Spent",
+  "transactionCountLabel": "{value1} transactions",
+  "@transactionCountLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "transactionHistoryTitle": "Transaction History",
+  "tryAgainCta": "Try Again",
+  "twitterSignInLabel": "Continue with Twitter",
+  "typicallyRepliesLabel": "Typically replies",
+  "unavailableLabel": "Unavailable",
+  "unknownRoleError": "Unknown account type",
+  "updateBookingError": "Failed to update booking",
+  "updateCta": "Update",
+  "updateReviewCta": "Update Review",
+  "upgradeCta": "Upgrade",
+  "uploadError": "Upload failed",
+  "uploadSuccess": "Uploaded successfully",
+  "userLabel": "User",
+  "vacationCleared": "Vacation cleared",
+  "vacationDateRequired": "Please select a vacation date range",
+  "vacationSet": "Vacation set successfully",
+  "validAmountError": "Please enter a valid amount",
+  "verificationAddPortfolio": "Add portfolio items to help get verified",
+  "verificationLabel": "Verification",
+  "verificationPending": "Verification pending",
+  "verifiedLabel": "Verified",
+  "verifiedProfessionalLabel": "Professional",
+  "verifiedStatusLabel": "Verified {value1}",
+  "@verifiedStatusLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "viewMyBookingsCta": "View My Bookings",
+  "viewProfileCta": "View Profile",
+  "viewWalletLabel": "View Wallet",
+  "visitorsLabel": "Visitors",
+  "visitorsSubtext": "People who viewed your profile",
+  "walletActionLabel": "Wallet",
+  "walletActionSubtitle": "View balance and transactions",
+  "walletEarningsLabel": "Earnings",
+  "walletLabel": "Wallet",
+  "walletTitle": "Wallet",
+  "whatHappensNextLabel": "What happens next?",
+  "whyBookHereLabel": "Why book with us?",
+  "withdrawCta": "Withdraw",
+  "withdrawErrorDefault": "Withdrawal failed. Please try again.",
+  "withdrawSuccess": "Withdrawal requested successfully",
+  "withdrawTitle": "Withdraw Funds",
+  "withdrawnLabel": "Withdrawn",
+  "workingHoursLabel": "Working Hours",
+  "writeReviewTitle": "Write a Review",
+  "yearsLabel": "{value1} years",
+  "@yearsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "yesCancelCta": "Yes, Cancel",
+  "youAreNotifiedLabel": "You'll be notified",
+  "youAreNotifiedSubtitle": "We'll notify you as soon as there's a response",
+  "yourAccountEmailPlaceholder": "your account email",
+  "tsErrForbidden": "You do not have permission to perform this action.",
+  "tsErrNetwork": "Network problem. Check your connection and try again.",
+  "tsErrGeneric": "Something went wrong. Please try again.",
+  "tsRetry": "Retry",
+  "tsCopy": "Copy",
+  "tsCopied": "Copied to clipboard",
+  "tsOpenLink": "Open link",
+  "tsLinkOpenFailed": "This link could not be opened.",
+  "tsCancel": "Cancel",
+  "tsClose": "Close",
+  "tsRefresh": "Refresh",
+  "tsAll": "All",
+  "tsCatSpam": "Spam",
+  "tsCatHarassment": "Harassment",
+  "tsCatFraud": "Fraud or scam",
+  "tsCatFakeProfile": "Fake profile",
+  "tsCatInappropriate": "Inappropriate content",
+  "tsCatPaymentFraud": "Payment fraud",
+  "tsCatOffPlatform": "Off-platform payment",
+  "tsCatThreats": "Threats or safety concern",
+  "tsCatDiscrimination": "Discrimination",
+  "tsCatMisconduct": "Service misconduct",
+  "tsCatOther": "Other",
+  "tsStatusPending": "Pending",
+  "tsStatusReviewed": "Reviewed",
+  "tsStatusActionTaken": "Action taken",
+  "tsStatusDismissed": "Dismissed",
+  "tsSevLow": "Low",
+  "tsSevMedium": "Medium",
+  "tsSevHigh": "High",
+  "tsSevCritical": "Critical",
+  "tsRoleCustomer": "Customer",
+  "tsRoleProfessional": "Professional",
+  "tsRoleAdmin": "Admin",
+  "tsActWarning": "Warning",
+  "tsActRestrictMessaging": "Messaging restriction",
+  "tsActRestrictBooking": "Booking restriction",
+  "tsActSuspendTemporary": "Temporary suspension",
+  "tsActSuspendPermanent": "Permanent suspension",
+  "tsActWarningDesc": "Records a formal warning. Does not limit the account.",
+  "tsActRestrictMessagingDesc": "Marks the account as restricted from messaging.",
+  "tsActRestrictBookingDesc": "Marks the account as restricted from creating bookings.",
+  "tsActSuspendTemporaryDesc": "Marks the account as suspended until the date you choose.",
+  "tsActSuspendPermanentDesc": "Marks the account as permanently suspended. No expiry; only an admin can reverse it.",
+  "tsStateActive": "Active",
+  "tsStateScheduled": "Scheduled",
+  "tsStateExpired": "Expired",
+  "tsStateReversed": "Reversed",
+  "tsAppealPending": "Pending",
+  "tsAppealApproved": "Approved",
+  "tsAppealRejected": "Rejected",
+  "tsReportsTitle": "Reported Users",
+  "tsPendingReview": "{count} pending review",
+  "@tsPendingReview": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSearchReportsHint": "Search by user, reporter, category or ID",
+  "tsFilterSeverity": "Severity",
+  "tsFilterCategory": "Category",
+  "tsFilterDate": "Date",
+  "tsDateAny": "Any time",
+  "tsDateToday": "Today",
+  "tsDate7": "Last 7 days",
+  "tsDate30": "Last 30 days",
+  "tsDateCustom": "Custom range",
+  "tsSortNewest": "Newest first",
+  "tsSortSeverity": "Highest severity first",
+  "tsClearFilters": "Clear filters",
+  "tsNoReports": "No reports yet",
+  "tsNoReportsHint": "Reports submitted by users will appear here.",
+  "tsNoMatches": "No reports match your filters",
+  "tsNoMatchesHint": "Try changing or clearing the filters.",
+  "tsSelectReport": "Select a report",
+  "tsSelectReportHint": "Choose a report from the list to review it and take action.",
+  "tsIndBooking": "Booking",
+  "tsIndMessage": "Message",
+  "tsIndEvidence": "Evidence",
+  "tsReportedBy": "Reported by {name}",
+  "@tsReportedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tsAccountBlocked": "Account blocked",
+  "tsReportNumber": "Report #{id}",
+  "@tsReportNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSubmittedOn": "Submitted {date}",
+  "@tsSubmittedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTakeAction": "Take action",
+  "tsMarkReviewed": "Mark reviewed",
+  "tsDismiss": "Dismiss",
+  "tsSecDescription": "Report description",
+  "tsNoDescription": "No description was provided.",
+  "tsSecEvidence": "Evidence and context",
+  "tsEvidenceLabel": "EVIDENCE / REFERENCE",
+  "tsNoEvidence": "No evidence link provided.",
+  "tsBookingLabel": "RELATED BOOKING",
+  "tsBookingNumber": "Booking #{id}",
+  "@tsBookingNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsMessageLabel": "RELATED MESSAGE",
+  "tsMessageNumber": "Message #{id}",
+  "@tsMessageNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsMessageDeleted": "This message was deleted. Its content is not available.",
+  "tsMessageAttachments": "Attachments: {count}",
+  "@tsMessageAttachments": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsNoRelated": "None linked to this report.",
+  "tsFieldWhen": "When",
+  "tsFieldParties": "Parties",
+  "tsFieldSender": "Sender",
+  "tsBookingWith": "{customer} with {professional}",
+  "@tsBookingWith": {
+    "placeholders": {
+      "customer": {
+        "type": "String"
+      },
+      "professional": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSecPeople": "People",
+  "tsReportedUser": "REPORTED USER",
+  "tsReporterLabel": "REPORTER",
+  "tsReporterAdminOnly": "Visible to admins only. Never shown to the reported user.",
+  "tsAccountBlockedNote": "This account is currently blocked (see the Blocked tab). Blocking is separate from moderation actions.",
+  "tsSecActive": "Active restrictions and suspension",
+  "tsNoActive": "No active restrictions or suspension.",
+  "tsSecTimeline": "Report history",
+  "tsSecHistory": "Moderation history",
+  "tsSecOtherReports": "Other reports about this user",
+  "tsHistoryLoadError": "Could not load moderation history.",
+  "tsHistoryEmpty": "No moderation actions on record for this user.",
+  "tsTlSubmitted": "Report submitted",
+  "tsTlReviewed": "Marked {status} by {admin}",
+  "@tsTlReviewed": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlInternalNote": "Internal note: {note}",
+  "@tsTlInternalNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlActionApplied": "{action} applied by {admin}",
+  "@tsTlActionApplied": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlActionReversed": "{action} reversed by {admin}",
+  "@tsTlActionReversed": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsThisReport": "This report",
+  "tsHistPerformedBy": "By {admin} on {date}",
+  "@tsHistPerformedBy": {
+    "placeholders": {
+      "admin": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsStartsOn": "Starts {date}",
+  "@tsStartsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsExpiresOn": "Expires {date}",
+  "@tsExpiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsNoExpiryPermanent": "Permanent, no expiry",
+  "tsNoExpiryOpen": "No end date, active until lifted",
+  "tsReasonShownToUser": "REASON (SHOWN TO THE USER)",
+  "tsInternalNoteLabel": "Internal note (admin only)",
+  "tsHistReversedBy": "Reversed by {admin} on {date}",
+  "@tsHistReversedBy": {
+    "placeholders": {
+      "admin": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsReverse": "Reverse",
+  "tsAdminUnknown": "Unknown admin",
+  "tsReviewTitle": "Mark report as reviewed",
+  "tsReviewMessage": "Confirm that you have reviewed this report. You can add an internal note.",
+  "tsReviewConfirm": "Mark reviewed",
+  "tsDismissTitle": "Dismiss report",
+  "tsDismissMessage": "Dismiss this report if it does not break the rules. No action is taken against the reported user.",
+  "tsDismissConfirm": "Dismiss report",
+  "tsResolveReporterNote": "The reporter receives a generic outcome notification. The reported user is not notified.",
+  "tsReportUpdated": "Report updated",
+  "tsTakeActionTitle": "Take moderation action",
+  "tsRegardingReport": "Regarding report #{id}",
+  "@tsRegardingReport": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsChooseAction": "Choose an action",
+  "tsChooseActionError": "Select an action to continue.",
+  "tsAlreadyActive": "Already active for this user.",
+  "tsAlreadyPermanentlySuspended": "This user is already permanently suspended.",
+  "tsDurationTitle": "Duration",
+  "tsDurationUntilLifted": "Until lifted",
+  "tsDurationPermanent": "Permanent",
+  "tsDurationDays": "{n} days",
+  "@tsDurationDays": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "tsDurationCustom": "Custom date",
+  "tsEndsAt": "Ends {when}",
+  "@tsEndsAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "tsUntilDate": "Until {date}",
+  "@tsUntilDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsExpiryRequired": "Choose when this ends.",
+  "tsExpiryMustBeFuture": "The end time must be in the future.",
+  "tsReasonLabel": "Reason",
+  "tsReasonHint": "Explain why this action is being taken",
+  "tsReasonUserVisibleNote": "Shown to the user in their notification. Do not mention the reporter or other users.",
+  "tsReasonTooShort": "Please enter a reason of at least {min} characters.",
+  "@tsReasonTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "tsInternalNoteHint": "Optional context for other admins",
+  "tsInternalNoteNote": "Internal only. Never shown to the user.",
+  "tsMarkReportTaken": "Mark this report as Action taken",
+  "tsMarkReportTakenHint": "The reporter receives a generic outcome notification only.",
+  "tsApplyAction": "Apply action",
+  "tsConfirmTitle": "Apply {action}?",
+  "@tsConfirmTitle": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "tsConfirmBody": "This is recorded in the moderation history of {user} and the user is notified.",
+  "@tsConfirmBody": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "tsConfirmPermanentAck": "I understand this suspension has no expiry and can only be reversed by an admin.",
+  "tsFieldUser": "User",
+  "tsFieldAction": "Action",
+  "tsFieldDuration": "Duration",
+  "tsFieldReason": "Reason",
+  "tsActionApplied": "Moderation action applied",
+  "tsActionAppliedReportFailed": "The action was applied, but the report status could not be updated.",
+  "tsCannotActOnAdmin": "Moderation actions cannot target admin accounts.",
+  "tsFieldPerformedBy": "Performed by",
+  "tsFieldCreated": "Created",
+  "tsFieldExpires": "Expires",
+  "tsFieldReport": "Report",
+  "tsFieldDecidedBy": "Decided by",
+  "tsFieldDecidedOn": "Decided on",
+  "tsReverseTitle": "Reverse moderation action",
+  "tsReverseMessage": "Reverse the {action}? It is lifted and the record stays in the history.",
+  "@tsReverseMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "tsReversalReasonLabel": "Reason for reversal",
+  "tsReversalReasonHint": "Why is this action being lifted?",
+  "tsReverseConfirm": "Reverse action",
+  "tsReverseAuditNote": "Your reason is internal. It is recorded in the moderation history and never shown to the user.",
+  "tsReverseNotifyNote": "The user is notified that this action was lifted.",
+  "tsReverseLegacyNote": "This action came from the legacy ban flow. Reversing it also re-enables the account.",
+  "tsActionReversed": "Moderation action reversed",
+  "tsAppealsTitle": "Appeals",
+  "tsPendingAppeals": "{count} pending appeals",
+  "@tsPendingAppeals": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSearchAppealsHint": "Search by user, email or appeal text",
+  "tsNoAppeals": "No appeals here",
+  "tsNoAppealsHint": "Appeals against moderation actions will appear here.",
+  "tsSelectAppeal": "Select an appeal",
+  "tsSelectAppealHint": "Choose an appeal from the list to review it.",
+  "tsAppealNumber": "Appeal #{id}",
+  "@tsAppealNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSecAppealReason": "Appeal",
+  "tsSecAppealedAction": "Appealed action",
+  "tsSecDecision": "Decision",
+  "tsAppealApprove": "Approve",
+  "tsAppealReject": "Reject",
+  "tsApproveTitle": "Approve appeal",
+  "tsApproveMessage": "Approving this appeal lifts the moderation action.",
+  "tsApproveConfirm": "Approve appeal",
+  "tsRejectTitle": "Reject appeal",
+  "tsRejectMessage": "Rejecting keeps the moderation action in place.",
+  "tsRejectConfirm": "Reject appeal",
+  "tsDecisionNoteLabel": "Decision note",
+  "tsDecisionNoteHint": "Explain your decision",
+  "tsDecisionNoteNote": "Internal only. Never shown to the user.",
+  "tsAppealApproveNote": "The action is reversed and the user is notified.",
+  "tsAppealApproveInactive": "This action is no longer in effect, so approving only closes the appeal. The user is notified.",
+  "tsAppealRejectNote": "The action stays in place and the user is notified of the outcome.",
+  "tsAppealApprovedSnack": "Appeal approved",
+  "tsAppealRejectedSnack": "Appeal rejected",
+  "tsNoDecisionNote": "No note was recorded.",
+  "tsEvidenceLinkOptional": "Evidence link (optional)",
+  "tsInvalidHttpUrl": "Enter a valid http or https URL.",
+  "myTsMyReportsTitle": "My Reports",
+  "myTsMyReportsActionSubtitle": "Reports you've submitted",
+  "myTsReportsEmptyTitle": "No reports yet",
+  "myTsReportsEmptyMessage": "Reports you submit about other users will appear here.",
+  "myTsReportsLoadError": "Couldn't load your reports. Pull down to try again.",
+  "myTsCategoryLabel": "Category",
+  "myTsSubmittedLabel": "Submitted",
+  "myTsStatusLabel": "Status",
+  "myTsOutcomeLabel": "Outcome",
+  "myTsYourDescriptionLabel": "Your description",
+  "myTsOutcomePending": "Our team hasn't reviewed this yet.",
+  "myTsOutcomeReviewedNoAction": "Reviewed — no further action was needed.",
+  "myTsOutcomeActionTaken": "Reviewed — action was taken based on your report.",
+  "myTsOutcomeDismissed": "Reviewed — no violation was found.",
+  "myTsAccountStatusTitle": "Account Status",
+  "myTsAccountStatusActionSubtitle": "Warnings, restrictions & suspensions",
+  "myTsGoodStandingTitle": "No active restrictions",
+  "myTsGoodStandingMessage": "Your account is in good standing.",
+  "myTsStatusLoadError": "Couldn't load your account status. Pull down to try again.",
+  "myTsStartTimeLabel": "Start time",
+  "myTsExpirationTimeLabel": "Expiration time",
+  "myTsAffectedFeatureLabel": "Affected feature",
+  "myTsFeatureMessaging": "Messaging",
+  "myTsFeatureBooking": "Bookings",
+  "myTsWarningInfoNote": "This is a warning only. It doesn't restrict your account, but repeated violations may lead to further action.",
+  "myTsAppealAvailableNote": "You can appeal this decision.",
+  "myTsAppealButtonLabel": "Appeal this decision",
+  "myTsAppealPendingNote": "Your appeal is pending review.",
+  "myTsMyAppealsTitle": "My Appeals",
+  "myTsMyAppealsEmpty": "You haven't submitted any appeals.",
+  "myTsAppealsLoadError": "Couldn't load your appeals. Pull down to try again.",
+  "myTsAppealDecidedNote": "This appeal has been decided.",
+  "myTsSubmitAppealTitle": "Appeal this decision",
+  "myTsAppealReasonLabel": "Why should this be reviewed?",
+  "myTsAppealReasonHint": "Explain why you believe this decision should be reconsidered",
+  "myTsAppealReasonRequired": "Please explain why this should be reviewed.",
+  "myTsAppealSubmitCta": "Submit appeal",
+  "myTsAppealSubmitSuccess": "Your appeal has been submitted.",
+  "myTsAppealSubmitError": "Couldn't submit your appeal. Try again.",
+  "myTsAppealAlreadyPending": "You already have a pending appeal for this.",
+  "myTsAppealNotEligible": "This action can no longer be appealed.",
+  "myTsAppealForLabel": "Appeal for {action}",
+  "@myTsAppealForLabel": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -17,6 +17,8 @@ import '../../subscription/widgets/promo_banner_mixin.dart';
 import '../../subscription/screens/subscription_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/cta_banner.dart';
+import '../../../shared/widgets/announcement_banner.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalHomeScreen extends StatefulWidget {
   final bool isVisible;
@@ -154,7 +156,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _error = 'Could not load dashboard. Pull down to retry.';
+        _error = AppLocalizations.of(context)!.dashboardLoadError;
       });
     }
   }
@@ -220,7 +222,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading your dashboard...',
+                    AppLocalizations.of(context)!.loadingDashboard,
                     style: TextStyle(
                       fontSize: 14,
                       color: context.colors.textSecondary,
@@ -235,6 +237,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               color: AppColors.professionalColor,
               child: CustomScrollView(
                 slivers: [
+                  const SliverToBoxAdapter(child: AnnouncementBanner(audience: 'professional')),
                   SliverToBoxAdapter(child: _buildHeader(isDark)),
                   SliverToBoxAdapter(child: _buildSearchBar(isDark)),
                   if (isSearchMode)
@@ -265,15 +268,13 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   // ── Header ─────────────────────────────────────────────
   Widget _buildHeader(bool isDark) {
     final header = _dashboard?['header'] as Map<String, dynamic>? ?? {};
-    final fullName = (header['name'] ?? 'Professional').toString();
+    final fullName = (header['name'] ?? AppLocalizations.of(context)!.professionalDefaultName).toString();
     final name = fullName.split(' ').first;
     final isVerified = header['is_verified'] ?? false;
     final photo = header['photo_url'];
     final unreadCount = (_dashboard?['unread_notifications'] ?? 0) as int;
     final category = (header['category_name'] ?? _proProfile['category_name'] ?? '').toString();
 
-    // Real KPI numbers — same data already loaded for the rest of the
-    // dashboard, just surfaced here too. No placeholder/fake values.
     final stats = _dashboard?['stats'] as Map<String, dynamic>? ?? {};
     final rating = _dashboard?['rating'] as Map<String, dynamic>? ?? {};
     final earnings = _dashboard?['earnings'] as Map<String, dynamic>? ?? {};
@@ -425,7 +426,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                               child: Text(
                                 category.isNotEmpty
                                     ? category
-                                    : 'Verified Professional',
+                                    : AppLocalizations.of(context)!.verifiedProfessionalLabel,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 13,
@@ -510,7 +511,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   child: _headerStat(
                     Icons.calendar_month_rounded,
                     '$totalBookings',
-                    'Total Bookings',
+                    AppLocalizations.of(context)!.totalBookingsLabel,
                   ),
                 ),
                 _headerStatDivider(),
@@ -518,7 +519,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   child: _headerStat(
                     Icons.star_rounded,
                     avgRating > 0 ? avgRating.toStringAsFixed(1) : '—',
-                    'Rating',
+                    AppLocalizations.of(context)!.ratingLabel,
                   ),
                 ),
                 _headerStatDivider(),
@@ -526,7 +527,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   child: _headerStat(
                     Icons.people_alt_rounded,
                     _formatCompactNumber(clientsCount),
-                    'Clients',
+                    AppLocalizations.of(context)!.clientsLabel,
                   ),
                 ),
                 _headerStatDivider(),
@@ -534,7 +535,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   child: _headerStat(
                     Icons.account_balance_wallet_rounded,
                     '\$${_formatMoney(totalEarnings)}',
-                    'Earnings',
+                    AppLocalizations.of(context)!.earningsLabel,
                   ),
                 ),
               ],
@@ -612,20 +613,20 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     final hour = DateTime.now().hour;
     String time;
     if (hour < 12) {
-      time = 'Good Morning';
+      time = AppLocalizations.of(context)!.goodMorning;
     } else if (hour < 17) {
-      time = 'Good Afternoon';
+      time = AppLocalizations.of(context)!.goodAfternoon;
     } else {
-      time = 'Good Evening';
+      time = AppLocalizations.of(context)!.goodEvening;
     }
     return '$time, $name';
   }
 
   String _greetingOnly() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good Morning,';
-    if (hour < 17) return 'Good Afternoon,';
-    return 'Good Evening,';
+    if (hour < 12) return AppLocalizations.of(context)!.goodMorningComma;
+    if (hour < 17) return AppLocalizations.of(context)!.goodAfternoonComma;
+    return AppLocalizations.of(context)!.goodEveningComma;
   }
 
   IconData _categoryIcon(String profession) {
@@ -714,7 +715,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   fontWeight: FontWeight.w400,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Search bookings by client name...',
+                  hintText: AppLocalizations.of(context)!.searchBookingsHint,
                   hintStyle: TextStyle(
                     fontSize: 14,
                     color: context.colors.textSecondary.withOpacity(0.5),
@@ -774,8 +775,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         children: [
           Text(
             _isSearching
-                ? 'Searching...'
-                : '${_searchResults.length} result${_searchResults.length == 1 ? '' : 's'} for "${_searchController.text}"',
+                ? AppLocalizations.of(context)!.searchingLabel
+                : AppLocalizations.of(context)!.searchResultsLabel(_searchResults.length, _searchController.text),
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -807,7 +808,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'No clients found',
+                    AppLocalizations.of(context)!.noClientsFound,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -816,7 +817,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Try adjusting your search terms',
+                    AppLocalizations.of(context)!.adjustSearchTerms,
                     style: TextStyle(
                       fontSize: 12,
                       color: context.colors.textSecondary.withOpacity(0.6),
@@ -844,9 +845,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
 
     return CtaBanner(
       isDark: isDark,
-      title: 'You\'re on the $planName plan',
-      subtitle: 'Upgrade for more bookings & priority ranking',
-      ctaLabel: 'Upgrade',
+      title: AppLocalizations.of(context)!.planUpgradeTitle(planName),
+      subtitle: AppLocalizations.of(context)!.planUpgradeSubtitle,
+      ctaLabel: AppLocalizations.of(context)!.upgradeCta,
       icon: Icons.workspace_premium_rounded,
       accentStart: const Color(0xFF9F7AEA),
       accentEnd: AppColors.professionalColor,
@@ -895,7 +896,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Profile Completion',
+                  AppLocalizations.of(context)!.profileCompletionLabel,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -927,7 +928,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             ),
             const SizedBox(height: 6),
             Text(
-              'Complete your profile to get more bookings',
+              AppLocalizations.of(context)!.profileCompletionHint,
               style: TextStyle(
                 fontSize: 11,
                 color: context.colors.textSecondary.withOpacity(0.7),
@@ -1011,8 +1012,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           Expanded(
             child: Text(
               portCount == 0
-                  ? 'Add portfolio items to get verified by admin.'
-                  : 'Portfolio submitted. Waiting for admin approval.',
+                  ? AppLocalizations.of(context)!.verificationAddPortfolio
+                  : AppLocalizations.of(context)!.verificationPending,
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? const Color(0xFFFCD34D) : const Color(0xFF92400E),
@@ -1032,7 +1033,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: Text(
-                'Add',
+                AppLocalizations.of(context)!.addCta,
                 style: TextStyle(
                   fontSize: 12,
                   color: const Color(0xFFF59E0B),
@@ -1053,7 +1054,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Quick Actions',
+            AppLocalizations.of(context)!.quickActionsLabel,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -1066,7 +1067,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             children: [
               _actionCard(
                 icon: Icons.calendar_today_outlined,
-                label: 'Bookings',
+                label: AppLocalizations.of(context)!.bookingsLabel,
                 color: const Color(0xFF3B82F6),
                 onTap: () => ProfessionalMainScreen.switchTab(1),
                 isDark: isDark,
@@ -1074,7 +1075,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               const SizedBox(width: 10),
               _actionCard(
                 icon: Icons.photo_library_outlined,
-                label: 'Portfolio',
+                label: AppLocalizations.of(context)!.portfolioLabel,
                 color: AppColors.professionalColor,
                 onTap: () => Navigator.push(
                   context,
@@ -1085,7 +1086,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               const SizedBox(width: 10),
               _actionCard(
                 icon: Icons.person_outline_rounded,
-                label: 'Profile',
+                label: AppLocalizations.of(context)!.profileLabel,
                 color: const Color(0xFF059669),
                 onTap: () => ProfessionalMainScreen.switchTab(5),
                 isDark: isDark,
@@ -1093,7 +1094,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               const SizedBox(width: 10),
               _actionCard(
                 icon: Icons.account_balance_wallet_outlined,
-                label: 'Wallet',
+                label: AppLocalizations.of(context)!.walletLabel,
                 color: const Color(0xFFF59E0B),
                 onTap: () => Navigator.push(
                   context,
@@ -1195,7 +1196,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Earnings',
+                AppLocalizations.of(context)!.earningsLabel,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -1209,7 +1210,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   MaterialPageRoute(builder: (_) => const ProfessionalWalletScreen()),
                 ),
                 child: Text(
-                  'View Wallet',
+                  AppLocalizations.of(context)!.viewWalletLabel,
                   style: TextStyle(
                     fontSize: 13,
                     color: AppColors.professionalColor,
@@ -1225,16 +1226,16 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             children: [
               Expanded(
                 flex: 3,
-                child: _earningsHeroCard('Today\'s Earnings', today, isDark),
+                child: _earningsHeroCard(AppLocalizations.of(context)!.todaysEarningsLabel, today, isDark),
               ),
             ],
           ),
           const SizedBox(height: 10),
           Row(
             children: [
-              Expanded(child: _earningsMiniCard('This Month', month, Icons.calendar_view_month_rounded, isDark)),
+              Expanded(child: _earningsMiniCard(AppLocalizations.of(context)!.thisMonthLabel, month, Icons.calendar_view_month_rounded, isDark)),
               const SizedBox(width: 10),
-              Expanded(child: _earningsMiniCard('Total Earned', total, Icons.savings_outlined, isDark)),
+              Expanded(child: _earningsMiniCard(AppLocalizations.of(context)!.totalEarnedLabel, total, Icons.savings_outlined, isDark)),
             ],
           ),
         ],
@@ -1377,7 +1378,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Performance',
+            AppLocalizations.of(context)!.performanceLabel,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -1394,10 +1395,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             crossAxisSpacing: 10,
             childAspectRatio: 2.4,
             children: [
-              _dashboardCard('Pending', '$pending', Icons.access_time_rounded, AppColors.warning, isDark),
-              _dashboardCard('Accepted', '$accepted', Icons.check_circle_outline_rounded, context.colors.primary, isDark),
-              _dashboardCard('Completed', '$completed', Icons.task_alt_rounded, context.colors.accent, isDark),
-              _dashboardCard('Rating', '${avgRating.toStringAsFixed(1)} ($totalRev)', Icons.star_rounded, const Color(0xFFF59E0B), isDark),
+              _dashboardCard(AppLocalizations.of(context)!.pendingLabel, '$pending', Icons.access_time_rounded, AppColors.warning, isDark),
+              _dashboardCard(AppLocalizations.of(context)!.acceptedLabel, '$accepted', Icons.check_circle_outline_rounded, context.colors.primary, isDark),
+              _dashboardCard(AppLocalizations.of(context)!.completedLabel, '$completed', Icons.task_alt_rounded, context.colors.accent, isDark),
+              _dashboardCard(AppLocalizations.of(context)!.ratingLabel, '${avgRating.toStringAsFixed(1)} ($totalRev)', Icons.star_rounded, const Color(0xFFF59E0B), isDark),
             ],
           ),
         ],
@@ -1507,7 +1508,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Skills & Pricing',
+                AppLocalizations.of(context)!.skillsPricingLabel,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -1518,7 +1519,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               GestureDetector(
                 onTap: () => ProfessionalMainScreen.switchTab(5),
                 child: Text(
-                  'Edit',
+                  AppLocalizations.of(context)!.editLabel,
                   style: TextStyle(
                     fontSize: 13,
                     color: AppColors.professionalColor,
@@ -1556,7 +1557,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               Row(
                 children: [
                   Text(
-                    isAvailable ? 'Available' : 'Unavailable',
+                    isAvailable ? AppLocalizations.of(context)!.availableLabel : AppLocalizations.of(context)!.unavailableLabel,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -1601,7 +1602,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           const SizedBox(height: 12),
           if (skills.isEmpty)
             Text(
-              'No skills added yet',
+              AppLocalizations.of(context)!.noSkillsAdded,
               style: TextStyle(
                 fontSize: 12,
                 color: context.colors.textSecondary.withOpacity(0.6),
@@ -1653,12 +1654,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       if (!mounted) return;
       AppHelpers.showSuccess(
         context,
-        value ? 'You are now available for bookings' : 'You are now marked unavailable',
+        value ? AppLocalizations.of(context)!.availabilityOnSuccess : AppLocalizations.of(context)!.availabilityOffSuccess,
       );
     } catch (e) {
       if (!mounted) return;
       setState(() => _proProfile = {..._proProfile, 'is_available': previous});
-      AppHelpers.showError(context, 'Could not update availability');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.availabilityUpdateError);
     } finally {
       if (mounted) setState(() => _isTogglingAvailability = false);
     }
@@ -1689,7 +1690,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Today's Schedule",
+            AppLocalizations.of(context)!.todaysScheduleLabel,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -1712,7 +1713,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 ),
               ),
               child: Text(
-                'No bookings scheduled for today',
+                AppLocalizations.of(context)!.noBookingsToday,
                 style: TextStyle(
                   fontSize: 13,
                   color: context.colors.textSecondary.withOpacity(0.6),
@@ -1728,7 +1729,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildScheduleTile(dynamic booking, bool isDark) {
-    final customerName = booking['customer_name']?.toString() ?? 'Customer';
+    final customerName = booking['customer_name']?.toString() ?? AppLocalizations.of(context)!.customerDefault;
     final time = booking['time']?.toString() ?? '';
     final status = booking['status']?.toString() ?? 'pending';
     final statusColor = status == 'accepted'
@@ -1798,7 +1799,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
-              status.isEmpty ? status : status[0].toUpperCase() + status.substring(1),
+              status.isEmpty ? status : AppHelpers.capitalize(status),
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
@@ -1870,8 +1871,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           ),
           const SizedBox(height: 8),
           Row(
-            children: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-                .map((d) => Expanded(
+            children: AppLocalizations.of(context)!.calendarWeekDays.split('').map((d) => Expanded(
                       child: Center(
                         child: Text(
                           d,
@@ -1883,8 +1883,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                           ),
                         ),
                       ),
-                    ))
-                .toList(),
+                    )).toList(),
           ),
           const SizedBox(height: 4),
           ...List.generate(((daysInMonth + startWeekday) / 7).ceil(), (week) {
@@ -1974,7 +1973,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'My Portfolio',
+                AppLocalizations.of(context)!.myPortfolioLabel,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -1988,7 +1987,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   MaterialPageRoute(builder: (_) => const ProfessionalPortfolioScreen()),
                 ),
                 child: Text(
-                  'Manage',
+                  AppLocalizations.of(context)!.manageLabel,
                   style: TextStyle(
                     fontSize: 13,
                     color: AppColors.professionalColor,
@@ -2041,7 +2040,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Add your work samples',
+                            AppLocalizations.of(context)!.addWorkSamplesLabel,
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -2051,7 +2050,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Get verified by adding portfolio',
+                            AppLocalizations.of(context)!.addPortfolioHint,
                             style: TextStyle(
                               fontSize: 11,
                               color: context.colors.textSecondary.withOpacity(0.6),
@@ -2108,7 +2107,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Add',
+                              AppLocalizations.of(context)!.addCta,
                               style: TextStyle(
                                 fontSize: 10,
                                 color: AppColors.professionalColor,
@@ -2199,7 +2198,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Recent Messages',
+                AppLocalizations.of(context)!.recentMessagesLabel,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -2210,7 +2209,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               GestureDetector(
                 onTap: () => ProfessionalMainScreen.switchTab(2),
                 child: Text(
-                  'See all',
+                  AppLocalizations.of(context)!.seeAllLabel,
                   style: TextStyle(
                     fontSize: 13,
                     color: AppColors.professionalColor,
@@ -2236,7 +2235,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 ),
               ),
               child: Text(
-                'No messages yet',
+                AppLocalizations.of(context)!.noMessagesYet,
                 style: TextStyle(
                   fontSize: 13,
                   color: context.colors.textSecondary.withOpacity(0.6),
@@ -2252,7 +2251,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildMessagePreviewTile(dynamic conv, bool isDark) {
-    final name = conv['other_user_name']?.toString() ?? 'Customer';
+    final name = conv['other_user_name']?.toString() ?? AppLocalizations.of(context)!.customerDefault;
     final lastMessage = conv['last_message']?.toString() ?? '';
     final unread = (conv['unread_count'] ?? 0) as int;
     final photo = conv['other_user_photo']?.toString();
@@ -2335,7 +2334,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        lastMessage.isEmpty ? 'No messages yet' : lastMessage,
+                        lastMessage.isEmpty ? AppLocalizations.of(context)!.noMessagesPlaceholder : lastMessage,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -2386,7 +2385,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Recent Reviews',
+                AppLocalizations.of(context)!.recentReviewsLabel,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -2400,7 +2399,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   MaterialPageRoute(builder: (_) => const ProfessionalReviewsScreen()),
                 ),
                 child: Text(
-                  'See all',
+                  AppLocalizations.of(context)!.seeAllLabel,
                   style: TextStyle(
                     fontSize: 13,
                     color: AppColors.professionalColor,
@@ -2426,7 +2425,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 ),
               ),
               child: Text(
-                'No reviews yet',
+                AppLocalizations.of(context)!.noReviewsYet,
                 style: TextStyle(
                   fontSize: 13,
                   color: context.colors.textSecondary.withOpacity(0.6),
@@ -2442,7 +2441,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildReviewTile(dynamic r, bool isDark) {
-    final customerName = r['reviewer_name'] ?? r['customer_name'] ?? 'Customer';
+    final customerName = r['reviewer_name'] ?? r['customer_name'] ?? AppLocalizations.of(context)!.customerDefault;
     final rating = (r['rating'] ?? 0).toDouble();
     final comment = r['comment']?.toString() ?? r['review']?.toString() ?? '';
 
@@ -2538,7 +2537,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Recent Bookings',
+                AppLocalizations.of(context)!.recentBookingsLabel,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -2549,7 +2548,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               GestureDetector(
                 onTap: () => ProfessionalMainScreen.switchTab(1),
                 child: Text(
-                  'See all',
+                  AppLocalizations.of(context)!.seeAllLabel,
                   style: TextStyle(
                     fontSize: 13,
                     color: AppColors.professionalColor,
@@ -2575,7 +2574,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 ),
               ),
               child: Text(
-                'No bookings yet',
+                AppLocalizations.of(context)!.noBookingsYet,
                 style: TextStyle(
                   fontSize: 13,
                   color: context.colors.textSecondary.withOpacity(0.6),
@@ -2591,7 +2590,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildBookingTile(dynamic b, bool isDark) {
-    final customerName = b['customer_name'] ?? 'Customer';
+    final customerName = b['customer_name'] ?? AppLocalizations.of(context)!.customerDefault;
     final status = b['status']?.toString() ?? 'pending';
     final date = b['date']?.toString() ?? '';
     final time = b['time']?.toString() ?? '';
@@ -2708,8 +2707,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     final isPending = status.toLowerCase() == 'pending';
     final isAccepted = status.toLowerCase() == 'accepted';
     final isCancellable = isPending || isAccepted;
-    final customerName = b['customer_name'] ?? 'Customer';
-    final date = b['date']?.toString() ?? 'Not set';
+    final customerName = b['customer_name'] ?? AppLocalizations.of(context)!.customerDefault;
+    final date = b['date']?.toString() ?? AppLocalizations.of(context)!.dateNotSet;
     final time = b['time']?.toString() ?? '';
     final note = b['note']?.toString() ?? '';
     final bookingId = b['id'];
@@ -2744,7 +2743,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'Booking Details',
+              AppLocalizations.of(context)!.bookingDetailsTitle,
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
@@ -2753,10 +2752,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               ),
             ),
             const SizedBox(height: 16),
-            _detailRow(Icons.person_outline_rounded, 'Customer', customerName.toString(), isDark),
-            _detailRow(Icons.calendar_today_outlined, 'Date', date, isDark),
-            if (time.isNotEmpty) _detailRow(Icons.access_time_rounded, 'Time', time, isDark),
-            if (note.isNotEmpty) _detailRow(Icons.notes_rounded, 'Notes', note, isDark),
+            _detailRow(Icons.person_outline_rounded, AppLocalizations.of(context)!.customerLabel, customerName.toString(), isDark),
+            _detailRow(Icons.calendar_today_outlined, AppLocalizations.of(context)!.dateLabel, date, isDark),
+            if (time.isNotEmpty) _detailRow(Icons.access_time_rounded, AppLocalizations.of(context)!.timeLabel, time, isDark),
+            if (note.isNotEmpty) _detailRow(Icons.notes_rounded, AppLocalizations.of(context)!.notesLabel, note, isDark),
             const SizedBox(height: 16),
             if (isPending) ...[
               Row(
@@ -2768,7 +2767,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                         _updateBookingStatus(bookingId, 'rejected');
                       },
                       icon: const Icon(Icons.close_rounded, size: 16),
-                      label: const Text('Reject'),
+                      label: Text(AppLocalizations.of(context)!.rejectCta),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
                         side: BorderSide(color: AppColors.error.withOpacity(0.3)),
@@ -2786,7 +2785,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                         _updateBookingStatus(bookingId, 'accepted');
                       },
                       icon: const Icon(Icons.check_rounded, size: 16),
-                      label: const Text('Accept'),
+                      label: Text(AppLocalizations.of(context)!.acceptCta),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.colors.accent,
                         foregroundColor: Colors.white,
@@ -2808,7 +2807,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     _updateBookingStatus(bookingId, 'completed');
                   },
                   icon: const Icon(Icons.done_all_rounded, size: 16),
-                  label: const Text('Mark as Completed'),
+                  label: Text(AppLocalizations.of(context)!.markCompletedCta),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.colors.primary,
                     foregroundColor: Colors.white,
@@ -2830,7 +2829,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     _updateBookingStatus(bookingId, 'cancelled');
                   },
                   icon: const Icon(Icons.cancel_outlined, size: 16),
-                  label: const Text('Cancel Booking'),
+                  label: Text(AppLocalizations.of(context)!.cancelBookingCta),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.error,
                     side: BorderSide(color: AppColors.error.withOpacity(0.3)),
@@ -2846,7 +2845,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(sheetContext),
-                  child: const Text('Close'),
+                  child: Text(AppLocalizations.of(context)!.closeCta),
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -2900,12 +2899,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     try {
       await _api.patch('${AppConstants.professionalBookings}$bookingId/', {'status': newStatus});
       if (!mounted) return;
-      AppHelpers.showInfo(context, 'Booking updated to "$newStatus"');
+      AppHelpers.showInfo(context, AppLocalizations.of(context)!.bookingUpdatedToast(newStatus));
       await _loadData();
       if (_searchQuery.isNotEmpty) _onSearchChanged(_searchQuery);
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showInfo(context, 'Could not update booking. Please try again.');
+      AppHelpers.showInfo(context, AppLocalizations.of(context)!.bookingUpdateError);
     }
   }
 }

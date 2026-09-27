@@ -58,6 +58,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/app_helpers.dart';
 import '../../core/theme/theme_context_ext.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class ProfessionalCard extends StatelessWidget {
   const ProfessionalCard({
@@ -179,7 +180,7 @@ class ProfessionalCard extends StatelessWidget {
     final clampedTextScaler = MediaQuery.textScalerOf(context).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.25);
 
     final id           = pro['id']?.toString() ?? pro['user_id']?.toString() ?? '';
-    final name         = pro['name']?.toString() ?? 'Professional';
+    final name         = pro['name']?.toString() ?? AppLocalizations.of(context)!.professionalDefaultName;
     final profession   = pro['category_name']?.toString().trim().isNotEmpty == true
         ? pro['category_name'].toString()
         : (pro['specialization']?.toString() ?? '');
@@ -193,7 +194,7 @@ class ProfessionalCard extends StatelessWidget {
     final isVerified   = pro['is_verified'] == true; // admin-controlled — never inferred client-side
     final isPremium    = pro['is_premium'] == true;
 
-    final badgeText  = sectionTag ?? (isPremium ? 'PRO' : null);
+    final badgeText  = sectionTag ?? (isPremium ? AppLocalizations.of(context)!.proBadgeLabel : null);
     final badgeIcon  = sectionTag != null ? sectionTagIcon : (isPremium ? Icons.workspace_premium_rounded : null);
     final badgeColor = sectionTag != null ? (sectionTagColor ?? context.colors.primary) : const Color(0xFF7C3AED);
 
@@ -271,7 +272,7 @@ class ProfessionalCard extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  profession.isNotEmpty ? profession : 'Service Professional',
+                                  profession.isNotEmpty ? profession : AppLocalizations.of(context)!.serviceProfessionalLabel,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -313,9 +314,15 @@ class ProfessionalCard extends StatelessWidget {
                       //    large green premium-accent price. This is
                       //    meant to be one of the first things the eye
                       //    lands on, per the redesign brief.
-                      Text('STARTING FROM',
-                          style: TextStyle(fontSize: _sp(9.5, scale, min: 8.5, max: 11), fontWeight: FontWeight.w700,
-                              color: context.colors.textSecondary, letterSpacing: 0.8)),
+                      Text(
+                        AppLocalizations.of(context)!.startingFromLabel,
+                        style: TextStyle(
+                          fontSize: _sp(9.5, scale, min: 8.5, max: 11),
+                          fontWeight: FontWeight.w700,
+                          color: context.colors.textSecondary,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
                       SizedBox(height: _sp(2, scale, min: 1.5, max: 3)),
                       RichText(
                         maxLines: 1,
@@ -323,11 +330,21 @@ class ProfessionalCard extends StatelessWidget {
                         text: TextSpan(children: [
                           TextSpan(
                             text: '\$${price.toStringAsFixed(0)}',
-                            style: TextStyle(fontSize: _sp(23, scale, min: 20, max: 26), fontWeight: FontWeight.w800, color: context.colors.accent, letterSpacing: 0.2),
+                            style: TextStyle(
+                              fontSize: _sp(23, scale, min: 20, max: 26),
+                              fontWeight: FontWeight.w800,
+                              color: context.colors.accent,
+                              letterSpacing: 0.2,
+                            ),
                           ),
                           TextSpan(
-                            text: ' /hr',
-                            style: TextStyle(fontSize: _sp(12, scale, min: 10.5, max: 13.5), fontWeight: FontWeight.w600, color: context.colors.textSecondary, letterSpacing: 0.2),
+                            text: AppLocalizations.of(context)!.perHourLabel,
+                            style: TextStyle(
+                              fontSize: _sp(12, scale, min: 10.5, max: 13.5),
+                              fontWeight: FontWeight.w600,
+                              color: context.colors.textSecondary,
+                              letterSpacing: 0.2,
+                            ),
                           ),
                         ]),
                       ),
@@ -350,6 +367,8 @@ class ProfessionalCard extends StatelessWidget {
   // ── 1–3. Photo + Verified badge + Section badge + favourite ──────────
   Widget _buildPhoto(BuildContext context, String name, String photo, bool isVerified, String? badgeText, IconData? badgeIcon, Color badgeColor,
       double photoHeight, double scale, int memCacheW, int memCacheH) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(_cardRadius)),
       child: SizedBox(
@@ -376,7 +395,12 @@ class ProfessionalCard extends StatelessWidget {
             if (isVerified)
               Positioned(
                 left: _sp(9, scale, min: 7, max: 11), top: _sp(9, scale, min: 7, max: 11),
-                child: _pill(color: context.colors.accent, icon: Icons.verified_rounded, text: 'Verified', scale: scale),
+                child: _pill(
+                  color: context.colors.accent,
+                  icon: Icons.verified_rounded,
+                  text: AppLocalizations.of(context)!.verifiedLabel,
+                  scale: scale,
+                ),
               ),
             // 3. Section status badge — top-left, stacked below Verified
             //    when both are present, so neither is ever hidden behind
@@ -399,9 +423,17 @@ class ProfessionalCard extends StatelessWidget {
                     child: Container(
                       width: _sp(31, scale, min: 27, max: 35), height: _sp(31, scale, min: 27, max: 35),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : Colors.white,
                         shape: BoxShape.circle,
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.18), blurRadius: 8, offset: const Offset(0, 2))],
+                        boxShadow: [BoxShadow(
+                          color: isDark
+                              ? Colors.black.withOpacity(0.3)
+                              : Colors.black.withOpacity(0.18),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        )],
                       ),
                       child: Center(
                         child: AnimatedSwitcher(
@@ -447,23 +479,41 @@ class ProfessionalCard extends StatelessWidget {
 
   // ── 6. Rating + review count + experience ─────────────────────────────
   Widget _buildRatingRow(BuildContext context, double rating, dynamic reviews, dynamic experience, double scale) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(children: [
       Container(
         padding: EdgeInsets.symmetric(horizontal: _sp(7, scale, min: 6, max: 8.5), vertical: _sp(3, scale, min: 2.5, max: 4)),
-        decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(6)),
+        decoration: BoxDecoration(
+          color: isDark
+              ? const Color(0xFFF59E0B).withOpacity(0.15)
+              : const Color(0xFFFEF3C7),
+          borderRadius: BorderRadius.circular(6),
+        ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.star_rounded, color: const Color(0xFFF59E0B), size: _sp(14.5, scale, min: 13, max: 16.5)),
           SizedBox(width: _sp(2, scale, min: 1.5, max: 3)),
           Text(rating.toStringAsFixed(1),
-              style: TextStyle(fontSize: _sp(12, scale, min: 10.5, max: 14), fontWeight: FontWeight.w700, color: const Color(0xFF92400E), letterSpacing: 0.2)),
+              style: TextStyle(
+                fontSize: _sp(12, scale, min: 10.5, max: 14),
+                fontWeight: FontWeight.w700,
+                color: isDark
+                    ? const Color(0xFFFCD34D)
+                    : const Color(0xFF92400E),
+                letterSpacing: 0.2,
+              )),
         ]),
       ),
       if (reviews != null) ...[
         SizedBox(width: _sp(6, scale, min: 5, max: 8)),
         Flexible(
-          child: Text('($reviews)',
+          child: Text(AppLocalizations.of(context)!.reviewsCountLabel(reviews),
               maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: _sp(12, scale, min: 10.5, max: 14), color: context.colors.textSecondary, letterSpacing: 0.2)),
+              style: TextStyle(
+                fontSize: _sp(12, scale, min: 10.5, max: 14),
+                color: context.colors.textSecondary,
+                letterSpacing: 0.2,
+              )),
         ),
       ],
       if (experience != null) ...[
@@ -471,9 +521,13 @@ class ProfessionalCard extends StatelessWidget {
         Icon(Icons.work_outline_rounded, size: _sp(13, scale, min: 11.5, max: 15), color: context.colors.textSecondary),
         SizedBox(width: _sp(2, scale, min: 1.5, max: 3)),
         Flexible(
-          child: Text('${experience}y exp',
+          child: Text(AppLocalizations.of(context)!.experienceYearsLabel(experience),
               maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: _sp(12, scale, min: 10.5, max: 14), color: context.colors.textSecondary, letterSpacing: 0.2)),
+              style: TextStyle(
+                fontSize: _sp(12, scale, min: 10.5, max: 14),
+                color: context.colors.textSecondary,
+                letterSpacing: 0.2,
+              )),
         ),
       ],
     ]);
@@ -483,7 +537,7 @@ class ProfessionalCard extends StatelessWidget {
   Widget _buildLocationRow(BuildContext context, String city, dynamic distance, double scale) {
     final label = distance != null
         ? (city.isNotEmpty ? '$city  •  ${distance}km away' : '${distance}km away')
-        : (city.isNotEmpty ? city : 'Nearby');
+        : (city.isNotEmpty ? city : AppLocalizations.of(context)!.nearbyLabel);
     return Row(children: [
       Icon(Icons.location_on_outlined, size: _sp(14, scale, min: 12.5, max: 16), color: context.colors.textSecondary),
       SizedBox(width: _sp(4, scale, min: 3, max: 5)),
@@ -516,7 +570,7 @@ class ProfessionalCard extends StatelessWidget {
             minimumSize:  Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          child: Text('View Profile',
+          child: Text(AppLocalizations.of(context)!.viewProfileCta,
               maxLines: 1, overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: fSize, fontWeight: FontWeight.w700, letterSpacing: 0.2)),
         ),
@@ -543,7 +597,7 @@ class ProfessionalCard extends StatelessWidget {
               minimumSize:  Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: Text('Book Now',
+            child: Text(AppLocalizations.of(context)!.bookNowCta,
                 maxLines: 1, overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: fSize, fontWeight: FontWeight.w700, letterSpacing: 0.3)),
           ),
@@ -626,6 +680,7 @@ class _PressableCardState extends State<_PressableCard> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final borderRadius = BorderRadius.circular(widget.radius);
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
@@ -645,16 +700,24 @@ class _PressableCardState extends State<_PressableCard> {
             width:  widget.width,
             height: widget.height,
             decoration: BoxDecoration(
-              color:        context.colors.surface,
+              color: context.colors.surface,
               borderRadius: borderRadius,
-              border:       Border.all(color: _hovering ? context.colors.primary.withOpacity(0.35) : context.colors.divider),
+              border: Border.all(
+                color: _hovering
+                    ? context.colors.primary.withOpacity(0.35)
+                    : (isDark
+                        ? Colors.white.withOpacity(0.08)
+                        : context.colors.divider),
+              ),
               // Single soft shadow — enough to lift the card off the page
               // without the heavy double-shadow look.
               boxShadow: [
                 BoxShadow(
-                  color:      Colors.black.withOpacity(_hovering ? 0.10 : 0.07),
+                  color: isDark
+                      ? Colors.black.withOpacity(_hovering ? 0.3 : 0.2)
+                      : Colors.black.withOpacity(_hovering ? 0.10 : 0.07),
                   blurRadius: _hovering ? 16 : 12,
-                  offset:     Offset(0, _hovering ? 6 : 4),
+                  offset: Offset(0, _hovering ? 6 : 4),
                 ),
               ],
             ),
@@ -691,6 +754,8 @@ class _ShimmerBoxState extends State<_ShimmerBox> with SingleTickerProviderState
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
@@ -700,10 +765,16 @@ class _ShimmerBoxState extends State<_ShimmerBox> with SingleTickerProviderState
           shaderCallback: (rect) => LinearGradient(
             begin:  Alignment(sweep - 0.6, 0),
             end:    Alignment(sweep + 0.6, 0),
-            colors: const [Color(0xFFE2E8F0), Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
+            colors: isDark
+                ? const [Color(0xFF1E293B), Color(0xFF334155), Color(0xFF1E293B)]
+                : const [Color(0xFFE2E8F0), Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
             stops:  const [0.15, 0.5, 0.85],
           ).createShader(rect),
-          child: Container(color: const Color(0xFFE2E8F0)),
+          child: Container(
+            color: isDark
+                ? const Color(0xFF1E293B)
+                : const Color(0xFFE2E8F0),
+          ),
         );
       },
     );

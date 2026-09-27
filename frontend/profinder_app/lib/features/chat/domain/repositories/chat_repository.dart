@@ -139,7 +139,7 @@ abstract class ChatRepository {
   Future<List<BlockedUserEntity>> getBlockedUsers();
   Future<void> blockUser(int userId);
   Future<void> unblockUser(int userId);
-  Future<void> reportUser(int userId, String reason, String details, {String? messageId});
+  Future<void> reportUser(int userId, String reason, String details, {String? messageId, String? evidenceUrl});
 
   // ── Realtime (WebSocket) ─────────────────────────────────────────────
   Stream<ChatSocketEvent> connectSocket(int conversationId);

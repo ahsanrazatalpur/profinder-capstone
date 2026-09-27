@@ -81,6 +81,31 @@ class AuthProvider extends ChangeNotifier {
     return false;
   }
 
+  // ✅ NEW — Google Sign-In. `role` is only used the first time this
+  // Google account signs in (see AuthService.loginWithGoogle for why).
+  Future<bool> loginWithGoogle({
+    required String idToken,
+    String role = 'customer',
+  }) async {
+    _setLoading(true);
+    _errorMessage = null;
+    _errorStatusCode = null;
+    final result = await _authService.loginWithGoogle(idToken: idToken, role: role);
+    _setLoading(false);
+    if (result['success']) {
+      _isLoggedIn = true;
+      _isGuest    = false;
+      _role       = result['data']['role'];
+      _loginPreferredLanguage = result['data']['preferred_language'];
+      notifyListeners();
+      return true;
+    }
+    _errorMessage = result['message'];
+    _errorStatusCode = result['statusCode'] as int?;
+    notifyListeners();
+    return false;
+  }
+
   Future<bool> forgotPassword({required String email}) async {
     _setLoading(true);
     _errorMessage = null;

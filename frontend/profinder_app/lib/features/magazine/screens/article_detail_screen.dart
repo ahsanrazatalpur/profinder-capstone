@@ -2,10 +2,11 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../models/article_model.dart';
 import '../services/magazine_service.dart';
-import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
   final String slug;
@@ -32,7 +33,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     final article = await _service.getArticle(widget.slug);
     if (!mounted) return;
     if (article == null) {
-      setState(() { _loading = false; _error = 'Article not found.'; });
+      setState(() { _loading = false; _error = AppLocalizations.of(context)!.articleNotFoundError; });
     } else {
       setState(() { _loading = false; _article = article; });
     }
@@ -43,8 +44,31 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       body: _loading
-          ? Center(child: CircularProgressIndicator(
-                color: context.colors.primary, strokeWidth: 2.5))
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CircularProgressIndicator(
+                      color: AppColors.customerColor,
+                      strokeWidth: 3,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppLocalizations.of(context)!.articleLoadingText,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: context.colors.textSecondary,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ],
+              ),
+            )
           : _error != null
               ? _buildError()
               : _buildContent(),
@@ -56,6 +80,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     final catColor = _hexColor(a.categoryColor);
     final width = MediaQuery.sizeOf(context).width;
     final scale = ResponsiveUtils.scaleForWidth(width);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     // Long-form reading text stretched across a full tablet width is hard
     // to read (lines too long) — capping and centering the body at a
     // reader-friendly width is the standard "reader mode" pattern, while
@@ -70,16 +95,26 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           expandedHeight: a.coverImage.isNotEmpty ? 260 : 140,
           pinned:         true,
           backgroundColor: context.colors.primary,
+          elevation: 0,
           leading: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color:        Colors.black.withOpacity(0.35),
+                color: isDark
+                    ? Colors.black.withOpacity(0.5)
+                    : Colors.black.withOpacity(0.35),
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 1,
+                ),
               ),
-              child: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white, size: 18),
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
             ),
           ),
           flexibleSpace: FlexibleSpaceBar(
@@ -87,32 +122,46 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                 ? Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.network(a.coverImage, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              Container(color: context.colors.primary)),
+                      Image.network(
+                        a.coverImage,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                            Container(color: context.colors.primary),
+                      ),
                       // gradient overlay so text is readable
                       Container(
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.transparent, Colors.black54],
-                            begin:  Alignment.topCenter,
-                            end:    Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              isDark
+                                  ? const Color(0xFF0F172A).withOpacity(0.6)
+                                  : Colors.black.withOpacity(0.4),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
                           ),
                         ),
                       ),
                     ],
                   )
                 : Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFF1E40AF), Color(0xFF2563EB)],
-                        begin:  Alignment.topLeft,
-                        end:    Alignment.bottomRight,
+                        colors: [
+                          AppColors.customerColor,
+                          AppColors.customerColor.withOpacity(0.8),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
                     ),
-                    child: const Center(
-                      child: Icon(Icons.menu_book_rounded,
-                          color: Colors.white24, size: 72),
+                    child: Center(
+                      child: Icon(
+                        Icons.menu_book_rounded,
+                        color: Colors.white.withOpacity(0.3),
+                        size: 72,
+                      ),
                     ),
                   ),
           ),
@@ -125,7 +174,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: readingMaxWidth),
               child: Padding(
-                padding: EdgeInsets.fromLTRB(ResponsiveUtils.screenPadding(width), 24, ResponsiveUtils.screenPadding(width), 48),
+                padding: EdgeInsets.fromLTRB(
+                  ResponsiveUtils.screenPadding(width),
+                  24,
+                  ResponsiveUtils.screenPadding(width),
+                  48,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -134,56 +188,74 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     if (a.categoryName.isNotEmpty)
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color:        catColor.withOpacity(0.10),
+                          color: catColor.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: catColor.withOpacity(0.2),
+                            width: 1,
+                          ),
                         ),
                         child: Text(
                           a.categoryName.toUpperCase(),
                           style: TextStyle(
-                            fontSize:      9,
-                            fontWeight:    FontWeight.w800,
-                            color:         catColor,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: catColor,
                             letterSpacing: 0.8,
                           ),
                         ),
                       ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
 
                     // Title
                     Text(
                       a.title,
                       style: TextStyle(
-                        fontSize:      ResponsiveUtils.sp(24, scale, min: 22, max: 30),
-                        fontWeight:    FontWeight.w900,
-                        color:         context.colors.textPrimary,
-                        height:        1.25,
-                        letterSpacing: -0.4,
+                        fontSize: ResponsiveUtils.sp(26, scale, min: 22, max: 32),
+                        fontWeight: FontWeight.w900,
+                        color: context.colors.textPrimary,
+                        height: 1.25,
+                        letterSpacing: -0.5,
                       ),
                     ),
 
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
 
                     // ── Byline row ─────────────────────────────
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Editorial label — "ProFinder Health Desk"
                         Flexible(
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
                             decoration: BoxDecoration(
-                              color:        context.colors.surface,
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.05)
+                                  : context.colors.surface,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: context.colors.divider),
+                              border: Border.all(
+                                color: isDark
+                                    ? Colors.white.withOpacity(0.08)
+                                    : context.colors.divider,
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.edit_rounded,
-                                    size: 12, color: catColor),
+                                Icon(
+                                  Icons.edit_rounded,
+                                  size: 12,
+                                  color: catColor,
+                                ),
                                 const SizedBox(width: 5),
                                 Flexible(
                                   child: Text(
@@ -191,9 +263,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      fontSize:   12,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w700,
-                                      color:      context.colors.textPrimary,
+                                      color: context.colors.textPrimary,
                                     ),
                                   ),
                                 ),
@@ -205,22 +277,36 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         const Spacer(),
 
                         // Read time
-                        Icon(Icons.schedule_outlined,
-                            size: 13, color: context.colors.textSecondary),
+                        Icon(
+                          Icons.schedule_outlined,
+                          size: 13,
+                          color: context.colors.textSecondary,
+                        ),
                         const SizedBox(width: 3),
-                        Text('${a.readTime} min read',
-                            style: TextStyle(
-                                fontSize: 12, color: context.colors.textSecondary)),
+                        Text(
+                          AppLocalizations.of(context)!.articleReadTime(a.readTime),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.colors.textSecondary,
+                          ),
+                        ),
 
                         const SizedBox(width: 10),
 
                         // Views
-                        Icon(Icons.visibility_outlined,
-                            size: 13, color: context.colors.textSecondary),
+                        Icon(
+                          Icons.visibility_outlined,
+                          size: 13,
+                          color: context.colors.textSecondary,
+                        ),
                         const SizedBox(width: 3),
-                        Text(_formatCount(a.viewsCount),
-                            style: TextStyle(
-                                fontSize: 12, color: context.colors.textSecondary)),
+                        Text(
+                          _formatCount(a.viewsCount),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.colors.textSecondary,
+                          ),
+                        ),
                       ],
                     ),
 
@@ -230,12 +316,20 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       Text(
                         _formatDate(a.publishedAt),
                         style: TextStyle(
-                            fontSize: 11, color: context.colors.textSecondary),
+                          fontSize: 11,
+                          color: context.colors.textSecondary,
+                          letterSpacing: 0.2,
+                        ),
                       ),
                     ],
 
                     const SizedBox(height: 20),
-                    Divider(color: context.colors.divider),
+                    Divider(
+                      color: isDark
+                          ? Colors.white.withOpacity(0.08)
+                          : context.colors.divider,
+                      height: 1,
+                    ),
                     const SizedBox(height: 20),
 
                     // Summary callout box
@@ -243,18 +337,26 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color:        context.colors.primaryLight,
+                          color: isDark
+                              ? AppColors.customerColor.withOpacity(0.08)
+                              : context.colors.primaryLight,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                              color: context.colors.primary.withOpacity(0.15)),
+                            color: AppColors.customerColor.withOpacity(
+                              isDark ? 0.15 : 0.15,
+                            ),
+                          ),
                         ),
                         child: Text(
                           a.summary,
                           style: TextStyle(
-                            fontSize:   ResponsiveUtils.sp(14, scale, min: 13, max: 17),
+                            fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
                             fontWeight: FontWeight.w600,
-                            color:      context.colors.primary,
-                            height:     1.6,
+                            color: isDark
+                                ? const Color(0xFF93C5FD)
+                                : context.colors.primary,
+                            height: 1.6,
+                            letterSpacing: 0.2,
                           ),
                         ),
                       ),
@@ -262,7 +364,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     ],
 
                     // Content paragraphs
-                    ..._renderContent(a.content, scale),
+                    ..._renderContent(a.content, scale, isDark),
 
                     const SizedBox(height: 32),
 
@@ -270,20 +372,30 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color:        context.colors.surface,
+                        color: isDark
+                            ? Colors.white.withOpacity(0.03)
+                            : context.colors.surface,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: context.colors.divider),
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.white.withOpacity(0.08)
+                              : context.colors.divider,
+                        ),
                       ),
                       child: Row(
                         children: [
                           Container(
-                            width: 36, height: 36,
+                            width: 36,
+                            height: 36,
                             decoration: BoxDecoration(
-                              color:  context.colors.primary.withOpacity(0.10),
-                              shape:  BoxShape.circle,
+                              color: AppColors.customerColor.withOpacity(0.12),
+                              shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.menu_book_rounded,
-                                color: context.colors.primary, size: 18),
+                            child: Icon(
+                              Icons.menu_book_rounded,
+                              color: AppColors.customerColor,
+                              size: 18,
+                            ),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -295,15 +407,19 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontSize:   12,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w700,
-                                    color:      context.colors.textPrimary,
+                                    color: context.colors.textPrimary,
+                                    letterSpacing: -0.1,
                                   ),
                                 ),
                                 Text(
-                                  'ProFinder Tips Magazine',
+                                  AppLocalizations.of(context)!.articleFooterMagazineLabel,
                                   style: TextStyle(
-                                      fontSize: 11, color: context.colors.textSecondary),
+                                    fontSize: 11,
+                                    color: context.colors.textSecondary,
+                                    letterSpacing: 0.2,
+                                  ),
                                 ),
                               ],
                             ),
@@ -321,7 +437,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     );
   }
 
-  List<Widget> _renderContent(String raw, double scale) {
+  List<Widget> _renderContent(String raw, double scale, bool isDark) {
     final paragraphs = raw
         .split(RegExp(r'\n{2,}'))
         .map((p) => p.trim())
@@ -335,10 +451,26 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           child: Text(
             para.replaceFirst(RegExp(r'^#+\s*'), ''),
             style: TextStyle(
-              fontSize:      ResponsiveUtils.sp(19, scale, min: 18, max: 23),
-              fontWeight:    FontWeight.w800,
-              color:         context.colors.textPrimary,
+              fontSize: ResponsiveUtils.sp(20, scale, min: 18, max: 24),
+              fontWeight: FontWeight.w800,
+              color: context.colors.textPrimary,
+              letterSpacing: -0.3,
+              height: 1.3,
+            ),
+          ),
+        );
+      }
+      if (para.startsWith('#')) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10, top: 16),
+          child: Text(
+            para.replaceFirst(RegExp(r'^#+\s*'), ''),
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(18, scale, min: 16, max: 21),
+              fontWeight: FontWeight.w700,
+              color: context.colors.textPrimary,
               letterSpacing: -0.2,
+              height: 1.3,
             ),
           ),
         );
@@ -349,8 +481,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           para,
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
-            color:    context.colors.textPrimary,
-            height:   1.75,
+            color: context.colors.textPrimary,
+            height: 1.75,
+            letterSpacing: 0.2,
           ),
         ),
       );
@@ -358,21 +491,70 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   Widget _buildError() => Center(
-    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Icon(Icons.article_outlined, size: 56, color: context.colors.textSecondary),
-      const SizedBox(height: 14),
-      Text(_error!, style: TextStyle(fontSize: 15,
-          color: context.colors.textPrimary, fontWeight: FontWeight.w600)),
-      const SizedBox(height: 20),
-      ElevatedButton(
-        onPressed: () => Navigator.pop(context),
-        style: ElevatedButton.styleFrom(backgroundColor: context.colors.primary,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-        child: const Text('Go Back'),
-      ),
-    ]),
-  );
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.customerColor.withOpacity(0.1),
+                      AppColors.customerColor.withOpacity(0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.article_outlined,
+                  size: 40,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                _error!,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: context.colors.textPrimary,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                AppLocalizations.of(context)!.articleNotFoundMessage,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: context.colors.textSecondary,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(height: 28),
+              ElevatedButton.icon(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back_rounded, size: 18),
+                label: Text(AppLocalizations.of(context)!.goBackCta),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.customerColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
 
   String _formatDate(String raw) {
     try {
@@ -390,6 +572,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
   Color _hexColor(String hex) {
     try { return Color(int.parse(hex.replaceFirst('#', '0xFF'))); }
-    catch (_) { return context.colors.primary; }
+    catch (_) { return AppColors.customerColor; }
   }
 }

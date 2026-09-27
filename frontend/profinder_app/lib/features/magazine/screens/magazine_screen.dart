@@ -2,12 +2,13 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../models/article_model.dart';
 import '../services/magazine_service.dart';
 import '../widgets/article_card.dart';
 import 'article_detail_screen.dart';
-import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class MagazineScreen extends StatefulWidget {
   const MagazineScreen({super.key});
@@ -60,7 +61,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = 'Failed to load articles.';
+        _error = AppLocalizations.of(context)!.magazineLoadError;
       });
     }
   }
@@ -106,12 +107,12 @@ class _MagazineScreenState extends State<MagazineScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: context.colors.background,
       body: SafeArea(
         child: RefreshIndicator(
-          color: context.colors.primary,
+          color: AppColors.customerColor,
           onRefresh: _loadAll,
           child: CustomScrollView(
             slivers: [
@@ -133,8 +134,10 @@ class _MagazineScreenState extends State<MagazineScreen> {
   Widget _buildHeader(bool isDark) {
     final width = MediaQuery.sizeOf(context).width;
     final scale = ResponsiveUtils.scaleForWidth(width);
-    
-    return Container(
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOut,
       padding: EdgeInsets.fromLTRB(
         ResponsiveUtils.screenPadding(width, base: 16),
         20,
@@ -217,7 +220,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tips Magazine',
+                  AppLocalizations.of(context)!.magazineTitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -230,7 +233,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Health · Legal · Home & Lifestyle',
+                  AppLocalizations.of(context)!.magazineSubtitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -252,7 +255,9 @@ class _MagazineScreenState extends State<MagazineScreen> {
   Widget _buildSearchBar(bool isDark) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
         decoration: BoxDecoration(
           color: context.colors.surface,
           borderRadius: BorderRadius.circular(14),
@@ -285,7 +290,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
             color: context.colors.textPrimary,
           ),
           decoration: InputDecoration(
-            hintText: 'Search articles...',
+            hintText: AppLocalizations.of(context)!.magazineSearchHint,
             hintStyle: TextStyle(
               color: context.colors.textSecondary.withOpacity(0.6),
               fontSize: 15,
@@ -336,7 +341,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         itemCount: _categories.length + 1,
         itemBuilder: (_, i) {
-          if (i == 0) return _chip(null, 'All', isDark);
+          if (i == 0) return _chip(null, AppLocalizations.of(context)!.magazineAllCategoriesLabel, isDark);
           final cat = _categories[i - 1];
           return _chip(cat.id, cat.name, isDark);
         },
@@ -346,7 +351,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
 
   Widget _chip(int? catId, String label, bool isDark) {
     final isSelected = _selectedCat == catId;
-    
+
     return GestureDetector(
       onTap: () => _filterBy(catId),
       child: AnimatedContainer(
@@ -357,8 +362,8 @@ class _MagazineScreenState extends State<MagazineScreen> {
           gradient: isSelected
               ? LinearGradient(
                   colors: [
-                    context.colors.primary,
-                    context.colors.primary.withOpacity(0.8),
+                    AppColors.customerColor,
+                    AppColors.customerColor.withOpacity(0.8),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -372,7 +377,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: isSelected
-                ? context.colors.primary
+                ? AppColors.customerColor
                 : isDark
                     ? Colors.white.withOpacity(0.1)
                     : context.colors.divider.withOpacity(0.5),
@@ -381,7 +386,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: context.colors.primary.withOpacity(0.3),
+                    color: AppColors.customerColor.withOpacity(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -406,9 +411,9 @@ class _MagazineScreenState extends State<MagazineScreen> {
   // ── Enhanced Count Line ──────────────────────────────────────
   Widget _buildCountLine() {
     final label = _articles.length == 1
-        ? '1 Article'
-        : '${_articles.length} Articles';
-    
+        ? AppLocalizations.of(context)!.magazineArticleCountSingle
+        : AppLocalizations.of(context)!.magazineArticleCountPlural(_articles.length);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
@@ -419,8 +424,8 @@ class _MagazineScreenState extends State<MagazineScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  context.colors.primary,
-                  context.colors.primary.withOpacity(0.4),
+                  AppColors.customerColor,
+                  AppColors.customerColor.withOpacity(0.4),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -443,14 +448,14 @@ class _MagazineScreenState extends State<MagazineScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: context.colors.primary.withOpacity(0.1),
+                color: AppColors.customerColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                'Search Results',
+                AppLocalizations.of(context)!.magazineSearchResultsLabel,
                 style: TextStyle(
                   fontSize: 11,
-                  color: context.colors.primary,
+                  color: AppColors.customerColor,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.2,
                 ),
@@ -473,13 +478,13 @@ class _MagazineScreenState extends State<MagazineScreen> {
                 width: 40,
                 height: 40,
                 child: CircularProgressIndicator(
-                  color: context.colors.primary,
+                  color: AppColors.customerColor,
                   strokeWidth: 3,
                 ),
               ),
               const SizedBox(height: 16),
               Text(
-                'Loading articles...',
+                AppLocalizations.of(context)!.magazineLoadingText,
                 style: TextStyle(
                   fontSize: 14,
                   color: context.colors.textSecondary,
@@ -548,8 +553,6 @@ class _MagazineScreenState extends State<MagazineScreen> {
 
   // ── Enhanced Error State ─────────────────────────────────────
   Widget _buildError() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -562,8 +565,8 @@ class _MagazineScreenState extends State<MagazineScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    context.colors.primary.withOpacity(0.1),
-                    context.colors.primary.withOpacity(0.05),
+                    AppColors.customerColor.withOpacity(0.1),
+                    AppColors.customerColor.withOpacity(0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -578,7 +581,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              'Connection Error',
+              AppLocalizations.of(context)!.magazineErrorTitle,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -588,7 +591,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Could not load articles. Please check your internet connection.',
+              AppLocalizations.of(context)!.magazineErrorMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -601,9 +604,9 @@ class _MagazineScreenState extends State<MagazineScreen> {
             ElevatedButton.icon(
               onPressed: _loadAll,
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Try Again'),
+              label: Text(AppLocalizations.of(context)!.tryAgainCta),
               style: ElevatedButton.styleFrom(
-                backgroundColor: context.colors.primary,
+                backgroundColor: AppColors.customerColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                 shape: RoundedRectangleBorder(
@@ -620,8 +623,6 @@ class _MagazineScreenState extends State<MagazineScreen> {
 
   // ── Enhanced Empty State ─────────────────────────────────────
   Widget _buildEmpty() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -634,27 +635,29 @@ class _MagazineScreenState extends State<MagazineScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    context.colors.primary.withOpacity(0.12),
-                    context.colors.primary.withOpacity(0.05),
+                    AppColors.customerColor.withOpacity(0.12),
+                    AppColors.customerColor.withOpacity(0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: context.colors.primary.withOpacity(0.1),
+                  color: AppColors.customerColor.withOpacity(0.1),
                   width: 2,
                 ),
               ),
               child: Icon(
                 Icons.auto_stories_rounded,
-                color: context.colors.primary.withOpacity(0.6),
+                color: AppColors.customerColor.withOpacity(0.6),
                 size: 44,
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              _isSearching ? 'No Results Found' : 'No Articles Yet',
+              _isSearching
+                  ? AppLocalizations.of(context)!.magazineEmptySearchTitle
+                  : AppLocalizations.of(context)!.magazineEmptyTitle,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -665,8 +668,8 @@ class _MagazineScreenState extends State<MagazineScreen> {
             const SizedBox(height: 10),
             Text(
               _isSearching
-                  ? 'Try adjusting your search terms or filters.'
-                  : 'Check back soon for new tips and advice.',
+                  ? AppLocalizations.of(context)!.magazineEmptySearchMessage
+                  : AppLocalizations.of(context)!.magazineEmptyMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -683,15 +686,15 @@ class _MagazineScreenState extends State<MagazineScreen> {
                   _search('');
                 },
                 icon: const Icon(Icons.clear_rounded, size: 18),
-                label: const Text('Clear Search'),
+                label: Text(AppLocalizations.of(context)!.magazineClearSearchCta),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: context.colors.primary,
+                  foregroundColor: AppColors.customerColor,
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   side: BorderSide(
-                    color: context.colors.primary.withOpacity(0.3),
+                    color: AppColors.customerColor.withOpacity(0.3),
                   ),
                 ),
               ),

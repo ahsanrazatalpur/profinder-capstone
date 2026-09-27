@@ -13,6 +13,7 @@ import 'professional_home_screen.dart';
 import 'professional_bookings_screen.dart';
 import 'professional_analytics_screen.dart';
 import 'professional_profile_screen.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalMainScreen extends StatefulWidget {
   const ProfessionalMainScreen({super.key});
@@ -55,82 +56,147 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > 600;
+
     // ✅ FIX: same root-pop issue as guest_main_screen.dart — see that
     // file for full explanation.
     return PopScope(
       canPop: false,
       child: Scaffold(
-      body: IndexedStack(
-        index:    _currentIndex,
-        children: [
-          ProfessionalHomeScreen(isVisible: _currentIndex == 0),
-          ProfessionalBookingsScreen(isVisible: _currentIndex == 1),
-          // ✅ FIX: was `const ProfessionalMessagesScreen()` — the old
-          // simple REST-polling chat. Now uses the premium WebSocket-based
-          // chat feature (typing, ticks, images, reply, pagination).
-          ConversationListEntry(isVisible: _currentIndex == 2),
-          const MagazineScreen(),        
-          const ProfessionalAnalyticsScreen(),
-          ProfessionalProfileScreen(),  
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: context.colors.surface,
-          border: Border(top: BorderSide(color: context.colors.divider, width: 1)),
-          boxShadow: [
-            BoxShadow(
-              color:      Colors.black.withOpacity(0.06),
-              blurRadius: 12,
-              offset:     const Offset(0, -4),
-            ),
+        body: IndexedStack(
+          index: _currentIndex,
+          children: [
+            ProfessionalHomeScreen(isVisible: _currentIndex == 0),
+            ProfessionalBookingsScreen(isVisible: _currentIndex == 1),
+            // ✅ FIX: was `const ProfessionalMessagesScreen()` — the old
+            // simple REST-polling chat. Now uses the premium WebSocket-based
+            // chat feature (typing, ticks, images, reply, pagination).
+            ConversationListEntry(isVisible: _currentIndex == 2),
+            const MagazineScreen(),        
+            const ProfessionalAnalyticsScreen(),
+            ProfessionalProfileScreen(),  
           ],
         ),
-        child: BottomNavigationBar(
-          currentIndex:         _currentIndex,
-          elevation:            0,
-          backgroundColor:      Colors.transparent,
-          selectedItemColor:    AppColors.professionalColor,
-          unselectedItemColor:  context.colors.textSecondary,
-          selectedLabelStyle:   const TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
-          unselectedLabelStyle: const TextStyle(fontSize: 11),
-          type: BottomNavigationBarType.fixed, 
-          onTap: (i) => setState(() => _currentIndex = i),
-          items: const [
-            BottomNavigationBarItem(
-              icon:       Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard_rounded),
-              label:      'Dashboard',
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            border: Border(
+              top: BorderSide(
+                color: isDark
+                    ? Colors.white.withOpacity(0.08)
+                    : Colors.grey.withOpacity(0.15),
+                width: 1,
+              ),
             ),
-            BottomNavigationBarItem(
-              icon:       Icon(Icons.calendar_today_outlined),
-              activeIcon: Icon(Icons.calendar_today_rounded),
-              label:      'Bookings',
+            boxShadow: [
+              BoxShadow(
+                color: isDark
+                    ? Colors.black.withOpacity(0.2)
+                    : Colors.black.withOpacity(0.04),
+                blurRadius: 12,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            top: false,
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              selectedItemColor: AppColors.professionalColor,
+              unselectedItemColor: context.colors.textSecondary,
+              selectedLabelStyle: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: isTablet ? 12.0 : 10.5,
+                letterSpacing: 0.2,
+              ),
+              unselectedLabelStyle: TextStyle(
+                fontSize: isTablet ? 12.0 : 10.5,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.1,
+              ),
+              type: BottomNavigationBarType.fixed,
+              showUnselectedLabels: true,
+              onTap: (i) => setState(() => _currentIndex = i),
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.dashboard_outlined,
+                    size: isTablet ? 26.0 : 24.0,
+                  ),
+                  activeIcon: Icon(
+                    Icons.dashboard_rounded,
+                    size: isTablet ? 26.0 : 24.0,
+                  ),
+                  label: AppLocalizations.of(context)!.navDashboard,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.calendar_today_outlined,
+                    size: isTablet ? 26.0 : 24.0,
+                  ),
+                  activeIcon: Icon(
+                    Icons.calendar_today_rounded,
+                    size: isTablet ? 26.0 : 24.0,
+                  ),
+                  label: AppLocalizations.of(context)!.navBookings,
+                ),
+                BottomNavigationBarItem(
+                  icon: UnreadNavBadge(
+                    icon: Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      size: isTablet ? 26.0 : 24.0,
+                    ),
+                  ),
+                  activeIcon: UnreadNavBadge(
+                    icon: Icon(
+                      Icons.chat_bubble_rounded,
+                      size: isTablet ? 26.0 : 24.0,
+                    ),
+                  ),
+                  label: AppLocalizations.of(context)!.navMessages,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.menu_book_outlined,
+                    size: isTablet ? 26.0 : 24.0,
+                  ),
+                  activeIcon: Icon(
+                    Icons.menu_book_rounded,
+                    size: isTablet ? 26.0 : 24.0,
+                  ),
+                  label: AppLocalizations.of(context)!.navMagazine,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.bar_chart_outlined,
+                    size: isTablet ? 26.0 : 24.0,
+                  ),
+                  activeIcon: Icon(
+                    Icons.bar_chart_rounded,
+                    size: isTablet ? 26.0 : 24.0,
+                  ),
+                  label: AppLocalizations.of(context)!.navAnalytics,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.person_outline_rounded,
+                    size: isTablet ? 26.0 : 24.0,
+                  ),
+                  activeIcon: Icon(
+                    Icons.person_rounded,
+                    size: isTablet ? 26.0 : 24.0,
+                  ),
+                  label: AppLocalizations.of(context)!.navProfile,
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon:       UnreadNavBadge(icon: const Icon(Icons.chat_bubble_outline_rounded)),
-              activeIcon: UnreadNavBadge(icon: const Icon(Icons.chat_bubble_rounded)),
-              label:      'Messages',
-            ),
-            BottomNavigationBarItem(
-              icon:       Icon(Icons.menu_book_outlined),
-              activeIcon: Icon(Icons.menu_book_rounded),
-              label:      'Magazine',
-            ),
-            BottomNavigationBarItem(
-              icon:       Icon(Icons.bar_chart_outlined),
-              activeIcon: Icon(Icons.bar_chart_rounded),
-              label:      'Analytics',
-            ),
-            BottomNavigationBarItem(
-              icon:       Icon(Icons.person_outline_rounded),
-              activeIcon: Icon(Icons.person_rounded),
-              label:      'Profile',
-            ),
-          ],
+          ),
         ),
-      ),
-    ), // Scaffold
+      ), // Scaffold
     );
   }
 }

@@ -40,6 +40,7 @@ import '../../../services/api_service.dart';
 import '../../chat/presentation/screens/chat_screen.dart';
 import '../../chat/data/models/conversation_model.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalDetailScreen extends StatefulWidget {
   final Map<String, dynamic> professional;
@@ -241,7 +242,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   dynamic _get(String key) =>
       _fullProfile?[key] ?? widget.professional[key];
 
-  String get _name      => _get('name')?.toString()      ?? 'Professional';
+  String get _name      => _get('name')?.toString()      ?? AppLocalizations.of(context)!.professionalDefaultName;
   String get _photoUrl  => (_get('photo_url') ?? '').toString();
   bool   get _verified  => _get('is_verified') == true;
   double get _rating    => double.tryParse(_get('average_rating')?.toString() ?? '0') ?? 0.0;
@@ -258,10 +259,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
   String get _responseTimeLabel {
     final hrs = _responseTimeHrs;
-    if (hrs <= 0) return 'Instant';
-    if (hrs < 1) return '${(hrs * 60).round()} min';
-    if (hrs == hrs.roundToDouble()) return '${hrs.round()} hr${hrs.round() == 1 ? '' : 's'}';
-    return '${hrs.toStringAsFixed(1)} hrs';
+    if (hrs <= 0) return AppLocalizations.of(context)!.instantLabel;
+    if (hrs < 1) return AppLocalizations.of(context)!.minutesLabel((hrs * 60).round());
+    if (hrs == hrs.roundToDouble()) return AppLocalizations.of(context)!.hoursLabel(hrs.round());
+    return AppLocalizations.of(context)!.hoursDecimalLabel(hrs.toStringAsFixed(1));
   }
 
   String get _memberSinceLabel {
@@ -289,9 +290,12 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: isDark
+          ? const Color(0xFF0F172A)
+          : const Color(0xFFF5F7FA),
       body: _isLoading
           ? const AppFullLoader()
           : _loadError != null
@@ -326,21 +330,62 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
   // ── Error State ───────────────────────────────────────────
   Widget _buildErrorState() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline_rounded, size: 64, color: Color(0xFFEF4444)),
-          const SizedBox(height: 16),
-          Text(_loadError ?? 'Something went wrong',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF374151))),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: _loadData,
-            icon: const Icon(Icons.refresh_rounded),
-            label: Text(AppStrings.retry),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : const Color(0xFFF3F4F6),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 40,
+                color: AppColors.error,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              _loadError ?? AppLocalizations.of(context)!.professionalDetailLoadError,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textPrimary,
+                letterSpacing: -0.2,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _loadData,
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: Text(
+                AppLocalizations.of(context)!.retryCta,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.customerColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -455,9 +500,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (_verified) _headerBadge(Icons.verified_rounded, 'Verified', context.colors.accent),
+                        if (_verified) _headerBadge(Icons.verified_rounded, AppLocalizations.of(context)!.verifiedLabel, context.colors.accent),
                         if (_verified && _isTopRated) const SizedBox(width: 8),
-                        if (_isTopRated) _headerBadge(Icons.star_rounded, 'Top Rated', AppColors.badgeTopRated),
+                        if (_isTopRated) _headerBadge(Icons.star_rounded, AppLocalizations.of(context)!.topRatedLabel, AppColors.badgeTopRated),
                       ],
                     ),
                   ),
@@ -515,7 +560,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     const Icon(Icons.star_rounded, color: AppColors.badgeTopRated, size: 16),
                     const SizedBox(width: 4),
                     Text(
-                      '${_rating.toStringAsFixed(1)} (${_reviewsTotal} Reviews)',
+                      '${_rating.toStringAsFixed(1)} (${_reviewsTotal} ${AppLocalizations.of(context)!.reviewsLabel})',
                       style: TextStyle(fontSize: ResponsiveUtils.sp(12.5, scale, min: 11.5, max: 15), color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -546,7 +591,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                         Container(width: 7, height: 7, decoration: BoxDecoration(color: _isOnline ? const Color(0xFF34D399) : Colors.white.withOpacity(0.4), shape: BoxShape.circle)),
                         const SizedBox(width: 4),
                         Text(
-                          _isOnline ? 'Online' : 'Offline',
+                          _isOnline ? AppLocalizations.of(context)!.onlineLabel : AppLocalizations.of(context)!.offlineLabel,
                           style: TextStyle(fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 15), color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w600),
                         ),
                       ],
@@ -563,13 +608,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.screenPadding(width, base: 16)),
                   child: Row(
                     children: [
-                      Expanded(child: _heroStatPill(Icons.star_rounded, _rating.toStringAsFixed(1), 'Rating', scale)),
+                      Expanded(child: _heroStatPill(Icons.star_rounded, _rating.toStringAsFixed(1), AppLocalizations.of(context)!.ratingLabel, scale)),
                       SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
-                      Expanded(child: _heroStatPill(Icons.forum_outlined, '${_reviewsTotal}', 'Reviews', scale)),
+                      Expanded(child: _heroStatPill(Icons.forum_outlined, '${_reviewsTotal}', AppLocalizations.of(context)!.reviewsLabel, scale)),
                       SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
-                      Expanded(child: _heroStatPill(Icons.work_outline_rounded, '$_completedJobs', 'Jobs Done', scale)),
+                      Expanded(child: _heroStatPill(Icons.work_outline_rounded, '$_completedJobs', AppLocalizations.of(context)!.jobsDoneLabel, scale)),
                       SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
-                      Expanded(child: _heroStatPill(Icons.bolt_rounded, _responseTimeLabel, 'Response', scale)),
+                      Expanded(child: _heroStatPill(Icons.bolt_rounded, _responseTimeLabel, AppLocalizations.of(context)!.responseLabel, scale)),
                     ],
                   ),
                 ),
@@ -630,15 +675,17 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   // ── Quick Information Cards (replaces the old CTA button row) ──────
   Widget _buildQuickInfoRow() {
     final items = <Map<String, dynamic>>[
-      {'icon': Icons.calendar_today_outlined, 'label': 'Member Since', 'value': _memberSinceLabel},
-      {'icon': Icons.event_available_outlined, 'label': 'Availability', 'value': _isAvailable ? 'Available now' : 'Currently busy'},
-      {'icon': Icons.language_rounded, 'label': 'Languages', 'value': _languagesList.isNotEmpty ? _languagesList.join(', ') : 'Not specified'},
-      {'icon': Icons.work_history_outlined, 'label': 'Experience', 'value': '${_get('experience_years') ?? 0} years'},
+      {'icon': Icons.calendar_today_outlined, 'label': AppLocalizations.of(context)!.memberSinceLabel, 'value': _memberSinceLabel},
+      {'icon': Icons.event_available_outlined, 'label': AppLocalizations.of(context)!.availabilityLabel, 'value': _isAvailable ? AppLocalizations.of(context)!.availableNowLabel : AppLocalizations.of(context)!.currentlyBusyLabel},
+      {'icon': Icons.language_rounded, 'label': AppLocalizations.of(context)!.languagesLabel, 'value': _languagesList.isNotEmpty ? _languagesList.join(', ') : AppLocalizations.of(context)!.notSpecifiedLabel},
+      {'icon': Icons.work_history_outlined, 'label': AppLocalizations.of(context)!.experienceLabel, 'value': AppLocalizations.of(context)!.yearsLabel(_get('experience_years') ?? 0)},
     ];
 
     return SliverToBoxAdapter(
       child: Container(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF0F172A)
+            : Colors.white,
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
         child: GridView.count(
           crossAxisCount: 2,
@@ -654,19 +701,37 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   }
 
   Widget _quickInfoCard(IconData icon, String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: isDark
+            ? Colors.white.withOpacity(0.04)
+            : const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withOpacity(0.08)
+              : const Color(0xFFE5E7EB),
+        ),
       ),
       child: Row(
         children: [
           Container(
-            width: 32, height: 32,
-            decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(9)),
-            child: Icon(icon, size: 16, color: context.colors.primary),
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: isDark
+                  ? AppColors.customerColor.withOpacity(0.15)
+                  : context.colors.primaryLight,
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Icon(
+              icon,
+              size: 16,
+              color: AppColors.customerColor,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -674,12 +739,24 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF))),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    color: isDark
+                        ? Colors.white.withOpacity(0.5)
+                        : const Color(0xFF9CA3AF),
+                  ),
+                ),
                 Text(
                   value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
                 ),
               ],
             ),
@@ -697,9 +774,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         TabBar(
           controller:           _tabController,
           isScrollable:         true,
-          labelColor:           context.colors.primary,
+          labelColor:           AppColors.customerColor,
           unselectedLabelColor: const Color(0xFF9CA3AF),
-          indicatorColor:       context.colors.primary,
+          indicatorColor:       AppColors.customerColor,
           indicatorWeight:      2.5,
           labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
           tabs: [
@@ -718,6 +795,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   Widget _buildOverviewTab() {
     final bio = (_get('bio') ?? '').toString();
     final exp = _get('experience_years') ?? 0;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -725,49 +803,67 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (bio.isNotEmpty) ...[
-            _sectionTitle('About'),
+            _sectionTitle(AppLocalizations.of(context)!.aboutLabel),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color:        Colors.white,
+                color: isDark
+                    ? Colors.white.withOpacity(0.04)
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border:       Border.all(color: const Color(0xFFE5E7EB)),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.08)
+                      : const Color(0xFFE5E7EB),
+                ),
               ),
-              child: Text(bio,
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF374151), height: 1.6)),
+              child: Text(
+                bio,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: context.colors.textPrimary,
+                  height: 1.6,
+                ),
+              ),
             ),
             const SizedBox(height: 20),
           ],
 
-          _sectionTitle('Details'),
+          _sectionTitle(AppLocalizations.of(context)!.detailsLabel),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color:        Colors.white,
+              color: isDark
+                  ? Colors.white.withOpacity(0.04)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border:       Border.all(color: const Color(0xFFE5E7EB)),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.08)
+                    : const Color(0xFFE5E7EB),
+              ),
             ),
             child: Column(
               children: [
-                _detailRow(Icons.work_outline_rounded, 'Experience', '$exp years'),
+                _detailRow(Icons.work_outline_rounded, AppLocalizations.of(context)!.experienceLabel, AppLocalizations.of(context)!.yearsLabel(exp)),
                 const Divider(height: 20),
-                _detailRow(Icons.attach_money_rounded, 'Hourly Rate',
+                _detailRow(Icons.attach_money_rounded, AppLocalizations.of(context)!.hourlyRateLabel,
                     '\$${_get('hourly_rate') ?? 0}/hr'),
                 const Divider(height: 20),
-                _detailRow(Icons.location_on_outlined, 'City',
+                _detailRow(Icons.location_on_outlined, AppLocalizations.of(context)!.cityLabel,
                     (_get('city') ?? 'N/A').toString()),
                 const Divider(height: 20),
                 _detailRow(
                   Icons.verified_outlined,
-                  'Verification',
-                  _verified ? 'Verified Professional' : 'Not Verified',
+                  AppLocalizations.of(context)!.verificationLabel,
+                  _verified ? AppLocalizations.of(context)!.verifiedProfessionalLabel : AppLocalizations.of(context)!.notVerifiedLabel,
                   valueColor: _verified ? context.colors.accent : AppColors.warning,
                 ),
                 if ((_get('category_name') ?? '').toString().isNotEmpty) ...[
                   const Divider(height: 20),
-                  _detailRow(Icons.category_outlined, 'Category',
+                  _detailRow(Icons.category_outlined, AppLocalizations.of(context)!.categoryLabel,
                       _get('category_name').toString()),
                 ],
               ],
@@ -776,7 +872,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
           if (_skillsList.isNotEmpty) ...[
             const SizedBox(height: 20),
-            _sectionTitle('Skills'),
+            _sectionTitle(AppLocalizations.of(context)!.skillsLabel),
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
@@ -787,15 +883,15 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
           if (_verified || _isTopRated || _isFastResponder || _certificates.isNotEmpty) ...[
             const SizedBox(height: 20),
-            _sectionTitle('Certifications & Badges'),
+            _sectionTitle(AppLocalizations.of(context)!.certificationsLabel),
             const SizedBox(height: 10),
             Wrap(
               spacing: 10,
               runSpacing: 10,
               children: [
-                if (_verified) _badgeTile(Icons.verified_user_rounded, 'ID Verified', context.colors.accent),
-                if (_isTopRated) _badgeTile(Icons.workspace_premium_rounded, 'Top Rated', AppColors.badgeTopRated),
-                if (_isFastResponder) _badgeTile(Icons.bolt_rounded, 'Fast Response', AppColors.info),
+                if (_verified) _badgeTile(Icons.verified_user_rounded, AppLocalizations.of(context)!.idVerifiedLabel, context.colors.accent),
+                if (_isTopRated) _badgeTile(Icons.workspace_premium_rounded, AppLocalizations.of(context)!.topRatedLabel, AppColors.badgeTopRated),
+                if (_isFastResponder) _badgeTile(Icons.bolt_rounded, AppLocalizations.of(context)!.fastResponseLabel, AppColors.info),
               ],
             ),
             if (_certificates.isNotEmpty) ...[
@@ -806,7 +902,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
           if (_related.isNotEmpty) ...[
             const SizedBox(height: 24),
-            _sectionTitle('Related Professionals'),
+            _sectionTitle(AppLocalizations.of(context)!.relatedProfessionalsLabel),
             const SizedBox(height: 10),
             SizedBox(
               height: ProfessionalCard.heightFor(context),
@@ -840,18 +936,33 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   }
 
   Widget _pillChip(String label) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: context.colors.primaryLight,
+        color: isDark
+            ? AppColors.customerColor.withOpacity(0.15)
+            : context.colors.primaryLight,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check_circle_rounded, size: 14, color: context.colors.primary),
+          Icon(
+            Icons.check_circle_rounded,
+            size: 14,
+            color: AppColors.customerColor,
+          ),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.colors.primary)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.customerColor,
+            ),
+          ),
         ],
       ),
     );
@@ -870,7 +981,14 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         children: [
           Icon(icon, size: 15, color: color),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: color)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
         ],
       ),
     );
@@ -880,35 +998,71 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     final title = cert['title']?.toString() ?? 'Certificate';
     final org   = cert['issuing_organization']?.toString() ?? '';
     final date  = cert['issue_date'] != null ? _formatDate(cert['issue_date'].toString()) : '';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark
+            ? Colors.white.withOpacity(0.04)
+            : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withOpacity(0.08)
+              : const Color(0xFFE5E7EB),
+        ),
       ),
       child: Row(
         children: [
           Container(
-            width: 34, height: 34,
-            decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(9)),
-            child: Icon(Icons.school_outlined, size: 17, color: context.colors.primary),
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: isDark
+                  ? AppColors.customerColor.withOpacity(0.15)
+                  : context.colors.primaryLight,
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Icon(
+              Icons.school_outlined,
+              size: 17,
+              color: AppColors.customerColor,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
                 if (org.isNotEmpty)
-                  Text(org, style: const TextStyle(fontSize: 11.5, color: Color(0xFF6B7280))),
+                  Text(
+                    org,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: context.colors.textSecondary,
+                    ),
+                  ),
               ],
             ),
           ),
           if (date.isNotEmpty)
-            Text(date, style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+            Text(
+              date,
+              style: TextStyle(
+                fontSize: 11,
+                color: context.colors.textSecondary,
+              ),
+            ),
         ],
       ),
     );
@@ -916,8 +1070,14 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
   // ── Services Tab ─────────────────────────────────────────
   Widget _buildServicesTab() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     if (_servicesList.isEmpty) {
-      return _emptyTabState(Icons.design_services_outlined, 'No services listed', 'This professional hasn\'t listed specific services yet');
+      return _emptyTabState(
+        Icons.design_services_outlined,
+        AppLocalizations.of(context)!.noServicesTitle,
+        AppLocalizations.of(context)!.noServicesSubtitle,
+      );
     }
     return ListView.separated(
       padding: const EdgeInsets.all(16),
@@ -926,20 +1086,43 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       itemBuilder: (ctx, i) => Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark
+              ? Colors.white.withOpacity(0.04)
+              : Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withOpacity(0.08)
+                : const Color(0xFFE5E7EB),
+          ),
         ),
         child: Row(
           children: [
             Container(
-              width: 32, height: 32,
-              decoration: BoxDecoration(color: context.colors.accentLight, borderRadius: BorderRadius.circular(9)),
-              child: Icon(Icons.check_rounded, size: 17, color: context.colors.accent),
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? AppColors.customerColor.withOpacity(0.15)
+                    : context.colors.accentLight,
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: Icon(
+                Icons.check_rounded,
+                size: 17,
+                color: AppColors.customerColor,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(_servicesList[i], style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: Color(0xFF111827))),
+              child: Text(
+                _servicesList[i],
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: context.colors.textPrimary,
+                ),
+              ),
             ),
           ],
         ),
@@ -951,6 +1134,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   Widget _buildAvailabilityTab() {
     final start = (_get('working_hours_start') ?? '09:00').toString();
     final end   = (_get('working_hours_end') ?? '18:00').toString();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -960,7 +1144,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _isAvailable ? context.colors.accentLight : const Color(0xFFF3F4F6),
+              color: _isAvailable
+                  ? (isDark
+                      ? const Color(0xFF10B981).withOpacity(0.15)
+                      : context.colors.accentLight)
+                  : (isDark
+                      ? Colors.white.withOpacity(0.05)
+                      : const Color(0xFFF3F4F6)),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Row(
@@ -973,7 +1163,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    _isAvailable ? 'Currently accepting new bookings' : 'Not accepting bookings right now',
+                    _isAvailable
+                        ? AppLocalizations.of(context)!.acceptingBookingsLabel
+                        : AppLocalizations.of(context)!.notAcceptingBookingsLabel,
                     style: TextStyle(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w700,
@@ -985,28 +1177,40 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             ),
           ),
           const SizedBox(height: 16),
-          _sectionTitle('Working Hours'),
+          _sectionTitle(AppLocalizations.of(context)!.workingHoursLabel),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark
+                  ? Colors.white.withOpacity(0.04)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.08)
+                    : const Color(0xFFE5E7EB),
+              ),
             ),
-            child: _detailRow(Icons.schedule_rounded, 'Daily Hours', '$start – $end'),
+            child: _detailRow(Icons.schedule_rounded, AppLocalizations.of(context)!.dailyHoursLabel, '$start – $end'),
           ),
           const SizedBox(height: 16),
-          _sectionTitle('Response Time'),
+          _sectionTitle(AppLocalizations.of(context)!.responseTimeLabel),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark
+                  ? Colors.white.withOpacity(0.04)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.08)
+                    : const Color(0xFFE5E7EB),
+              ),
             ),
-            child: _detailRow(Icons.bolt_rounded, 'Typically replies within', _responseTimeLabel),
+            child: _detailRow(Icons.bolt_rounded, AppLocalizations.of(context)!.typicallyRepliesLabel, _responseTimeLabel),
           ),
         ],
       ),
@@ -1014,27 +1218,70 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   }
 
   Widget _emptyTabState(IconData icon, String title, String subtitle) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 64, color: const Color(0xFFD1D5DB)),
-          const SizedBox(height: 16),
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF374151))),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Text(subtitle, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF))),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : const Color(0xFFF3F4F6),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 40,
+                color: isDark
+                    ? Colors.white.withOpacity(0.3)
+                    : const Color(0xFFD1D5DB),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textPrimary,
+                letterSpacing: -0.2,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: context.colors.textSecondary,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   // ── Reviews Tab ──────────────────────────────────────────
   Widget _buildReviewsTab() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     if (_reviews.isEmpty) {
-      return _emptyTabState(Icons.rate_review_outlined, 'No reviews yet', 'Be the first to review!');
+      return _emptyTabState(
+        Icons.rate_review_outlined,
+        AppLocalizations.of(context)!.noReviewsTitle,
+        AppLocalizations.of(context)!.noReviewsSubtitle,
+      );
     }
 
     return ListView.builder(
@@ -1051,9 +1298,15 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color:        Colors.white,
+            color: isDark
+                ? Colors.white.withOpacity(0.04)
+                : Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border:       Border.all(color: const Color(0xFFE5E7EB)),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withOpacity(0.08)
+                  : const Color(0xFFE5E7EB),
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1067,13 +1320,21 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          review['reviewer_name']?.toString() ?? 'User',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF111827)),
+                          review['reviewer_name']?.toString() ?? AppLocalizations.of(context)!.userLabel,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: context.colors.textPrimary,
+                          ),
                         ),
                         if (date.isNotEmpty)
-                          Text(date,
-                              style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+                          Text(
+                            date,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: context.colors.textSecondary,
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -1090,9 +1351,14 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               ),
               if ((review['comment'] ?? '').toString().isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Text(review['comment'].toString(),
-                    style: const TextStyle(
-                        fontSize: 13, color: Color(0xFF6B7280), height: 1.5)),
+                Text(
+                  review['comment'].toString(),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: context.colors.textSecondary,
+                    height: 1.5,
+                  ),
+                ),
               ],
             ],
           ),
@@ -1103,8 +1369,14 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
   // ── Portfolio Tab ─────────────────────────────────────────
   Widget _buildPortfolioTab() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     if (_portfolio.isEmpty) {
-      return _emptyTabState(Icons.photo_library_outlined, 'No portfolio yet', 'This professional has no approved work yet');
+      return _emptyTabState(
+        Icons.photo_library_outlined,
+        AppLocalizations.of(context)!.noPortfolioTitle,
+        AppLocalizations.of(context)!.noPortfolioSubtitle,
+      );
     }
 
     final width = MediaQuery.sizeOf(context).width;
@@ -1126,16 +1398,26 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
         return GestureDetector(
           onTap: () => _showPortfolioDetail(item),
-          child: Container(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
             decoration: BoxDecoration(
-              color:        Colors.white,
+              color: isDark
+                  ? Colors.white.withOpacity(0.04)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border:       Border.all(color: const Color(0xFFE5E7EB)),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.08)
+                    : const Color(0xFFE5E7EB),
+              ),
               boxShadow: [
                 BoxShadow(
-                  color:      Colors.black.withOpacity(0.04),
+                  color: isDark
+                      ? Colors.black.withOpacity(0.15)
+                      : Colors.black.withOpacity(0.04),
                   blurRadius: 8,
-                  offset:     const Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -1151,7 +1433,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                           width:      double.infinity,
                           fit:        BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
-                            color: const Color(0xFFF3F4F6),
+                            color: isDark
+                                ? Colors.white.withOpacity(0.05)
+                                : const Color(0xFFF3F4F6),
                             child: const Center(
                               child: Icon(Icons.broken_image_outlined,
                                   color: Color(0xFFD1D5DB), size: 32),
@@ -1160,7 +1444,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                           loadingBuilder: (ctx, child, progress) {
                             if (progress == null) return child;
                             return Container(
-                              color: const Color(0xFFF3F4F6),
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.05)
+                                  : const Color(0xFFF3F4F6),
                               child: Center(
                                 child: CircularProgressIndicator(
                                   value: progress.expectedTotalBytes != null
@@ -1168,17 +1454,22 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                                           progress.expectedTotalBytes!
                                       : null,
                                   strokeWidth: 2,
-                                  color: context.colors.primary,
+                                  color: AppColors.customerColor,
                                 ),
                               ),
                             );
                           },
                         )
                       : Container(
-                          color: context.colors.primaryLight,
+                          color: isDark
+                              ? Colors.white.withOpacity(0.05)
+                              : context.colors.primaryLight,
                           child: Center(
                             child: Icon(Icons.image_outlined,
-                                color: context.colors.primary.withOpacity(0.4), size: 36),
+                                color: isDark
+                                    ? Colors.white.withOpacity(0.3)
+                                    : context.colors.primary.withOpacity(0.4),
+                                size: 36),
                           ),
                         ),
                 ),
@@ -1193,10 +1484,11 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                           title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF111827)),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: context.colors.textPrimary,
+                          ),
                         ),
                       if (desc.isNotEmpty) ...[
                         const SizedBox(height: 2),
@@ -1204,8 +1496,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                           desc,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontSize: 10, color: Color(0xFF9CA3AF)),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: context.colors.textSecondary,
+                          ),
                         ),
                       ],
                     ],
@@ -1227,15 +1521,18 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     final date     = item['created_at'] != null
         ? _formatDate(item['created_at'].toString())
         : '';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showModalBottomSheet(
       context:         context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
-        decoration: const BoxDecoration(
-          color:        Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: isDark
+              ? const Color(0xFF1E293B)
+              : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1244,7 +1541,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             Container(
               width: 36, height: 4,
               decoration: BoxDecoration(
-                color:        const Color(0xFFE5E7EB),
+                color: isDark
+                    ? Colors.white.withOpacity(0.15)
+                    : const Color(0xFFE5E7EB),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -1254,16 +1553,21 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                 height: 240,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  color:        const Color(0xFFF3F4F6),
+                  color: isDark
+                      ? Colors.white.withOpacity(0.05)
+                      : const Color(0xFFF3F4F6),
                 ),
                 clipBehavior: Clip.hardEdge,
                 child: Image.network(
                   imageUrl,
                   width:  double.infinity,
                   fit:    BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const Center(
+                  errorBuilder: (_, __, ___) => Center(
                     child: Icon(Icons.broken_image_outlined,
-                        color: Color(0xFFD1D5DB), size: 48),
+                        color: isDark
+                            ? Colors.white.withOpacity(0.3)
+                            : const Color(0xFFD1D5DB),
+                        size: 48),
                   ),
                 ),
               ),
@@ -1276,25 +1580,35 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: Text(title,
-                            style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF111827))),
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: context.colors.textPrimary,
+                          ),
+                        ),
                       ),
                       if (date.isNotEmpty)
-                        Text(date,
-                            style: const TextStyle(
-                                fontSize: 11, color: Color(0xFF9CA3AF))),
+                        Text(
+                          date,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: context.colors.textSecondary,
+                          ),
+                        ),
                     ],
                   ),
                   if (desc.isNotEmpty) ...[
                     const SizedBox(height: 10),
-                    Text(desc,
-                        style: const TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFF6B7280),
-                            height: 1.6)),
+                    Text(
+                      desc,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: context.colors.textSecondary,
+                        height: 1.6,
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -1308,6 +1622,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   // ── Sticky Bottom Bar — the ONLY place Message + Book Now appear ───
   Widget _buildBookBar() {
     final originalUserId = widget.professional['id'];
+    final width = MediaQuery.sizeOf(context).width;
+    final scale = ResponsiveUtils.scaleForWidth(width);
+    final btnSize = ResponsiveUtils.sp(50, scale, min: 48, max: 62);
 
     final pro = {
       ...widget.professional,
@@ -1316,13 +1633,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       'user_id': originalUserId,
     };
 
-    final width = MediaQuery.sizeOf(context).width;
-    final scale = ResponsiveUtils.scaleForWidth(width);
-    final btnSize = ResponsiveUtils.sp(50, scale, min: 48, max: 62);
-
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colors.surface,
         border: const Border(top: BorderSide(color: Color(0xFFE5E7EB))),
         boxShadow: [
           BoxShadow(
@@ -1343,8 +1656,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   mainAxisSize:     MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Hourly Rate',
-                        style: TextStyle(fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 14), color: const Color(0xFF9CA3AF))),
+                    Text(
+                      AppLocalizations.of(context)!.hourlyRateLabel,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 14),
+                        color: const Color(0xFF9CA3AF),
+                      ),
+                    ),
                     Text(
                       '\$${pro['hourly_rate'] ?? 0}/hr',
                       maxLines: 1,
@@ -1399,9 +1717,12 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   ),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
-                    child: Text(AppStrings.bookNow,
-                        style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18), fontWeight: FontWeight.w700)),
+                    child: Text(
+                      AppLocalizations.of(context)!.bookNowCta,
+                      style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
+                          fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ),
@@ -1416,8 +1737,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   Widget _buildGuestBar() {
     final width = MediaQuery.sizeOf(context).width;
     final scale = ResponsiveUtils.scaleForWidth(width);
+
     return Container(
-      color: Colors.white,
+      color: context.colors.surface,
       child: SafeArea(
         top: false,
         child: Padding(
@@ -1430,8 +1752,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   borderRadius: BorderRadius.circular(14)),
             ),
             onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
-            child: Text('Login to Book',
-                style: TextStyle(fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18), fontWeight: FontWeight.w700)),
+            child: Text(
+              AppLocalizations.of(context)!.loginToBookCta,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ),
       ),
@@ -1455,13 +1782,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           builder: (_) => ChatScreen(
               conversationId: data['id'] is int ? data['id'] as int : int.parse(data['id'].toString()),
               currentUserId: myId,
-              otherUserName: data['other_user_name']?.toString() ?? pro['name']?.toString() ?? 'Professional',
+              otherUserName: data['other_user_name']?.toString() ?? pro['name']?.toString() ?? AppLocalizations.of(context)!.professionalDefaultName,
               otherUserPhoto: data['other_user_photo']?.toString(),
               conversationSnapshot: ConversationModel.fromJson(data),
             )));
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, 'Could not start conversation');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.startConversationError);
     } finally {
       if (mounted) setState(() => _isStartingChat = false);
     }
@@ -1478,37 +1805,60 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   }
 
   Widget _sectionTitle(String title) {
-    return Text(title,
-        style: const TextStyle(
-            fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF111827)));
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        color: context.colors.textPrimary,
+        letterSpacing: -0.1,
+      ),
+    );
   }
 
   Widget _detailRow(IconData icon, String label, String value,
       {Color? valueColor}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
         Container(
-          width: 34, height: 34,
+          width: 34,
+          height: 34,
           decoration: BoxDecoration(
-            color:        context.colors.primaryLight,
+            color: isDark
+                ? AppColors.customerColor.withOpacity(0.15)
+                : context.colors.primaryLight,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, size: 17, color: context.colors.primary),
+          child: Icon(
+            icon,
+            size: 17,
+            color: AppColors.customerColor,
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: const TextStyle(
-                      fontSize: 11, color: Color(0xFF9CA3AF))),
-              Text(value,
-                  style: TextStyle(
-                    fontSize:   13,
-                    fontWeight: FontWeight.w600,
-                    color:      valueColor ?? const Color(0xFF374151),
-                  )),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isDark
+                      ? Colors.white.withOpacity(0.5)
+                      : const Color(0xFF9CA3AF),
+                ),
+              ),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: valueColor ?? context.colors.textPrimary,
+                ),
+              ),
             ],
           ),
         ),
@@ -1524,7 +1874,13 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(color: Colors.white, child: tabBar);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      color: isDark
+          ? const Color(0xFF0F172A)
+          : Colors.white,
+      child: tabBar,
+    );
   }
 
   @override double get minExtent => tabBar.preferredSize.height;

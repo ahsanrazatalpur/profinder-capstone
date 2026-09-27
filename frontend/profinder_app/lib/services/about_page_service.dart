@@ -1,6 +1,7 @@
 // lib/services/about_page_service.dart
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'api_service.dart';
 import '../features/about/models/about_page_model.dart';
 
@@ -45,6 +46,15 @@ class AboutPageService {
       final response = await _api.patch('/about-page/admin/sections/$id/', data);
       return {'success': true, 'data': AboutSection.fromJson(response.data)};
     } catch (e) {
+      // ✅ DEBUG: temporary — prints the raw status code + response body
+      // to the console so we can see exactly why a toggle is rejected.
+      if (e is DioException) {
+        debugPrint('[AboutToggle] updateSection($id) FAILED — '
+            'status=${e.response?.statusCode} body=${e.response?.data} '
+            'message=${e.message}');
+      } else {
+        debugPrint('[AboutToggle] updateSection($id) FAILED — $e');
+      }
       return {'success': false, 'error': _errorMessage(e)};
     }
   }

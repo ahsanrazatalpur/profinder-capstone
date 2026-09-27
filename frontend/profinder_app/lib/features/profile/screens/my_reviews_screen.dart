@@ -12,11 +12,12 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
-import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class MyReviewsScreen extends StatefulWidget {
   const MyReviewsScreen({super.key});
@@ -64,7 +65,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
               final proBooking = completed.firstWhere((b) => b['professional']?.toString() == pid, orElse: () => {});
               reviews.add({
                 ...Map<String, dynamic>.from(rv),
-                'professional_name': proBooking['professional_name'] ?? 'Professional',
+                'professional_name': proBooking['professional_name'] ?? AppLocalizations.of(context)!.professionalDefaultName,
               });
             }
           }
@@ -83,69 +84,178 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > 600;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: context.colors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.colors.surface,
         elevation: 0,
-        title: const Text('My Reviews', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Color(0xFF374151)), onPressed: () => Navigator.pop(context)),
+        title: Text(
+          AppLocalizations.of(context)!.myReviewsTitle,
+          style: TextStyle(
+            fontSize: isTablet ? 18.0 : 16.0,
+            fontWeight: FontWeight.w700,
+            color: context.colors.textPrimary,
+            letterSpacing: -0.3,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: context.colors.textPrimary,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  color: AppColors.customerColor,
+                  strokeWidth: 3,
+                ),
+              ),
+            )
           : _myReviews.isEmpty
-              ? _empty()
+              ? _empty(isDark)
               : RefreshIndicator(
                   onRefresh: _load,
-                  color: context.colors.primary,
+                  color: AppColors.customerColor,
                   child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(isTablet ? 20 : 16),
                     itemCount: _myReviews.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    itemBuilder: (_, i) => _reviewCard(_myReviews[i]),
+                    itemBuilder: (_, i) => _reviewCard(_myReviews[i], isDark, isTablet),
                   ),
                 ),
     );
   }
 
-  Widget _empty() => Center(
+  Widget _empty(bool isDark) => Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.rate_review_outlined, size: 56, color: Color(0xFFD1D5DB)),
-            const SizedBox(height: 12),
-            const Text('No reviews written yet', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF374151))),
-            const SizedBox(height: 4),
-            const Text('Complete a booking to leave your first review', style: TextStyle(fontSize: 12.5, color: Color(0xFF9CA3AF))),
+            Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : const Color(0xFFF3F4F6),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.rate_review_outlined,
+                size: 40,
+                color: isDark
+                    ? Colors.white.withOpacity(0.3)
+                    : const Color(0xFFD1D5DB),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              AppLocalizations.of(context)!.myReviewsEmptyTitle,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: context.colors.textPrimary,
+                letterSpacing: -0.2,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              AppLocalizations.of(context)!.myReviewsEmptySubtitle,
+              style: TextStyle(
+                fontSize: 13,
+                color: context.colors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       );
 
-  Widget _reviewCard(Map<String, dynamic> rv) {
+  Widget _reviewCard(Map<String, dynamic> rv, bool isDark, bool isTablet) {
     final rating  = int.tryParse('${rv['rating']}') ?? 0;
     final comment = rv['comment']?.toString() ?? '';
-    final name    = rv['professional_name']?.toString() ?? 'Professional';
+    final name    = rv['professional_name']?.toString() ?? AppLocalizations.of(context)!.professionalDefaultName;
     final parsedDate = DateTime.tryParse(rv['created_at']?.toString() ?? '');
     final date    = parsedDate != null ? AppHelpers.formatDate(parsedDate) : '';
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE5E7EB))),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.all(isTablet ? 16 : 14),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withOpacity(0.08)
+              : const Color(0xFFE5E7EB),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(0.08)
+                : Colors.grey.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Expanded(child: Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700))),
-            Text(date, style: TextStyle(fontSize: 11, color: context.colors.textSecondary)),
-          ]),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: isTablet ? 15.0 : 14.0,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ),
+              Text(
+                date,
+                style: TextStyle(
+                  fontSize: isTablet ? 12.0 : 11.0,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 6),
-          Row(children: List.generate(5, (i) => Icon(
-                i < rating ? Icons.star_rounded : Icons.star_border_rounded,
-                size: 16, color: const Color(0xFFF59E0B),
-              ))),
+          Row(
+            children: List.generate(5, (i) => Icon(
+              i < rating
+                  ? Icons.star_rounded
+                  : Icons.star_border_rounded,
+              size: isTablet ? 18 : 16,
+              color: const Color(0xFFF59E0B),
+            )),
+          ),
           if (comment.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(comment, style: const TextStyle(fontSize: 13, color: Color(0xFF374151), height: 1.4)),
+            Text(
+              comment,
+              style: TextStyle(
+                fontSize: isTablet ? 14.0 : 13.0,
+                color: context.colors.textPrimary,
+                height: 1.5,
+                letterSpacing: 0.2,
+              ),
+            ),
           ],
         ],
       ),

@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:google_sign_in/google_sign_in.dart'; // ✅ Google Sign-In
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_colors.dart';
@@ -13,6 +15,7 @@ import '../../../core/utils/app_validators.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/app_loader.dart';
+import '../../../core/widgets/google_logo.dart'; // ✅ real Google "G" (flutter_svg)
 import '../../../services/auth_provider.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/home_service.dart';
@@ -23,9 +26,9 @@ import '../widgets/searchable_picker_field.dart';
 import '../widgets/account_type_card.dart';
 import '../widgets/social_auth_button.dart';
 import '../widgets/registration_success_dialog.dart';
-import '../../../core/widgets/coming_soon_screen.dart';
 import 'login_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 // Email-availability state for the Step 1 live check. `idle` covers both
 // "haven't typed enough yet" and "format invalid" — no need to distinguish
@@ -188,6 +191,12 @@ class _RegisterScreenState extends State<RegisterScreen>
     final cityOk    = _selectedCountry != null && _selectedCity != null;
     final categoryOk =
         _selectedRole != 'professional' || _selectedCategory != null;
+
+    // TEMP DEBUG — remove once the disabled-button issue is found.
+    // ignore: avoid_print
+    print('[FORM DEBUG] name=$nameOk email=$emailOk(status=$_emailStatus) '
+        'pass=$passOk confirm=$confirmOk city=$cityOk category=$categoryOk');
+
     return nameOk && emailOk && passOk && confirmOk && cityOk && categoryOk;
   }
 
@@ -249,7 +258,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     // Professional must select category
     if (_selectedRole == 'professional' && _selectedCategory == null) {
       _shakeController.forward(from: 0);
-      AppHelpers.showError(context, 'Please select your profession category.');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.registerCategoryRequired);
       return;
     }
 
@@ -280,7 +289,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     } else {
       AppHelpers.showError(
         context,
-        auth.errorMessage ?? AppStrings.serverError,
+        auth.errorMessage ?? AppLocalizations.of(context)!.registerServerError,
       );
     }
   }
@@ -301,17 +310,79 @@ class _RegisterScreenState extends State<RegisterScreen>
     );
   }
 
-  void _goToComingSoon(String provider) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ComingSoonScreen(
-          title:   provider,
-          message: "We're finishing up secure sign-in with $provider. "
-              "Check back soon — for now, please create your account with email.",
-        ),
-      ),
+  // Shared post-login navigation — used by Google sign-in
+  // (email/password login has its own copy in login_screen.dart).
+  Future<void> _navigateAfterSocialLogin(AuthProvider auth) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('just_logged_in_banner_flag', true);
+    if (!mounted) return;
+    switch (auth.role) {
+      case 'customer':
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+        break;
+      case 'professional':
+        Navigator.pushNamedAndRemoveUntil(context, '/pro', (route) => false);
+        break;
+      case 'admin':
+        Navigator.pushNamedAndRemoveUntil(context, '/admin', (route) => false);
+        break;
+      default:
+        AppHelpers.showError(context, AppLocalizations.of(context)!.unknownRoleError);
+    }
+  }
+
+  // ✅ NEW — Google Sign-In. `_selectedRole` (Customer/Professional toggle
+  // at the top of this screen) is sent along so a brand-new Google account
+  // gets created with the role the person picked; an existing account
+  // just logs in with whatever role it already has.
+  Future<void> _handleGoogleSignIn() async {
+    // Web needs `clientId` (same Web Client ID as the <meta> tag in
+    // web/index.html and the backend's GOOGLE_CLIENT_ID); native
+    // Android/iOS instead use `serverClientId` so the idToken's audience
+    // matches what the backend verifies against.
+    final googleSignIn = GoogleSignIn(
+      scopes: ['email', 'profile'],
+      clientId: kIsWeb
+          ? '405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com'
+          : null,
     );
+    try {
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return; // person cancelled the account picker
+
+      final googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
+      if (idToken == null) {
+        if (!mounted) return;
+        AppHelpers.showError(
+          context,
+          AppLocalizations.of(context)!.registerServerError,
+        );
+        return;
+      }
+
+      final auth = context.read<AuthProvider>();
+      final success = await auth.loginWithGoogle(
+        idToken: idToken,
+        role: _selectedRole,
+      );
+      if (!mounted) return;
+
+      if (success) {
+        await _navigateAfterSocialLogin(auth);
+      } else {
+        AppHelpers.showError(
+          context,
+          auth.errorMessage ?? AppLocalizations.of(context)!.registerServerError,
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      // TEMP DEBUG — remove once Google Sign-In is confirmed working.
+      // ignore: avoid_print
+      print('[GOOGLE SIGN-IN DEBUG] $e');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.registerServerError);
+    }
   }
 
   // ── Email field trailing status icon ─────────────────────
@@ -338,16 +409,16 @@ class _RegisterScreenState extends State<RegisterScreen>
   // ── Email field inline hint (available / taken + Sign In Instead) ───────
   Widget _buildEmailHint() {
     if (_emailStatus == _EmailStatus.available) {
-      return const Padding(
-        padding: EdgeInsets.only(top: 6, left: 4),
+      return Padding(
+        padding: const EdgeInsets.only(top: 6, left: 4),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.check_circle, size: 14, color: AppColors.success),
-            SizedBox(width: 6),
+            const Icon(Icons.check_circle, size: 14, color: AppColors.success),
+            const SizedBox(width: 6),
             Text(
-              'Email available',
-              style: TextStyle(
+              AppLocalizations.of(context)!.emailAvailableLabel,
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: AppColors.success,
@@ -364,10 +435,10 @@ class _RegisterScreenState extends State<RegisterScreen>
           children: [
             const Icon(Icons.cancel, size: 14, color: AppColors.error),
             const SizedBox(width: 6),
-            const Expanded(
+            Expanded(
               child: Text(
-                'This email is already registered.',
-                style: TextStyle(
+                AppLocalizations.of(context)!.emailTakenLabel,
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: AppColors.error,
@@ -389,7 +460,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                 ),
               ),
               child: Text(
-                'Sign In Instead',
+                AppLocalizations.of(context)!.signInInsteadLabel,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -407,6 +478,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: context.colors.background,
@@ -436,17 +508,23 @@ class _RegisterScreenState extends State<RegisterScreen>
                     const SizedBox(height: AppSizes.md),
 
                     // ── Heading ───────────────────────────────
-                    Text('Create Account', style: context.textStyles.h2),
+                    Text(
+                      AppLocalizations.of(context)!.registerTitle,
+                      style: context.textStyles.h2,
+                    ),
                     const SizedBox(height: AppSizes.xs),
                     Text(
-                      'Join ProFinder and connect with professionals.',
+                      AppLocalizations.of(context)!.registerSubtitle,
                       style: context.textStyles.bodyMedium,
                     ),
 
                     const SizedBox(height: AppSizes.md),
 
                     // ── Account Type ───────────────────────────
-                    Text('Choose Account Type', style: AppTextStyles.label),
+                    Text(
+                      AppLocalizations.of(context)!.accountTypeLabel,
+                      style: AppTextStyles.label,
+                    ),
                     const SizedBox(height: AppSizes.sm),
                     IntrinsicHeight(
                       child: Row(
@@ -454,7 +532,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         children: [
                           AccountTypeCard(
                             title:       AppStrings.customer,
-                            description: 'Hire trusted professionals.',
+                            description: AppLocalizations.of(context)!.customerAccountDescription,
                             icon:        Icons.person_outline,
                             accentColor: AppColors.customerColor,
                             isSelected:  _selectedRole == 'customer',
@@ -466,7 +544,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           const SizedBox(width: AppSizes.sm),
                           AccountTypeCard(
                             title:       AppStrings.professional,
-                            description: 'Offer your services and grow your business.',
+                            description: AppLocalizations.of(context)!.professionalAccountDescription,
                             icon:        Icons.work_outline,
                             accentColor: AppColors.professionalColor,
                             isSelected:  _selectedRole == 'professional',
@@ -488,10 +566,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                       autofillHints: const [AutofillHints.name],
                       onFieldSubmitted: (_) =>
                           FocusScope.of(context).requestFocus(_emailFocusNode),
-                      decoration: const InputDecoration(
-                        labelText:  'Full Name',
-                        hintText:   'Enter your full name',
-                        prefixIcon: Icon(Icons.person_outline),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context)!.fullNameLabel,
+                        hintText: AppLocalizations.of(context)!.fullNameHint,
+                        prefixIcon: const Icon(Icons.person_outline),
                       ),
                       validator: AppValidators.name,
                     ),
@@ -511,7 +589,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           FocusScope.of(context).requestFocus(_passwordFocusNode),
                       decoration: InputDecoration(
                         labelText:  AppStrings.email,
-                        hintText:   'example@email.com',
+                        hintText:   AppLocalizations.of(context)!.emailHint,
                         prefixIcon: const Icon(Icons.email_outlined),
                         suffixIcon: _emailSuffixIcon(),
                       ),
@@ -532,17 +610,17 @@ class _RegisterScreenState extends State<RegisterScreen>
                             ? Text(flag, style: const TextStyle(fontSize: 20))
                             : const Icon(Icons.public, size: 20);
                       },
-                      label:      'Country',
-                      hint:       'Select your country',
+                      label:      AppLocalizations.of(context)!.countryLabel,
+                      hint:       AppLocalizations.of(context)!.countryHint,
                       prefixIcon: Icons.public_outlined,
                       loading:    _loadingCountries,
-                      searchHint: 'Search countries...',
-                      emptyMessage: 'No countries found',
+                      searchHint: AppLocalizations.of(context)!.countrySearchHint,
+                      emptyMessage: AppLocalizations.of(context)!.countryEmptyMessage,
                       onChanged: (country) {
                         if (country != null) _onCountrySelected(country);
                       },
                       validator: (value) =>
-                          value == null ? 'Please select your country' : null,
+                          value == null ? AppLocalizations.of(context)!.countryRequiredError : null,
                     ),
 
                     const SizedBox(height: AppSizes.sm),
@@ -553,17 +631,17 @@ class _RegisterScreenState extends State<RegisterScreen>
                       value:      _selectedCity,
                       items:      List<Map<String, dynamic>>.from(_cities),
                       itemLabel:  (c) => c['name'] as String,
-                      label:      'City',
-                      hint:       'Select your city',
+                      label:      AppLocalizations.of(context)!.cityLabel,
+                      hint:       AppLocalizations.of(context)!.cityHint,
                       prefixIcon: Icons.location_city_outlined,
                       enabled:    _selectedCountry != null,
                       loading:    _loadingCities,
-                      disabledHint: 'Select a country first',
-                      searchHint: 'Search cities...',
-                      emptyMessage: 'No cities found',
+                      disabledHint: AppLocalizations.of(context)!.cityDisabledHint,
+                      searchHint: AppLocalizations.of(context)!.citySearchHint,
+                      emptyMessage: AppLocalizations.of(context)!.cityEmptyMessage,
                       onChanged: (city) => setState(() => _selectedCity = city),
                       validator: (value) =>
-                          value == null ? 'Please select your city' : null,
+                          value == null ? AppLocalizations.of(context)!.cityRequiredError : null,
                     ),
 
                     // ── Category — only for professionals ─────
@@ -582,16 +660,16 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   value: _selectedCategory,
                                   items: List<Map<String, dynamic>>.from(_categories),
                                   itemLabel: (cat) => cat['name'] ?? '',
-                                  label:      'Your Profession',
-                                  hint:       'Select your category',
+                                  label:      AppLocalizations.of(context)!.professionLabel,
+                                  hint:       AppLocalizations.of(context)!.professionHint,
                                   prefixIcon: Icons.category_outlined,
-                                  searchHint: 'Search professions...',
-                                  emptyMessage: 'No categories found',
+                                  searchHint: AppLocalizations.of(context)!.professionSearchHint,
+                                  emptyMessage: AppLocalizations.of(context)!.professionEmptyMessage,
                                   onChanged: (cat) =>
                                       setState(() => _selectedCategory = cat),
                                   validator: (value) {
                                     if (_selectedRole == 'professional' && value == null) {
-                                      return 'Please select your profession';
+                                      return AppLocalizations.of(context)!.professionRequiredError;
                                     }
                                     return null;
                                   },
@@ -614,7 +692,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           FocusScope.of(context).requestFocus(_confirmFocusNode),
                       decoration: InputDecoration(
                         labelText:  AppStrings.password,
-                        hintText:   'Min. 8 characters',
+                        hintText:   AppLocalizations.of(context)!.passwordHint,
                         prefixIcon: const Icon(Icons.lock_outlined),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -629,16 +707,16 @@ class _RegisterScreenState extends State<RegisterScreen>
                       validator: AppValidators.password,
                     ),
                     if (_showCapsLockHint && _capsLockOn && _passwordFocusNode.hasFocus)
-                      const Padding(
-                        padding: EdgeInsets.only(top: 6, left: 4),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, left: 4),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.info_outline, size: 14, color: AppColors.warning),
-                            SizedBox(width: 6),
+                            const Icon(Icons.info_outline, size: 14, color: AppColors.warning),
+                            const SizedBox(width: 6),
                             Text(
-                              'Caps Lock is on',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.capsLockOnHint,
+                              style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.warning,
@@ -662,7 +740,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                       onFieldSubmitted: (_) => _onRegisterPressed(),
                       decoration: InputDecoration(
                         labelText:  AppStrings.confirmPass,
-                        hintText:   'Re-enter your password',
+                        hintText:   AppLocalizations.of(context)!.confirmPasswordHint,
                         prefixIcon: const Icon(Icons.lock_outlined),
                         suffixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -698,11 +776,26 @@ class _RegisterScreenState extends State<RegisterScreen>
                     const SizedBox(height: AppSizes.lg),
 
                     // ── Register Button ───────────────────────
-                    ElevatedButton(
-                      onPressed: (auth.isLoading || !_isFormValid) ? null : _onRegisterPressed,
-                      child: auth.isLoading
-                          ? const AppButtonLoader()
-                          : Text(AppStrings.register),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: (auth.isLoading || !_isFormValid) ? null : _onRegisterPressed,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: auth.isLoading
+                            ? const AppButtonLoader()
+                            : Text(
+                                AppLocalizations.of(context)!.registerCta,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                      ),
                     ),
 
                     const SizedBox(height: AppSizes.md),
@@ -710,12 +803,27 @@ class _RegisterScreenState extends State<RegisterScreen>
                     // ── Divider ───────────────────────────────
                     Row(
                       children: [
-                        const Expanded(child: Divider()),
+                        Expanded(
+                          child: Divider(
+                            color: isDark
+                                ? Colors.white.withOpacity(0.1)
+                                : Colors.grey.withOpacity(0.2),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm),
-                          child: Text('or continue with', style: AppTextStyles.label),
+                          child: Text(
+                            AppLocalizations.of(context)!.orContinueWithLabel,
+                            style: AppTextStyles.label,
+                          ),
                         ),
-                        const Expanded(child: Divider()),
+                        Expanded(
+                          child: Divider(
+                            color: isDark
+                                ? Colors.white.withOpacity(0.1)
+                                : Colors.grey.withOpacity(0.2),
+                          ),
+                        ),
                       ],
                     ),
 
@@ -723,42 +831,16 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                     // ── Google ────────────────────────────────
                     SocialAuthButton(
-                      logo: SizedBox(
-                        width: 22, height: 22,
-                        child: CustomPaint(painter: _GoogleLogoPainter()),
-                      ),
-                      label:       'Continue with Google',
-                      background:  AppColors.white,
-                      textColor:   context.colors.textPrimary,
+                      // ✅ replaced CustomPaint(painter: _GoogleLogoPainter())
+                      // with the real Google "G" SVG widget — everything else
+                      // about the button (size, colors, border, spacing,
+                      // onTap) is unchanged.
+                      logo: const GoogleLogo(size: 18),
+                      label: AppLocalizations.of(context)!.googleSignInLabel,
+                      background: isDark ? const Color(0xFF2C2C2E) : AppColors.white,
+                      textColor: context.colors.textPrimary,
                       borderColor: context.colors.divider,
-                      onTap: () => _goToComingSoon('Google Sign-In'),
-                    ),
-
-                    const SizedBox(height: AppSizes.sm),
-
-                    // ── Facebook + Twitter ────────────────────
-                    Row(
-                      children: [
-                        Expanded(
-                          child: SocialAuthButton(
-                            logo: const Icon(Icons.facebook_rounded, color: AppColors.white, size: 20),
-                            label:      'Facebook',
-                            background: const Color(0xFF1877F2),
-                            textColor:  AppColors.white,
-                            onTap: () => _goToComingSoon('Facebook Sign-In'),
-                          ),
-                        ),
-                        const SizedBox(width: AppSizes.sm),
-                        Expanded(
-                          child: SocialAuthButton(
-                            logo: const Icon(Icons.close, color: AppColors.white, size: 18),
-                            label:      'Twitter',
-                            background: AppColors.black,
-                            textColor:  AppColors.white,
-                            onTap: () => _goToComingSoon('X (Twitter) Sign-In'),
-                          ),
-                        ),
-                      ],
+                      onTap: _handleGoogleSignIn,
                     ),
 
                     const SizedBox(height: AppSizes.md),
@@ -767,10 +849,19 @@ class _RegisterScreenState extends State<RegisterScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(AppStrings.hasAccount, style: context.textStyles.bodyMedium),
+                        Text(
+                          AppStrings.hasAccount,
+                          style: context.textStyles.bodyMedium,
+                        ),
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child:     Text(AppStrings.login),
+                          child: Text(
+                            AppStrings.login,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.professionalColor,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -783,54 +874,4 @@ class _RegisterScreenState extends State<RegisterScreen>
       ),
     );
   }
-}
-
-// ── Google Logo ───────────────────────────────────────────────
-// Drawn as a colored ring (stroke, not a filled pie) with a crossbar,
-// matching the real Google "G" proportions instead of looking like a
-// solid color-wheel blob.
-class _GoogleLogoPainter extends CustomPainter {
-  double _deg(double degrees) => degrees * 3.1415926535 / 180;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final strokeWidth = size.width * 0.22;
-    final ringRadius = size.width / 2 - strokeWidth / 2;
-    final rect = Rect.fromCircle(center: center, radius: ringRadius);
-
-    final ringPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.butt;
-
-    ringPaint.color = const Color(0xFF4285F4); // blue
-    canvas.drawArc(rect, _deg(-10), _deg(100), false, ringPaint);
-
-    ringPaint.color = const Color(0xFF34A853); // green
-    canvas.drawArc(rect, _deg(90), _deg(90), false, ringPaint);
-
-    ringPaint.color = const Color(0xFFFBBC05); // yellow
-    canvas.drawArc(rect, _deg(180), _deg(70), false, ringPaint);
-
-    ringPaint.color = const Color(0xFFEA4335); // red
-    canvas.drawArc(rect, _deg(250), _deg(100), false, ringPaint);
-
-    // Crossbar of the "G" — bridges the ring to the center on the blue
-    // (right) side, which is what actually reads as a "G" rather than a
-    // plain colored ring.
-    final barPaint = Paint()..color = const Color(0xFF4285F4);
-    canvas.drawRect(
-      Rect.fromLTWH(
-        center.dx - strokeWidth * 0.15,
-        center.dy - strokeWidth / 2,
-        size.width / 2 - (center.dx - strokeWidth * 0.15),
-        strokeWidth,
-      ),
-      barPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_context_ext.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class VoiceRecorderButton extends StatefulWidget {
   final void Function(File audioFile, int durationSeconds) onRecorded;
@@ -39,7 +40,7 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
     if (!hasPermission) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Microphone permission is required for voice messages.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.chatMicPermissionRequired)),
         );
       }
       return;

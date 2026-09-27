@@ -57,6 +57,30 @@ class AuthService {
     }
   }
 
+  // ✅ NEW — Google Sign-In. `role` is only used by the backend the very
+  // first time this Google account signs in (i.e. when it creates a new
+  // User); for an existing account it's ignored and the stored role wins.
+  Future<Map<String, dynamic>> loginWithGoogle({
+    required String idToken,
+    String role = 'customer',
+  }) async {
+    try {
+      final response = await _api.post(
+        AppConstants.googleLogin,
+        {'id_token': idToken, 'role': role},
+      );
+      await _saveTokens(
+        access:  response.data['access'],
+        refresh: response.data['refresh'],
+        role:    response.data['role'],
+      );
+      await PushNotificationService().registerToken();
+      return {'success': true, 'data': response.data};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
   // ✅ NEW — Register Step 1 realtime email availability check.
   // Returns {'success': true, 'available': bool} on a clean response;
   // {'success': false, 'available': null} on network/server error — the

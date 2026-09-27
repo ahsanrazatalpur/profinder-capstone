@@ -9,6 +9,7 @@ import '../../../../core/theme/theme_context_ext.dart';
 import '../providers/conversation_list_provider.dart';
 import '../widgets/conversation_tile.dart';
 import 'chat_screen.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class ConversationListScreen extends StatefulWidget {
   final int currentUserId;
@@ -84,30 +85,74 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > 600;
+
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: AppBar(
         backgroundColor: context.colors.surface,
         elevation: 0,
-        title: Text('Messages', style: TextStyle(color: context.colors.textPrimary, fontWeight: FontWeight.w700)),
+        title: Text(
+          AppLocalizations.of(context)!.messagesTitle,
+          style: TextStyle(
+            color: context.colors.textPrimary,
+            fontWeight: FontWeight.w700,
+            fontSize: isTablet ? 18.0 : 16.0,
+            letterSpacing: -0.3,
+          ),
+        ),
         iconTheme: IconThemeData(color: context.colors.textPrimary),
       ),
       body: Consumer<ConversationListProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading && provider.conversations.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CircularProgressIndicator(
+                      color: AppColors.customerColor,
+                      strokeWidth: 3,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppLocalizations.of(context)!.messagesLoadingText,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: context.colors.textSecondary,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
           if (provider.error != null && provider.conversations.isEmpty) {
-            return _buildError(provider);
+            return _buildError(provider, isDark);
           }
           if (provider.conversations.isEmpty) {
-            return _buildEmpty();
+            return _buildEmpty(isDark, isTablet);
           }
           return RefreshIndicator(
             onRefresh: provider.refresh,
+            color: AppColors.customerColor,
             child: ListView.separated(
+              padding: EdgeInsets.symmetric(vertical: isTablet ? 8 : 4),
               itemCount: provider.conversations.length,
-              separatorBuilder: (_, __) => Divider(height: 1, indent: 80, color: context.colors.divider),
+              separatorBuilder: (_, __) => Divider(
+                height: 1,
+                indent: 80,
+                color: isDark
+                    ? Colors.white.withOpacity(0.06)
+                    : context.colors.divider,
+              ),
               itemBuilder: (context, index) {
                 final conv = provider.conversations[index];
                 return ConversationTile(
@@ -133,30 +178,111 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
     );
   }
 
-  Widget _buildEmpty() {
-    return Builder(builder: (context) {
-      return Center(
+  Widget _buildEmpty(bool isDark, bool isTablet) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(isTablet ? 32 : 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.chat_bubble_outline, size: 56, color: context.colors.textDisabled),
-            const SizedBox(height: 12),
-            Text('No conversations yet', style: TextStyle(fontSize: 14.5, color: context.colors.textSecondary)),
+            Container(
+              width: isTablet ? 100 : 88,
+              height: isTablet ? 100 : 88,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : const Color(0xFFF3F4F6),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.chat_bubble_outline_rounded,
+                size: isTablet ? 44 : 40,
+                color: isDark
+                    ? Colors.white.withOpacity(0.3)
+                    : const Color(0xFFD1D5DB),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              AppLocalizations.of(context)!.messagesEmptyTitle,
+              style: TextStyle(
+                fontSize: isTablet ? 18 : 16,
+                fontWeight: FontWeight.w700,
+                color: context.colors.textPrimary,
+                letterSpacing: -0.2,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              AppLocalizations.of(context)!.messagesEmptySubtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: isTablet ? 14 : 13,
+                color: context.colors.textSecondary,
+                letterSpacing: 0.2,
+              ),
+            ),
           ],
         ),
-      );
-    });
+      ),
+    );
   }
 
-  Widget _buildError(ConversationListProvider provider) {
+  Widget _buildError(ConversationListProvider provider, bool isDark) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(provider.error!, style: const TextStyle(color: AppColors.error)),
-          const SizedBox(height: 12),
-          TextButton(onPressed: provider.load, child: const Text('Retry')),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : const Color(0xFFF3F4F6),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 40,
+                color: AppColors.error,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              provider.error!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: context.colors.textSecondary,
+                letterSpacing: 0.2,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: provider.load,
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: Text(
+                AppLocalizations.of(context)!.retryCta,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.customerColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

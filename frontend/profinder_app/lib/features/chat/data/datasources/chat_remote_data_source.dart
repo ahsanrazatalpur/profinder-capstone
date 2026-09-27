@@ -188,16 +188,22 @@ class ChatRemoteDataSource {
     await _api.delete(AppConstants.unblockUser(userId));
   }
 
-  Future<void> reportUser(int userId, String reason, String details, {String? messageId}) async {
+  Future<void> reportUser(int userId, String reason, String details, {String? messageId, String? evidenceUrl}) async {
     // 🐛 FIX: field names now match apps.admin_panel's CreateUserReportSerializer
     // ({reported_user, reason, description}), not messaging's UserReport
     // ({reported, reason, details, message}) — see AppConstants.reportUser.
     // That serializer has no message-link field, so `messageId` (still
     // accepted for API compatibility with call sites) isn't sent.
-    await _api.post(AppConstants.reportUser, {
+    // ✅ Trust & Safety Part 8: `evidence_url` is now also accepted by the
+    // backend serializer (optional reference link) — sent only if non-empty
+    // so older call sites that never pass it behave exactly as before.
+    final body = <String, dynamic>{
       'reported_user': userId,
       'reason': reason,
       'description': details,
-    });
+    };
+    final ev = evidenceUrl?.trim() ?? '';
+    if (ev.isNotEmpty) body['evidence_url'] = ev;
+    await _api.post(AppConstants.reportUser, body);
   }
 }

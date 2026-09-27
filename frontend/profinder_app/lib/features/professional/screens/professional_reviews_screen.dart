@@ -6,6 +6,7 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalReviewsScreen extends StatefulWidget {
   const ProfessionalReviewsScreen({super.key});
@@ -52,7 +53,7 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
       appBar: AppBar(
         backgroundColor: context.colors.surface,
         elevation: 0,
-        title: Text('Reviews', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+        title: Text(AppLocalizations.of(context)!.reviews, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
         leading: IconButton(icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: context.colors.textPrimary), onPressed: () => Navigator.pop(context)),
       ),
       body: _isLoading
@@ -72,7 +73,7 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
                         children: [
                           Icon(Icons.rate_review_outlined, size: 56, color: context.colors.textDisabled),
                           const SizedBox(height: 12),
-                          Text('No reviews yet', style: TextStyle(fontSize: 14, color: context.colors.textSecondary)),
+                          Text(AppLocalizations.of(context)!.searchNoReviewsYet, style: TextStyle(fontSize: 14, color: context.colors.textSecondary)),
                         ],
                       ),
                     )
@@ -105,7 +106,7 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
                     size: 16, color: Colors.white,
                   ))),
               const SizedBox(height: 4),
-              Text('${_reviews.length} review${_reviews.length == 1 ? '' : 's'}',
+              Text(AppLocalizations.of(context)!.professionalReview('${_reviews.length}', _reviews.length == 1 ? '' : 's'),
                   style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.9))),
             ],
           ),

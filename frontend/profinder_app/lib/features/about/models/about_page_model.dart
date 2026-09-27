@@ -128,6 +128,29 @@ class AboutSection {
   };
 
   bool get isCollectionType => collectionTypes.contains(sectionType);
+
+  // ✅ FIX: needed for optimistic toggle updates in the admin section list —
+  // without this the switch could only reflect the server response, so on
+  // a slow connection a single tap looked like it did nothing.
+  AboutSection copyWith({bool? isEnabled}) {
+    return AboutSection(
+      id: id,
+      sectionType: sectionType,
+      sectionKey: sectionKey,
+      title: title,
+      subtitle: subtitle,
+      description: description,
+      icon: icon,
+      imageUrl: imageUrl,
+      ctaText: ctaText,
+      ctaUrl: ctaUrl,
+      ctaStyle: ctaStyle,
+      extraData: extraData,
+      order: order,
+      isEnabled: isEnabled ?? this.isEnabled,
+      items: items,
+    );
+  }
 }
 
 class AboutPageSeo {

@@ -6,6 +6,7 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalChatScreen extends StatefulWidget {
   final int conversationId;
@@ -139,7 +140,7 @@ class _ProfessionalChatScreenState extends State<ProfessionalChatScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : _messages.isEmpty
                     ? Center(
-                        child: Text('Say hello 👋', style: TextStyle(fontSize: 14, color: context.colors.textSecondary)))
+                        child: Text(AppLocalizations.of(context)!.chatSayHello, style: TextStyle(fontSize: 14, color: context.colors.textSecondary)))
                     : ListView.builder(
                         controller: _scrollController,
                         padding: const EdgeInsets.all(14),
@@ -194,7 +195,7 @@ class _ProfessionalChatScreenState extends State<ProfessionalChatScreen> {
               maxLines: 4,
               style: TextStyle(fontSize: 14, color: context.colors.textPrimary),
               decoration: InputDecoration(
-                hintText: 'Type a message...',
+                hintText: AppLocalizations.of(context)!.professionalTypeMessage,
                 hintStyle: TextStyle(fontSize: 13, color: context.colors.textSecondary),
                 filled: true,
                 fillColor: context.colors.background,

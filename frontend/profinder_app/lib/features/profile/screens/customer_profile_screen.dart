@@ -24,9 +24,12 @@ import 'my_reviews_screen.dart';
 import 'settings_screen.dart';
 import 'security_screen.dart';
 import 'help_screen.dart';
+import '../../trust_safety/screens/my_reports_screen.dart';
+import '../../trust_safety/screens/account_status_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/profile_header_card.dart';
 import '../../about/screens/about_screen.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class CustomerProfileScreen extends StatefulWidget {
   const CustomerProfileScreen({super.key});
@@ -114,7 +117,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       print('❌ _loadProfile error: $e'); // TEMP DEBUG — console mein pura error dekhne ke liye
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, 'Could not load profile');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.profileLoadError);
     }
   }
 
@@ -171,58 +174,114 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, 'Could not pick image');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.imagePickError);
     }
   }
 
   // ── Show Image Source Sheet ──────────────────────────────
   void _showImageSourceSheet() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40, height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE5E7EB),
-                  borderRadius: BorderRadius.circular(2),
+      builder: (_) => Container(
+        decoration: BoxDecoration(
+          color: context.colors.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withOpacity(0.15)
+                        : const Color(0xFFE5E7EB),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-              const Text(
-                'Change Profile Photo',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                leading: Container(
-                  width: 40, height: 40,
-                  decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(10)),
-                  child: Icon(Icons.photo_library_outlined, color: context.colors.primary, size: 20),
+                Text(
+                  AppLocalizations.of(context)!.changeProfilePhotoTitle,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                    letterSpacing: -0.2,
+                  ),
                 ),
-                title: const Text('Choose from Gallery', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                onTap: () => _pickImage(ImageSource.gallery),
-              ),
-              // Camera option — web pe hide karo (web me camera support limited hai)
-              if (!kIsWeb)
+                const SizedBox(height: 16),
                 ListTile(
                   leading: Container(
-                    width: 40, height: 40,
-                    decoration: BoxDecoration(color: context.colors.accentLight, borderRadius: BorderRadius.circular(10)),
-                    child: Icon(Icons.camera_alt_outlined, color: context.colors.accent, size: 20),
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: context.colors.primaryLight,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.photo_library_outlined,
+                      color: context.colors.primary,
+                      size: 20,
+                    ),
                   ),
-                  title: const Text('Take a Photo', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                  onTap: () => _pickImage(ImageSource.camera),
+                  title: Text(
+                    AppLocalizations.of(context)!.galleryOptionLabel,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: context.colors.textPrimary,
+                    ),
+                  ),
+                  onTap: () => _pickImage(ImageSource.gallery),
                 ),
-              const SizedBox(height: 8),
-            ],
+                // Camera option — web pe hide karo (web me camera support limited hai)
+                if (!kIsWeb)
+                  ListTile(
+                    leading: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: context.colors.accentLight,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.camera_alt_outlined,
+                        color: context.colors.accent,
+                        size: 20,
+                      ),
+                    ),
+                    title: Text(
+                      AppLocalizations.of(context)!.cameraOptionLabel,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: context.colors.textPrimary,
+                      ),
+                    ),
+                    onTap: () => _pickImage(ImageSource.camera),
+                  ),
+                const SizedBox(height: 8),
+              ],
+            ),
           ),
         ),
       ),
@@ -270,12 +329,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         _pickedXFile   = null;
         _webImageBytes = null;
       });
-      AppHelpers.showSuccess(context, 'Profile updated successfully!');
+      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.profileUpdateSuccess);
       _loadProfile();
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      AppHelpers.showError(context, 'Failed to update profile');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.profileUpdateError);
     }
   }
 
@@ -296,14 +355,25 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(isDark),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  color: AppColors.customerColor,
+                  strokeWidth: 3,
+                ),
+              ),
+            )
           : RefreshIndicator(
               onRefresh: _loadProfile,
-              color: context.colors.primary,
+              color: AppColors.customerColor,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16),
@@ -325,16 +395,25 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   }
 
   // ── AppBar ───────────────────────────────────────────────
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(bool isDark) {
     return AppBar(
       backgroundColor: context.colors.surface,
       elevation: 0,
       title: Text(
-        'My Profile',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+        AppLocalizations.of(context)!.profileTitle,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: context.colors.textPrimary,
+          letterSpacing: -0.2,
+        ),
       ),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: context.colors.textPrimary),
+        icon: Icon(
+          Icons.arrow_back_ios_new_rounded,
+          size: 20,
+          color: context.colors.textPrimary,
+        ),
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
@@ -346,19 +425,41 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
               clipBehavior: Clip.none,
               children: [
                 Container(
-                  width: 38, height: 38,
-                  decoration: BoxDecoration(color: context.colors.background, shape: BoxShape.circle),
-                  child: Icon(Icons.notifications_outlined, color: context.colors.textPrimary, size: 19),
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withOpacity(0.05)
+                        : context.colors.background,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.notifications_outlined,
+                    color: context.colors.textPrimary,
+                    size: 19,
+                  ),
                 ),
                 if (_unreadNotifications > 0)
                   Positioned(
-                    right: -2, top: -2,
+                    right: -2,
+                    top: -2,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                       constraints: const BoxConstraints(minWidth: 17),
-                      decoration: BoxDecoration(color: const Color(0xFFF59E0B), borderRadius: BorderRadius.circular(9), border: Border.all(color: Colors.white, width: 1.5)),
-                      child: Text(_unreadNotifications > 9 ? '9+' : '$_unreadNotifications', textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF59E0B),
+                        borderRadius: BorderRadius.circular(9),
+                        border: Border.all(color: Colors.white, width: 1.5),
+                      ),
+                      child: Text(
+                        _unreadNotifications > 9 ? '9+' : '$_unreadNotifications',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
               ],
@@ -368,22 +469,47 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         if (!_isEditing)
           TextButton.icon(
             onPressed: () => setState(() => _isEditing = true),
-            icon: Icon(Icons.edit_outlined, size: 16, color: context.colors.primary),
-            label: Text('Edit', style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.w600)),
+            icon: Icon(Icons.edit_outlined, size: 16, color: AppColors.customerColor),
+            label: Text(
+              AppLocalizations.of(context)!.editCta,
+              style: TextStyle(
+                color: AppColors.customerColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           )
         else ...[
           TextButton(
             onPressed: _isSaving ? null : _cancelEdit,
-            child: Text('Cancel', style: TextStyle(color: context.colors.textSecondary, fontWeight: FontWeight.w500)),
+            child: Text(
+              AppLocalizations.of(context)!.cancelCta,
+              style: TextStyle(
+                color: context.colors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
           _isSaving
-              ? const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.customerColor,
+                    ),
+                  ),
                 )
               : TextButton(
                   onPressed: _saveProfile,
-                  child: Text('Save', style: TextStyle(color: context.colors.accent, fontWeight: FontWeight.w700)),
+                  child: Text(
+                    AppLocalizations.of(context)!.saveCta,
+                    style: TextStyle(
+                      color: AppColors.customerColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
         ],
       ],
@@ -400,6 +526,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   }
 
   Widget _buildAvatarSection() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: [
         // ── Global profile header card (guest ke sath shared widget) ──
@@ -415,23 +543,50 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
           onAvatarTap: _isEditing ? _showImageSourceSheet : null,
           avatarBadge: _isEditing
               ? Container(
-                  width: 28, height: 28,
-                  decoration: BoxDecoration(color: const Color(0xFFF59E0B), shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 2)),
-                  child: const Icon(Icons.camera_alt_rounded, size: 14, color: Colors.white),
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF59E0B),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    size: 14,
+                    color: Colors.white,
+                  ),
                 )
               : null,
-          statusText: _isPremium ? 'Premium Member' : null,
+          statusText: _isPremium ? AppLocalizations.of(context)!.premiumMemberLabel : null,
           statusIcon: Icons.workspace_premium_rounded,
           description: (_profile?['email'] as String?)?.isNotEmpty == true ? _profile!['email'] as String : null,
           stats: [
-            ProfileHeaderStat(icon: Icons.calendar_today_rounded, value: '$_bookingsCount', label: 'Bookings'),
-            ProfileHeaderStat(icon: Icons.favorite_rounded, value: '$_savedCount', label: 'Saved'),
-            ProfileHeaderStat(icon: Icons.workspace_premium_rounded, value: _planName, label: 'Plan'),
+            ProfileHeaderStat(
+              icon: Icons.calendar_today_rounded,
+              value: '$_bookingsCount',
+              label: AppLocalizations.of(context)!.bookingsStatLabel,
+            ),
+            ProfileHeaderStat(
+              icon: Icons.favorite_rounded,
+              value: '$_savedCount',
+              label: AppLocalizations.of(context)!.savedStatLabel,
+            ),
+            ProfileHeaderStat(
+              icon: Icons.workspace_premium_rounded,
+              value: _planName,
+              label: AppLocalizations.of(context)!.planStatLabel,
+            ),
           ],
         ),
         if (_isEditing && _pickedXFile != null) ...[
           const SizedBox(height: 8),
-          const Text('New photo selected — tap Save to upload', style: TextStyle(fontSize: 11, color: Color(0xFFB45309))),
+          Text(
+            AppLocalizations.of(context)!.newPhotoSelectedHint,
+            style: TextStyle(
+              fontSize: 11,
+              color: isDark ? const Color(0xFFFCD34D) : const Color(0xFFB45309),
+            ),
+          ),
         ],
       ],
     );
@@ -439,32 +594,71 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 
   // ── Info Card ────────────────────────────────────────────
   Widget _buildInfoCard() {
-    return Container(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.colors.divider),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withOpacity(0.08)
+              : context.colors.divider,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(0.1)
+                : Colors.grey.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.person_outline_rounded, size: 16, color: context.colors.primary),
+              Icon(
+                Icons.person_outline_rounded,
+                size: 16,
+                color: AppColors.customerColor,
+              ),
               const SizedBox(width: 6),
               Text(
-                'Personal Information',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                AppLocalizations.of(context)!.personalInfoLabel,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: context.colors.textPrimary,
+                  letterSpacing: -0.1,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          _buildField('Full Name',    _nameController,  Icons.person_outline_rounded),
+          _buildField(
+            AppLocalizations.of(context)!.fullNameLabel,
+            _nameController,
+            Icons.person_outline_rounded,
+          ),
           const SizedBox(height: 12),
-          _buildField('Phone Number', _phoneController, Icons.phone_outlined, type: TextInputType.phone),
+          _buildField(
+            AppLocalizations.of(context)!.phoneLabel,
+            _phoneController,
+            Icons.phone_outlined,
+            type: TextInputType.phone,
+          ),
           const SizedBox(height: 12),
-          _buildField('City',         _cityController,  Icons.location_city_outlined),
+          _buildField(
+            AppLocalizations.of(context)!.cityLabel,
+            _cityController,
+            Icons.location_city_outlined,
+          ),
         ],
       ),
     );
@@ -476,48 +670,149 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _groupLabel('Account'),
+        _groupLabel(AppLocalizations.of(context)!.accountGroupLabel),
         _menuGroup([
-          _actionTile(Icons.edit_outlined, 'Edit Profile', 'Update your personal details',
-              () => setState(() => _isEditing = true), iconColor: const Color(0xFF3B82F6)),
-          _actionTile(Icons.workspace_premium_rounded, 'Subscription',
-              _isPremium ? 'You\'re on the $_planName plan' : 'Upgrade to Premium',
-              () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const SubscriptionScreen(userRole: 'customer'))),
-              iconColor: const Color(0xFFF59E0B)),
-          _actionTile(Icons.account_balance_wallet_outlined, 'Wallet', 'Manage your balance',
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletScreen())),
-              iconColor: const Color(0xFFF97316)),
-          _actionTile(Icons.calendar_today_outlined, 'Bookings', 'View your bookings',
-              () => Navigator.pushNamed(context, '/bookings'), iconColor: const Color(0xFF06B6D4)),
-          _actionTile(Icons.favorite_border_rounded, 'Saved Professionals', 'Your favorite professionals',
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedProfessionalsScreen())),
-              iconColor: const Color(0xFFEC4899)),
-          _actionTile(Icons.rate_review_outlined, 'Reviews', 'Reviews you\'ve written',
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyReviewsScreen())),
-              iconColor: const Color(0xFF8B5CF6)),
-          _actionTile(Icons.receipt_long_outlined, 'Payments', 'Your payment history',
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentsScreen())),
-              iconColor: const Color(0xFF6366F1)),
+          _actionTile(
+            Icons.edit_outlined,
+            AppLocalizations.of(context)!.editProfileActionLabel,
+            AppLocalizations.of(context)!.editProfileActionSubtitle,
+            () => setState(() => _isEditing = true),
+            iconColor: const Color(0xFF3B82F6),
+          ),
+          _actionTile(
+            Icons.workspace_premium_rounded,
+            AppLocalizations.of(context)!.subscriptionActionLabel,
+            _isPremium
+                ? AppLocalizations.of(context)!.subscriptionActiveStatus(_planName)
+                : AppLocalizations.of(context)!.subscriptionUpgradeStatus,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const SubscriptionScreen(userRole: 'customer'),
+              ),
+            ),
+            iconColor: const Color(0xFFF59E0B),
+          ),
+          _actionTile(
+            Icons.account_balance_wallet_outlined,
+            AppLocalizations.of(context)!.walletActionLabel,
+            AppLocalizations.of(context)!.walletActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const WalletScreen()),
+            ),
+            iconColor: const Color(0xFFF97316),
+          ),
+          _actionTile(
+            Icons.calendar_today_outlined,
+            AppLocalizations.of(context)!.bookingsActionLabel,
+            AppLocalizations.of(context)!.bookingsActionSubtitle,
+            () => Navigator.pushNamed(context, '/bookings'),
+            iconColor: const Color(0xFF06B6D4),
+          ),
+          _actionTile(
+            Icons.favorite_border_rounded,
+            AppLocalizations.of(context)!.savedProfessionalsActionLabel,
+            AppLocalizations.of(context)!.savedProfessionalsActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SavedProfessionalsScreen()),
+            ),
+            iconColor: const Color(0xFFEC4899),
+          ),
+          _actionTile(
+            Icons.rate_review_outlined,
+            AppLocalizations.of(context)!.reviewsActionLabel,
+            AppLocalizations.of(context)!.reviewsActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MyReviewsScreen()),
+            ),
+            iconColor: const Color(0xFF8B5CF6),
+          ),
+          _actionTile(
+            Icons.receipt_long_outlined,
+            AppLocalizations.of(context)!.paymentsActionLabel,
+            AppLocalizations.of(context)!.paymentsActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PaymentsScreen()),
+            ),
+            iconColor: const Color(0xFF6366F1),
+          ),
         ]),
 
         const SizedBox(height: 16),
-        _groupLabel('Preferences & Safety'),
+        _groupLabel(AppLocalizations.of(context)!.preferencesGroupLabel),
         _menuGroup([
-          _actionTile(Icons.notifications_outlined, 'Notifications', 'Manage your notification settings',
-              () => Navigator.pushNamed(context, '/notifications'), iconColor: const Color(0xFFF43F5E)),
-          _actionTile(Icons.settings_outlined, 'Settings', 'Language, theme & preferences',
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
-              iconColor: const Color(0xFF64748B)),
-          _actionTile(Icons.security_rounded, 'Security', 'Password & account security',
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SecurityScreen())),
-              iconColor: const Color(0xFF10B981)),
-          _actionTile(Icons.help_outline_rounded, 'Help & Support', 'FAQs & contact support',
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpScreen())),
-              iconColor: const Color(0xFF14B8A6)),
-          _actionTile(Icons.info_outline_rounded, 'About', 'Our story, mission & more',
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutScreen())),
-              iconColor: const Color(0xFF6366F1)),
+          _actionTile(
+            Icons.notifications_outlined,
+            AppLocalizations.of(context)!.notificationsActionLabel,
+            AppLocalizations.of(context)!.notificationsActionSubtitle,
+            () => Navigator.pushNamed(context, '/notifications'),
+            iconColor: const Color(0xFFF43F5E),
+          ),
+          _actionTile(
+            Icons.settings_outlined,
+            AppLocalizations.of(context)!.settingsActionLabel,
+            AppLocalizations.of(context)!.settingsActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
+            iconColor: const Color(0xFF64748B),
+          ),
+          _actionTile(
+            Icons.security_rounded,
+            AppLocalizations.of(context)!.securityActionLabel,
+            AppLocalizations.of(context)!.securityActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SecurityScreen()),
+            ),
+            iconColor: const Color(0xFF10B981),
+          ),
+          // ✅ Trust & Safety Part 8 — user-facing account status + reports.
+          _actionTile(
+            Icons.shield_outlined,
+            AppLocalizations.of(context)!.myTsAccountStatusTitle,
+            AppLocalizations.of(context)!.myTsAccountStatusActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AccountStatusScreen()),
+            ),
+            iconColor: const Color(0xFFEF4444),
+          ),
+          _actionTile(
+            Icons.outlined_flag_rounded,
+            AppLocalizations.of(context)!.myTsMyReportsTitle,
+            AppLocalizations.of(context)!.myTsMyReportsActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MyReportsScreen()),
+            ),
+            iconColor: const Color(0xFF0EA5E9),
+          ),
+          _actionTile(
+            Icons.help_outline_rounded,
+            AppLocalizations.of(context)!.helpActionLabel,
+            AppLocalizations.of(context)!.helpActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HelpScreen()),
+            ),
+            iconColor: const Color(0xFF14B8A6),
+          ),
+          _actionTile(
+            Icons.info_outline_rounded,
+            AppLocalizations.of(context)!.aboutActionLabel,
+            AppLocalizations.of(context)!.aboutActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AboutScreen()),
+            ),
+            iconColor: const Color(0xFF6366F1),
+          ),
         ]),
       ],
     );
@@ -525,8 +820,15 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 
   Widget _groupLabel(String text) => Padding(
         padding: const EdgeInsets.only(left: 4, bottom: 8),
-        child: Text(text.toUpperCase(),
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: context.colors.textSecondary, letterSpacing: 0.6)),
+        child: Text(
+          text.toUpperCase(),
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: context.colors.textSecondary,
+            letterSpacing: 0.6,
+          ),
+        ),
       );
 
   Widget _menuGroup(List<Widget> tiles) {
@@ -560,7 +862,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         ),
         child: _actionTile(
           Icons.logout_rounded,
-          'Logout',
+          AppLocalizations.of(context)!.logoutActionLabel,
           null,
           () => _confirmLogout(auth),
           iconColor: AppColors.error,
@@ -572,32 +874,53 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 
   // ── Field Builder ────────────────────────────────────────
   Widget _buildField(String label, TextEditingController controller, IconData icon, {TextInputType? type}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 11, color: context.colors.textSecondary, fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: context.colors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         const SizedBox(height: 4),
         _isEditing
             ? TextFormField(
-                controller:   controller,
+                controller: controller,
                 keyboardType: type,
-                style: TextStyle(fontSize: 14, color: context.colors.textPrimary),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: context.colors.textPrimary,
+                ),
                 decoration: InputDecoration(
-                  prefixIcon:     Icon(icon, size: 18, color: context.colors.textSecondary),
+                  prefixIcon: Icon(
+                    icon,
+                    size: 18,
+                    color: context.colors.textSecondary,
+                  ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  filled:    true,
-                  fillColor: context.colors.background,
+                  filled: true,
+                  fillColor: isDark
+                      ? Colors.white.withOpacity(0.04)
+                      : context.colors.background,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide:   BorderSide(color: context.colors.divider),
+                    borderSide: BorderSide(color: context.colors.divider),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide:   BorderSide(color: context.colors.divider),
+                    borderSide: BorderSide(color: context.colors.divider),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide:   BorderSide(color: context.colors.primary, width: 1.5),
+                    borderSide: BorderSide(
+                      color: AppColors.customerColor,
+                      width: 1.5,
+                    ),
                   ),
                 ),
               )
@@ -606,10 +929,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   Icon(icon, size: 16, color: context.colors.textSecondary),
                   const SizedBox(width: 8),
                   Text(
-                    controller.text.isEmpty ? 'Not set' : controller.text,
+                    controller.text.isEmpty ? AppLocalizations.of(context)!.notSetPlaceholder : controller.text,
                     style: TextStyle(
-                      fontSize:   14,
-                      color:      controller.text.isEmpty ? context.colors.textSecondary : context.colors.textPrimary,
+                      fontSize: 14,
+                      color: controller.text.isEmpty
+                          ? context.colors.textSecondary
+                          : context.colors.textPrimary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -621,36 +946,120 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 
   // ── Action Tile ──────────────────────────────────────────
   Widget _actionTile(IconData icon, String label, String? subtitle, VoidCallback onTap, {Color? iconColor, Color? titleColor}) {
-    final c = iconColor ?? context.colors.primary;
+    final c = iconColor ?? AppColors.customerColor;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: Container(
-        width: 38, height: 38,
-        decoration: BoxDecoration(color: c.withOpacity(0.14), borderRadius: BorderRadius.circular(11)),
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: c.withOpacity(0.14),
+          borderRadius: BorderRadius.circular(11),
+        ),
         child: Icon(icon, color: c, size: 19),
       ),
-      title: Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: titleColor ?? context.colors.textPrimary)),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: titleColor ?? context.colors.textPrimary,
+        ),
+      ),
       subtitle: subtitle == null
           ? null
-          : Text(subtitle, style: TextStyle(fontSize: 11.5, color: context.colors.textSecondary)),
-      trailing: Icon(Icons.chevron_right_rounded, size: 18, color: context.colors.textSecondary),
+          : Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 11.5,
+                color: context.colors.textSecondary,
+              ),
+            ),
+      trailing: Icon(
+        Icons.chevron_right_rounded,
+        size: 18,
+        color: context.colors.textSecondary,
+      ),
       onTap: onTap,
     );
   }
 
   // ── Logout Dialog ─────────────────────────────────────────
   void _confirmLogout(AuthProvider auth) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Logout?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-        content: const Text('Are you sure you want to logout?',
-            style: TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+        backgroundColor: context.colors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        elevation: 0,
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.error.withOpacity(0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.logout_rounded,
+                color: AppColors.error,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              AppLocalizations.of(context)!.logoutDialogTitle,
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: context.colors.textPrimary,
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          AppLocalizations.of(context)!.logoutDialogContent,
+          style: TextStyle(
+            fontSize: 14,
+            color: context.colors.textSecondary,
+            height: 1.5,
+            letterSpacing: 0.2,
+          ),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              foregroundColor: context.colors.textSecondary,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              AppLocalizations.of(context)!.cancelCta,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 0,
+            ),
             onPressed: () async {
               Navigator.pop(context);
               await auth.logout();
@@ -658,7 +1067,14 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
               // ✅ FIX: pushNamedAndRemoveUntil clears the whole stack.
               Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
             },
-            child: const Text('Logout'),
+            child: Text(
+              AppLocalizations.of(context)!.logoutCta,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.3,
+              ),
+            ),
           ),
         ],
       ),

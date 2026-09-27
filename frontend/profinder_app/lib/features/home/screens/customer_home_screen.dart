@@ -35,6 +35,7 @@ import '../../../services/favorites_store.dart';
 import '../../../shared/widgets/professional_card.dart';
 import '../../../shared/widgets/category_card.dart';
 import '../../../shared/widgets/cta_banner.dart';
+import '../../../shared/widgets/announcement_banner.dart';
 import '../../../core/constants/category_style.dart';
 import '../../search/screens/professional_detail_screen.dart';
 import '../../search/screens/search_screen.dart';
@@ -136,7 +137,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   int    _completedPayments = 0;
   int    _pendingPayments   = 0;
   bool   _isPremium         = false;
-  String _planName          = 'Free';
+  String _planName          = '';
   List<dynamic> _recentPayments = [];
   bool _walletLoading = true;
 
@@ -366,7 +367,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
         _pendingPayments    = pending.length;
         _recentPayments      = list.take(4).toList();
         _isPremium           = plan?.isPremium ?? false;
-        _planName            = plan?.planName ?? 'Free';
+        _planName            = plan?.planName ?? '';
         _walletLoading        = false;
       });
     } catch (_) {
@@ -571,6 +572,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           onRefresh: _refreshAll,
           child: CustomScrollView(
             slivers: [
+              const SliverToBoxAdapter(child: AnnouncementBanner(audience: 'customer')),
               SliverToBoxAdapter(child: _buildHeader(fullName, city, photoUrl)),
               SliverToBoxAdapter(child: _buildSearchTap()),
               SliverToBoxAdapter(child: _buildAiRecommendationCard()),
@@ -881,7 +883,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     }
 
     final pick = _recommendations.first;
-    final name   = pick['name']?.toString() ?? 'Professional';
+    final name   = pick['name']?.toString() ?? t.homeDefaultProfessionalName;
     final cat    = pick['category_name']?.toString() ?? '';
     final reason = pick['ai_reason']?.toString() ?? '';
     final photo  = AppHelpers.getFullImageUrl(pick['photo_url']?.toString());
@@ -1011,7 +1013,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   }
 
   Widget _bookAgainCard(Map<String, dynamic> pro) {
-    final name  = pro['name']?.toString() ?? 'Professional';
+    final t     = AppLocalizations.of(context)!;
+    final name  = pro['name']?.toString() ?? t.homeDefaultProfessionalName;
     final cat   = pro['category_name']?.toString() ?? '';
     final photo = AppHelpers.getFullImageUrl(pro['photo_url']?.toString());
     return GestureDetector(
@@ -1237,10 +1240,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   }
 
   Widget _upcomingBookingCard(dynamic b) {
+    final t    = AppLocalizations.of(context)!;
     final date = DateTime.tryParse('${b['date']}');
     final day  = date != null ? date.day.toString() : '--';
     final mon  = date != null ? _monthAbbr(date.month) : '';
-    final name = b['professional_name']?.toString() ?? 'Professional';
+    final name = b['professional_name']?.toString() ?? t.homeDefaultProfessionalName;
     final time = b['time']?.toString() ?? '';
     final status = b['status']?.toString() ?? 'pending';
 
@@ -1323,7 +1327,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   }
 
   Widget _recentBookingRow(dynamic b) {
-    final name   = b['professional_name']?.toString() ?? 'Professional';
+    final t      = AppLocalizations.of(context)!;
+    final name   = b['professional_name']?.toString() ?? t.homeDefaultProfessionalName;
     final status = b['status']?.toString() ?? '';
     final date   = b['date']?.toString() ?? '';
     final cancelReason = b['cancel_reason']?.toString() ?? '';
@@ -1393,7 +1398,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
             Row(children: [
               Icon(Icons.workspace_premium_rounded, color: _isPremium ? Colors.white : Colors.white38, size: 18),
               const SizedBox(width: 8),
-              Expanded(child: Text(t.homePlan(_planName), style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w600))),
+              Expanded(child: Text(t.homePlan(_planName.isEmpty ? t.homeDefaultPlanFree : _planName), style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w600))),
               GestureDetector(
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen(userRole: 'customer'))),
                 child: Text(_isPremium ? t.homeManageButton : t.homeUpgradeButton, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700, decoration: TextDecoration.underline)),

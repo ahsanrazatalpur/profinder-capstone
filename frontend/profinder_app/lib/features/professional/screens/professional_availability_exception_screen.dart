@@ -28,6 +28,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Models
@@ -224,7 +225,7 @@ class _ProfessionalAvailabilityExceptionScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, 'Could not load exceptions');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.exceptionsLoadError);
     }
   }
 
@@ -266,14 +267,14 @@ class _ProfessionalAvailabilityExceptionScreenState
       setState(() => _overrides.remove(key));
       await _persist();
       if (!mounted) return;
-      AppHelpers.showSuccess(context, 'Override removed');
+      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.overrideRemoved);
       return;
     }
     if (result is _DateOverride) {
       setState(() => _overrides[key] = result);
       await _persist();
       if (!mounted) return;
-      AppHelpers.showSuccess(context, 'Override saved for ${DateFormat('d MMMM').format(date)}');
+      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.overrideSaved(DateFormat('d MMMM').format(date)));
     }
   }
 
@@ -301,7 +302,7 @@ class _ProfessionalAvailabilityExceptionScreenState
 
   Future<void> _saveVacation() async {
     if (_vacationStart == null || _vacationEnd == null) {
-      AppHelpers.showError(context, 'Please select a start and end date');
+      AppHelpers.showError(context, AppLocalizations.of(context)!.vacationDateRequired);
       return;
     }
     setState(() {
@@ -313,7 +314,7 @@ class _ProfessionalAvailabilityExceptionScreenState
     });
     await _persist();
     if (!mounted) return;
-    AppHelpers.showSuccess(context, 'Vacation mode set');
+    AppHelpers.showSuccess(context, AppLocalizations.of(context)!.vacationSet);
   }
 
   Future<void> _clearVacation() async {
@@ -325,7 +326,7 @@ class _ProfessionalAvailabilityExceptionScreenState
     });
     await _persist();
     if (!mounted) return;
-    AppHelpers.showSuccess(context, 'Vacation mode cleared');
+    AppHelpers.showSuccess(context, AppLocalizations.of(context)!.vacationCleared);
   }
 
   void _changeMonth(int delta) {
@@ -348,7 +349,7 @@ class _ProfessionalAvailabilityExceptionScreenState
         backgroundColor: context.colors.surface,
         elevation: 0,
         title: Text(
-          'Availability Exceptions',
+          AppLocalizations.of(context)!.exceptionsTitle,
           style: TextStyle(
             fontSize: isTablet ? 19.0 : 17.0,
             fontWeight: FontWeight.w700,
@@ -359,9 +360,13 @@ class _ProfessionalAvailabilityExceptionScreenState
       ),
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(
-                color: AppColors.professionalColor,
-                strokeWidth: 3,
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  color: AppColors.professionalColor,
+                  strokeWidth: 3,
+                ),
               ),
             )
           : RefreshIndicator(
@@ -375,8 +380,8 @@ class _ProfessionalAvailabilityExceptionScreenState
                   SizedBox(height: isTablet ? 24 : 20),
                   _sectionHeader(
                     icon: Icons.calendar_month_rounded,
-                    title: 'Calendar',
-                    subtitle: 'Tap any date to set an override',
+                    title: AppLocalizations.of(context)!.exceptionsCalendarTitle,
+                    subtitle: AppLocalizations.of(context)!.exceptionsCalendarSubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -384,8 +389,8 @@ class _ProfessionalAvailabilityExceptionScreenState
                   SizedBox(height: isTablet ? 24 : 20),
                   _sectionHeader(
                     icon: Icons.flight_takeoff_rounded,
-                    title: 'Vacation Mode',
-                    subtitle: 'Block out a whole date range at once',
+                    title: AppLocalizations.of(context)!.exceptionsVacationTitle,
+                    subtitle: AppLocalizations.of(context)!.exceptionsVacationSubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -393,8 +398,8 @@ class _ProfessionalAvailabilityExceptionScreenState
                   SizedBox(height: isTablet ? 24 : 20),
                   _sectionHeader(
                     icon: Icons.event_note_rounded,
-                    title: 'Date Overrides',
-                    subtitle: 'Specific dates that differ from your weekly hours',
+                    title: AppLocalizations.of(context)!.exceptionsOverridesTitle,
+                    subtitle: AppLocalizations.of(context)!.exceptionsOverridesSubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -421,7 +426,7 @@ class _ProfessionalAvailabilityExceptionScreenState
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Exceptions override your regular weekly schedule for specific dates — perfect for holidays, half-days or planned time off.',
+              AppLocalizations.of(context)!.exceptionsIntroText,
               style: TextStyle(
                 fontSize: isTablet ? 13.5 : 12.5,
                 fontWeight: FontWeight.w500,
@@ -670,11 +675,11 @@ class _ProfessionalAvailabilityExceptionScreenState
       spacing: 16,
       runSpacing: 8,
       children: [
-        item(context.colors.textPrimary.withOpacity(0.35), 'Working day'),
-        item(AppColors.professionalColor, 'Vacation'),
-        item(AppColors.info, 'Custom hours'),
-        item(AppColors.warning, 'Unavailable'),
-        item(context.colors.textSecondary, 'Closed day'),
+        item(context.colors.textPrimary.withOpacity(0.35), AppLocalizations.of(context)!.exceptionsLegendWorking),
+        item(AppColors.professionalColor, AppLocalizations.of(context)!.exceptionsLegendVacation),
+        item(AppColors.info, AppLocalizations.of(context)!.exceptionsLegendCustom),
+        item(AppColors.warning, AppLocalizations.of(context)!.exceptionsLegendUnavailable),
+        item(context.colors.textSecondary, AppLocalizations.of(context)!.exceptionsLegendClosed),
       ],
     );
   }
@@ -704,8 +709,8 @@ class _ProfessionalAvailabilityExceptionScreenState
                   const SizedBox(width: 8),
                   Text(
                     isActive
-                        ? 'Unavailable during vacation'
-                        : 'Vacation scheduled from ${DateFormat('d MMM').format(_vacation!.start)}',
+                        ? AppLocalizations.of(context)!.exceptionsVacationActive
+                        : AppLocalizations.of(context)!.exceptionsVacationScheduled(DateFormat('d MMM').format(_vacation!.start)),
                     style: TextStyle(
                       fontSize: isTablet ? 13 : 12,
                       fontWeight: FontWeight.w700,
@@ -721,7 +726,7 @@ class _ProfessionalAvailabilityExceptionScreenState
             children: [
               Expanded(
                 child: _dateField(
-                  label: 'Start Date',
+                  label: AppLocalizations.of(context)!.exceptionsStartDate,
                   value: _vacationStart,
                   isTablet: isTablet,
                   onTap: () => _pickVacationDate(isStart: true),
@@ -730,7 +735,7 @@ class _ProfessionalAvailabilityExceptionScreenState
               const SizedBox(width: 12),
               Expanded(
                 child: _dateField(
-                  label: 'End Date',
+                  label: AppLocalizations.of(context)!.exceptionsEndDate,
                   value: _vacationEnd,
                   isTablet: isTablet,
                   onTap: () => _pickVacationDate(isStart: false),
@@ -744,7 +749,7 @@ class _ProfessionalAvailabilityExceptionScreenState
             maxLength: 80,
             style: TextStyle(fontSize: isTablet ? 14 : 13, color: context.colors.textPrimary),
             decoration: InputDecoration(
-              labelText: 'Reason (optional)',
+              labelText: AppLocalizations.of(context)!.exceptionsReasonLabel,
               labelStyle: TextStyle(color: context.colors.textSecondary, fontSize: 13),
               counterText: '',
               prefixIcon: Icon(Icons.edit_note_rounded, color: context.colors.textSecondary, size: 20),
@@ -770,7 +775,7 @@ class _ProfessionalAvailabilityExceptionScreenState
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: Text(
-                      'Clear',
+                      AppLocalizations.of(context)!.clearCta,
                       style: TextStyle(fontWeight: FontWeight.w600, color: context.colors.textSecondary),
                     ),
                   ),
@@ -789,7 +794,7 @@ class _ProfessionalAvailabilityExceptionScreenState
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: Text(
-                    _vacation == null ? 'Set Vacation' : 'Update Vacation',
+                    _vacation == null ? AppLocalizations.of(context)!.exceptionsSetVacation : AppLocalizations.of(context)!.exceptionsUpdateVacation,
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -836,7 +841,7 @@ class _ProfessionalAvailabilityExceptionScreenState
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    value != null ? DateFormat('d MMM yyyy').format(value) : 'Select',
+                    value != null ? DateFormat('d MMM yyyy').format(value) : AppLocalizations.of(context)!.exceptionsSelectDate,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: isTablet ? 13.5 : 12.5,
@@ -867,7 +872,7 @@ class _ProfessionalAvailabilityExceptionScreenState
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'No date overrides yet. Tap a date on the calendar to add one.',
+                AppLocalizations.of(context)!.exceptionsNoOverrides,
                 style: TextStyle(
                   fontSize: isTablet ? 13.5 : 12.5,
                   color: context.colors.textSecondary,
@@ -940,7 +945,7 @@ class _ProfessionalAvailabilityExceptionScreenState
                           ),
                           const SizedBox(height: 4),
                           isUnavailable
-                              ? _statusChip('Unavailable', color)
+                              ? _statusChip(AppLocalizations.of(context)!.exceptionsUnavailableLabel, color)
                               : Wrap(
                                   spacing: 6,
                                   runSpacing: 6,
@@ -963,7 +968,7 @@ class _ProfessionalAvailabilityExceptionScreenState
                           setState(() => _overrides.remove(_key(o.date)));
                           await _persist();
                           if (!mounted) return;
-                          AppHelpers.showSuccess(context, 'Override removed');
+                          AppHelpers.showSuccess(context, AppLocalizations.of(context)!.overrideRemoved);
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(6),
@@ -1059,8 +1064,8 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
       for (final r in _ranges) {
         if (_todMinutes(r.end) <= _todMinutes(r.start)) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('End time must be after start time'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.exceptionsTimeError),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -1145,9 +1150,9 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Expanded(child: _typeChip(_OverrideType.unavailable, 'Unavailable', Icons.event_busy_rounded, isDark)),
+                  Expanded(child: _typeChip(_OverrideType.unavailable, AppLocalizations.of(context)!.exceptionsUnavailableChip, Icons.event_busy_rounded, isDark)),
                   const SizedBox(width: 10),
-                  Expanded(child: _typeChip(_OverrideType.customHours, 'Custom Hours', Icons.schedule_rounded, isDark)),
+                  Expanded(child: _typeChip(_OverrideType.customHours, AppLocalizations.of(context)!.exceptionsCustomChip, Icons.schedule_rounded, isDark)),
                 ],
               ),
               if (_type == _OverrideType.customHours) ...[
@@ -1167,7 +1172,7 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
                           Icon(Icons.add_circle_outline_rounded, size: 18, color: AppColors.professionalColor),
                           const SizedBox(width: 8),
                           Text(
-                            'Add another time range',
+                            AppLocalizations.of(context)!.exceptionsAddRange,
                             style: TextStyle(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w700,
@@ -1193,7 +1198,7 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         child: Text(
-                          'Remove',
+                          AppLocalizations.of(context)!.removeCta,
                           style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.error),
                         ),
                       ),
@@ -1211,7 +1216,10 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Save', style: TextStyle(fontWeight: FontWeight.w700)),
+                      child: Text(
+                        AppLocalizations.of(context)!.saveCta,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
                     ),
                   ),
                 ],

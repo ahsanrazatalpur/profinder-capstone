@@ -7,6 +7,7 @@ import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
 import 'professional_chat_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalMessagesScreen extends StatefulWidget {
   const ProfessionalMessagesScreen({super.key});
@@ -60,7 +61,7 @@ class _ProfessionalMessagesScreenState extends State<ProfessionalMessagesScreen>
       appBar: AppBar(
         backgroundColor: context.colors.surface,
         elevation: 0,
-        title: Text('Messages', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+        title: Text(AppLocalizations.of(context)!.chatMessages, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -77,9 +78,9 @@ class _ProfessionalMessagesScreenState extends State<ProfessionalMessagesScreen>
                             children: [
                               Icon(Icons.chat_bubble_outline_rounded, size: 64, color: context.colors.textDisabled),
                               const SizedBox(height: 12),
-                              Text('No messages yet', style: TextStyle(fontSize: 15, color: context.colors.textSecondary)),
+                              Text(AppLocalizations.of(context)!.professionalNoMessagesYet, style: TextStyle(fontSize: 15, color: context.colors.textSecondary)),
                               const SizedBox(height: 6),
-                              Text('Customer conversations will show up here', style: TextStyle(fontSize: 12, color: context.colors.textSecondary)),
+                              Text(AppLocalizations.of(context)!.professionalCustomerConversationsShowUpHere, style: TextStyle(fontSize: 12, color: context.colors.textSecondary)),
                             ],
                           ),
                         ),

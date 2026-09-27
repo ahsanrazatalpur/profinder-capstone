@@ -15,6 +15,11 @@ import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 
+// Content is centered and width-capped on tablet/desktop so rows of text
+// don't stretch uncomfortably wide on large screens.
+const double _kWideContentMaxWidth = 760;
+const double _kTabletBreakpoint = 720;
+
 class AdminCategoriesScreen extends StatefulWidget {
   const AdminCategoriesScreen({super.key});
 
@@ -37,6 +42,11 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    // Rebuilds the header so its "Add" button/tooltip target the tab that
+    // is actually visible (Category vs. Subcategory) as the user swipes.
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) setState(() {});
+    });
     _load();
   }
 
@@ -72,13 +82,18 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
           children: [
             _buildHeader(),
             Container(
-              color: Colors.white,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1)),
+              ),
               child: TabBar(
                 controller: _tabController,
                 labelColor: AppColors.adminColor,
                 unselectedLabelColor: const Color(0xFF9CA3AF),
                 indicatorColor: AppColors.adminColor,
+                indicatorSize: TabBarIndicatorSize.label,
                 labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                unselectedLabelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 tabs: [
                   Tab(text: 'Categories (${_categories.length})'),
                   Tab(text: 'Subcategories (${_subcategories.length})'),
@@ -86,14 +101,22 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
               ),
             ),
             Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator(color: AppColors.adminColor, strokeWidth: 2.5))
-                  : _error != null
-                      ? _buildError()
-                      : TabBarView(
-                          controller: _tabController,
-                          children: [_buildCategoriesTab(), _buildSubcategoriesTab()],
-                        ),
+              // Cross-fades between loading / error / tab content instead
+              // of an abrupt jump-cut when data finishes loading.
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                child: _loading
+                    ? const Center(
+                        key: ValueKey('loading'),
+                        child: CircularProgressIndicator(color: AppColors.adminColor, strokeWidth: 2.5))
+                    : _error != null
+                        ? _buildError()
+                        : TabBarView(
+                            key: const ValueKey('content'),
+                            controller: _tabController,
+                            children: [_buildCategoriesTab(), _buildSubcategoriesTab()],
+                          ),
+              ),
             ),
           ],
         ),
@@ -102,6 +125,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
   }
 
   Widget _buildHeader() {
+    final onSubcategoriesTab = _tabController.index == 1;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       decoration: const BoxDecoration(
@@ -122,10 +146,11 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
             child: Text('Categories',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
           ),
-          IconButton(
-            onPressed: () => _tabController.index == 0 ? _showCategoryDialog() : _showSubcategoryDialog(),
-            icon: const Icon(Icons.add_circle_rounded, color: Colors.white),
-            tooltip: 'Add New',
+          _HoverIconButton(
+            icon: Icons.add_circle_rounded,
+            tooltip: onSubcategoriesTab ? 'Add Subcategory' : 'Add Category',
+            onPressed: () => onSubcategoriesTab ? _showSubcategoryDialog() : _showCategoryDialog(),
+            color: Colors.white,
           ),
         ],
       ),
@@ -138,66 +163,103 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
     return RefreshIndicator(
       onRefresh: _load,
       color: AppColors.adminColor,
-      child: ReorderableListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-        itemCount: _categories.length,
-        onReorder: _reorderCategories,
-        itemBuilder: (_, i) {
-          final c = _categories[i];
-          return Container(
-            key: ValueKey(c['id']),
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-            child: Row(
-              children: [
-                ReorderableDragStartListener(
-                  index: i,
-                  child: const Icon(Icons.drag_indicator_rounded, color: Color(0xFFCBD5E1)),
-                ),
-                const SizedBox(width: 10),
-                Container(
-                  width: 38, height: 38,
-                  decoration: BoxDecoration(color: context.colors.primary.withOpacity(0.1), shape: BoxShape.circle),
-                  child: Icon(Icons.category_outlined, size: 18, color: context.colors.primary),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: _kWideContentMaxWidth),
+          child: ReorderableListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+            itemCount: _categories.length,
+            onReorder: _reorderCategories,
+            // A custom drag handle (the 6-dot icon) is already built into
+            // each row on the left via ReorderableDragStartListener, so the
+            // library's own auto-generated handle on the right is disabled
+            // here — otherwise it renders as a stray "=" glyph next to Delete.
+            buildDefaultDragHandles: false,
+            itemBuilder: (_, i) {
+              final c = _categories[i];
+              // Keying by ReorderableDragStartListener wraps the whole row
+              // so the entire card (not just the handle) can be grabbed on
+              // touch, while still allowing hover/tap on the action icons.
+              return _HoverLift(
+                key: ValueKey(c['id']),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white, borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                  child: Row(
                     children: [
-                      Text(c['name']?.toString() ?? '',
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-                      Text(
-                          '${c['professional_count'] ?? 0} pros · ${c['booking_count'] ?? 0} bookings · ${c['subcategory_count'] ?? 0} subcategories',
-                          style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF))),
+                      ReorderableDragStartListener(
+                        index: i,
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: Icon(Icons.drag_indicator_rounded, color: Color(0xFFCBD5E1)),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        width: 38, height: 38,
+                        decoration: BoxDecoration(color: context.colors.primary.withOpacity(0.1), shape: BoxShape.circle),
+                        child: Icon(Icons.category_outlined, size: 18, color: context.colors.primary),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(c['name']?.toString() ?? '',
+                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                                maxLines: 1, overflow: TextOverflow.ellipsis),
+                            const SizedBox(height: 2),
+                            Text(
+                                '${c['professional_count'] ?? 0} pros · ${c['booking_count'] ?? 0} bookings · ${c['subcategory_count'] ?? 0} subcategories',
+                                style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF)),
+                                maxLines: 1, overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
+                      ),
+                      // ✅ FIX: These three action icons previously used the
+                      // default IconButton hit-box (48x48 each, no gaps),
+                      // which on a narrow phone screen pushed the row past
+                      // its available width. The row would silently clip,
+                      // making the Delete icon appear cut in half (looked
+                      // like a stray "=" glyph) and made Edit/Delete taps
+                      // land on the wrong control. `_HoverIconButton` now
+                      // renders a tight, fixed-size hit box, and each icon
+                      // has explicit spacing so all three are fully visible
+                      // and independently tappable.
+                      _HoverIconButton(
+                        onPressed: () => _toggleFeatured(c),
+                        tooltip: c['is_featured'] == true ? 'Featured — tap to unfeature' : 'Not featured — tap to feature',
+                        icon: c['is_featured'] == true ? Icons.star_rounded : Icons.star_outline_rounded,
+                        color: c['is_featured'] == true ? const Color(0xFFF59E0B) : const Color(0xFF9CA3AF),
+                        size: 18,
+                      ),
+                      const SizedBox(width: 4),
+                      _HoverIconButton(
+                        onPressed: () => _showCategoryDialog(category: c),
+                        tooltip: 'Edit',
+                        icon: Icons.edit_outlined,
+                        color: const Color(0xFF64748B),
+                        size: 17,
+                      ),
+                      const SizedBox(width: 4),
+                      _HoverIconButton(
+                        onPressed: () => _deleteCategory(c),
+                        tooltip: 'Delete',
+                        icon: Icons.delete_outline_rounded,
+                        color: AppColors.error,
+                        size: 17,
+                      ),
                     ],
                   ),
                 ),
-                IconButton(
-                  onPressed: () => _toggleFeatured(c),
-                  tooltip: c['is_featured'] == true ? 'Featured — tap to unfeature' : 'Not featured — tap to feature',
-                  icon: Icon(
-                    c['is_featured'] == true ? Icons.star_rounded : Icons.star_outline_rounded,
-                    size: 20,
-                    color: c['is_featured'] == true ? const Color(0xFFF59E0B) : const Color(0xFF9CA3AF),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => _showCategoryDialog(category: c),
-                  icon: const Icon(Icons.edit_outlined, size: 18, color: Color(0xFF64748B)),
-                ),
-                IconButton(
-                  onPressed: () => _deleteCategory(c),
-                  icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.error),
-                ),
-              ],
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -224,13 +286,42 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
       context: context,
       builder: (_) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          title: Text(category == null ? 'Add Category' : 'Edit Category'),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.adminColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  category == null ? Icons.add_rounded : Icons.edit_rounded,
+                  color: AppColors.adminColor, size: 18,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(category == null ? 'Add Category' : 'Edit Category',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Name')),
-              const SizedBox(height: 10),
-              TextField(controller: iconCtrl, decoration: const InputDecoration(labelText: 'Icon (optional)')),
+              TextField(
+                controller: nameCtrl,
+                style: const TextStyle(fontSize: 13),
+                decoration: _dialogFieldDecoration('Name'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: iconCtrl,
+                style: const TextStyle(fontSize: 13),
+                decoration: _dialogFieldDecoration('Icon (optional)'),
+              ),
               const SizedBox(height: 6),
               SwitchListTile.adaptive(
                 contentPadding: EdgeInsets.zero,
@@ -243,10 +334,20 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
               ),
             ],
           ),
+          actionsAlignment: MainAxisAlignment.end,
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: const Color(0xFF6B7280)),
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+            ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.adminColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
               onPressed: () async {
                 Navigator.pop(dialogContext);
                 try {
@@ -265,10 +366,10 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                   }
                   _load();
                 } catch (e) {
-                  _showSnack('Failed to save category.');
+                  _showSnack('Failed to save category.', isError: true);
                 }
               },
-              child: const Text('Save', style: TextStyle(color: Colors.white)),
+              child: const Text('Save', style: TextStyle(fontWeight: FontWeight.w700)),
             ),
           ],
         ),
@@ -285,7 +386,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
       await _api.patch('/admin-panel/categories/${c['id']}/', {'is_featured': next});
     } catch (e) {
       setState(() => c['is_featured'] = !next); // revert on failure
-      _showSnack('Failed to update Featured status.');
+      _showSnack('Failed to update Featured status.', isError: true);
     }
   }
 
@@ -297,7 +398,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
       await _api.delete('/admin-panel/categories/${c['id']}/');
       _load();
     } catch (e) {
-      _showSnack('Cannot delete — professionals are still assigned to this category.');
+      _showSnack('Cannot delete — professionals are still assigned to this category.', isError: true);
     }
   }
 
@@ -316,6 +417,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
             height: 32,
             child: ListView(
               scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
               children: [
                 _filterChip('All', _subcategoryFilter == null, () => setState(() => _subcategoryFilter = null)),
                 const SizedBox(width: 8),
@@ -334,43 +436,66 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
               : RefreshIndicator(
                   onRefresh: _load,
                   color: AppColors.adminColor,
-                  child: ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                    itemCount: filtered.length,
-                    itemBuilder: (_, i) {
-                      final s = filtered[i];
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white, borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: _kWideContentMaxWidth),
+                      child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                        itemCount: filtered.length,
+                        itemBuilder: (_, i) {
+                          final s = filtered[i];
+                          return _HoverLift(
+                            key: ValueKey(s['id']),
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white, borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFE5E7EB)),
+                              ),
+                              child: Row(
                                 children: [
-                                  Text(s['name']?.toString() ?? '',
-                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-                                  Text(s['category_name']?.toString() ?? '',
-                                      style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF))),
+                                  Container(
+                                    width: 32, height: 32,
+                                    decoration: BoxDecoration(
+                                      color: context.colors.primary.withOpacity(0.08),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(Icons.subdirectory_arrow_right_rounded,
+                                        size: 16, color: context.colors.primary),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(s['name']?.toString() ?? '',
+                                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                                        Text(s['category_name']?.toString() ?? '',
+                                            style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF)),
+                                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                                      ],
+                                    ),
+                                  ),
+                                  _HoverIconButton(
+                                    onPressed: () async {
+                                      await _api.delete('/admin-panel/subcategories/${s['id']}/');
+                                      _load();
+                                    },
+                                    tooltip: 'Delete',
+                                    icon: Icons.delete_outline_rounded,
+                                    color: AppColors.error,
+                                    size: 17,
+                                  ),
                                 ],
                               ),
                             ),
-                            IconButton(
-                              onPressed: () async {
-                                await _api.delete('/admin-panel/subcategories/${s['id']}/');
-                                _load();
-                              },
-                              icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.error),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
         ),
@@ -385,26 +510,60 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          title: const Text('Add Subcategory'),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.adminColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.add_rounded, color: AppColors.adminColor, size: 18),
+              ),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Text('Add Subcategory', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               DropdownButtonFormField<int>(
                 value: selectedCategory,
-                decoration: const InputDecoration(labelText: 'Parent Category'),
+                isExpanded: true,
+                icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF9CA3AF)),
+                decoration: _dialogFieldDecoration('Parent Category'),
                 items: _categories
-                    .map<DropdownMenuItem<int>>((c) => DropdownMenuItem(value: c['id'], child: Text(c['name'])))
+                    .map<DropdownMenuItem<int>>((c) => DropdownMenuItem(
+                        value: c['id'], child: Text(c['name'], style: const TextStyle(fontSize: 13))))
                     .toList(),
                 onChanged: (v) => setDialogState(() => selectedCategory = v),
               ),
-              const SizedBox(height: 10),
-              TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Name')),
+              const SizedBox(height: 12),
+              TextField(
+                controller: nameCtrl,
+                style: const TextStyle(fontSize: 13),
+                decoration: _dialogFieldDecoration('Name'),
+              ),
             ],
           ),
+          actionsAlignment: MainAxisAlignment.end,
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: const Color(0xFF6B7280)),
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+            ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.adminColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
               onPressed: () async {
                 Navigator.pop(dialogContext);
                 if (selectedCategory == null || nameCtrl.text.trim().isEmpty) return;
@@ -413,10 +572,10 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                       {'name': nameCtrl.text.trim(), 'category_id': selectedCategory});
                   _load();
                 } catch (e) {
-                  _showSnack('Failed to add subcategory.');
+                  _showSnack('Failed to add subcategory.', isError: true);
                 }
               },
-              child: const Text('Save', style: TextStyle(color: Colors.white)),
+              child: const Text('Save', style: TextStyle(fontWeight: FontWeight.w700)),
             ),
           ],
         ),
@@ -425,21 +584,30 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
   }
 
   // ── Shared helpers ─────────────────────────────────────────
-  Widget _filterChip(String label, bool active, VoidCallback onTap) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: active ? AppColors.adminColor.withOpacity(0.12) : const Color(0xFFF5F7FA),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: active ? AppColors.adminColor : Colors.transparent),
-          ),
-          child: Text(label,
-              style: TextStyle(
-                  fontSize: 12, fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                  color: active ? AppColors.adminColor : const Color(0xFF6B7280))),
+  InputDecoration _dialogFieldDecoration(String label) => InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
         ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.adminColor, width: 1.5),
+        ),
+        filled: true,
+        fillColor: const Color(0xFFF9FAFB),
+      );
+
+  Widget _filterChip(String label, bool active, VoidCallback onTap) => _HoverScaleChip(
+        label: label,
+        active: active,
+        onTap: onTap,
       );
 
   Widget _emptyState(String title, String subtitle) => ListView(
@@ -450,11 +618,18 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
             child: Center(
               child: Column(
                 children: [
-                  Icon(Icons.category_outlined, size: 48, color: Colors.grey.shade300),
-                  const SizedBox(height: 10),
-                  Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF6B7280))),
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.category_outlined, size: 40, color: Colors.grey.shade300),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF374151))),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade400)),
+                  Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey.shade400)),
                 ],
               ),
             ),
@@ -463,18 +638,29 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
       );
 
   Widget _buildError() => Center(
+        key: const ValueKey('error'),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
-            const SizedBox(height: 10),
-            const Text('Failed to load', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(color: AppColors.error.withOpacity(0.08), shape: BoxShape.circle),
+              child: const Icon(Icons.error_outline_rounded, size: 40, color: AppColors.error),
+            ),
+            const SizedBox(height: 14),
+            const Text('Failed to load', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF374151))),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _load,
-              icon: const Icon(Icons.refresh_rounded),
+              icon: const Icon(Icons.refresh_rounded, size: 18),
               label: const Text('Retry'),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.adminColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
             ),
           ],
         ),
@@ -483,20 +669,238 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
   Future<bool?> _confirm(String title, String message) => showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text(title),
-          content: Text(message),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          icon: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: AppColors.error.withOpacity(0.08), shape: BoxShape.circle),
+            child: const Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 26),
+          ),
+          title: Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+          content: Text(message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280), height: 1.4)),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF6B7280),
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Delete', style: TextStyle(color: AppColors.error)),
+              child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.w700)),
             ),
           ],
         ),
       );
 
-  void _showSnack(String msg) {
+  void _showSnack(String msg, {bool isError = false}) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(
+              isError ? Icons.error_outline_rounded : Icons.check_circle_rounded,
+              color: Colors.white, size: 18,
+            ),
+            const SizedBox(width: 10),
+            Expanded(child: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600))),
+          ],
+        ),
+        backgroundColor: isError ? AppColors.error : AppColors.adminColor,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 2,
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Small shared UI helpers — visual polish only, no logic
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Icon button with a subtle hover background on desktop/web and a tooltip.
+/// ✅ FIX: previously wrapped a plain `IconButton`, which carries a default
+/// 48x48 minimum hit box and internal padding. Placed three-in-a-row (star/
+/// edit/delete) on a narrow phone screen, that pushed the row wider than
+/// the card, so the row silently clipped — the Delete icon got cut in half
+/// and looked like a stray "=" mark, and taps landed on the wrong button.
+/// `constraints`/`padding` are now tightened so the tappable area matches
+/// the icon's actual visual size, and callers add explicit spacing between
+/// buttons instead of relying on IconButton's built-in padding for gaps.
+class _HoverIconButton extends StatefulWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+  final Color? color;
+  final double size;
+
+  const _HoverIconButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+    this.color,
+    this.size = 22,
+  });
+
+  @override
+  State<_HoverIconButton> createState() => _HoverIconButtonState();
+}
+
+class _HoverIconButtonState extends State<_HoverIconButton> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // Tap target is the icon size plus a small fixed margin — enough for a
+    // comfortable finger-press without overlapping its neighbors.
+    final hitBox = widget.size + 20;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) {
+        if (!mounted) return;
+        setState(() => _hovering = true);
+      },
+      onExit: (_) {
+        if (!mounted) return;
+        setState(() => _hovering = false);
+      },
+      child: Tooltip(
+        message: widget.tooltip,
+        child: Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: widget.onPressed,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              width: hitBox,
+              height: hitBox,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: _hovering
+                    ? (widget.color ?? const Color(0xFF374151)).withOpacity(0.08)
+                    : Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(widget.icon, color: widget.color, size: widget.size),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Wraps a card with a gentle hover "lift" (translate + deeper shadow) on
+/// platforms that support a mouse cursor. No-ops on touch-only devices.
+class _HoverLift extends StatefulWidget {
+  final Widget child;
+
+  const _HoverLift({super.key, required this.child});
+
+  @override
+  State<_HoverLift> createState() => _HoverLiftState();
+}
+
+class _HoverLiftState extends State<_HoverLift> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) {
+        if (!mounted) return;
+        setState(() => _hovering = true);
+      },
+      onExit: (_) {
+        if (!mounted) return;
+        setState(() => _hovering = false);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        transform: _hovering
+            ? (Matrix4.identity()..translate(0.0, -2.0))
+            : Matrix4.identity(),
+        decoration: _hovering
+            ? BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12, offset: const Offset(0, 4)),
+                ],
+              )
+            : null,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+/// Filter chip used in the Subcategories tab, with an animated selected
+/// state and a subtle hover background on desktop/web.
+class _HoverScaleChip extends StatefulWidget {
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+
+  const _HoverScaleChip({required this.label, required this.active, required this.onTap});
+
+  @override
+  State<_HoverScaleChip> createState() => _HoverScaleChipState();
+}
+
+class _HoverScaleChipState extends State<_HoverScaleChip> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) {
+        if (!mounted) return;
+        setState(() => _hovering = true);
+      },
+      onExit: (_) {
+        if (!mounted) return;
+        setState(() => _hovering = false);
+      },
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: widget.active
+                ? AppColors.adminColor.withOpacity(0.12)
+                : (_hovering ? const Color(0xFFEDEFF3) : const Color(0xFFF5F7FA)),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: widget.active ? AppColors.adminColor : Colors.transparent),
+          ),
+          child: Text(widget.label,
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: widget.active ? FontWeight.w700 : FontWeight.w500,
+                  color: widget.active ? AppColors.adminColor : const Color(0xFF6B7280))),
+        ),
+      ),
+    );
   }
 }

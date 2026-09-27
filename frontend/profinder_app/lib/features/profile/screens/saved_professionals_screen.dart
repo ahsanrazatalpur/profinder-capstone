@@ -5,11 +5,12 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/favorites_store.dart';
 import '../../search/screens/professional_detail_screen.dart';
 import '../../bookings/screens/booking_screen.dart';
-import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class SavedProfessionalsScreen extends StatefulWidget {
   const SavedProfessionalsScreen({super.key});
@@ -48,97 +49,293 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > 600;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: context.colors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.colors.surface,
         elevation: 0,
-        title: const Text('Saved Professionals', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Color(0xFF374151)), onPressed: () => Navigator.pop(context)),
+        title: Text(
+          AppLocalizations.of(context)!.savedProfessionalsTitle,
+          style: TextStyle(
+            fontSize: isTablet ? 18.0 : 16.0,
+            fontWeight: FontWeight.w700,
+            color: context.colors.textPrimary,
+            letterSpacing: -0.3,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: context.colors.textPrimary,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  color: AppColors.customerColor,
+                  strokeWidth: 3,
+                ),
+              ),
+            )
           : _favorites.isEmpty
-              ? _empty()
-              : ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _favorites.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (_, i) => _card(_favorites[i]),
+              ? _empty(isDark)
+              : RefreshIndicator(
+                  onRefresh: _load,
+                  color: AppColors.customerColor,
+                  child: ListView.separated(
+                    padding: EdgeInsets.all(isTablet ? 20 : 16),
+                    itemCount: _favorites.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (_, i) => _card(_favorites[i], isDark, isTablet),
+                  ),
                 ),
     );
   }
 
-  Widget _empty() => Center(
+  Widget _empty(bool isDark) => Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.favorite_border_rounded, size: 56, color: Color(0xFFD1D5DB)),
-            const SizedBox(height: 12),
-            const Text('No saved professionals yet', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF374151))),
-            const SizedBox(height: 4),
-            const Text('Tap the heart on any professional to save them here', style: TextStyle(fontSize: 12.5, color: Color(0xFF9CA3AF)), textAlign: TextAlign.center),
+            Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : const Color(0xFFF3F4F6),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.favorite_border_rounded,
+                size: 40,
+                color: isDark
+                    ? Colors.white.withOpacity(0.3)
+                    : const Color(0xFFD1D5DB),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              AppLocalizations.of(context)!.savedProfessionalsEmptyTitle,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: context.colors.textPrimary,
+                letterSpacing: -0.2,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              AppLocalizations.of(context)!.savedProfessionalsEmptySubtitle,
+              style: TextStyle(
+                fontSize: 13,
+                color: context.colors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       );
 
-  Widget _card(Map<String, dynamic> pro) {
+  Widget _card(Map<String, dynamic> pro, bool isDark, bool isTablet) {
     final id         = pro['id']?.toString() ?? '';
-    final name       = pro['name']?.toString() ?? 'Professional';
+    final name       = pro['name']?.toString() ?? AppLocalizations.of(context)!.professionalDefaultName;
     final profession = pro['category_name']?.toString() ?? pro['specialization']?.toString() ?? '';
     final photo      = AppHelpers.getFullImageUrl(pro['photo_url']?.toString());
     final rating     = _num(pro['average_rating']);
     final price      = _num(pro['hourly_rate']);
     final isVerified = pro['is_verified'] == true;
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE5E7EB))),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.all(isTablet ? 16 : 12),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withOpacity(0.08)
+              : const Color(0xFFE5E7EB),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(0.12)
+                : Colors.grey.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Row(
         children: [
+          // ── Avatar ──────────────────────────────────────
           GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProfessionalDetailScreen(professional: pro))),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProfessionalDetailScreen(professional: pro),
+              ),
+            ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                width: 64, height: 64, color: context.colors.primaryLight,
+                width: isTablet ? 72 : 64,
+                height: isTablet ? 72 : 64,
+                color: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : context.colors.primaryLight,
                 child: photo.isNotEmpty
-                    ? Image.network(photo, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Center(child: Text(AppHelpers.getInitials(name), style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.bold))))
-                    : Center(child: Text(AppHelpers.getInitials(name), style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.bold))),
+                    ? Image.network(
+                        photo,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(
+                          child: Text(
+                            AppHelpers.getInitials(name),
+                            style: TextStyle(
+                              color: context.colors.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: isTablet ? 18 : 16,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          AppHelpers.getInitials(name),
+                          style: TextStyle(
+                            color: context.colors.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: isTablet ? 18 : 16,
+                          ),
+                        ),
+                      ),
               ),
             ),
           ),
           const SizedBox(width: 12),
+
+          // ── Info ──────────────────────────────────────
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(children: [
-                  Flexible(child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700))),
-                  if (isVerified) ...[const SizedBox(width: 4), Icon(Icons.verified_rounded, color: context.colors.accent, size: 15)],
-                ]),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: isTablet ? 15.0 : 14.0,
+                          fontWeight: FontWeight.w700,
+                          color: context.colors.textPrimary,
+                          letterSpacing: -0.1,
+                        ),
+                      ),
+                    ),
+                    if (isVerified) ...[
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.verified_rounded,
+                        color: context.colors.accent,
+                        size: isTablet ? 17 : 15,
+                      ),
+                    ],
+                  ],
+                ),
                 if (profession.isNotEmpty)
-                  Text(profession, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.5, color: context.colors.primary, fontWeight: FontWeight.w500)),
+                  Text(
+                    profession,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: isTablet ? 12.0 : 11.5,
+                      color: AppColors.customerColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 const SizedBox(height: 4),
-                Row(children: [
-                  const Icon(Icons.star_rounded, color: Color(0xFFF59E0B), size: 14),
-                  Text(' ${rating.toStringAsFixed(1)}  •  \$${price.toStringAsFixed(0)}/hr',
-                      style: TextStyle(fontSize: 11.5, color: context.colors.textSecondary)),
-                ]),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.star_rounded,
+                      color: const Color(0xFFF59E0B),
+                      size: isTablet ? 15 : 14,
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      ' ${rating.toStringAsFixed(1)}  •  \$${price.toStringAsFixed(0)}/hr',
+                      style: TextStyle(
+                        fontSize: isTablet ? 12.0 : 11.5,
+                        color: context.colors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
+
+          // ── Actions ──────────────────────────────────
           Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              IconButton(
-                icon: const Icon(Icons.favorite_rounded, color: AppColors.error, size: 20),
-                onPressed: () => _remove(id),
-                tooltip: 'Remove from saved',
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () => _remove(id),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(
+                      Icons.favorite_rounded,
+                      color: AppColors.error,
+                      size: isTablet ? 22 : 20,
+                    ),
+                  ),
+                ),
               ),
+              const SizedBox(height: 4),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(minimumSize: const Size(0, 32), padding: const EdgeInsets.symmetric(horizontal: 12)),
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BookingScreen(professional: pro))),
-                child: const Text('Book', style: TextStyle(fontSize: 11.5)),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(0, 32),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isTablet ? 16 : 12,
+                    vertical: 4,
+                  ),
+                  backgroundColor: AppColors.customerColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BookingScreen(professional: pro),
+                  ),
+                ),
+                child: Text(
+                  AppLocalizations.of(context)!.bookCta,
+                  style: TextStyle(
+                    fontSize: isTablet ? 12.0 : 11.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),

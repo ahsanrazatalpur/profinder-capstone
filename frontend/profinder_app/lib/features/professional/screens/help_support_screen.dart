@@ -7,159 +7,393 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
 
-  static const _faqs = [
-    {
-      'q': 'How do I get verified?',
-      'a': 'Add at least one portfolio item with clear photos of your work. '
-          'Our admin team reviews submissions within 24-48 hours and adds a '
-          'verification badge once approved.',
-    },
-    {
-      'q': 'How do I withdraw my earnings?',
-      'a': 'Go to Profile > Wallet & Earnings, add your bank details if you '
-          'haven\'t already, then tap "Withdraw" and enter the amount. '
-          'Withdrawals are processed within 3-5 business days.',
-    },
-    {
-      'q': 'Why is my booking request still pending?',
-      'a': 'New booking requests need your action — accept or reject them '
-          'from the Dashboard or Bookings tab. Customers are notified '
-          'immediately once you respond.',
-    },
-    {
-      'q': 'How can I improve my profile completion score?',
-      'a': 'Add a profile photo, bio, hourly rate, experience, skills, and '
-          'at least one portfolio item. Each of these boosts your visibility '
-          'in search results.',
-    },
-    {
-      'q': 'How do I change my availability status?',
-      'a': 'On your Profile tab, toggle the "Available for Bookings" switch. '
-          'This updates instantly and controls whether new customers can '
-          'book you.',
-    },
+  // Static FAQ keys — content is localized via helper methods
+  static const _faqKeys = [
+    'faq_get_verified',
+    'faq_withdraw_earnings',
+    'faq_booking_pending',
+    'faq_improve_profile',
+    'faq_change_availability',
   ];
+
+  String _getFaqQuestion(String key, BuildContext context) {
+    switch (key) {
+      case 'faq_get_verified':
+        return AppLocalizations.of(context)!.faqGetVerifiedQ;
+      case 'faq_withdraw_earnings':
+        return AppLocalizations.of(context)!.faqWithdrawEarningsQ;
+      case 'faq_booking_pending':
+        return AppLocalizations.of(context)!.faqBookingPendingQ;
+      case 'faq_improve_profile':
+        return AppLocalizations.of(context)!.faqImproveProfileQ;
+      case 'faq_change_availability':
+        return AppLocalizations.of(context)!.faqChangeAvailabilityQ;
+      default:
+        return '';
+    }
+  }
+
+  String _getFaqAnswer(String key, BuildContext context) {
+    switch (key) {
+      case 'faq_get_verified':
+        return AppLocalizations.of(context)!.faqGetVerifiedA;
+      case 'faq_withdraw_earnings':
+        return AppLocalizations.of(context)!.faqWithdrawEarningsA;
+      case 'faq_booking_pending':
+        return AppLocalizations.of(context)!.faqBookingPendingA;
+      case 'faq_improve_profile':
+        return AppLocalizations.of(context)!.faqImproveProfileA;
+      case 'faq_change_availability':
+        return AppLocalizations.of(context)!.faqChangeAvailabilityA;
+      default:
+        return '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > 600;
+
+    // Build FAQ items with localized content
+    final faqs = _faqKeys.map((key) {
+      return {
+        'q': _getFaqQuestion(key, context),
+        'a': _getFaqAnswer(key, context),
+      };
+    }).toList();
+
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: AppBar(
         backgroundColor: context.colors.surface,
         elevation: 0,
-        title: Text('Help & Support',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+        title: Text(
+          AppLocalizations.of(context)!.helpSupportTitle,
+          style: TextStyle(
+            fontSize: isTablet ? 18.0 : 16.0,
+            fontWeight: FontWeight.w700,
+            color: context.colors.textPrimary,
+            letterSpacing: -0.3,
+          ),
+        ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(isTablet ? 20 : 16),
+        physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          _buildContactCard(context),
-          const SizedBox(height: 20),
-          Text('Frequently Asked Questions',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
-          const SizedBox(height: 10),
-          ..._faqs.map((faq) => _buildFaqTile(context, faq['q']!, faq['a']!)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContactCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.support_agent_rounded, color: Colors.white, size: 24),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          // ── Contact Card ──────────────────────────────
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOut,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF7C3AED).withOpacity(0.3),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
               children: [
-                const Text('Need more help?',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
-                const SizedBox(height: 2),
-                Text('Our support team replies within 24 hours',
-                    style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.85))),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.support_agent_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.needMoreHelpLabel,
+                        style: TextStyle(
+                          fontSize: isTablet ? 15 : 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: -0.1,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        AppLocalizations.of(context)!.supportTeamReplyLabel,
+                        style: TextStyle(
+                          fontSize: isTablet ? 12 : 11,
+                          color: Colors.white.withOpacity(0.85),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => _showContactSheet(context),
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isTablet ? 18 : 14,
+                      vertical: isTablet ? 10 : 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.contactCta,
+                    style: TextStyle(
+                      fontSize: isTablet ? 13 : 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.professionalColor,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          TextButton(
-            onPressed: () => _showContactSheet(context),
-            style: TextButton.styleFrom(
-              backgroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+
+          const SizedBox(height: 20),
+
+          // ── FAQ Section ──────────────────────────────
+          Text(
+            AppLocalizations.of(context)!.faqSectionLabel,
+            style: TextStyle(
+              fontSize: isTablet ? 16 : 15,
+              fontWeight: FontWeight.w700,
+              color: context.colors.textPrimary,
+              letterSpacing: -0.1,
             ),
-            child: const Text('Contact', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.professionalColor)),
           ),
+          const SizedBox(height: 10),
+          ...faqs.map((faq) => _buildFaqTile(
+                context,
+                faq['q']!,
+                faq['a']!,
+                isDark,
+                isTablet,
+              )),
         ],
       ),
     );
   }
 
   void _showContactSheet(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > 600;
+
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Contact Support', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.email_outlined, color: AppColors.professionalColor),
-              title: const Text('support@profinder.com'),
-              subtitle: const Text('Email us anytime'),
-              onTap: () {}, // ⚠️ Wire up url_launcher's launchUrl(Uri(scheme: 'mailto', ...)) here
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Container(
+        decoration: BoxDecoration(
+          color: context.colors.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
             ),
-            ListTile(
-              leading: const Icon(Icons.chat_bubble_outline_rounded, color: AppColors.professionalColor),
-              title: const Text('Live Chat'),
-              subtitle: const Text('Available 9 AM - 6 PM'),
-              onTap: () {}, // ⚠️ Hook up to your support chat provider (Intercom, Zendesk, etc.)
-            ),
-            const SizedBox(height: 10),
           ],
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.all(isTablet ? 24 : 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withOpacity(0.15)
+                          : const Color(0xFFE5E7EB),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                Text(
+                  AppLocalizations.of(context)!.contactSupportTitle,
+                  style: TextStyle(
+                    fontSize: isTablet ? 18 : 16,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.professionalColor.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.email_outlined,
+                      color: AppColors.professionalColor,
+                      size: 20,
+                    ),
+                  ),
+                  title: Text(
+                    AppLocalizations.of(context)!.contactEmailLabel,
+                    style: TextStyle(
+                      fontSize: isTablet ? 15 : 14,
+                      fontWeight: FontWeight.w600,
+                      color: context.colors.textPrimary,
+                    ),
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context)!.contactEmailSubtitle,
+                    style: TextStyle(
+                      fontSize: isTablet ? 13 : 12,
+                      color: context.colors.textSecondary,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.chevron_right_rounded,
+                    color: context.colors.textSecondary,
+                    size: 20,
+                  ),
+                  onTap: () {}, // ⚠️ Wire up url_launcher's launchUrl(Uri(scheme: 'mailto', ...)) here
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.professionalColor.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      color: AppColors.professionalColor,
+                      size: 20,
+                    ),
+                  ),
+                  title: Text(
+                    AppLocalizations.of(context)!.contactChatLabel,
+                    style: TextStyle(
+                      fontSize: isTablet ? 15 : 14,
+                      fontWeight: FontWeight.w600,
+                      color: context.colors.textPrimary,
+                    ),
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context)!.contactChatSubtitle,
+                    style: TextStyle(
+                      fontSize: isTablet ? 13 : 12,
+                      color: context.colors.textSecondary,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.chevron_right_rounded,
+                    color: context.colors.textSecondary,
+                    size: 20,
+                  ),
+                  onTap: () {}, // ⚠️ Hook up to your support chat provider (Intercom, Zendesk, etc.)
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildFaqTile(BuildContext context, String question, String answer) {
-    return Container(
+  Widget _buildFaqTile(
+    BuildContext context,
+    String question,
+    String answer,
+    bool isDark,
+    bool isTablet,
+  ) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.colors.divider),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withOpacity(0.08)
+              : context.colors.divider,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(0.06)
+                : Colors.grey.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Theme(
-        data: ThemeData(dividerColor: Colors.transparent),
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+        ),
         child: ExpansionTile(
-          title: Text(question, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
+          title: Text(
+            question,
+            style: TextStyle(
+              fontSize: isTablet ? 14.5 : 13.5,
+              fontWeight: FontWeight.w600,
+              color: context.colors.textPrimary,
+              letterSpacing: -0.1,
+            ),
+          ),
+          iconColor: AppColors.professionalColor,
+          collapsedIconColor: context.colors.textSecondary,
           childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          expandedAlignment: Alignment.topLeft,
           children: [
-            Text(answer, style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary, height: 1.5)),
+            Text(
+              answer,
+              style: TextStyle(
+                fontSize: isTablet ? 13.5 : 12.5,
+                color: context.colors.textSecondary,
+                height: 1.6,
+                letterSpacing: 0.2,
+              ),
+            ),
           ],
         ),
       ),

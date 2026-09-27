@@ -100,8 +100,8 @@ class ChatRepositoryImpl implements ChatRepository {
   Future<void> unblockUser(int userId) => _remote.unblockUser(userId);
 
   @override
-  Future<void> reportUser(int userId, String reason, String details, {String? messageId}) =>
-      _remote.reportUser(userId, reason, details, messageId: messageId);
+  Future<void> reportUser(int userId, String reason, String details, {String? messageId, String? evidenceUrl}) =>
+      _remote.reportUser(userId, reason, details, messageId: messageId, evidenceUrl: evidenceUrl);
 
   @override
   Stream<ChatSocketEvent> connectSocket(int conversationId) {
