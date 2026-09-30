@@ -87,6 +87,9 @@ class ApiService {
           final token = prefs.getString(AppConstants.accessTokenKey);
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
+            // 🐛 FIX: yaad rakho ke ye request kaunsa token le kar gayi thi —
+            // onError mein stale 401 (purani/guest request) ko pehchanne ke liye.
+            options.extra['sentToken'] = token;
           }
           handler.next(options);
         },
@@ -96,11 +99,43 @@ class ApiService {
           final alreadyRetried = error.requestOptions.extra['retried'] == true;
 
           if (isUnauthorized && !isRefreshCall && !alreadyRetried) {
+            final sentToken = error.requestOptions.extra['sentToken'] as String?;
+
+            // 🐛 FIX 1: Guest request (koi token gaya hi nahi) — refresh/clear
+            // karne ka koi matlab nahi. Pehle ye path tokens delete kar deta
+            // tha, aur agar is dauran Google/email login naye tokens save kar
+            // chuka hota to wo bhi mit jaate (race condition).
+            if (sentToken == null) {
+              handler.next(error);
+              return;
+            }
+
+            // 🐛 FIX 2: Request purane token se gayi thi, lekin ab prefs mein
+            // naya token hai (login beech mein ho gaya) — refresh ki zaroorat
+            // nahi, bas naye token ke saath dobara bhejo.
+            final prefs = await _getPrefs;
+            final currentToken = prefs.getString(AppConstants.accessTokenKey);
+            if (currentToken != null && currentToken != sentToken) {
+              try {
+                final retryOptions = error.requestOptions
+                  ..headers['Authorization'] = 'Bearer $currentToken'
+                  ..extra['sentToken'] = currentToken
+                  ..extra['retried'] = true;
+                final response = await _dio.fetch(retryOptions);
+                handler.resolve(response);
+                return;
+              } catch (_) {
+                handler.next(error);
+                return;
+              }
+            }
+
             final newAccess = await _refreshAccessToken();
             if (newAccess != null) {
               // Original (failed) request ko naye token ke saath dobara try karo
               final retryOptions = error.requestOptions
                 ..headers['Authorization'] = 'Bearer $newAccess'
+                ..extra['sentToken'] = newAccess
                 ..extra['retried'] = true;
               try {
                 final response = await _dio.fetch(retryOptions);
@@ -113,9 +148,14 @@ class ApiService {
             } else {
               // Refresh token bhi expire/invalid — session clear karo taake
               // app login screen pe route kare (AuthProvider isko check karta hai).
-              final prefs = await _getPrefs;
-              await prefs.remove(AppConstants.accessTokenKey);
-              await prefs.remove(AppConstants.refreshTokenKey);
+              // 🐛 FIX 3: sirf tab clear karo jab prefs mein ab bhi wahi token
+              // ho jo is failed request ne bheja tha. Agar is dauran koi naya
+              // login ho chuka hai to uske tokens ko mat chhedo.
+              final latestToken = prefs.getString(AppConstants.accessTokenKey);
+              if (latestToken == null || latestToken == sentToken) {
+                await prefs.remove(AppConstants.accessTokenKey);
+                await prefs.remove(AppConstants.refreshTokenKey);
+              }
             }
           }
           handler.next(error);

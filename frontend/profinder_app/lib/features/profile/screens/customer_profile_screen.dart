@@ -14,6 +14,9 @@ import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
 import '../../../services/favorites_store.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../services/geo_service.dart';
+import '../../../core/constants/country_flags.dart';
+import '../../auth/widgets/searchable_picker_field.dart';
 import '../../notifications/screens/notification_screen.dart';
 import '../../subscription/services/subscription_service.dart';
 import '../../subscription/screens/subscription_screen.dart';  // ✅ FIX: navigate here
@@ -63,12 +66,19 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   // ── Controllers ──────────────────────────────────────────
   final _nameController  = TextEditingController();
   final _phoneController = TextEditingController();
-  final _cityController  = TextEditingController();
   final _api             = ApiService();
   final _bookingSvc      = BookingService();
   final _favStore        = FavoritesStore();
   final _subSvc          = SubscriptionService();
   final _picker          = ImagePicker();
+
+  final _geoService = GeoService();
+  List<Map<String, dynamic>> _countries       = [];
+  List<Map<String, dynamic>> _cities          = [];
+  Map<String, dynamic>?      _selectedCountry;
+  Map<String, dynamic>?      _selectedCity;
+  bool _loadingCountries = false;
+  bool _loadingCities    = false;
 
   @override
   void initState() {
@@ -81,7 +91,6 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
-    _cityController.dispose();
     super.dispose();
   }
 
@@ -110,8 +119,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         _photoUrl  = profileData['photo_url'] as String?;
         _nameController.text  = merged['name']  ?? '';
         _phoneController.text = merged['phone'] ?? '';
-        _cityController.text  = merged['city']  ?? '';
       });
+      _loadCountriesAndPreselect(
+        merged['country'] as String?,
+        merged['city']    as String?,
+      );
     } catch (e) {
       // ignore: avoid_print
       print('❌ _loadProfile error: $e'); // TEMP DEBUG — console mein pura error dekhne ke liye
@@ -119,6 +131,76 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       setState(() => _isLoading = false);
       AppHelpers.showError(context, AppLocalizations.of(context)!.profileLoadError);
     }
+  }
+
+  Future<void> _loadCountriesAndPreselect(String? countryName, String? cityName) async {
+    setState(() => _loadingCountries = true);
+    final result = await _geoService.getCountries();
+    if (!mounted) return;
+
+    final countries = result['success'] == true
+        ? List<Map<String, dynamic>>.from(result['data'] ?? [])
+        : <Map<String, dynamic>>[];
+
+    Map<String, dynamic>? matchedCountry;
+    if (countryName != null && countryName.isNotEmpty) {
+      for (final c in countries) {
+        if ((c['name'] as String).toLowerCase() == countryName.toLowerCase()) {
+          matchedCountry = c;
+          break;
+        }
+      }
+    }
+
+    setState(() {
+      _countries        = countries;
+      _selectedCountry  = matchedCountry;
+      _loadingCountries = false;
+    });
+
+    if (matchedCountry == null) return;
+
+    setState(() => _loadingCities = true);
+    final cityResult = await _geoService.getCities(matchedCountry['id'] as int);
+    if (!mounted) return;
+
+    final cities = cityResult['success'] == true
+        ? List<Map<String, dynamic>>.from(cityResult['data'] ?? [])
+        : <Map<String, dynamic>>[];
+
+    Map<String, dynamic>? matchedCity;
+    if (cityName != null && cityName.isNotEmpty) {
+      for (final c in cities) {
+        if ((c['name'] as String).toLowerCase() == cityName.toLowerCase()) {
+          matchedCity = c;
+          break;
+        }
+      }
+    }
+
+    setState(() {
+      _cities        = cities;
+      _selectedCity  = matchedCity;
+      _loadingCities = false;
+    });
+  }
+
+  Future<void> _onCountrySelected(Map<String, dynamic>? country) async {
+    if (country == null) return;
+    setState(() {
+      _selectedCountry = country;
+      _selectedCity    = null;
+      _loadingCities   = true;
+      _cities          = [];
+    });
+    final result = await _geoService.getCities(country['id'] as int);
+    if (!mounted) return;
+    setState(() {
+      _cities = result['success'] == true
+          ? List<Map<String, dynamic>>.from(result['data'] ?? [])
+          : [];
+      _loadingCities = false;
+    });
   }
 
   // ── Load header stats — real counts, no fake numbers ──────
@@ -315,7 +397,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       final formData = FormData.fromMap({
         'full_name': _nameController.text.trim(),
         'phone':     _phoneController.text.trim(),
-        'city':      _cityController.text.trim(),
+        'city':      _selectedCity?['name']    ?? '',
+        'country':   _selectedCountry?['name'] ?? '',
         if (photoMultipart != null) 'photo': photoMultipart,
       });
 
@@ -347,8 +430,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       _webImageBytes = null;
       _nameController.text  = _profile?['name']  ?? '';
       _phoneController.text = _profile?['phone'] ?? '';
-      _cityController.text  = _profile?['city']  ?? '';
     });
+    _loadCountriesAndPreselect(
+      _profile?['country'] as String?,
+      _profile?['city']    as String?,
+    );
   }
 
   // ── Build ────────────────────────────────────────────────
@@ -654,10 +740,49 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             type: TextInputType.phone,
           ),
           const SizedBox(height: 12),
-          _buildField(
-            AppLocalizations.of(context)!.cityLabel,
-            _cityController,
-            Icons.location_city_outlined,
+          _buildLocationField(
+            label: AppLocalizations.of(context)!.countryLabel,
+            icon: Icons.public_outlined,
+            displayValue: (_selectedCountry?['name'] as String?) ??
+                (_profile?['country'] as String?),
+            editingBuilder: () => SearchablePickerField<Map<String, dynamic>>(
+              value:      _selectedCountry,
+              items:      _countries,
+              itemLabel:  (c) => c['name'] as String,
+              itemLeading: (c) {
+                final flag = CountryFlags.flagFor(c['name'] as String);
+                return Text(flag ?? '🌐', style: const TextStyle(fontSize: 18));
+              },
+              label:      AppLocalizations.of(context)!.countryLabel,
+              hint:       AppLocalizations.of(context)!.countryHint,
+              prefixIcon: Icons.public_outlined,
+              loading:    _loadingCountries,
+              searchHint: AppLocalizations.of(context)!.countrySearchHint,
+              emptyMessage: AppLocalizations.of(context)!.countryEmptyMessage,
+              onChanged:  _onCountrySelected,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildLocationField(
+            label: AppLocalizations.of(context)!.cityLabel,
+            icon: Icons.location_city_outlined,
+            displayValue: (_selectedCity?['name'] as String?) ??
+                (_profile?['city'] as String?),
+            editingBuilder: () => SearchablePickerField<Map<String, dynamic>>(
+              key:        ValueKey(_selectedCountry?['id']),
+              value:      _selectedCity,
+              items:      _cities,
+              itemLabel:  (c) => c['name'] as String,
+              label:      AppLocalizations.of(context)!.cityLabel,
+              hint:       AppLocalizations.of(context)!.cityHint,
+              prefixIcon: Icons.location_city_outlined,
+              enabled:    _selectedCountry != null,
+              loading:    _loadingCities,
+              disabledHint: AppLocalizations.of(context)!.cityDisabledHint,
+              searchHint: AppLocalizations.of(context)!.citySearchHint,
+              emptyMessage: AppLocalizations.of(context)!.cityEmptyMessage,
+              onChanged:  (city) => setState(() => _selectedCity = city),
+            ),
           ),
         ],
       ),
@@ -869,6 +994,50 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
           titleColor: AppColors.error,
         ),
       ),
+    );
+  }
+
+  // ── Location Field Builder — Country/City picker (view mode shows a
+  //    plain row like _buildField; edit mode shows the searchable picker) ──
+  Widget _buildLocationField({
+    required String label,
+    required IconData icon,
+    required String? displayValue,
+    required Widget Function() editingBuilder,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: context.colors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 4),
+        _isEditing
+            ? editingBuilder()
+            : Row(
+                children: [
+                  Icon(icon, size: 16, color: context.colors.textSecondary),
+                  const SizedBox(width: 8),
+                  Text(
+                    (displayValue == null || displayValue.isEmpty)
+                        ? AppLocalizations.of(context)!.notSetPlaceholder
+                        : displayValue,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: (displayValue == null || displayValue.isEmpty)
+                          ? context.colors.textSecondary
+                          : context.colors.textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+      ],
     );
   }
 

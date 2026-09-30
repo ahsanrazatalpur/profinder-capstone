@@ -17,29 +17,43 @@ class MyBookingsScreen extends StatefulWidget {
 }
 
 class _MyBookingsScreenState extends State<MyBookingsScreen>
-    with SingleTickerProviderStateMixin,
-         PromoBannerMixin {
+    with SingleTickerProviderStateMixin, PromoBannerMixin {
   late TabController _tabController;
   final _service = BookingService();
 
   List<dynamic> _bookings = [];
-  bool          _isLoading = true;
+  bool _isLoading = true;
 
-  final List<String> _tabs = ['All', 'Pending', 'Accepted', 'Completed', 'Cancelled'];
+  // PageController per tab so each tab keeps its own position
+  final Map<String, PageController> _pageControllers = {};
+
+  final List<String> _tabs = [
+    'All',
+    'Pending',
+    'Accepted',
+    'Completed',
+    'Cancelled',
+  ];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
+    for (final t in _tabs) {
+      _pageControllers[t] = PageController();
+    }
     _loadBookings();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      showBannerForScreen('booking'); // Banner — booking trigger
+      showBannerForScreen('booking');
     });
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    for (final c in _pageControllers.values) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -49,34 +63,45 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     if (!mounted) return;
     setState(() {
       _isLoading = false;
-      _bookings  = result['data'] is List ? result['data'] : [];
+      _bookings = result['data'] is List ? result['data'] : [];
     });
   }
 
   List<dynamic> _filtered(String status) {
     if (status == 'All') return _bookings;
-    return _bookings.where((b) =>
-        b['status']?.toString().toLowerCase() == status.toLowerCase()
-    ).toList();
+    return _bookings
+        .where((b) =>
+            b['status']?.toString().toLowerCase() == status.toLowerCase())
+        .toList();
   }
 
   Color _statusColor(BuildContext context, String status) {
     switch (status.toLowerCase()) {
-      case 'accepted':  return context.colors.accent;
-      case 'rejected':  return AppColors.error;
-      case 'completed': return context.colors.primary;
-      case 'cancelled': return context.colors.textSecondary;
-      default:          return const Color(0xFFF59E0B); // pending
+      case 'accepted':
+        return context.colors.accent;
+      case 'rejected':
+        return AppColors.error;
+      case 'completed':
+        return context.colors.primary;
+      case 'cancelled':
+        return context.colors.textSecondary;
+      default:
+        return const Color(0xFFF59E0B); // pending
     }
   }
 
   IconData _statusIcon(String status) {
     switch (status.toLowerCase()) {
-      case 'accepted':  return Icons.check_circle_outline;
-      case 'rejected':  return Icons.cancel_outlined;
-      case 'completed': return Icons.task_alt_outlined;
-      case 'cancelled': return Icons.block_outlined;
-      default:          return Icons.schedule_outlined;
+      case 'accepted':
+        return Icons.check_circle_outline;
+      case 'rejected':
+        return Icons.cancel_outlined;
+      case 'completed':
+        return Icons.task_alt_outlined;
+      case 'cancelled':
+        return Icons.block_outlined;
+      default:
+        return Icons.schedule_outlined;
     }
   }
 
@@ -94,7 +119,15 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     if (raw.isEmpty) return '';
     try {
       final d = DateTime.parse(raw);
-      const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+      const days = [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday'
+      ];
       return days[d.weekday - 1];
     } catch (_) {
       return '';
@@ -135,318 +168,512 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
       backgroundColor: context.colors.background,
       appBar: AppBar(
         backgroundColor: context.colors.surface,
-        elevation:       0,
-        toolbarHeight:   56,
-        title: Text(AppLocalizations.of(context)!.myBookings,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700,
-                letterSpacing: -0.3, color: context.colors.textPrimary)),
+        elevation: 0,
+        toolbarHeight: 52,
+        title: Text(
+          AppLocalizations.of(context)!.myBookings,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.3,
+            color: context.colors.textPrimary,
+          ),
+        ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: context.colors.textPrimary),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              size: 18, color: context.colors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
+          preferredSize: const Size.fromHeight(44),
           child: TabBar(
-            controller:          _tabController,
-            labelColor:          context.colors.primary,
+            controller: _tabController,
+            labelColor: context.colors.primary,
             unselectedLabelColor: context.colors.textSecondary,
-            indicatorColor:      context.colors.primary,
-            indicatorWeight:     2.6,
-            isScrollable:        true,
-            labelPadding: const EdgeInsets.symmetric(horizontal: 16),
-            labelStyle:   const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700),
-            unselectedLabelStyle: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500),
-            tabs:        _tabs.map((t) => Tab(height: 48, text: t)).toList(),
+            indicatorColor: context.colors.primary,
+            indicatorWeight: 2.4,
+            isScrollable: true,
+            labelPadding: const EdgeInsets.symmetric(horizontal: 14),
+            labelStyle:
+                const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+            unselectedLabelStyle:
+                const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500),
+            tabs: _tabs.map((t) => Tab(height: 44, text: t)).toList(),
           ),
         ),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: context.colors.primary))
-          : RefreshIndicator(
-              color:     context.colors.primary,
-              onRefresh: _loadBookings,
-              child: TabBarView(
-                controller: _tabController,
-                children: _tabs.map((tab) {
-                  final list = _filtered(tab);
-                  if (list.isEmpty) return _buildEmpty(tab);
-                  return ListView.builder(
-                    padding:     const EdgeInsets.fromLTRB(16, 20, 16, 28),
-                    itemCount:   list.length,
-                    itemBuilder: (ctx, i) => Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: _buildCard(list[i]),
-                    ),
-                  );
-                }).toList(),
-              ),
+          ? Center(
+              child:
+                  CircularProgressIndicator(color: context.colors.primary))
+          : TabBarView(
+              controller: _tabController,
+              children: _tabs.map((tab) {
+                final list = _filtered(tab);
+                if (list.isEmpty) return _buildEmpty(tab);
+                return _buildPager(tab, list);
+              }).toList(),
             ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  //  PAGER — one booking per page
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildPager(String tab, List<dynamic> list) {
+    final controller = _pageControllers[tab]!;
+    return Column(
+      children: [
+        // Small "N of M" header
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
+          child: Row(
+            children: [
+              Text(
+                '${list.length} ${list.length == 1 ? "booking" : "bookings"}',
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+              const Spacer(),
+              Icon(Icons.swipe_rounded,
+                  size: 16, color: context.colors.textSecondary),
+              const SizedBox(width: 4),
+              Text(
+                'swipe',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Pages
+        Expanded(
+          child: PageView.builder(
+            controller: controller,
+            physics: const BouncingScrollPhysics(),
+            itemCount: list.length,
+            onPageChanged: (_) => setState(() {}),
+            itemBuilder: (ctx, i) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(14, 6, 14, 6),
+                child: _buildCard(list[i], index: i, total: list.length),
+              );
+            },
+          ),
+        ),
+
+        // Page dots
+        if (list.length > 1)
+          Padding(
+            padding: const EdgeInsets.only(top: 4, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(list.length, (i) {
+                final active = (controller.hasClients
+                        ? (controller.page?.round() ?? 0)
+                        : 0) ==
+                    i;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: active ? 18 : 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: active
+                        ? context.colors.primary
+                        : context.colors.divider,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                );
+              }),
+            ),
+          ),
+      ],
     );
   }
 
   Widget _buildEmpty(String tab) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.calendar_today_outlined, size: 64, color: context.colors.textDisabled),
-          const SizedBox(height: 16),
-          Text(
-            tab == 'All' ? AppLocalizations.of(context)!.professionalNoBookingsYet : AppLocalizations.of(context)!.professionalNoBookings(tab),
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
-          ),
-          const SizedBox(height: 8),
-          Text(AppLocalizations.of(context)!.bookingsBookProfessionalFromHomeScreen,
-              style: TextStyle(fontSize: 14, color: context.colors.textSecondary)),
-        ],
-      ),
-    );
-  }
-
-  // ══════════════════════════════════════════════════════════════════
-  //  CARD
-  // ══════════════════════════════════════════════════════════════════
-  Widget _buildCard(dynamic booking) {
-    final proName    = booking['professional_name']?.toString() ?? 'Professional';
-    final profession = booking['profession']?.toString() ?? '';
-    final rating      = double.tryParse(booking['professional_rating']?.toString() ?? '') ?? 0.0;
-    final reviewCount = int.tryParse(booking['professional_reviews']?.toString() ?? '') ?? 0;
-    final location    = booking['location']?.toString() ?? '';
-    final verified    = booking['professional_verified'] == true;
-
-    final status   = booking['status']?.toString() ?? 'pending';
-    final date     = booking['date']?.toString() ?? '';
-    final time     = booking['time']?.toString() ?? '';
-    final note     = booking['note']?.toString() ?? '';
-    final bookedAt = booking['created_at']?.toString() ?? '';
-    final cancelReason = booking['cancel_reason']?.toString() ?? '';
-    final cancelledBy  = booking['cancelled_by']?.toString() ?? '';
-
-    final sColor = _statusColor(context, status);
-    final sIcon  = _statusIcon(status);
-    final isCancelledOrRejected = status == 'cancelled' || status == 'rejected';
-
-    return Container(
-      decoration: BoxDecoration(
-        color:        context.colors.surface,
-        borderRadius: BorderRadius.circular(22),
-        border:       Border.all(color: context.colors.divider),
-        boxShadow: [
-          BoxShadow(
-            color:      Colors.black.withOpacity(0.06),
-            blurRadius: 30,
-            offset:     const Offset(0, 10),
-          ),
-        ],
-      ),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // ── Header ──────────────────────────────────────────────
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius:          28,
-                  backgroundColor: context.colors.primaryLight,
-                  child: Text(
-                    AppHelpers.getInitials(proName),
-                    style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.w700, fontSize: 17),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(proName,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700,
-                                    letterSpacing: -0.2, color: context.colors.textPrimary)),
-                          ),
-                          if (verified) ...[
-                            const SizedBox(width: 5),
-                            Icon(Icons.verified_rounded, size: 17, color: context.colors.primary),
-                          ],
-                        ],
-                      ),
-                      if (profession.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(profession,
-                            style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500,
-                                color: context.colors.textSecondary)),
-                      ],
-                      if (rating > 0) ...[
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.star_rounded, size: 16, color: Color(0xFFF59E0B)),
-                            const SizedBox(width: 4),
-                            Text(rating.toStringAsFixed(1),
-                                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700,
-                                    color: context.colors.textPrimary)),
-                            if (reviewCount > 0) ...[
-                              const SizedBox(width: 4),
-                              Text('($reviewCount ${AppLocalizations.of(context)!.reviews})',
-                                  style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary)),
-                            ],
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                _statusBadge(status, sColor, sIcon),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-            _thinDivider(context),
-            const SizedBox(height: 20),
-
-            // ── Booking Details ────────────────────────────────────
-            _sectionLabel('BOOKING DETAILS'),
+            Icon(Icons.calendar_today_outlined,
+                size: 56, color: context.colors.textDisabled),
             const SizedBox(height: 14),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: _infoTile(Icons.calendar_today_outlined, 'DATE',
-                      _prettyDate(date), sub: _weekday(date)),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _infoTile(Icons.access_time_rounded, 'TIME', _prettyTime(time)),
-                ),
-              ],
-            ),
-            if (location.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              _infoTile(Icons.location_on_outlined, 'LOCATION', location),
-            ],
-
-            // ── Service ─────────────────────────────────────────────
-            if (profession.isNotEmpty) ...[
-              const SizedBox(height: 20),
-              _thinDivider(context),
-              const SizedBox(height: 20),
-              _sectionLabel('SERVICE'),
-              const SizedBox(height: 14),
-              _infoTile(Icons.build_outlined, 'CATEGORY', profession),
-            ],
-
-            // ── Notes ────────────────────────────────────────────────
-            if (note.isNotEmpty) ...[
-              const SizedBox(height: 20),
-              _thinDivider(context),
-              const SizedBox(height: 20),
-              _sectionLabel('CUSTOMER NOTES'),
-              const SizedBox(height: 12),
-              _notesCard(_noteLines(note)),
-            ],
-
-            // ── Cancellation info ──────────────────────────────────
-            if (isCancelledOrRejected && cancelReason.isNotEmpty) ...[
-              const SizedBox(height: 20),
-              _thinDivider(context),
-              const SizedBox(height: 20),
-              _infoTile(
-                Icons.info_outline_rounded,
-                cancelledBy == 'professional' ? 'CANCELLED BY PROFESSIONAL' : 'CANCELLED BY YOU',
-                cancelReason,
-                accent: AppColors.error,
+            Text(
+              tab == 'All'
+                  ? AppLocalizations.of(context)!
+                      .professionalNoBookingsYet
+                  : AppLocalizations.of(context)!
+                      .professionalNoBookings(tab),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: context.colors.textPrimary,
               ),
-            ],
-
-            // ── Timeline ────────────────────────────────────────────
-            const SizedBox(height: 20),
-            _thinDivider(context),
-            const SizedBox(height: 20),
-            _sectionLabel('BOOKING TIMELINE'),
-            const SizedBox(height: 16),
-            isCancelledOrRejected
-                ? _cancelledTimeline(status, sColor)
-                : _stepperTimeline(status, bookedAt, sColor),
-
-            // ── Action button ───────────────────────────────────────
-            if (status == 'pending' || status == 'accepted' || status == 'completed') ...[
-              const SizedBox(height: 20),
-              _thinDivider(context),
-              const SizedBox(height: 20),
-              _actionButton(booking, status),
-            ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              AppLocalizations.of(context)!
+                  .bookingsBookProfessionalFromHomeScreen,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 13, color: context.colors.textSecondary),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _thinDivider(BuildContext context) => Divider(height: 1, thickness: 1, color: context.colors.divider);
+  // ══════════════════════════════════════════════════════════════════
+  //  CARD — fits within one page
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildCard(dynamic booking, {required int index, required int total}) {
+    final proName =
+        booking['professional_name']?.toString() ?? 'Professional';
+    final profession = booking['profession']?.toString() ?? '';
+    final rating = double.tryParse(
+            booking['professional_rating']?.toString() ?? '') ??
+        0.0;
+    final reviewCount = int.tryParse(
+            booking['professional_reviews']?.toString() ?? '') ??
+        0;
+    final location = booking['location']?.toString() ?? '';
+    final verified = booking['professional_verified'] == true;
+
+    final status = booking['status']?.toString() ?? 'pending';
+    final date = booking['date']?.toString() ?? '';
+    final time = booking['time']?.toString() ?? '';
+    final note = booking['note']?.toString() ?? '';
+    final bookedAt = booking['created_at']?.toString() ?? '';
+    final cancelReason = booking['cancel_reason']?.toString() ?? '';
+    final cancelledBy = booking['cancelled_by']?.toString() ?? '';
+
+    final sColor = _statusColor(context, status);
+    final sIcon = _statusIcon(status);
+    final isCancelledOrRejected =
+        status == 'cancelled' || status == 'rejected';
+
+    // Action row only for actionable statuses
+    final showAction = status == 'pending' ||
+        status == 'accepted' ||
+        status == 'completed';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: context.colors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          children: [
+            // ── Scrollable content ────────────────────────────────
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(18, 16, 18, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ── Header ──────────────────────────────────
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor: context.colors.primaryLight,
+                          child: Text(
+                            AppHelpers.getInitials(proName),
+                            style: TextStyle(
+                              color: context.colors.primary,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      proName,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 16.5,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: -0.2,
+                                        color: context.colors.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                  if (verified) ...[
+                                    const SizedBox(width: 4),
+                                    Icon(Icons.verified_rounded,
+                                        size: 15,
+                                        color: context.colors.primary),
+                                  ],
+                                ],
+                              ),
+                              if (profession.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  profession,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: context.colors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                              if (rating > 0) ...[
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.star_rounded,
+                                        size: 14,
+                                        color: Color(0xFFF59E0B)),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      rating.toStringAsFixed(1),
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: context.colors.textPrimary,
+                                      ),
+                                    ),
+                                    if (reviewCount > 0) ...[
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        '($reviewCount ${AppLocalizations.of(context)!.reviews})',
+                                        style: TextStyle(
+                                          fontSize: 11.5,
+                                          color: context.colors.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        _statusBadge(status, sColor, sIcon),
+                      ],
+                    ),
+
+                    const SizedBox(height: 14),
+                    _thinDivider(context),
+                    const SizedBox(height: 14),
+
+                    // ── Booking Details ──────────────────────────
+                    _sectionLabel('BOOKING DETAILS'),
+                    const SizedBox(height: 10),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _infoTile(
+                            Icons.calendar_today_outlined,
+                            'DATE',
+                            _prettyDate(date),
+                            sub: _weekday(date),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _infoTile(
+                            Icons.access_time_rounded,
+                            'TIME',
+                            _prettyTime(time),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (location.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      _infoTile(Icons.location_on_outlined, 'LOCATION',
+                          location),
+                    ],
+
+                    // ── Service ─────────────────────────────────
+                    if (profession.isNotEmpty) ...[
+                      const SizedBox(height: 14),
+                      _thinDivider(context),
+                      const SizedBox(height: 14),
+                      _sectionLabel('SERVICE'),
+                      const SizedBox(height: 10),
+                      _infoTile(Icons.build_outlined, 'CATEGORY', profession),
+                    ],
+
+                    // ── Notes ───────────────────────────────────
+                    if (note.isNotEmpty) ...[
+                      const SizedBox(height: 14),
+                      _thinDivider(context),
+                      const SizedBox(height: 14),
+                      _sectionLabel('CUSTOMER NOTES'),
+                      const SizedBox(height: 10),
+                      _notesCard(_noteLines(note)),
+                    ],
+
+                    // ── Cancellation info ───────────────────────
+                    if (isCancelledOrRejected && cancelReason.isNotEmpty) ...[
+                      const SizedBox(height: 14),
+                      _thinDivider(context),
+                      const SizedBox(height: 14),
+                      _infoTile(
+                        Icons.info_outline_rounded,
+                        cancelledBy == 'professional'
+                            ? 'CANCELLED BY PROFESSIONAL'
+                            : 'CANCELLED BY YOU',
+                        cancelReason,
+                        accent: AppColors.error,
+                      ),
+                    ],
+
+                    // ── Timeline ────────────────────────────────
+                    const SizedBox(height: 14),
+                    _thinDivider(context),
+                    const SizedBox(height: 14),
+                    _sectionLabel('BOOKING TIMELINE'),
+                    const SizedBox(height: 12),
+                    isCancelledOrRejected
+                        ? _cancelledTimeline(status, sColor)
+                        : _stepperTimeline(status, bookedAt, sColor),
+
+                    const SizedBox(height: 6),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── Pinned action ──────────────────────────────────────
+            if (showAction)
+              Container(
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 14),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: context.colors.divider),
+                  ),
+                ),
+                child: _actionButton(booking, status),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _thinDivider(BuildContext context) =>
+      Divider(height: 1, thickness: 1, color: context.colors.divider);
 
   Widget _sectionLabel(String text) {
-    return Text(text,
-        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
-            letterSpacing: 0.9, color: context.colors.textSecondary));
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.9,
+        color: context.colors.textSecondary,
+      ),
+    );
   }
 
   Widget _statusBadge(String status, Color color, IconData icon) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color:        color.withOpacity(0.12),
+        color: color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(999),
-        border:       Border.all(color: color.withOpacity(0.35)),
+        border: Border.all(color: color.withOpacity(0.35)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 6),
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
           Text(
             AppHelpers.capitalize(status),
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: color),
+            style: TextStyle(
+                fontSize: 11.5, fontWeight: FontWeight.w700, color: color),
           ),
         ],
       ),
     );
   }
 
-  Widget _infoTile(IconData icon, String label, String value, {String? sub, Color? accent}) {
+  Widget _infoTile(IconData icon, String label, String value,
+      {String? sub, Color? accent}) {
     final iconColor = accent ?? context.colors.primary;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width:  36,
-          height: 36,
+          width: 32,
+          height: 32,
           decoration: BoxDecoration(
-            color:        iconColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(11),
+            color: iconColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 18, color: iconColor),
+          child: Icon(icon, size: 16, color: iconColor),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-                      letterSpacing: 0.7, color: context.colors.textSecondary)),
-              const SizedBox(height: 4),
-              Text(value,
-                  style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w600,
-                      height: 1.4, color: context.colors.textPrimary)),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.6,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  height: 1.3,
+                  color: context.colors.textPrimary,
+                ),
+              ),
               if (sub != null && sub.isNotEmpty)
-                Text(sub,
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500,
-                        color: context.colors.textSecondary)),
+                Text(
+                  sub,
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w500,
+                    color: context.colors.textSecondary,
+                  ),
+                ),
             ],
           ),
         ),
@@ -457,32 +684,40 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   Widget _notesCard(List<String> lines) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color:        context.colors.background,
-        borderRadius: BorderRadius.circular(14),
+        color: context.colors.background,
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: lines.map((line) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.only(bottom: 6),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 7),
+                  padding: const EdgeInsets.only(top: 6),
                   child: Container(
-                    width: 5, height: 5,
+                    width: 4,
+                    height: 4,
                     decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: context.colors.textSecondary),
+                      shape: BoxShape.circle,
+                      color: context.colors.textSecondary,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Expanded(
-                  child: Text(line,
-                      style: TextStyle(fontSize: 14.5, height: 1.5,
-                          color: context.colors.textPrimary)),
+                  child: Text(
+                    line,
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      height: 1.4,
+                      color: context.colors.textPrimary,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -492,14 +727,19 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     );
   }
 
-  // Booked → Accepted → Completed stepper, filled up to current status
+  // Booked → Accepted → Completed stepper
   Widget _stepperTimeline(String status, String bookedAt, Color sColor) {
     const stages = ['Booked', 'Accepted', 'Completed'];
     int current;
     switch (status) {
-      case 'accepted':  current = 1; break;
-      case 'completed': current = 2; break;
-      default:          current = 0; // pending
+      case 'accepted':
+        current = 1;
+        break;
+      case 'completed':
+        current = 2;
+        break;
+      default:
+        current = 0; // pending
     }
 
     return Row(
@@ -510,49 +750,70 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           final filled = leftStage < current;
           return Expanded(
             child: Container(
-              height:  2,
-              margin:  const EdgeInsets.only(top: 11),
-              color:   filled ? sColor : context.colors.divider,
+              height: 2,
+              margin: const EdgeInsets.only(top: 10),
+              color: filled ? sColor : context.colors.divider,
             ),
           );
         }
         final stageIndex = i ~/ 2;
-        final isDone   = stageIndex < current;
+        final isDone = stageIndex < current;
         final isActive = stageIndex == current;
         final dotColor = (isDone || isActive) ? sColor : context.colors.divider;
 
         return Column(
           children: [
             Container(
-              width: 24, height: 24,
+              width: 22,
+              height: 22,
               decoration: BoxDecoration(
-                shape:  BoxShape.circle,
-                color:  isDone ? dotColor : Colors.transparent,
+                shape: BoxShape.circle,
+                color: isDone ? dotColor : Colors.transparent,
                 border: Border.all(color: dotColor, width: 2),
               ),
               child: isDone
-                  ? const Icon(Icons.check, size: 14, color: Colors.white)
-                  : (isActive ? Center(child: Container(
-                      width: 8, height: 8,
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: dotColor),
-                    )) : null),
+                  ? const Icon(Icons.check, size: 12, color: Colors.white)
+                  : (isActive
+                      ? Center(
+                          child: Container(
+                            width: 7,
+                            height: 7,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: dotColor,
+                            ),
+                          ),
+                        )
+                      : null),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             SizedBox(
-              width: 66,
-              child: Text(stages[stageIndex],
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
-                      color: (isDone || isActive) ? context.colors.textPrimary : context.colors.textSecondary)),
+              width: 62,
+              child: Text(
+                stages[stageIndex],
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: (isDone || isActive)
+                      ? context.colors.textPrimary
+                      : context.colors.textSecondary,
+                ),
+              ),
             ),
             if (stageIndex == 0 && bookedAt.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: SizedBox(
-                  width: 90,
-                  child: Text(_prettyBookedAt(bookedAt),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 10, color: context.colors.textSecondary)),
+                  width: 84,
+                  child: Text(
+                    _prettyBookedAt(bookedAt),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 9.5,
+                      color: context.colors.textSecondary,
+                    ),
+                  ),
                 ),
               ),
           ],
@@ -565,14 +826,33 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     return Row(
       children: [
         Container(
-          width: 36, height: 36,
-          decoration: BoxDecoration(color: sColor.withOpacity(0.12), shape: BoxShape.circle),
-          child: Icon(status == 'rejected' ? Icons.cancel_outlined : Icons.block_outlined,
-              size: 18, color: sColor),
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: sColor.withOpacity(0.12),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            status == 'rejected'
+                ? Icons.cancel_outlined
+                : Icons.block_outlined,
+            size: 16,
+            color: sColor,
+          ),
         ),
-        const SizedBox(width: 12),
-        Text(status == 'rejected' ? 'Booking was rejected' : 'Booking was cancelled',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            status == 'rejected'
+                ? 'Booking was rejected'
+                : 'Booking was cancelled',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: context.colors.textPrimary,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -580,50 +860,65 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   Widget _actionButton(dynamic booking, String status) {
     if (status == 'pending') {
       return SizedBox(
-        width:  double.infinity,
-        height: 50,
+        width: double.infinity,
+        height: 46,
         child: OutlinedButton.icon(
           onPressed: () => _confirmCancel((booking['id'] as num).toInt()),
-          icon:  const Icon(Icons.cancel_outlined, size: 19, color: AppColors.error),
-          label: Text(AppLocalizations.of(context)!.professionalCancelBooking,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.error)),
+          icon: const Icon(Icons.cancel_outlined,
+              size: 17, color: AppColors.error),
+          label: Text(
+            AppLocalizations.of(context)!.professionalCancelBooking,
+            style: const TextStyle(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w600,
+              color: AppColors.error,
+            ),
+          ),
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: AppColors.error, width: 1.4),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
           ),
         ),
       );
     }
 
     // accepted || completed → Write a Review
-    // ⚠️ TODO: remove `status == 'accepted' ||` once payment/completion flow is live.
     return SizedBox(
-      width:  double.infinity,
-      height: 50,
+      width: double.infinity,
+      height: 46,
       child: ElevatedButton.icon(
         onPressed: () async {
-          final proId   = int.parse(booking['professional'].toString());
-          final proName = booking['professional_name']?.toString() ?? 'Professional';
-          final bookId  = (booking['id'] as num).toInt();
-          final result  = await Navigator.push(
+          final proId = int.parse(booking['professional'].toString());
+          final proName =
+              booking['professional_name']?.toString() ?? 'Professional';
+          final bookId = (booking['id'] as num).toInt();
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => WriteReviewScreen(
-                professionalId:   proId,
+                professionalId: proId,
                 professionalName: proName,
-                bookingId:        bookId,
+                bookingId: bookId,
               ),
             ),
           );
           if (result == true) _loadBookings();
         },
-        icon:  const Icon(Icons.star_rounded, size: 19, color: Colors.white),
-        label: Text(AppLocalizations.of(context)!.writeReview,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+        icon: const Icon(Icons.star_rounded, size: 17, color: Colors.white),
+        label: Text(
+          AppLocalizations.of(context)!.writeReview,
+          style: const TextStyle(
+            fontSize: 14.5,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFF59E0B),
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
@@ -636,13 +931,20 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
-            const Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
+            const Icon(Icons.cancel_outlined,
+                color: AppColors.error, size: 20),
             const SizedBox(width: 8),
-            Text(AppLocalizations.of(context)!.professionalCancelBooking + '?',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            Expanded(
+              child: Text(
+                '${AppLocalizations.of(context)!.professionalCancelBooking}?',
+                style: const TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w700),
+              ),
+            ),
           ],
         ),
         content: Column(
@@ -650,35 +952,46 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context)!.professionalSureWantCancelBooking,
-              style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+              AppLocalizations.of(context)!
+                  .professionalSureWantCancelBooking,
+              style: const TextStyle(
+                  fontSize: 13, color: Color(0xFF6B7280)),
             ),
             const SizedBox(height: 14),
-            Text(AppLocalizations.of(context)!.professionalReasonCancellingOptional,
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF374151))),
+            Text(
+              AppLocalizations.of(context)!
+                  .professionalReasonCancellingOptional,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF374151),
+              ),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: reasonCtrl,
-              maxLines:   3,
+              maxLines: 3,
               style: const TextStyle(fontSize: 13),
               decoration: InputDecoration(
-                hintText:  AppLocalizations.of(context)!.bookingsEGScheduleChangedNoLonger,
-                hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
-                filled:    true,
+                hintText: AppLocalizations.of(context)!
+                    .bookingsEGScheduleChangedNoLonger,
+                hintStyle: const TextStyle(
+                    fontSize: 12, color: Color(0xFF9CA3AF)),
+                filled: true,
                 fillColor: const Color(0xFFF9FAFB),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide:   const BorderSide(color: Color(0xFFE5E7EB))),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                ),
                 enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide:   const BorderSide(color: Color(0xFFE5E7EB))),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                ),
                 focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide:   const BorderSide(
-                        color: AppColors.error, width: 1.5)),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                      color: AppColors.error, width: 1.5),
+                ),
               ),
             ),
           ],
@@ -686,17 +999,22 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.of(context)!.magazineGoBack,
-                style: const TextStyle(color: Color(0xFF9CA3AF))),
+            child: Text(
+              AppLocalizations.of(context)!.magazineGoBack,
+              style: const TextStyle(color: Color(0xFF9CA3AF)),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8))),
+              backgroundColor: AppColors.error,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+            ),
             onPressed: () => Navigator.pop(context, true),
-            child: Text(AppLocalizations.of(context)!.professionalYesCancelIt,
-                style: const TextStyle(color: Colors.white)),
+            child: Text(
+              AppLocalizations.of(context)!.professionalYesCancelIt,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -712,7 +1030,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
       AppHelpers.showSuccess(context, 'Booking cancelled');
       _loadBookings();
     } else {
-      AppHelpers.showError(context, result['message'] ?? 'Could not cancel, please try again');
+      AppHelpers.showError(
+          context, result['message'] ?? 'Could not cancel, please try again');
     }
   }
 }

@@ -94,6 +94,11 @@ class _SearchScreenState extends State<SearchScreen>
   // ── Auto-suggest state ────────────────────────────────────────────────
   Timer?         _debounce;
   bool           _showSuggestions   = false;
+  // Bumped on every keystroke / search / hide. A suggestion response that comes
+  // back after the user already pressed Enter is stale and must be ignored —
+  // otherwise it flips _showSuggestions back to true and the suggestion panel
+  // covers the results (blank screen with only "Recent" chips).
+  int            _suggestRequestId  = 0;
   List<String>   _suggestPopular    = [];
   List<String>   _suggestProfessions= [];
   List<dynamic>  _suggestCategories = [];
@@ -243,6 +248,7 @@ class _SearchScreenState extends State<SearchScreen>
   // ── Suggestion loader — debounced 280ms ──────────────────────────────────
   void _onTyping(String value) {
     _debounce?.cancel();
+    final int suggestId = ++_suggestRequestId;
 
     if (value.isEmpty) {
       setState(() {
@@ -261,7 +267,7 @@ class _SearchScreenState extends State<SearchScreen>
 
     _debounce = Timer(const Duration(milliseconds: 280), () async {
       final data = await _service.getSuggestions(value);
-      if (!mounted) return;
+      if (!mounted || suggestId != _suggestRequestId) return;   // stale → ignore
       setState(() {
         _suggestPopular     = List<String>.from(data['popular_searches']    ?? []);
         _suggestProfessions = List<String>.from(data['matching_professions'] ?? []);
@@ -273,6 +279,7 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   void _hideSuggestions() {
+    _suggestRequestId++;   // invalidate any in-flight suggestion request
     setState(() => _showSuggestions = false);
   }
 
@@ -300,6 +307,7 @@ class _SearchScreenState extends State<SearchScreen>
     query = query.trim();
     if (query.isEmpty) return;
     _debounce?.cancel();          // kill any pending suggestion-fetch timer
+    _suggestRequestId++;          // ...and any suggestion request already in flight
     _showSuggestions = false;     // make sure it can't flip back on mid-search
     if (_aiMode) { await _aiSearch(query); return; }
 

@@ -345,6 +345,12 @@ class _RegisterScreenState extends State<RegisterScreen>
       clientId: kIsWeb
           ? '405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com'
           : null,
+      // 🐛 FIX: native Android/iOS was never passing serverClientId, so the
+      // idToken's audience was the platform's own OAuth client instead of
+      // the Web client — which never matches backend's GOOGLE_CLIENT_ID.
+      serverClientId: kIsWeb
+          ? null
+          : '405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com',
     );
     try {
       final googleUser = await googleSignIn.signIn();
@@ -352,7 +358,10 @@ class _RegisterScreenState extends State<RegisterScreen>
 
       final googleAuth = await googleUser.authentication;
       final idToken = googleAuth.idToken;
-      if (idToken == null) {
+      // 🐛 FIX: on web, google_sign_in never returns an idToken — only an
+      // accessToken. Only treat this as a failure when BOTH are missing.
+      final accessToken = googleAuth.accessToken;
+      if (idToken == null && accessToken == null) {
         if (!mounted) return;
         AppHelpers.showError(
           context,
@@ -364,6 +373,7 @@ class _RegisterScreenState extends State<RegisterScreen>
       final auth = context.read<AuthProvider>();
       final success = await auth.loginWithGoogle(
         idToken: idToken,
+        accessToken: idToken == null ? accessToken : null,
         role: _selectedRole,
       );
       if (!mounted) return;

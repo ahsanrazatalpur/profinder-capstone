@@ -60,14 +60,24 @@ class AuthService {
   // ✅ NEW — Google Sign-In. `role` is only used by the backend the very
   // first time this Google account signs in (i.e. when it creates a new
   // User); for an existing account it's ignored and the stored role wins.
+  // 🐛 FIX: web's google_sign_in never returns an idToken, only an
+  // accessToken — so accessToken is now accepted too and sent as
+  // `access_token`; the backend verifies whichever one arrives.
   Future<Map<String, dynamic>> loginWithGoogle({
-    required String idToken,
+    String? idToken,
+    String? accessToken,
     String role = 'customer',
   }) async {
+    assert(idToken != null || accessToken != null,
+        'loginWithGoogle needs either idToken or accessToken');
     try {
       final response = await _api.post(
         AppConstants.googleLogin,
-        {'id_token': idToken, 'role': role},
+        {
+          if (idToken != null) 'id_token': idToken,
+          if (idToken == null && accessToken != null) 'access_token': accessToken,
+          'role': role,
+        },
       );
       await _saveTokens(
         access:  response.data['access'],
@@ -110,6 +120,9 @@ class AuthService {
   }
 
   Future<void> logout() async {
+    // Detach this device from the account BEFORE the JWT is wiped, so the next
+    // user on this phone doesn't get the previous user's notifications.
+    await PushNotificationService().unregisterToken();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(AppConstants.accessTokenKey);
     await prefs.remove(AppConstants.refreshTokenKey);

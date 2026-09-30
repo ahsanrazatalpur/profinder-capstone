@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
+import 'push_notification_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -29,6 +30,10 @@ class AuthProvider extends ChangeNotifier {
   Future<void> checkLoginStatus() async {
     _isLoggedIn = await _authService.isLoggedIn();
     _role       = await _authService.getSavedRole();
+    // Already logged in (app restart / auto-login) → make sure backend has this device's FCM token
+    if (_isLoggedIn) {
+      PushNotificationService().registerToken(); // fire-and-forget
+    }
     notifyListeners();
   }
 
@@ -83,14 +88,23 @@ class AuthProvider extends ChangeNotifier {
 
   // ✅ NEW — Google Sign-In. `role` is only used the first time this
   // Google account signs in (see AuthService.loginWithGoogle for why).
+  // 🐛 FIX: `idToken` is now optional and `accessToken` was added — web's
+  // google_sign_in only ever returns an accessToken (see register_screen.dart).
   Future<bool> loginWithGoogle({
-    required String idToken,
+    String? idToken,
+    String? accessToken,
     String role = 'customer',
   }) async {
+    assert(idToken != null || accessToken != null,
+        'loginWithGoogle needs either idToken or accessToken');
     _setLoading(true);
     _errorMessage = null;
     _errorStatusCode = null;
-    final result = await _authService.loginWithGoogle(idToken: idToken, role: role);
+    final result = await _authService.loginWithGoogle(
+      idToken: idToken,
+      accessToken: accessToken,
+      role: role,
+    );
     _setLoading(false);
     if (result['success']) {
       _isLoggedIn = true;

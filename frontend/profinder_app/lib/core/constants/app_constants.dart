@@ -109,11 +109,12 @@ class AppConstants {
   static const String aiRecommendations = '/ai/recommendations/';   // ✅ confirmed: apps/ai_engine/urls.py
   static const String aiSearchHistory   = '/ai/search-history/';    // ✅ confirmed: apps/ai_engine/urls.py
 
-  // ⚠️ NO backend endpoint exists for this anywhere in the project.
-  // Pointed at '/search/' (closest existing text-search-ish view) so the
-  // app compiles, but this will NOT return real autocomplete suggestions
-  // until a dedicated view is built. Tell me if you want that built.
-  static const String suggest = '/search/';
+  // ✅ FIX: backend HAS a dedicated endpoint — AutoSuggestView at
+  // /api/search/suggest/ (apps/search/urls.py). This used to point at
+  // '/search/' (the full search), which returns {results, meta} and none of
+  // popular_searches / matching_professions / matching_categories /
+  // matching_professionals — so the suggestion panel always rendered blank.
+  static const String suggest = '/search/suggest/';
 
   // ─── Bookings ─────────────────────────────────────────────
   static const String bookings             = '/bookings/';
