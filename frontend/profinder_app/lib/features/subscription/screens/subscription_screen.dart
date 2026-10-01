@@ -6,6 +6,7 @@ import '../models/subscription_model.dart';
 import '../services/subscription_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   /// role: 'customer' ya 'professional'
@@ -127,11 +128,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final t = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        title: Text(t.subscriptionChoosePlan),
-        backgroundColor: context.colors.surface,
-        foregroundColor: context.colors.textPrimary,
-        elevation: 0,
+      appBar: UniversalAppBar(
+        title: t.subscriptionChoosePlan,
+        icon: Icons.workspace_premium_rounded,
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())

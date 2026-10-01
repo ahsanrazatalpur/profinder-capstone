@@ -20,6 +20,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 /// Responsive breakpoints shared across the screen.
 class _Breakpoints {
@@ -179,59 +180,23 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
   /// Title bar with a live count subtitle so admins see the size of the
   /// current queue at a glance.
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.adminColor,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      titleSpacing: 16,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.photo_library_rounded,
-                  color: Colors.white, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Portfolio Approval',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  letterSpacing: -0.2,
-                ),
-              ),
-            ],
-          ),
-          // Count caption updates reactively with each tab change/load.
-          Padding(
-            padding: const EdgeInsets.only(left: 28, top: 2),
-            child: Text(
-              '${_items.length} $_activeStatus',
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.white.withOpacity(0.75),
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.1,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return UniversalAppBar(
+      title: 'Portfolio Approval',
+      subtitle: '${_items.length} $_activeStatus',
+      icon: Icons.photo_library_rounded,
+      showBack: false,
       actions: [
-        // Manual refresh button; dims while a load is in flight to signal
-        // pending state without blocking the action.
+        // Dims while a load is in flight to signal pending state.
         AnimatedOpacity(
           duration: const Duration(milliseconds: 180),
           opacity: _loading ? 0.5 : 1.0,
-          child: IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-            onPressed: _load,
+          child: AppBarIconButton(
+            icon: Icons.refresh_rounded,
             tooltip: 'Refresh',
+            onPressed: _load,
+            onGradient: true,
           ),
         ),
-        const SizedBox(width: 4),
       ],
     );
   }

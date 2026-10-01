@@ -36,6 +36,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
@@ -654,31 +655,30 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.bookingManagementTitle,
-          style: TextStyle(
-            fontSize: isTablet ? 19 : 17,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-            letterSpacing: -0.3,
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.bookingManagementTitle,
+        icon: Icons.calendar_month_rounded,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(44),
+          child: TabBar(
+            controller: _tabController,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white.withOpacity(0.7),
+            indicatorColor: Colors.white,
+            dividerColor: Colors.transparent,
+            indicatorWeight: 2.4,
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            labelPadding: const EdgeInsets.symmetric(horizontal: 14),
+            labelStyle:
+                const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+            unselectedLabelStyle:
+                const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500),
+            tabs: _tabs.map((t) {
+              final count = _filtered(t).length;
+              return Tab(height: 44, text: count > 0 ? '$t ($count)' : t);
+            }).toList(),
           ),
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          labelColor: AppColors.professionalColor,
-          unselectedLabelColor: context.colors.textSecondary,
-          indicatorColor: AppColors.professionalColor,
-          indicatorWeight: 2.6,
-          labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
-          unselectedLabelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
-          tabs: _tabs.map((t) {
-            final count = _filtered(t).length;
-            return Tab(text: count > 0 ? '$t ($count)' : t);
-          }).toList(),
         ),
       ),
       body: _isLoading

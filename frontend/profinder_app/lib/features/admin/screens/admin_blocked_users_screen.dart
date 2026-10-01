@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 // Responsive breakpoints for the card list: a single column on phones,
 // a two-column grid from tablet width up.
@@ -92,10 +93,16 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Blocked Users',
+        subtitle: '${_all.length} currently blocked',
+        icon: Icons.block_rounded,
+        showBack: false,
+      ),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            _buildHeader(),
             _buildSearch(),
             Expanded(
               // Cross-fades between loading / error / content so switching
@@ -183,55 +190,6 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
         );
       },
       child: _userCard(u),
-    );
-  }
-
-  // ── Header ────────────────────────────────────────────────
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 42, height: 42,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.block_rounded, color: Colors.white, size: 21),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Blocked Users',
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-                const SizedBox(height: 2),
-                // Count badge animates smoothly whenever the underlying
-                // list changes (load, unblock, etc.).
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  transitionBuilder: (child, anim) => FadeTransition(opacity: anim, child: child),
-                  child: Text(
-                    '${_all.length} currently blocked',
-                    key: ValueKey(_all.length),
-                    style: TextStyle(fontSize: 11.5, color: Colors.white.withOpacity(0.88)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 

@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../../../shared/widgets/universal_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_context_ext.dart';
@@ -91,19 +92,9 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.messagesTitle,
-          style: TextStyle(
-            color: context.colors.textPrimary,
-            fontWeight: FontWeight.w700,
-            fontSize: isTablet ? 18.0 : 16.0,
-            letterSpacing: -0.3,
-          ),
-        ),
-        iconTheme: IconThemeData(color: context.colors.textPrimary),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.messagesTitle,
+        icon: Icons.chat_bubble_rounded,
       ),
       body: Consumer<ConversationListProvider>(
         builder: (context, provider, _) {

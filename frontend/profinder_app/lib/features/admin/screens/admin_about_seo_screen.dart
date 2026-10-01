@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/about_page_service.dart';
 import '../../../shared/widgets/about_image_picker_field.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminAboutSeoScreen extends StatefulWidget {
   const AdminAboutSeoScreen({super.key});
@@ -98,16 +99,11 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.adminColor,
-        elevation: 0,
-        scrolledUnderElevation: 2,
-        title: const Text('SEO Settings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+      appBar: UniversalAppBar(
+        title: 'SEO Settings',
+        icon: Icons.search_rounded,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: _SaveButton(saving: _saving, onPressed: _saving ? null : _save),
-          ),
+          _SaveButton(saving: _saving, onPressed: _saving ? null : _save),
         ],
       ),
       body: _loading

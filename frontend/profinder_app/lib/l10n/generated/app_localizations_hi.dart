@@ -2749,6 +2749,14 @@ class AppLocalizationsHi extends AppLocalizations {
   String get homeGoodEvening => 'शुभ संध्या';
 
   @override
+  String get homeWhatServiceAreYouLookingFor =>
+      'आज आप कौन सी सेवा ढूंढ रहे हैं?';
+
+  @override
+  String get proReadyToGrowToday =>
+      'क्या आप आज अपना व्यवसाय बढ़ाने के लिए तैयार हैं?';
+
+  @override
   String get homeSetYourLocation => 'अपना स्थान सेट करें';
 
   @override

@@ -12,6 +12,7 @@ import '../../magazine/services/magazine_service.dart';
 import '../../magazine/screens/article_detail_screen.dart';
 import 'admin_magazine_analytics_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Responsive breakpoints used throughout this screen. Centralizing them
@@ -274,80 +275,60 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
     );
   }
 
-  PreferredSizeWidget _buildAppBar() => AppBar(
-    backgroundColor: Colors.white,
-    surfaceTintColor: Colors.white,
-    elevation: 0,
-    scrolledUnderElevation: 0,
-    titleSpacing: 0,
-    title: const Text(
-      'Tips Magazine',
-      style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w800,
-        color: Color(0xFF111827),
-        letterSpacing: -0.3,
-      ),
-    ),
-    leading: IconButton(
-      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Color(0xFF374151)),
-      tooltip: 'Back',
-      onPressed: () => Navigator.pop(context),
-    ),
+  PreferredSizeWidget _buildAppBar() => UniversalAppBar(
+    title: 'Tips Magazine',
+    icon: Icons.menu_book_rounded,
+    showBack: false,
     actions: [
-      _HoverIconButton(
+      AppBarIconButton(
         icon: Icons.analytics_rounded,
         tooltip: 'Analytics',
         onPressed: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const AdminMagazineAnalyticsScreen()),
         ),
+        onGradient: true,
       ),
-      _HoverIconButton(
+      const SizedBox(width: 8),
+      AppBarIconButton(
         icon: Icons.folder_rounded,
         tooltip: 'Manage Categories',
         onPressed: _openCategoryManager,
+        onGradient: true,
       ),
-      _HoverIconButton(
+      const SizedBox(width: 8),
+      AppBarIconButton(
         icon: Icons.refresh_rounded,
         tooltip: 'Refresh',
-        color: const Color(0xFF9CA3AF),
         onPressed: _loadAll,
+        onGradient: true,
       ),
-      const SizedBox(width: 6),
     ],
     bottom: PreferredSize(
       preferredSize: const Size.fromHeight(48),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1),
-          ),
+      child: TabBar(
+        controller: _tabCtrl,
+        indicatorColor: Colors.white,
+        indicatorSize: TabBarIndicatorSize.label,
+        indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
+        splashBorderRadius: BorderRadius.circular(8),
+        dividerColor: Colors.transparent,
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.white70,
+        labelStyle: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
         ),
-        child: TabBar(
-          controller: _tabCtrl,
-          indicatorColor: AppColors.adminColor,
-          indicatorSize: TabBarIndicatorSize.label,
-          indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
-          splashBorderRadius: BorderRadius.circular(8),
-          labelColor: AppColors.adminColor,
-          unselectedLabelColor: const Color(0xFF9CA3AF),
-          labelStyle: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.2,
-          ),
-          unselectedLabelStyle: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-          ),
-          tabs: [
-            _tabItem('All', _articles.length),
-            _tabItem('Published', _published.length),
-            _tabItem('Drafts', _drafts.length),
-          ],
+        unselectedLabelStyle: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
         ),
+        tabs: [
+          _tabItem('All', _articles.length),
+          _tabItem('Published', _published.length),
+          _tabItem('Drafts', _drafts.length),
+        ],
       ),
     ),
   );
@@ -368,7 +349,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
               key: ValueKey(count),
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: Colors.white.withOpacity(0.22),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -376,7 +357,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
                 style: const TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF64748B),
+                  color: Colors.white,
                 ),
               ),
             ),

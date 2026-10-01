@@ -127,10 +127,18 @@ class AppHelpers {
   // Initialize with name, Used in Avatar (user logo)
   // e.g. "Ahsan Raza" → "AR"
   static String getInitials(String name) {
-    final parts = name.trim().split(' ');
+    // Split on ANY whitespace and drop empty pieces — "John  Doe" (double
+    // space), trailing spaces or an empty name used to give parts[1] == ''
+    // and `''[0]` threw RangeError (no indices are valid: 0).
+    final parts = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
     if (parts.length >= 2) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
     }
-    return name.isNotEmpty ? name[0].toUpperCase() : '?';
+    return parts[0][0].toUpperCase();
   }
 }

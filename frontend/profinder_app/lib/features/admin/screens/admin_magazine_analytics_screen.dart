@@ -19,6 +19,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../magazine/models/article_model.dart';
 import '../../magazine/services/magazine_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminMagazineAnalyticsScreen extends StatefulWidget {
   const AdminMagazineAnalyticsScreen({super.key});
@@ -124,55 +125,21 @@ class _AdminMagazineAnalyticsScreenState
 
   // ── AppBar ────────────────────────────────────────────────
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.adminColor,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      title: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.bar_chart_rounded, color: Colors.white, size: 22),
-          SizedBox(width: 10),
-          Text('Magazine Analytics',
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  letterSpacing: -0.2)),
-        ],
-      ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-            size: 20, color: Colors.white),
-        onPressed: () => Navigator.pop(context),
-      ),
+    return UniversalAppBar(
+      title: 'Magazine Analytics',
+      icon: Icons.bar_chart_rounded,
       actions: [
         AnimatedOpacity(
           duration: const Duration(milliseconds: 180),
           opacity: _loading ? 0.5 : 1.0,
-          child: _HoverIconButton(
+          child: AppBarIconButton(
             icon: Icons.refresh_rounded,
             tooltip: 'Refresh',
             onPressed: _load,
+            onGradient: true,
           ),
         ),
-        const SizedBox(width: 6),
       ],
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(2),
-        child: Container(
-          height: 2,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.white.withOpacity(0.3),
-                Colors.white.withOpacity(0.7),
-                Colors.white.withOpacity(0.3),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -948,60 +915,6 @@ class _AdminMagazineAnalyticsScreenState
 // ═══════════════════════════════════════════════════════════════════════════
 //  Small shared UI helpers — visual polish only, no logic
 // ═══════════════════════════════════════════════════════════════════════════
-
-/// Icon button with a subtle hover background on desktop/web and a tooltip.
-/// Same component used on the Bookings screen's app bar, for visual
-/// consistency across admin screens.
-class _HoverIconButton extends StatefulWidget {
-  final IconData icon;
-  final String tooltip;
-  final VoidCallback onPressed;
-
-  const _HoverIconButton({
-    required this.icon,
-    required this.tooltip,
-    required this.onPressed,
-  });
-
-  @override
-  State<_HoverIconButton> createState() => _HoverIconButtonState();
-}
-
-class _HoverIconButtonState extends State<_HoverIconButton> {
-  bool _hovering = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) {
-        if (!mounted) return;
-        setState(() => _hovering = true);
-      },
-      onExit: (_) {
-        if (!mounted) return;
-        setState(() => _hovering = false);
-      },
-      child: Tooltip(
-        message: widget.tooltip,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            color:
-                _hovering ? Colors.white.withOpacity(0.15) : Colors.transparent,
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            icon: Icon(widget.icon, color: Colors.white),
-            onPressed: widget.onPressed,
-            tooltip: null, // outer Tooltip handles the label
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 /// Wraps a card with a gentle hover "lift" (translate) on platforms that
 /// support a mouse cursor. No-ops on touch-only devices. Same component

@@ -4916,6 +4916,18 @@ abstract class AppLocalizations {
   /// **'Good evening'**
   String get homeGoodEvening;
 
+  /// No description provided for @homeWhatServiceAreYouLookingFor.
+  ///
+  /// In en, this message translates to:
+  /// **'What service are you looking for today?'**
+  String get homeWhatServiceAreYouLookingFor;
+
+  /// No description provided for @proReadyToGrowToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to grow your business today?'**
+  String get proReadyToGrowToday;
+
   /// No description provided for @homeSetYourLocation.
   ///
   /// In en, this message translates to:

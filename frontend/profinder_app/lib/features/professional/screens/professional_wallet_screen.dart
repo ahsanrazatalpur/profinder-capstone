@@ -7,6 +7,7 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../shared/widgets/cta_banner.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
@@ -197,13 +198,9 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.walletTitle,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.walletTitle,
+        icon: Icons.account_balance_wallet_rounded,
       ),
       body: _isLoading
           ? Center(
@@ -271,6 +268,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
       curve: Curves.easeOut,
       width: double.infinity,
       padding: const EdgeInsets.all(20),
+          clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF10B981), Color(0xFF059669)],
@@ -286,7 +284,10 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
           ),
         ],
       ),
-      child: Column(
+      child: Stack(children: [
+          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)))),
+          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
+          Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -315,6 +316,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
           ),
         ],
       ),
+        ]),
     );
   }
 

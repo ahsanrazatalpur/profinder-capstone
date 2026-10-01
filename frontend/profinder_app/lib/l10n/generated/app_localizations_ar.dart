@@ -2735,6 +2735,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeGoodEvening => 'مساء الخير';
 
   @override
+  String get homeWhatServiceAreYouLookingFor =>
+      'ما الخدمة التي تبحث عنها اليوم؟';
+
+  @override
+  String get proReadyToGrowToday => 'هل أنت مستعد لتنمية عملك اليوم؟';
+
+  @override
   String get homeSetYourLocation => 'حدد موقعك';
 
   @override

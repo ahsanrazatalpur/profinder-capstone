@@ -10,6 +10,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 /// Responsive breakpoints used by the list container and grid.
 class _Breakpoints {
@@ -191,10 +192,16 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Subscriptions',
+        subtitle: '${_subs.length} ${_statusFilter} subscription${_subs.length == 1 ? '' : 's'}',
+        icon: Icons.workspace_premium_rounded,
+        showBack: false,
+      ),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            _buildHeader(),
             _buildStatusFilter(hPad),
             Expanded(
               child: AnimatedSwitcher(
@@ -282,66 +289,6 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
           end: Offset.zero,
         ).animate(anim),
         child: _subCard(sub),
-      ),
-    );
-  }
-
-  // ── Header ────────────────────────────────────────────────
-  /// Gradient header with icon + live count subtitle.
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.adminColor.withOpacity(0.25),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withOpacity(0.28)),
-            ),
-            child: const Icon(Icons.workspace_premium_rounded,
-                color: Colors.white, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Subscriptions',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${_subs.length} ${_statusFilter} subscription${_subs.length == 1 ? '' : 's'}',
-                  style: TextStyle(
-                      fontSize: 11.5,
-                      color: Colors.white.withOpacity(0.85),
-                      fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

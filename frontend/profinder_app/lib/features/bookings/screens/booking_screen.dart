@@ -26,6 +26,7 @@
 //     PromoBannerMixin usage are all preserved exactly as before.
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
@@ -348,22 +349,10 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: context.colors.textPrimary),
-          onPressed: _onBackPressed,
-        ),
-        title: Text(
-          AppLocalizations.of(context)!.bookAppointmentTitle,
-          style: TextStyle(
-            fontSize: isTablet ? 19 : 17,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.2,
-            color: context.colors.textPrimary,
-          ),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.bookAppointmentTitle,
+        icon: Icons.event_available_rounded,
+        onBackPressed: _onBackPressed,
       ),
       body: Column(
         children: [

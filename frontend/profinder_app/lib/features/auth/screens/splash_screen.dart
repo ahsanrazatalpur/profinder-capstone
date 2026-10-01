@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/app_loader.dart';
 import '../../../services/auth_provider.dart';
+import '../../../services/push_notification_service.dart';
 import 'login_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 
@@ -104,6 +105,10 @@ class _SplashScreenState extends State<SplashScreen>
         MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
     }
+
+    // ✅ Push tap navigation — home tak pohanch gaye, ab cold-start wali
+    // notification (agar thi) sahi screen par khul sakti hai.
+    PushNotificationService().onAppReady();
   }
 
   @override

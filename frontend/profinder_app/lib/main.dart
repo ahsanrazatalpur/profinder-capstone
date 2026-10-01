@@ -69,6 +69,7 @@ class ProFinderApp extends StatelessWidget {
       child: Consumer2<LocaleProvider, ThemeProvider>(
         builder: (context, locale, themeProvider, _) {
           return MaterialApp(
+            navigatorKey:               PushNotificationService.navigatorKey, // ✅ push tap navigation
             title:                      'ProFinder',
             debugShowCheckedModeBanner: false,
             theme:                      AppTheme.lightTheme,

@@ -18,6 +18,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 enum _RoleFilter { all, customer, professional }
 enum _StatusFilter { all, active, blocked }
@@ -292,20 +293,13 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
 
   // ── AppBar ────────────────────────────────────────────────────
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.adminColor,
-      elevation: 0,
-      title: const Row(
-        children: [
-          Icon(Icons.people_alt_rounded, color: Colors.white, size: 20),
-          SizedBox(width: 8),
-          Text('Users',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
-        ],
-      ),
+    return UniversalAppBar(
+      title: 'Users',
+      icon: Icons.people_alt_rounded,
+      showBack: false,
       actions: [
-        PopupMenuButton<_SortOption>(
-          icon: const Icon(Icons.sort_rounded, color: Colors.white),
+        AppBarPopupButton<_SortOption>(
+          icon: Icons.sort_rounded,
           tooltip: 'Sort',
           onSelected: (v) {
             setState(() => _sortOption = v);
@@ -318,22 +312,17 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             PopupMenuItem(value: _SortOption.dateOld,  child: Text('Oldest First')),
           ],
         ),
-        IconButton(
-          icon: Icon(_selectionMode ? Icons.close_rounded : Icons.checklist_rounded,
-              color: Colors.white),
+        const SizedBox(width: 8),
+        AppBarIconButton(
+          icon: _selectionMode ? Icons.close_rounded : Icons.checklist_rounded,
           tooltip: _selectionMode ? 'Cancel selection' : 'Select multiple',
           onPressed: _toggleSelectionMode,
+          onGradient: true,
         ),
-        IconButton(
-          icon: const Icon(Icons.download_rounded, color: Colors.white),
-          tooltip: 'Export',
-          onPressed: _exportCsv,
-        ),
-        IconButton(
-          icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-          tooltip: 'Refresh',
-          onPressed: _load,
-        ),
+        const SizedBox(width: 8),
+        AppBarIconButton(icon: Icons.download_rounded, tooltip: 'Export', onPressed: _exportCsv, onGradient: true),
+        const SizedBox(width: 8),
+        AppBarIconButton(icon: Icons.refresh_rounded, tooltip: 'Refresh', onPressed: _load, onGradient: true),
       ],
     );
   }

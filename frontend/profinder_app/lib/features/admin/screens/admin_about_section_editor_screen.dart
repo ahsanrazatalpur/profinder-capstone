@@ -11,6 +11,7 @@ import '../../../shared/widgets/about_image_picker_field.dart';
 import '../../../shared/widgets/simple_rich_text_editor.dart';
 import '../../about/models/about_page_model.dart';
 import 'admin_about_page_screen.dart' show sectionTypeLabel, suggestIconKeyForType;
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminAboutSectionEditorScreen extends StatefulWidget {
   final AboutSection section;
@@ -245,24 +246,22 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
       },
       child: Scaffold(
         backgroundColor: context.colors.background,
-        appBar: AppBar(
-          backgroundColor: AppColors.adminColor,
-          elevation: 0,
-          scrolledUnderElevation: 2,
-          titleSpacing: 0,
-          title: Text(sectionTypeLabel(widget.section.sectionType),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+        appBar: UniversalAppBar(
+          title: sectionTypeLabel(widget.section.sectionType),
+          icon: Icons.edit_note_rounded,
+          // Keep the existing "discard unsaved changes?" confirmation.
+          onBackPressed: () async {
+            if (await _confirmDiscard() && mounted) Navigator.pop(context);
+          },
           actions: [
-            _HoverIconButton(
-              tooltip: 'Translations',
+            AppBarIconButton(
               icon: Icons.translate_rounded,
+              tooltip: 'Translations',
               onPressed: _openTranslations,
+              onGradient: true,
             ),
-            const SizedBox(width: 4),
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: _SaveButton(saving: _saving, onPressed: _saving ? null : _save),
-            ),
+            const SizedBox(width: 8),
+            _SaveButton(saving: _saving, onPressed: _saving ? null : _save),
           ],
         ),
         body: LayoutBuilder(

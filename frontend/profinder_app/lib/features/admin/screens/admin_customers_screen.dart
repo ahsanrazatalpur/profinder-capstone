@@ -16,6 +16,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 enum _StatusFilter { all, active, blocked }
 enum _SortOption { spentHigh, bookingsHigh, nameAsc, dateNew }
@@ -328,57 +329,36 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
 
   // ── AppBar ────────────────────────────────────────────────
   PreferredSizeWidget _buildAppBar() {
-    final isWide = MediaQuery.of(context).size.width >= 900;
-    return AppBar(
-      backgroundColor: AppColors.adminColor,
-      elevation: 0,
-      title: const Row(
-        children: [
-          Icon(Icons.person_outline_rounded, color: Colors.white, size: 20),
-          SizedBox(width: 8),
-          Text('Customers',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
-        ],
-      ),
+    return UniversalAppBar(
+      title: 'Customers',
+      icon: Icons.person_outline_rounded,
+      showBack: false,
       actions: [
-        _AppBarPopupAction<_SortOption>(
+        AppBarPopupButton<_SortOption>(
           icon: Icons.sort_rounded,
-          label: 'Sort',
-          showLabel: isWide,
           tooltip: 'Sort',
           onSelected: (v) {
             setState(() => _sortOption = v);
             _applyFilters();
           },
-          items: const [
+          itemBuilder: (_) => const [
             PopupMenuItem(value: _SortOption.spentHigh,    child: Text('Total Spent (High-Low)')),
             PopupMenuItem(value: _SortOption.bookingsHigh, child: Text('Most Bookings')),
             PopupMenuItem(value: _SortOption.nameAsc,      child: Text('Name (A-Z)')),
             PopupMenuItem(value: _SortOption.dateNew,      child: Text('Newest First')),
           ],
         ),
-        _AppBarAction(
+        const SizedBox(width: 8),
+        AppBarIconButton(
           icon: _selectionMode ? Icons.close_rounded : Icons.checklist_rounded,
-          label: _selectionMode ? 'Cancel' : 'Select',
-          showLabel: isWide,
           tooltip: _selectionMode ? 'Cancel selection' : 'Select multiple',
           onPressed: _toggleSelectionMode,
+          onGradient: true,
         ),
-        _AppBarAction(
-          icon: Icons.download_rounded,
-          label: 'Export',
-          showLabel: isWide,
-          tooltip: 'Export',
-          onPressed: _exportCsv,
-        ),
-        _AppBarAction(
-          icon: Icons.refresh_rounded,
-          label: 'Refresh',
-          showLabel: isWide,
-          tooltip: 'Refresh',
-          onPressed: _load,
-        ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 8),
+        AppBarIconButton(icon: Icons.download_rounded, tooltip: 'Export', onPressed: _exportCsv, onGradient: true),
+        const SizedBox(width: 8),
+        AppBarIconButton(icon: Icons.refresh_rounded, tooltip: 'Refresh', onPressed: _load, onGradient: true),
       ],
     );
   }
@@ -840,124 +820,6 @@ Widget detailRow(IconData icon, String label, String value) {
       ],
     ),
   );
-}
-
-/// AppBar icon action that reveals a text label next to the icon on wide
-/// (tablet/desktop) layouts, and shows a hover tint on desktop/web.
-class _AppBarAction extends StatefulWidget {
-  final IconData icon;
-  final String label;
-  final bool showLabel;
-  final String tooltip;
-  final VoidCallback onPressed;
-  const _AppBarAction({
-    required this.icon,
-    required this.label,
-    required this.showLabel,
-    required this.tooltip,
-    required this.onPressed,
-  });
-
-  @override
-  State<_AppBarAction> createState() => _AppBarActionState();
-}
-
-class _AppBarActionState extends State<_AppBarAction> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: Tooltip(
-        message: widget.tooltip,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(10),
-          onTap: widget.onPressed,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 140),
-            margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
-            padding: EdgeInsets.symmetric(horizontal: widget.showLabel ? 10 : 8, vertical: 8),
-            decoration: BoxDecoration(
-              color: _hovered ? Colors.white.withOpacity(0.16) : Colors.transparent,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                Icon(widget.icon, color: Colors.white, size: 20),
-                if (widget.showLabel) ...[
-                  const SizedBox(width: 6),
-                  Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Same visual chrome as `_AppBarAction`, but drives a `PopupMenuButton`
-/// (used for the Sort menu) instead of a direct tap callback.
-class _AppBarPopupAction<T> extends StatefulWidget {
-  final IconData icon;
-  final String label;
-  final bool showLabel;
-  final String tooltip;
-  final ValueChanged<T> onSelected;
-  final List<PopupMenuEntry<T>> items;
-  const _AppBarPopupAction({
-    required this.icon,
-    required this.label,
-    required this.showLabel,
-    required this.tooltip,
-    required this.onSelected,
-    required this.items,
-  });
-
-  @override
-  State<_AppBarPopupAction<T>> createState() => _AppBarPopupActionState<T>();
-}
-
-class _AppBarPopupActionState<T> extends State<_AppBarPopupAction<T>> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: Tooltip(
-        message: widget.tooltip,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
-          padding: EdgeInsets.symmetric(horizontal: widget.showLabel ? 6 : 4, vertical: 2),
-          decoration: BoxDecoration(
-            color: _hovered ? Colors.white.withOpacity(0.16) : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: PopupMenuButton<T>(
-            icon: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(widget.icon, color: Colors.white, size: 20),
-                if (widget.showLabel) ...[
-                  const SizedBox(width: 6),
-                  Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
-                ],
-              ],
-            ),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            onSelected: widget.onSelected,
-            itemBuilder: (_) => widget.items,
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// Status filter chip with an animated selection transition.

@@ -14,6 +14,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminAnnouncementsScreen extends StatefulWidget {
   const AdminAnnouncementsScreen({super.key});
@@ -117,13 +118,20 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final activeCount = _announcements.where((a) => a['is_active'] == true).length;
     return Scaffold(
       backgroundColor: _bgColor,
+      appBar: UniversalAppBar(
+        title: 'Announcements',
+        subtitle: '$activeCount active',
+        icon: Icons.campaign_rounded,
+        showBack: false,
+      ),
       floatingActionButton: _composeFab(),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            _header(),
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 260),
@@ -198,55 +206,6 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
           label: const Text('New Announcement', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
         );
       },
-    );
-  }
-
-  // ── Gradient header with live active-count summary ──────────────────────
-  Widget _header() {
-    final activeCount = _announcements.where((a) => a['is_active'] == true).length;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [BoxShadow(color: Color(0x33991B1B), blurRadius: 14, offset: Offset(0, 6))],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 38, height: 38,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.campaign_rounded, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Announcements',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.2)),
-                const SizedBox(height: 2),
-                // Animated switcher avoids an abrupt jump when the count
-                // changes after a toggle/create/delete round-trip.
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  child: Text(
-                    '$activeCount active',
-                    key: ValueKey(activeCount),
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white.withOpacity(0.85)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 

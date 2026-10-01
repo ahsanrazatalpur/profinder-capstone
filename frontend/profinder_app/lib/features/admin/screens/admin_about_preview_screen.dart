@@ -7,6 +7,7 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/about_page_service.dart';
 import '../../about/models/about_page_model.dart';
 import '../../about/widgets/about_page_content.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminAboutPreviewScreen extends StatefulWidget {
   const AdminAboutPreviewScreen({super.key});
@@ -47,13 +48,9 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.adminColor,
-        elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.15),
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text('Preview (Draft)',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.1)),
+      appBar: UniversalAppBar(
+        title: 'Preview (Draft)',
+        icon: Icons.visibility_outlined,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),

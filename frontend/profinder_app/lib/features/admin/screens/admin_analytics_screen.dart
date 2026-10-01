@@ -17,6 +17,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminAnalyticsScreen extends StatefulWidget {
   const AdminAnalyticsScreen({super.key});
@@ -116,7 +117,26 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
     final bg = context.colors.background;
     return Scaffold(
       backgroundColor: bg,
+      appBar: UniversalAppBar(
+        title: 'Analytics',
+        subtitle: 'Real-time business insights',
+        icon: Icons.insights_rounded,
+        showBack: false,
+        actions: [
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 180),
+            opacity: _refreshing ? 0.5 : 1.0,
+            child: AppBarIconButton(
+              icon: Icons.refresh_rounded,
+              tooltip: 'Refresh analytics',
+              onPressed: () { if (!_refreshing) _load(); },
+              onGradient: true,
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
+        top: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth;
@@ -148,8 +168,6 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                                   crossAxisAlignment:
                                       CrossAxisAlignment.start,
                                   children: [
-                                    _fadeStep(0, _buildHeader()),
-                                    const SizedBox(height: 16),
                                     _fadeStep(1, _rangeSelector()),
                                     const SizedBox(height: 24),
                                     _fadeStep(2, _kpiGrid(width)),
@@ -286,103 +304,6 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
   /// Purely cosmetic — no state or logic involved.
   Widget _fadeStep(int index, Widget child) =>
       _FadeInUp(index: index, child: child);
-
-  // ── Header ───────────────────────────────────────────────────────────
-  /// Top gradient banner with the screen title and a refresh action.
-  /// During refresh the icon morphs into a spinner via AnimatedSwitcher.
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.adminColor.withOpacity(0.28),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withOpacity(0.28)),
-            ),
-            child: const Icon(Icons.insights_rounded,
-                color: Colors.white, size: 22),
-          ),
-          const SizedBox(width: 14),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Analytics',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                SizedBox(height: 3),
-                Text(
-                  'Real-time business insights',
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          _HoverScale(
-            scale: 1.06,
-            child: Tooltip(
-              message: 'Refresh analytics',
-              child: Material(
-                color: Colors.white.withOpacity(0.18),
-                borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: _refreshing ? null : _load,
-                  child: SizedBox(
-                    width: 44,
-                    height: 44,
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 220),
-                      child: _refreshing
-                          ? const Padding(
-                              key: ValueKey('spin'),
-                              padding: EdgeInsets.all(12),
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
-                            )
-                          : const Icon(Icons.refresh_rounded,
-                              key: ValueKey('icon'),
-                              color: Colors.white,
-                              size: 20),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // ── Range selector (large tap targets, animated pill) ──────────────────
   /// Segmented control for 7D / 30D / 90D. Selection re-fires `_load`.

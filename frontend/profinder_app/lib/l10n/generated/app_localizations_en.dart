@@ -2743,6 +2743,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeGoodEvening => 'Good evening';
 
   @override
+  String get homeWhatServiceAreYouLookingFor =>
+      'What service are you looking for today?';
+
+  @override
+  String get proReadyToGrowToday => 'Ready to grow your business today?';
+
+  @override
   String get homeSetYourLocation => 'Set your location';
 
   @override

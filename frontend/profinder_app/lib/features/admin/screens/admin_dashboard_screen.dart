@@ -20,6 +20,7 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_provider.dart';
 import '../../notifications/screens/notification_screen.dart';
+import '../../../shared/widgets/role_app_bar.dart';
 
 /// Responsive breakpoints used throughout the dashboard for adaptive layout.
 class _Breakpoints {
@@ -162,324 +163,157 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     final hPad = isDesktop ? 32.0 : (isTablet ? 24.0 : 16.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: context.colors.background,
       body: SafeArea(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 240),
-          switchInCurve: Curves.easeOut,
-          switchOutCurve: Curves.easeIn,
-          child: _loading
-              ? _buildLoader()
-              : _error != null
-                  ? _buildError()
-                  : RefreshIndicator(
-                      onRefresh: _load,
-                      color: AppColors.adminColor,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: EdgeInsets.fromLTRB(hPad, hPad, hPad, 24),
-                        child: Center(
-                          child: ConstrainedBox(
-                            // Keeps content readable on ultra-wide displays.
-                            constraints: const BoxConstraints(maxWidth: 1280),
-                            child: FadeTransition(
-                              opacity: _fadeIn,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildHeader(),
-                                  const SizedBox(height: 18),
-                                  _buildQuickActions(),
-                                  const SizedBox(height: 22),
-                                  _buildSectionTitle('Overview'),
-                                  const SizedBox(height: 12),
-                                  _buildStatsGrid(
-                                    isDesktop: isDesktop,
-                                    isTablet: isTablet,
-                                  ),
-                                  const SizedBox(height: 26),
-                                  _buildSectionTitle('Pending Approvals'),
-                                  const SizedBox(height: 12),
-                                  _buildPendingApprovals(),
-                                  const SizedBox(height: 26),
-                                  _buildSectionTitle('Recent Payments'),
-                                  const SizedBox(height: 12),
-                                  _buildRecentPayments(),
-                                  const SizedBox(height: 26),
-                                  _buildSectionTitle('Latest Registrations'),
-                                  const SizedBox(height: 12),
-                                  _buildLatestRegistrations(),
-                                  const SizedBox(height: 26),
-                                  _buildSectionTitle('Latest Activities'),
-                                  const SizedBox(height: 12),
-                                  _buildActivityLogs(),
-                                  const SizedBox(height: 12),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-        ),
-      ),
-    );
-  }
-
-  // ── Header ──────────────────────────────────────────────────
-  /// Top gradient banner: profile avatar, greeting, inline mini-stats,
-  /// search, and notifications with a badge. Hover adds a slight lift on
-  /// pointer devices.
-  Widget _buildHeader() {
-    return _HoverLift(
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.adminColor.withOpacity(0.28),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: LayoutBuilder(
-          builder: (context, c) {
-            final compact = c.maxWidth < 520;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    // Avatar / profile trigger
-                    Semantics(
-                      button: true,
-                      label: 'Open admin profile',
-                      child: InkWell(
-                        onTap: _showProfileSheet,
-                        borderRadius: BorderRadius.circular(14),
-                        child: Container(
-                          width: 46,
-                          height: 46,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.18),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.28),
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.admin_panel_settings_rounded,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+        child: RefreshIndicator(
+          onRefresh: _load,
+          color: AppColors.adminColor,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              // Admin does not get the broadcast banner here — announcements
+              // are managed from the Announcements screen in this dashboard.
+              _buildAppBar(),
+              if (_loading)
+                SliverFillRemaining(hasScrollBody: false, child: _buildLoader())
+              else if (_error != null)
+                SliverFillRemaining(hasScrollBody: false, child: _buildError())
+              else
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(hPad, 18, hPad, 24),
+                    child: Center(
+                      child: ConstrainedBox(
+                        // Keeps content readable on ultra-wide displays.
+                        constraints: const BoxConstraints(maxWidth: 1280),
+                        child: FadeTransition(
+                          opacity: _fadeIn,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Flexible(
-                                child: Text(
-                                  'Welcome, $_adminName',
-                                  style: const TextStyle(
-                                    fontSize: 15.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                    letterSpacing: 0.1,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                              _buildWelcome(),
+                              const SizedBox(height: 18),
+                              _buildQuickActions(),
+                              const SizedBox(height: 22),
+                              _buildSectionTitle('Overview'),
+                              const SizedBox(height: 12),
+                              _buildStatsGrid(
+                                isDesktop: isDesktop,
+                                isTablet: isTablet,
                               ),
-                              const SizedBox(width: 6),
-                              // Emoji replaced with a proper Flutter icon.
-                              const Icon(
-                                Icons.waving_hand_rounded,
-                                size: 16,
-                                color: Colors.amber,
-                              ),
+                              const SizedBox(height: 26),
+                              _buildSectionTitle('Pending Approvals'),
+                              const SizedBox(height: 12),
+                              _buildPendingApprovals(),
+                              const SizedBox(height: 26),
+                              _buildSectionTitle('Recent Payments'),
+                              const SizedBox(height: 12),
+                              _buildRecentPayments(),
+                              const SizedBox(height: 26),
+                              _buildSectionTitle('Latest Registrations'),
+                              const SizedBox(height: 12),
+                              _buildLatestRegistrations(),
+                              const SizedBox(height: 26),
+                              _buildSectionTitle('Latest Activities'),
+                              const SizedBox(height: 12),
+                              _buildActivityLogs(),
+                              const SizedBox(height: 12),
                             ],
                           ),
-                          const SizedBox(height: 3),
-                          Text(
-                            '$_totalCustomers customers · $_totalPros professionals',
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              color: Colors.white.withOpacity(0.88),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                    // Search + Notifications
-                    _headerIconButton(
-                      tooltip: 'Search',
-                      icon: Icons.search_rounded,
-                      onTap: _showSearchSheet,
-                      dense: compact,
-                    ),
-                    const SizedBox(width: 4),
-                    _buildNotificationBell(dense: compact),
-                  ],
-                ),
-                if (!compact) const SizedBox(height: 14),
-                if (!compact)
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      _headerChip(
-                        icon: Icons.groups_rounded,
-                        label: 'Users',
-                        value: '$_totalUsers',
-                      ),
-                      _headerChip(
-                        icon: Icons.event_available_rounded,
-                        label: 'Today',
-                        value: '$_todayBookings',
-                      ),
-                      _headerChip(
-                        icon: Icons.payments_rounded,
-                        label: 'Revenue',
-                        value: 'Rs $_revenueDisplay',
-                      ),
-                      _headerChip(
-                        icon: Icons.hourglass_top_rounded,
-                        label: 'Pending',
-                        value: '$_pendingVerification',
-                      ),
-                    ],
                   ),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  /// Small translucent icon button used inside the gradient header.
-  Widget _headerIconButton({
-    required String tooltip,
-    required IconData icon,
-    required VoidCallback onTap,
-    bool dense = false,
-  }) {
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: Colors.white.withOpacity(0.14),
-        shape: const CircleBorder(),
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onTap,
-          child: SizedBox(
-            width: dense ? 40 : 44,
-            height: dense ? 40 : 44,
-            child: Icon(icon, color: Colors.white, size: dense ? 20 : 22),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Notifications bell with an unread-count badge. Badge is hidden when 0.
-  Widget _buildNotificationBell({bool dense = false}) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        _headerIconButton(
-          tooltip: 'Notifications',
-          icon: Icons.notifications_rounded,
-          // ✅ FIX: badge used to go stale — admin opens the bell, reads
-          // / marks notifications as read inside NotificationScreen, comes
-          // back, and the header still shows the OLD unread count until
-          // the next full dashboard reload (pull-to-refresh). Awaiting the
-          // push and re-fetching just the unread count on return keeps the
-          // badge honest immediately.
-          onTap: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const NotificationScreen()),
-            );
-            _refreshUnreadCount();
-          },
-          dense: dense,
-        ),
-        if (_unreadNotifications > 0)
-          Positioned(
-            right: 2,
-            top: 2,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.amber,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.white, width: 1.5),
-              ),
-              constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-              child: Text(
-                _unreadNotifications > 9 ? '9+' : '$_unreadNotifications',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 9.5,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black,
-                  height: 1.1,
                 ),
-              ),
-            ),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // ── AppBar (logo + Admin tag, search, notifications, admin avatar) ──
+  Widget _buildAppBar() {
+    return AdminAppBar(
+      name: _adminName,
+      unreadCount: _unreadNotifications,
+      onSearch: _showSearchSheet,
+      onProfile: _showProfileSheet,
+      // Awaiting the push and re-fetching just the unread count on return keeps
+      // the badge honest right after the admin reads notifications.
+      onNotifications: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const NotificationScreen()),
+        );
+        _refreshUnreadCount();
+      },
+    );
+  }
+
+  // ── Welcome + KPI chips (page content, not AppBar) ──────────────────
+  Widget _buildWelcome() {
+    final c = context.colors;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Welcome, $_adminName',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
+            color: c.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '$_totalCustomers customers · $_totalPros professionals',
+          style: TextStyle(fontSize: 13.5, color: c.textSecondary),
+        ),
+        const SizedBox(height: 14),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: [
+            _headerChip(icon: Icons.groups_rounded, label: 'Users', value: '$_totalUsers'),
+            _headerChip(icon: Icons.event_available_rounded, label: 'Today', value: '$_todayBookings'),
+            _headerChip(icon: Icons.payments_rounded, label: 'Revenue', value: 'Rs $_revenueDisplay'),
+            _headerChip(icon: Icons.hourglass_top_rounded, label: 'Pending', value: '$_pendingVerification'),
+          ],
+        ),
       ],
     );
   }
 
-  /// Translucent chip showing a single KPI inside the header.
+  /// Chip showing a single KPI (themed for the page background).
   Widget _headerChip({
     required IconData icon,
     required String label,
     required String value,
   }) {
+    final c = context.colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.16),
+        color: AppColors.adminColor.withOpacity(0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.22)),
+        border: Border.all(color: AppColors.adminColor.withOpacity(0.22)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Colors.white.withOpacity(0.95)),
+          Icon(icon, size: 14, color: AppColors.adminColor),
           const SizedBox(width: 6),
           Text(
             '$label: ',
-            style: TextStyle(
-              fontSize: 11,
-              color: Colors.white.withOpacity(0.85),
-              fontWeight: FontWeight.w500,
-            ),
+            style: TextStyle(fontSize: 11, color: c.textSecondary, fontWeight: FontWeight.w500),
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 11.5,
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-            ),
+            style: TextStyle(fontSize: 11.5, color: c.textPrimary, fontWeight: FontWeight.w800),
           ),
         ],
       ),

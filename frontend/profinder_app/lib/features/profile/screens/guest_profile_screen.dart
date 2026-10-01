@@ -11,6 +11,7 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/profile_header_card.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../about/screens/about_screen.dart';
 
 class GuestProfileScreen extends StatelessWidget {
@@ -28,6 +29,10 @@ class GuestProfileScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: context.colors.background,
+      appBar: UniversalAppBar(
+        title: t.profileTitle,
+        icon: Icons.person_rounded,
+      ),
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,

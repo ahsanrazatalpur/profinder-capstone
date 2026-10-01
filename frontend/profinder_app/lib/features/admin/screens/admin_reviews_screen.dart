@@ -11,6 +11,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminReviewsScreen extends StatefulWidget {
   const AdminReviewsScreen({super.key});
@@ -78,32 +79,16 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Reviews',
+        subtitle: 'Avg rating: ${avgRating.toStringAsFixed(1)} ★ · ${_all.length} total',
+        icon: Icons.star_rounded,
+        showBack: false,
+      ),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-                    begin: Alignment.topLeft, end: Alignment.bottomRight),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.star_rounded, color: Colors.white, size: 22),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Reviews', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-                        Text('Avg rating: ${avgRating.toStringAsFixed(1)} ★ · ${_all.length} total',
-                            style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.85))),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
             Container(
               color: Colors.white,
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),

@@ -18,6 +18,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import 'admin_translation_editor_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminLanguagesScreen extends StatefulWidget {
   const AdminLanguagesScreen({super.key});
@@ -222,8 +223,15 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final activeCount = _languages.where((l) => l['status'] == 'active').length;
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Languages',
+        subtitle: '$activeCount active · ${_languages.length} total',
+        icon: Icons.translate_rounded,
+        showBack: false,
+      ),
       floatingActionButton: FloatingActionButton.extended(
         // Unique tag — this screen lives inside AdminMainScreen's
         // IndexedStack, which keeps every admin tab (and its FAB) mounted
@@ -241,9 +249,9 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
       ),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            _buildHeader(),
             Expanded(
               child: _loading
                   ? const Center(
@@ -269,44 +277,6 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    final activeCount = _languages.where((l) => l['status'] == 'active').length;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40, height: 40,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.translate_rounded, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Languages',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-                Text('$activeCount active · ${_languages.length} total',
-                    style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.85))),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

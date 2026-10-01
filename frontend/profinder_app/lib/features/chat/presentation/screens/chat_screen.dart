@@ -21,6 +21,7 @@ import '../widgets/report_user_dialog.dart'; // ✅ NEW
 import '../widgets/message_search_sheet.dart'; // ✅ NEW
 import '../../../../core/theme/theme_context_ext.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../shared/widgets/universal_app_bar.dart';
 
 /// Sealed-ish helper: one entry in the rendered list is either a message
 /// bubble or a date separator. Keeping both in one flat list lets us use a
@@ -186,11 +187,9 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        titleSpacing: 0,
-        title: Consumer<ChatProvider>(
+      appBar: UniversalAppBar(
+        title: widget.otherUserName,
+        titleWidget: Consumer<ChatProvider>(
           builder: (context, provider, _) => Row(
             children: [
               AvatarWithStatus(
@@ -198,11 +197,11 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
                 size: 36,
                 avatar: CircleAvatar(
                   radius: 18,
-                  backgroundColor: context.colors.primaryLight,
+                  backgroundColor: Colors.white.withOpacity(0.25),
                   backgroundImage: widget.otherUserPhoto != null ? CachedNetworkImageProvider(widget.otherUserPhoto!) : null,
                   child: widget.otherUserPhoto == null
                       ? Text(AppHelpers.getInitials(widget.otherUserName),
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.colors.primary))
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white))
                       : null,
                 ),
               ),
@@ -214,12 +213,12 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
                   children: [
                     Text(widget.otherUserName,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
                     Text(
                       _statusSubtitle(context, provider),
                       style: TextStyle(
                         fontSize: 11.5,
-                        color: provider.otherUserTyping ? context.colors.primary : context.colors.textSecondary,
+                        color: Colors.white.withOpacity(provider.otherUserTyping ? 1 : 0.8),
                       ),
                     ),
                   ],
@@ -229,8 +228,9 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.search_rounded, color: context.colors.textSecondary),
+          AppBarIconButton(
+            icon: Icons.search_rounded,
+            onGradient: true,
             tooltip: AppLocalizations.of(context)!.chatSearchChat,
             onPressed: () => showModalBottomSheet(
               context: context,
@@ -239,7 +239,7 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
             ),
           ),
           PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert_rounded, color: context.colors.textSecondary),
+            icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
             onSelected: (value) => _onMenuSelected(context, value),
             itemBuilder: (menuContext) => [
               PopupMenuItem(value: 'media', child: Text(AppLocalizations.of(menuContext)!.chatSharedMedia2)),

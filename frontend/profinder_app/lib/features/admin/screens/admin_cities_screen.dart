@@ -24,6 +24,7 @@ import 'package:dio/dio.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 // Responsive breakpoints for switching between a single-column list
 // (mobile) and a multi-column grid (tablet/desktop).
@@ -490,6 +491,11 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: isNested ? 'Cities — ${widget.country['name']}' : 'All Cities',
+        icon: Icons.location_city_rounded,
+        showBack: isNested,
+      ),
       // FAB is available on both the nested (single-country) and global
       // "All Cities" screens. When there's no country context yet, pressing
       // it opens a country picker first (see _addFabPressed).
@@ -508,6 +514,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
         ),
       ),
       body: SafeArea(
+        top: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth;
@@ -515,7 +522,6 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
 
             return Column(
               children: [
-                _Header(isNested: isNested, country: widget.country),
                 Expanded(
                   // Cross-fades between loading/error/empty/content instead
                   // of an abrupt jump when the API call resolves.
@@ -546,50 +552,6 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-}
-
-/// Gradient app header. Shows a back button when nested under a country,
-/// otherwise a plain "All Cities" title — mirrors the original condition.
-class _Header extends StatelessWidget {
-  final bool isNested;
-  final dynamic country;
-  const _Header({required this.isNested, required this.country});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(12, 14, 20, 20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [BoxShadow(color: Color(0x33991B1B), blurRadius: 14, offset: Offset(0, 6))],
-      ),
-      child: Row(
-        children: [
-          if (isNested)
-            _HoverIconButton(icon: Icons.arrow_back_rounded, onPressed: () => Navigator.pop(context))
-          else
-            Container(
-              padding: const EdgeInsets.all(9),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.16), borderRadius: BorderRadius.circular(12)),
-              child: const Icon(Icons.location_city_rounded, color: Colors.white, size: 20),
-            ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              isNested ? 'Cities — ${country['name']}' : 'All Cities',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 0.1),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
       ),
     );
   }

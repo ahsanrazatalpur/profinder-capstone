@@ -1,6 +1,7 @@
 // lib/features/profile/screens/settings_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
@@ -43,26 +44,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.settingsTitle,
-          style: TextStyle(
-            fontSize: isTablet ? 18.0 : 16.0,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-            letterSpacing: -0.3,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: context.colors.textPrimary,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.settingsTitle,
+        icon: Icons.settings_rounded,
       ),
       body: ListView(
         padding: EdgeInsets.all(isTablet ? 20 : 16),

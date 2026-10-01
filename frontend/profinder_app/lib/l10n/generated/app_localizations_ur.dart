@@ -2748,6 +2748,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get homeGoodEvening => 'شام بخیر';
 
   @override
+  String get homeWhatServiceAreYouLookingFor =>
+      'آج آپ کون سی سروس تلاش کر رہے ہیں؟';
+
+  @override
+  String get proReadyToGrowToday =>
+      'کیا آپ آج اپنا کاروبار بڑھانے کے لیے تیار ہیں؟';
+
+  @override
   String get homeSetYourLocation => 'اپنا مقام سیٹ کریں';
 
   @override

@@ -14,6 +14,7 @@ import '../../../shared/widgets/featured_category_card.dart';
 import '../../../shared/widgets/category_card.dart';
 import '../../../shared/widgets/cta_banner.dart';
 import '../../../shared/widgets/announcement_banner.dart';
+import '../../../shared/widgets/role_app_bar.dart';
 import '../../../core/constants/category_style.dart';
 import '../../search/screens/professional_detail_screen.dart';
 import '../../search/screens/search_screen.dart';
@@ -256,6 +257,17 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           child: CustomScrollView(
             slivers: [
               const SliverToBoxAdapter(child: AnnouncementBanner(audience: 'guest')),
+              GuestAppBar(
+                onLogin: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                ),
+                onRegister: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                ),
+                onSearch: _openSearch,
+              ),
               SliverToBoxAdapter(child: _buildHeader(nearby, isDark)),
               SliverToBoxAdapter(child: _buildHeroSearch(isDark)),
               SliverToBoxAdapter(child: _buildQuickActionChips(home.categories ?? [], isDark)),
@@ -370,31 +382,6 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     return Container(
       padding: const EdgeInsets.fromLTRB(
           AppSizes.screenPadding, AppSizes.md, AppSizes.screenPadding, AppSizes.sm),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? const [
-                  AppColors.heroGradientDark1,
-                  AppColors.heroGradientDark2,
-                  AppColors.heroGradientDark3,
-                ]
-              : [
-                  AppColors.heroGradientLight1,
-                  AppColors.heroGradientLight2,
-                  context.colors.primary,
-                ],
-          stops: const [0.0, 0.5, 1.0],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: context.colors.primary.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -409,7 +396,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                         Text(
                           t.homeWelcomeGuest,
                           style: AppTextStyles.h2.copyWith(
-                            color: AppColors.white,
+                            color: context.colors.textPrimary,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.5,
                           ),
@@ -420,51 +407,12 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                     Text(
                       t.appTagline,
                       style: AppTextStyles.bodyMedium.copyWith(
-                        color: Colors.white.withOpacity(0.9),
+                        color: context.colors.textSecondary,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.3,
                       ),
                     ),
                   ],
-                ),
-              ),
-              _headerIconButton(
-                icon: Icons.notifications_none_rounded,
-                onTap: () => _requireLogin(t.homeNotificationsSignInMessage),
-                isDark: isDark,
-              ),
-              const SizedBox(width: 6),
-              _headerIconButton(
-                icon: Icons.search_rounded,
-                onTap: _openSearch,
-                isDark: isDark,
-              ),
-              const SizedBox(width: 6),
-              GestureDetector(
-                onTap: () => _requireLogin(t.homeSetUpProfileMessage),
-                child: Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.white.withOpacity(0.25),
-                        Colors.white.withOpacity(0.1),
-                      ],
-                    ),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.4),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.person_outline_rounded,
-                    color: AppColors.white,
-                    size: 24,
-                  ),
                 ),
               ),
             ],
@@ -474,46 +422,11 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             width: 60,
             height: 3,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.3),
+              color: context.colors.primary.withOpacity(0.3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _headerIconButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    int badgeCount = 0,
-    required bool isDark,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 42,
-        height: 42,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withOpacity(0.2),
-              Colors.white.withOpacity(0.08),
-            ],
-          ),
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Colors.white.withOpacity(0.2),
-            width: 1,
-          ),
-        ),
-        child: Icon(
-          icon,
-          color: AppColors.white,
-          size: 22,
-        ),
       ),
     );
   }
@@ -526,32 +439,14 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     return Container(
       padding: const EdgeInsets.fromLTRB(
           AppSizes.screenPadding, 0, AppSizes.screenPadding, AppSizes.lg),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? const [
-                  AppColors.heroGradientDark1,
-                  AppColors.heroGradientDark2,
-                  AppColors.heroGradientDark3,
-                ]
-              : [
-                  AppColors.heroGradientLight1,
-                  AppColors.heroGradientLight2,
-                  context.colors.primary,
-                ],
-          stops: const [0.0, 0.5, 1.0],
-        ),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             t.homeWhatAreYouLookingForToday,
             style: AppTextStyles.h1.copyWith(
-              color: AppColors.white,
-              fontSize: 28,
+              color: context.colors.textPrimary,
+              fontSize: 24,
               height: 1.2,
               fontWeight: FontWeight.w700,
               letterSpacing: -0.5,
@@ -567,14 +462,16 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.15),
+                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
                     blurRadius: 24,
                     offset: const Offset(0, 8),
                   ),
                 ],
-                border: isDark
-                    ? Border.all(color: Colors.white.withOpacity(0.1))
-                    : null,
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.1)
+                      : context.colors.divider,
+                ),
               ),
               child: Row(
                 children: [

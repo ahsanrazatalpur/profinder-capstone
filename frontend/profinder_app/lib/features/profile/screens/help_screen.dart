@@ -1,6 +1,7 @@
 // lib/features/profile/screens/help_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -33,26 +34,9 @@ class HelpScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.helpTitle,
-          style: TextStyle(
-            fontSize: isTablet ? 18.0 : 16.0,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-            letterSpacing: -0.3,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: context.colors.textPrimary,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.helpTitle,
+        icon: Icons.help_outline_rounded,
       ),
       body: ListView(
         padding: EdgeInsets.all(isTablet ? 20 : 16),

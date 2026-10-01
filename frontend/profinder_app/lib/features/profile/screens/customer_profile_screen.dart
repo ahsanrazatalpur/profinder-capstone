@@ -31,6 +31,7 @@ import '../../trust_safety/screens/my_reports_screen.dart';
 import '../../trust_safety/screens/account_status_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/profile_header_card.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../about/screens/about_screen.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
@@ -482,120 +483,58 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 
   // ── AppBar ───────────────────────────────────────────────
   PreferredSizeWidget _buildAppBar(bool isDark) {
-    return AppBar(
-      backgroundColor: context.colors.surface,
-      elevation: 0,
-      title: Text(
-        AppLocalizations.of(context)!.profileTitle,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: context.colors.textPrimary,
-          letterSpacing: -0.2,
-        ),
-      ),
-      leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back_ios_new_rounded,
-          size: 20,
-          color: context.colors.textPrimary,
-        ),
-        onPressed: () => Navigator.pop(context),
-      ),
+    final t = AppLocalizations.of(context)!;
+    return UniversalAppBar(
+      title: t.profileTitle,
+      icon: Icons.person_rounded,
       actions: [
-        GestureDetector(
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen())).then((_) => _loadStats()),
-          child: Padding(
-            padding: const EdgeInsets.only(right: 4),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withOpacity(0.05)
-                        : context.colors.background,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.notifications_outlined,
-                    color: context.colors.textPrimary,
-                    size: 19,
-                  ),
-                ),
-                if (_unreadNotifications > 0)
-                  Positioned(
-                    right: -2,
-                    top: -2,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                      constraints: const BoxConstraints(minWidth: 17),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF59E0B),
-                        borderRadius: BorderRadius.circular(9),
-                        border: Border.all(color: Colors.white, width: 1.5),
-                      ),
-                      child: Text(
-                        _unreadNotifications > 9 ? '9+' : '$_unreadNotifications',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+        AppBarIconButton(
+          icon: Icons.notifications_outlined,
+          tooltip: t.notificationsTitle,
+          badgeCount: _unreadNotifications,
+          onGradient: true,
+          badgeBorderColor: universalBarColor(context),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const NotificationScreen()),
+          ).then((_) => _loadStats()),
         ),
+        const SizedBox(width: 8),
         if (!_isEditing)
-          TextButton.icon(
+          AppBarIconButton(
+            icon: Icons.edit_outlined,
+            tooltip: t.editCta,
+            onGradient: true,
             onPressed: () => setState(() => _isEditing = true),
-            icon: Icon(Icons.edit_outlined, size: 16, color: AppColors.customerColor),
-            label: Text(
-              AppLocalizations.of(context)!.editCta,
-              style: TextStyle(
-                color: AppColors.customerColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
           )
         else ...[
-          TextButton(
-            onPressed: _isSaving ? null : _cancelEdit,
-            child: Text(
-              AppLocalizations.of(context)!.cancelCta,
-              style: TextStyle(
-                color: context.colors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+          AppBarIconButton(
+            icon: Icons.close_rounded,
+            tooltip: t.cancelCta,
+            onGradient: true,
+            onPressed: _isSaving ? () {} : _cancelEdit,
           ),
+          const SizedBox(width: 8),
           _isSaving
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.customerColor,
+              ? const SizedBox(
+                  width: 42,
+                  height: 42,
+                  child: Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 )
-              : TextButton(
+              : AppBarIconButton(
+                  icon: Icons.check_rounded,
+                  tooltip: t.saveCta,
+                  onGradient: true,
                   onPressed: _saveProfile,
-                  child: Text(
-                    AppLocalizations.of(context)!.saveCta,
-                    style: TextStyle(
-                      color: AppColors.customerColor,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
                 ),
         ],
       ],

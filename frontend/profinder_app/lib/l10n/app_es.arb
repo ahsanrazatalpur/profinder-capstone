@@ -1702,6 +1702,8 @@
   "homeGoodMorning": "Buenos días",
   "homeGoodAfternoon": "Buenas tardes",
   "homeGoodEvening": "Buenas noches",
+  "homeWhatServiceAreYouLookingFor": "¿Qué servicio buscas hoy?",
+  "proReadyToGrowToday": "¿Listo para hacer crecer tu negocio hoy?",
   "homeSetYourLocation": "Configura tu ubicación",
   "homeCityHint": "p. ej. Karachi, Lahore",
   "homeNoLimit": "Sin límite",

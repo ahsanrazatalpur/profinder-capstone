@@ -192,11 +192,6 @@ class _RegisterScreenState extends State<RegisterScreen>
     final categoryOk =
         _selectedRole != 'professional' || _selectedCategory != null;
 
-    // TEMP DEBUG — remove once the disabled-button issue is found.
-    // ignore: avoid_print
-    print('[FORM DEBUG] name=$nameOk email=$emailOk(status=$_emailStatus) '
-        'pass=$passOk confirm=$confirmOk city=$cityOk category=$categoryOk');
-
     return nameOk && emailOk && passOk && confirmOk && cityOk && categoryOk;
   }
 
@@ -335,23 +330,24 @@ class _RegisterScreenState extends State<RegisterScreen>
   // at the top of this screen) is sent along so a brand-new Google account
   // gets created with the role the person picked; an existing account
   // just logs in with whatever role it already has.
+  // One shared instance — creating a new GoogleSignIn() on every tap made
+  // google.accounts.id.initialize() run again and again on web.
+  static final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    clientId: kIsWeb
+        ? '405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com'
+        : null,
+    serverClientId: kIsWeb
+        ? null
+        : '405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com',
+  );
+
   Future<void> _handleGoogleSignIn() async {
     // Web needs `clientId` (same Web Client ID as the <meta> tag in
     // web/index.html and the backend's GOOGLE_CLIENT_ID); native
     // Android/iOS instead use `serverClientId` so the idToken's audience
     // matches what the backend verifies against.
-    final googleSignIn = GoogleSignIn(
-      scopes: ['email', 'profile'],
-      clientId: kIsWeb
-          ? '405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com'
-          : null,
-      // 🐛 FIX: native Android/iOS was never passing serverClientId, so the
-      // idToken's audience was the platform's own OAuth client instead of
-      // the Web client — which never matches backend's GOOGLE_CLIENT_ID.
-      serverClientId: kIsWeb
-          ? null
-          : '405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com',
-    );
+    final googleSignIn = _googleSignIn;
     try {
       final googleUser = await googleSignIn.signIn();
       if (googleUser == null) return; // person cancelled the account picker

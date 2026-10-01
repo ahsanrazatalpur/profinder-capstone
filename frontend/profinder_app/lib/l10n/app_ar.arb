@@ -1702,6 +1702,8 @@
   "homeGoodMorning": "صباح الخير",
   "homeGoodAfternoon": "نهارك سعيد",
   "homeGoodEvening": "مساء الخير",
+  "homeWhatServiceAreYouLookingFor": "ما الخدمة التي تبحث عنها اليوم؟",
+  "proReadyToGrowToday": "هل أنت مستعد لتنمية عملك اليوم؟",
   "homeSetYourLocation": "حدد موقعك",
   "homeCityHint": "مثلاً كراتشي، لاهور",
   "homeNoLimit": "بدون حد",

@@ -82,7 +82,7 @@ class GuestMainScreenState extends State<GuestMainScreen> {
             userRole: 'guest',
             onBackWhenEmbedded: () => switchToTab(0),
           ),
-          const MagazineScreen(),
+          MagazineScreen(onBackWhenEmbedded: () => switchToTab(0)),
           const RegisterScreen(initialRole: 'professional'),
           const GuestProfileScreen(),
         ],

@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 /// Responsive breakpoints used by the list container and grid.
 class _Breakpoints {
@@ -123,10 +124,16 @@ class _AdminVerificationRequestsScreenState
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Verification Requests',
+        subtitle: '${_all.length} pending · oldest first',
+        icon: Icons.verified_user_rounded,
+        showBack: false,
+      ),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            _buildHeader(),
             _buildSearch(hPad),
             Expanded(
               child: AnimatedSwitcher(
@@ -213,81 +220,6 @@ class _AdminVerificationRequestsScreenState
           end: Offset.zero,
         ).animate(anim),
         child: _requestCard(req, index),
-      ),
-    );
-  }
-
-  // ── Header ────────────────────────────────────────────────
-  /// Gradient header with icon, title, and a live pending count.
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.adminColor.withOpacity(0.25),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withOpacity(0.28)),
-            ),
-            child: const Icon(Icons.verified_user_rounded,
-                color: Colors.white, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Verification Requests',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white),
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: _all.isEmpty
-                            ? Colors.greenAccent
-                            : Colors.amber,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${_all.length} pending · oldest first',
-                      style: TextStyle(
-                          fontSize: 11.5,
-                          color: Colors.white.withOpacity(0.9),
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

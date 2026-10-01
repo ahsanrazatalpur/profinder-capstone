@@ -258,12 +258,49 @@ class AboutPageService {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
+  /// Turns any failure into a readable message.
+  /// Handles both the app's own `{"error": "..."}` shape AND Django REST
+  /// Framework validation errors like `{"section_type": ["A \"Contact...\" already exists"]}`
+  /// (the old version only read `error`, so DRF's real reason was lost).
   String _errorMessage(Object e) {
     if (e is DioException) {
       final data = e.response?.data;
-      if (data is Map && data['error'] != null) return data['error'].toString();
+      final parsed = _parseErrorBody(data);
+      if (parsed != null && parsed.isNotEmpty) return parsed;
+      if (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.sendTimeout) {
+        return 'Network problem. Please check your connection and try again.';
+      }
+      final code = e.response?.statusCode;
+      if (code != null) return 'Request failed (HTTP $code).';
       return e.message ?? 'Something went wrong.';
     }
     return 'Something went wrong.';
+  }
+
+  String? _parseErrorBody(dynamic data) {
+    if (data == null) return null;
+    if (data is String) {
+      // Django HTML error pages are useless to show — ignore them.
+      return data.trimLeft().startsWith('<') ? null : data;
+    }
+    if (data is List) {
+      return data.map((v) => v.toString()).join('\n');
+    }
+    if (data is Map) {
+      for (final key in const ['error', 'detail', 'message']) {
+        if (data[key] != null) return data[key].toString();
+      }
+      // DRF field errors: {"field": ["msg1", "msg2"], ...}
+      final lines = <String>[];
+      data.forEach((field, value) {
+        final msg = value is List ? value.join(' ') : value.toString();
+        lines.add(field == 'non_field_errors' ? msg : '$field: $msg');
+      });
+      return lines.join('\n');
+    }
+    return data.toString();
   }
 }

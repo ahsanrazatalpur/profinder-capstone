@@ -22,6 +22,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../subscription/models/promo_banner_model.dart';
 import '../../subscription/widgets/promo_banner_popup.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 /// Responsive breakpoints used by the banner grid and dialogs.
 class _Breakpoints {
@@ -947,48 +948,13 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        backgroundColor: AppColors.adminColor,
-        elevation: 0,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.campaign_rounded, color: Colors.white, size: 20),
-                SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    'Promo Banners',
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 28, top: 2),
-              child: Text(
-                '${_banners.length} ${_banners.length == 1 ? 'banner' : 'banners'}',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.white.withOpacity(0.75),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
+      appBar: UniversalAppBar(
+        title: 'Promo Banners',
+        subtitle: '${_banners.length} ${_banners.length == 1 ? 'banner' : 'banners'}',
+        icon: Icons.campaign_rounded,
+        showBack: false,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-            onPressed: _load,
-            tooltip: 'Refresh',
-          ),
+          AppBarIconButton(icon: Icons.refresh_rounded, tooltip: 'Refresh', onPressed: _load, onGradient: true),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

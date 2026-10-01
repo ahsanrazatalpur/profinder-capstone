@@ -18,6 +18,7 @@ import '../../subscription/screens/subscription_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/cta_banner.dart';
 import '../../../shared/widgets/announcement_banner.dart';
+import '../../../shared/widgets/role_app_bar.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalHomeScreen extends StatefulWidget {
@@ -207,7 +208,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      body: _isLoading
+      body: SafeArea(bottom: false, child: _isLoading
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -238,7 +239,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               child: CustomScrollView(
                 slivers: [
                   const SliverToBoxAdapter(child: AnnouncementBanner(audience: 'professional')),
-                  SliverToBoxAdapter(child: _buildHeader(isDark)),
+                  _buildAppBar(),
+                  SliverToBoxAdapter(child: _buildGreetingAndKpis(isDark)),
                   SliverToBoxAdapter(child: _buildSearchBar(isDark)),
                   if (isSearchMode)
                     SliverToBoxAdapter(child: _buildSearchResults(isDark))
@@ -261,18 +263,35 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   const SliverToBoxAdapter(child: SizedBox(height: 80)),
                 ],
               ),
-            ),
+            )),
     );
   }
 
-  // ── Header ─────────────────────────────────────────────
-  Widget _buildHeader(bool isDark) {
+  // ── AppBar (logo + notifications + profile avatar only) ──────────────
+  Widget _buildAppBar() {
     final header = _dashboard?['header'] as Map<String, dynamic>? ?? {};
     final fullName = (header['name'] ?? AppLocalizations.of(context)!.professionalDefaultName).toString();
-    final name = fullName.split(' ').first;
-    final isVerified = header['is_verified'] ?? false;
     final photo = header['photo_url'];
-    final unreadCount = (_dashboard?['unread_notifications'] ?? 0) as int;
+    final unread = (_dashboard?['unread_notifications'] ?? 0) as int;
+    return ProfessionalAppBar(
+      name: fullName,
+      photoUrl: (photo != null && photo.toString().isNotEmpty)
+          ? AppHelpers.getFullImageUrl(photo.toString())
+          : null,
+      unreadCount: unread,
+      isVerified: header['is_verified'] == true,
+      onNotifications: () => Navigator.pushNamed(context, '/notifications'),
+      onProfile: () => ProfessionalMainScreen.switchTab(5), // Profile tab
+    );
+  }
+
+  // ── Greeting + KPI strip (page content, not AppBar) ──────────────────
+  Widget _buildGreetingAndKpis(bool isDark) {
+    final t = AppLocalizations.of(context)!;
+    final c = context.colors;
+    final header = _dashboard?['header'] as Map<String, dynamic>? ?? {};
+    final fullName = (header['name'] ?? t.professionalDefaultName).toString();
+    final isVerified = header['is_verified'] ?? false;
     final category = (header['category_name'] ?? _proProfile['category_name'] ?? '').toString();
 
     final stats = _dashboard?['stats'] as Map<String, dynamic>? ?? {};
@@ -291,282 +310,108 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         .toSet()
         .length;
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [const Color(0xFF4C1D95), const Color(0xFF312E81)]
-              : [const Color(0xFF7C3AED), const Color(0xFF5B21B6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withOpacity(0.3)
-                : const Color(0xFF7C3AED).withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Glowing avatar ring
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withOpacity(0.85), width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.white.withOpacity(0.25),
-                          blurRadius: 16,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                    child: CircleAvatar(
-                      radius: 36,
-                      backgroundColor: Colors.white.withOpacity(0.2),
-                      backgroundImage: (photo != null && photo.toString().isNotEmpty)
-                          ? NetworkImage(AppHelpers.getFullImageUrl(photo.toString()))
-                          : null,
-                      child: (photo == null || photo.toString().isEmpty)
-                          ? Text(
-                              AppHelpers.getInitials(fullName),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 22,
-                              ),
-                            )
-                          : null,
-                    ),
+    const accent = AppColors.professionalColor;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RoleGreeting(
+          greeting: roleTimeGreeting(context),
+          name: fullName,
+          subtitle: t.proReadyToGrowToday,
+          footer: (category.isNotEmpty || isVerified == true)
+              ? Container(
+                  padding: const EdgeInsets.fromLTRB(10, 6, 12, 6),
+                  decoration: BoxDecoration(
+                    color: accent.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: accent.withOpacity(0.3)),
                   ),
-                  if (isVerified == true)
-                    Positioned(
-                      right: 2,
-                      bottom: 2,
-                      child: Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: context.colors.accent,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: const Icon(
-                          Icons.check,
-                          color: Colors.white,
-                          size: 11,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _greetingOnly(),
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white.withOpacity(0.75),
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      fullName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                        letterSpacing: 0.1,
-                        height: 1.15,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    if (category.isNotEmpty || isVerified == true)
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(10, 6, 12, 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white.withOpacity(0.15)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _categoryIcon(category),
-                              color: Colors.white,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 6),
-                            Flexible(
-                              child: Text(
-                                category.isNotEmpty
-                                    ? category
-                                    : AppLocalizations.of(context)!.verifiedProfessionalLabel,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                  letterSpacing: 0.2,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              // Notification bell
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/notifications'),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                          width: 1,
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.notifications_outlined,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    if (unreadCount > 0)
-                      Positioned(
-                        top: -4,
-                        right: -4,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                          constraints: const BoxConstraints(minWidth: 18),
-                          decoration: BoxDecoration(
-                            color: AppColors.error,
-                            borderRadius: BorderRadius.circular(9),
-                            border: Border.all(
-                              color: const Color(0xFF7C3AED),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Text(
-                            unreadCount > 9 ? '9+' : '$unreadCount',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(_categoryIcon(category), color: accent, size: 14),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          category.isNotEmpty ? category : t.verifiedProfessionalLabel,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: accent,
+                            letterSpacing: 0.2,
                           ),
                         ),
                       ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 22),
-          // KPI stats strip — real dashboard data
-          Container(
+                    ],
+                  ),
+                )
+              : null,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: Container(
             padding: const EdgeInsets.symmetric(vertical: 14),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
+              color: c.surface,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(color: c.divider),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Row(
               children: [
                 Expanded(
-                  child: _headerStat(
-                    Icons.calendar_month_rounded,
-                    '$totalBookings',
-                    AppLocalizations.of(context)!.totalBookingsLabel,
-                  ),
+                  child: _headerStat(Icons.calendar_month_rounded, '$totalBookings', t.totalBookingsLabel),
                 ),
                 _headerStatDivider(),
                 Expanded(
-                  child: _headerStat(
-                    Icons.star_rounded,
-                    avgRating > 0 ? avgRating.toStringAsFixed(1) : '—',
-                    AppLocalizations.of(context)!.ratingLabel,
-                  ),
+                  child: _headerStat(Icons.star_rounded, avgRating > 0 ? avgRating.toStringAsFixed(1) : '—', t.ratingLabel),
                 ),
                 _headerStatDivider(),
                 Expanded(
-                  child: _headerStat(
-                    Icons.people_alt_rounded,
-                    _formatCompactNumber(clientsCount),
-                    AppLocalizations.of(context)!.clientsLabel,
-                  ),
+                  child: _headerStat(Icons.people_alt_rounded, _formatCompactNumber(clientsCount), t.clientsLabel),
                 ),
                 _headerStatDivider(),
                 Expanded(
-                  child: _headerStat(
-                    Icons.account_balance_wallet_rounded,
-                    '\$${_formatMoney(totalEarnings)}',
-                    AppLocalizations.of(context)!.earningsLabel,
-                  ),
+                  child: _headerStat(Icons.account_balance_wallet_rounded, '\$${_formatMoney(totalEarnings)}', t.earningsLabel),
                 ),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _headerStat(IconData icon, String value, String label) {
+    final c = context.colors;
     return Column(
       children: [
         Container(
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: AppColors.professionalColor.withOpacity(0.12),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: Colors.white, size: 16),
+          child: Icon(icon, color: AppColors.professionalColor, size: 16),
         ),
         const SizedBox(height: 6),
         Text(
           value,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: c.textPrimary,
             letterSpacing: 0.1,
           ),
         ),
@@ -577,7 +422,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: 10,
-            color: Colors.white.withOpacity(0.7),
+            color: c.textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -588,7 +433,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   Widget _headerStatDivider() => Container(
         width: 1,
         height: 34,
-        color: Colors.white.withOpacity(0.15),
+        color: context.colors.divider,
       );
 
   String _formatCompactNumber(int n) {
@@ -1244,66 +1089,28 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _earningsHeroCard(String label, double amount, bool isDark) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [const Color(0xFF065F46), const Color(0xFF047857)]
-              : [const Color(0xFF10B981), const Color(0xFF059669)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfessionalWalletScreen())),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF059669), Color(0xFF10B981)]),
         ),
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF10B981).withOpacity(isDark ? 0.2 : 0.15),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white.withOpacity(0.85),
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0.2,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '\$${amount.toStringAsFixed(0)}',
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  letterSpacing: 0.15,
-                ),
-              ),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.trending_up_rounded,
-              color: Colors.white,
-              size: 22,
-            ),
-          ),
-        ],
+        child: Stack(clipBehavior: Clip.none, children: [
+        Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)))),
+        Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            const Icon(Icons.trending_up_rounded, color: Colors.white, size: 22),
+            const SizedBox(width: 8),
+            Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12.5, fontWeight: FontWeight.w600)),
+          ]),
+          const SizedBox(height: 10),
+          Text('\$${amount.toStringAsFixed(0)}', style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+        ]),
+      ]),
       ),
     );
   }

@@ -1702,6 +1702,8 @@
   "homeGoodMorning": "Good morning",
   "homeGoodAfternoon": "Good afternoon",
   "homeGoodEvening": "Good evening",
+  "homeWhatServiceAreYouLookingFor": "What service are you looking for today?",
+  "proReadyToGrowToday": "Ready to grow your business today?",
   "homeSetYourLocation": "Set your location",
   "homeCityHint": "e.g. Karachi, Lahore",
   "homeNoLimit": "No limit",

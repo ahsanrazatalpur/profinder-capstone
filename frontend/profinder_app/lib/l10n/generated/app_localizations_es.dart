@@ -2771,6 +2771,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeGoodEvening => 'Buenas noches';
 
   @override
+  String get homeWhatServiceAreYouLookingFor => '¿Qué servicio buscas hoy?';
+
+  @override
+  String get proReadyToGrowToday => '¿Listo para hacer crecer tu negocio hoy?';
+
+  @override
   String get homeSetYourLocation => 'Configura tu ubicación';
 
   @override

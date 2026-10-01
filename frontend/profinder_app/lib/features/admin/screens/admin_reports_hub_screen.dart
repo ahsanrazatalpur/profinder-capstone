@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminReportsHubScreen extends StatefulWidget {
   const AdminReportsHubScreen({super.key});
@@ -217,6 +218,12 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Reports',
+        subtitle: 'Generate and export platform data',
+        icon: Icons.summarize_rounded,
+        showBack: false,
+      ),
       body: SafeArea(
         top: false,
         child: LayoutBuilder(
@@ -226,71 +233,13 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
             final crossAxisCount = width >= 1000 ? 4 : (width >= 640 ? 3 : 2);
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               child: Center(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: isWide ? 960 : double.infinity),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // ── Header ────────────────────────────────────────
-                      Container(
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.adminColor.withOpacity(0.25),
-                              blurRadius: 16,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(Icons.summarize_rounded, color: Colors.white, size: 22),
-                            ),
-                            const SizedBox(width: 12),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Reports',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                      letterSpacing: -0.2,
-                                    ),
-                                  ),
-                                  SizedBox(height: 2),
-                                  Text(
-                                    'Generate and export platform data',
-                                    style: TextStyle(
-                                      fontSize: 11.5,
-                                      color: Colors.white70,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 22),
                       const _SectionLabel('Quick Generate'),
                       const SizedBox(height: 12),
                       GridView.builder(

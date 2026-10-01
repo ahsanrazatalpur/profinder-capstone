@@ -1,6 +1,7 @@
 // lib/features/magazine/screens/magazine_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/responsive_utils.dart';
@@ -11,7 +12,10 @@ import 'article_detail_screen.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
 class MagazineScreen extends StatefulWidget {
-  const MagazineScreen({super.key});
+  /// Back action when embedded as a bottom-nav tab (no route to pop).
+  final VoidCallback? onBackWhenEmbedded;
+
+  const MagazineScreen({super.key, this.onBackWhenEmbedded});
 
   @override
   State<MagazineScreen> createState() => _MagazineScreenState();
@@ -102,7 +106,6 @@ class _MagazineScreenState extends State<MagazineScreen> {
     });
   }
 
-  bool get _canPop => Navigator.of(context).canPop();
 
   @override
   Widget build(BuildContext context) {
@@ -110,13 +113,17 @@ class _MagazineScreenState extends State<MagazineScreen> {
 
     return Scaffold(
       backgroundColor: context.colors.background,
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.magazineTitle,
+        icon: Icons.menu_book_rounded,
+        onBack: widget.onBackWhenEmbedded,
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           color: AppColors.customerColor,
           onRefresh: _loadAll,
           child: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(child: _buildHeader(isDark)),
               SliverToBoxAdapter(child: _buildSearchBar(isDark)),
               if (_categories.isNotEmpty)
                 SliverToBoxAdapter(child: _buildCategoryRow(isDark)),
@@ -126,127 +133,6 @@ class _MagazineScreenState extends State<MagazineScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  // ── Enhanced Header ──────────────────────────────────────────
-  Widget _buildHeader(bool isDark) {
-    final width = MediaQuery.sizeOf(context).width;
-    final scale = ResponsiveUtils.scaleForWidth(width);
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.screenPadding(width, base: 16),
-        20,
-        ResponsiveUtils.screenPadding(width, base: 20),
-        24,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [const Color(0xFF1E293B), const Color(0xFF0F172A)]
-              : [const Color(0xFF1E40AF), const Color(0xFF2563EB)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withOpacity(0.3)
-                : const Color(0xFF1E40AF).withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          if (_canPop)
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                width: ResponsiveUtils.sp(40, scale, min: 36, max: 48),
-                height: ResponsiveUtils.sp(40, scale, min: 36, max: 48),
-                margin: const EdgeInsets.only(right: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.1),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white,
-                  size: ResponsiveUtils.sp(18, scale, min: 17, max: 22),
-                ),
-              ),
-            ),
-          Container(
-            width: ResponsiveUtils.sp(48, scale, min: 42, max: 56),
-            height: ResponsiveUtils.sp(48, scale, min: 42, max: 56),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withOpacity(0.25),
-                  Colors.white.withOpacity(0.1),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.15),
-                width: 1,
-              ),
-            ),
-            child: Icon(
-              Icons.menu_book_rounded,
-              color: Colors.white,
-              size: ResponsiveUtils.sp(26, scale, min: 22, max: 30),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.magazineTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(22, scale, min: 18, max: 26),
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    letterSpacing: -0.5,
-                    height: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  AppLocalizations.of(context)!.magazineSubtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(13, scale, min: 11, max: 15),
-                    letterSpacing: 0.3,
-                    color: Colors.white.withOpacity(0.8),
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -1702,6 +1702,8 @@
   "homeGoodMorning": "सुप्रभात",
   "homeGoodAfternoon": "शुभ दोपहर",
   "homeGoodEvening": "शुभ संध्या",
+  "homeWhatServiceAreYouLookingFor": "आज आप कौन सी सेवा ढूंढ रहे हैं?",
+  "proReadyToGrowToday": "क्या आप आज अपना व्यवसाय बढ़ाने के लिए तैयार हैं?",
   "homeSetYourLocation": "अपना स्थान सेट करें",
   "homeCityHint": "जैसे कराची, लाहौर",
   "homeNoLimit": "कोई सीमा नहीं",

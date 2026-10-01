@@ -24,6 +24,7 @@ import '../services/trust_safety_service.dart';
 import '../widgets/report_detail_panel.dart';
 import '../widgets/ts_ui.dart';
 import 'admin_report_detail_screen.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 enum _DateFilter { any, today, week, month, custom }
 
@@ -227,8 +228,23 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final pending = _all.where((r) => r.status == ReportStatus.pending).length;
     return Scaffold(
       backgroundColor: TsColors.bg,
+      appBar: UniversalAppBar(
+        title: l.tsReportsTitle,
+        subtitle: l.tsPendingReview(pending.toString()),
+        icon: Icons.flag_rounded,
+        showBack: false,
+        actions: [
+          AppBarIconButton(
+            icon: Icons.refresh_rounded,
+            tooltip: l.tsRefresh,
+            onPressed: () { if (!_loading) _load(); },
+            onGradient: true,
+          ),
+        ],
+      ),
       body: LayoutBuilder(
         builder: (context, c) {
           final split = c.maxWidth >= _splitBreakpoint;
@@ -269,19 +285,10 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
   }
 
   Widget _buildListColumn(AppLocalizations l, bool split, double width) {
-    final pending = _all.where((r) => r.status == ReportStatus.pending).length;
     final hPad = split ? 14.0 : (width >= 700 ? 24.0 : 12.0);
 
     return Column(
       children: [
-        TsScreenHeader(
-          icon: Icons.flag_rounded,
-          title: l.tsReportsTitle,
-          subtitle: l.tsPendingReview(pending.toString()),
-          dotColor: pending > 0 ? Colors.amber : Colors.greenAccent,
-          onRefresh: _loading ? null : () => _load(),
-          refreshTooltip: l.tsRefresh,
-        ),
         _buildSearchAndFilters(l, hPad),
         Expanded(child: _buildBody(l, split, hPad)),
       ],

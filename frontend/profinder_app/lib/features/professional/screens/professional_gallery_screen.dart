@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
@@ -180,36 +181,29 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.galleryTitle,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: context.colors.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.galleryTitle,
+        icon: Icons.photo_library_rounded,
         actions: [
           _isUploading
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Center(
                     child: SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        color: AppColors.professionalColor,
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 )
-              : IconButton(
-                  icon: Icon(Icons.add_photo_alternate_outlined, color: AppColors.professionalColor),
-                  onPressed: _pickAndUpload,
+              : AppBarIconButton(
+                  icon: Icons.add_photo_alternate_outlined,
                   tooltip: AppLocalizations.of(context)!.addPhotoTooltip,
+                  onGradient: true,
+                  onPressed: _pickAndUpload,
                 ),
         ],
       ),

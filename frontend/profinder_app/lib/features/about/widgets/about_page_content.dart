@@ -28,11 +28,34 @@ class AboutPageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Public page: skip sections that would render as just an icon with no
+    // text (e.g. a section saved with an icon but empty title/description).
+    // Admin preview keeps them visible so they can still be found and fixed.
+    final visible = showDisabledBadge
+        ? sections
+        : sections.where(_hasVisibleContent).toList();
     return ListView.builder(
       padding: const EdgeInsets.only(bottom: 32),
-      itemCount: sections.length,
-      itemBuilder: (context, index) => _buildSection(context, sections[index]),
+      itemCount: visible.length,
+      itemBuilder: (context, index) => _buildSection(context, visible[index]),
     );
+  }
+
+  bool _hasVisibleContent(AboutSection s) {
+    String clean(String v) => v
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '')
+        .replaceAll(RegExp(r'&nbsp;|&#160;', caseSensitive: false), '')
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .trim();
+    final hasExtra = s.extraData.values.any((v) =>
+        v != null && (v is String ? v.trim().isNotEmpty : v is Iterable || v is Map ? (v as dynamic).isNotEmpty : true));
+    return s.title.trim().isNotEmpty ||
+        s.subtitle.trim().isNotEmpty ||
+        clean(s.description).isNotEmpty ||
+        s.imageUrl.isNotEmpty ||
+        s.items.isNotEmpty ||
+        s.hasCta ||
+        hasExtra;
   }
 
   // ── Safe link launch ─────────────────────────────────────────────────────

@@ -11,6 +11,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminLogsScreen extends StatefulWidget {
   const AdminLogsScreen({super.key});
@@ -162,32 +163,16 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
 
   // ── AppBar ────────────────────────────────────────────────
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.adminColor,
-      elevation: 0,
-      title: const Row(
-        children: [
-          Icon(Icons.history_rounded, color: Colors.white, size: 20),
-          SizedBox(width: 8),
-          Text('Activity Logs',
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white)),
-        ],
-      ),
+    return UniversalAppBar(
+      title: 'Activity Logs',
+      icon: Icons.history_rounded,
+      showBack: false,
       actions: [
-        IconButton(
-          icon:    const Icon(Icons.refresh_rounded, color: Colors.white),
-          onPressed: _load,
-          tooltip: 'Refresh',
-        ),
-        if (_all.isNotEmpty)
-          IconButton(
-            icon:    const Icon(Icons.delete_sweep_rounded, color: Colors.white),
-            onPressed: _clearAll,
-            tooltip: 'Clear All',
-          ),
+        AppBarIconButton(icon: Icons.refresh_rounded, tooltip: 'Refresh', onPressed: _load, onGradient: true),
+        if (_all.isNotEmpty) ...[
+          const SizedBox(width: 8),
+          AppBarIconButton(icon: Icons.delete_sweep_rounded, tooltip: 'Clear All', onPressed: _clearAll, onGradient: true),
+        ],
       ],
     );
   }

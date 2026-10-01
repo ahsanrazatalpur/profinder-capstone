@@ -5,6 +5,7 @@
 // an honest "spend & plan" summary, not a fake wallet balance.
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
@@ -65,26 +66,9 @@ class _WalletScreenState extends State<WalletScreen> {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.walletTitle,
-          style: TextStyle(
-            fontSize: isTablet ? 18.0 : 16.0,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-            letterSpacing: -0.3,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: context.colors.textPrimary,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.walletTitle,
+        icon: Icons.account_balance_wallet_rounded,
       ),
       body: _loading
           ? Center(
@@ -111,6 +95,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       curve: Curves.easeOut,
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
+          clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         gradient: const LinearGradient(
@@ -126,7 +111,10 @@ class _WalletScreenState extends State<WalletScreen> {
                           ),
                         ],
                       ),
-                      child: Column(
+                      child: Stack(children: [
+          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)))),
+          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
+          Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
@@ -177,6 +165,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           ),
                         ],
                       ),
+        ]),
                     ),
 
                     const SizedBox(height: 14),

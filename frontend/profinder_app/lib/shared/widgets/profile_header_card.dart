@@ -149,21 +149,17 @@ class ProfileHeaderCard extends StatelessWidget {
           Color.lerp(accentColorSecondary, Colors.black, 0.55)!,
         ];
 
+    final radius = BorderRadius.circular(ResponsiveUtils.sp(22, scale, min: 20, max: 24));
+
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.sp(20, scale, min: 18, max: 24),
-        ResponsiveUtils.sp(24, scale, min: 22, max: 28),
-        ResponsiveUtils.sp(20, scale, min: 18, max: 24),
-        ResponsiveUtils.sp(20, scale, min: 18, max: 24),
-      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark ? gradientDark : gradientLight,
         ),
-        borderRadius: BorderRadius.circular(ResponsiveUtils.sp(22, scale, min: 20, max: 24)),
+        borderRadius: radius,
         boxShadow: [
           BoxShadow(
             color: isDark
@@ -174,7 +170,29 @@ class ProfileHeaderCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: ClipRRect(
+        borderRadius: radius,
+        child: Stack(
+          children: [
+            // Soft translucent-white glass layers (same as the app bar)
+            const Positioned(
+              right: -36,
+              top: -52,
+              child: _GlassCircle(size: 150, opacity: 0.10),
+            ),
+            const Positioned(
+              right: 70,
+              bottom: -64,
+              child: _GlassCircle(size: 110, opacity: 0.08),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                ResponsiveUtils.sp(20, scale, min: 18, max: 24),
+                ResponsiveUtils.sp(24, scale, min: 22, max: 28),
+                ResponsiveUtils.sp(20, scale, min: 18, max: 24),
+                ResponsiveUtils.sp(20, scale, min: 18, max: 24),
+              ),
+              child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -316,6 +334,10 @@ class ProfileHeaderCard extends StatelessWidget {
             ),
           ],
         ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -437,4 +459,21 @@ class ProfileHeaderCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Translucent white circle used for the glass/layered background effect.
+class _GlassCircle extends StatelessWidget {
+  final double size;
+  final double opacity;
+  const _GlassCircle({required this.size, required this.opacity});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withOpacity(opacity),
+        ),
+      );
 }

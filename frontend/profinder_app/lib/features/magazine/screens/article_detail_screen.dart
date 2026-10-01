@@ -1,6 +1,7 @@
 // lib/features/magazine/screens/article_detail_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/responsive_utils.dart';
@@ -94,28 +95,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         SliverAppBar(
           expandedHeight: a.coverImage.isNotEmpty ? 260 : 140,
           pinned:         true,
-          backgroundColor: context.colors.primary,
+          backgroundColor: universalBarColor(context),
           elevation: 0,
-          leading: GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.black.withOpacity(0.5)
-                    : Colors.black.withOpacity(0.35),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.1),
-                  width: 1,
-                ),
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
+          leadingWidth: 66,
+          leading: const Padding(
+            padding: EdgeInsets.only(left: 12),
+            child: Center(child: UniversalBackButton()),
           ),
           flexibleSpace: FlexibleSpaceBar(
             background: a.coverImage.isNotEmpty

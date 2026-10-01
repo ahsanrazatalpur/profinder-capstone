@@ -17,6 +17,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import 'admin_cities_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminCountriesScreen extends StatefulWidget {
   const AdminCountriesScreen({super.key});
@@ -229,6 +230,12 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Countries',
+        subtitle: '$activeCount active',
+        icon: Icons.public_rounded,
+        showBack: false,
+      ),
       floatingActionButton: _EntranceScale(
         child: FloatingActionButton.extended(
           // Unique tag prevents "multiple heroes share the same tag"
@@ -246,6 +253,7 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
         ),
       ),
       body: SafeArea(
+        top: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth;
@@ -254,7 +262,6 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
 
             return Column(
               children: [
-                _Header(activeCount: activeCount),
                 Expanded(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 260),
@@ -338,49 +345,6 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-}
-
-/// Gradient app header showing the live "N active" count under the title —
-/// same derived value as the original (`_countries.where(status==active)`).
-class _Header extends StatelessWidget {
-  final int activeCount;
-  const _Header({required this.activeCount});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 20, 20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [BoxShadow(color: Color(0x33991B1B), blurRadius: 14, offset: Offset(0, 6))],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(9),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.16), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.public_rounded, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Countries',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 0.1)),
-                const SizedBox(height: 2),
-                Text('$activeCount active', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.85))),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

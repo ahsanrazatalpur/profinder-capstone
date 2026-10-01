@@ -2800,6 +2800,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeGoodEvening => 'Bonsoir';
 
   @override
+  String get homeWhatServiceAreYouLookingFor =>
+      'Quel service recherchez-vous aujourd\'hui ?';
+
+  @override
+  String get proReadyToGrowToday =>
+      'Prêt à développer votre activité aujourd\'hui ?';
+
+  @override
   String get homeSetYourLocation => 'Définissez votre position';
 
   @override

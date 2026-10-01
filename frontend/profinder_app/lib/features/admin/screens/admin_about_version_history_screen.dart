@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/about_page_service.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminAboutVersionHistoryScreen extends StatefulWidget {
   const AdminAboutVersionHistoryScreen({super.key});
@@ -97,11 +98,9 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.adminColor,
-        elevation: 0,
-        scrolledUnderElevation: 2,
-        title: const Text('Version History', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+      appBar: UniversalAppBar(
+        title: 'Version History',
+        icon: Icons.history_rounded,
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 220),

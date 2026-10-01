@@ -20,6 +20,7 @@ import 'admin_about_section_items_screen.dart';
 import 'admin_about_seo_screen.dart';
 import 'admin_about_version_history_screen.dart';
 import 'admin_about_preview_screen.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 /// (type value, display label, icon) — mirrors the backend's
 /// SECTION_TYPE_CHOICES so "Add Section" always matches what the public
@@ -155,6 +156,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
   // ── Actions ──────────────────────────────────────────────────────────────
 
   Future<void> _reorder(int oldIndex, int newIndex) async {
+    final previous = List<AboutSection>.from(_sections);
     setState(() {
       if (newIndex > oldIndex) newIndex--;
       final item = _sections.removeAt(oldIndex);
@@ -163,7 +165,24 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
     final order = [
       for (var i = 0; i < _sections.length; i++) {'id': _sections[i].id, 'order': i}
     ];
-    await _service.reorderSections(order);
+    final result = await _service.reorderSections(order);
+    if (!mounted) return;
+    if (result['success'] != true) {
+      // Server rejected the new order — put the list back so the screen
+      // never shows an order that isn't actually saved.
+      setState(() => _sections = previous);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(result['error']?.toString() ?? 'Could not save the new order.')));
+    }
+  }
+
+  /// Moves a section one step up (delta = -1) or down (delta = +1).
+  /// Easier than drag-and-drop on phones and for long lists.
+  Future<void> _move(int index, int delta) async {
+    final target = index + delta;
+    if (target < 0 || target >= _sections.length) return;
+    // ReorderableListView semantics: moving down needs newIndex + 1.
+    await _reorder(index, delta > 0 ? target + 1 : target);
   }
 
   Future<void> _toggleEnabled(AboutSection section) async {
@@ -396,45 +415,72 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     final status = _status?['status'] ?? 'draft';
-    return AppBar(
-      backgroundColor: AppColors.adminColor,
-      elevation: 2,
-      shadowColor: Colors.black.withOpacity(0.15),
-      iconTheme: const IconThemeData(color: Colors.white),
-      title: const Text('About Page Management',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.1)),
+    final statusLabel = status == 'published'
+        ? 'Published'
+        : (status == 'unpublished' ? 'Unpublished' : 'Draft');
+    return UniversalAppBar(
+      title: 'About Page Management',
+      subtitle: statusLabel,
+      icon: Icons.info_outline_rounded,
+      showBack: false,
       actions: [
-        _statusChip(status),
-        _HoverAppBarIcon(
-          tooltip: 'View Live Page',
-          icon: Icons.public_rounded,
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutScreen())),
-        ),
-        _HoverAppBarIcon(
-          tooltip: 'SEO',
-          icon: Icons.search_rounded,
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminAboutSeoScreen())),
-        ),
-        _HoverAppBarIcon(
-          tooltip: 'Version History',
-          icon: Icons.history_rounded,
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminAboutVersionHistoryScreen()))
-              .then((_) => _load()),
-        ),
-        _HoverAppBarIcon(
-          tooltip: 'Preview',
+        AppBarIconButton(
           icon: Icons.visibility_outlined,
+          tooltip: 'Preview',
+          onGradient: true,
           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminAboutPreviewScreen())),
         ),
-        PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        const SizedBox(width: 8),
+        AppBarPopupButton<String>(
+          icon: Icons.more_vert_rounded,
+          tooltip: 'More',
           onSelected: (value) async {
-            if (value == 'publish') await _publish();
-            if (value == 'unpublish') await _unpublish();
+            switch (value) {
+              case 'live':
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutScreen()));
+                break;
+              case 'seo':
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminAboutSeoScreen()));
+                break;
+              case 'history':
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminAboutVersionHistoryScreen()))
+                    .then((_) => _load());
+                break;
+              case 'publish':
+                await _publish();
+                break;
+              case 'unpublish':
+                await _unpublish();
+                break;
+            }
           },
-          itemBuilder: (_) => [
-            const PopupMenuItem(
+          itemBuilder: (_) => const [
+            PopupMenuItem(
+              value: 'live',
+              child: Row(children: [
+                Icon(Icons.public_rounded, size: 18),
+                SizedBox(width: 10),
+                Text('View Live Page'),
+              ]),
+            ),
+            PopupMenuItem(
+              value: 'seo',
+              child: Row(children: [
+                Icon(Icons.search_rounded, size: 18),
+                SizedBox(width: 10),
+                Text('SEO'),
+              ]),
+            ),
+            PopupMenuItem(
+              value: 'history',
+              child: Row(children: [
+                Icon(Icons.history_rounded, size: 18),
+                SizedBox(width: 10),
+                Text('Version History'),
+              ]),
+            ),
+            PopupMenuDivider(),
+            PopupMenuItem(
               value: 'publish',
               child: Row(children: [
                 Icon(Icons.cloud_upload_rounded, size: 18, color: Color(0xFF16A34A)),
@@ -442,7 +488,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
                 Text('Publish'),
               ]),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'unpublish',
               child: Row(children: [
                 Icon(Icons.cloud_off_rounded, size: 18, color: Colors.orange),
@@ -452,38 +498,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
             ),
           ],
         ),
-        const SizedBox(width: 4),
       ],
-    );
-  }
-
-  Widget _statusChip(String status) {
-    final isPublished = status == 'published';
-    final dotColor = isPublished ? const Color(0xFF4ADE80) : const Color(0xFFFCD34D); // soft green / soft amber dot — reads fine on the red bar instead of another solid block of color fighting it
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.18),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: 6,
-              height: 6,
-              decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
-            ),
-            const SizedBox(width: 6),
-            Text(isPublished ? 'Published' : (status == 'unpublished' ? 'Unpublished' : 'Draft'),
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
-          ],
-        ),
-      ),
     );
   }
 
@@ -739,6 +754,8 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
       ).then((_) => _load()),
       onDuplicate: () => _duplicate(section),
       onDelete: () => _confirmDelete(section),
+      onMoveUp: reorderable && index > 0 ? () => _move(index, -1) : null,
+      onMoveDown: reorderable && index < _sections.length - 1 ? () => _move(index, 1) : null,
     );
   }
 }
@@ -769,44 +786,6 @@ class _AnimatedEntry extends StatelessWidget {
   }
 }
 
-/// AppBar icon button with a soft circular hover highlight on desktop/web.
-class _HoverAppBarIcon extends StatefulWidget {
-  final IconData icon;
-  final String tooltip;
-  final VoidCallback onPressed;
-
-  const _HoverAppBarIcon({required this.icon, required this.tooltip, required this.onPressed});
-
-  @override
-  State<_HoverAppBarIcon> createState() => _HoverAppBarIconState();
-}
-
-class _HoverAppBarIconState extends State<_HoverAppBarIcon> {
-  bool _hovering = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovering = true),
-      onExit: (_) => setState(() => _hovering = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        margin: const EdgeInsets.symmetric(horizontal: 1),
-        decoration: BoxDecoration(
-          color: _hovering ? Colors.white.withOpacity(0.15) : Colors.transparent,
-          shape: BoxShape.circle,
-        ),
-        child: IconButton(
-          tooltip: widget.tooltip,
-          icon: Icon(widget.icon, color: Colors.white),
-          onPressed: widget.onPressed,
-        ),
-      ),
-    );
-  }
-}
-
 /// Collapsible card for one section in the list — drag handle, type badge,
 /// enable switch, and quick actions. Expands to a short content preview.
 class _AboutSectionCard extends StatefulWidget {
@@ -818,6 +797,8 @@ class _AboutSectionCard extends StatefulWidget {
   final VoidCallback onManageItems;
   final VoidCallback onDuplicate;
   final VoidCallback onDelete;
+  final VoidCallback? onMoveUp;
+  final VoidCallback? onMoveDown;
 
   const _AboutSectionCard({
     super.key,
@@ -829,6 +810,8 @@ class _AboutSectionCard extends StatefulWidget {
     required this.onManageItems,
     required this.onDuplicate,
     required this.onDelete,
+    this.onMoveUp,
+    this.onMoveDown,
   });
 
   @override
@@ -881,7 +864,18 @@ class _AboutSectionCardState extends State<_AboutSectionCard> {
                       )
                     else
                       const SizedBox(width: 24),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
+                    // Position on the public page (1 = top). Only shown in the
+                    // full list — while searching, indexes belong to the filtered list.
+                    if (widget.reorderable) ...[
+                      SizedBox(
+                        width: 22,
+                        child: Text('${widget.index + 1}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: context.colors.textSecondary)),
+                      ),
+                      const SizedBox(width: 4),
+                    ],
                     Container(
                       width: 36, height: 36,
                       decoration: BoxDecoration(color: AppColors.adminColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
@@ -958,6 +952,10 @@ class _AboutSectionCardState extends State<_AboutSectionCard> {
                             spacing: 8, runSpacing: 8,
                             children: [
                               _actionChip(context, Icons.edit_outlined, 'Edit', widget.onEdit),
+                              if (widget.onMoveUp != null)
+                                _actionChip(context, Icons.arrow_upward_rounded, 'Move Up', widget.onMoveUp!),
+                              if (widget.onMoveDown != null)
+                                _actionChip(context, Icons.arrow_downward_rounded, 'Move Down', widget.onMoveDown!),
                               if (s.isCollectionType)
                                 _actionChip(context, Icons.list_alt_rounded, 'Manage Items (${s.items.length})', widget.onManageItems),
                               _actionChip(context, Icons.copy_all_outlined, 'Duplicate', widget.onDuplicate),

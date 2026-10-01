@@ -36,6 +36,7 @@ import '../../../shared/widgets/professional_card.dart';
 import '../../../shared/widgets/category_card.dart';
 import '../../../shared/widgets/cta_banner.dart';
 import '../../../shared/widgets/announcement_banner.dart';
+import '../../../shared/widgets/role_app_bar.dart';
 import '../../../core/constants/category_style.dart';
 import '../../search/screens/professional_detail_screen.dart';
 import '../../search/screens/search_screen.dart';
@@ -565,7 +566,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     return PopScope(
       canPop: false,
       child: Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: context.colors.background,
       body: SafeArea(
         child: RefreshIndicator(
           color: context.colors.primary,
@@ -573,7 +574,17 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           child: CustomScrollView(
             slivers: [
               const SliverToBoxAdapter(child: AnnouncementBanner(audience: 'customer')),
-              SliverToBoxAdapter(child: _buildHeader(fullName, city, photoUrl)),
+              CustomerAppBar(
+                name: fullName,
+                photoUrl: photoUrl,
+                unreadCount: _unreadCount,
+                onNotifications: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const NotificationScreen()),
+                ).then((_) => _loadNotifications()),
+                onProfile: () => Navigator.pushNamed(context, '/profile').then((_) => _loadProfessionals()),
+              ),
+              SliverToBoxAdapter(child: _buildGreeting(fullName, city)),
               SliverToBoxAdapter(child: _buildSearchTap()),
               SliverToBoxAdapter(child: _buildAiRecommendationCard()),
               SliverToBoxAdapter(child: _buildQuickActions()),
@@ -737,90 +748,25 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   }
 
   // ═══════════════════════════════════════════════════════════
-  // HEADER — greeting, photo, notification bell+badge, location
+  // GREETING — lives in the page body (the AppBar above only holds the
+  // brand logo, notifications and the profile avatar).
   // ═══════════════════════════════════════════════════════════
-  Widget _buildHeader(String fullName, String city, String? photoUrl) {
+  Widget _buildGreeting(String fullName, String city) {
     final t = AppLocalizations.of(context)!;
-    final hour = DateTime.now().hour;
-    final greeting = hour < 12 ? t.homeGoodMorning : (hour < 17 ? t.homeGoodAfternoon : t.homeGoodEvening);
-
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-      decoration: BoxDecoration(
-        color: context.colors.primary,
-        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(24), bottomRight: Radius.circular(24)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/profile').then((_) => _loadProfessionals()),
-                child: Container(
-                  width: 46, height: 46,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.15),
-                    border: Border.all(color: Colors.white.withOpacity(0.4), width: 1.5),
-                    image: (photoUrl != null && photoUrl.isNotEmpty)
-                        ? DecorationImage(image: NetworkImage(photoUrl), fit: BoxFit.cover)
-                        : null,
-                  ),
-                  child: (photoUrl != null && photoUrl.isNotEmpty)
-                      ? null
-                      : Center(child: Text(AppHelpers.getInitials(fullName),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(greeting, style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.7))),
-                    Text(t.homeHi(fullName),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.3)),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen())).then((_) => _loadNotifications()),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      width: 42, height: 42,
-                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(13)),
-                      child: const Icon(Icons.notifications_outlined, color: Colors.white, size: 22),
-                    ),
-                    if (_unreadCount > 0)
-                      Positioned(
-                        right: -2, top: -2,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                          constraints: const BoxConstraints(minWidth: 18),
-                          decoration: BoxDecoration(color: const Color(0xFFF59E0B), borderRadius: BorderRadius.circular(9), border: Border.all(color: context.colors.primary, width: 1.5)),
-                          child: Text(_unreadCount > 9 ? '9+' : '$_unreadCount', textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(children: [
-            Icon(Icons.location_on_outlined, size: 14, color: Colors.white.withOpacity(0.85)),
-            const SizedBox(width: 4),
-            Text(city.isNotEmpty ? city : t.homeSetYourLocation,
-                style: TextStyle(fontSize: 12.5, color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w500)),
-          ]),
-        ],
-      ),
+    return RoleGreeting(
+      greeting: roleTimeGreeting(context),
+      name: fullName,
+      subtitle: t.homeWhatServiceAreYouLookingFor,
+      footer: Row(children: [
+        Icon(Icons.location_on_outlined, size: 14, color: context.colors.textSecondary),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(city.isNotEmpty ? city : t.homeSetYourLocation,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary, fontWeight: FontWeight.w500)),
+        ),
+      ]),
     );
   }
 
@@ -890,67 +836,52 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     final rating = _num(pick['average_rating']);
     final price  = _num(pick['hourly_rate']);
 
-    return GestureDetector(
+    Widget initials() => Center(
+          child: Text(
+            AppHelpers.getInitials(name),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
+        );
+
+    return UniversalCard(
+      margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProfessionalDetailScreen(professional: pick))),
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF4C1D95), Color(0xFF6D28D9)]),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(children: [
-              const Icon(Icons.auto_awesome_rounded, color: Color(0xFFFCD34D), size: 16),
-              const SizedBox(width: 6),
-              Text(t.homeAiPickForYou, style: const TextStyle(color: Color(0xFFFCD34D), fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 1.0)),
-            ]),
-            const SizedBox(height: 18),
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(26),
-                child: Container(
-                  width: 52, height: 52, color: Colors.white24,
-                  child: photo.isNotEmpty
-                      ? Image.network(photo, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Center(child: Text(AppHelpers.getInitials(name), style: const TextStyle(color: Colors.white))))
-                      : Center(child: Text(AppHelpers.getInitials(name), style: const TextStyle(color: Colors.white))),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700, height: 1.3, letterSpacing: 0.1), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  if (cat.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(cat, style: const TextStyle(color: Color(0xFFC4B5FD), fontSize: 12.5, height: 1.3), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  ],
-                ]),
-              ),
-              const SizedBox(width: 12),
-              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Row(children: [
-                  const Icon(Icons.star_rounded, color: Color(0xFFFCD34D), size: 16),
-                  const SizedBox(width: 3),
-                  Text(rating.toStringAsFixed(1), style: const TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w600)),
-                ]),
-                const SizedBox(height: 6),
-                Text('\$${price.toStringAsFixed(0)}/hr', style: const TextStyle(color: Colors.white70, fontSize: 12)),
-              ]),
-            ]),
-            if (reason.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(
-                reason,
-                style: const TextStyle(color: Colors.white, fontSize: 12.5, height: 1.6, letterSpacing: 0.15),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ],
+      badge: t.homeAiPickForYou,
+      badgeIcon: Icons.auto_awesome_rounded,
+      leading: ClipOval(
+        child: Container(
+          width: 52,
+          height: 52,
+          color: Colors.white.withOpacity(0.2),
+          child: photo.isNotEmpty
+              ? Image.network(photo, fit: BoxFit.cover, errorBuilder: (_, __, ___) => initials())
+              : initials(),
         ),
       ),
+      title: name,
+      subtitle: cat,
+      subtitleMaxLines: 1,
+      trailing: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            const Icon(Icons.star_rounded, color: Color(0xFFFCD34D), size: 16),
+            const SizedBox(width: 3),
+            Text(rating.toStringAsFixed(1), style: const TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w700)),
+          ]),
+          const SizedBox(height: 6),
+          Text('\$${price.toStringAsFixed(0)}/hr', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+        ],
+      ),
+      child: reason.isEmpty
+          ? null
+          : Text(
+              reason,
+              style: const TextStyle(color: Colors.white, fontSize: 12.5, height: 1.6, letterSpacing: 0.15),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
     );
   }
 
@@ -1373,11 +1304,15 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletScreen())),
         child: Container(
           padding: const EdgeInsets.all(18),
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
             gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF059669), Color(0xFF10B981)]),
           ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child: Stack(children: [
+          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)))),
+          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
               const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 22),
               const SizedBox(width: 8),
@@ -1385,7 +1320,16 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
             ]),
             const SizedBox(height: 10),
             _walletLoading
-                ? const SizedBox(height: 30, child: AppFullLoader())
+                ? const SizedBox(
+                    height: 30,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                        width: 20, height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                      ),
+                    ),
+                  )
                 : Text('\$${_totalSpent.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
             const SizedBox(height: 2),
             Text(
@@ -1405,6 +1349,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
               ),
             ]),
           ]),
+        ]),
         ),
       ),
     );

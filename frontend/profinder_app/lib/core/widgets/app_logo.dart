@@ -27,56 +27,8 @@ class AppLogo extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Outer glow ring
-          Container(
-            width:  size,
-            height: size,
-            decoration: BoxDecoration(
-              color: inverted
-                  ? AppColors.white.withOpacity(0.15)
-                  : context.colors.primary.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              // Inner circle with PF initials
-              child: Container(
-                width:  size * 0.72,
-                height: size * 0.72,
-                decoration: BoxDecoration(
-                  color: inverted ? AppColors.white : context.colors.primary,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'P',
-                          style: TextStyle(
-                            fontSize:   size * 0.28,
-                            fontWeight: FontWeight.bold,
-                            color:      inverted
-                                ? context.colors.primary
-                                : AppColors.white,
-                            height: 1,
-                          ),
-                        ),
-                        TextSpan(
-                          text: 'F',
-                          style: TextStyle(
-                            fontSize:   size * 0.28,
-                            fontWeight: FontWeight.bold,
-                            color:      context.colors.accent,
-                            height:     1,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // PF mark — shared with the role AppBars via AppLogoMark
+          AppLogoMark(size: size, inverted: inverted),
 
           // App name
           if (showName) ...[
@@ -109,6 +61,69 @@ class AppLogo extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// The ProFinder "PF" mark on its own (glow ring + filled circle + P/F initials).
+/// Single source of truth: [AppLogo] (splash/login) and the role AppBars
+/// (guest/customer/professional/admin) all render this exact widget.
+class AppLogoMark extends StatelessWidget {
+  final double size;
+  final bool   inverted;
+
+  const AppLogoMark({super.key, this.size = 90, this.inverted = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width:  size,
+      height: size,
+      decoration: BoxDecoration(
+        color: inverted
+            ? AppColors.white.withOpacity(0.15)
+            : context.colors.primary.withOpacity(0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        // Inner circle with PF initials
+        child: Container(
+          width:  size * 0.72,
+          height: size * 0.72,
+          decoration: BoxDecoration(
+            color: inverted ? AppColors.white : context.colors.primary,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'P',
+                    style: TextStyle(
+                      fontSize:   size * 0.28,
+                      fontWeight: FontWeight.bold,
+                      color:      inverted
+                          ? context.colors.primary
+                          : AppColors.white,
+                      height: 1,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'F',
+                    style: TextStyle(
+                      fontSize:   size * 0.28,
+                      fontWeight: FontWeight.bold,
+                      color:      context.colors.accent,
+                      height:     1,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

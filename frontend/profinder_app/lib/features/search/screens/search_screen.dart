@@ -1,6 +1,7 @@
 // lib/features/search/screens/search_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -790,6 +791,11 @@ class _SearchScreenState extends State<SearchScreen>
     final barHeight = ResponsiveUtils.sp(44, scale, min: 42, max: 54);
     return Scaffold(
       backgroundColor: context.colors.background,
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.navSearch,
+        icon: Icons.search_rounded,
+        onBack: widget.onBackWhenEmbedded,
+      ),
       body: SafeArea(
         child: Column(children: [
           // ── Search Bar ─────────────────────────────────────────────
@@ -798,24 +804,6 @@ class _SearchScreenState extends State<SearchScreen>
             padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 0),
             child: Column(children: [
               Row(children: [
-                GestureDetector(
-                  // ✅ FIX: pop when there's a real route to pop (SearchScreen
-                  // pushed standalone); otherwise fall back to the caller's
-                  // onBackWhenEmbedded callback (e.g. switch to Home tab)
-                  // when embedded as a bottom-nav tab. Never blindly calls
-                  // Navigator.pop() — that was popping the app's root route
-                  // and causing a white screen for the Guest Search tab.
-                  onTap: () {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    } else {
-                      widget.onBackWhenEmbedded?.call();
-                    }
-                  },
-                  child: Icon(Icons.arrow_back_ios_new_rounded,
-                      size: ResponsiveUtils.sp(20, scale, min: 18, max: 24), color: context.colors.textPrimary),
-                ),
-                SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 14)),
                 Expanded(
                   child: Container(
                     height: barHeight,

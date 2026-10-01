@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
@@ -299,22 +300,15 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.certificatesTitle,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: context.colors.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.certificatesTitle,
+        icon: Icons.workspace_premium_rounded,
         actions: [
-          IconButton(
-            icon: Icon(Icons.add_circle_outline_rounded, color: AppColors.professionalColor),
-            onPressed: _showAddSheet,
+          AppBarIconButton(
+            icon: Icons.add_rounded,
             tooltip: AppLocalizations.of(context)!.addCertificateTooltip,
+            onGradient: true,
+            onPressed: _showAddSheet,
           ),
         ],
       ),

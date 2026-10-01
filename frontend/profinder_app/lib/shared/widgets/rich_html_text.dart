@@ -59,11 +59,23 @@ class RichHtmlText extends StatelessWidget {
         final liPattern = RegExp(r'<li[^>]*>(.*?)</li>', caseSensitive: false, dotAll: true);
         final items = liPattern.allMatches(inner).map((m) => m.group(1)!.trim()).toList();
         blocks.add(_Block('ul', items.join('\u0000')));
-      } else if (inner.isNotEmpty) {
+      } else if (_hasVisibleText(inner)) {
+        // Rich-text editors often leave empty paragraphs like <p><br></p> or
+        // <p>&nbsp;</p>; they used to render as blank lines (big white gaps).
         blocks.add(_Block(tag, inner));
       }
     }
     return blocks;
+  }
+
+  /// True if [html] contains anything a reader would actually see.
+  bool _hasVisibleText(String html) {
+    final text = html
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '')
+        .replaceAll(RegExp(r'&nbsp;|&#160;', caseSensitive: false), '')
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .trim();
+    return text.isNotEmpty;
   }
 
   // ── Block rendering ─────────────────────────────────────────────────────

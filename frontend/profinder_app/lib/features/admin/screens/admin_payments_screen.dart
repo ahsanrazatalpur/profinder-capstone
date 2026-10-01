@@ -11,6 +11,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminPaymentsScreen extends StatefulWidget {
   const AdminPaymentsScreen({super.key});
@@ -82,10 +83,16 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Payments',
+        subtitle: 'Rs ${total.toStringAsFixed(0)} shown',
+        icon: Icons.payments_rounded,
+        showBack: false,
+      ),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            _header(total),
             _searchAndFilters(),
             Expanded(
               child: _loading
@@ -109,33 +116,6 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
       ),
     );
   }
-
-  Widget _header(double total) => Container(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-              begin: Alignment.topLeft, end: Alignment.bottomRight),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40, height: 40,
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
-              child: const Icon(Icons.payments_rounded, color: Colors.white, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Payments', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-                  Text('Rs ${total.toStringAsFixed(0)} shown', style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.85))),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
 
   Widget _searchAndFilters() => Container(
         color: Colors.white,

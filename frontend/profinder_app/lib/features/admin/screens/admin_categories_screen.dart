@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 // Content is centered and width-capped on tablet/desktop so rows of text
 // don't stretch uncomfortably wide on large screens.
@@ -77,10 +78,23 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Categories',
+        icon: Icons.category_rounded,
+        showBack: false,
+        actions: [
+          AppBarIconButton(
+            icon: Icons.add_circle_rounded,
+            tooltip: _tabController.index == 1 ? 'Add Subcategory' : 'Add Category',
+            onPressed: () => _tabController.index == 1 ? _showSubcategoryDialog() : _showCategoryDialog(),
+            onGradient: true,
+          ),
+        ],
+      ),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
-            _buildHeader(),
             Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -120,39 +134,6 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    final onSubcategoriesTab = _tabController.index == 1;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft, end: Alignment.bottomRight,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40, height: 40,
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.category_rounded, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text('Categories',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-          ),
-          _HoverIconButton(
-            icon: Icons.add_circle_rounded,
-            tooltip: onSubcategoriesTab ? 'Add Subcategory' : 'Add Category',
-            onPressed: () => onSubcategoriesTab ? _showSubcategoryDialog() : _showCategoryDialog(),
-            color: Colors.white,
-          ),
-        ],
       ),
     );
   }

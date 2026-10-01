@@ -15,6 +15,7 @@ import '../../../services/about_page_service.dart';
 import '../../../shared/widgets/about_image_picker_field.dart';
 import '../../about/models/about_page_model.dart';
 import 'admin_about_page_screen.dart' show suggestIconKeyForType;
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminAboutSectionItemsScreen extends StatefulWidget {
   final AboutSection section;
@@ -135,12 +136,9 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
     final label = widget.section.title.isNotEmpty ? widget.section.title : widget.section.sectionKey;
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.adminColor,
-        elevation: 0,
-        scrolledUnderElevation: 2,
-        title: Text('Items — $label',
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+      appBar: UniversalAppBar(
+        title: 'Items — $label',
+        icon: Icons.list_alt_rounded,
       ),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'about_page_add_item_fab',

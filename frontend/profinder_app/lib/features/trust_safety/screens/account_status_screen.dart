@@ -7,6 +7,7 @@
 // appeals and lets them submit a new one for an eligible action.
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
@@ -80,22 +81,9 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          t.myTsAccountStatusTitle,
-          style: TextStyle(
-            fontSize: isTablet ? 18.0 : 16.0,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-            letterSpacing: -0.3,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: context.colors.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: t.myTsAccountStatusTitle,
+        icon: Icons.verified_user_rounded,
       ),
       body: _loading
           ? Center(

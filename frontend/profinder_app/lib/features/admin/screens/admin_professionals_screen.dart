@@ -17,6 +17,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 enum _StatusFilter { all, verified, unverified, banned }
 enum _SortOption { ratingHigh, bookingsHigh, nameAsc, dateNew }
@@ -382,20 +383,13 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
 
   // ── AppBar ────────────────────────────────────────────────
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.adminColor,
-      elevation: 0,
-      title: const Row(
-        children: [
-          Icon(Icons.work_rounded, color: Colors.white, size: 20),
-          SizedBox(width: 8),
-          Text('Professionals',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
-        ],
-      ),
+    return UniversalAppBar(
+      title: 'Professionals',
+      icon: Icons.work_rounded,
+      showBack: false,
       actions: [
-        PopupMenuButton<_SortOption>(
-          icon: const Icon(Icons.sort_rounded, color: Colors.white),
+        AppBarPopupButton<_SortOption>(
+          icon: Icons.sort_rounded,
           tooltip: 'Sort',
           onSelected: (v) {
             setState(() => _sortOption = v);
@@ -408,22 +402,17 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
             PopupMenuItem(value: _SortOption.dateNew,      child: Text('Newest First')),
           ],
         ),
-        IconButton(
-          icon: Icon(_selectionMode ? Icons.close_rounded : Icons.checklist_rounded,
-              color: Colors.white),
+        const SizedBox(width: 8),
+        AppBarIconButton(
+          icon: _selectionMode ? Icons.close_rounded : Icons.checklist_rounded,
           tooltip: _selectionMode ? 'Cancel selection' : 'Select multiple',
           onPressed: _toggleSelectionMode,
+          onGradient: true,
         ),
-        IconButton(
-          icon: const Icon(Icons.download_rounded, color: Colors.white),
-          tooltip: 'Export',
-          onPressed: _exportCsv,
-        ),
-        IconButton(
-          icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-          onPressed: _load,
-          tooltip: 'Refresh',
-        ),
+        const SizedBox(width: 8),
+        AppBarIconButton(icon: Icons.download_rounded, tooltip: 'Export', onPressed: _exportCsv, onGradient: true),
+        const SizedBox(width: 8),
+        AppBarIconButton(icon: Icons.refresh_rounded, tooltip: 'Refresh', onPressed: _load, onGradient: true),
       ],
     );
   }

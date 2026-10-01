@@ -11,6 +11,7 @@
 // single call — the UI below won't need to change, only `_load()`.
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
@@ -90,26 +91,9 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.myReviewsTitle,
-          style: TextStyle(
-            fontSize: isTablet ? 18.0 : 16.0,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-            letterSpacing: -0.3,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: context.colors.textPrimary,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.myReviewsTitle,
+        icon: Icons.star_rounded,
       ),
       body: _loading
           ? Center(

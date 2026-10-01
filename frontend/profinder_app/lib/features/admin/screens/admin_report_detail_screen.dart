@@ -9,6 +9,7 @@ import '../models/ts_models.dart';
 import '../services/trust_safety_service.dart';
 import '../widgets/report_detail_panel.dart';
 import '../widgets/ts_ui.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminReportDetailScreen extends StatelessWidget {
   final TsReport report;
@@ -31,19 +32,9 @@ class AdminReportDetailScreen extends StatelessWidget {
     final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: TsColors.bg,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: TsColors.textPrimary,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          l.tsReportNumber(report.id.toString()),
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-        ),
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: TsColors.border),
-        ),
+      appBar: UniversalAppBar(
+        title: l.tsReportNumber(report.id.toString()),
+        icon: Icons.flag_rounded,
       ),
       body: SafeArea(
         top: false,

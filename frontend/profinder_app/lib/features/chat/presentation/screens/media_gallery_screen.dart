@@ -7,6 +7,7 @@ import '../../data/repositories/chat_repository_impl.dart';
 import '../../domain/repositories/chat_repository.dart' show MediaAttachmentEntity;
 import '../../../../core/theme/theme_context_ext.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../shared/widgets/universal_app_bar.dart';
 
 class MediaGalleryScreen extends StatefulWidget {
   final int conversationId;
@@ -46,10 +47,9 @@ class _MediaGalleryScreenState extends State<MediaGalleryScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text(t.chatSharedMedia, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+      appBar: UniversalAppBar(
+        title: t.chatSharedMedia,
+        icon: Icons.photo_library_rounded,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

@@ -23,6 +23,7 @@ import '../widgets/change_password_dialog.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../shared/widgets/profile_header_card.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../about/screens/about_screen.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../trust_safety/screens/my_reports_screen.dart';
@@ -412,20 +413,11 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
   }
 
   PreferredSizeWidget _buildAppBar(AuthProvider auth, bool isDark, bool isTablet, bool isDesktop) {
-    return AppBar(
-      backgroundColor: context.colors.surface,
-      elevation: 0,
-      leadingWidth: isDesktop ? 60 : null,
-      leading: isDesktop ? const SizedBox(width: 8) : null,
-      title: Text(
-        AppLocalizations.of(context)!.profileTitle,
-        style: TextStyle(
-          fontSize: isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0),
-          fontWeight: FontWeight.w700,
-          color: context.colors.textPrimary,
-          letterSpacing: -0.3,
-        ),
-      ),
+    final t = AppLocalizations.of(context)!;
+    final actionSize = isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0);
+    return UniversalAppBar(
+      title: t.profileTitle,
+      icon: Icons.person_rounded,
       actions: [
         if (!_isEditing)
           TextButton.icon(
@@ -433,14 +425,14 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             icon: Icon(
               Icons.edit_outlined,
               size: isDesktop ? 20.0 : 16.0,
-              color: AppColors.professionalColor,
+              color: Colors.white,
             ),
             label: Text(
-              AppLocalizations.of(context)!.editCta,
+              t.editCta,
               style: TextStyle(
-                color: AppColors.professionalColor,
+                color: Colors.white,
                 fontWeight: FontWeight.w600,
-                fontSize: isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0),
+                fontSize: actionSize,
                 letterSpacing: 0.2,
               ),
             ),
@@ -449,10 +441,10 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
           TextButton(
             onPressed: _isSaving ? null : _cancelEdit,
             child: Text(
-              AppLocalizations.of(context)!.cancelCta,
+              t.cancelCta,
               style: TextStyle(
-                color: isDark ? Colors.grey[400] : Colors.grey[600],
-                fontSize: isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0),
+                color: Colors.white.withOpacity(0.8),
+                fontSize: actionSize,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -463,9 +455,9 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               child: SizedBox(
                 width: isDesktop ? 22.0 : 18.0,
                 height: isDesktop ? 22.0 : 18.0,
-                child: CircularProgressIndicator(
+                child: const CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: AppColors.professionalColor,
+                  color: Colors.white,
                 ),
               ),
             )
@@ -473,11 +465,11 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             TextButton(
               onPressed: _saveProfile,
               child: Text(
-                AppLocalizations.of(context)!.saveCta,
+                t.saveCta,
                 style: TextStyle(
-                  color: AppColors.professionalColor,
+                  color: Colors.white,
                   fontWeight: FontWeight.w700,
-                  fontSize: isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0),
+                  fontSize: actionSize,
                   letterSpacing: 0.2,
                 ),
               ),

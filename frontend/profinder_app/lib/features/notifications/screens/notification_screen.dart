@@ -14,6 +14,7 @@
 // stays consistent no matter what the backend sends.
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/api_service.dart';
@@ -315,94 +316,28 @@ class _NotificationScreenState extends State<NotificationScreen> {
   PreferredSizeWidget _buildAppBar() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return AppBar(
-      backgroundColor: context.colors.surface,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      titleSpacing: 0,
-      title: Row(
-        children: [
-          Text(
-            AppLocalizations.of(context)!.notificationsTitle,
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.2,
-              color: context.colors.textPrimary,
-            ),
-          ),
-          if (_unreadCount > 0) ...[
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-              constraints: const BoxConstraints(minWidth: 20),
-              decoration: BoxDecoration(
-                color: AppColors.error,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.error.withOpacity(0.3),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-              child: Text(
-                '$_unreadCount',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-      leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back_ios_new_rounded,
-          size: 20,
-          color: context.colors.textPrimary,
-        ),
-        onPressed: () => Navigator.pop(context),
-      ),
+    return UniversalAppBar(
+      title: AppLocalizations.of(context)!.notificationsTitle,
+      icon: Icons.notifications_rounded,
       actions: [
-        if (_unreadCount > 0)
-          TextButton(
+        if (_unreadCount > 0) ...[
+          AppBarIconButton(
+            icon: Icons.done_all_rounded,
+            tooltip: AppLocalizations.of(context)!.notificationsMarkAllReadCta,
+            badgeCount: _unreadCount,
+            onGradient: true,
+            badgeBorderColor: universalBarColor(context),
             onPressed: _markAllRead,
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.customerColor,
-            ),
-            child: Text(
-              AppLocalizations.of(context)!.notificationsMarkAllReadCta,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.2,
-              ),
-            ),
           ),
-        IconButton(
-          icon: Icon(
-            Icons.refresh_rounded,
-            color: context.colors.textSecondary,
-            size: 21,
-          ),
+          const SizedBox(width: 8),
+        ],
+        AppBarIconButton(
+          icon: Icons.refresh_rounded,
+          tooltip: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
+          onGradient: true,
           onPressed: _load,
         ),
-        const SizedBox(width: 4),
       ],
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1),
-        child: Container(
-          height: 1,
-          color: isDark
-              ? Colors.white.withOpacity(0.06)
-              : context.colors.divider,
-        ),
-      ),
     );
   }
 

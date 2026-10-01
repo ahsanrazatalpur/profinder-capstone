@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminComplaintsScreen extends StatefulWidget {
   const AdminComplaintsScreen({super.key});
@@ -124,7 +125,13 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Complaints',
+        icon: Icons.report_problem_rounded,
+        showBack: false,
+      ),
       body: SafeArea(
+        top: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth;
@@ -133,7 +140,6 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
 
             return Column(
               children: [
-                const _Header(),
                 _FilterBar(
                   statuses: _statuses,
                   activeKey: _statusFilter,
@@ -204,40 +210,6 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-}
-
-/// Gradient app header — title only, no dynamic content.
-class _Header extends StatelessWidget {
-  const _Header();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 20, 20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [BoxShadow(color: Color(0x33991B1B), blurRadius: 14, offset: Offset(0, 6))],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(9),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.16), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.report_problem_rounded, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 10),
-          const Expanded(
-            child: Text('Complaints',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 0.1)),
-          ),
-        ],
       ),
     );
   }

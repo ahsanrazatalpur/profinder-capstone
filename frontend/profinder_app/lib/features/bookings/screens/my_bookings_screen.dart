@@ -1,6 +1,7 @@
 // lib/features/bookings/screens/my_bookings_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/booking_service.dart';
@@ -166,33 +167,20 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        toolbarHeight: 52,
-        title: Text(
-          AppLocalizations.of(context)!.myBookings,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.3,
-            color: context.colors.textPrimary,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              size: 18, color: context.colors.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.myBookings,
+        icon: Icons.calendar_month_rounded,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(44),
           child: TabBar(
             controller: _tabController,
-            labelColor: context.colors.primary,
-            unselectedLabelColor: context.colors.textSecondary,
-            indicatorColor: context.colors.primary,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white.withOpacity(0.7),
+            indicatorColor: Colors.white,
+            dividerColor: Colors.transparent,
             indicatorWeight: 2.4,
             isScrollable: true,
+            tabAlignment: TabAlignment.start,
             labelPadding: const EdgeInsets.symmetric(horizontal: 14),
             labelStyle:
                 const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),

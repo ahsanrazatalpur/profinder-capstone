@@ -1,6 +1,7 @@
 // lib/features/professional/screens/professional_analytics_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/responsive_utils.dart';
@@ -64,32 +65,16 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        leadingWidth: isDesktop ? 60 : null,
-        leading: isDesktop ? const SizedBox(width: 8) : null,
-        title: Text(
-          AppLocalizations.of(context)!.analyticsTitle,
-          style: TextStyle(
-            fontSize: isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0),
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-            letterSpacing: -0.3,
-          ),
-        ),
-        centerTitle: false,
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.analyticsTitle,
+        icon: Icons.insights_rounded,
         actions: [
-          IconButton(
-            onPressed: _load,
-            icon: Icon(
-              Icons.refresh_rounded,
-              color: context.colors.textSecondary,
-              size: isDesktop ? 24.0 : 20.0,
-            ),
+          AppBarIconButton(
+            icon: Icons.refresh_rounded,
             tooltip: AppLocalizations.of(context)!.refreshTooltip,
+            onGradient: true,
+            onPressed: _load,
           ),
-          const SizedBox(width: 8),
         ],
       ),
       body: _isLoading
@@ -284,6 +269,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
       curve: Curves.easeOut,
       width: double.infinity,
       padding: EdgeInsets.all(padding),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -293,97 +279,89 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0)),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(isDark ? 0.3 : 0.2),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: color.withOpacity(isDark ? 0.15 : 0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(18),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.analytics_rounded,
-                color: Colors.white.withOpacity(0.3),
-                size: isDesktop ? 28.0 : (isTablet ? 24.0 : 20.0),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                AppLocalizations.of(context)!.performanceScoreLabel,
-                style: TextStyle(
-                  fontSize: isDesktop ? 16.0 : (isTablet ? 14.0 : 13.0),
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                  letterSpacing: 0.3,
+      child: Stack(clipBehavior: Clip.none, children: [
+        Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)))),
+        Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.analytics_rounded,
+                  color: Colors.white.withOpacity(0.3),
+                  size: isDesktop ? 28.0 : (isTablet ? 24.0 : 20.0),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            score.toStringAsFixed(0),
-            style: TextStyle(
-              fontSize: scoreSize,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: -1,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            AppLocalizations.of(context)!.performanceScoreOutOf(score.toStringAsFixed(0)),
-            style: TextStyle(
-              fontSize: isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0),
-              color: Colors.white.withOpacity(0.8),
-              fontWeight: FontWeight.w400,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: score / 100,
-              minHeight: isDesktop ? 10.0 : (isTablet ? 8.0 : 7.0),
-              backgroundColor: Colors.white.withOpacity(0.2),
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '0',
-                style: TextStyle(
-                  fontSize: isDesktop ? 11.0 : 10.0,
-                  color: Colors.white.withOpacity(0.5),
-                  fontWeight: FontWeight.w400,
+                const SizedBox(width: 10),
+                Text(
+                  AppLocalizations.of(context)!.performanceScoreLabel,
+                  style: TextStyle(
+                    fontSize: isDesktop ? 16.0 : (isTablet ? 14.0 : 13.0),
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    letterSpacing: 0.3,
+                  ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              score.toStringAsFixed(0),
+              style: TextStyle(
+                fontSize: scoreSize,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+                letterSpacing: -1,
               ),
-              Text(
-                '100',
-                style: TextStyle(
-                  fontSize: isDesktop ? 11.0 : 10.0,
-                  color: Colors.white.withOpacity(0.5),
-                  fontWeight: FontWeight.w400,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              AppLocalizations.of(context)!.performanceScoreOutOf(score.toStringAsFixed(0)),
+              style: TextStyle(
+                fontSize: isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0),
+                color: Colors.white.withOpacity(0.8),
+                fontWeight: FontWeight.w400,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: score / 100,
+                minHeight: isDesktop ? 10.0 : (isTablet ? 8.0 : 7.0),
+                backgroundColor: Colors.white.withOpacity(0.2),
+                valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '0',
+                  style: TextStyle(
+                    fontSize: isDesktop ? 11.0 : 10.0,
+                    color: Colors.white.withOpacity(0.5),
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
+                Text(
+                  '100',
+                  style: TextStyle(
+                    fontSize: isDesktop ? 11.0 : 10.0,
+                    color: Colors.white.withOpacity(0.5),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ]),
     );
   }
 

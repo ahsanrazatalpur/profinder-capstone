@@ -7,6 +7,7 @@
 // list the caller already fetched.
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/professional_card.dart';
@@ -185,19 +186,9 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        scrolledUnderElevation: 1,
-        surfaceTintColor: context.colors.surface,
-        title: Text(widget.title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700,
-                letterSpacing: -0.2, color: context.colors.textPrimary)),
-        centerTitle: false,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: context.colors.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: widget.title,
+        icon: Icons.groups_rounded,
       ),
       body: Column(
         children: [

@@ -11,6 +11,7 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
 class ProfessionalPortfolioScreen extends StatefulWidget {
@@ -294,22 +295,15 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.myPortfolioTitle,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: context.colors.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.myPortfolioTitle,
+        icon: Icons.collections_rounded,
         actions: [
-          IconButton(
-            icon: Icon(Icons.add_circle_outline_rounded, color: AppColors.professionalColor),
-            onPressed: _showAddSheet,
+          AppBarIconButton(
+            icon: Icons.add_rounded,
             tooltip: AppLocalizations.of(context)!.addPortfolioTooltip,
+            onGradient: true,
+            onPressed: _showAddSheet,
           ),
         ],
       ),

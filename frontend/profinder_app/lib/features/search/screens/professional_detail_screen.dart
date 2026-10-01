@@ -22,6 +22,7 @@
 // no new field is invented.
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_strings.dart';
@@ -404,25 +405,24 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       expandedHeight: expandedHeight,
       pinned: true,
       backgroundColor: context.colors.primary,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-        onPressed: () => Navigator.pop(context),
+      leadingWidth: 66,
+      leading: const Padding(
+        padding: EdgeInsets.only(left: 12),
+        child: Center(child: UniversalBackButton()),
       ),
-      // ✅ Save moved here — a single bookmark icon in the AppBar instead
-      // of taking up space as a button row inside the page.
+      // Save = single bookmark glass tile in the bar
       actions: [
-        IconButton(
-          onPressed: _toggleFavorite,
-          icon: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: Icon(
-              _isFavorite ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-              key: ValueKey<bool>(_isFavorite),
-              color: Colors.white,
+        Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: Center(
+            child: AppBarIconButton(
+              icon: _isFavorite ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+              tooltip: AppLocalizations.of(context)!.save,
+              onGradient: true,
+              onPressed: _toggleFavorite,
             ),
           ),
         ),
-        const SizedBox(width: 4),
       ],
       flexibleSpace: FlexibleSpaceBar(
         background: Container(

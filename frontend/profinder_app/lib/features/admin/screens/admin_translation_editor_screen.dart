@@ -14,6 +14,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminTranslationEditorScreen extends StatefulWidget {
   final dynamic language;
@@ -217,6 +218,33 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
       },
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F7FA),
+        appBar: UniversalAppBar(
+          title: 'Translate — ${widget.language['name']?.toString() ?? ''}',
+          subtitle: '${_rows.length} keys · ${_dirtyKeyIds.length} unsaved',
+          icon: Icons.translate_rounded,
+          // Keep the existing "discard unsaved changes?" confirmation.
+          onBackPressed: () async {
+            if (await _confirmDiscard() && mounted) Navigator.pop(context);
+          },
+          actions: [
+            if (_dirtyKeyIds.isNotEmpty)
+              _saving
+                  ? const SizedBox(
+                      width: 42,
+                      height: 42,
+                      child: Padding(
+                        padding: EdgeInsets.all(11),
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      ),
+                    )
+                  : AppBarIconButton(
+                      icon: Icons.save_rounded,
+                      tooltip: 'Save',
+                      onPressed: _save,
+                      onGradient: true,
+                    ),
+          ],
+        ),
         floatingActionButton: FloatingActionButton.extended(
           backgroundColor: AppColors.adminColor,
           onPressed: _addKeyDialog,
@@ -224,9 +252,9 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
           label: const Text('Add Key', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
         ),
         body: SafeArea(
+          top: false,
           child: Column(
             children: [
-              _buildHeader(),
               _buildSearch(),
               Expanded(
                 child: _loading
@@ -245,57 +273,6 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    final name = widget.language['name']?.toString() ?? '';
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-            onPressed: () async {
-              if (await _confirmDiscard() && mounted) Navigator.pop(context);
-            },
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Translate — $name',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-                Text('${_rows.length} keys · ${_dirtyKeyIds.length} unsaved',
-                    style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.85))),
-              ],
-            ),
-          ),
-          if (_dirtyKeyIds.isNotEmpty)
-            _saving
-                ? const Padding(
-                    padding: EdgeInsets.all(8),
-                    child: SizedBox(
-                        width: 18, height: 18,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)),
-                  )
-                : TextButton(
-                    onPressed: _save,
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.2),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-                  ),
-        ],
       ),
     );
   }

@@ -5,6 +5,7 @@
 // the user clearly what's coming.
 
 import 'package:flutter/material.dart';
+import '../../shared/widgets/universal_app_bar.dart';
 import '../theme/app_colors.dart';
 import '../theme/theme_context_ext.dart';
 
@@ -24,11 +25,9 @@ class ComingSoonScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Color(0xFF374151)), onPressed: () => Navigator.pop(context)),
+      appBar: UniversalAppBar(
+        title: title,
+        icon: icon,
       ),
       body: Center(
         child: Padding(

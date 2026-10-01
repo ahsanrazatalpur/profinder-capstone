@@ -8,6 +8,7 @@
 // AboutPageContent so the admin Preview screen can reuse it byte-for-byte.
 
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -61,26 +62,9 @@ class _AboutScreenState extends State<AboutScreen> {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.aboutTitle,
-          style: TextStyle(
-            fontSize: isTablet ? 18.0 : 16.0,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-            letterSpacing: -0.3,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: context.colors.textPrimary,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
+      appBar: UniversalAppBar(
+        title: AppLocalizations.of(context)!.aboutTitle,
+        icon: Icons.info_outline_rounded,
       ),
       body: _buildBody(isDark, isTablet),
     );
@@ -117,13 +101,17 @@ class _AboutScreenState extends State<AboutScreen> {
     if (_error != null || _data == null) {
       return _errorState(isDark, isTablet);
     }
-    if (_data!.sections.isEmpty) {
+    // The page title now lives in the universal app bar, so the old blue
+    // "About Us" hero banner section is skipped here (admin preview keeps it).
+    final sections =
+        _data!.sections.where((s) => s.sectionType != 'hero_banner').toList();
+    if (sections.isEmpty) {
       return _emptyState(isDark, isTablet);
     }
     return RefreshIndicator(
       onRefresh: _load,
       color: AppColors.customerColor,
-      child: AboutPageContent(sections: _data!.sections),
+      child: AboutPageContent(sections: sections),
     );
   }
 

@@ -20,6 +20,7 @@ import '../models/ts_models.dart';
 import '../services/trust_safety_service.dart';
 import '../widgets/ts_reason_dialog.dart';
 import '../widgets/ts_ui.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminAppealsScreen extends StatefulWidget {
   const AdminAppealsScreen({super.key});
@@ -128,8 +129,23 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final pending = _all.where((a) => a.isPending).length;
     return Scaffold(
       backgroundColor: TsColors.bg,
+      appBar: UniversalAppBar(
+        title: l.tsAppealsTitle,
+        subtitle: l.tsPendingAppeals(pending.toString()),
+        icon: Icons.gavel_rounded,
+        showBack: false,
+        actions: [
+          AppBarIconButton(
+            icon: Icons.refresh_rounded,
+            tooltip: l.tsRefresh,
+            onPressed: () { if (!_loading) _load(); },
+            onGradient: true,
+          ),
+        ],
+      ),
       body: LayoutBuilder(
         builder: (context, c) {
           final split = c.maxWidth >= _splitBreakpoint;
@@ -169,7 +185,6 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
   }
 
   Widget _buildListColumn(AppLocalizations l, bool split, double width) {
-    final pending = _all.where((a) => a.isPending).length;
     final hPad = split ? 14.0 : (width >= 700 ? 24.0 : 12.0);
     final base = _apply(ignoreStatus: true);
     int countFor(String? s) =>
@@ -177,14 +192,6 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
 
     return Column(
       children: [
-        TsScreenHeader(
-          icon: Icons.gavel_rounded,
-          title: l.tsAppealsTitle,
-          subtitle: l.tsPendingAppeals(pending.toString()),
-          dotColor: pending > 0 ? Colors.amber : Colors.greenAccent,
-          onRefresh: _loading ? null : () => _load(),
-          refreshTooltip: l.tsRefresh,
-        ),
         Container(
           color: Colors.white,
           padding: const EdgeInsets.only(top: 10, bottom: 10),
@@ -475,19 +482,9 @@ class _AppealDetailScreen extends StatelessWidget {
     final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: TsColors.bg,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: TsColors.textPrimary,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          l.tsAppealNumber(appeal.id.toString()),
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-        ),
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, color: TsColors.border),
-        ),
+      appBar: UniversalAppBar(
+        title: l.tsAppealNumber(appeal.id.toString()),
+        icon: Icons.gavel_rounded,
       ),
       body: SafeArea(
         top: false,

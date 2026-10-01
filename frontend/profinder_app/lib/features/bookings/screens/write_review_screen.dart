@@ -16,6 +16,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import '../../../core/theme/app_colors.dart';
@@ -188,26 +189,10 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        backgroundColor: context.colors.surface,
-        elevation: 0,
-        title: Text(
-          widget.isEditMode ? AppLocalizations.of(context)!.editReviewTitle : AppLocalizations.of(context)!.writeReviewTitle,
-          style: TextStyle(
-            fontSize: isTablet ? 18.0 : 16.0,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-            letterSpacing: -0.3,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: context.colors.textPrimary,
-          ),
-          onPressed: () => Navigator.pop(context, _submitted),
-        ),
+      appBar: UniversalAppBar(
+        title: widget.isEditMode ? AppLocalizations.of(context)!.editReviewTitle : AppLocalizations.of(context)!.writeReviewTitle,
+        icon: Icons.rate_review_rounded,
+        onBackPressed: () => Navigator.pop(context, _submitted),
       ),
       body: _submitted ? _buildSuccessState(isDark, isTablet) : _buildForm(isDark, isTablet),
     );

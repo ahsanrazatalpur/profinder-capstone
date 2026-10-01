@@ -10,6 +10,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
+import '../../../shared/widgets/universal_app_bar.dart';
 
 class AdminRevenueScreen extends StatefulWidget {
   const AdminRevenueScreen({super.key});
@@ -52,7 +53,13 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      appBar: UniversalAppBar(
+        title: 'Revenue',
+        icon: Icons.trending_up_rounded,
+        showBack: false,
+      ),
       body: SafeArea(
+        top: false,
         child: _loading
             ? const Center(child: CircularProgressIndicator(color: AppColors.adminColor))
             : _error != null
@@ -66,7 +73,7 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _header(),
+                          _rangeSelector(),
                           const SizedBox(height: 16),
                           _summaryCard(),
                           const SizedBox(height: 16),
@@ -82,39 +89,32 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
     );
   }
 
-  Widget _header() => Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [AppColors.adminColor, Color(0xFFB91C1C)],
-              begin: Alignment.topLeft, end: Alignment.bottomRight),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.trending_up_rounded, color: Colors.white, size: 22),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Text('Revenue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-            ),
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                children: _ranges.map((d) {
-                  final isActive = _rangeDays == d;
-                  return GestureDetector(
-                    onTap: () { if (_rangeDays != d) { setState(() => _rangeDays = d); _load(); } },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(color: isActive ? Colors.white : Colors.transparent, borderRadius: BorderRadius.circular(8)),
-                      child: Text('${d}D', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-                          color: isActive ? AppColors.adminColor : Colors.white)),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ],
+  Widget _rangeSelector() => Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: AppColors.adminColor.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: _ranges.map((d) {
+              final isActive = _rangeDays == d;
+              return GestureDetector(
+                onTap: () { if (_rangeDays != d) { setState(() => _rangeDays = d); _load(); } },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                  decoration: BoxDecoration(
+                    color: isActive ? AppColors.adminColor : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text('${d}D', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
+                      color: isActive ? Colors.white : AppColors.adminColor)),
+                ),
+              );
+            }).toList(),
+          ),
         ),
       );
 
