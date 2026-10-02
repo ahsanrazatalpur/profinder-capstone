@@ -166,7 +166,7 @@ class _ProfessionalBookingConfigurationScreenState
           keyboardType: TextInputType.number,
           autofocus: true,
           decoration: InputDecoration(
-            labelText: AppLocalizations.of(context)!.minutesLabel,
+            labelText: AppLocalizations.of(context)!.minute,
             hintText: AppLocalizations.of(context)!.customSlotHint,
             border: const OutlineInputBorder(),
           ),
