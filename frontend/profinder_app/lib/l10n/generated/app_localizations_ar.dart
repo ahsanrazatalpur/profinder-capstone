@@ -3142,3144 +3142,3156 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chatReasonOther => 'أخرى';
 
   @override
-  String get aboutActionLabel => 'About';
+  String get aboutActionLabel => 'حول';
 
   @override
-  String get aboutActionSubtitle => 'About this app';
+  String get aboutActionSubtitle => 'حول هذا التطبيق';
 
   @override
   String get aboutAppStoreLabel => 'App Store';
 
   @override
-  String get aboutDisabledBadgeLabel => 'Unavailable';
+  String get aboutDisabledBadgeLabel => 'غير متاح';
 
   @override
   String get aboutEmptyStateMessage =>
-      'We couldn\'t find any information to show right now.';
+      'لم نتمكن من العثور على أي معلومات لعرضها الآن.';
 
   @override
-  String get aboutEmptyStateTitle => 'Nothing to Show';
+  String get aboutEmptyStateTitle => 'لا يوجد ما يمكن عرضه';
 
   @override
   String get aboutGooglePlayLabel => 'Google Play';
 
   @override
-  String get aboutLabel => 'About';
+  String get aboutLabel => 'حول';
 
   @override
   String aboutLinkCouldNotOpen(Object value1) {
-    return 'Could not open this link $value1';
+    return 'تعذّر فتح هذا الرابط $value1';
   }
 
   @override
   String aboutLinkError(Object value1) {
-    return 'Something went wrong while opening the link $value1';
+    return 'حدث خطأ أثناء فتح الرابط $value1';
   }
 
   @override
   String aboutLinkNoAppFound(Object value1) {
-    return 'No app found to open this link $value1';
+    return 'لم يتم العثور على تطبيق لفتح هذا الرابط $value1';
   }
 
   @override
-  String get aboutLoadError => 'Failed to load this page';
+  String get aboutLoadError => 'فشل تحميل هذه الصفحة';
 
   @override
-  String get aboutLoadingText => 'Loading...';
+  String get aboutLoadingText => 'جارٍ التحميل...';
 
   @override
-  String get aboutTitle => 'About';
+  String get aboutTitle => 'حول';
 
   @override
-  String get acceptCta => 'Accept';
+  String get acceptCta => 'قبول';
 
   @override
-  String get acceptDescription => 'Accept this booking';
+  String get acceptDescription => 'قبول هذا الحجز';
 
   @override
-  String get acceptLabel => 'Accept';
+  String get acceptLabel => 'قبول';
 
   @override
-  String get acceptanceRateLabel => 'Acceptance Rate';
+  String get acceptanceRateLabel => 'معدل القبول';
 
   @override
-  String get acceptanceRateSubtext => 'Of bookings you accept';
+  String get acceptanceRateSubtext => 'من الحجوزات التي تقبلها';
 
   @override
-  String get acceptedLabel => 'Accepted';
+  String get acceptedLabel => 'مقبول';
 
   @override
-  String get acceptingBookingsLabel => 'Accepting Bookings';
+  String get acceptingBookingsLabel => 'استقبال الحجوزات';
 
   @override
-  String get accountGroupLabel => 'Account';
+  String get accountGroupLabel => 'الحساب';
 
   @override
-  String get accountHolderLabel => 'Account Holder Name';
+  String get accountHolderLabel => 'اسم صاحب الحساب';
 
   @override
-  String get accountNumberLabel => 'Account Number';
+  String get accountNumberLabel => 'رقم الحساب';
 
   @override
-  String get accountSectionLabel => 'Account';
+  String get accountSectionLabel => 'الحساب';
 
   @override
-  String get accountTypeLabel => 'Account Type';
+  String get accountTypeLabel => 'نوع الحساب';
 
   @override
   String get addBankBannerSubtitle =>
-      'Add your bank details to receive withdrawals';
+      'أضف بياناتك المصرفية لاستلام عمليات السحب';
 
   @override
-  String get addBankBannerTitle => 'Add Bank Details';
+  String get addBankBannerTitle => 'إضافة البيانات المصرفية';
 
   @override
-  String get addBankCta => 'Add Bank Account';
+  String get addBankCta => 'إضافة حساب مصرفي';
 
   @override
-  String get addCertificateImageLabel => 'Certificate Image';
+  String get addCertificateImageLabel => 'صورة الشهادة';
 
   @override
-  String get addCertificateTitle => 'Add Certificate';
+  String get addCertificateTitle => 'إضافة شهادة';
 
   @override
-  String get addCertificateTooltip => 'Add a certificate';
+  String get addCertificateTooltip => 'إضافة شهادة';
 
   @override
-  String get addCta => 'Add';
+  String get addCta => 'إضافة';
 
   @override
-  String get addFirstCertificateCta => 'Add Your First Certificate';
+  String get addFirstCertificateCta => 'أضف شهادتك الأولى';
 
   @override
-  String get addFirstItemCta => 'Add Your First Item';
+  String get addFirstItemCta => 'أضف عنصرك الأول';
 
   @override
-  String get addImageLabel => 'Add Image';
+  String get addImageLabel => 'إضافة صورة';
 
   @override
-  String get addLanguageHint => 'Type a language and press enter';
+  String get addLanguageHint => 'اكتب لغة واضغط على إدخال';
 
   @override
-  String get addPhotoCta => 'Add Photo';
+  String get addPhotoCta => 'إضافة صورة';
 
   @override
-  String get addPhotoTooltip => 'Add a photo';
+  String get addPhotoTooltip => 'إضافة صورة';
 
   @override
-  String get addPortfolioHint =>
-      'Showcase your best work to attract more customers';
+  String get addPortfolioHint => 'اعرض أفضل أعمالك لجذب المزيد من العملاء';
 
   @override
-  String get addPortfolioTitle => 'Add Portfolio Item';
+  String get addPortfolioTitle => 'إضافة عنصر إلى معرض الأعمال';
 
   @override
-  String get addPortfolioTooltip => 'Add portfolio item';
+  String get addPortfolioTooltip => 'إضافة عنصر إلى معرض الأعمال';
 
   @override
-  String get addSkillHint => 'Type a skill and press enter';
+  String get addSkillHint => 'اكتب مهارة واضغط على إدخال';
 
   @override
-  String get addWorkSamplesLabel => 'Add work samples';
+  String get addWorkSamplesLabel => 'إضافة نماذج من الأعمال';
 
   @override
-  String get adjustSearchTerms => 'Try adjusting your search terms';
+  String get adjustSearchTerms => 'جرّب تعديل كلمات البحث';
 
   @override
-  String get adminNoteLabel => 'Admin Note';
+  String get adminNoteLabel => 'ملاحظة المسؤول';
 
   @override
-  String get allCategoriesTitle => 'All Categories';
+  String get allCategoriesTitle => 'جميع الفئات';
 
   @override
-  String get analyticsErrorTitle => 'Couldn\'t load analytics';
+  String get analyticsErrorTitle => 'تعذّر تحميل التحليلات';
 
   @override
-  String get analyticsLoadError => 'Failed to load analytics';
+  String get analyticsLoadError => 'فشل تحميل التحليلات';
 
   @override
-  String get analyticsTitle => 'Analytics';
+  String get analyticsTitle => 'التحليلات';
 
   @override
-  String get applyCta => 'Apply';
+  String get applyCta => 'تطبيق';
 
   @override
-  String get approvalSubtitle => 'Pending admin approval';
+  String get approvalSubtitle => 'بانتظار موافقة المسؤول';
 
   @override
-  String get approvalTitle => 'Approval Status';
+  String get approvalTitle => 'حالة الموافقة';
 
   @override
-  String get articleFooterMagazineLabel => 'More from Magazine';
+  String get articleFooterMagazineLabel => 'المزيد من المجلة';
 
   @override
-  String get articleLoadingText => 'Loading article...';
+  String get articleLoadingText => 'جارٍ تحميل المقال...';
 
   @override
-  String get articleNotFoundError => 'Article not found';
+  String get articleNotFoundError => 'المقال غير موجود';
 
   @override
   String get articleNotFoundMessage =>
-      'This article may have been removed or doesn\'t exist';
+      'ربما تمت إزالة هذا المقال أو أنه غير موجود';
 
   @override
   String articleReadTime(Object value1) {
-    return '$value1 min read';
+    return '$value1 دقيقة للقراءة';
   }
 
   @override
   String articleReadTimeLabel(Object value1) {
-    return '$value1 min read';
+    return '$value1 دقيقة للقراءة';
   }
 
   @override
   String get automaticDescription =>
-      'Automatically accept bookings that meet your criteria';
+      'قبول الحجوزات التي تستوفي معاييرك تلقائيًا';
 
   @override
-  String get automaticLabel => 'Automatic';
+  String get automaticLabel => 'تلقائي';
 
   @override
-  String get availabilityClosedLabel => 'Closed';
+  String get availabilityClosedLabel => 'مغلق';
 
   @override
-  String get availabilityLabel => 'Availability';
+  String get availabilityLabel => 'التوفر';
 
   @override
-  String get availabilityLoadError => 'Failed to load availability';
+  String get availabilityLoadError => 'فشل تحميل التوفر';
 
   @override
-  String get availabilityOffSuccess => 'You\'re now marked as unavailable';
+  String get availabilityOffSuccess => 'تم تعيين حالتك الآن على غير متاح';
 
   @override
-  String get availabilityOnSuccess => 'You\'re now marked as available';
+  String get availabilityOnSuccess => 'تم تعيين حالتك الآن على متاح';
 
   @override
-  String get availabilityScheduleSaveError => 'Failed to save schedule';
+  String get availabilityScheduleSaveError => 'فشل حفظ الجدول';
 
   @override
-  String get availabilityScheduleSaved => 'Schedule saved successfully';
+  String get availabilityScheduleSaved => 'تم حفظ الجدول بنجاح';
 
   @override
-  String get availabilityStatusUpdateError =>
-      'Failed to update availability status';
+  String get availabilityStatusUpdateError => 'فشل تحديث حالة التوفر';
 
   @override
   String availabilityStatusUpdated(Object value1) {
-    return 'Availability set to $value1';
+    return 'تم تعيين التوفر إلى $value1';
   }
 
   @override
   String get availabilitySummarySubtitle =>
-      'Your weekly working hours at a glance';
+      'نظرة سريعة على ساعات عملك الأسبوعية';
 
   @override
-  String get availabilitySummaryTitle => 'Availability Summary';
+  String get availabilitySummaryTitle => 'ملخص التوفر';
 
   @override
-  String get availabilityTitle => 'Availability';
+  String get availabilityTitle => 'التوفر';
 
   @override
-  String get availabilityUpdateError => 'Failed to update availability';
+  String get availabilityUpdateError => 'فشل تحديث التوفر';
 
   @override
-  String get availabilityWeeklySubtitle =>
-      'Set your working hours for each day';
+  String get availabilityWeeklySubtitle => 'حدّد ساعات عملك لكل يوم';
 
   @override
-  String get availabilityWeeklyTitle => 'Weekly Schedule';
+  String get availabilityWeeklyTitle => 'الجدول الأسبوعي';
 
   @override
   String availableBalanceLabel(Object value1) {
-    return 'Available balance: Rs $value1';
+    return 'الرصيد المتاح: $value1 روبية';
   }
 
   @override
-  String get availableBalanceTitle => 'Available Balance';
+  String get availableBalanceTitle => 'الرصيد المتاح';
 
   @override
-  String get availableForBookingsLabel => 'Available for Bookings';
+  String get availableForBookingsLabel => 'متاح للحجوزات';
 
   @override
-  String get availableLabel => 'Available';
+  String get availableLabel => 'متاح';
 
   @override
-  String get availableNowLabel => 'Available Now';
+  String get availableNowLabel => 'متاح الآن';
 
   @override
-  String get availableSubtitle => 'Ready to accept new bookings';
+  String get availableSubtitle => 'جاهز لقبول حجوزات جديدة';
 
   @override
-  String get averageRatingLabel => 'Average Rating';
+  String get averageRatingLabel => 'متوسط التقييم';
 
   @override
-  String get averageRatingSubtext => 'Based on customer reviews';
+  String get averageRatingSubtext => 'بناءً على تقييمات العملاء';
 
   @override
-  String get backCta => 'Back';
+  String get backCta => 'رجوع';
 
   @override
-  String get backToBookingsCta => 'Back to Bookings';
+  String get backToBookingsCta => 'العودة إلى الحجوزات';
 
   @override
-  String get backToHomeCta => 'Back to Home';
+  String get backToHomeCta => 'العودة إلى الرئيسية';
 
   @override
-  String get backToLoginCta => 'Back to Login';
+  String get backToLoginCta => 'العودة إلى تسجيل الدخول';
 
   @override
-  String get bankDetailsEmpty => 'No bank details added yet';
+  String get bankDetailsEmpty => 'لم تتم إضافة بيانات مصرفية بعد';
 
   @override
-  String get bankDetailsLabel => 'Bank Details';
+  String get bankDetailsLabel => 'البيانات المصرفية';
 
   @override
   String get bankDetailsRequiredMessage =>
-      'Please add your bank details before requesting a withdrawal';
+      'يرجى إضافة بياناتك المصرفية قبل طلب السحب';
 
   @override
-  String get bankDetailsRequiredTitle => 'Bank Details Required';
+  String get bankDetailsRequiredTitle => 'البيانات المصرفية مطلوبة';
 
   @override
-  String get bankDetailsSubtitle => 'Used for withdrawals to your account';
+  String get bankDetailsSubtitle => 'تُستخدم لعمليات السحب إلى حسابك';
 
   @override
-  String get bankNameLabel => 'Bank Name';
+  String get bankNameLabel => 'اسم البنك';
 
   @override
-  String get bioLabel => 'Bio';
+  String get bioLabel => 'نبذة تعريفية';
 
   @override
-  String get bookAppointmentTitle => 'Book Appointment';
+  String get bookAppointmentTitle => 'حجز موعد';
 
   @override
-  String get bookCta => 'Book';
+  String get bookCta => 'احجز';
 
   @override
-  String get bookNowCta => 'Book Now';
+  String get bookNowCta => 'احجز الآن';
 
   @override
-  String get bookingConfigurationTitle => 'Booking Configuration';
+  String get bookingConfigurationTitle => 'إعدادات الحجز';
 
   @override
-  String get bookingDateRequired => 'Please select a date';
+  String get bookingDateRequired => 'يرجى اختيار تاريخ';
 
   @override
-  String get bookingDetailsTitle => 'Booking Details';
+  String get bookingDetailsTitle => 'تفاصيل الحجز';
 
   @override
-  String get bookingFailed => 'Booking failed. Please try again.';
+  String get bookingFailed => 'فشل الحجز. يرجى المحاولة مرة أخرى.';
 
   @override
-  String get bookingManagementTitle => 'Manage Bookings';
+  String get bookingManagementTitle => 'إدارة الحجوزات';
 
   @override
-  String get bookingSoFarLabel => 'Bookings so far';
+  String get bookingSoFarLabel => 'الحجوزات حتى الآن';
 
   @override
   String bookingStatusUpdated(Object value1) {
-    return 'Booking marked as $value1';
+    return 'تم تعيين الحجز على $value1';
   }
 
   @override
   String bookingSuccessMessage(Object value1) {
-    return 'Your booking request with $value1 has been sent';
+    return 'تم إرسال طلب حجزك مع $value1';
   }
 
   @override
-  String get bookingSuccessTitle => 'Booking Requested';
+  String get bookingSuccessTitle => 'تم طلب الحجز';
 
   @override
-  String get bookingTimeRequired => 'Please select a time';
+  String get bookingTimeRequired => 'يرجى اختيار وقت';
 
   @override
-  String get bookingTipText =>
-      'You can cancel for free up to 24 hours before the appointment';
+  String get bookingTipText => 'يمكنك الإلغاء مجانًا حتى 24 ساعة قبل الموعد';
 
   @override
-  String get bookingUpdateError => 'Failed to update booking';
+  String get bookingUpdateError => 'فشل تحديث الحجز';
 
   @override
   String bookingUpdatedToast(Object value1) {
-    return 'Booking updated to $value1';
+    return 'تم تحديث الحجز إلى $value1';
   }
 
   @override
-  String get bookingsActionLabel => 'Bookings';
+  String get bookingsActionLabel => 'الحجوزات';
 
   @override
-  String get bookingsActionSubtitle => 'View your booking history';
+  String get bookingsActionSubtitle => 'عرض سجل حجوزاتك';
 
   @override
-  String get bookingsLabel => 'Bookings';
+  String get bookingsLabel => 'الحجوزات';
 
   @override
-  String get bookingsStatLabel => 'Bookings';
+  String get bookingsStatLabel => 'الحجوزات';
 
   @override
   String bufferMinLabel(Object value1) {
-    return '$value1 min buffer';
+    return 'فاصل $value1 دقيقة';
   }
 
   @override
-  String get bufferNoneLabel => 'No buffer';
+  String get bufferNoneLabel => 'بدون فاصل';
 
   @override
-  String get bufferTimeSubtitle => 'Time between consecutive bookings';
+  String get bufferTimeSubtitle => 'الوقت بين الحجوزات المتتالية';
 
   @override
-  String get bufferTimeTitle => 'Buffer Time';
+  String get bufferTimeTitle => 'وقت الفاصل';
 
   @override
-  String get calendarWeekDays => 'S,M,T,W,T,F,S';
+  String get calendarWeekDays => 'ح,ن,ث,ر,خ,ج,س';
 
   @override
-  String get cameraOptionLabel => 'Camera';
+  String get cameraOptionLabel => 'الكاميرا';
 
   @override
-  String get cancelBookingCta => 'Cancel Booking';
+  String get cancelBookingCta => 'إلغاء الحجز';
 
   @override
-  String get cancelBookingTitle => 'Cancel Booking';
+  String get cancelBookingTitle => 'إلغاء الحجز';
 
   @override
   String get cancelConfirmationMessage =>
-      'Are you sure you want to cancel this booking?';
+      'هل أنت متأكد أنك تريد إلغاء هذا الحجز؟';
 
   @override
-  String get cancelCta => 'Cancel';
+  String get cancelCta => 'إلغاء';
 
   @override
-  String get cancelReasonHint => 'Let us know why you are cancelling';
+  String get cancelReasonHint => 'أخبرنا لماذا تقوم بالإلغاء';
 
   @override
-  String get cancelReasonLabel => 'Reason for cancellation';
+  String get cancelReasonLabel => 'سبب الإلغاء';
 
   @override
-  String get cancellationPolicyLabel => 'Cancellation Policy';
+  String get cancellationPolicyLabel => 'سياسة الإلغاء';
 
   @override
-  String get cancelledByCustomerLabel => 'Cancelled by customer';
+  String get bookingQuickNoteFirstTime => 'عميل لأول مرة';
 
   @override
-  String get cancelledByYouLabel => 'Cancelled by you';
+  String get bookingQuickNoteUrgent => 'طلب عاجل';
 
   @override
-  String get categoryLabel => 'Category';
+  String get bookingQuickNoteFollowUp => 'زيارة متابعة';
 
   @override
-  String get certificateAddError => 'Failed to add certificate';
+  String get bookingQuickNoteCallBefore => 'يرجى الاتصال قبل الوصول';
 
   @override
-  String get certificateAddSuccess => 'Certificate added successfully';
+  String get cancellationPolicyPointFree =>
+      'إلغاء مجاني في أي وقت أثناء انتظار طلبك.';
 
   @override
-  String get certificateTitleHint => 'e.g. Certified Plumbing Technician';
+  String get cancellationPolicyPointChat =>
+      'بعد القبول، يمكنك تنسيق التغييرات مباشرة مع المحترف عبر الدردشة.';
 
   @override
-  String get certificateTitleLabelRequired => 'Certificate Title';
+  String walletJobCompletedWithName(String name) {
+    return 'اكتملت المهمة — $name';
+  }
 
   @override
-  String get certificatesLabel => 'Certificates';
+  String get walletJobCompleted => 'اكتملت المهمة';
 
   @override
-  String get certificatesTitle => 'Certificates';
+  String get walletWithdrawalRequestLabel => 'طلب سحب';
 
   @override
-  String get certificationsLabel => 'Certifications';
+  String get cancelledByCustomerLabel => 'ألغاه العميل';
 
   @override
-  String get changePasswordLabel => 'Change Password';
+  String get cancelledByYouLabel => 'ألغيته أنت';
 
   @override
-  String get changePasswordSubtitle => 'Update your account password';
+  String get categoryLabel => 'الفئة';
 
   @override
-  String get changePasswordTitle => 'Change Password';
+  String get certificateAddError => 'فشلت إضافة الشهادة';
 
   @override
-  String get changeProfilePhotoTitle => 'Change Profile Photo';
+  String get certificateAddSuccess => 'تمت إضافة الشهادة بنجاح';
+
+  @override
+  String get certificateTitleHint => 'مثال: فني سباكة معتمد';
+
+  @override
+  String get certificateTitleLabelRequired => 'عنوان الشهادة';
+
+  @override
+  String get certificatesLabel => 'الشهادات';
+
+  @override
+  String get certificatesTitle => 'الشهادات';
+
+  @override
+  String get certificationsLabel => 'الاعتمادات';
+
+  @override
+  String get changePasswordLabel => 'تغيير كلمة المرور';
+
+  @override
+  String get changePasswordSubtitle => 'تحديث كلمة مرور حسابك';
+
+  @override
+  String get changePasswordTitle => 'تغيير كلمة المرور';
+
+  @override
+  String get changeProfilePhotoTitle => 'تغيير صورة الملف الشخصي';
 
   @override
   String get chatMicPermissionRequired =>
-      'Microphone permission is required to record voice messages';
+      'يلزم إذن الميكروفون لتسجيل الرسائل الصوتية';
 
   @override
-  String get chatNoMessagesFound => 'No messages found';
+  String get chatNoMessagesFound => 'لم يتم العثور على رسائل';
 
   @override
-  String get chatSearchMessagesHint => 'Search messages';
+  String get chatSearchMessagesHint => 'البحث في الرسائل';
 
   @override
-  String get chatTypeToSearchConversation => 'Type to search this conversation';
+  String get chatTypeToSearchConversation => 'اكتب للبحث في هذه المحادثة';
 
   @override
-  String get checkEmailHint => 'Didn\'t receive it? Check your spam folder.';
+  String get checkEmailHint =>
+      'لم تصلك الرسالة؟ تحقق من مجلد الرسائل غير المرغوب فيها.';
 
   @override
   String get checkEmailMessage =>
-      'We\'ve sent a password reset link to your email';
+      'لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني';
 
   @override
-  String get checkEmailTitle => 'Check Your Email';
+  String get checkEmailTitle => 'تحقق من بريدك الإلكتروني';
 
   @override
-  String get cityDisabledHint => 'Select a country first';
+  String get cityDisabledHint => 'اختر الدولة أولاً';
 
   @override
-  String get cityEmptyMessage => 'No cities found';
+  String get cityEmptyMessage => 'لم يتم العثور على مدن';
 
   @override
-  String get cityHint => 'Select city';
+  String get cityHint => 'اختر المدينة';
 
   @override
-  String get cityLabel => 'City';
+  String get cityLabel => 'المدينة';
 
   @override
-  String get cityRequiredError => 'Please select a city';
+  String get cityRequiredError => 'يرجى اختيار مدينة';
 
   @override
-  String get citySearchHint => 'Search city';
+  String get citySearchHint => 'ابحث عن مدينة';
 
   @override
-  String get clearCta => 'Clear';
+  String get clearCta => 'مسح';
 
   @override
-  String get clientsLabel => 'Clients';
+  String get clientsLabel => 'العملاء';
 
   @override
-  String get closeCta => 'Close';
+  String get closeCta => 'إغلاق';
 
   @override
   String comingSoonMessage(Object value1) {
-    return '$value1 is coming soon';
+    return '$value1 قريبًا';
   }
 
   @override
   String commentHint(Object value1) {
-    return 'Share your experience with $value1';
+    return 'شاركنا تجربتك مع $value1';
   }
 
   @override
-  String get commentOptionalLabel => 'Comment Optional';
+  String get commentOptionalLabel => 'تعليق (اختياري)';
 
   @override
-  String get completedLabel => 'Completed';
+  String get completedLabel => 'مكتمل';
 
   @override
-  String get confirmBookingCta => 'Confirm Booking';
+  String get confirmBookingCta => 'تأكيد الحجز';
 
   @override
-  String get confirmPasswordLabel => 'Confirm Password';
+  String get confirmPasswordLabel => 'تأكيد كلمة المرور';
 
   @override
-  String get contactChatLabel => 'Chat with us';
+  String get contactChatLabel => 'تحدث معنا';
 
   @override
-  String get contactChatSubtitle => 'Get a quick response in chat';
+  String get contactChatSubtitle => 'احصل على رد سريع عبر الدردشة';
 
   @override
-  String get contactChatTitle => 'Chat Support';
+  String get contactChatTitle => 'دعم الدردشة';
 
   @override
-  String get contactCta => 'Contact';
+  String get contactCta => 'اتصل';
 
   @override
-  String get contactEmailLabel => 'Email us';
+  String get contactEmailLabel => 'راسلنا';
 
   @override
-  String get contactEmailSubtitle => 'We\'ll get back to you within 24 hours';
+  String get contactEmailSubtitle => 'سنرد عليك خلال 24 ساعة';
 
   @override
-  String get contactEmailTitle => 'Email Support';
+  String get contactEmailTitle => 'الدعم عبر البريد الإلكتروني';
 
   @override
-  String get contactSupportTitle => 'Contact Support';
+  String get contactSupportTitle => 'التواصل مع الدعم';
 
   @override
-  String get continueAsGuestCta => 'Continue as Guest';
+  String get continueAsGuestCta => 'المتابعة كضيف';
 
   @override
-  String get countryEmptyMessage => 'No countries found';
+  String get countryEmptyMessage => 'لم يتم العثور على دول';
 
   @override
-  String get countryHint => 'Select country';
+  String get countryHint => 'اختر الدولة';
 
   @override
-  String get countryRequiredError => 'Please select a country';
+  String get countryRequiredError => 'يرجى اختيار دولة';
 
   @override
-  String get countrySearchHint => 'Search country';
+  String get countrySearchHint => 'ابحث عن دولة';
 
   @override
-  String get currencyFeatureName => 'Currency';
+  String get currencyFeatureName => 'العملة';
 
   @override
-  String get currentPasswordLabel => 'Current Password';
+  String get currentPasswordLabel => 'كلمة المرور الحالية';
 
   @override
   String currentPlanLabel(Object value1) {
-    return 'Current plan: $value1';
+    return 'الخطة الحالية: $value1';
   }
 
   @override
-  String get currentlyBusyLabel => 'Currently Busy';
+  String get currentlyBusyLabel => 'مشغول حاليًا';
 
   @override
-  String get customLocationHint => 'Enter a custom location';
+  String get customLocationHint => 'أدخل موقعًا مخصصًا';
 
   @override
-  String get customLocationOption => 'Custom Location';
+  String get customLocationOption => 'موقع مخصص';
 
   @override
-  String get customLocationSubtitle => 'Enter an address manually';
+  String get customLocationSubtitle => 'أدخل العنوان يدويًا';
 
   @override
-  String get customSlotDefaultLabel => 'Custom';
+  String get customSlotDefaultLabel => 'مخصص';
 
   @override
-  String get customSlotHint => 'Enter duration in minutes';
+  String get customSlotHint => 'أدخل المدة بالدقائق';
 
   @override
   String customSlotLabel(Object value1) {
-    return 'Custom ($value1)';
+    return 'مخصص ($value1)';
   }
 
   @override
-  String get customSlotTitle => 'Custom Slot Duration';
+  String get customSlotTitle => 'مدة الفترة المخصصة';
 
   @override
-  String get customSlotValidation => 'Please enter a valid duration';
+  String get customSlotValidation => 'يرجى إدخال مدة صالحة';
 
   @override
-  String get customerAccountDescription =>
-      'Book trusted professionals near you';
+  String get customerAccountDescription => 'احجز مع محترفين موثوقين بالقرب منك';
 
   @override
-  String get customerDefault => 'Customer';
+  String get customerDefault => 'عميل';
 
   @override
-  String get customerLabel => 'Customer';
+  String get customerLabel => 'عميل';
 
   @override
-  String get dailyHoursLabel => 'Daily Hours';
+  String get dailyHoursLabel => 'الساعات اليومية';
 
   @override
-  String get darkModeOffLabel => 'Light Mode';
+  String get darkModeOffLabel => 'الوضع الفاتح';
 
   @override
-  String get darkModeOnLabel => 'Dark Mode';
+  String get darkModeOnLabel => 'الوضع الداكن';
 
   @override
-  String get dashboardLoadError => 'Failed to load dashboard';
+  String get dashboardLoadError => 'فشل تحميل لوحة التحكم';
 
   @override
-  String get dateLabel => 'Date';
+  String get dateLabel => 'التاريخ';
 
   @override
-  String get dateNotSet => 'Date not set';
+  String get dateNotSet => 'لم يتم تحديد التاريخ';
 
   @override
-  String get dateNotSetShort => 'No date';
+  String get dateNotSetShort => 'بلا تاريخ';
 
   @override
-  String get dateRequiredMessage => 'Please select a date';
+  String get dateRequiredMessage => 'يرجى اختيار تاريخ';
 
   @override
-  String get dateTipText => 'Choose a date that works best for you';
+  String get dateTipText => 'اختر التاريخ الأنسب لك';
 
   @override
   String daysLabel(Object value1) {
-    return '${value1}d';
+    return '$value1 ي';
   }
 
   @override
-  String get declineCta => 'Decline';
+  String get declineCta => 'رفض';
 
   @override
-  String get declineDescription => 'Decline this booking';
+  String get declineDescription => 'رفض هذا الحجز';
 
   @override
-  String get declineLabel => 'Decline';
+  String get declineLabel => 'رفض';
 
   @override
   String get deleteAccountDialogContent =>
-      'This will permanently delete your account and all associated data. This action cannot be undone.';
+      'سيؤدي هذا إلى حذف حسابك وجميع البيانات المرتبطة به نهائيًا. لا يمكن التراجع عن هذا الإجراء.';
 
   @override
-  String get deleteAccountDialogTitle => 'Delete Account';
+  String get deleteAccountDialogTitle => 'حذف الحساب';
 
   @override
-  String get deleteAccountLabel => 'Delete Account';
+  String get deleteAccountLabel => 'حذف الحساب';
 
   @override
-  String get deleteConfirmationTitle => 'Delete this item?';
+  String get deleteConfirmationTitle => 'هل تريد حذف هذا العنصر؟';
 
   @override
-  String get deleteCta => 'Delete';
+  String get deleteCta => 'حذف';
 
   @override
   String deleteDialogContent(Object value1) {
-    return 'Are you sure you want to delete \"$value1\"?';
+    return 'هل أنت متأكد أنك تريد حذف \"$value1\"؟';
   }
 
   @override
-  String get deleteDialogTitle => 'Delete Item';
+  String get deleteDialogTitle => 'حذف العنصر';
 
   @override
-  String get deleteError => 'Failed to delete';
+  String get deleteError => 'فشل الحذف';
 
   @override
   String get deleteGalleryDialogContent =>
-      'Are you sure you want to delete this photo?';
+      'هل أنت متأكد أنك تريد حذف هذه الصورة؟';
 
   @override
-  String get deleteGalleryDialogTitle => 'Delete Photo';
+  String get deleteGalleryDialogTitle => 'حذف الصورة';
 
   @override
   String get deleteReviewConfirmationMessage =>
-      'Are you sure you want to delete this review?';
+      'هل أنت متأكد أنك تريد حذف هذا التقييم؟';
 
   @override
-  String get deleteSuccess => 'Deleted successfully';
+  String get deleteSuccess => 'تم الحذف بنجاح';
 
   @override
-  String get descriptionHint => 'Add a description';
+  String get descriptionHint => 'أضف وصفًا';
 
   @override
-  String get descriptionLabelOptional => 'Description (optional)';
+  String get descriptionLabelOptional => 'الوصف (اختياري)';
 
   @override
-  String get detailsLabel => 'Details';
+  String get detailsLabel => 'التفاصيل';
 
   @override
-  String get directChatLabel => 'Message';
+  String get directChatLabel => 'مراسلة';
 
   @override
-  String get discardCta => 'Discard';
+  String get discardCta => 'تجاهل';
 
   @override
-  String get doneCta => 'Done';
+  String get doneCta => 'تم';
 
   @override
-  String get earningsLabel => 'Earnings';
+  String get earningsLabel => 'الأرباح';
 
   @override
-  String get editCta => 'Edit';
+  String get editCta => 'تعديل';
 
   @override
-  String get editLabel => 'Edit';
+  String get editLabel => 'تعديل';
 
   @override
-  String get editProfileActionLabel => 'Edit Profile';
+  String get editProfileActionLabel => 'تعديل الملف الشخصي';
 
   @override
-  String get editProfileActionSubtitle => 'Update your personal information';
+  String get editProfileActionSubtitle => 'تحديث معلوماتك الشخصية';
 
   @override
-  String get editReviewHint => 'Update your comment';
+  String get editReviewHint => 'حدّث تعليقك';
 
   @override
-  String get editReviewSubtitle => 'Update your rating and comment';
+  String get editReviewSubtitle => 'حدّث تقييمك وتعليقك';
 
   @override
-  String get editReviewTitle => 'Edit Review';
+  String get editReviewTitle => 'تعديل التقييم';
 
   @override
-  String get editorHeadingPlaceholder => 'Heading';
+  String get editorHeadingPlaceholder => 'عنوان';
 
   @override
-  String get editorHintText => 'Start writing...';
+  String get editorHintText => 'ابدأ الكتابة...';
 
   @override
-  String get editorInsertCta => 'Insert';
+  String get editorInsertCta => 'إدراج';
 
   @override
-  String get editorInsertLinkTitle => 'Insert Link';
+  String get editorInsertLinkTitle => 'إدراج رابط';
 
   @override
   String get editorLinkHint => 'https://example.com';
 
   @override
-  String get editorLinkPlaceholder => 'Link text';
+  String get editorLinkPlaceholder => 'نص الرابط';
 
   @override
-  String get educationLabel => 'Education';
+  String get educationLabel => 'التعليم';
 
   @override
-  String get emailAvailableLabel => 'Email is available';
+  String get emailAvailableLabel => 'البريد الإلكتروني متاح';
 
   @override
-  String get emailNotificationsLabel => 'Email Notifications';
+  String get emailNotificationsLabel => 'إشعارات البريد الإلكتروني';
 
   @override
-  String get emailTakenLabel => 'This email is already registered';
+  String get emailTakenLabel => 'هذا البريد الإلكتروني مسجّل بالفعل';
 
   @override
-  String get emptyCertificatesSubtitle =>
-      'Add your certifications to build trust with customers';
+  String get emptyCertificatesSubtitle => 'أضف شهاداتك لبناء الثقة مع العملاء';
 
   @override
-  String get emptyCertificatesTitle => 'No Certificates Yet';
+  String get emptyCertificatesTitle => 'لا توجد شهادات بعد';
 
   @override
-  String get emptyGallerySubtitle => 'Add photos to showcase your work';
+  String get emptyGallerySubtitle => 'أضف صورًا لعرض أعمالك';
 
   @override
-  String get emptyGalleryTitle => 'No Photos Yet';
+  String get emptyGalleryTitle => 'لا توجد صور بعد';
 
   @override
-  String get emptyPortfolioSubtitle =>
-      'Add your best work to attract more customers';
+  String get emptyPortfolioSubtitle => 'أضف أفضل أعمالك لجذب المزيد من العملاء';
 
   @override
-  String get emptyPortfolioTitle => 'No Portfolio Items Yet';
+  String get emptyPortfolioTitle => 'لا توجد عناصر في معرض الأعمال بعد';
 
   @override
-  String get endTimeLabel => 'End Time';
+  String get endTimeLabel => 'وقت الانتهاء';
 
   @override
-  String get enterAmountHint => 'Enter amount';
+  String get enterAmountHint => 'أدخل المبلغ';
 
   @override
-  String get exceedsBalanceError => 'Amount exceeds your available balance';
+  String get exceedsBalanceError => 'المبلغ يتجاوز رصيدك المتاح';
 
   @override
-  String get exceptionsAddRange => 'Add Date Range';
+  String get exceptionsAddRange => 'إضافة نطاق تواريخ';
 
   @override
-  String get exceptionsCalendarSubtitle => 'Tap a date to set an exception';
+  String get exceptionsCalendarSubtitle => 'اضغط على تاريخ لتعيين استثناء';
 
   @override
-  String get exceptionsCalendarTitle => 'Calendar';
+  String get exceptionsCalendarTitle => 'التقويم';
 
   @override
-  String get exceptionsCustomChip => 'Custom';
+  String get exceptionsCustomChip => 'مخصص';
 
   @override
-  String get exceptionsEndDate => 'End Date';
+  String get exceptionsEndDate => 'تاريخ الانتهاء';
 
   @override
   String get exceptionsIntroText =>
-      'Mark dates when your availability differs from your usual schedule';
+      'حدّد التواريخ التي يختلف فيها توفرك عن جدولك المعتاد';
 
   @override
-  String get exceptionsLegendClosed => 'Closed';
+  String get exceptionsLegendClosed => 'مغلق';
 
   @override
-  String get exceptionsLegendCustom => 'Custom Hours';
+  String get exceptionsLegendCustom => 'ساعات مخصصة';
 
   @override
-  String get exceptionsLegendUnavailable => 'Unavailable';
+  String get exceptionsLegendUnavailable => 'غير متاح';
 
   @override
-  String get exceptionsLegendVacation => 'Vacation';
+  String get exceptionsLegendVacation => 'إجازة';
 
   @override
-  String get exceptionsLegendWorking => 'Working';
+  String get exceptionsLegendWorking => 'عمل';
 
   @override
-  String get exceptionsLoadError => 'Failed to load exceptions';
+  String get exceptionsLoadError => 'فشل تحميل الاستثناءات';
 
   @override
-  String get exceptionsNoOverrides => 'No exceptions set';
+  String get exceptionsNoOverrides => 'لم يتم تعيين استثناءات';
 
   @override
-  String get exceptionsOverridesSubtitle => 'Dates with custom availability';
+  String get exceptionsOverridesSubtitle => 'التواريخ ذات التوفر المخصص';
 
   @override
-  String get exceptionsOverridesTitle => 'Overrides';
+  String get exceptionsOverridesTitle => 'التجاوزات';
 
   @override
-  String get exceptionsReasonLabel => 'Reason (optional)';
+  String get exceptionsReasonLabel => 'السبب (اختياري)';
 
   @override
-  String get exceptionsSelectDate => 'Select a date';
+  String get exceptionsSelectDate => 'اختر تاريخًا';
 
   @override
-  String get exceptionsSetVacation => 'Set Vacation';
+  String get exceptionsSetVacation => 'تعيين إجازة';
 
   @override
-  String get exceptionsStartDate => 'Start Date';
+  String get exceptionsStartDate => 'تاريخ البدء';
 
   @override
-  String get exceptionsTimeError => 'End time must be after start time';
+  String get exceptionsTimeError => 'يجب أن يكون وقت الانتهاء بعد وقت البدء';
 
   @override
-  String get exceptionsTitle => 'Availability Exceptions';
+  String get exceptionsTitle => 'استثناءات التوفر';
 
   @override
-  String get exceptionsUnavailableChip => 'Unavailable';
+  String get exceptionsUnavailableChip => 'غير متاح';
 
   @override
-  String get exceptionsUnavailableLabel => 'Mark as unavailable';
+  String get exceptionsUnavailableLabel => 'تحديد كغير متاح';
 
   @override
-  String get exceptionsUpdateVacation => 'Update Vacation';
+  String get exceptionsUpdateVacation => 'تحديث الإجازة';
 
   @override
-  String get exceptionsVacationActive => 'Vacation is currently active';
+  String get exceptionsVacationActive => 'الإجازة سارية حاليًا';
 
   @override
   String exceptionsVacationScheduled(Object value1) {
-    return 'Vacation scheduled from $value1';
+    return 'الإجازة مجدولة بدءًا من $value1';
   }
 
   @override
-  String get exceptionsVacationSubtitle => 'Set a date range when you are away';
+  String get exceptionsVacationSubtitle => 'حدّد نطاق تواريخ تكون فيه بعيدًا';
 
   @override
-  String get exceptionsVacationTitle => 'Vacation Mode';
+  String get exceptionsVacationTitle => 'وضع الإجازة';
 
   @override
-  String get experienceLabel => 'Experience';
+  String get experienceLabel => 'الخبرة';
 
   @override
   String experienceYearsLabel(Object value1) {
-    return '$value1 years experience';
+    return 'خبرة $value1 سنوات';
   }
 
   @override
-  String get exploreExpertsLabel => 'Explore Experts';
+  String get exploreExpertsLabel => 'استكشف الخبراء';
 
   @override
-  String get facebookSignInLabel => 'Continue with Facebook';
+  String get facebookSignInLabel => 'المتابعة باستخدام Facebook';
 
   @override
   String get faqBookingPendingA =>
-      'It may take a little time for the professional to respond. You will be notified once they accept or decline.';
+      'قد يستغرق رد المحترف بعض الوقت. سيتم إشعارك بمجرد قبوله أو رفضه.';
 
   @override
-  String get faqBookingPendingQ => 'Why is my booking still pending?';
+  String get faqBookingPendingQ => 'لماذا لا يزال حجزي قيد الانتظار؟';
 
   @override
   String get faqChangeAvailabilityA =>
-      'Go to your Availability settings from your profile to update your working hours.';
+      'انتقل إلى إعدادات التوفر من ملفك الشخصي لتحديث ساعات عملك.';
 
   @override
-  String get faqChangeAvailabilityQ => 'How do I change my availability?';
+  String get faqChangeAvailabilityQ => 'كيف أغيّر توفري؟';
 
   @override
   String get faqGetVerifiedA =>
-      'Complete your profile and submit the required documents from your profile settings to request verification.';
+      'أكمل ملفك الشخصي وأرسل المستندات المطلوبة من إعدادات الملف الشخصي لطلب التوثيق.';
 
   @override
-  String get faqGetVerifiedQ => 'How do I get verified?';
+  String get faqGetVerifiedQ => 'كيف أحصل على التوثيق؟';
 
   @override
   String get faqHowToBookA =>
-      'Search for a professional, view their profile, and tap Book Now to select a date and time.';
+      'ابحث عن محترف، واطلع على ملفه الشخصي، ثم اضغط على احجز الآن لاختيار التاريخ والوقت.';
 
   @override
-  String get faqHowToBookQ => 'How do I book a professional?';
+  String get faqHowToBookQ => 'كيف أحجز مع محترف؟';
 
   @override
   String get faqHowToCancelA =>
-      'Open the booking from My Bookings and tap Cancel. Cancellations made in time are free.';
+      'افتح الحجز من حجوزاتي واضغط على إلغاء. الإلغاءات التي تتم في الوقت المناسب مجانية.';
 
   @override
-  String get faqHowToCancelQ => 'How do I cancel a booking?';
+  String get faqHowToCancelQ => 'كيف ألغي حجزًا؟';
 
   @override
   String get faqImproveProfileA =>
-      'Add a profile photo, portfolio samples, and certificates to build trust with customers.';
+      'أضف صورة شخصية ونماذج من أعمالك وشهاداتك لبناء الثقة مع العملاء.';
 
   @override
-  String get faqImproveProfileQ => 'How can I improve my profile?';
+  String get faqImproveProfileQ => 'كيف يمكنني تحسين ملفي الشخصي؟';
 
   @override
   String get faqPaymentSecureA =>
-      'Yes, all payments are processed securely and your details are never shared.';
+      'نعم، تتم معالجة جميع المدفوعات بشكل آمن ولا تتم مشاركة بياناتك أبدًا.';
 
   @override
-  String get faqPaymentSecureQ => 'Is my payment information secure?';
+  String get faqPaymentSecureQ => 'هل معلومات الدفع الخاصة بي آمنة؟';
 
   @override
   String get faqRefundsA =>
-      'Refunds are processed automatically for eligible cancellations within a few business days.';
+      'تتم معالجة المبالغ المستردة تلقائيًا للإلغاءات المؤهلة خلال بضعة أيام عمل.';
 
   @override
-  String get faqRefundsQ => 'How do refunds work?';
+  String get faqRefundsQ => 'كيف تعمل المبالغ المستردة؟';
 
   @override
-  String get faqSectionLabel => 'FAQ';
+  String get faqSectionLabel => 'الأسئلة الشائعة';
 
   @override
-  String get faqSectionTitle => 'Frequently Asked Questions';
+  String get faqSectionTitle => 'الأسئلة المتكررة';
 
   @override
   String get faqWithdrawEarningsA =>
-      'Go to your Wallet and tap Withdraw to transfer your earnings to your bank account.';
+      'انتقل إلى محفظتك واضغط على سحب لتحويل أرباحك إلى حسابك المصرفي.';
 
   @override
-  String get faqWithdrawEarningsQ => 'How do I withdraw my earnings?';
+  String get faqWithdrawEarningsQ => 'كيف أسحب أرباحي؟';
 
   @override
-  String get fastResponseLabel => 'Fast Response';
+  String get fastResponseLabel => 'استجابة سريعة';
 
   @override
-  String get flexibleTimingLabel => 'Flexible Timing';
+  String get flexibleTimingLabel => 'مواعيد مرنة';
 
   @override
-  String get freeToCancelLabel => 'Free to Cancel';
+  String get freeToCancelLabel => 'إلغاء مجاني';
 
   @override
-  String get fullNameLabel => 'Full Name';
+  String get fullNameLabel => 'الاسم الكامل';
 
   @override
-  String get galleryLabel => 'Gallery';
+  String get galleryLabel => 'المعرض';
 
   @override
-  String get galleryOptionLabel => 'Gallery';
+  String get galleryOptionLabel => 'المعرض';
 
   @override
-  String get galleryTitle => 'Gallery';
+  String get galleryTitle => 'المعرض';
 
   @override
-  String get galleryUploadError => 'Failed to upload photo';
+  String get galleryUploadError => 'فشل رفع الصورة';
 
   @override
-  String get galleryUploadSuccess => 'Photo uploaded successfully';
+  String get galleryUploadSuccess => 'تم رفع الصورة بنجاح';
 
   @override
-  String get goBackCta => 'Go Back';
+  String get goBackCta => 'رجوع';
 
   @override
-  String get goodAfternoon => 'Good afternoon';
+  String get goodAfternoon => 'مساء الخير';
 
   @override
-  String get goodAfternoonComma => 'Good afternoon,';
+  String get goodAfternoonComma => 'مساء الخير،';
 
   @override
-  String get goodEvening => 'Good evening';
+  String get goodEvening => 'مساء الخير';
 
   @override
-  String get goodEveningComma => 'Good evening,';
+  String get goodEveningComma => 'مساء الخير،';
 
   @override
-  String get goodMorning => 'Good morning';
+  String get goodMorning => 'صباح الخير';
 
   @override
-  String get goodMorningComma => 'Good morning,';
+  String get goodMorningComma => 'صباح الخير،';
 
   @override
-  String get goodToKnowLabel => 'Good to Know';
+  String get goodToKnowLabel => 'من الجيد معرفته';
 
   @override
-  String get googleSignInLabel => 'Continue with Google';
+  String get googleSignInLabel => 'المتابعة باستخدام Google';
 
   @override
-  String get helpActionLabel => 'Help & Support';
+  String get helpActionLabel => 'المساعدة والدعم';
 
   @override
-  String get helpActionSubtitle => 'Get help or contact us';
+  String get helpActionSubtitle => 'احصل على مساعدة أو تواصل معنا';
 
   @override
-  String get helpSupportLabel => 'Help & Support';
+  String get helpSupportLabel => 'المساعدة والدعم';
 
   @override
-  String get helpSupportTitle => 'Help & Support';
+  String get helpSupportTitle => 'المساعدة والدعم';
 
   @override
-  String get helpTitle => 'Help';
+  String get helpTitle => 'المساعدة';
 
   @override
-  String get homeDefaultPlanFree => 'Free';
+  String get homeDefaultPlanFree => 'مجاني';
 
   @override
-  String get homeDefaultProfessionalName => 'Professional';
+  String get homeDefaultProfessionalName => 'محترف';
 
   @override
-  String get homeFilterAll => 'All';
+  String get homeFilterAll => 'الكل';
 
   @override
-  String get homeFilterAvailableNow => 'Available Now';
+  String get homeFilterAvailableNow => 'متاح الآن';
 
   @override
-  String get homeFilterFastResponse => 'Fast Response';
+  String get homeFilterFastResponse => 'استجابة سريعة';
 
   @override
-  String get homeFilterHighestPrice => 'Highest Price';
+  String get homeFilterHighestPrice => 'الأعلى سعرًا';
 
   @override
-  String get homeFilterLowestPrice => 'Lowest Price';
+  String get homeFilterLowestPrice => 'الأقل سعرًا';
 
   @override
-  String get homeFilterMostBooked => 'Most Booked';
+  String get homeFilterMostBooked => 'الأكثر حجزًا';
 
   @override
-  String get homeFilterMostExperienced => 'Most Experienced';
+  String get homeFilterMostExperienced => 'الأكثر خبرة';
 
   @override
-  String get homeFilterMostReviews => 'Most Reviews';
+  String get homeFilterMostReviews => 'الأكثر تقييمات';
 
   @override
-  String get homeFilterRating1Plus => '1+ Stars';
+  String get homeFilterRating1Plus => 'نجمة واحدة فأكثر';
 
   @override
-  String get homeFilterRating2Plus => '2+ Stars';
+  String get homeFilterRating2Plus => 'نجمتان فأكثر';
 
   @override
-  String get homeFilterRating3Plus => '3+ Stars';
+  String get homeFilterRating3Plus => '3 نجوم فأكثر';
 
   @override
-  String get homeFilterRating4Plus => '4+ Stars';
+  String get homeFilterRating4Plus => '4 نجوم فأكثر';
 
   @override
-  String get homeFilterRating5Plus => '5 Stars';
+  String get homeFilterRating5Plus => '5 نجوم';
 
   @override
-  String get homeFilterThisMonth => 'This Month';
+  String get homeFilterThisMonth => 'هذا الشهر';
 
   @override
-  String get homeFilterThisWeek => 'This Week';
+  String get homeFilterThisWeek => 'هذا الأسبوع';
 
   @override
-  String get homeFilterToday => 'Today';
+  String get homeFilterToday => 'اليوم';
 
   @override
-  String get homeFilterTopRated => 'Top Rated';
+  String get homeFilterTopRated => 'الأعلى تقييمًا';
 
   @override
-  String get homeFilterVerified => 'Verified';
+  String get homeFilterVerified => 'موثّق';
 
   @override
-  String get homeFilterWithin10Km => 'Within 10 km';
+  String get homeFilterWithin10Km => 'ضمن 10 كم';
 
   @override
-  String get homeFilterWithin2Km => 'Within 2 km';
+  String get homeFilterWithin2Km => 'ضمن 2 كم';
 
   @override
-  String get homeFilterWithin5Km => 'Within 5 km';
+  String get homeFilterWithin5Km => 'ضمن 5 كم';
 
   @override
-  String get homeGoBack => 'Go Back';
+  String get homeGoBack => 'رجوع';
 
   @override
-  String get homeNoProfessionalsFound => 'No professionals found';
+  String get homeNoProfessionalsFound => 'لم يتم العثور على محترفين';
 
   @override
   String get homeNoProfessionalsFoundHint =>
-      'Try adjusting your filters or search a different area';
+      'جرّب تعديل عوامل التصفية أو ابحث في منطقة أخرى';
 
   @override
-  String get hour => 'hour';
+  String get hour => 'ساعة';
 
   @override
-  String get hourlyRateLabel => 'Hourly Rate';
+  String get hourlyRateLabel => 'السعر بالساعة';
 
   @override
   String hoursDecimalLabel(Object value1) {
-    return '${value1}h';
+    return '$value1 س';
   }
 
   @override
   String hoursLabel(Object value1) {
-    return '${value1}h';
+    return '$value1 س';
   }
 
   @override
   String hoursMinutesShort(Object value1, Object value2) {
-    return '${value1}h ${value2}m';
+    return '$value1 س $value2 د';
   }
 
   @override
   String hoursShort(Object value1) {
-    return '${value1}h';
+    return '$value1 س';
   }
 
   @override
-  String get idVerifiedLabel => 'ID Verified';
+  String get idVerifiedLabel => 'الهوية موثّقة';
 
   @override
-  String get imagePickError => 'Failed to select image';
+  String get imagePickError => 'فشل اختيار الصورة';
 
   @override
-  String get instantLabel => 'Instant';
+  String get instantLabel => 'فوري';
 
   @override
-  String get issueDateLabelOptional => 'Issue Date (optional)';
+  String get issueDateLabelOptional => 'تاريخ الإصدار (اختياري)';
 
   @override
-  String get issuingOrganizationHint => 'e.g. National Skills Board';
+  String get issuingOrganizationHint => 'مثال: المجلس الوطني للمهارات';
 
   @override
-  String get issuingOrganizationLabel => 'Issuing Organization';
+  String get issuingOrganizationLabel => 'الجهة المصدرة';
 
   @override
-  String get jobsDoneLabel => 'Jobs Done';
+  String get jobsDoneLabel => 'الأعمال المنجزة';
 
   @override
-  String get languagesLabel => 'Languages';
+  String get languagesLabel => 'اللغات';
 
   @override
   String lastUpdatedLabel(Object value1) {
-    return 'Last updated: $value1';
+    return 'آخر تحديث: $value1';
   }
 
   @override
-  String get laterCta => 'Later';
+  String get laterCta => 'لاحقًا';
 
   @override
-  String get loadBookingsError => 'Failed to load bookings';
+  String get loadBookingsError => 'فشل تحميل الحجوزات';
 
   @override
-  String get loadCertificatesError => 'Failed to load certificates';
+  String get loadCertificatesError => 'فشل تحميل الشهادات';
 
   @override
-  String get loadGalleryError => 'Failed to load gallery';
+  String get loadGalleryError => 'فشل تحميل المعرض';
 
   @override
-  String get loadPortfolioError => 'Failed to load portfolio';
+  String get loadPortfolioError => 'فشل تحميل معرض الأعمال';
 
   @override
-  String get loadSettingsError => 'Failed to load settings';
+  String get loadSettingsError => 'فشل تحميل الإعدادات';
 
   @override
-  String get loadWalletError => 'Failed to load wallet';
+  String get loadWalletError => 'فشل تحميل المحفظة';
 
   @override
-  String get loadingAnalyticsText => 'Loading analytics...';
+  String get loadingAnalyticsText => 'جارٍ تحميل التحليلات...';
 
   @override
-  String get loadingDashboard => 'Loading dashboard...';
+  String get loadingDashboard => 'جارٍ تحميل لوحة التحكم...';
 
   @override
-  String get locationLabel => 'Location';
+  String get locationLabel => 'الموقع';
 
   @override
-  String get locationNotSpecified => 'Location not specified';
+  String get locationNotSpecified => 'الموقع غير محدد';
 
   @override
-  String get locationTipText => 'Enable location for more accurate results';
+  String get locationTipText => 'فعّل الموقع للحصول على نتائج أكثر دقة';
 
   @override
-  String get loginCta => 'Login';
+  String get loginCta => 'تسجيل الدخول';
 
   @override
-  String get loginSubtitle => 'Welcome back! Please sign in to continue';
+  String get loginSubtitle => 'مرحبًا بعودتك! يرجى تسجيل الدخول للمتابعة';
 
   @override
-  String get loginTitle => 'Login';
+  String get loginTitle => 'تسجيل الدخول';
 
   @override
-  String get loginToBookCta => 'Login to Book';
+  String get loginToBookCta => 'سجّل الدخول للحجز';
 
   @override
-  String get logoutActionLabel => 'Logout';
+  String get logoutActionLabel => 'تسجيل الخروج';
 
   @override
-  String get logoutActionSubtitle => 'Sign out of your account';
+  String get logoutActionSubtitle => 'تسجيل الخروج من حسابك';
 
   @override
-  String get logoutCta => 'Logout';
+  String get logoutCta => 'تسجيل الخروج';
 
   @override
-  String get logoutDialogContent => 'Are you sure you want to log out?';
+  String get logoutDialogContent => 'هل أنت متأكد أنك تريد تسجيل الخروج؟';
 
   @override
-  String get logoutDialogTitle => 'Logout';
+  String get logoutDialogTitle => 'تسجيل الخروج';
 
   @override
-  String get magazineAllCategoriesLabel => 'All';
+  String get magazineAllCategoriesLabel => 'الكل';
 
   @override
   String magazineArticleCountPlural(Object value1) {
-    return '$value1 articles';
+    return '$value1 مقالات';
   }
 
   @override
-  String get magazineArticleCountSingle => '1 article';
+  String get magazineArticleCountSingle => 'مقال واحد';
 
   @override
-  String get magazineClearSearchCta => 'Clear Search';
+  String get magazineClearSearchCta => 'مسح البحث';
 
   @override
-  String get magazineEmptyMessage => 'No articles available right now';
+  String get magazineEmptyMessage => 'لا توجد مقالات متاحة حاليًا';
 
   @override
-  String get magazineEmptySearchMessage => 'Try a different search term';
+  String get magazineEmptySearchMessage => 'جرّب كلمة بحث مختلفة';
 
   @override
-  String get magazineEmptySearchTitle => 'No Results Found';
+  String get magazineEmptySearchTitle => 'لم يتم العثور على نتائج';
 
   @override
-  String get magazineEmptyTitle => 'No Articles Yet';
+  String get magazineEmptyTitle => 'لا توجد مقالات بعد';
 
   @override
-  String get magazineErrorMessage =>
-      'Something went wrong while loading the magazine';
+  String get magazineErrorMessage => 'حدث خطأ أثناء تحميل المجلة';
 
   @override
-  String get magazineErrorTitle => 'Failed to Load';
+  String get magazineErrorTitle => 'فشل التحميل';
 
   @override
-  String get magazineLoadError => 'Failed to load magazine';
+  String get magazineLoadError => 'فشل تحميل المجلة';
 
   @override
-  String get magazineLoadingText => 'Loading articles...';
+  String get magazineLoadingText => 'جارٍ تحميل المقالات...';
 
   @override
-  String get magazineSearchHint => 'Search articles';
+  String get magazineSearchHint => 'البحث في المقالات';
 
   @override
-  String get magazineSearchResultsLabel => 'Search Results';
+  String get magazineSearchResultsLabel => 'نتائج البحث';
 
   @override
-  String get magazineSubtitle => 'Tips and stories for professionals';
+  String get magazineSubtitle => 'نصائح وقصص للمحترفين';
 
   @override
-  String get magazineTitle => 'Magazine';
+  String get magazineTitle => 'المجلة';
 
   @override
-  String get manageCta => 'Manage';
+  String get manageCta => 'إدارة';
 
   @override
-  String get manageLabel => 'Manage';
+  String get manageLabel => 'إدارة';
 
   @override
-  String get manualDescription => 'Review and accept bookings yourself';
+  String get manualDescription => 'راجع الحجوزات واقبلها بنفسك';
 
   @override
-  String get manualInfoFooter => 'You can change this anytime in settings';
+  String get manualInfoFooter => 'يمكنك تغيير هذا في أي وقت من الإعدادات';
 
   @override
-  String get manualInfoTitle => 'Manual Approval';
+  String get manualInfoTitle => 'الموافقة اليدوية';
 
   @override
-  String get manualLabel => 'Manual';
+  String get manualLabel => 'يدوي';
 
   @override
-  String get markCompletedCta => 'Mark as Completed';
+  String get markCompletedCta => 'تحديد كمكتمل';
 
   @override
-  String get markCompletedCtaShort => 'Complete';
+  String get markCompletedCtaShort => 'إكمال';
 
   @override
-  String get maxAdvanceSubtitle => 'How far in advance customers can book';
+  String get maxAdvanceSubtitle => 'إلى أي مدى مسبقًا يمكن للعملاء الحجز';
 
   @override
-  String get maxAdvanceTitle => 'Max Advance Booking';
+  String get maxAdvanceTitle => 'أقصى مدة للحجز المسبق';
 
   @override
-  String get memberSinceLabel => 'Member Since';
+  String get memberSinceLabel => 'عضو منذ';
 
   @override
-  String get messagesEmptySubtitle =>
-      'Start a conversation with a professional or customer';
+  String get messagesEmptySubtitle => 'ابدأ محادثة مع محترف أو عميل';
 
   @override
-  String get messagesEmptyTitle => 'No Messages Yet';
+  String get messagesEmptyTitle => 'لا توجد رسائل بعد';
 
   @override
-  String get messagesLoadError => 'Failed to load messages';
+  String get messagesLoadError => 'فشل تحميل الرسائل';
 
   @override
-  String get messagesLoadingText => 'Loading messages...';
+  String get messagesLoadingText => 'جارٍ تحميل الرسائل...';
 
   @override
-  String get messagesTitle => 'Messages';
+  String get messagesTitle => 'الرسائل';
 
   @override
   String minAmountError(Object value1) {
-    return 'Minimum withdrawal amount is Rs $value1';
+    return 'الحد الأدنى للسحب هو $value1 روبية';
   }
 
   @override
-  String get minNoticeSubtitle => 'Minimum time before a booking can start';
+  String get minNoticeSubtitle => 'الحد الأدنى للوقت قبل أن يبدأ الحجز';
 
   @override
-  String get minNoticeTitle => 'Minimum Notice';
+  String get minNoticeTitle => 'الحد الأدنى للإشعار المسبق';
 
   @override
   String minWithdrawalLabel(Object value1) {
-    return 'Minimum withdrawal: Rs $value1';
+    return 'الحد الأدنى للسحب: $value1 روبية';
   }
 
   @override
-  String get minute => 'minute';
+  String get minute => 'دقيقة';
 
   @override
   String minutesLabel(Object value1) {
-    return '${value1}m';
+    return '$value1 د';
   }
 
   @override
   String minutesShort(Object value1) {
-    return '${value1}m';
+    return '$value1 د';
   }
 
   @override
-  String get minutesZero => '0 minutes';
+  String get minutesZero => '0 دقيقة';
 
   @override
-  String get myPortfolioLabel => 'My Portfolio';
+  String get myPortfolioLabel => 'معرض أعمالي';
 
   @override
-  String get myPortfolioTitle => 'My Portfolio';
+  String get myPortfolioTitle => 'معرض أعمالي';
 
   @override
-  String get myReviewsEmptySubtitle => 'Reviews you write will appear here';
+  String get myReviewsEmptySubtitle => 'ستظهر هنا التقييمات التي تكتبها';
 
   @override
-  String get myReviewsEmptyTitle => 'No Reviews Yet';
+  String get myReviewsEmptyTitle => 'لا توجد تقييمات بعد';
 
   @override
-  String get myReviewsTitle => 'My Reviews';
+  String get myReviewsTitle => 'تقييماتي';
 
   @override
-  String get navAnalytics => 'Analytics';
+  String get navAnalytics => 'التحليلات';
 
   @override
-  String get navBookings => 'Bookings';
+  String get navBookings => 'الحجوزات';
 
   @override
-  String get navDashboard => 'Dashboard';
+  String get navDashboard => 'لوحة التحكم';
 
   @override
-  String get navMagazine => 'Magazine';
+  String get navMagazine => 'المجلة';
 
   @override
-  String get navMessages => 'Messages';
+  String get navMessages => 'الرسائل';
 
   @override
-  String get navProfile => 'Profile';
+  String get navProfile => 'الملف الشخصي';
 
   @override
-  String get nearbyLabel => 'Nearby';
+  String get nearbyLabel => 'بالقرب منك';
 
   @override
-  String get needMoreHelpLabel => 'Need more help?';
+  String get needMoreHelpLabel => 'هل تحتاج إلى مزيد من المساعدة؟';
 
   @override
-  String get newPasswordLabel => 'New Password';
+  String get newPasswordLabel => 'كلمة المرور الجديدة';
 
   @override
-  String get newPhotoSelectedHint => 'New photo selected';
+  String get newPhotoSelectedHint => 'تم اختيار صورة جديدة';
 
   @override
-  String get nextCta => 'Next';
+  String get nextCta => 'التالي';
 
   @override
-  String get noBookingsAccepted => 'No accepted bookings';
+  String get noBookingsAccepted => 'لا توجد حجوزات مقبولة';
 
   @override
-  String get noBookingsAll => 'No bookings yet';
+  String get noBookingsAll => 'لا توجد حجوزات بعد';
 
   @override
-  String get noBookingsCancelled => 'No cancelled bookings';
+  String get noBookingsCancelled => 'لا توجد حجوزات ملغاة';
 
   @override
-  String get noBookingsCompleted => 'No completed bookings';
+  String get noBookingsCompleted => 'لا توجد حجوزات مكتملة';
 
   @override
-  String get noBookingsDefault => 'No bookings found';
+  String get noBookingsDefault => 'لم يتم العثور على حجوزات';
 
   @override
-  String get noBookingsPending => 'No pending bookings';
+  String get noBookingsPending => 'لا توجد حجوزات قيد الانتظار';
 
   @override
-  String get noBookingsRescheduled => 'No rescheduled bookings';
+  String get noBookingsRescheduled => 'لا توجد حجوزات معاد جدولتها';
 
   @override
-  String get noBookingsToday => 'No bookings today';
+  String get noBookingsToday => 'لا توجد حجوزات اليوم';
 
   @override
-  String get noBookingsYet => 'No bookings yet';
+  String get noBookingsYet => 'لا توجد حجوزات بعد';
 
   @override
-  String get noClientsFound => 'No clients found';
+  String get noClientsFound => 'لم يتم العثور على عملاء';
 
   @override
-  String get noLanguagesAdded => 'No languages added yet';
+  String get noLanguagesAdded => 'لم تتم إضافة لغات بعد';
 
   @override
-  String get noMessagesPlaceholder => 'No messages yet';
+  String get noMessagesPlaceholder => 'لا توجد رسائل بعد';
 
   @override
-  String get noMessagesYet => 'No messages yet';
+  String get noMessagesYet => 'لا توجد رسائل بعد';
 
   @override
-  String get noPaymentsSubtitle => 'Your payment history will appear here';
+  String get noPaymentsSubtitle => 'سيظهر سجل مدفوعاتك هنا';
 
   @override
-  String get noPaymentsTitle => 'No Payments Yet';
+  String get noPaymentsTitle => 'لا توجد مدفوعات بعد';
 
   @override
-  String get noPortfolioSubtitle => 'Portfolio items will appear here';
+  String get noPortfolioSubtitle => 'ستظهر عناصر معرض الأعمال هنا';
 
   @override
-  String get noPortfolioTitle => 'No Portfolio Items';
+  String get noPortfolioTitle => 'لا توجد عناصر في معرض الأعمال';
 
   @override
-  String get noReviewsSubtitle =>
-      'Reviews will appear here once customers rate you';
+  String get noReviewsSubtitle => 'ستظهر التقييمات هنا بمجرد أن يقيّمك العملاء';
 
   @override
-  String get noReviewsTitle => 'No Reviews Yet';
+  String get noReviewsTitle => 'لا توجد تقييمات بعد';
 
   @override
-  String get noReviewsYet => 'No reviews yet';
+  String get noReviewsYet => 'لا توجد تقييمات بعد';
 
   @override
-  String get noServicesSubtitle =>
-      'Add services you offer to attract customers';
+  String get noServicesSubtitle => 'أضف الخدمات التي تقدمها لجذب العملاء';
 
   @override
-  String get noServicesTitle => 'No Services Added';
+  String get noServicesTitle => 'لم تتم إضافة خدمات';
 
   @override
-  String get noSkillsAdded => 'No skills added yet';
+  String get noSkillsAdded => 'لم تتم إضافة مهارات بعد';
 
   @override
-  String get noTransactionsLabel => 'No transactions yet';
+  String get noTransactionsLabel => 'لا توجد معاملات بعد';
 
   @override
-  String get noWorkingHoursMessage => 'No working hours set for this day';
+  String get noWorkingHoursMessage => 'لم يتم تعيين ساعات عمل لهذا اليوم';
 
   @override
-  String get notAcceptingBookingsLabel => 'Not Accepting Bookings';
+  String get notAcceptingBookingsLabel => 'لا يقبل الحجوزات';
 
   @override
-  String get notAvailableLabel => 'Not Available';
+  String get notAvailableLabel => 'غير متاح';
 
   @override
-  String get notAvailableSubtitle => 'Not accepting bookings right now';
+  String get notAvailableSubtitle => 'لا يقبل الحجوزات حاليًا';
 
   @override
-  String get notSetPlaceholder => 'Not set';
+  String get notSetPlaceholder => 'غير محدد';
 
   @override
-  String get notSpecifiedLabel => 'Not specified';
+  String get notSpecifiedLabel => 'غير محدد';
 
   @override
-  String get notVerifiedLabel => 'Not Verified';
+  String get notVerifiedLabel => 'غير موثّق';
 
   @override
-  String get notesHintText => 'Add any notes here';
+  String get notesHintText => 'أضف أي ملاحظات هنا';
 
   @override
-  String get notesInfoText => 'Notes are only visible to you';
+  String get notesInfoText => 'الملاحظات مرئية لك فقط';
 
   @override
-  String get notesLabel => 'Notes';
+  String get notesLabel => 'ملاحظات';
 
   @override
-  String get notesTipText => 'Add any special requests or details';
+  String get notesTipText => 'أضف أي طلبات أو تفاصيل خاصة';
 
   @override
-  String get notificationsActionLabel => 'Notifications';
+  String get notificationsActionLabel => 'الإشعارات';
 
   @override
-  String get notificationsActionSubtitle => 'Manage notification preferences';
+  String get notificationsActionSubtitle => 'إدارة تفضيلات الإشعارات';
 
   @override
   String notificationsDaysAgo(Object value1) {
-    return '${value1}d ago';
+    return 'منذ $value1 ي';
   }
 
   @override
-  String get notificationsEmptyMessage => 'You\'re all caught up!';
+  String get notificationsEmptyMessage => 'لا يوجد جديد!';
 
   @override
-  String get notificationsEmptyTitle => 'No Notifications';
+  String get notificationsEmptyTitle => 'لا توجد إشعارات';
 
   @override
-  String get notificationsErrorTitle => 'Couldn\'t load notifications';
+  String get notificationsErrorTitle => 'تعذّر تحميل الإشعارات';
 
   @override
   String notificationsHoursAgo(Object value1) {
-    return '${value1}h ago';
+    return 'منذ $value1 س';
   }
 
   @override
-  String get notificationsJustNow => 'Just now';
+  String get notificationsJustNow => 'الآن';
 
   @override
-  String get notificationsLoadError => 'Failed to load notifications';
+  String get notificationsLoadError => 'فشل تحميل الإشعارات';
 
   @override
-  String get notificationsLoadingText => 'Loading notifications...';
+  String get notificationsLoadingText => 'جارٍ تحميل الإشعارات...';
 
   @override
-  String get notificationsMarkAllReadCta => 'Mark all as read';
+  String get notificationsMarkAllReadCta => 'تحديد الكل كمقروء';
 
   @override
   String get notificationsMarkAllReadSuccess =>
-      'All notifications marked as read';
+      'تم تحديد جميع الإشعارات كمقروءة';
 
   @override
   String notificationsMinutesAgo(Object value1) {
-    return '${value1}m ago';
+    return 'منذ $value1 د';
   }
 
   @override
-  String get notificationsSectionLabel => 'Notifications';
+  String get notificationsSectionLabel => 'الإشعارات';
 
   @override
-  String get notificationsSectionThisMonth => 'This Month';
+  String get notificationsSectionThisMonth => 'هذا الشهر';
 
   @override
-  String get notificationsSectionThisWeek => 'This Week';
+  String get notificationsSectionThisWeek => 'هذا الأسبوع';
 
   @override
-  String get notificationsSectionToday => 'Today';
+  String get notificationsSectionToday => 'اليوم';
 
   @override
-  String get notificationsSectionYesterday => 'Yesterday';
+  String get notificationsSectionYesterday => 'أمس';
 
   @override
-  String get notificationsTitle => 'Notifications';
+  String get notificationsTitle => 'الإشعارات';
 
   @override
   String notifyCustomerMessage(Object value1, Object value2) {
-    return 'Notify the customer about the new time: $value1 at $value2?';
+    return 'هل تريد إشعار العميل بالموعد الجديد: $value1 في $value2؟';
   }
 
   @override
-  String get notifyCustomerTitle => 'Notify Customer';
+  String get notifyCustomerTitle => 'إشعار العميل';
 
   @override
-  String get offlineLabel => 'Offline';
+  String get offlineLabel => 'غير متصل';
 
   @override
-  String get okCta => 'OK';
+  String get okCta => 'موافق';
 
   @override
-  String get onlineLabel => 'Online';
+  String get onlineLabel => 'متصل';
 
   @override
-  String get openChatCta => 'Open Chat';
+  String get openChatCta => 'فتح المحادثة';
 
   @override
-  String get openChatCtaShort => 'Chat';
+  String get openChatCtaShort => 'محادثة';
 
   @override
-  String get openChatError => 'Failed to open chat';
+  String get openChatError => 'فشل فتح المحادثة';
 
   @override
-  String get orContinueWithLabel => 'Or continue with';
+  String get orContinueWithLabel => 'أو تابع باستخدام';
 
   @override
-  String get overrideRemoved => 'Exception removed';
+  String get overrideRemoved => 'تمت إزالة الاستثناء';
 
   @override
   String overrideSaved(Object value1) {
-    return 'Exception saved for $value1';
+    return 'تم حفظ الاستثناء لـ $value1';
   }
 
   @override
-  String get passwordChangeError => 'Failed to change password';
+  String get passwordChangeError => 'فشل تغيير كلمة المرور';
 
   @override
-  String get passwordChangeSuccess => 'Password changed successfully';
+  String get passwordChangeSuccess => 'تم تغيير كلمة المرور بنجاح';
 
   @override
-  String get passwordHelperText => 'Must be at least 8 characters';
+  String get passwordHelperText => 'يجب ألا تقل عن 8 أحرف';
 
   @override
-  String get passwordMinLengthError => 'Password must be at least 8 characters';
+  String get passwordMinLengthError => 'يجب ألا تقل كلمة المرور عن 8 أحرف';
 
   @override
-  String get passwordMismatchError => 'Passwords do not match';
+  String get passwordMismatchError => 'كلمتا المرور غير متطابقتين';
 
   @override
-  String get passwordRequiredError => 'Password is required';
+  String get passwordRequiredError => 'كلمة المرور مطلوبة';
 
   @override
-  String get paymentHistoryLabel => 'Payment History';
+  String get paymentHistoryLabel => 'سجل المدفوعات';
 
   @override
-  String get paymentHistorySubtitle => 'View all your past payments';
+  String get paymentHistorySubtitle => 'عرض جميع مدفوعاتك السابقة';
 
   @override
-  String get paymentStatusCompleted => 'Completed';
+  String get paymentStatusCompleted => 'مكتمل';
 
   @override
-  String get paymentStatusFailed => 'Failed';
+  String get paymentStatusFailed => 'فشل';
 
   @override
-  String get paymentStatusPending => 'Pending';
+  String get paymentStatusPending => 'قيد الانتظار';
 
   @override
-  String get paymentStatusRefunded => 'Refunded';
+  String get paymentStatusRefunded => 'تم الاسترداد';
 
   @override
-  String get paymentsActionLabel => 'Payments';
+  String get paymentsActionLabel => 'المدفوعات';
 
   @override
-  String get paymentsActionSubtitle => 'View your payment history';
+  String get paymentsActionSubtitle => 'عرض سجل مدفوعاتك';
 
   @override
-  String get paymentsTitle => 'Payments';
+  String get paymentsTitle => 'المدفوعات';
 
   @override
-  String get pendingLabel => 'Pending';
+  String get pendingLabel => 'قيد الانتظار';
 
   @override
-  String get perHourLabel => '/hr';
+  String get perHourLabel => '/ساعة';
 
   @override
-  String get performanceLabel => 'Performance';
+  String get performanceLabel => 'الأداء';
 
   @override
   String get performanceScoreInfo =>
-      'Based on your ratings, response time, and completed bookings';
+      'بناءً على تقييماتك ووقت استجابتك والحجوزات المكتملة';
 
   @override
-  String get performanceScoreLabel => 'Performance Score';
+  String get performanceScoreLabel => 'درجة الأداء';
 
   @override
   String performanceScoreOutOf(Object value1) {
-    return '$value1 out of 100';
+    return '$value1 من 100';
   }
 
   @override
-  String get personalInfoLabel => 'Personal Information';
+  String get personalInfoLabel => 'المعلومات الشخصية';
 
   @override
-  String get phoneLabel => 'Phone';
+  String get phoneLabel => 'الهاتف';
 
   @override
   String photoLimitReached(Object value1) {
-    return 'You can add up to $value1 photos';
+    return 'يمكنك إضافة ما يصل إلى $value1 صور';
   }
 
   @override
-  String get photoPickError => 'Failed to select photo';
+  String get photoPickError => 'فشل اختيار الصورة';
 
   @override
-  String get photosOptionalLabel => 'Photos (optional)';
+  String get photosOptionalLabel => 'الصور (اختياري)';
 
   @override
-  String get planStatLabel => 'Plan';
+  String get planStatLabel => 'الخطة';
 
   @override
-  String get planUpgradeSubtitle =>
-      'Unlock more features and grow your business';
+  String get planUpgradeSubtitle => 'افتح المزيد من الميزات وطوّر عملك';
 
   @override
   String planUpgradeTitle(Object value1) {
-    return 'Upgrade from $value1';
+    return 'الترقية من $value1';
   }
 
   @override
-  String get portfolioInfoNote =>
-      'Showcase your best work to attract more customers';
+  String get portfolioInfoNote => 'اعرض أفضل أعمالك لجذب المزيد من العملاء';
 
   @override
-  String get portfolioLabel => 'Portfolio';
+  String get portfolioLabel => 'معرض الأعمال';
 
   @override
-  String get postReplyCta => 'Post Reply';
+  String get postReplyCta => 'نشر الرد';
 
   @override
-  String get preferencesGroupLabel => 'Preferences';
+  String get preferencesGroupLabel => 'التفضيلات';
 
   @override
-  String get preferencesSectionLabel => 'Preferences';
+  String get preferencesSectionLabel => 'التفضيلات';
 
   @override
-  String get premiumActiveSubtitle => 'You have access to all premium features';
+  String get premiumActiveSubtitle =>
+      'لديك إمكانية الوصول إلى جميع الميزات المميزة';
 
   @override
-  String get premiumMemberLabel => 'Premium Member';
+  String get premiumMemberLabel => 'عضو مميز';
 
   @override
-  String get premiumUpgradeSubtitle => 'Get unlimited AI searches and more';
+  String get premiumUpgradeSubtitle =>
+      'احصل على عمليات بحث غير محدودة بالذكاء الاصطناعي والمزيد';
 
   @override
   String get proBadgeLabel => 'PRO';
 
   @override
-  String get professionEmptyMessage => 'No professions found';
+  String get professionEmptyMessage => 'لم يتم العثور على مهن';
 
   @override
-  String get professionHint => 'Select profession';
+  String get professionHint => 'اختر المهنة';
 
   @override
-  String get professionLabel => 'Profession';
+  String get professionLabel => 'المهنة';
 
   @override
-  String get professionRequiredError => 'Please select a profession';
+  String get professionRequiredError => 'يرجى اختيار مهنة';
 
   @override
-  String get professionSearchHint => 'Search profession';
+  String get professionSearchHint => 'ابحث عن مهنة';
 
   @override
-  String get professionalAccountDescription =>
-      'Offer your services to customers';
+  String get professionalAccountDescription => 'قدّم خدماتك للعملاء';
 
   @override
-  String get professionalDefaultName => 'Professional';
+  String get professionalDefaultName => 'محترف';
 
   @override
-  String get professionalDetailLoadError =>
-      'Failed to load professional details';
+  String get professionalDetailLoadError => 'فشل تحميل تفاصيل المحترف';
 
   @override
-  String get professionalDetailsLabel => 'Professional Details';
+  String get professionalDetailsLabel => 'تفاصيل المحترف';
 
   @override
-  String get professionalLabel => 'Professional';
+  String get professionalLabel => 'محترف';
 
   @override
-  String get professionalLocationLabel => 'Professional\'s Location';
+  String get professionalLocationLabel => 'موقع المحترف';
 
   @override
-  String get professionalLocationOption => 'Professional\'s Location';
+  String get professionalLocationOption => 'موقع المحترف';
 
   @override
-  String get professionalReviewsLabel => 'Reviews';
+  String get professionalReviewsLabel => 'التقييمات';
 
   @override
-  String get professionalReviewsSubtitle => 'What customers are saying';
+  String get professionalReviewsSubtitle => 'ماذا يقول العملاء';
 
   @override
-  String get profileCompletionHint =>
-      'Complete your profile to attract more customers';
+  String get profileCompletionHint => 'أكمل ملفك الشخصي لجذب المزيد من العملاء';
 
   @override
-  String get profileCompletionLabel => 'Profile Completion';
+  String get profileCompletionLabel => 'اكتمال الملف الشخصي';
 
   @override
-  String get profileEditProfile => 'Edit Profile';
+  String get profileEditProfile => 'تعديل الملف الشخصي';
 
   @override
-  String get profileLabel => 'Profile';
+  String get profileLabel => 'الملف الشخصي';
 
   @override
-  String get profileLoadError => 'Failed to load profile';
+  String get profileLoadError => 'فشل تحميل الملف الشخصي';
 
   @override
-  String get profileLoadingText => 'Loading profile...';
+  String get profileLoadingText => 'جارٍ تحميل الملف الشخصي...';
 
   @override
-  String get profileNotAvailable => 'Profile not available';
+  String get profileNotAvailable => 'الملف الشخصي غير متاح';
 
   @override
-  String get profileOff => 'Off';
+  String get profileOff => 'إيقاف';
 
   @override
-  String get profileOn => 'On';
+  String get profileOn => 'تشغيل';
 
   @override
-  String get profileReviewsLabel => 'Reviews';
+  String get profileReviewsLabel => 'التقييمات';
 
   @override
-  String get profileSavedLabel => 'Saved';
+  String get profileSavedLabel => 'المحفوظات';
 
   @override
-  String get profileTitle => 'Profile';
+  String get profileTitle => 'الملف الشخصي';
 
   @override
-  String get profileUpdateError => 'Failed to update profile';
+  String get profileUpdateError => 'فشل تحديث الملف الشخصي';
 
   @override
-  String get profileUpdateSuccess => 'Profile updated successfully';
+  String get profileUpdateSuccess => 'تم تحديث الملف الشخصي بنجاح';
 
   @override
-  String get profileViewsLabel => 'Profile Views';
+  String get profileViewsLabel => 'مشاهدات الملف الشخصي';
 
   @override
-  String get profileViewsSubtext => 'People who viewed your profile';
+  String get profileViewsSubtext => 'الأشخاص الذين شاهدوا ملفك الشخصي';
 
   @override
-  String get profileWalletLabel => 'Wallet';
+  String get profileWalletLabel => 'المحفظة';
 
   @override
-  String get pushNotificationsLabel => 'Push Notifications';
+  String get pushNotificationsLabel => 'الإشعارات الفورية';
 
   @override
-  String get quickActionsLabel => 'Quick Actions';
+  String get quickActionsLabel => 'إجراءات سريعة';
 
   @override
-  String get quickAddLabel => 'Quick Add';
+  String get quickAddLabel => 'إضافة سريعة';
 
   @override
-  String get rateLabel => 'Rate';
+  String get rateLabel => 'السعر';
 
   @override
-  String get ratingLabel => 'Rating';
+  String get ratingLabel => 'التقييم';
 
   @override
-  String get ratingRequiredError => 'Please select a rating';
+  String get ratingRequiredError => 'يرجى اختيار تقييم';
 
   @override
-  String get recentBookingsLabel => 'Recent Bookings';
+  String get recentBookingsLabel => 'الحجوزات الأخيرة';
 
   @override
-  String get recentMessagesLabel => 'Recent Messages';
+  String get recentMessagesLabel => 'الرسائل الأخيرة';
 
   @override
-  String get recentReviewsLabel => 'Recent Reviews';
+  String get recentReviewsLabel => 'التقييمات الأخيرة';
 
   @override
-  String get refreshTooltip => 'Refresh';
+  String get refreshTooltip => 'تحديث';
 
   @override
-  String get registerCategoryRequired => 'Please select a category';
+  String get registerCategoryRequired => 'يرجى اختيار فئة';
 
   @override
-  String get registerCta => 'Register';
+  String get registerCta => 'التسجيل';
 
   @override
-  String get registerServerError => 'Registration failed. Please try again.';
+  String get registerServerError => 'فشل التسجيل. يرجى المحاولة مرة أخرى.';
 
   @override
-  String get registerSubtitle => 'Sign up to get started';
+  String get registerSubtitle => 'سجّل للبدء';
 
   @override
-  String get registerTitle => 'Create Account';
+  String get registerTitle => 'إنشاء حساب';
 
   @override
-  String get rejectCta => 'Reject';
+  String get rejectCta => 'رفض';
 
   @override
-  String get relatedProfessionalsLabel => 'You May Also Like';
+  String get relatedProfessionalsLabel => 'قد يعجبك أيضًا';
 
   @override
-  String get removeCta => 'Remove';
+  String get removeCta => 'إزالة';
 
   @override
-  String get replyHint => 'Write a reply';
+  String get replyHint => 'اكتب ردًا';
 
   @override
-  String get replySubtitle => 'Your reply is public and visible to everyone';
+  String get replySubtitle => 'ردك علني ومرئي للجميع';
 
   @override
-  String get replyTitle => 'Reply to Review';
+  String get replyTitle => 'الرد على التقييم';
 
   @override
-  String get reportNoteHint => 'Add any additional details';
+  String get reportNoteHint => 'أضف أي تفاصيل إضافية';
 
   @override
-  String get reportSubtitle => 'Help us understand what went wrong';
+  String get reportSubtitle => 'ساعدنا في فهم ما حدث من خطأ';
 
   @override
-  String get reportTitle => 'Report an Issue';
+  String get reportTitle => 'الإبلاغ عن مشكلة';
 
   @override
-  String get requestSentLabel => 'Request Sent';
+  String get requestSentLabel => 'تم إرسال الطلب';
 
   @override
   String requestSentSubtitle(Object value1) {
-    return 'Your request has been sent to $value1';
+    return 'تم إرسال طلبك إلى $value1';
   }
 
   @override
-  String get requestWithdrawCta => 'Request Withdrawal';
+  String get requestWithdrawCta => 'طلب سحب';
 
   @override
-  String get rescheduledLabel => 'Rescheduled';
+  String get rescheduledLabel => 'أُعيدت جدولته';
 
   @override
-  String get resendEmailCta => 'Resend Email';
+  String get resendEmailCta => 'إعادة إرسال البريد الإلكتروني';
 
   @override
-  String get resetLinkError => 'Failed to send reset link';
+  String get resetLinkError => 'فشل إرسال رابط إعادة التعيين';
 
   @override
   String resetLinkSent(Object value1) {
-    return 'Password reset link sent to $value1';
+    return 'تم إرسال رابط إعادة تعيين كلمة المرور إلى $value1';
   }
 
   @override
   String get resetPassSubtitle =>
-      'Enter your email and we\'ll send you a reset link';
+      'أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين';
 
   @override
-  String get resetPassTitle => 'Reset Password';
+  String get resetPassTitle => 'إعادة تعيين كلمة المرور';
 
   @override
   String resetPasswordDescription(Object value1) {
-    return 'We\'ll send a password reset link to $value1';
+    return 'سنرسل رابط إعادة تعيين كلمة المرور إلى $value1';
   }
 
   @override
-  String get resetPasswordLabel => 'Reset Password';
+  String get resetPasswordLabel => 'إعادة تعيين كلمة المرور';
 
   @override
-  String get responseLabel => 'Response';
+  String get responseLabel => 'الاستجابة';
 
   @override
-  String get responseRateLabel => 'Response Rate';
+  String get responseRateLabel => 'معدل الاستجابة';
 
   @override
-  String get responseRateSubtext => 'How often you respond to messages';
+  String get responseRateSubtext => 'عدد المرات التي ترد فيها على الرسائل';
 
   @override
-  String get responseTimeLabel => 'Response Time';
+  String get responseTimeLabel => 'وقت الاستجابة';
 
   @override
-  String get retryCta => 'Retry';
+  String get retryCta => 'إعادة المحاولة';
 
   @override
-  String get reviewBookingLabel => 'Review Booking';
+  String get reviewBookingLabel => 'تقييم الحجز';
 
   @override
-  String get reviewSubmitErrorDefault => 'Failed to submit review';
+  String get reviewSubmitErrorDefault => 'فشل إرسال التقييم';
 
   @override
   String reviewSubmittedSuccessMessage(Object value1) {
-    return 'Your review for $value1 has been submitted';
+    return 'تم إرسال تقييمك لـ $value1';
   }
 
   @override
-  String get reviewSubmittedSuccessTitle => 'Review Submitted';
+  String get reviewSubmittedSuccessTitle => 'تم إرسال التقييم';
 
   @override
-  String get reviewUpdateErrorDefault => 'Failed to update review';
+  String get reviewUpdateErrorDefault => 'فشل تحديث التقييم';
 
   @override
   String reviewUpdatedSuccessMessage(Object value1) {
-    return 'Your review for $value1 has been updated';
+    return 'تم تحديث تقييمك لـ $value1';
   }
 
   @override
-  String get reviewUpdatedSuccessTitle => 'Review Updated';
+  String get reviewUpdatedSuccessTitle => 'تم تحديث التقييم';
 
   @override
-  String get reviewsActionLabel => 'Reviews';
+  String get reviewsActionLabel => 'التقييمات';
 
   @override
-  String get reviewsActionSubtitle => 'Reviews you have written';
+  String get reviewsActionSubtitle => 'التقييمات التي كتبتها';
 
   @override
   String reviewsCountLabel(Object value1) {
-    return '$value1 reviews';
+    return '$value1 تقييمات';
   }
 
   @override
-  String get reviewsLabel => 'Reviews';
+  String get reviewsLabel => 'التقييمات';
 
   @override
-  String get saveCertificateCta => 'Save Certificate';
+  String get saveCertificateCta => 'حفظ الشهادة';
 
   @override
-  String get saveChangesCta => 'Save Changes';
+  String get saveChangesCta => 'حفظ التغييرات';
 
   @override
-  String get saveCta => 'Save';
+  String get saveCta => 'حفظ';
 
   @override
-  String get saveScheduleCta => 'Save Schedule';
+  String get saveScheduleCta => 'حفظ الجدول';
 
   @override
-  String get saveSettingsError => 'Failed to save settings';
+  String get saveSettingsError => 'فشل حفظ الإعدادات';
 
   @override
-  String get saveSettingsSuccess => 'Settings saved successfully';
+  String get saveSettingsSuccess => 'تم حفظ الإعدادات بنجاح';
 
   @override
-  String get savedProfessionalsActionLabel => 'Saved Professionals';
+  String get savedProfessionalsActionLabel => 'المحترفون المحفوظون';
 
   @override
-  String get savedProfessionalsActionSubtitle => 'Professionals you have saved';
+  String get savedProfessionalsActionSubtitle => 'المحترفون الذين حفظتهم';
 
   @override
   String get savedProfessionalsEmptySubtitle =>
-      'Professionals you save will appear here';
+      'سيظهر هنا المحترفون الذين تحفظهم';
 
   @override
-  String get savedProfessionalsEmptyTitle => 'No Saved Professionals';
+  String get savedProfessionalsEmptyTitle => 'لا يوجد محترفون محفوظون';
 
   @override
-  String get savedProfessionalsTitle => 'Saved Professionals';
+  String get savedProfessionalsTitle => 'المحترفون المحفوظون';
 
   @override
-  String get savedStatLabel => 'Saved';
+  String get savedStatLabel => 'المحفوظات';
 
   @override
-  String get searchAiPremiumActive => 'AI Search Premium Active';
+  String get searchAiPremiumActive => 'البحث بالذكاء الاصطناعي المميز مفعّل';
 
   @override
   String searchAiRemainingToday(Object value1) {
-    return '$value1 AI searches remaining today';
+    return 'تبقّى $value1 عمليات بحث بالذكاء الاصطناعي اليوم';
   }
 
   @override
-  String get searchBookingsHint => 'Search bookings';
+  String get searchBookingsHint => 'البحث في الحجوزات';
 
   @override
-  String get searchCategories => 'Categories';
+  String get searchCategories => 'الفئات';
 
   @override
-  String get searchPopular => 'Popular';
+  String get searchPopular => 'الأكثر رواجًا';
 
   @override
-  String get searchPopularCleaners => 'Cleaners';
+  String get searchPopularCleaners => 'عمال النظافة';
 
   @override
-  String get searchPopularDoctors => 'Doctors';
+  String get searchPopularDoctors => 'أطباء';
 
   @override
-  String get searchPopularElectricians => 'Electricians';
+  String get searchPopularElectricians => 'كهربائيون';
 
   @override
-  String get searchPopularEngineers => 'Engineers';
+  String get searchPopularEngineers => 'مهندسون';
 
   @override
-  String get searchPopularLawyers => 'Lawyers';
+  String get searchPopularLawyers => 'محامون';
 
   @override
-  String get searchPopularPlumbers => 'Plumbers';
+  String get searchPopularPlumbers => 'سباكون';
 
   @override
-  String get searchProfessionals => 'Professionals';
+  String get searchProfessionals => 'المحترفون';
 
   @override
-  String get searchProfessions => 'Professions';
+  String get searchProfessions => 'المهن';
 
   @override
-  String get searchRecent => 'Recent';
+  String get searchRecent => 'الأخيرة';
 
   @override
   String searchResultsLabel(Object value1, Object value2) {
-    return '$value1 results for \"$value2\"';
+    return '$value1 نتائج لـ \"$value2\"';
   }
 
   @override
-  String get searchingLabel => 'Searching...';
+  String get searchingLabel => 'جارٍ البحث...';
 
   @override
-  String get security => 'Security';
+  String get security => 'الأمان';
 
   @override
-  String get securityActionLabel => 'Security';
+  String get securityActionLabel => 'الأمان';
 
   @override
-  String get securityActionSubtitle => 'Password and account security';
+  String get securityActionSubtitle => 'كلمة المرور وأمان الحساب';
 
   @override
-  String get securityBannerSubtitle => 'Keep your account safe and secure';
+  String get securityBannerSubtitle => 'حافظ على أمان حسابك وحمايته';
 
   @override
-  String get securityBannerTitle => 'Account Security';
+  String get securityBannerTitle => 'أمان الحساب';
 
   @override
   String get securityFooterText =>
-      'If you didn\'t request this change, please contact support immediately';
+      'إذا لم تطلب هذا التغيير، يرجى التواصل مع الدعم فورًا';
 
   @override
-  String get securityTitle => 'Security';
+  String get securityTitle => 'الأمان';
 
   @override
-  String get seeAllLabel => 'See All';
+  String get seeAllLabel => 'عرض الكل';
 
   @override
-  String get selectedLabel => 'Selected';
+  String get selectedLabel => 'محدد';
 
   @override
-  String get sendResetLinkCta => 'Send Reset Link';
+  String get sendResetLinkCta => 'إرسال رابط إعادة التعيين';
 
   @override
-  String get serviceLabel => 'Service';
+  String get serviceLabel => 'الخدمة';
 
   @override
-  String get serviceProfessionalLabel => 'Service Professional';
+  String get serviceProfessionalLabel => 'مقدّم خدمة';
 
   @override
-  String get settingsActionLabel => 'Settings';
+  String get settingsActionLabel => 'الإعدادات';
 
   @override
-  String get settingsActionSubtitle => 'App preferences';
+  String get settingsActionSubtitle => 'تفضيلات التطبيق';
 
   @override
-  String get shareExperienceLabel => 'Share your experience';
+  String get shareExperienceLabel => 'شاركنا تجربتك';
 
   @override
-  String get signInInsteadLabel => 'Sign in instead';
+  String get signInInsteadLabel => 'تسجيل الدخول بدلاً من ذلك';
 
   @override
-  String get skillsLabel => 'Skills';
+  String get skillsLabel => 'المهارات';
 
   @override
-  String get skillsPricingLabel => 'Skills & Pricing';
+  String get skillsPricingLabel => 'المهارات والأسعار';
 
   @override
-  String get slotDurationSubtitle => 'Default length of each booking slot';
+  String get slotDurationSubtitle => 'المدة الافتراضية لكل فترة حجز';
 
   @override
-  String get slotDurationTitle => 'Slot Duration';
+  String get slotDurationTitle => 'مدة الفترة';
 
   @override
-  String get startConversationError => 'Failed to start conversation';
+  String get startConversationError => 'فشل بدء المحادثة';
 
   @override
-  String get startTimeLabel => 'Start Time';
+  String get startTimeLabel => 'وقت البدء';
 
   @override
-  String get startingFromLabel => 'Starting from';
+  String get startingFromLabel => 'ابتداءً من';
 
   @override
-  String get statusApproved => 'Approved';
+  String get statusApproved => 'موافق عليه';
 
   @override
-  String get statusCompleted => 'Completed';
+  String get statusCompleted => 'مكتمل';
 
   @override
-  String get statusPending => 'Pending';
+  String get statusPending => 'قيد الانتظار';
 
   @override
-  String get statusRejected => 'Rejected';
+  String get statusRejected => 'مرفوض';
 
   @override
-  String get submitReportCta => 'Submit Report';
+  String get submitReportCta => 'إرسال البلاغ';
 
   @override
-  String get submitReviewCta => 'Submit Review';
+  String get submitReviewCta => 'إرسال التقييم';
 
   @override
-  String get subscriptionActionLabel => 'Subscription';
+  String get subscriptionActionLabel => 'الاشتراك';
 
   @override
   String subscriptionActiveStatus(Object value1) {
-    return '$value1 plan active';
+    return 'خطة $value1 مفعّلة';
   }
 
   @override
-  String get subscriptionUpgradeLabel => 'Upgrade Plan';
+  String get subscriptionUpgradeLabel => 'ترقية الخطة';
 
   @override
-  String get subscriptionUpgradeStatus => 'Upgrade to premium';
+  String get subscriptionUpgradeStatus => 'الترقية إلى الخطة المميزة';
 
   @override
-  String get suggestTimeCta => 'Suggest a Different Time';
+  String get suggestTimeCta => 'اقتراح وقت مختلف';
 
   @override
-  String get suggestTimeCtaShort => 'Suggest Time';
+  String get suggestTimeCtaShort => 'اقتراح وقت';
 
   @override
-  String get suggestTimeDescription =>
-      'Propose a new date and time for this booking';
+  String get suggestTimeDescription => 'اقترح تاريخًا ووقتًا جديدين لهذا الحجز';
 
   @override
-  String get suggestTimeLabel => 'Suggest a Time';
+  String get suggestTimeLabel => 'اقتراح وقت';
 
   @override
-  String get suggestTimeSuccess => 'New time suggested to customer';
+  String get suggestTimeSuccess => 'تم اقتراح وقت جديد للعميل';
 
   @override
-  String get suggestedTimeLabel => 'Suggested Time';
+  String get suggestedTimeLabel => 'الوقت المقترح';
 
   @override
-  String get supportBannerSubtitle => 'We\'re here to help, 24/7';
+  String get supportBannerSubtitle => 'نحن هنا لمساعدتك على مدار الساعة';
 
   @override
-  String get supportBannerTitle => 'Need Help?';
+  String get supportBannerTitle => 'هل تحتاج إلى مساعدة؟';
 
   @override
-  String get supportTeamReplyLabel => 'Support Team';
+  String get supportTeamReplyLabel => 'فريق الدعم';
 
   @override
-  String get tapStarToRateLabel => 'Tap a star to rate';
+  String get tapStarToRateLabel => 'اضغط على نجمة للتقييم';
 
   @override
-  String get thisMonthLabel => 'This Month';
+  String get thisMonthLabel => 'هذا الشهر';
 
   @override
-  String get timeLabel => 'Time';
+  String get timeLabel => 'الوقت';
 
   @override
-  String get timeSlotsLabel => 'Time Slots';
+  String get timeSlotsLabel => 'الفترات الزمنية';
 
   @override
-  String get timeTipText => 'Choose a time that works best for you';
+  String get timeTipText => 'اختر الوقت الأنسب لك';
 
   @override
-  String get titleHint => 'Enter a title';
+  String get titleHint => 'أدخل عنوانًا';
 
   @override
-  String get titleLabelRequired => 'Title';
+  String get titleLabelRequired => 'العنوان';
 
   @override
-  String get titleValidationError => 'Please enter a title';
+  String get titleValidationError => 'يرجى إدخال عنوان';
 
   @override
-  String get todayLabel => 'Today';
+  String get todayLabel => 'اليوم';
 
   @override
-  String get todaysEarningsLabel => 'Today\'s Earnings';
+  String get todaysEarningsLabel => 'أرباح اليوم';
 
   @override
-  String get todaysScheduleLabel => 'Today\'s Schedule';
+  String get todaysScheduleLabel => 'جدول اليوم';
 
   @override
-  String get topRatedLabel => 'Top Rated';
+  String get topRatedLabel => 'الأعلى تقييمًا';
 
   @override
-  String get totalBookingsLabel => 'Total Bookings';
+  String get totalBookingsLabel => 'إجمالي الحجوزات';
 
   @override
-  String get totalEarnedLabel => 'Total Earned';
+  String get totalEarnedLabel => 'إجمالي الأرباح';
 
   @override
-  String get totalSpentLabel => 'Total Spent';
+  String get totalSpentLabel => 'إجمالي المصروف';
 
   @override
   String transactionCountLabel(Object value1) {
-    return '$value1 transactions';
+    return '$value1 معاملات';
   }
 
   @override
-  String get transactionHistoryTitle => 'Transaction History';
+  String get transactionHistoryTitle => 'سجل المعاملات';
 
   @override
-  String get tryAgainCta => 'Try Again';
+  String get tryAgainCta => 'حاول مرة أخرى';
 
   @override
-  String get twitterSignInLabel => 'Continue with Twitter';
+  String get twitterSignInLabel => 'المتابعة باستخدام Twitter';
 
   @override
-  String get typicallyRepliesLabel => 'Typically replies';
+  String get typicallyRepliesLabel => 'يرد عادةً';
 
   @override
-  String get unavailableLabel => 'Unavailable';
+  String get unavailableLabel => 'غير متاح';
 
   @override
-  String get unknownRoleError => 'Unknown account type';
+  String get unknownRoleError => 'نوع حساب غير معروف';
 
   @override
-  String get updateBookingError => 'Failed to update booking';
+  String get updateBookingError => 'فشل تحديث الحجز';
 
   @override
-  String get updateCta => 'Update';
+  String get updateCta => 'تحديث';
 
   @override
-  String get updateReviewCta => 'Update Review';
+  String get updateReviewCta => 'تحديث التقييم';
 
   @override
-  String get upgradeCta => 'Upgrade';
+  String get upgradeCta => 'ترقية';
 
   @override
-  String get uploadError => 'Upload failed';
+  String get uploadError => 'فشل الرفع';
 
   @override
-  String get uploadSuccess => 'Uploaded successfully';
+  String get uploadSuccess => 'تم الرفع بنجاح';
 
   @override
-  String get userLabel => 'User';
+  String get userLabel => 'مستخدم';
 
   @override
-  String get vacationCleared => 'Vacation cleared';
+  String get vacationCleared => 'تم مسح الإجازة';
 
   @override
-  String get vacationDateRequired => 'Please select a vacation date range';
+  String get vacationDateRequired => 'يرجى اختيار نطاق تواريخ الإجازة';
 
   @override
-  String get vacationSet => 'Vacation set successfully';
+  String get vacationSet => 'تم تعيين الإجازة بنجاح';
 
   @override
-  String get validAmountError => 'Please enter a valid amount';
+  String get validAmountError => 'يرجى إدخال مبلغ صالح';
 
   @override
   String get verificationAddPortfolio =>
-      'Add portfolio items to help get verified';
+      'أضف عناصر إلى معرض أعمالك للمساعدة في الحصول على التوثيق';
 
   @override
-  String get verificationLabel => 'Verification';
+  String get verificationLabel => 'التوثيق';
 
   @override
-  String get verificationPending => 'Verification pending';
+  String get verificationPending => 'التوثيق قيد الانتظار';
 
   @override
-  String get verifiedLabel => 'Verified';
+  String get verifiedLabel => 'موثّق';
 
   @override
-  String get verifiedProfessionalLabel => 'Professional';
+  String get verifiedProfessionalLabel => 'محترف';
 
   @override
   String verifiedStatusLabel(Object value1) {
-    return 'Verified $value1';
+    return 'موثّق $value1';
   }
 
   @override
-  String get viewMyBookingsCta => 'View My Bookings';
+  String get viewMyBookingsCta => 'عرض حجوزاتي';
 
   @override
-  String get viewProfileCta => 'View Profile';
+  String get viewProfileCta => 'عرض الملف الشخصي';
 
   @override
-  String get viewWalletLabel => 'View Wallet';
+  String get viewWalletLabel => 'عرض المحفظة';
 
   @override
-  String get visitorsLabel => 'Visitors';
+  String get visitorsLabel => 'الزوار';
 
   @override
-  String get visitorsSubtext => 'People who viewed your profile';
+  String get visitorsSubtext => 'الأشخاص الذين شاهدوا ملفك الشخصي';
 
   @override
-  String get walletActionLabel => 'Wallet';
+  String get walletActionLabel => 'المحفظة';
 
   @override
-  String get walletActionSubtitle => 'View balance and transactions';
+  String get walletActionSubtitle => 'عرض الرصيد والمعاملات';
 
   @override
-  String get walletEarningsLabel => 'Earnings';
+  String get walletEarningsLabel => 'الأرباح';
 
   @override
-  String get walletLabel => 'Wallet';
+  String get walletLabel => 'المحفظة';
 
   @override
-  String get walletTitle => 'Wallet';
+  String get walletTitle => 'المحفظة';
 
   @override
-  String get whatHappensNextLabel => 'What happens next?';
+  String get whatHappensNextLabel => 'ماذا يحدث بعد ذلك؟';
 
   @override
-  String get whyBookHereLabel => 'Why book with us?';
+  String get whyBookHereLabel => 'لماذا تحجز معنا؟';
 
   @override
-  String get withdrawCta => 'Withdraw';
+  String get withdrawCta => 'سحب';
 
   @override
-  String get withdrawErrorDefault => 'Withdrawal failed. Please try again.';
+  String get withdrawErrorDefault => 'فشل السحب. يرجى المحاولة مرة أخرى.';
 
   @override
-  String get withdrawSuccess => 'Withdrawal requested successfully';
+  String get withdrawSuccess => 'تم طلب السحب بنجاح';
 
   @override
-  String get withdrawTitle => 'Withdraw Funds';
+  String get withdrawTitle => 'سحب الأموال';
 
   @override
-  String get withdrawnLabel => 'Withdrawn';
+  String get withdrawnLabel => 'تم سحبه';
 
   @override
-  String get workingHoursLabel => 'Working Hours';
+  String get workingHoursLabel => 'ساعات العمل';
 
   @override
-  String get writeReviewTitle => 'Write a Review';
+  String get writeReviewTitle => 'اكتب تقييمًا';
 
   @override
   String yearsLabel(Object value1) {
-    return '$value1 years';
+    return '$value1 سنوات';
   }
 
   @override
-  String get yesCancelCta => 'Yes, Cancel';
+  String get yesCancelCta => 'نعم، إلغاء';
 
   @override
-  String get youAreNotifiedLabel => 'You\'ll be notified';
+  String get youAreNotifiedLabel => 'سيتم إشعارك';
 
   @override
-  String get youAreNotifiedSubtitle =>
-      'We\'ll notify you as soon as there\'s a response';
+  String get youAreNotifiedSubtitle => 'سنخبرك فور وصول رد';
 
   @override
-  String get yourAccountEmailPlaceholder => 'your account email';
+  String get yourAccountEmailPlaceholder => 'البريد الإلكتروني لحسابك';
 
   @override
-  String get tsErrForbidden =>
-      'You do not have permission to perform this action.';
+  String get tsErrForbidden => 'ليس لديك إذن لتنفيذ هذا الإجراء.';
 
   @override
-  String get tsErrNetwork =>
-      'Network problem. Check your connection and try again.';
+  String get tsErrNetwork => 'مشكلة في الشبكة. تحقق من اتصالك وحاول مرة أخرى.';
 
   @override
-  String get tsErrGeneric => 'Something went wrong. Please try again.';
+  String get tsErrGeneric => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
 
   @override
-  String get tsRetry => 'Retry';
+  String get tsRetry => 'إعادة المحاولة';
 
   @override
-  String get tsCopy => 'Copy';
+  String get tsCopy => 'نسخ';
 
   @override
-  String get tsCopied => 'Copied to clipboard';
+  String get tsCopied => 'تم النسخ إلى الحافظة';
 
   @override
-  String get tsOpenLink => 'Open link';
+  String get tsOpenLink => 'فتح الرابط';
 
   @override
-  String get tsLinkOpenFailed => 'This link could not be opened.';
+  String get tsLinkOpenFailed => 'تعذّر فتح هذا الرابط.';
 
   @override
-  String get tsCancel => 'Cancel';
+  String get tsCancel => 'إلغاء';
 
   @override
-  String get tsClose => 'Close';
+  String get tsClose => 'إغلاق';
 
   @override
-  String get tsRefresh => 'Refresh';
+  String get tsRefresh => 'تحديث';
 
   @override
-  String get tsAll => 'All';
+  String get tsAll => 'الكل';
 
   @override
-  String get tsCatSpam => 'Spam';
+  String get tsCatSpam => 'بريد مزعج';
 
   @override
-  String get tsCatHarassment => 'Harassment';
+  String get tsCatHarassment => 'تحرش';
 
   @override
-  String get tsCatFraud => 'Fraud or scam';
+  String get tsCatFraud => 'احتيال أو نصب';
 
   @override
-  String get tsCatFakeProfile => 'Fake profile';
+  String get tsCatFakeProfile => 'ملف شخصي مزيف';
 
   @override
-  String get tsCatInappropriate => 'Inappropriate content';
+  String get tsCatInappropriate => 'محتوى غير لائق';
 
   @override
-  String get tsCatPaymentFraud => 'Payment fraud';
+  String get tsCatPaymentFraud => 'احتيال في الدفع';
 
   @override
-  String get tsCatOffPlatform => 'Off-platform payment';
+  String get tsCatOffPlatform => 'دفع خارج المنصة';
 
   @override
-  String get tsCatThreats => 'Threats or safety concern';
+  String get tsCatThreats => 'تهديدات أو مخاوف تتعلق بالسلامة';
 
   @override
-  String get tsCatDiscrimination => 'Discrimination';
+  String get tsCatDiscrimination => 'تمييز';
 
   @override
-  String get tsCatMisconduct => 'Service misconduct';
+  String get tsCatMisconduct => 'سوء سلوك في الخدمة';
 
   @override
-  String get tsCatOther => 'Other';
+  String get tsCatOther => 'أخرى';
 
   @override
-  String get tsStatusPending => 'Pending';
+  String get tsStatusPending => 'قيد الانتظار';
 
   @override
-  String get tsStatusReviewed => 'Reviewed';
+  String get tsStatusReviewed => 'تمت المراجعة';
 
   @override
-  String get tsStatusActionTaken => 'Action taken';
+  String get tsStatusActionTaken => 'تم اتخاذ إجراء';
 
   @override
-  String get tsStatusDismissed => 'Dismissed';
+  String get tsStatusDismissed => 'مرفوض';
 
   @override
-  String get tsSevLow => 'Low';
+  String get tsSevLow => 'منخفضة';
 
   @override
-  String get tsSevMedium => 'Medium';
+  String get tsSevMedium => 'متوسطة';
 
   @override
-  String get tsSevHigh => 'High';
+  String get tsSevHigh => 'عالية';
 
   @override
-  String get tsSevCritical => 'Critical';
+  String get tsSevCritical => 'حرجة';
 
   @override
-  String get tsRoleCustomer => 'Customer';
+  String get tsRoleCustomer => 'عميل';
 
   @override
-  String get tsRoleProfessional => 'Professional';
+  String get tsRoleProfessional => 'محترف';
 
   @override
-  String get tsRoleAdmin => 'Admin';
+  String get tsRoleAdmin => 'مسؤول';
 
   @override
-  String get tsActWarning => 'Warning';
+  String get tsActWarning => 'تحذير';
 
   @override
-  String get tsActRestrictMessaging => 'Messaging restriction';
+  String get tsActRestrictMessaging => 'تقييد المراسلة';
 
   @override
-  String get tsActRestrictBooking => 'Booking restriction';
+  String get tsActRestrictBooking => 'تقييد الحجز';
 
   @override
-  String get tsActSuspendTemporary => 'Temporary suspension';
+  String get tsActSuspendTemporary => 'تعليق مؤقت';
 
   @override
-  String get tsActSuspendPermanent => 'Permanent suspension';
+  String get tsActSuspendPermanent => 'تعليق دائم';
 
   @override
-  String get tsActWarningDesc =>
-      'Records a formal warning. Does not limit the account.';
+  String get tsActWarningDesc => 'يسجّل تحذيرًا رسميًا. لا يقيّد الحساب.';
 
   @override
   String get tsActRestrictMessagingDesc =>
-      'Marks the account as restricted from messaging.';
+      'يضع الحساب في وضع مقيّد من المراسلة.';
 
   @override
   String get tsActRestrictBookingDesc =>
-      'Marks the account as restricted from creating bookings.';
+      'يضع الحساب في وضع مقيّد من إنشاء الحجوزات.';
 
   @override
   String get tsActSuspendTemporaryDesc =>
-      'Marks the account as suspended until the date you choose.';
+      'يعلّق الحساب حتى التاريخ الذي تختاره.';
 
   @override
   String get tsActSuspendPermanentDesc =>
-      'Marks the account as permanently suspended. No expiry; only an admin can reverse it.';
+      'يعلّق الحساب بشكل دائم. بلا تاريخ انتهاء؛ ولا يمكن إلغاؤه إلا بواسطة مسؤول.';
 
   @override
-  String get tsStateActive => 'Active';
+  String get tsStateActive => 'نشط';
 
   @override
-  String get tsStateScheduled => 'Scheduled';
+  String get tsStateScheduled => 'مجدول';
 
   @override
-  String get tsStateExpired => 'Expired';
+  String get tsStateExpired => 'منتهي';
 
   @override
-  String get tsStateReversed => 'Reversed';
+  String get tsStateReversed => 'تم إلغاؤه';
 
   @override
-  String get tsAppealPending => 'Pending';
+  String get tsAppealPending => 'قيد الانتظار';
 
   @override
-  String get tsAppealApproved => 'Approved';
+  String get tsAppealApproved => 'تمت الموافقة';
 
   @override
-  String get tsAppealRejected => 'Rejected';
+  String get tsAppealRejected => 'مرفوض';
 
   @override
-  String get tsReportsTitle => 'Reported Users';
+  String get tsReportsTitle => 'المستخدمون المبلّغ عنهم';
 
   @override
   String tsPendingReview(String count) {
-    return '$count pending review';
+    return '$count قيد المراجعة';
   }
 
   @override
-  String get tsSearchReportsHint => 'Search by user, reporter, category or ID';
+  String get tsSearchReportsHint =>
+      'ابحث بالمستخدم أو المبلّغ أو الفئة أو المعرّف';
 
   @override
-  String get tsFilterSeverity => 'Severity';
+  String get tsFilterSeverity => 'الخطورة';
 
   @override
-  String get tsFilterCategory => 'Category';
+  String get tsFilterCategory => 'الفئة';
 
   @override
-  String get tsFilterDate => 'Date';
+  String get tsFilterDate => 'التاريخ';
 
   @override
-  String get tsDateAny => 'Any time';
+  String get tsDateAny => 'في أي وقت';
 
   @override
-  String get tsDateToday => 'Today';
+  String get tsDateToday => 'اليوم';
 
   @override
-  String get tsDate7 => 'Last 7 days';
+  String get tsDate7 => 'آخر 7 أيام';
 
   @override
-  String get tsDate30 => 'Last 30 days';
+  String get tsDate30 => 'آخر 30 يومًا';
 
   @override
-  String get tsDateCustom => 'Custom range';
+  String get tsDateCustom => 'نطاق مخصص';
 
   @override
-  String get tsSortNewest => 'Newest first';
+  String get tsSortNewest => 'الأحدث أولاً';
 
   @override
-  String get tsSortSeverity => 'Highest severity first';
+  String get tsSortSeverity => 'الأعلى خطورة أولاً';
 
   @override
-  String get tsClearFilters => 'Clear filters';
+  String get tsClearFilters => 'مسح عوامل التصفية';
 
   @override
-  String get tsNoReports => 'No reports yet';
+  String get tsNoReports => 'لا توجد بلاغات بعد';
 
   @override
-  String get tsNoReportsHint => 'Reports submitted by users will appear here.';
+  String get tsNoReportsHint => 'ستظهر هنا البلاغات التي يرسلها المستخدمون.';
 
   @override
-  String get tsNoMatches => 'No reports match your filters';
+  String get tsNoMatches => 'لا توجد بلاغات تطابق عوامل التصفية';
 
   @override
-  String get tsNoMatchesHint => 'Try changing or clearing the filters.';
+  String get tsNoMatchesHint => 'جرّب تغيير عوامل التصفية أو مسحها.';
 
   @override
-  String get tsSelectReport => 'Select a report';
+  String get tsSelectReport => 'اختر بلاغًا';
 
   @override
   String get tsSelectReportHint =>
-      'Choose a report from the list to review it and take action.';
+      'اختر بلاغًا من القائمة لمراجعته واتخاذ إجراء.';
 
   @override
-  String get tsIndBooking => 'Booking';
+  String get tsIndBooking => 'حجز';
 
   @override
-  String get tsIndMessage => 'Message';
+  String get tsIndMessage => 'رسالة';
 
   @override
-  String get tsIndEvidence => 'Evidence';
+  String get tsIndEvidence => 'دليل';
 
   @override
   String tsReportedBy(String name) {
-    return 'Reported by $name';
+    return 'بلّغ عنه $name';
   }
 
   @override
-  String get tsAccountBlocked => 'Account blocked';
+  String get tsAccountBlocked => 'الحساب محظور';
 
   @override
   String tsReportNumber(String id) {
-    return 'Report #$id';
+    return 'البلاغ رقم $id';
   }
 
   @override
   String tsSubmittedOn(String date) {
-    return 'Submitted $date';
+    return 'أُرسل في $date';
   }
 
   @override
-  String get tsTakeAction => 'Take action';
+  String get tsTakeAction => 'اتخاذ إجراء';
 
   @override
-  String get tsMarkReviewed => 'Mark reviewed';
+  String get tsMarkReviewed => 'تحديد كمراجَع';
 
   @override
-  String get tsDismiss => 'Dismiss';
+  String get tsDismiss => 'رفض';
 
   @override
-  String get tsSecDescription => 'Report description';
+  String get tsSecDescription => 'وصف البلاغ';
 
   @override
-  String get tsNoDescription => 'No description was provided.';
+  String get tsNoDescription => 'لم يتم تقديم وصف.';
 
   @override
-  String get tsSecEvidence => 'Evidence and context';
+  String get tsSecEvidence => 'الأدلة والسياق';
 
   @override
-  String get tsEvidenceLabel => 'EVIDENCE / REFERENCE';
+  String get tsEvidenceLabel => 'الدليل / المرجع';
 
   @override
-  String get tsNoEvidence => 'No evidence link provided.';
+  String get tsNoEvidence => 'لم يتم تقديم رابط دليل.';
 
   @override
-  String get tsBookingLabel => 'RELATED BOOKING';
+  String get tsBookingLabel => 'الحجز المرتبط';
 
   @override
   String tsBookingNumber(String id) {
-    return 'Booking #$id';
+    return 'الحجز رقم $id';
   }
 
   @override
-  String get tsMessageLabel => 'RELATED MESSAGE';
+  String get tsMessageLabel => 'الرسالة المرتبطة';
 
   @override
   String tsMessageNumber(String id) {
-    return 'Message #$id';
+    return 'الرسالة رقم $id';
   }
 
   @override
-  String get tsMessageDeleted =>
-      'This message was deleted. Its content is not available.';
+  String get tsMessageDeleted => 'تم حذف هذه الرسالة. محتواها غير متاح.';
 
   @override
   String tsMessageAttachments(String count) {
-    return 'Attachments: $count';
+    return 'المرفقات: $count';
   }
 
   @override
-  String get tsNoRelated => 'None linked to this report.';
+  String get tsNoRelated => 'لا يوجد شيء مرتبط بهذا البلاغ.';
 
   @override
-  String get tsFieldWhen => 'When';
+  String get tsFieldWhen => 'الوقت';
 
   @override
-  String get tsFieldParties => 'Parties';
+  String get tsFieldParties => 'الأطراف';
 
   @override
-  String get tsFieldSender => 'Sender';
+  String get tsFieldSender => 'المرسِل';
 
   @override
   String tsBookingWith(String customer, String professional) {
-    return '$customer with $professional';
+    return '$customer مع $professional';
   }
 
   @override
-  String get tsSecPeople => 'People';
+  String get tsSecPeople => 'الأشخاص';
 
   @override
-  String get tsReportedUser => 'REPORTED USER';
+  String get tsReportedUser => 'المستخدم المبلّغ عنه';
 
   @override
-  String get tsReporterLabel => 'REPORTER';
+  String get tsReporterLabel => 'المبلِّغ';
 
   @override
   String get tsReporterAdminOnly =>
-      'Visible to admins only. Never shown to the reported user.';
+      'مرئي للمسؤولين فقط. لا يظهر أبدًا للمستخدم المبلّغ عنه.';
 
   @override
   String get tsAccountBlockedNote =>
-      'This account is currently blocked (see the Blocked tab). Blocking is separate from moderation actions.';
+      'هذا الحساب محظور حاليًا (انظر تبويب المحظورين). الحظر منفصل عن إجراءات الإشراف.';
 
   @override
-  String get tsSecActive => 'Active restrictions and suspension';
+  String get tsSecActive => 'القيود والتعليق النشطة';
 
   @override
-  String get tsNoActive => 'No active restrictions or suspension.';
+  String get tsNoActive => 'لا توجد قيود أو تعليق نشط.';
 
   @override
-  String get tsSecTimeline => 'Report history';
+  String get tsSecTimeline => 'سجل البلاغ';
 
   @override
-  String get tsSecHistory => 'Moderation history';
+  String get tsSecHistory => 'سجل الإشراف';
 
   @override
-  String get tsSecOtherReports => 'Other reports about this user';
+  String get tsSecOtherReports => 'بلاغات أخرى عن هذا المستخدم';
 
   @override
-  String get tsHistoryLoadError => 'Could not load moderation history.';
+  String get tsHistoryLoadError => 'تعذّر تحميل سجل الإشراف.';
 
   @override
-  String get tsHistoryEmpty => 'No moderation actions on record for this user.';
+  String get tsHistoryEmpty => 'لا توجد إجراءات إشراف مسجلة لهذا المستخدم.';
 
   @override
-  String get tsTlSubmitted => 'Report submitted';
+  String get tsTlSubmitted => 'تم إرسال البلاغ';
 
   @override
   String tsTlReviewed(String status, String admin) {
-    return 'Marked $status by $admin';
+    return 'تم تحديده $status بواسطة $admin';
   }
 
   @override
   String tsTlInternalNote(String note) {
-    return 'Internal note: $note';
+    return 'ملاحظة داخلية: $note';
   }
 
   @override
   String tsTlActionApplied(String action, String admin) {
-    return '$action applied by $admin';
+    return 'تم تطبيق $action بواسطة $admin';
   }
 
   @override
   String tsTlActionReversed(String action, String admin) {
-    return '$action reversed by $admin';
+    return 'تم إلغاء $action بواسطة $admin';
   }
 
   @override
-  String get tsThisReport => 'This report';
+  String get tsThisReport => 'هذا البلاغ';
 
   @override
   String tsHistPerformedBy(String admin, String date) {
-    return 'By $admin on $date';
+    return 'بواسطة $admin في $date';
   }
 
   @override
   String tsStartsOn(String date) {
-    return 'Starts $date';
+    return 'يبدأ في $date';
   }
 
   @override
   String tsExpiresOn(String date) {
-    return 'Expires $date';
+    return 'ينتهي في $date';
   }
 
   @override
-  String get tsNoExpiryPermanent => 'Permanent, no expiry';
+  String get tsNoExpiryPermanent => 'دائم، بلا تاريخ انتهاء';
 
   @override
-  String get tsNoExpiryOpen => 'No end date, active until lifted';
+  String get tsNoExpiryOpen => 'بلا تاريخ انتهاء، ساري حتى يتم رفعه';
 
   @override
-  String get tsReasonShownToUser => 'REASON (SHOWN TO THE USER)';
+  String get tsReasonShownToUser => 'السبب (يظهر للمستخدم)';
 
   @override
-  String get tsInternalNoteLabel => 'Internal note (admin only)';
+  String get tsInternalNoteLabel => 'ملاحظة داخلية (للمسؤولين فقط)';
 
   @override
   String tsHistReversedBy(String admin, String date) {
-    return 'Reversed by $admin on $date';
+    return 'أُلغي بواسطة $admin في $date';
   }
 
   @override
-  String get tsReverse => 'Reverse';
+  String get tsReverse => 'إلغاء الإجراء';
 
   @override
-  String get tsAdminUnknown => 'Unknown admin';
+  String get tsAdminUnknown => 'مسؤول غير معروف';
 
   @override
-  String get tsReviewTitle => 'Mark report as reviewed';
+  String get tsReviewTitle => 'تحديد البلاغ كمراجَع';
 
   @override
   String get tsReviewMessage =>
-      'Confirm that you have reviewed this report. You can add an internal note.';
+      'أكّد أنك راجعت هذا البلاغ. يمكنك إضافة ملاحظة داخلية.';
 
   @override
-  String get tsReviewConfirm => 'Mark reviewed';
+  String get tsReviewConfirm => 'تحديد كمراجَع';
 
   @override
-  String get tsDismissTitle => 'Dismiss report';
+  String get tsDismissTitle => 'رفض البلاغ';
 
   @override
   String get tsDismissMessage =>
-      'Dismiss this report if it does not break the rules. No action is taken against the reported user.';
+      'ارفض هذا البلاغ إذا كان لا ينتهك القواعد. لن يتم اتخاذ أي إجراء ضد المستخدم المبلّغ عنه.';
 
   @override
-  String get tsDismissConfirm => 'Dismiss report';
+  String get tsDismissConfirm => 'رفض البلاغ';
 
   @override
   String get tsResolveReporterNote =>
-      'The reporter receives a generic outcome notification. The reported user is not notified.';
+      'يتلقى المبلِّغ إشعارًا عامًا بالنتيجة. لا يتم إشعار المستخدم المبلّغ عنه.';
 
   @override
-  String get tsReportUpdated => 'Report updated';
+  String get tsReportUpdated => 'تم تحديث البلاغ';
 
   @override
-  String get tsTakeActionTitle => 'Take moderation action';
+  String get tsTakeActionTitle => 'اتخاذ إجراء إشرافي';
 
   @override
   String tsRegardingReport(String id) {
-    return 'Regarding report #$id';
+    return 'بخصوص البلاغ رقم $id';
   }
 
   @override
-  String get tsChooseAction => 'Choose an action';
+  String get tsChooseAction => 'اختر إجراءً';
 
   @override
-  String get tsChooseActionError => 'Select an action to continue.';
+  String get tsChooseActionError => 'اختر إجراءً للمتابعة.';
 
   @override
-  String get tsAlreadyActive => 'Already active for this user.';
+  String get tsAlreadyActive => 'نشط بالفعل لهذا المستخدم.';
 
   @override
   String get tsAlreadyPermanentlySuspended =>
-      'This user is already permanently suspended.';
+      'هذا المستخدم معلّق بشكل دائم بالفعل.';
 
   @override
-  String get tsDurationTitle => 'Duration';
+  String get tsDurationTitle => 'المدة';
 
   @override
-  String get tsDurationUntilLifted => 'Until lifted';
+  String get tsDurationUntilLifted => 'حتى يتم الرفع';
 
   @override
-  String get tsDurationPermanent => 'Permanent';
+  String get tsDurationPermanent => 'دائم';
 
   @override
   String tsDurationDays(String n) {
-    return '$n days';
+    return '$n أيام';
   }
 
   @override
-  String get tsDurationCustom => 'Custom date';
+  String get tsDurationCustom => 'تاريخ مخصص';
 
   @override
   String tsEndsAt(String when) {
-    return 'Ends $when';
+    return 'ينتهي $when';
   }
 
   @override
   String tsUntilDate(String date) {
-    return 'Until $date';
+    return 'حتى $date';
   }
 
   @override
-  String get tsExpiryRequired => 'Choose when this ends.';
+  String get tsExpiryRequired => 'اختر موعد انتهاء هذا الإجراء.';
 
   @override
-  String get tsExpiryMustBeFuture => 'The end time must be in the future.';
+  String get tsExpiryMustBeFuture => 'يجب أن يكون وقت الانتهاء في المستقبل.';
 
   @override
-  String get tsReasonLabel => 'Reason';
+  String get tsReasonLabel => 'السبب';
 
   @override
-  String get tsReasonHint => 'Explain why this action is being taken';
+  String get tsReasonHint => 'اشرح سبب اتخاذ هذا الإجراء';
 
   @override
   String get tsReasonUserVisibleNote =>
-      'Shown to the user in their notification. Do not mention the reporter or other users.';
+      'يظهر للمستخدم في إشعاره. لا تذكر المبلِّغ أو مستخدمين آخرين.';
 
   @override
   String tsReasonTooShort(String min) {
-    return 'Please enter a reason of at least $min characters.';
+    return 'يرجى إدخال سبب لا يقل عن $min أحرف.';
   }
 
   @override
-  String get tsInternalNoteHint => 'Optional context for other admins';
+  String get tsInternalNoteHint => 'سياق اختياري للمسؤولين الآخرين';
 
   @override
-  String get tsInternalNoteNote => 'Internal only. Never shown to the user.';
+  String get tsInternalNoteNote =>
+      'للاستخدام الداخلي فقط. لا يظهر أبدًا للمستخدم.';
 
   @override
-  String get tsMarkReportTaken => 'Mark this report as Action taken';
+  String get tsMarkReportTaken => 'تحديد هذا البلاغ بحالة تم اتخاذ إجراء';
 
   @override
   String get tsMarkReportTakenHint =>
-      'The reporter receives a generic outcome notification only.';
+      'يتلقى المبلِّغ إشعارًا عامًا بالنتيجة فقط.';
 
   @override
-  String get tsApplyAction => 'Apply action';
+  String get tsApplyAction => 'تطبيق الإجراء';
 
   @override
   String tsConfirmTitle(String action) {
-    return 'Apply $action?';
+    return 'تطبيق $action؟';
   }
 
   @override
   String tsConfirmBody(String user) {
-    return 'This is recorded in the moderation history of $user and the user is notified.';
+    return 'سيتم تسجيل هذا في سجل الإشراف الخاص بـ $user وسيتم إشعار المستخدم.';
   }
 
   @override
   String get tsConfirmPermanentAck =>
-      'I understand this suspension has no expiry and can only be reversed by an admin.';
+      'أدرك أن هذا التعليق ليس له تاريخ انتهاء ولا يمكن إلغاؤه إلا بواسطة مسؤول.';
 
   @override
-  String get tsFieldUser => 'User';
+  String get tsFieldUser => 'المستخدم';
 
   @override
-  String get tsFieldAction => 'Action';
+  String get tsFieldAction => 'الإجراء';
 
   @override
-  String get tsFieldDuration => 'Duration';
+  String get tsFieldDuration => 'المدة';
 
   @override
-  String get tsFieldReason => 'Reason';
+  String get tsFieldReason => 'السبب';
 
   @override
-  String get tsActionApplied => 'Moderation action applied';
+  String get tsActionApplied => 'تم تطبيق الإجراء الإشرافي';
 
   @override
   String get tsActionAppliedReportFailed =>
-      'The action was applied, but the report status could not be updated.';
+      'تم تطبيق الإجراء، ولكن تعذّر تحديث حالة البلاغ.';
 
   @override
   String get tsCannotActOnAdmin =>
-      'Moderation actions cannot target admin accounts.';
+      'لا يمكن توجيه إجراءات الإشراف ضد حسابات المسؤولين.';
 
   @override
-  String get tsFieldPerformedBy => 'Performed by';
+  String get tsFieldPerformedBy => 'نفّذه';
 
   @override
-  String get tsFieldCreated => 'Created';
+  String get tsFieldCreated => 'تاريخ الإنشاء';
 
   @override
-  String get tsFieldExpires => 'Expires';
+  String get tsFieldExpires => 'ينتهي';
 
   @override
-  String get tsFieldReport => 'Report';
+  String get tsFieldReport => 'البلاغ';
 
   @override
-  String get tsFieldDecidedBy => 'Decided by';
+  String get tsFieldDecidedBy => 'قرّره';
 
   @override
-  String get tsFieldDecidedOn => 'Decided on';
+  String get tsFieldDecidedOn => 'تاريخ القرار';
 
   @override
-  String get tsReverseTitle => 'Reverse moderation action';
+  String get tsReverseTitle => 'إلغاء الإجراء الإشرافي';
 
   @override
   String tsReverseMessage(String action) {
-    return 'Reverse the $action? It is lifted and the record stays in the history.';
+    return 'هل تريد إلغاء $action؟ سيتم رفعه ويبقى السجل في التاريخ.';
   }
 
   @override
-  String get tsReversalReasonLabel => 'Reason for reversal';
+  String get tsReversalReasonLabel => 'سبب الإلغاء';
 
   @override
-  String get tsReversalReasonHint => 'Why is this action being lifted?';
+  String get tsReversalReasonHint => 'لماذا يتم رفع هذا الإجراء؟';
 
   @override
-  String get tsReverseConfirm => 'Reverse action';
+  String get tsReverseConfirm => 'إلغاء الإجراء';
 
   @override
   String get tsReverseAuditNote =>
-      'Your reason is internal. It is recorded in the moderation history and never shown to the user.';
+      'سببك داخلي. يُسجَّل في سجل الإشراف ولا يظهر أبدًا للمستخدم.';
 
   @override
   String get tsReverseNotifyNote =>
-      'The user is notified that this action was lifted.';
+      'سيتم إشعار المستخدم بأنه تم رفع هذا الإجراء.';
 
   @override
   String get tsReverseLegacyNote =>
-      'This action came from the legacy ban flow. Reversing it also re-enables the account.';
+      'جاء هذا الإجراء من مسار الحظر القديم. سيؤدي إلغاؤه أيضًا إلى إعادة تفعيل الحساب.';
 
   @override
-  String get tsActionReversed => 'Moderation action reversed';
+  String get tsActionReversed => 'تم إلغاء الإجراء الإشرافي';
 
   @override
-  String get tsAppealsTitle => 'Appeals';
+  String get tsAppealsTitle => 'الاستئنافات';
 
   @override
   String tsPendingAppeals(String count) {
-    return '$count pending appeals';
+    return '$count استئنافات قيد الانتظار';
   }
 
   @override
-  String get tsSearchAppealsHint => 'Search by user, email or appeal text';
+  String get tsSearchAppealsHint =>
+      'ابحث بالمستخدم أو البريد الإلكتروني أو نص الاستئناف';
 
   @override
-  String get tsNoAppeals => 'No appeals here';
+  String get tsNoAppeals => 'لا توجد استئنافات هنا';
 
   @override
   String get tsNoAppealsHint =>
-      'Appeals against moderation actions will appear here.';
+      'ستظهر هنا الاستئنافات المقدمة ضد إجراءات الإشراف.';
 
   @override
-  String get tsSelectAppeal => 'Select an appeal';
+  String get tsSelectAppeal => 'اختر استئنافًا';
 
   @override
-  String get tsSelectAppealHint =>
-      'Choose an appeal from the list to review it.';
+  String get tsSelectAppealHint => 'اختر استئنافًا من القائمة لمراجعته.';
 
   @override
   String tsAppealNumber(String id) {
-    return 'Appeal #$id';
+    return 'الاستئناف رقم $id';
   }
 
   @override
-  String get tsSecAppealReason => 'Appeal';
+  String get tsSecAppealReason => 'الاستئناف';
 
   @override
-  String get tsSecAppealedAction => 'Appealed action';
+  String get tsSecAppealedAction => 'الإجراء المستأنَف';
 
   @override
-  String get tsSecDecision => 'Decision';
+  String get tsSecDecision => 'القرار';
 
   @override
-  String get tsAppealApprove => 'Approve';
+  String get tsAppealApprove => 'قبول';
 
   @override
-  String get tsAppealReject => 'Reject';
+  String get tsAppealReject => 'رفض';
 
   @override
-  String get tsApproveTitle => 'Approve appeal';
+  String get tsApproveTitle => 'قبول الاستئناف';
 
   @override
-  String get tsApproveMessage =>
-      'Approving this appeal lifts the moderation action.';
+  String get tsApproveMessage => 'قبول هذا الاستئناف سيرفع الإجراء الإشرافي.';
 
   @override
-  String get tsApproveConfirm => 'Approve appeal';
+  String get tsApproveConfirm => 'قبول الاستئناف';
 
   @override
-  String get tsRejectTitle => 'Reject appeal';
+  String get tsRejectTitle => 'رفض الاستئناف';
 
   @override
-  String get tsRejectMessage =>
-      'Rejecting keeps the moderation action in place.';
+  String get tsRejectMessage => 'رفض الاستئناف يُبقي الإجراء الإشرافي قائمًا.';
 
   @override
-  String get tsRejectConfirm => 'Reject appeal';
+  String get tsRejectConfirm => 'رفض الاستئناف';
 
   @override
-  String get tsDecisionNoteLabel => 'Decision note';
+  String get tsDecisionNoteLabel => 'ملاحظة القرار';
 
   @override
-  String get tsDecisionNoteHint => 'Explain your decision';
+  String get tsDecisionNoteHint => 'اشرح قرارك';
 
   @override
-  String get tsDecisionNoteNote => 'Internal only. Never shown to the user.';
+  String get tsDecisionNoteNote =>
+      'للاستخدام الداخلي فقط. لا يظهر أبدًا للمستخدم.';
 
   @override
-  String get tsAppealApproveNote =>
-      'The action is reversed and the user is notified.';
+  String get tsAppealApproveNote => 'سيتم إلغاء الإجراء وإشعار المستخدم.';
 
   @override
   String get tsAppealApproveInactive =>
-      'This action is no longer in effect, so approving only closes the appeal. The user is notified.';
+      'لم يعد هذا الإجراء ساريًا، لذا فإن القبول يغلق الاستئناف فقط. سيتم إشعار المستخدم.';
 
   @override
   String get tsAppealRejectNote =>
-      'The action stays in place and the user is notified of the outcome.';
+      'يبقى الإجراء قائمًا ويتم إشعار المستخدم بالنتيجة.';
 
   @override
-  String get tsAppealApprovedSnack => 'Appeal approved';
+  String get tsAppealApprovedSnack => 'تم قبول الاستئناف';
 
   @override
-  String get tsAppealRejectedSnack => 'Appeal rejected';
+  String get tsAppealRejectedSnack => 'تم رفض الاستئناف';
 
   @override
-  String get tsNoDecisionNote => 'No note was recorded.';
+  String get tsNoDecisionNote => 'لم يتم تسجيل ملاحظة.';
 
   @override
   String get tsEvidenceLinkOptional => 'رابط الدليل (اختياري)';
@@ -6426,4 +6438,508 @@ class AppLocalizationsAr extends AppLocalizations {
   String myTsAppealForLabel(String action) {
     return 'استئناف بخصوص $action';
   }
+
+  @override
+  String get announcementDismiss => 'إغلاق الإعلان';
+
+  @override
+  String get chatMessageHint => 'رسالة';
+
+  @override
+  String get voiceRecordStartFailed =>
+      'تعذّر بدء التسجيل. يرجى التحقق من الميكروفون والمحاولة مرة أخرى.';
+
+  @override
+  String get voiceRecordSaveFailed =>
+      'تعذّر حفظ التسجيل. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get voicePlayFailed => 'تعذّر تشغيل هذه الرسالة الصوتية.';
+
+  @override
+  String get reviewSortBy => 'ترتيب حسب';
+
+  @override
+  String get reviewSortRelevant => 'الأكثر صلة';
+
+  @override
+  String get reviewSortNewest => 'الأحدث';
+
+  @override
+  String get reviewSortHighest => 'الأعلى تقييمًا';
+
+  @override
+  String get reviewSortLowest => 'الأقل تقييمًا';
+
+  @override
+  String get reviewSortHelpful => 'الأكثر إفادة';
+
+  @override
+  String get reviewSortWithPhotos => 'مع صور';
+
+  @override
+  String get reviewFilterAll => 'كل المراجعات';
+
+  @override
+  String get promoSkip => 'تخطي';
+
+  @override
+  String reviewCountPlural(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مراجعة',
+      many: '$count مراجعة',
+      few: '$count مراجعات',
+      two: 'مراجعتان',
+      one: 'مراجعة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get valEmailRequired => 'البريد الإلكتروني مطلوب';
+
+  @override
+  String get valEmailInvalid => 'أدخل بريدًا إلكترونيًا صالحًا';
+
+  @override
+  String get valEmailTooLong => 'البريد الإلكتروني طويل جدًا';
+
+  @override
+  String get valPasswordRequired => 'كلمة المرور مطلوبة';
+
+  @override
+  String get valPasswordMinLength =>
+      'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل';
+
+  @override
+  String get valPasswordUpper => 'أضف حرفًا كبيرًا واحدًا على الأقل';
+
+  @override
+  String get valPasswordLower => 'أضف حرفًا صغيرًا واحدًا على الأقل';
+
+  @override
+  String get valPasswordNumber => 'أضف رقمًا واحدًا على الأقل';
+
+  @override
+  String get valPasswordSpecial => 'أضف رمزًا خاصًا واحدًا على الأقل';
+
+  @override
+  String get valConfirmPassword => 'يرجى تأكيد كلمة المرور';
+
+  @override
+  String get valPasswordsMismatch => 'كلمتا المرور غير متطابقتين';
+
+  @override
+  String get valNameRequired => 'الاسم مطلوب';
+
+  @override
+  String get valNameMinLength => 'يجب أن يتكون الاسم من حرفين على الأقل';
+
+  @override
+  String get valNameMaxLength => 'يجب أن يكون الاسم أقل من 50 حرفًا';
+
+  @override
+  String get valNameNoNumbers => 'لا يمكن أن يحتوي الاسم على أرقام';
+
+  @override
+  String get valNameInvalidChars => 'يحتوي الاسم على أحرف غير صالحة';
+
+  @override
+  String get valPhoneRequired => 'رقم الهاتف مطلوب';
+
+  @override
+  String get valPhoneInvalid => 'أدخل رقم هاتف صالحًا';
+
+  @override
+  String get valFieldRequired => 'هذا الحقل مطلوب';
+
+  @override
+  String valFieldNamedRequired(String field) {
+    return '$field مطلوب';
+  }
+
+  @override
+  String get pwReqMinLength => '8 أحرف على الأقل';
+
+  @override
+  String get pwReqUppercase => 'حرف كبير';
+
+  @override
+  String get pwReqLowercase => 'حرف صغير';
+
+  @override
+  String get pwReqNumber => 'رقم';
+
+  @override
+  String get pwReqSpecial => 'رمز خاص';
+
+  @override
+  String get pwStrengthVeryWeak => 'ضعيفة جدًا';
+
+  @override
+  String get pwStrengthWeak => 'ضعيفة';
+
+  @override
+  String get pwStrengthMedium => 'متوسطة';
+
+  @override
+  String get pwStrengthStrong => 'قوية';
+
+  @override
+  String get pwStrengthExcellent => 'ممتازة';
+
+  @override
+  String get pickerTapToSelect => 'اضغط للاختيار';
+
+  @override
+  String get pickerNoResults => 'لا توجد نتائج';
+
+  @override
+  String get pickerSearchHint => 'بحث...';
+
+  @override
+  String get pickerSelectAboveFirst => 'اختر من الأعلى أولاً';
+
+  @override
+  String get bkStatusAll => 'الكل';
+
+  @override
+  String get bkStatusPending => 'قيد الانتظار';
+
+  @override
+  String get bkStatusAccepted => 'مقبول';
+
+  @override
+  String get bkStatusCompleted => 'مكتمل';
+
+  @override
+  String get bkStatusCancelled => 'ملغى';
+
+  @override
+  String get bkStatusRejected => 'مرفوض';
+
+  @override
+  String get bkStatusRescheduled => 'أُعيد جدولته';
+
+  @override
+  String get bkStatusBooked => 'تم الحجز';
+
+  @override
+  String get bkSwipeHint => 'اسحب';
+
+  @override
+  String bkCountPlural(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count حجز',
+      many: '$count حجزًا',
+      few: '$count حجوزات',
+      two: 'حجزان',
+      one: 'حجز واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bkSectionDetails => 'تفاصيل الحجز';
+
+  @override
+  String get bkSectionService => 'الخدمة';
+
+  @override
+  String get bkSectionNotes => 'ملاحظات العميل';
+
+  @override
+  String get bkSectionTimeline => 'الجدول الزمني للحجز';
+
+  @override
+  String get bkFieldDate => 'التاريخ';
+
+  @override
+  String get bkFieldTime => 'الوقت';
+
+  @override
+  String get bkFieldLocation => 'الموقع';
+
+  @override
+  String get bkFieldCategory => 'الفئة';
+
+  @override
+  String get bkCancelledByProfessional => 'ألغاه المحترف';
+
+  @override
+  String get bkCancelledByYou => 'ألغيته أنت';
+
+  @override
+  String get bkWasRejected => 'تم رفض الحجز';
+
+  @override
+  String get bkWasCancelled => 'تم إلغاء الحجز';
+
+  @override
+  String get bkCancelledSuccess => 'تم إلغاء الحجز';
+
+  @override
+  String get bkCancelFailed => 'تعذّر الإلغاء، يرجى المحاولة مرة أخرى';
+
+  @override
+  String get detailTabOverview => 'نظرة عامة';
+
+  @override
+  String detailTabPortfolio(int count) {
+    return 'الأعمال ($count)';
+  }
+
+  @override
+  String detailTabReviews(int count) {
+    return 'التقييمات ($count)';
+  }
+
+  @override
+  String get detailTabServices => 'الخدمات';
+
+  @override
+  String get detailTabAvailability => 'التوفر';
+
+  @override
+  String get detailNotAvailable => 'غير متاح';
+
+  @override
+  String get detailCertificateDefault => 'شهادة';
+
+  @override
+  String get detailPortfolioItemDefault => 'عنصر من الأعمال';
+
+  @override
+  String get categoryItTech => 'تكنولوجيا المعلومات والتقنية';
+
+  @override
+  String get categoryEngineers => 'المهندسون';
+
+  @override
+  String get categoryLawyersLegal => 'المحامون والقانون';
+
+  @override
+  String get categoryDoctorsHealthcare => 'الأطباء والرعاية الصحية';
+
+  @override
+  String get categoryArchitects => 'المعماريون';
+
+  @override
+  String get categoryElectricians => 'الكهربائيون';
+
+  @override
+  String get categoryPlumbers => 'السباكون';
+
+  @override
+  String get categoryTutorsEducation => 'المدرسون والتعليم';
+
+  @override
+  String get ctaGrowYourBusiness => 'نمِّ عملك';
+
+  @override
+  String get ctaJoinProfessionalsSubtitle =>
+      'انضم إلى أكثر من 500 محترف على ProFinder';
+
+  @override
+  String get ctaJoinNow => 'انضم الآن';
+
+  @override
+  String get promoGetPremium => 'احصل على بريميوم';
+
+  @override
+  String get categoryCarpenters => 'النجارون';
+
+  @override
+  String get errSomethingWentWrong => 'حدث خطأ ما.';
+
+  @override
+  String get errSomethingWentWrongTryAgain =>
+      'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get errNetworkCheckConnection =>
+      'خطأ في الشبكة. يرجى التحقق من اتصالك.';
+
+  @override
+  String get errNetworkProblemTryAgain =>
+      'مشكلة في الشبكة. تحقق من اتصالك وحاول مرة أخرى.';
+
+  @override
+  String errRequestFailedHttp(int code) {
+    return 'فشل الطلب (HTTP $code).';
+  }
+
+  @override
+  String get errNotLoggedIn => 'لم يتم تسجيل الدخول';
+
+  @override
+  String get bkStepTitleService => 'ملخص الخدمة';
+
+  @override
+  String get bkStepTitleDate => 'اختر التاريخ';
+
+  @override
+  String get bkStepTitleTime => 'اختر الوقت';
+
+  @override
+  String get bkStepTitleNotes => 'ملاحظات إضافية';
+
+  @override
+  String get bkStepTitleSummary => 'ملخص الحجز';
+
+  @override
+  String get bkStepDesc1 => 'راجع تفاصيل المحترف قبل المتابعة.';
+
+  @override
+  String get bkStepDesc2 => 'اختر التاريخ الأنسب لموعدك.';
+
+  @override
+  String get bkStepDesc3 => 'اختر وقتاً متاحاً لزيارتك.';
+
+  @override
+  String get bkStepDesc4 => 'أخبر المحترف أين يجب تقديم الخدمة.';
+
+  @override
+  String get bkStepDesc5 => 'أضف أي تفاصيل تساعد المحترف على الاستعداد.';
+
+  @override
+  String get bkStepDesc6 => 'راجع كل شيء بعناية قبل تأكيد حجزك.';
+
+  @override
+  String get bkWeekdayMon => 'اثن';
+
+  @override
+  String get bkWeekdayTue => 'ثلا';
+
+  @override
+  String get bkWeekdayWed => 'أرب';
+
+  @override
+  String get bkWeekdayThu => 'خمي';
+
+  @override
+  String get bkWeekdayFri => 'جمع';
+
+  @override
+  String get bkWeekdaySat => 'سبت';
+
+  @override
+  String get bkWeekdaySun => 'أحد';
+
+  @override
+  String get bkGoodToKnow1 => 'إرسال الطلب مجاني ولا يستغرق سوى دقيقة.';
+
+  @override
+  String get bkGoodToKnow2 => 'ستصلك إشعارات فور رد المحترف.';
+
+  @override
+  String get bkGoodToKnow3 =>
+      'يمكنك الإلغاء دون أي تكلفة ما دام طلبك قيد الانتظار.';
+
+  @override
+  String get bkTimeSlots1 => 'تُعرض فقط الفترات ضمن ساعات عمل المحترف.';
+
+  @override
+  String get bkTimeSlots2 => 'يتم تعطيل الفترات التي انقضت اليوم تلقائياً.';
+
+  @override
+  String get bkTimeSlots3 =>
+      'يمكنك تغيير الوقت الذي اخترته في أي وقت قبل التأكيد.';
+
+  @override
+  String get chatCouldNotLoadConversations => 'تعذر تحميل المحادثات';
+
+  @override
+  String get chatVoiceMessagePreview => '🎤 رسالة صوتية';
+
+  @override
+  String get chatPhotoPreview => '📷 صورة';
+
+  @override
+  String get reviewRatingPoor => 'ضعيف';
+
+  @override
+  String get reviewRatingFair => 'مقبول';
+
+  @override
+  String get reviewRatingGood => 'جيد';
+
+  @override
+  String get reviewRatingVeryGood => 'جيد جداً';
+
+  @override
+  String get reviewRatingExcellent => 'ممتاز';
+
+  @override
+  String get reviewReportReasonSpam => 'محتوى مزعج';
+
+  @override
+  String get reviewReportReasonFake => 'مراجعة مزيفة';
+
+  @override
+  String get reviewReportReasonAbusive => 'لغة مسيئة';
+
+  @override
+  String get reviewReportReasonHarassment => 'مضايقة';
+
+  @override
+  String get reviewReportReasonOffTopic => 'خارج الموضوع';
+
+  @override
+  String get reviewReportReasonConflict => 'تضارب مصالح';
+
+  @override
+  String get reviewReportReasonOther => 'أخرى';
+
+  @override
+  String get availabilityStatusBusy => 'مشغول';
+
+  @override
+  String get availabilityStatusOnLeave => 'في إجازة';
+
+  @override
+  String get availabilityStatusDescAvailable => 'يمكن للعملاء حجزك الآن';
+
+  @override
+  String get availabilityStatusDescBusy =>
+      'أنت تعمل — الطلبات الجديدة متوقفة مؤقتاً';
+
+  @override
+  String get availabilityStatusDescOffline => 'لن تظهر في طلبات الحجز الجديدة';
+
+  @override
+  String get availabilityStatusDescOnLeave =>
+      'سيتم تحديد حالتك «في إجازة» حتى عودتك';
+
+  @override
+  String get professionalInvalidId => 'معرّف المحترف غير صالح';
+
+  @override
+  String get uploadFailedTryAgain => 'فشل الرفع. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get editorListItemPlaceholder => 'عنصر القائمة';
+
+  @override
+  String get pushChannelGeneralName => 'الإشعارات العامة';
+
+  @override
+  String get pushChannelGeneralDesc =>
+      'الحجوزات والإعلانات والبلاغات وتنبيهات أخرى';
+
+  @override
+  String get pushChannelChatName => 'رسائل الدردشة';
+
+  @override
+  String get pushChannelChatDesc => 'رسائل دردشة جديدة';
+
+  @override
+  String get errBookingLimitReached => 'تم بلوغ حد الحجوزات.';
+
+  @override
+  String get categoryCarpenter => 'نجار';
 }

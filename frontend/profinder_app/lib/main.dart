@@ -98,6 +98,7 @@ class ProFinderApp extends StatelessWidget {
             // currently selected — no other file needed to change.
             builder: (context, child) {
               AppStrings.setContext(context);
+              PushNotificationService().updateChannelLocalization(AppLocalizations.of(context));
               return child!;
             },
 

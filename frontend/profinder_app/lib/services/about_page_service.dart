@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'api_service.dart';
 import '../features/about/models/about_page_model.dart';
+import '../core/constants/app_strings.dart';
 
 class AboutPageService {
   final ApiService _api = ApiService();
@@ -271,13 +272,13 @@ class AboutPageService {
           e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout ||
           e.type == DioExceptionType.sendTimeout) {
-        return 'Network problem. Please check your connection and try again.';
+        return AppStrings.errNetworkProblemTryAgain;
       }
       final code = e.response?.statusCode;
-      if (code != null) return 'Request failed (HTTP $code).';
-      return e.message ?? 'Something went wrong.';
+      if (code != null) return AppStrings.errRequestFailedHttp(code);
+      return e.message ?? AppStrings.errSomethingWentWrong;
     }
-    return 'Something went wrong.';
+    return AppStrings.errSomethingWentWrong;
   }
 
   String? _parseErrorBody(dynamic data) {

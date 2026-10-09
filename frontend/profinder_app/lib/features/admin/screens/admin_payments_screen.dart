@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminPaymentsScreen extends StatefulWidget {
   const AdminPaymentsScreen({super.key});
@@ -31,11 +33,11 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
   String _statusFilter = 'all';
 
   static const _statuses = [
-    ('all', 'All', Color(0xFF374151)),
-    ('completed', 'Completed', Color(0xFF16A34A)),
-    ('pending', 'Pending', Color(0xFFF59E0B)),
-    ('failed', 'Failed', Color(0xFFEF4444)),
-    ('refunded', 'Refunded', Color(0xFF64748B)),
+    ('all', 'All', AppColors.gray700),
+    ('completed', 'Completed', AppColors.greenDeep),
+    ('pending', 'Pending', AppColors.warningAmber),
+    ('failed', 'Failed', AppColors.favoriteRed),
+    ('refunded', 'Refunded', AppColors.slate500),
   ];
 
   @override
@@ -82,7 +84,7 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
         0, (a, p) => a + (double.tryParse(p['amount']?.toString() ?? '0') ?? 0));
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Payments',
         subtitle: 'Rs ${total.toStringAsFixed(0)} shown',
@@ -127,11 +129,11 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
               onChanged: (_) => _applySearch(),
               decoration: InputDecoration(
                 hintText: 'Search by name, email, or transaction ID…',
-                hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
+                hintStyle: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
                 prefixIcon: const Icon(Icons.search_rounded, size: 20),
-                filled: true, fillColor: const Color(0xFFF5F7FA),
+                filled: true, fillColor: AppColors.lightScaffold,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
               ),
             ),
             const SizedBox(height: 10),
@@ -140,7 +142,7 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: _statuses.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
                 itemBuilder: (_, i) {
                   final (key, label, color) = _statuses[i];
                   final isActive = _statusFilter == key;
@@ -149,14 +151,14 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
-                        color: isActive ? color.withOpacity(0.12) : const Color(0xFFF5F7FA),
-                        borderRadius: BorderRadius.circular(20),
+                        color: isActive ? color.withValues(alpha: 0.12) : AppColors.lightScaffold,
+                        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                         border: Border.all(color: isActive ? color : Colors.transparent),
                       ),
                       alignment: Alignment.center,
                       child: Text(label, style: TextStyle(
-                          fontSize: 12, fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                          color: isActive ? color : const Color(0xFF6B7280))),
+                          fontSize: AppFontSizes.small, fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                          color: isActive ? color : AppColors.grayDeep)),
                     ),
                   );
                 },
@@ -172,8 +174,8 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE5E7EB))),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: AppColors.neutral200)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -183,13 +185,13 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(p['user_name']?.toString() ?? '', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-                    Text(p['user_email']?.toString() ?? '', style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+                    Text(p['user_name']?.toString() ?? '', style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700)),
+                    Text(p['user_email']?.toString() ?? '', style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
                   ],
                 ),
               ),
               Text('${p['currency'] ?? 'Rs'} ${p['amount'] ?? '0'}',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
+                  style: const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w800, color: AppColors.greenDeep)),
             ],
           ),
           const SizedBox(height: 8),
@@ -197,26 +199,26 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(20)),
-                child: Text(status.toUpperCase(), style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: color)),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+                child: Text(status.toUpperCase(), style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w800, color: color)),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(p['created_at']?.toString() ?? '',
-                    style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF)), overflow: TextOverflow.ellipsis),
+                    style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400), overflow: TextOverflow.ellipsis),
               ),
               if (status == 'completed')
                 TextButton(
                   onPressed: () => _refundDialog(p),
                   style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10)),
-                  child: const Text('Refund', style: TextStyle(fontSize: 12, color: AppColors.error, fontWeight: FontWeight.w700)),
+                  child: const Text('Refund', style: TextStyle(fontSize: AppFontSizes.small, color: AppColors.error, fontWeight: FontWeight.w700)),
                 ),
             ],
           ),
           if ((p['stripe_id'] ?? '').toString().isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 4),
-              child: Text('Txn: ${p['stripe_id']}', style: const TextStyle(fontSize: 10, color: Color(0xFFB0B8C1))),
+              child: Text('Txn: ${p['stripe_id']}', style: const TextStyle(fontSize: AppFontSizes.micro, color: Color(0xFFB0B8C1))),
             ),
         ],
       ),
@@ -234,7 +236,7 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Refund Rs ${payment['amount']} to ${payment['user_name']}?',
-                style: const TextStyle(fontSize: 13)),
+                style: const TextStyle(fontSize: AppFontSizes.secondary)),
             const SizedBox(height: 12),
             TextField(
               controller: reasonCtrl,
@@ -276,7 +278,7 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
           child: Column(children: [
             Icon(Icons.payments_outlined, size: 48, color: Colors.grey.shade300),
             const SizedBox(height: 10),
-            const Text('No payments found', style: TextStyle(fontSize: 13, color: Color(0xFF9CA3AF))),
+            const Text('No payments found', style: TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400)),
           ]),
         ),
       );
@@ -287,7 +289,7 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
           children: [
             const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
             const SizedBox(height: 10),
-            const Text('Failed to load payments', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            const Text('Failed to load payments', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: _load,

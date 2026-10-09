@@ -13,6 +13,9 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../models/user_ts_models.dart';
 import 'ts_labels.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class ModerationActionCard extends StatelessWidget {
   final MyModerationAction action;
@@ -35,15 +38,15 @@ class ModerationActionCard extends StatelessWidget {
   }
 
   Color get _severityColor {
-    if (action.isPermanentSuspension) return const Color(0xFFDC2626);
-    if (action.isTemporarySuspension) return const Color(0xFFF59E0B);
-    if (action.isRestriction) return const Color(0xFFF97316);
+    if (action.isPermanentSuspension) return AppColors.red600;
+    if (action.isTemporarySuspension) return AppColors.warningAmber;
+    if (action.isRestriction) return AppColors.badgeTrending;
     return const Color(0xFFEAB308); // warning
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final severity = _severityColor;
 
@@ -52,11 +55,11 @@ class ModerationActionCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: severity.withOpacity(0.35)),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(color: severity.withValues(alpha: 0.35)),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.12) : Colors.grey.withOpacity(0.06),
+            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -70,14 +73,14 @@ class ModerationActionCard extends StatelessWidget {
               Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(color: severity.withOpacity(0.14), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: severity.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(AppSizes.radius10)),
                 child: Icon(_icon, color: severity, size: 19),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   moderationActionTypeLabel(t, action.actionType, fallback: action.actionTypeDisplay),
-                  style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                  style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
                 ),
               ),
             ],
@@ -118,7 +121,7 @@ class ModerationActionCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               t.myTsWarningInfoNote,
-              style: TextStyle(fontSize: 12, color: context.colors.textSecondary, height: 1.4),
+              style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary, height: 1.4),
             ),
           ],
 
@@ -136,9 +139,9 @@ class ModerationActionCard extends StatelessWidget {
                   label: Text(t.myTsAppealButtonLabel, style: const TextStyle(fontWeight: FontWeight.w600)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: accentColor,
-                    side: BorderSide(color: accentColor.withOpacity(0.5)),
+                    side: BorderSide(color: accentColor.withValues(alpha: 0.5)),
                     padding: const EdgeInsets.symmetric(vertical: 11),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                   ),
                 ),
               ),
@@ -152,17 +155,17 @@ class ModerationActionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF3B82F6).withOpacity(0.12),
-        borderRadius: BorderRadius.circular(10),
+        color: AppColors.primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.hourglass_top_rounded, size: 15, color: Color(0xFF3B82F6)),
+          const Icon(Icons.hourglass_top_rounded, size: 15, color: AppColors.primary),
           const SizedBox(width: 6),
           Text(
             t.myTsAppealPendingNote,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF3B82F6)),
+            style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: AppColors.primary),
           ),
         ],
       ),
@@ -175,14 +178,14 @@ class ModerationActionCard extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: context.colors.textSecondary, letterSpacing: 0.3),
+          style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: context.colors.textSecondary, letterSpacing: 0.3),
         ),
         const SizedBox(height: 2),
         Text(
           value,
           maxLines: multiline ? 4 : 1,
           overflow: multiline ? TextOverflow.ellipsis : TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500, color: context.colors.textPrimary, height: 1.3),
+          style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w500, color: context.colors.textPrimary, height: 1.3),
         ),
       ],
     );

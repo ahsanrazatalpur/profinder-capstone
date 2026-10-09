@@ -4,10 +4,43 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
-import '../theme/theme_context_ext.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class AppHelpers {
   AppHelpers._();
+
+  // ─── Category name localization ─────────────────────────
+  // Backend sends category names in English only. This maps the known
+  // names to the current app language; unknown names are shown as-is.
+  // NOTE: use this for DISPLAY only — keep the original name for search/API.
+  static String localizedCategoryName(BuildContext context, String name) {
+    final t = AppLocalizations.of(context);
+    final n = name
+        .toLowerCase()
+        .replaceAll('&', 'and')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    switch (n) {
+      case 'it and tech':
+        return t.categoryItTech;
+      case 'engineers':
+        return t.categoryEngineers;
+      case 'lawyers and legal':
+        return t.categoryLawyersLegal;
+      case 'doctors and healthcare':
+        return t.categoryDoctorsHealthcare;
+      case 'architects':
+        return t.categoryArchitects;
+      case 'electricians':
+        return t.categoryElectricians;
+      case 'plumbers':
+        return t.categoryPlumbers;
+      case 'tutors and education':
+        return t.categoryTutorsEducation;
+      default:
+        return name;
+    }
+  }
 
   // ─── Date / Time Format ─────────────────────────────────
   // convert Datetime object to readable string

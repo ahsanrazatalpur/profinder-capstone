@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants/app_constants.dart';
 import 'api_service.dart';
 import 'push_notification_service.dart'; // ✅ NEW
+import '../core/constants/app_strings.dart';
 
 class AuthService {
   final ApiService _api = ApiService();
@@ -74,7 +75,7 @@ class AuthService {
       final response = await _api.post(
         AppConstants.googleLogin,
         {
-          if (idToken != null) 'id_token': idToken,
+          'id_token': ?idToken,
           if (idToken == null && accessToken != null) 'access_token': accessToken,
           'role': role,
         },
@@ -167,14 +168,17 @@ class AuthService {
           }
           final messages = <String>[];
           data.forEach((key, value) {
-            if (value is List)   messages.add(value.first.toString());
-            else if (value is String) messages.add(value);
+            if (value is List) {
+              messages.add(value.first.toString());
+            } else if (value is String) {
+              messages.add(value);
+            }
           });
           if (messages.isNotEmpty) {
             return {'success': false, 'message': messages.join('\n'), 'statusCode': statusCode};
           }
         }
-        return {'success': false, 'message': 'Something went wrong. Please try again.', 'statusCode': statusCode};
+        return {'success': false, 'message': AppStrings.errSomethingWentWrongTryAgain, 'statusCode': statusCode};
       }
       // No response reached the client at all — either a timeout or no
       // connection. Dio's `type` tells us which, so we can give a more
@@ -183,10 +187,10 @@ class AuthService {
       if (typeName.contains('connectionTimeout') ||
           typeName.contains('sendTimeout') ||
           typeName.contains('receiveTimeout')) {
-        return {'success': false, 'message': 'Request timed out. Please check your connection and try again.', 'statusCode': null};
+        return {'success': false, 'message': AppStrings.requestTimedOut, 'statusCode': null};
       }
-      return {'success': false, 'message': 'Network error. Check your connection.', 'statusCode': null};
+      return {'success': false, 'message': AppStrings.errNetworkCheckConnection, 'statusCode': null};
     }
-    return {'success': false, 'message': 'Something went wrong. Please try again.', 'statusCode': null};
+    return {'success': false, 'message': AppStrings.errSomethingWentWrongTryAgain, 'statusCode': null};
   }
 }

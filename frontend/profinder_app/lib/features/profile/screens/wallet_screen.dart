@@ -4,6 +4,8 @@
 // There's no stored-balance/top-up concept in the backend yet, so this is
 // an honest "spend & plan" summary, not a fake wallet balance.
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/constants/app_constants.dart';
@@ -67,7 +69,7 @@ class _WalletScreenState extends State<WalletScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.walletTitle,
+        title: AppLocalizations.of(context).walletTitle,
         icon: Icons.account_balance_wallet_rounded,
       ),
       body: _loading
@@ -97,23 +99,23 @@ class _WalletScreenState extends State<WalletScreen> {
                       padding: const EdgeInsets.all(20),
           clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                         gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Color(0xFF059669), Color(0xFF10B981)],
+                          colors: [AppColors.successDeep, AppColors.emerald],
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF10B981).withOpacity(0.3),
+                            color: AppColors.emerald.withValues(alpha: 0.3),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
                         ],
                       ),
                       child: Stack(children: [
-          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)))),
-          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
+          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.10)))),
+          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.08)))),
           Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -123,7 +125,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                 width: 44,
                                 height: 44,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.15),
+                                  color: Colors.white.withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -134,10 +136,10 @@ class _WalletScreenState extends State<WalletScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                AppLocalizations.of(context)!.totalSpentLabel,
+                                AppLocalizations.of(context).totalSpentLabel,
                                 style: const TextStyle(
                                   color: Colors.white70,
-                                  fontSize: 13,
+                                  fontSize: AppFontSizes.secondary,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 0.3,
                                 ),
@@ -149,17 +151,17 @@ class _WalletScreenState extends State<WalletScreen> {
                             '\$${_totalSpent.toStringAsFixed(2)}',
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 32,
+                              fontSize: AppFontSizes.h1,
                               fontWeight: FontWeight.bold,
                               letterSpacing: -0.5,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            AppLocalizations.of(context)!.transactionCountLabel(_txCount),
+                            AppLocalizations.of(context).transactionCountLabel(_txCount),
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.75),
-                              fontSize: 12,
+                              color: Colors.white.withValues(alpha: 0.75),
+                              fontSize: AppFontSizes.small,
                               letterSpacing: 0.2,
                             ),
                           ),
@@ -173,14 +175,14 @@ class _WalletScreenState extends State<WalletScreen> {
                     // ── Subscription Banner ──────────────────
                     CtaBanner(
                       isDark: isDark,
-                      title: AppLocalizations.of(context)!.currentPlanLabel(_planName),
+                      title: AppLocalizations.of(context).currentPlanLabel(_planName),
                       subtitle: _isPremium
-                          ? AppLocalizations.of(context)!.premiumActiveSubtitle
-                          : AppLocalizations.of(context)!.premiumUpgradeSubtitle,
-                      ctaLabel: _isPremium ? AppLocalizations.of(context)!.manageCta : AppLocalizations.of(context)!.upgradeCta,
+                          ? AppLocalizations.of(context).premiumActiveSubtitle
+                          : AppLocalizations.of(context).premiumUpgradeSubtitle,
+                      ctaLabel: _isPremium ? AppLocalizations.of(context).manageCta : AppLocalizations.of(context).upgradeCta,
                       icon: Icons.workspace_premium_rounded,
-                      accentStart: const Color(0xFFA78BFA),
-                      accentEnd: const Color(0xFF8B5CF6),
+                      accentStart: AppColors.violetLight,
+                      accentEnd: AppColors.violet,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -194,20 +196,20 @@ class _WalletScreenState extends State<WalletScreen> {
                     // ── Payment History Tile ──────────────────
                     Material(
                       color: context.colors.surface,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                           border: Border.all(
                             color: isDark
-                                ? Colors.white.withOpacity(0.08)
-                                : const Color(0xFFE5E7EB),
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : AppColors.neutral200,
                           ),
                           boxShadow: [
                             BoxShadow(
                               color: isDark
-                                  ? Colors.black.withOpacity(0.1)
-                                  : Colors.grey.withOpacity(0.04),
+                                  ? Colors.black.withValues(alpha: 0.1)
+                                  : Colors.grey.withValues(alpha: 0.04),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -218,8 +220,8 @@ class _WalletScreenState extends State<WalletScreen> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: AppColors.customerColor.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(10),
+                              color: AppColors.customerColor.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             ),
                             child: Icon(
                               Icons.receipt_long_rounded,
@@ -228,7 +230,7 @@ class _WalletScreenState extends State<WalletScreen> {
                             ),
                           ),
                           title: Text(
-                            AppLocalizations.of(context)!.paymentHistoryLabel,
+                            AppLocalizations.of(context).paymentHistoryLabel,
                             style: TextStyle(
                               fontSize: isTablet ? 15.0 : 14.0,
                               fontWeight: FontWeight.w600,
@@ -237,7 +239,7 @@ class _WalletScreenState extends State<WalletScreen> {
                             ),
                           ),
                           subtitle: Text(
-                            AppLocalizations.of(context)!.paymentHistorySubtitle,
+                            AppLocalizations.of(context).paymentHistorySubtitle,
                             style: TextStyle(
                               fontSize: isTablet ? 12.0 : 11.5,
                               color: context.colors.textSecondary,

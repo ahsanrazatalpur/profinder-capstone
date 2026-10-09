@@ -5,6 +5,7 @@
 // So "Reset Password" here honestly triggers that same flow using the
 // user's own account email, rather than faking an in-app password form.
 
+import '../../../core/constants/app_sizes.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:provider/provider.dart';
@@ -50,10 +51,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
     try {
       await _api.post(AppConstants.forgotPassword, {'email': _email});
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.resetLinkSent(_email!));
+      AppHelpers.showSuccess(context, AppLocalizations.of(context).resetLinkSent(_email!));
     } catch (_) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context)!.resetLinkError);
+      AppHelpers.showError(context, AppLocalizations.of(context).resetLinkError);
     }
     if (!mounted) return;
     setState(() => _sending = false);
@@ -69,7 +70,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.securityTitle,
+        title: AppLocalizations.of(context).securityTitle,
         icon: Icons.shield_rounded,
       ),
       body: _loading
@@ -95,17 +96,17 @@ class _SecurityScreenState extends State<SecurityScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: context.colors.surface,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                       border: Border.all(
                         color: isDark
-                            ? Colors.white.withOpacity(0.08)
-                            : const Color(0xFFE5E7EB),
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : AppColors.neutral200,
                       ),
                       boxShadow: [
                         BoxShadow(
                           color: isDark
-                              ? Colors.black.withOpacity(0.12)
-                              : Colors.grey.withOpacity(0.06),
+                              ? Colors.black.withValues(alpha: 0.12)
+                              : Colors.grey.withValues(alpha: 0.06),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -121,9 +122,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
                               height: 40,
                               decoration: BoxDecoration(
                                 color: isDark
-                                    ? AppColors.customerColor.withOpacity(0.15)
+                                    ? AppColors.customerColor.withValues(alpha: 0.15)
                                     : context.colors.primaryLight,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                               ),
                               child: Icon(
                                 Icons.lock_reset_rounded,
@@ -134,7 +135,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                AppLocalizations.of(context)!.resetPasswordLabel,
+                                AppLocalizations.of(context).resetPasswordLabel,
                                 style: TextStyle(
                                   fontSize: isTablet ? 15.5 : 14.5,
                                   fontWeight: FontWeight.w700,
@@ -147,7 +148,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          AppLocalizations.of(context)!.resetPasswordDescription(_email ?? AppLocalizations.of(context)!.yourAccountEmailPlaceholder),
+                          AppLocalizations.of(context).resetPasswordDescription(_email ?? AppLocalizations.of(context).yourAccountEmailPlaceholder),
                           style: TextStyle(
                             fontSize: isTablet ? 13.0 : 12.5,
                             color: context.colors.textSecondary,
@@ -165,7 +166,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                               ),
                               elevation: 0,
                             ),
@@ -179,7 +180,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                                     ),
                                   )
                                 : Text(
-                                    AppLocalizations.of(context)!.sendResetLinkCta,
+                                    AppLocalizations.of(context).sendResetLinkCta,
                                     style: TextStyle(
                                       fontSize: isTablet ? 15.0 : 14.0,
                                       fontWeight: FontWeight.w700,
@@ -197,20 +198,20 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   // ── Logout Card ─────────────────────────
                   Material(
                     color: context.colors.surface,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                         border: Border.all(
                           color: isDark
-                              ? Colors.white.withOpacity(0.08)
-                              : const Color(0xFFE5E7EB),
+                              ? Colors.white.withValues(alpha: 0.08)
+                              : AppColors.neutral200,
                         ),
                         boxShadow: [
                           BoxShadow(
                             color: isDark
-                                ? Colors.black.withOpacity(0.12)
-                                : Colors.grey.withOpacity(0.06),
+                                ? Colors.black.withValues(alpha: 0.12)
+                                : Colors.grey.withValues(alpha: 0.06),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -221,8 +222,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: AppColors.error.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(10),
+                            color: AppColors.error.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           ),
                           child: Icon(
                             Icons.logout_rounded,
@@ -231,7 +232,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           ),
                         ),
                         title: Text(
-                          AppLocalizations.of(context)!.logoutActionLabel,
+                          AppLocalizations.of(context).logoutActionLabel,
                           style: TextStyle(
                             fontSize: isTablet ? 15.0 : 14.0,
                             fontWeight: FontWeight.w600,
@@ -240,7 +241,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           ),
                         ),
                         subtitle: Text(
-                          AppLocalizations.of(context)!.logoutActionSubtitle,
+                          AppLocalizations.of(context).logoutActionSubtitle,
                           style: TextStyle(
                             fontSize: isTablet ? 12.0 : 11.5,
                             color: context.colors.textSecondary,
@@ -255,7 +256,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           await auth.logout();
                           if (!mounted) return;
                           Navigator.pushNamedAndRemoveUntil(
-                            context,
+                            this.context,
                             '/login',
                             (_) => false,
                           );

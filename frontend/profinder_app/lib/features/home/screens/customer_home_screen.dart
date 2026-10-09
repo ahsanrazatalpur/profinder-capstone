@@ -19,11 +19,14 @@
 //   • Recent Chats icon (inline, 2 spots) → still ComingSoonScreen — see note near _openComingSoon()
 //   • Favourites                       → on-device (services/favorites_store.dart)
 
+import '../../../services/content_localizer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_loader.dart';
 import '../../../core/widgets/coming_soon_screen.dart';
 import '../../../core/utils/app_helpers.dart';
@@ -37,7 +40,6 @@ import '../../../shared/widgets/category_card.dart';
 import '../../../shared/widgets/cta_banner.dart';
 import '../../../shared/widgets/announcement_banner.dart';
 import '../../../shared/widgets/role_app_bar.dart';
-import '../../../core/constants/category_style.dart';
 import '../../search/screens/professional_detail_screen.dart';
 import '../../search/screens/search_screen.dart';
 import '../../bookings/screens/booking_screen.dart';
@@ -47,20 +49,15 @@ import '../../magazine/models/article_model.dart';
 import '../../magazine/services/magazine_service.dart';
 import '../../magazine/screens/article_detail_screen.dart';
 import '../../chat/presentation/providers/conversation_list_provider.dart';
-import '../../chat/domain/entities/conversation_entity.dart';
-import '../../chat/presentation/screens/chat_screen.dart';
-import '../../chat/presentation/screens/conversation_list_screen.dart';
 import '../../magazine/screens/magazine_screen.dart';
 import '../../notifications/screens/notification_screen.dart';
 import '../../profile/screens/help_screen.dart';
 import '../../profile/screens/wallet_screen.dart';
-import '../../profile/screens/payments_screen.dart';
 import '../../profile/screens/saved_professionals_screen.dart';
 import '../../subscription/services/subscription_service.dart';
 import '../../subscription/screens/subscription_screen.dart';
 import '../../subscription/widgets/promo_banner_mixin.dart';
 import '../../chat/presentation/screens/conversation_list_entry.dart';   // ✅ NEW — Messages tab
-import '../../chat/presentation/providers/conversation_list_provider.dart';
 import '../../chat/presentation/widgets/unread_nav_badge.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -78,11 +75,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   int?   _selectedCategory;
   String? _selectedCategoryName;
 
-  double _minPrice     = 0;
-  double _maxPrice     = 1000;
-  double _minRating    = 0;
-  bool   _verifiedOnly = false;
-  String _cityFilter   = '';
+  final double _minPrice     = 0;
+  final double _maxPrice     = 1000;
+  final double _minRating    = 0;
+  final bool   _verifiedOnly = false;
+  final String _cityFilter   = '';
 
   // 🐛 FIX: Customer Home never requested live GPS at all — only Guest
   // Home did — so the customer's saved profile city (or nothing) was
@@ -129,28 +126,23 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
 
   // ── Bookings (Upcoming / Recent) ──────────────────────────
   List<dynamic> _upcomingBookings = [];
-  List<dynamic> _recentBookings   = [];
   bool _bookingsLoading = true;
 
   // ── Wallet / Payment Summary ──────────────────────────────
   double _totalSpent        = 0;
   int    _paymentsCount     = 0;
-  int    _completedPayments = 0;
-  int    _pendingPayments   = 0;
   bool   _isPremium         = false;
   String _planName          = '';
-  List<dynamic> _recentPayments = [];
   bool _walletLoading = true;
 
   // ── Notifications preview ─────────────────────────────────
-  List<dynamic> _notifications = [];
   int  _unreadCount    = 0;
-  bool _notifLoading   = true;
 
   // ── Magazine ───────────────────────────────────────────────
   List<Article> _articles         = [];
   List<Article> _featuredArticles = [];
   bool _articlesLoading = true;
+  int  _magazineTab = 0; // 0 = Tips, 1 = Featured
 
   // ── AI Suggestions quota ──────────────────────────────────
   int  _aiUsed     = 0;
@@ -162,6 +154,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   @override
   void initState() {
     super.initState();
+    ApiService.contentRevision.addListener(_onContentRevision);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadNearbySections();
       _loadRecommendations();
@@ -179,8 +172,38 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     });
   }
 
+  String? _lastLang;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // When the user changes language (Settings) or the server finishes
+    // translating, reload the dashboard so no section stays in the old
+    // language (that was the half-Hindi / half-Urdu mix).
+    final lang = Localizations.localeOf(context).languageCode;
+    if (_lastLang != null && _lastLang != lang) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _refreshAll();
+      });
+    }
+    _lastLang = lang;
+  }
+
+  DateTime? _lastRevisionRefresh;
+
+  void _onContentRevision() {
+    if (!mounted) return;
+    // Throttle: a translation-finished signal must not cause a refresh loop.
+    final now = DateTime.now();
+    if (_lastRevisionRefresh != null &&
+        now.difference(_lastRevisionRefresh!) < const Duration(seconds: 15)) return;
+    _lastRevisionRefresh = now;
+    _refreshAll();
+  }
+
   @override
   void dispose() {
+    ApiService.contentRevision.removeListener(_onContentRevision);
     _aiPromptController.dispose();
     super.dispose();
   }
@@ -262,6 +285,14 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           hydrated.add({...pro, 'ai_reason': r['reason']?.toString() ?? ''});
         }
       }
+      if (hydrated.isNotEmpty) {
+        final first = hydrated.first;
+        await Future.wait([
+          ContentLocalizer.instance.prefetch([first['name']?.toString()], LocKind.name),
+          ContentLocalizer.instance.prefetch([first['ai_reason']?.toString()], LocKind.text),
+          ContentLocalizer.instance.prefetch([first['category_name']?.toString()], LocKind.category),
+        ]);
+      }
       if (!mounted) return;
       setState(() {
         _recommendations = hydrated;
@@ -312,11 +343,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       }).toList()
         ..sort((a, b) => '${a['date']}'.compareTo('${b['date']}'));
 
-      final recent = all.where((b) =>
-          b['status'] == 'completed' || b['status'] == 'cancelled' || b['status'] == 'rejected')
-          .toList()
-        ..sort((a, b) => (b['created_at'] ?? '').compareTo(a['created_at'] ?? ''));
-
       // Book Again — dedupe completed bookings by professional, hydrate top few
       final completed = all.where((b) => b['status'] == 'completed').toList()
         ..sort((a, b) => (b['created_at'] ?? '').compareTo(a['created_at'] ?? ''));
@@ -334,7 +360,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       if (!mounted) return;
       setState(() {
         _upcomingBookings = upcoming;
-        _recentBookings   = recent;
         _bookingsLoading  = false;
         _bookAgain        = bookAgainHydrated;
         _bookAgainLoading = false;
@@ -355,7 +380,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       final list = res.data is List ? List<dynamic>.from(res.data) : [];
       list.sort((a, b) => (b['created_at'] ?? '').compareTo(a['created_at'] ?? ''));
       final completed = list.where((p) => p['status'] == 'completed').toList();
-      final pending   = list.where((p) => p['status'] == 'pending').toList();
       final spent     = completed.fold(0.0, (s, p) => s + _num(p['amount']));
 
       final plan = await _subSvc.getMyPlan();
@@ -364,9 +388,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       setState(() {
         _totalSpent        = spent;
         _paymentsCount      = list.length;
-        _completedPayments = completed.length;
-        _pendingPayments    = pending.length;
-        _recentPayments      = list.take(4).toList();
         _isPremium           = plan?.isPremium ?? false;
         _planName            = plan?.planName ?? '';
         _walletLoading        = false;
@@ -378,7 +399,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   }
 
   Future<void> _loadNotifications() async {
-    setState(() => _notifLoading = true);
     try {
       final res = await _api.get(AppConstants.notifications);
       // Backend may return a plain list OR a paginated object like
@@ -401,13 +421,10 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       final unread = list.where(isUnread).length;
       if (!mounted) return;
       setState(() {
-        _notifications = list;
         _unreadCount   = unread;
-        _notifLoading  = false;
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _notifLoading = false);
     }
   }
 
@@ -473,7 +490,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   }
 
   void _openComingSoon({String? title, String? message}) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     Navigator.push(context, MaterialPageRoute(
         builder: (_) => ComingSoonScreen(
             title: title ?? t.homeMessagingComingSoonTitle,
@@ -481,80 +498,10 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
             icon: Icons.chat_bubble_outline_rounded)));
   }
 
-  void _showFilterSheet() {
-    final t = AppLocalizations.of(context)!;
-    showModalBottomSheet(
-      context:            context,
-      isScrollControlled: true,
-      backgroundColor:    AppColors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => StatefulBuilder(
-        builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.only(
-            left: AppSizes.screenPadding, right: AppSizes.screenPadding,
-            top: AppSizes.md, bottom: MediaQuery.of(ctx).viewInsets.bottom + AppSizes.lg,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(width: 36, height: 4,
-                    decoration: BoxDecoration(color: context.colors.divider, borderRadius: BorderRadius.circular(2))),
-              ),
-              const SizedBox(height: AppSizes.md),
-              Text(t.homeFilter, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: AppSizes.lg),
-              Text(t.city, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-              const SizedBox(height: AppSizes.xs),
-              TextFormField(
-                initialValue: _cityFilter,
-                decoration: InputDecoration(hintText: t.homeCityHint, prefixIcon: const Icon(Icons.location_city_outlined)),
-                onChanged: (v) => _cityFilter = v,
-              ),
-              const SizedBox(height: AppSizes.md),
-              Text(
-                t.homePrice('${_minPrice.toInt()}', _maxPrice >= 1000 ? t.homeNoLimit : '\$${_maxPrice.toInt()}/hr'),
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-              ),
-              RangeSlider(
-                values: RangeValues(_minPrice, _maxPrice), min: 0, max: 1000, divisions: 20,
-                activeColor: context.colors.primary,
-                onChanged: (v) => setSheet(() { _minPrice = v.start; _maxPrice = v.end; }),
-              ),
-              Text(t.homeMinRatingLabel(_minRating.toStringAsFixed(1)), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-              Slider(
-                value: _minRating, min: 0, max: 5, divisions: 10, activeColor: context.colors.primary,
-                onChanged: (v) => setSheet(() => _minRating = v),
-              ),
-              SwitchListTile(
-                title: Text(t.homeVerifiedOnly, style: const TextStyle(fontSize: 13)),
-                value: _verifiedOnly, activeColor: context.colors.primary, contentPadding: EdgeInsets.zero,
-                onChanged: (v) => setSheet(() => _verifiedOnly = v),
-              ),
-              const SizedBox(height: AppSizes.sm),
-              Row(children: [
-                Expanded(child: OutlinedButton(
-                    onPressed: () => setSheet(() { _minPrice = 0; _maxPrice = 1000; _minRating = 0; _verifiedOnly = false; _cityFilter = ''; }),
-                    child: Text(t.homeResetButton))),
-                const SizedBox(width: AppSizes.sm),
-                Expanded(child: ElevatedButton(
-                    onPressed: () { Navigator.pop(context); _loadProfessionals(); },
-                    child: Text(t.homeApplyButton))),
-              ]),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final home      = context.watch<HomeProvider>();
-    final t         = AppLocalizations.of(context)!;
+    final t         = AppLocalizations.of(context);
     final fullName  = (home.userProfile?['name'] ?? 'there').toString();
     final city      = (home.userProfile?['city'] ?? '').toString();
     final photoUrl  = AppHelpers.getFullImageUrl(home.userProfile?['photo_url']?.toString());
@@ -565,9 +512,33 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     // screen on web, stuck state on mobile). PopScope blocks that.
     return PopScope(
       canPop: false,
+      // Status-bar icons (network / battery / time) in white, because the
+      // strip behind them is now the brand blue.
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light, // Android
+        statusBarBrightness: Brightness.dark,      // iOS
+      ),
       child: Scaffold(
       backgroundColor: context.colors.background,
-      body: SafeArea(
+      // 🐛 FIX: the whole body sat inside SafeArea, so the header started
+      // BELOW the status bar and the strip with the time / network /
+      // battery stayed white. Now a blue block is painted behind that strip
+      // (height = the phone's status-bar inset, 0 on web/desktop) and the
+      // content still starts safely below it — header + status bar look like
+      // one continuous blue top section, also while scrolling.
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: MediaQuery.paddingOf(context).top,
+          child: ColoredBox(color: context.colors.primary),
+        ),
+        SafeArea(
         child: RefreshIndicator(
           color: context.colors.primary,
           onRefresh: _refreshAll,
@@ -601,7 +572,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
               // below, so it doesn't get mixed in with them) ─────────────
               if (_selectedCategory != null)
                 _buildProSection(
-                  _selectedCategoryName ?? t.homeFilteredResults,
+                  _selectedCategoryName != null
+                      ? AppHelpers.localizedCategoryName(context, _selectedCategoryName!)
+                      : t.homeFilteredResults,
                   _nearby(home.nearbyProfessionals),
                   loading: home.isLoading,
                   section: ProSection.category,
@@ -648,27 +621,23 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
 
               // ── Bookings & Wallet ────────────────────────────
               SliverToBoxAdapter(child: _buildUpcomingBookings()),
-              SliverToBoxAdapter(child: _buildRecentBookings()),
               SliverToBoxAdapter(child: _buildWalletCard()),
-              SliverToBoxAdapter(child: _buildPaymentSummary()),
-              SliverToBoxAdapter(child: _buildPaymentHistoryPreview()),
 
               // ── Engagement ───────────────────────────────────
-              SliverToBoxAdapter(child: _buildRecentChats()),
-              SliverToBoxAdapter(child: _buildNotificationsPreview()),
-              SliverToBoxAdapter(child: _buildMagazineSection(t.homeTipsMagazineTitle, _articles, _articlesLoading)),
-              SliverToBoxAdapter(child: _buildMagazineSection(t.homeFeaturedArticlesTitle, _featuredArticles, _articlesLoading, showViews: true)),
+              SliverToBoxAdapter(child: _buildMagazineTabs()),
               SliverToBoxAdapter(child: _buildAiSuggestions()),
               SliverToBoxAdapter(child: _buildSupportBanner()),
-              SliverToBoxAdapter(child: _buildHelpCenterRow()),
 
               const SliverToBoxAdapter(child: SizedBox(height: 90)),
             ],
           ),
         ),
-      ),
+      ), // SafeArea
+        ],
+      ), // Stack
       bottomNavigationBar: _buildBottomNav(),
     ), // Scaffold
+    ), // AnnotatedRegion
     );
   }
 
@@ -693,7 +662,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   /// customer's own city (backend never mixes in other cities here), with
   /// the exact empty-state copy this section needs when the city has none.
   Widget _buildNearbySection(HomeProvider home) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     if (home.feedLoading) {
       return _buildProSection(t.nearbyProfessionals, const [], loading: true, tag: t.homeNearbyLabel, tagIcon: Icons.near_me_rounded, tagColor: context.colors.primary, section: ProSection.nearby);
     }
@@ -701,23 +670,23 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       return SliverMainAxisGroup(slivers: [
         SliverToBoxAdapter(child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 22, 16, 8),
-          child: Text(t.nearbyProfessionals, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
+          child: Text(t.nearbyProfessionals, style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
         )),
         SliverToBoxAdapter(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             width: double.infinity, padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.colors.divider)),
+            decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg), border: Border.all(color: context.colors.divider)),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
                 Icon(Icons.location_off_outlined, color: context.colors.textSecondary, size: 20),
                 const SizedBox(width: 8),
-                Text(t.homeNoProfessionalsAvailableCity, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                Text(t.homeNoProfessionalsAvailableCity, style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700)),
               ]),
               const SizedBox(height: 4),
               GestureDetector(
                 onTap: () => _openSearch(),
-                child: Text(t.homeTrySearchingNearbyCities, style: TextStyle(fontSize: 12.5, color: context.colors.primary, fontWeight: FontWeight.w600)),
+                child: Text(t.homeTrySearchingNearbyCities, style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.primary, fontWeight: FontWeight.w600)),
               ),
             ]),
           ),
@@ -752,7 +721,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // brand logo, notifications and the profile avatar).
   // ═══════════════════════════════════════════════════════════
   Widget _buildGreeting(String fullName, String city) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return RoleGreeting(
       greeting: roleTimeGreeting(context),
       name: fullName,
@@ -764,37 +733,37 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           child: Text(city.isNotEmpty ? city : t.homeSetYourLocation,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary, fontWeight: FontWeight.w500)),
+              style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary, fontWeight: FontWeight.w500)),
         ),
       ]),
     );
   }
 
   Widget _buildSearchTap() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () => _openSearch(),
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
         height: 50,
         decoration: BoxDecoration(
-          color: context.colors.surface, borderRadius: BorderRadius.circular(14),
+          color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(color: context.colors.divider),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 3))],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 3))],
         ),
         child: Row(children: [
           const SizedBox(width: 14),
-          const Icon(Icons.search, color: Color(0xFF9CA3AF), size: 20),
+          Icon(Icons.search, color: context.colors.textSecondary, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Text(t.homeSearchDoctorsLawyersPlumbers,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
-                style: const TextStyle(fontSize: 13.5, color: Color(0xFF6B7280))),
+                style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary)),
           ),
           Container(
             margin: const EdgeInsets.all(6), padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: context.colors.primary, borderRadius: BorderRadius.circular(9)),
+            decoration: BoxDecoration(color: context.colors.primary, borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
             child: const Icon(Icons.tune_outlined, size: 15, color: Colors.white),
           ),
         ]),
@@ -806,12 +775,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // AI RECOMMENDATION CARD — single card, real /ai/recommendations/
   // ═══════════════════════════════════════════════════════════
   Widget _buildAiRecommendationCard() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     if (_recLoading) {
       return Container(
         margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
         height: 110,
-        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(18)),
+        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
       );
     }
     if (_recommendations.isEmpty) {
@@ -822,15 +791,15 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
         subtitle: t.homeBookFirstServiceWeLlStart,
         ctaLabel: t.homeBrowse,
         icon: Icons.auto_awesome_rounded,
-        accentStart: const Color(0xFFFCD34D),
-        accentEnd: const Color(0xFFF59E0B),
+        accentStart: AppColors.starGold,
+        accentEnd: AppColors.warningAmber,
         onTap: () => _openSearch(),
       );
     }
 
     final pick = _recommendations.first;
     final name   = pick['name']?.toString() ?? t.homeDefaultProfessionalName;
-    final cat    = pick['category_name']?.toString() ?? '';
+    final cat    = AppHelpers.localizedCategoryName(context, pick['category_name']?.toString() ?? '');
     final reason = pick['ai_reason']?.toString() ?? '';
     final photo  = AppHelpers.getFullImageUrl(pick['photo_url']?.toString());
     final rating = _num(pick['average_rating']);
@@ -852,13 +821,19 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
         child: Container(
           width: 52,
           height: 52,
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           child: photo.isNotEmpty
-              ? Image.network(photo, fit: BoxFit.cover, errorBuilder: (_, __, ___) => initials())
+              ? Image.network(photo, fit: BoxFit.cover, errorBuilder: (_, _, _) => initials())
               : initials(),
         ),
       ),
-      title: name,
+      titleWidget: LocalizedText(
+        name,
+        kind: LocKind.name,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, height: 1.25, color: Colors.white),
+      ),
       subtitle: cat,
       subtitleMaxLines: 1,
       trailing: Column(
@@ -866,19 +841,20 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Row(mainAxisSize: MainAxisSize.min, children: [
-            const Icon(Icons.star_rounded, color: Color(0xFFFCD34D), size: 16),
+            const Icon(Icons.star_rounded, color: AppColors.starGold, size: 16),
             const SizedBox(width: 3),
-            Text(rating.toStringAsFixed(1), style: const TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w700)),
+            Text(rating.toStringAsFixed(1), style: const TextStyle(color: Colors.white, fontSize: AppFontSizes.body, fontWeight: FontWeight.w700)),
           ]),
           const SizedBox(height: 6),
-          Text('\$${price.toStringAsFixed(0)}/hr', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          Text('\$${price.toStringAsFixed(0)}/hr', style: const TextStyle(color: Colors.white70, fontSize: AppFontSizes.small)),
         ],
       ),
       child: reason.isEmpty
           ? null
-          : Text(
+          : LocalizedText(
               reason,
-              style: const TextStyle(color: Colors.white, fontSize: 12.5, height: 1.6, letterSpacing: 0.15),
+              kind: LocKind.text,
+              style: const TextStyle(color: Colors.white, fontSize: AppFontSizes.secondary, height: 1.6, letterSpacing: 0.15),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
@@ -889,13 +865,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // QUICK ACTIONS — muscle-memory shortcuts, fixed order
   // ═══════════════════════════════════════════════════════════
   Widget _buildQuickActions() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final items = [
-      {'icon': Icons.replay_rounded,               'label': t.homeBookAgain,  'color': const Color(0xFF2563EB), 'onTap': () { final ctx = _bookAgainKey.currentContext; if (ctx != null) Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 400)); }},
-      {'icon': Icons.calendar_today_rounded,        'label': t.myBookings, 'color': const Color(0xFF10B981), 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyBookingsScreen()))},
-      {'icon': Icons.favorite_rounded,              'label': t.homeSavedQuickAction,       'color': const Color(0xFFEF4444), 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedProfessionalsScreen()))},
-      {'icon': Icons.account_balance_wallet_rounded,'label': t.homeWalletQuickAction,      'color': const Color(0xFFF59E0B), 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletScreen()))},
-      {'icon': Icons.support_agent_rounded,         'label': t.homeHelpQuickAction,        'color': const Color(0xFF7C3AED), 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpScreen()))},
+      {'icon': Icons.replay_rounded,               'label': t.homeBookAgain,  'color': context.colors.primary, 'onTap': () { final ctx = _bookAgainKey.currentContext; if (ctx != null) Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 400)); }},
+      {'icon': Icons.calendar_today_rounded,        'label': t.myBookings, 'color': context.colors.accent, 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyBookingsScreen()))},
+      {'icon': Icons.favorite_rounded,              'label': t.homeSavedQuickAction,       'color': AppColors.favoriteRed, 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedProfessionalsScreen()))},
+      {'icon': Icons.account_balance_wallet_rounded,'label': t.homeWalletQuickAction,      'color': AppColors.warningAmber, 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletScreen()))},
+      {'icon': Icons.support_agent_rounded,         'label': t.homeHelpQuickAction,        'color': AppColors.accentPurple, 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpScreen()))},
     ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
@@ -906,11 +882,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           child: Column(children: [
             Container(
               width: 52, height: 52,
-              decoration: BoxDecoration(color: (it['color'] as Color).withOpacity(0.12), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: (it['color'] as Color).withValues(alpha: 0.12), shape: BoxShape.circle),
               child: Icon(it['icon'] as IconData, color: it['color'] as Color, size: 22),
             ),
             const SizedBox(height: 6),
-            Text(it['label'] as String, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: Color(0xFF374151))),
+            Text(it['label'] as String, style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
           ]),
         )).toList(),
       ),
@@ -921,22 +897,30 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // BOOK AGAIN
   // ═══════════════════════════════════════════════════════════
   Widget _buildBookAgain() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     if (!_bookAgainLoading && _bookAgain.isEmpty) return const SizedBox.shrink();
+    // Card content is ~146px + the text-scale growth; the old fixed 150 left
+    // no slack (1px overflow ribbon). Clamp the text scale and give the strip
+    // a safety buffer, same approach as the magazine strip.
+    final textScaler = MediaQuery.textScalerOf(context).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.15);
+    final stripHeight = 172 + (textScaler.scale(1.0) - 1.0) * 60;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(title: t.homeBookAgain, onSeeAll: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyBookingsScreen()))),
         SizedBox(
-          height: 150,
+          height: stripHeight,
           child: _bookAgainLoading
               ? const Center(child: AppFullLoader())
-              : ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: _bookAgain.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
-                  itemBuilder: (_, i) => _bookAgainCard(_bookAgain[i]),
+              : MediaQuery(
+                  data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _bookAgain.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 10),
+                    itemBuilder: (_, i) => _bookAgainCard(_bookAgain[i]),
+                  ),
                 ),
         ),
       ],
@@ -944,36 +928,36 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   }
 
   Widget _bookAgainCard(Map<String, dynamic> pro) {
-    final t     = AppLocalizations.of(context)!;
+    final t     = AppLocalizations.of(context);
     final name  = pro['name']?.toString() ?? t.homeDefaultProfessionalName;
-    final cat   = pro['category_name']?.toString() ?? '';
+    final cat   = AppHelpers.localizedCategoryName(context, pro['category_name']?.toString() ?? '');
     final photo = AppHelpers.getFullImageUrl(pro['photo_url']?.toString());
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BookingScreen(professional: pro))),
       child: Container(
         width: 128,
         padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.colors.divider)),
-        child: Column(children: [
+        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg), border: Border.all(color: context.colors.divider)),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(AppSizes.radiusXl),
             child: Container(
               width: 56, height: 56, color: context.colors.primaryLight,
               child: photo.isNotEmpty
-                  ? Image.network(photo, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Center(child: Text(AppHelpers.getInitials(name), style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.bold))))
+                  ? Image.network(photo, fit: BoxFit.cover, errorBuilder: (_, _, _) => Center(child: Text(AppHelpers.getInitials(name), style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.bold))))
                   : Center(child: Text(AppHelpers.getInitials(name), style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.bold))),
             ),
           ),
           const SizedBox(height: 6),
-          Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-          if (cat.isNotEmpty) Text(cat, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 10.5, color: context.colors.primary)),
+          Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700)),
+          if (cat.isNotEmpty) Text(cat, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.primary)),
           const SizedBox(height: 6),
           SizedBox(
             width: double.infinity, height: 28,
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(padding: EdgeInsets.zero, textStyle: const TextStyle(fontSize: 11)),
+              style: ElevatedButton.styleFrom(padding: EdgeInsets.zero, textStyle: const TextStyle(fontSize: AppFontSizes.caption)),
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BookingScreen(professional: pro))),
-              child: Text(AppLocalizations.of(context)!.homeBookAgain),
+              child: Text(AppLocalizations.of(context).homeBookAgain),
             ),
           ),
         ]),
@@ -985,7 +969,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // RECENT SEARCHES
   // ═══════════════════════════════════════════════════════════
   Widget _buildRecentSearches() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     if (!_searchHistoryLoading && _recentSearches.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
@@ -993,10 +977,10 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Expanded(child: Text(t.homeRecentSearches, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF6B7280)))),
+            Expanded(child: Text(t.homeRecentSearches, style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700, color: context.colors.textSecondary))),
             if (_recentSearches.isNotEmpty)
               GestureDetector(onTap: () => setState(() => _recentSearches = []),
-                  child: Text(t.homeClearAll, style: TextStyle(fontSize: 11.5, color: context.colors.textSecondary))),
+                  child: Text(t.homeClearAll, style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary))),
           ]),
           const SizedBox(height: 8),
           Wrap(
@@ -1005,11 +989,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
               onTap: () => _openSearch(query: q),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: context.colors.divider)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(AppSizes.radiusFull), border: Border.all(color: context.colors.divider)),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.history_rounded, size: 13, color: context.colors.textSecondary),
                   const SizedBox(width: 5),
-                  Text(q, style: const TextStyle(fontSize: 12, color: Color(0xFF374151))),
+                  Text(q, style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textPrimary)),
                 ]),
               ),
             )).toList(),
@@ -1028,11 +1012,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
+          Text(title, style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
           GestureDetector(
             onTap: onSeeAll,
             child: Row(children: [
-              Text(AppLocalizations.of(context)!.seeAll, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: context.colors.primary)),
+              Text(AppLocalizations.of(context).seeAll, style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.primary)),
               Icon(Icons.chevron_right_rounded, size: 16, color: context.colors.primary),
             ]),
           ),
@@ -1086,7 +1070,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
                   itemBuilder: (_, i) => _buildProfessionalCard(items[i] as Map, tag: tag, tagIcon: tagIcon, tagColor: tagColor),
                 ),
               ),
@@ -1137,7 +1121,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // UPCOMING BOOKINGS
   // ═══════════════════════════════════════════════════════════
   Widget _buildUpcomingBookings() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       _buildSectionHeader(title: t.homeUpcomingBookings, onSeeAll: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyBookingsScreen()))),
       _bookingsLoading
@@ -1147,11 +1131,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Container(
                     width: double.infinity, padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.colors.divider)),
+                    decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg), border: Border.all(color: context.colors.divider)),
                     child: Column(children: [
-                      const Icon(Icons.event_available_outlined, size: 32, color: Color(0xFFD1D5DB)),
+                      Icon(Icons.event_available_outlined, size: 32, color: context.colors.textDisabled),
                       const SizedBox(height: 8),
-                      Text(t.homeNoUpcomingBookings, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF374151))),
+                      Text(t.homeNoUpcomingBookings, style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
                       const SizedBox(height: 10),
                       OutlinedButton(onPressed: () => _openSearch(), child: Text(t.homeBrowseProfessionals)),
                     ]),
@@ -1163,7 +1147,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: _upcomingBookings.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    separatorBuilder: (_, _) => const SizedBox(width: 10),
                     itemBuilder: (_, i) => _upcomingBookingCard(_upcomingBookings[i]),
                   ),
                 ),
@@ -1171,7 +1155,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   }
 
   Widget _upcomingBookingCard(dynamic b) {
-    final t    = AppLocalizations.of(context)!;
+    final t    = AppLocalizations.of(context);
     final date = DateTime.tryParse('${b['date']}');
     final day  = date != null ? date.day.toString() : '--';
     final mon  = date != null ? _monthAbbr(date.month) : '';
@@ -1181,23 +1165,23 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
 
     return Container(
       width: 210, padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.colors.divider)),
+      decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg), border: Border.all(color: context.colors.divider)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Container(
             width: 44, height: 44,
-            decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(day, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: context.colors.primary, height: 1)),
-              Text(mon, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: context.colors.primary)),
+              Text(day, style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.bold, color: context.colors.primary, height: 1)),
+              Text(mon, style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: context.colors.primary)),
             ]),
           ),
           const SizedBox(width: 10),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+            Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700)),
             if (time.isNotEmpty) Row(children: [
               Icon(Icons.access_time_rounded, size: 11, color: context.colors.textSecondary), const SizedBox(width: 2),
-              Text(time, style: TextStyle(fontSize: 10.5, color: context.colors.textSecondary)),
+              Text(time, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
             ]),
           ])),
           _statusPill(status),
@@ -1207,7 +1191,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           Expanded(child: TextButton(
             style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(0, 30)),
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyBookingsScreen())),
-            child: Text(AppLocalizations.of(context)!.homeViewDetails, style: const TextStyle(fontSize: 11)),
+            child: Text(AppLocalizations.of(context).homeViewDetails, style: const TextStyle(fontSize: AppFontSizes.caption)),
           )),
           GestureDetector(onTap: () => _openComingSoon(), child: Icon(Icons.chat_bubble_outline_rounded, size: 16, color: context.colors.textSecondary)),
         ]),
@@ -1218,9 +1202,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   String _monthAbbr(int m) => const ['', 'JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][m];
 
   Widget _statusPill(String status) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final map = {
-      'pending':   [const Color(0xFFF59E0B), Icons.schedule_rounded, t.pending],
+      'pending':   [AppColors.warningAmber, Icons.schedule_rounded, t.pending],
       'accepted':  [context.colors.primary, Icons.check_circle_outline_rounded, t.homeConfirmedStatus],
       'rejected':  [AppColors.error, Icons.cancel_outlined, t.homeDeclinedStatus],
       'completed': [context.colors.accent, Icons.check_circle_rounded, t.completed],
@@ -1230,65 +1214,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     final color = v[0] as Color;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(6)),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppSizes.radiusBadge)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         Icon(v[1] as IconData, size: 10, color: color),
         const SizedBox(width: 2),
-        Text(v[2] as String, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: color)),
-      ]),
-    );
-  }
-
-  // ═══════════════════════════════════════════════════════════
-  // RECENT BOOKINGS
-  // ═══════════════════════════════════════════════════════════
-  Widget _buildRecentBookings() {
-    final t = AppLocalizations.of(context)!;
-    if (!_bookingsLoading && _recentBookings.isEmpty) return const SizedBox.shrink();
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _buildSectionHeader(title: t.homeRecentBookingsTitle, onSeeAll: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyBookingsScreen()))),
-      if (_bookingsLoading)
-        const Padding(padding: EdgeInsets.only(top: 10), child: AppFullLoader())
-      else
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(children: _recentBookings.take(3).map((b) => _recentBookingRow(b)).toList()),
-        ),
-    ]);
-  }
-
-  Widget _recentBookingRow(dynamic b) {
-    final t      = AppLocalizations.of(context)!;
-    final name   = b['professional_name']?.toString() ?? t.homeDefaultProfessionalName;
-    final status = b['status']?.toString() ?? '';
-    final date   = b['date']?.toString() ?? '';
-    final cancelReason = b['cancel_reason']?.toString() ?? '';
-    final cancelledBy  = b['cancelled_by']?.toString() ?? '';
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: context.colors.divider)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          CircleAvatar(radius: 18, backgroundColor: context.colors.primaryLight, child: Text(AppHelpers.getInitials(name), style: TextStyle(fontSize: 11, color: context.colors.primary, fontWeight: FontWeight.bold))),
-          const SizedBox(width: 10),
-          Expanded(child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700))),
-          Text(date, style: TextStyle(fontSize: 10.5, color: context.colors.textSecondary)),
-          const SizedBox(width: 8),
-          _statusPill(status),
-        ]),
-        if (status == 'cancelled' && cancelReason.isNotEmpty) Padding(
-          padding: const EdgeInsets.only(top: 6, left: 46),
-          child: Text(AppLocalizations.of(context)!.homeCancelledBy(cancelledBy.isNotEmpty ? cancelledBy : AppLocalizations.of(context)!.homeSystemLabel, cancelReason),
-              style: TextStyle(fontSize: 10.5, color: context.colors.textSecondary, fontStyle: FontStyle.italic)),
-        ),
-        if (status == 'completed') Padding(
-          padding: const EdgeInsets.only(top: 8, left: 46),
-          child: GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyBookingsScreen())),
-            child: Text(AppLocalizations.of(context)!.homeRateExperience, style: TextStyle(fontSize: 11.5, color: context.colors.primary, fontWeight: FontWeight.w600)),
-          ),
-        ),
+        Text(v[2] as String, style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.bold, color: color)),
       ]),
     );
   }
@@ -1297,7 +1227,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // WALLET
   // ═══════════════════════════════════════════════════════════
   Widget _buildWalletCard() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
       child: GestureDetector(
@@ -1306,17 +1236,17 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           padding: const EdgeInsets.all(18),
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF059669), Color(0xFF10B981)]),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+            gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.walletGradientStart, AppColors.walletGradientEnd]),
           ),
           child: Stack(children: [
-          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)))),
-          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
+          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.10)))),
+          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.08)))),
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
               const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 22),
               const SizedBox(width: 8),
-              Text(t.homeTotalSpent, style: const TextStyle(color: Colors.white70, fontSize: 12.5, fontWeight: FontWeight.w600)),
+              Text(t.homeTotalSpent, style: const TextStyle(color: Colors.white70, fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600)),
             ]),
             const SizedBox(height: 10),
             _walletLoading
@@ -1330,22 +1260,22 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                       ),
                     ),
                   )
-                : Text('\$${_totalSpent.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+                : Text('\$${_totalSpent.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white, fontSize: AppFontSizes.display, fontWeight: FontWeight.bold)),
             const SizedBox(height: 2),
             Text(
               _paymentsCount == 1
                   ? t.homeAcrossTransaction('$_paymentsCount')
                   : t.homeAcrossTransactions('$_paymentsCount'),
-              style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: AppFontSizes.caption),
             ),
             const Divider(color: Colors.white30, height: 24),
             Row(children: [
               Icon(Icons.workspace_premium_rounded, color: _isPremium ? Colors.white : Colors.white38, size: 18),
               const SizedBox(width: 8),
-              Expanded(child: Text(t.homePlan(_planName.isEmpty ? t.homeDefaultPlanFree : _planName), style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w600))),
+              Expanded(child: Text(t.homePlan(_planName.isEmpty ? t.homeDefaultPlanFree : _planName), style: const TextStyle(color: Colors.white, fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600))),
               GestureDetector(
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen(userRole: 'customer'))),
-                child: Text(_isPremium ? t.homeManageButton : t.homeUpgradeButton, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700, decoration: TextDecoration.underline)),
+                child: Text(_isPremium ? t.homeManageButton : t.homeUpgradeButton, style: const TextStyle(color: Colors.white, fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, decoration: TextDecoration.underline)),
               ),
             ]),
           ]),
@@ -1355,269 +1285,69 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     );
   }
 
-  Widget _buildPaymentSummary() {
-    final t = AppLocalizations.of(context)!;
-    if (_walletLoading) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Row(children: [
-        Expanded(child: _statChip(t.completed, '$_completedPayments', context.colors.accent)),
-        const SizedBox(width: 8),
-        if (_pendingPayments > 0) Expanded(child: _statChip(t.pending, '$_pendingPayments', const Color(0xFFF59E0B))),
-        if (_pendingPayments > 0) const SizedBox(width: 8),
-        Expanded(child: _statChip(t.homeTotalLabel, '$_paymentsCount', context.colors.primary)),
-      ]),
-    );
-  }
-
-  Widget _statChip(String label, String value, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: context.colors.divider)),
-      child: Column(children: [
-        Text(value, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: color)),
-        Text(label, style: TextStyle(fontSize: 10, color: context.colors.textSecondary)),
-      ]),
-    );
-  }
-
-  Widget _buildPaymentHistoryPreview() {
-    final t = AppLocalizations.of(context)!;
-    if (!_walletLoading && _recentPayments.isEmpty) return const SizedBox.shrink();
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _buildSectionHeader(title: t.homePaymentHistoryTitle, onSeeAll: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentsScreen()))),
-      if (_walletLoading)
-        const Padding(padding: EdgeInsets.only(top: 10), child: AppFullLoader())
-      else
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(children: _recentPayments.map((p) => _paymentRow(p)).toList()),
-        ),
-    ]);
-  }
-
-  Widget _paymentRow(dynamic p) {
-    final amount   = _num(p['amount']);
-    final currency = p['currency']?.toString() ?? 'USD';
-    final status   = p['status']?.toString() ?? 'pending';
-    final colors = {'completed': context.colors.accent, 'pending': const Color(0xFFF59E0B), 'failed': AppColors.error, 'refunded': const Color(0xFF6366F1)};
-    final color = colors[status] ?? context.colors.textSecondary;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: context.colors.divider)),
-      child: Row(children: [
-        Container(width: 34, height: 34, decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(9)), child: Icon(Icons.receipt_rounded, color: color, size: 16)),
-        const SizedBox(width: 10),
-        Expanded(child: Text('$currency ${amount.toStringAsFixed(2)}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700))),
-        Text(AppHelpers.capitalize(status), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
-      ]),
-    );
-  }
-
   // ═══════════════════════════════════════════════════════════
-  // RECENT CHATS — real conversations (photo, name, last message,
-  // timestamp, unread badge, online status), with the required empty state.
+  // MAGAZINE TABS — Tips + Featured merged into one section so the
+  // home screen stays short. Tabs hide themselves if a list is empty.
   // ═══════════════════════════════════════════════════════════
-  Widget _buildRecentChats() {
-    final t = AppLocalizations.of(context)!;
-    final convoProvider = context.watch<ConversationListProvider>();
-    // Not pinned/archived, most-recent first, top 3 for the dashboard preview.
-    final recent = convoProvider.conversations
-        .where((c) => !c.isArchived)
-        .take(3)
-        .toList();
+  Widget _buildMagazineTabs() {
+    final t = AppLocalizations.of(context);
+    final hasTips = _articles.isNotEmpty;
+    final hasFeatured = _featuredArticles.isNotEmpty;
+    if (!_articlesLoading && !hasTips && !hasFeatured) return const SizedBox.shrink();
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Expanded(child: Text(t.homeRecentChats, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF111827)))),
-          if (recent.isNotEmpty)
-            GestureDetector(
-              onTap: () {
-                final myId = int.tryParse((_homeUserId ?? '').toString());
-                if (myId == null) return;
-                Navigator.push(context, MaterialPageRoute(builder: (_) => ConversationListScreen(currentUserId: myId)));
-              },
-              child: Row(children: [
-                Text(t.homeViewAll, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: context.colors.primary)),
-                Icon(Icons.chevron_right_rounded, size: 16, color: context.colors.primary),
-              ]),
+    // Only one list has content -> no tabs needed, show it directly.
+    if (!_articlesLoading && hasTips != hasFeatured) {
+      return hasTips
+          ? _buildMagazineSection(t.homeTipsMagazineTitle, _articles, false)
+          : _buildMagazineSection(t.homeFeaturedArticlesTitle, _featuredArticles, false, showViews: true);
+    }
+
+    final showFeatured = _magazineTab == 1;
+    Widget chip(String label, bool selected, VoidCallback onTap) => GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            decoration: BoxDecoration(
+              color: selected ? context.colors.primary : context.colors.surface,
+              borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+              border: Border.all(color: selected ? context.colors.primary : context.colors.divider),
             ),
-        ]),
-        const SizedBox(height: 8),
-        if (convoProvider.isLoading && convoProvider.conversations.isEmpty)
-          const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: AppFullLoader())
-        else if (recent.isEmpty)
-          Container(
-            width: double.infinity, padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.colors.divider)),
-            child: Row(children: [
-              Icon(Icons.chat_bubble_outline_rounded, color: context.colors.textSecondary, size: 26),
-              const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(t.homeNoMessagesYet, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 2),
-                Text(t.homeStartConversationAfterBookingProfessional, style: TextStyle(fontSize: 11.5, color: context.colors.textSecondary)),
-              ])),
-            ]),
-          )
-        else
-          Column(children: recent.map((c) => _recentChatRow(c)).toList()),
-      ]),
-    );
-  }
-
-  Widget _recentChatRow(ConversationEntity c) {
-    return GestureDetector(
-      onTap: () => _openChat(c),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: context.colors.divider)),
-        child: Row(children: [
-          Stack(clipBehavior: Clip.none, children: [
-            CircleAvatar(
-              radius: 22, backgroundColor: context.colors.primaryLight,
-              backgroundImage: (c.otherUserPhoto != null && c.otherUserPhoto!.isNotEmpty)
-                  ? NetworkImage(AppHelpers.getFullImageUrl(c.otherUserPhoto)) as ImageProvider
-                  : null,
-              child: (c.otherUserPhoto == null || c.otherUserPhoto!.isEmpty)
-                  ? Text(c.otherUserName.isNotEmpty ? c.otherUserName[0].toUpperCase() : '?', style: TextStyle(fontWeight: FontWeight.w700, color: context.colors.primary))
-                  : null,
-            ),
-            if (c.otherUserOnline)
-              Positioned(right: 0, bottom: 0, child: Container(
-                width: 12, height: 12,
-                decoration: BoxDecoration(color: const Color(0xFF22C55E), shape: BoxShape.circle, border: Border.all(color: context.colors.surface, width: 2)),
-              )),
-          ]),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(c.otherUserName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 2),
-            Text(
-              c.lastMessage.isEmpty ? AppLocalizations.of(context)!.homeSayHello : c.lastMessage,
-              maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 11.5, color: c.unreadCount > 0 ? const Color(0xFF111827) : context.colors.textSecondary, fontWeight: c.unreadCount > 0 ? FontWeight.w600 : FontWeight.w400),
-            ),
-          ])),
-          const SizedBox(width: 8),
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Text(_relativeTime(c.lastMessageAt ?? c.updatedAt), style: TextStyle(fontSize: 10.5, color: context.colors.textSecondary)),
-            const SizedBox(height: 6),
-            if (c.unreadCount > 0)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(color: context.colors.primary, borderRadius: BorderRadius.circular(10)),
-                child: Text('${c.unreadCount}', style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.w700)),
-              ),
-          ]),
-        ]),
-      ),
-    );
-  }
-
-  String _relativeTime(DateTime dt) {
-    final diff = DateTime.now().difference(dt);
-    if (diff.inMinutes < 1)  return 'now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m';
-    if (diff.inHours < 24)   return '${diff.inHours}h';
-    if (diff.inDays < 7)     return '${diff.inDays}d';
-    return AppHelpers.formatDate(dt);
-  }
-
-  void _openChat(ConversationEntity c) {
-    final myId = int.tryParse((_homeUserId ?? '').toString());
-    if (myId == null) return;
-    Navigator.push(context, MaterialPageRoute(
-      builder: (_) => ChatScreen(
-        conversationId: c.id,
-        currentUserId: myId,
-        otherUserName: c.otherUserName,
-        otherUserPhoto: c.otherUserPhoto,
-        conversationSnapshot: c,
-      ),
-    )).then((_) => context.read<ConversationListProvider>().refresh());
-  }
-
-  /// Current customer's own id — reused from the already-loaded profile
-  /// instead of an extra `/users/me/` call.
-  String? get _homeUserId => context.read<HomeProvider>().userProfile?['id']?.toString();
-
-  // ═══════════════════════════════════════════════════════════
-  // NOTIFICATIONS PREVIEW
-  // ═══════════════════════════════════════════════════════════
-  Widget _buildNotificationsPreview() {
-    final t = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Expanded(child: Text(t.homeNotifications(_unreadCount > 0 ? ' ($_unreadCount)' : ''), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF111827)))),
-          GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen())).then((_) => _loadNotifications()),
-            child: Row(children: [Text(t.homeViewAll, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: context.colors.primary)), Icon(Icons.chevron_right_rounded, size: 16, color: context.colors.primary)]),
+            child: Text(label, style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: selected ? Colors.white : context.colors.textSecondary)),
           ),
-        ]),
-        const SizedBox(height: 8),
-        if (_notifLoading)
-          const AppFullLoader()
-        else if (_notifications.isEmpty)
-          Container(
-            width: double.infinity, padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.colors.divider)),
-            child: Text(t.noNotifications, style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary)),
-          )
-        else
-          Column(children: (() {
-            final unread = _notifications.where((n) => n['is_read'] != true).toList();
-            final read   = _notifications.where((n) => n['is_read'] == true).toList();
-            final combined = [...unread, ...read].take(3).toList();
-            return combined.map((n) => _notificationRow(n)).toList();
-          })()),
-      ]),
-    );
-  }
+        );
 
-  Widget _notificationRow(dynamic n) {
-    final type = n['type']?.toString() ?? 'general';
-    final map = {
-      'payment':      [const Color(0xFF10B981), Icons.receipt_rounded],
-      'review':       [const Color(0xFFF59E0B), Icons.star_rounded],
-      'subscription': [const Color(0xFF7C3AED), Icons.workspace_premium_rounded],
-      'general':      [context.colors.primary, Icons.notifications_rounded],
-    };
-    final v = map[type] ?? map['general']!;
-    final color = v[0] as Color;
-    final isRead = n['is_read'] == true;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: context.colors.divider)),
-      child: Row(children: [
-        if (!isRead) Container(width: 6, height: 6, margin: const EdgeInsets.only(right: 8), decoration: BoxDecoration(color: context.colors.primary, shape: BoxShape.circle)),
-        Container(width: 32, height: 32, decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(9)), child: Icon(v[1] as IconData, color: color, size: 15)),
-        const SizedBox(width: 10),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(n['title']?.toString() ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
-          Text(n['message']?.toString() ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: context.colors.textSecondary)),
-        ])),
-      ]),
-    );
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      _buildSectionHeader(
+        title: t.homeTipsMagazineTitle,
+        onSeeAll: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MagazineScreen())),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(left: 16, bottom: 10),
+        child: Row(children: [
+          chip(t.homeTipsMagazineTitle, !showFeatured, () => setState(() => _magazineTab = 0)),
+          const SizedBox(width: 8),
+          chip(t.homeFeaturedArticlesTitle, showFeatured, () => setState(() => _magazineTab = 1)),
+        ]),
+      ),
+      showFeatured
+          ? _buildMagazineSection(t.homeFeaturedArticlesTitle, _featuredArticles, _articlesLoading, showViews: true, showHeader: false)
+          : _buildMagazineSection(t.homeTipsMagazineTitle, _articles, _articlesLoading, showHeader: false),
+    ]);
   }
 
   // ═══════════════════════════════════════════════════════════
   // MAGAZINE — Tips Magazine / Featured Articles (shared builder)
   // ═══════════════════════════════════════════════════════════
-  Widget _buildMagazineSection(String title, List<Article> articles, bool loading, {bool showViews = false}) {
+  Widget _buildMagazineSection(String title, List<Article> articles, bool loading, {bool showViews = false, bool showHeader = true}) {
     if (!loading && articles.isEmpty) return const SizedBox.shrink();
     // Clamp text scaling for this horizontal strip — the card height below
     // already includes a safety buffer, but without a ceiling on scale a
     // large system/accessibility font size could still outgrow it on some
     // devices, which is exactly what was overflowing before.
     final textScaler = MediaQuery.textScalerOf(context).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.15);
-    final cardHeight = 178 + (textScaler.scale(1.0) - 1.0) * 60;
+    final cardHeight = 200 + (textScaler.scale(1.0) - 1.0) * 60;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _buildSectionHeader(title: title, onSeeAll: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MagazineScreen()))),
+      if (showHeader) _buildSectionHeader(title: title, onSeeAll: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MagazineScreen()))),
       SizedBox(
         height: cardHeight,
         child: loading
@@ -1628,7 +1358,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: articles.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
                   itemBuilder: (_, i) => _articleCard(articles[i], showViews: showViews),
                 ),
               ),
@@ -1642,44 +1372,47 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ArticleDetailScreen(slug: a.slug))),
       child: Container(
         width: showViews ? 240 : 210,
-        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.colors.divider)),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg), border: Border.all(color: context.colors.divider)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Stack(children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusLg)),
               child: Container(
                 height: 92, width: double.infinity, color: context.colors.primaryLight,
                 child: cover.isNotEmpty
-                    ? Image.network(cover, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(Icons.menu_book_rounded, color: context.colors.primary))
+                    ? Image.network(cover, fit: BoxFit.cover, errorBuilder: (_, _, _) => Icon(Icons.menu_book_rounded, color: context.colors.primary))
                     : Icon(Icons.menu_book_rounded, color: context.colors.primary),
               ),
             ),
             if (showViews) Positioned(right: 8, top: 8, child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-              decoration: BoxDecoration(color: Colors.black.withOpacity(0.6), borderRadius: BorderRadius.circular(6)),
+              decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.6), borderRadius: BorderRadius.circular(AppSizes.radiusBadge)),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 const Icon(Icons.remove_red_eye_outlined, color: Colors.white, size: 10), const SizedBox(width: 3),
-                Text(_formatViews(a.viewsCount), style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                Text(_formatViews(a.viewsCount), style: const TextStyle(color: Colors.white, fontSize: AppFontSizes.caption, fontWeight: FontWeight.bold)),
               ]),
             )),
           ]),
-          Padding(
+          // Expanded + non-scrolling scroll view: taller Devanagari/Urdu text can
+          // never trigger the yellow-black "BOTTOM OVERFLOWED" ribbon.
+          Expanded(child: SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(a.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, height: 1.25)),
+              Text(a.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, height: 1.25)),
               const SizedBox(height: 4),
-              Text(a.editorialLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 10, color: context.colors.primary, fontWeight: FontWeight.w600)),
+              Text(a.editorialLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.primary, fontWeight: FontWeight.w600)),
               const SizedBox(height: 3),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.access_time_rounded, size: 10, color: context.colors.textSecondary), const SizedBox(width: 2),
-                  Text(AppLocalizations.of(context)!.magazineMinRead('${a.readTime}'), style: TextStyle(fontSize: 10, color: context.colors.textSecondary)),
+                  Text(AppLocalizations.of(context).magazineMinRead('${a.readTime}'), style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
                 ]),
               ),
             ]),
-          ),
+          )),
         ]),
       ),
     );
@@ -1690,8 +1423,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // ═══════════════════════════════════════════════════════════
   // AI SUGGESTIONS — free 5/day, unlimited premium (real backend)
   // ═══════════════════════════════════════════════════════════
+
   Widget _buildAiSuggestions() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final remaining = (_aiLimit - _aiUsed).clamp(0, _aiLimit);
     final exhausted  = !_aiPremium && _aiLimit > 0 && remaining <= 0;
 
@@ -1699,40 +1433,40 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: context.colors.divider)),
+        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg), border: Border.all(color: context.colors.divider)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            const Icon(Icons.auto_awesome_rounded, color: Color(0xFF7C3AED), size: 20),
+            const Icon(Icons.auto_awesome_rounded, color: AppColors.accentPurple, size: 20),
             const SizedBox(width: 8),
-            Expanded(child: Text(t.homeAiSuggestions, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
+            Expanded(child: Text(t.homeAiSuggestions, style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.bold))),
             if (_aiQuotaLoading)
               const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
             else if (_aiPremium)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFF2563EB)]), borderRadius: BorderRadius.circular(8)),
-                child: Text(t.homeUnlimited, style: const TextStyle(color: Colors.white, fontSize: 10.5, fontWeight: FontWeight.bold)),
+                decoration: BoxDecoration(gradient: const LinearGradient(colors: [AppColors.accentPurple, AppColors.customerColor]), borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
+                child: Text(t.homeUnlimited, style: const TextStyle(color: Colors.white, fontSize: AppFontSizes.caption, fontWeight: FontWeight.bold)),
               )
             else
-              Text(t.homeUsedToday('$_aiUsed', '$_aiLimit'), style: TextStyle(fontSize: 11, color: context.colors.textSecondary)),
+              Text(t.homeUsedToday('$_aiUsed', '$_aiLimit'), style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
           ]),
           const SizedBox(height: 4),
           Text(
             t.homeJustTellUsWhatNeedWe,
-            style: TextStyle(fontSize: 11, color: context.colors.textSecondary),
+            style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary),
           ),
           const SizedBox(height: 12),
           if (exhausted)
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: const Color(0xFFFFFBEB), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFFDE68A))),
+              decoration: BoxDecoration(color: context.colors.warningBg, borderRadius: BorderRadius.circular(AppSizes.radiusMd), border: Border.all(color: context.colors.warningBorder)),
               child: Row(children: [
-                const Icon(Icons.info_outline_rounded, color: Color(0xFFF59E0B), size: 16),
+                const Icon(Icons.info_outline_rounded, color: AppColors.warningAmber, size: 16),
                 const SizedBox(width: 8),
-                Expanded(child: Text(t.homeDailyLimitReachedResetsMidnight, style: const TextStyle(fontSize: 11.5, color: Color(0xFF92400E)))),
+                Expanded(child: Text(t.homeDailyLimitReachedResetsMidnight, style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.warningText))),
                 GestureDetector(
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen(userRole: 'customer'))),
-                  child: Text(t.homeUpgradeButton, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: context.colors.primary)),
+                  child: Text(t.homeUpgradeButton, style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.bold, color: context.colors.primary)),
                 ),
               ]),
             )
@@ -1743,9 +1477,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                   controller: _aiPromptController,
                   decoration: InputDecoration(
                     hintText: t.homeEGINeedPlumberLeaking,
-                    hintStyle: const TextStyle(fontSize: 12.5),
+                    hintStyle: const TextStyle(fontSize: AppFontSizes.secondary),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
                   ),
                 ),
               ),
@@ -1759,7 +1493,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                 },
                 child: Container(
                   padding: const EdgeInsets.all(11),
-                  decoration: BoxDecoration(color: context.colors.primary, borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: context.colors.primary, borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                   child: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18),
                 ),
               ),
@@ -1773,40 +1507,26 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // CUSTOMER SUPPORT + HELP CENTER
   // ═══════════════════════════════════════════════════════════
   Widget _buildSupportBanner() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
       child: Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.colors.divider)),
+        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg), border: Border.all(color: context.colors.divider)),
         child: Row(children: [
           Icon(Icons.support_agent_rounded, color: context.colors.primary, size: 26),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(t.homeNeedHelpWeReHere, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+            Text(t.homeNeedHelpWeReHere, style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700)),
             const SizedBox(height: 2),
-            Text(t.homeGetResponseWithin24Hours, style: TextStyle(fontSize: 10.5, color: context.colors.textSecondary)),
+            Text(t.homeGetResponseWithin24Hours, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
           ])),
           OutlinedButton(
             style: OutlinedButton.styleFrom(minimumSize: const Size(0, 34), padding: const EdgeInsets.symmetric(horizontal: 12)),
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpScreen())),
-            child: Text(t.homeContactButton, style: const TextStyle(fontSize: 11.5)),
+            child: Text(t.homeContactButton, style: const TextStyle(fontSize: AppFontSizes.small)),
           ),
         ]),
-      ),
-    );
-  }
-
-  Widget _buildHelpCenterRow() {
-    final t = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-      child: ListTile(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpScreen())),
-        contentPadding: EdgeInsets.zero,
-        leading: Icon(Icons.help_outline_rounded, color: context.colors.textSecondary, size: 20),
-        title: Text(t.homeHelpCenter, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-        trailing: Icon(Icons.chevron_right_rounded, size: 18, color: context.colors.textSecondary),
       ),
     );
   }
@@ -1815,21 +1535,21 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // BOTTOM NAV
   // ═══════════════════════════════════════════════════════════
   Widget _buildBottomNav() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: context.colors.surface,
         border: Border(top: BorderSide(color: context.colors.divider, width: 1)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12, offset: const Offset(0, -4))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, -4))],
       ),
       child: BottomNavigationBar(
         currentIndex: _currentNavIndex,
         elevation: 0,
         backgroundColor: Colors.transparent,
         selectedItemColor: context.colors.primary,
-        unselectedItemColor: const Color(0xFF9CA3AF),
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
-        unselectedLabelStyle: const TextStyle(fontSize: 11),
+        unselectedItemColor: context.colors.textSecondary,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: AppFontSizes.caption),
+        unselectedLabelStyle: const TextStyle(fontSize: AppFontSizes.caption),
         type: BottomNavigationBarType.fixed,
         onTap: (i) {
           setState(() => _currentNavIndex = i);

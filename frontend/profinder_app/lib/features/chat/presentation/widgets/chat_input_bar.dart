@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import '../../../../core/theme/app_colors.dart';
 import 'voice_recorder_button.dart';
 import '../../../../core/theme/theme_context_ext.dart';
+import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class ChatInputBar extends StatefulWidget {
   final void Function(String text) onSendText;
@@ -103,12 +105,12 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 icon: Icon(_showEmojiPicker ? Icons.keyboard_alt_outlined : Icons.emoji_emotions_outlined,
                     color: context.colors.textSecondary),
                 onPressed: _toggleEmojiPicker,
-                tooltip: 'Emoji',
+                tooltip: AppLocalizations.of(context).chatEmoji,
               ),
               IconButton(
                 icon: Icon(Icons.image_outlined, color: context.colors.textSecondary),
                 onPressed: _pickImage,
-                tooltip: 'Send a photo',
+                tooltip: AppLocalizations.of(context).chatSendPhoto,
               ),
               Expanded(
                 child: Container(
@@ -116,7 +118,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   decoration: BoxDecoration(
                     color: context.colors.background,
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(AppSizes.radius22),
                   ),
                   child: TextField(
                     controller: _controller,
@@ -124,10 +126,10 @@ class _ChatInputBarState extends State<ChatInputBar> {
                     minLines: 1,
                     maxLines: 5,
                     textCapitalization: TextCapitalization.sentences,
-                    style: TextStyle(fontSize: 14.5, color: context.colors.textPrimary),
+                    style: TextStyle(fontSize: AppFontSizes.input, color: context.colors.textPrimary),
                     decoration: InputDecoration(
-                      hintText: 'Message',
-                      hintStyle: TextStyle(fontSize: 14.5, color: context.colors.textSecondary),
+                      hintText: AppLocalizations.of(context).chatMessageHint,
+                      hintStyle: TextStyle(fontSize: AppFontSizes.input, color: context.colors.textSecondary),
                       border: InputBorder.none,
                       isCollapsed: true,
                     ),

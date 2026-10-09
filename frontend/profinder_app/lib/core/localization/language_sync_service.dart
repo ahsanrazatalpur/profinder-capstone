@@ -1,10 +1,8 @@
 // lib/core/localization/language_sync_service.dart
 //
 // Login-time language sync, as specified:
-//   - If the backend already has a preferred_language, that wins — the
-//     app switches to it (e.g. user logged in on a new device).
-//   - If the backend has none (null), we upload whatever is currently
-//     selected locally (from first-launch detection or Settings).
+//   - The language chosen on this device wins and is uploaded to the backend.
+//   - Only if this device never chose a language does the backend value apply.
 //
 // Call `LanguageSyncService().syncAfterLogin(...)` right after a
 // successful login response is received — see AuthService.login().
@@ -24,16 +22,23 @@ class LanguageSyncService {
     required String? backendLanguage,
     required LocaleProvider localeProvider,
   }) async {
-    if (backendLanguage != null && SupportedLanguages.isSupported(backendLanguage)) {
-      // Backend already has a preference — it wins.
-      if (backendLanguage != localeProvider.locale.languageCode) {
-        await localeProvider.setLocale(backendLanguage);
-      }
+    // The language the user picked on THIS device (first-launch screen, guest
+    // mode or Settings) always wins. Previously the backend's saved
+    // preferred_language overrode it, so a guest using Urdu logged in and
+    // suddenly got Hindi (an old value stored on the account). Now we push the
+    // local choice to the backend so both stay in sync.
+    if (localeProvider.hasChosenLanguage ||
+        backendLanguage == null ||
+        !SupportedLanguages.isSupported(backendLanguage)) {
+      await _uploadLanguage(localeProvider.locale.languageCode);
       return;
     }
 
-    // Backend has none yet — upload the locally selected language.
-    await _uploadLanguage(localeProvider.locale.languageCode);
+    // Device has never had a language chosen (fresh install, login before the
+    // language screen) -> adopt the account's saved language.
+    if (backendLanguage != localeProvider.locale.languageCode) {
+      await localeProvider.setLocale(backendLanguage);
+    }
   }
 
   /// Also called from Settings → Language when a logged-in user changes

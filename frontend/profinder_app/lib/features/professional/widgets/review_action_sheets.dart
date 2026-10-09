@@ -1,5 +1,7 @@
 // lib/features/professional/widgets/review_action_sheets.dart
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
@@ -30,7 +32,7 @@ Future<Map<String, dynamic>?> showEditReviewSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet))),
     builder: (sheetContext) {
       final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
       return StatefulBuilder(
@@ -41,12 +43,12 @@ Future<Map<String, dynamic>?> showEditReviewSheet(
             child: Container(
               decoration: BoxDecoration(
                 color: sheetContext.colors.surface,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
                 boxShadow: [
                   BoxShadow(
                     color: isDark
-                        ? Colors.black.withOpacity(0.3)
-                        : Colors.black.withOpacity(0.08),
+                        ? Colors.black.withValues(alpha: 0.3)
+                        : Colors.black.withValues(alpha: 0.08),
                     blurRadius: 20,
                     offset: const Offset(0, -4),
                   ),
@@ -72,16 +74,16 @@ Future<Map<String, dynamic>?> showEditReviewSheet(
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
                             color: isDark
-                                ? Colors.white.withOpacity(0.15)
+                                ? Colors.white.withValues(alpha: 0.15)
                                 : sheetContext.colors.divider,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusXs),
                           ),
                         ),
                       ),
                       Text(
-                        AppLocalizations.of(context)!.editReviewTitle,
+                        AppLocalizations.of(context).editReviewTitle,
                         style: TextStyle(
-                          fontSize: 17,
+                          fontSize: AppFontSizes.title,
                           fontWeight: FontWeight.w700,
                           color: sheetContext.colors.textPrimary,
                           letterSpacing: -0.3,
@@ -89,9 +91,9 @@ Future<Map<String, dynamic>?> showEditReviewSheet(
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        AppLocalizations.of(context)!.editReviewSubtitle,
+                        AppLocalizations.of(context).editReviewSubtitle,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: AppFontSizes.small,
                           color: sheetContext.colors.textSecondary,
                           letterSpacing: 0.2,
                         ),
@@ -114,9 +116,9 @@ Future<Map<String, dynamic>?> showEditReviewSheet(
                                       : Icons.star_outline_rounded,
                                   size: 34,
                                   color: star <= rating
-                                      ? const Color(0xFFF59E0B)
+                                      ? AppColors.warningAmber
                                       : sheetContext.colors.textSecondary
-                                          .withOpacity(0.3),
+                                          .withValues(alpha: 0.3),
                                 ),
                               ),
                             );
@@ -129,23 +131,23 @@ Future<Map<String, dynamic>?> showEditReviewSheet(
                         maxLines: 4,
                         maxLength: 1000,
                         style: TextStyle(
-                          fontSize: 13.5,
+                          fontSize: AppFontSizes.body,
                           color: sheetContext.colors.textPrimary,
                         ),
                         decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context)!.editReviewHint,
+                          hintText: AppLocalizations.of(context).editReviewHint,
                           filled: true,
                           fillColor: sheetContext.colors.background,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             borderSide: BorderSide(color: sheetContext.colors.divider),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             borderSide: BorderSide(color: sheetContext.colors.divider),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             borderSide: BorderSide(
                               color: AppColors.professionalColor,
                               width: 1.5,
@@ -168,14 +170,14 @@ Future<Map<String, dynamic>?> showEditReviewSheet(
                             foregroundColor: Colors.white,
                             minimumSize: const Size(double.infinity, 48),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             ),
                             elevation: 0,
                           ),
                           child: Text(
-                            AppLocalizations.of(context)!.saveChangesCta,
+                            AppLocalizations.of(context).saveChangesCta,
                             style: const TextStyle(
-                              fontSize: 14,
+                              fontSize: AppFontSizes.body,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.3,
                             ),
@@ -196,15 +198,13 @@ Future<Map<String, dynamic>?> showEditReviewSheet(
 
 /// Confirms permanent deletion of the caller's own review. Returns true if confirmed.
 Future<bool> showDeleteReviewConfirm(BuildContext context) async {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-
   final result = await showDialog<bool>(
     context: context,
     barrierDismissible: true,
     builder: (dialogContext) => AlertDialog(
       backgroundColor: dialogContext.colors.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       ),
       elevation: 0,
       title: Row(
@@ -212,7 +212,7 @@ Future<bool> showDeleteReviewConfirm(BuildContext context) async {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.error.withOpacity(0.12),
+              color: AppColors.error.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -223,9 +223,9 @@ Future<bool> showDeleteReviewConfirm(BuildContext context) async {
           ),
           const SizedBox(width: 12),
           Text(
-            AppLocalizations.of(context)!.deleteConfirmationTitle,
+            AppLocalizations.of(context).deleteConfirmationTitle,
             style: TextStyle(
-              fontSize: 17,
+              fontSize: AppFontSizes.title,
               fontWeight: FontWeight.w700,
               color: dialogContext.colors.textPrimary,
               letterSpacing: -0.3,
@@ -234,9 +234,9 @@ Future<bool> showDeleteReviewConfirm(BuildContext context) async {
         ],
       ),
       content: Text(
-        AppLocalizations.of(context)!.deleteReviewConfirmationMessage,
+        AppLocalizations.of(context).deleteReviewConfirmationMessage,
         style: TextStyle(
-          fontSize: 14,
+          fontSize: AppFontSizes.body,
           color: dialogContext.colors.textSecondary,
           height: 1.5,
           letterSpacing: 0.2,
@@ -249,13 +249,13 @@ Future<bool> showDeleteReviewConfirm(BuildContext context) async {
             foregroundColor: dialogContext.colors.textSecondary,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
           ),
           child: Text(
-            AppLocalizations.of(context)!.cancelCta,
+            AppLocalizations.of(context).cancelCta,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: AppFontSizes.body,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.3,
             ),
@@ -268,14 +268,14 @@ Future<bool> showDeleteReviewConfirm(BuildContext context) async {
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
             elevation: 0,
           ),
           child: Text(
-            AppLocalizations.of(context)!.deleteCta,
+            AppLocalizations.of(context).deleteCta,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: AppFontSizes.body,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.3,
             ),
@@ -297,7 +297,7 @@ Future<String?> showReplySheet(BuildContext context, {String? existingText}) {
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
     ),
     builder: (sheetContext) {
       final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
@@ -307,12 +307,12 @@ Future<String?> showReplySheet(BuildContext context, {String? existingText}) {
         child: Container(
           decoration: BoxDecoration(
             color: sheetContext.colors.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
             boxShadow: [
               BoxShadow(
                 color: isDark
-                    ? Colors.black.withOpacity(0.3)
-                    : Colors.black.withOpacity(0.08),
+                    ? Colors.black.withValues(alpha: 0.3)
+                    : Colors.black.withValues(alpha: 0.08),
                 blurRadius: 20,
                 offset: const Offset(0, -4),
               ),
@@ -338,16 +338,16 @@ Future<String?> showReplySheet(BuildContext context, {String? existingText}) {
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? Colors.white.withOpacity(0.15)
+                            ? Colors.white.withValues(alpha: 0.15)
                             : sheetContext.colors.divider,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusXs),
                       ),
                     ),
                   ),
                   Text(
-                    AppLocalizations.of(context)!.replyTitle,
+                    AppLocalizations.of(context).replyTitle,
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: AppFontSizes.title,
                       fontWeight: FontWeight.w700,
                       color: sheetContext.colors.textPrimary,
                       letterSpacing: -0.3,
@@ -355,9 +355,9 @@ Future<String?> showReplySheet(BuildContext context, {String? existingText}) {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    AppLocalizations.of(context)!.replySubtitle,
+                    AppLocalizations.of(context).replySubtitle,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: AppFontSizes.small,
                       color: sheetContext.colors.textSecondary,
                       letterSpacing: 0.2,
                     ),
@@ -369,23 +369,23 @@ Future<String?> showReplySheet(BuildContext context, {String? existingText}) {
                     maxLength: 1000,
                     autofocus: true,
                     style: TextStyle(
-                      fontSize: 13.5,
+                      fontSize: AppFontSizes.body,
                       color: sheetContext.colors.textPrimary,
                     ),
                     decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context)!.replyHint,
+                      hintText: AppLocalizations.of(context).replyHint,
                       filled: true,
                       fillColor: sheetContext.colors.background,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         borderSide: BorderSide(color: sheetContext.colors.divider),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         borderSide: BorderSide(color: sheetContext.colors.divider),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         borderSide: BorderSide(
                           color: AppColors.professionalColor,
                           width: 1.5,
@@ -407,14 +407,14 @@ Future<String?> showReplySheet(BuildContext context, {String? existingText}) {
                         foregroundColor: Colors.white,
                         minimumSize: const Size(double.infinity, 48),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         ),
                         elevation: 0,
                       ),
                       child: Text(
-                        AppLocalizations.of(context)!.postReplyCta,
+                        AppLocalizations.of(context).postReplyCta,
                         style: const TextStyle(
-                          fontSize: 14,
+                          fontSize: AppFontSizes.body,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.3,
                         ),
@@ -442,7 +442,7 @@ Future<Map<String, String>?> showReportSheet(BuildContext context) {
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
     ),
     builder: (sheetContext) {
       final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
@@ -454,12 +454,12 @@ Future<Map<String, String>?> showReportSheet(BuildContext context) {
             child: Container(
               decoration: BoxDecoration(
                 color: sheetContext.colors.surface,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
                 boxShadow: [
                   BoxShadow(
                     color: isDark
-                        ? Colors.black.withOpacity(0.3)
-                        : Colors.black.withOpacity(0.08),
+                        ? Colors.black.withValues(alpha: 0.3)
+                        : Colors.black.withValues(alpha: 0.08),
                     blurRadius: 20,
                     offset: const Offset(0, -4),
                   ),
@@ -485,9 +485,9 @@ Future<Map<String, String>?> showReportSheet(BuildContext context) {
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
                             color: isDark
-                                ? Colors.white.withOpacity(0.15)
+                                ? Colors.white.withValues(alpha: 0.15)
                                 : sheetContext.colors.divider,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusXs),
                           ),
                         ),
                       ),
@@ -496,7 +496,7 @@ Future<Map<String, String>?> showReportSheet(BuildContext context) {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: AppColors.error.withOpacity(0.12),
+                              color: AppColors.error.withValues(alpha: 0.12),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -508,9 +508,9 @@ Future<Map<String, String>?> showReportSheet(BuildContext context) {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              AppLocalizations.of(context)!.reportTitle,
+                              AppLocalizations.of(context).reportTitle,
                               style: TextStyle(
-                                fontSize: 17,
+                                fontSize: AppFontSizes.title,
                                 fontWeight: FontWeight.w700,
                                 color: sheetContext.colors.textPrimary,
                                 letterSpacing: -0.3,
@@ -521,57 +521,64 @@ Future<Map<String, String>?> showReportSheet(BuildContext context) {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        AppLocalizations.of(context)!.reportSubtitle,
+                        AppLocalizations.of(context).reportSubtitle,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: AppFontSizes.small,
                           color: sheetContext.colors.textSecondary,
                           height: 1.4,
                           letterSpacing: 0.2,
                         ),
                       ),
                       const SizedBox(height: 12),
-                      ...kReportReasons.entries.map((e) => RadioListTile<String>(
-                            value: e.key,
-                            groupValue: selectedReason,
-                            onChanged: (v) => setSheetState(() => selectedReason = v),
-                            dense: true,
-                            contentPadding: EdgeInsets.zero,
-                            activeColor: AppColors.error,
-                            title: Text(
-                              e.value,
-                              style: TextStyle(
-                                fontSize: 13.5,
-                                fontWeight: selectedReason == e.key
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
-                                color: selectedReason == e.key
-                                    ? AppColors.error
-                                    : sheetContext.colors.textPrimary,
-                              ),
-                            ),
-                          )),
+                      RadioGroup<String>(
+                        groupValue: selectedReason,
+                        onChanged: (v) => setSheetState(() => selectedReason = v),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: kReportReasons.entries
+                              .map((e) => RadioListTile<String>(
+                                    value: e.key,
+                                    dense: true,
+                                    contentPadding: EdgeInsets.zero,
+                                    activeColor: AppColors.error,
+                                    title: Text(
+                                      e.value,
+                                      style: TextStyle(
+                                        fontSize: AppFontSizes.body,
+                                        fontWeight: selectedReason == e.key
+                                            ? FontWeight.w600
+                                            : FontWeight.w400,
+                                        color: selectedReason == e.key
+                                            ? AppColors.error
+                                            : sheetContext.colors.textPrimary,
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       TextField(
                         controller: noteController,
                         maxLines: 2,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: AppFontSizes.secondary,
                           color: sheetContext.colors.textPrimary,
                         ),
                         decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context)!.reportNoteHint,
+                          hintText: AppLocalizations.of(context).reportNoteHint,
                           filled: true,
                           fillColor: sheetContext.colors.background,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             borderSide: BorderSide(color: sheetContext.colors.divider),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             borderSide: BorderSide(color: sheetContext.colors.divider),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             borderSide: BorderSide(
                               color: AppColors.professionalColor,
                               width: 1.5,
@@ -594,14 +601,14 @@ Future<Map<String, String>?> showReportSheet(BuildContext context) {
                             foregroundColor: Colors.white,
                             minimumSize: const Size(double.infinity, 48),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             ),
                             elevation: 0,
                           ),
                           child: Text(
-                            AppLocalizations.of(context)!.submitReportCta,
+                            AppLocalizations.of(context).submitReportCta,
                             style: const TextStyle(
-                              fontSize: 14,
+                              fontSize: AppFontSizes.body,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.3,
                             ),

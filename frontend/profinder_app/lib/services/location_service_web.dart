@@ -1,6 +1,8 @@
 // lib/services/location_service_web.dart
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'dart:async';
+import 'dart:js_interop';
+
+import 'package:web/web.dart' as web;
 
 class LocationServiceImpl {
   static double? _cachedLat;
@@ -13,14 +15,25 @@ class LocationServiceImpl {
       return (lat: _cachedLat!, lng: _cachedLng!);
     }
     try {
-      final pos = await html.window.navigator.geolocation.getCurrentPosition(
-        enableHighAccuracy: false,
-        timeout: const Duration(seconds: 8),
-        maximumAge: const Duration(minutes: 5),
+      final completer = Completer<({double lat, double lng})?>();
+      web.window.navigator.geolocation.getCurrentPosition(
+        ((web.GeolocationPosition pos) {
+          _cachedLat = pos.coords.latitude;
+          _cachedLng = pos.coords.longitude;
+          if (!completer.isCompleted) {
+            completer.complete((lat: _cachedLat!, lng: _cachedLng!));
+          }
+        }).toJS,
+        ((web.GeolocationPositionError _) {
+          if (!completer.isCompleted) completer.complete(null);
+        }).toJS,
+        web.PositionOptions(
+          enableHighAccuracy: false,
+          timeout: 8000,
+          maximumAge: 300000,
+        ),
       );
-      _cachedLat = pos.coords!.latitude!.toDouble();
-      _cachedLng = pos.coords!.longitude!.toDouble();
-      return (lat: _cachedLat!, lng: _cachedLng!);
+      return await completer.future;
     } catch (_) {
       return null;
     }

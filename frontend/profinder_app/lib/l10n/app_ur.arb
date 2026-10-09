@@ -1929,6 +1929,1531 @@
   "chatReasonScamFraud": "دھوکہ دہی یا فراڈ",
   "chatReasonFakeProfile": "جعلی پروفائل",
   "chatReasonOther": "دیگر",
+  "aboutActionLabel": "ہمارے بارے میں",
+  "aboutActionSubtitle": "اس ایپ کے بارے میں",
+  "aboutAppStoreLabel": "App Store",
+  "aboutDisabledBadgeLabel": "دستیاب نہیں",
+  "aboutEmptyStateMessage": "ابھی دکھانے کے لیے کوئی معلومات نہیں مل سکیں۔",
+  "aboutEmptyStateTitle": "دکھانے کے لیے کچھ نہیں",
+  "aboutGooglePlayLabel": "Google Play",
+  "aboutLabel": "ہمارے بارے میں",
+  "aboutLinkCouldNotOpen": "یہ لنک نہیں کھل سکا {value1}",
+  "@aboutLinkCouldNotOpen": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLinkError": "لنک کھولتے وقت کچھ غلط ہو گیا {value1}",
+  "@aboutLinkError": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLinkNoAppFound": "یہ لنک کھولنے کے لیے کوئی ایپ نہیں ملی {value1}",
+  "@aboutLinkNoAppFound": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLoadError": "یہ صفحہ لوڈ نہیں ہو سکا",
+  "aboutLoadingText": "لوڈ ہو رہا ہے...",
+  "aboutTitle": "ہمارے بارے میں",
+  "acceptCta": "قبول کریں",
+  "acceptDescription": "اس بکنگ کو قبول کریں",
+  "acceptLabel": "قبول کریں",
+  "acceptanceRateLabel": "قبولیت کی شرح",
+  "acceptanceRateSubtext": "آپ کی قبول کردہ بکنگز میں سے",
+  "acceptedLabel": "قبول شدہ",
+  "acceptingBookingsLabel": "بکنگز قبول کر رہے ہیں",
+  "accountGroupLabel": "اکاؤنٹ",
+  "accountHolderLabel": "اکاؤنٹ ہولڈر کا نام",
+  "accountNumberLabel": "اکاؤنٹ نمبر",
+  "accountSectionLabel": "اکاؤنٹ",
+  "accountTypeLabel": "اکاؤنٹ کی قسم",
+  "addBankBannerSubtitle": "رقم نکلوانے کے لیے اپنی بینک تفصیلات شامل کریں",
+  "addBankBannerTitle": "بینک تفصیلات شامل کریں",
+  "addBankCta": "بینک اکاؤنٹ شامل کریں",
+  "addCertificateImageLabel": "سرٹیفیکیٹ کی تصویر",
+  "addCertificateTitle": "سرٹیفیکیٹ شامل کریں",
+  "addCertificateTooltip": "سرٹیفیکیٹ شامل کریں",
+  "addCta": "شامل کریں",
+  "addFirstCertificateCta": "اپنا پہلا سرٹیفیکیٹ شامل کریں",
+  "addFirstItemCta": "اپنی پہلی آئٹم شامل کریں",
+  "addImageLabel": "تصویر شامل کریں",
+  "addLanguageHint": "زبان لکھیں اور انٹر دبائیں",
+  "addPhotoCta": "تصویر شامل کریں",
+  "addPhotoTooltip": "تصویر شامل کریں",
+  "addPortfolioHint": "زیادہ کسٹمرز کو متوجہ کرنے کے لیے اپنا بہترین کام دکھائیں",
+  "addPortfolioTitle": "پورٹ فولیو آئٹم شامل کریں",
+  "addPortfolioTooltip": "پورٹ فولیو آئٹم شامل کریں",
+  "addSkillHint": "مہارت لکھیں اور انٹر دبائیں",
+  "addWorkSamplesLabel": "کام کے نمونے شامل کریں",
+  "adjustSearchTerms": "اپنے سرچ الفاظ تبدیل کر کے دیکھیں",
+  "adminNoteLabel": "ایڈمن نوٹ",
+  "allCategoriesTitle": "تمام کیٹیگریز",
+  "analyticsErrorTitle": "تجزیات لوڈ نہیں ہو سکے",
+  "analyticsLoadError": "تجزیات لوڈ کرنے میں ناکامی",
+  "analyticsTitle": "تجزیات",
+  "applyCta": "لاگو کریں",
+  "approvalSubtitle": "ایڈمن کی منظوری زیر التوا",
+  "approvalTitle": "منظوری کی حالت",
+  "articleFooterMagazineLabel": "میگزین سے مزید",
+  "articleLoadingText": "مضمون لوڈ ہو رہا ہے...",
+  "articleNotFoundError": "مضمون نہیں ملا",
+  "articleNotFoundMessage": "ہو سکتا ہے یہ مضمون ہٹا دیا گیا ہو یا موجود نہ ہو",
+  "articleReadTime": "{value1} منٹ کا مطالعہ",
+  "@articleReadTime": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "articleReadTimeLabel": "{value1} منٹ کا مطالعہ",
+  "@articleReadTimeLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "automaticDescription": "آپ کے معیار پر پورا اترنے والی بکنگز خود بخود قبول کریں",
+  "automaticLabel": "خودکار",
+  "availabilityClosedLabel": "بند",
+  "availabilityLabel": "دستیابی",
+  "availabilityLoadError": "دستیابی لوڈ کرنے میں ناکامی",
+  "availabilityOffSuccess": "آپ کو اب دستیاب نہیں کے طور پر نشان زد کر دیا گیا ہے",
+  "availabilityOnSuccess": "آپ کو اب دستیاب کے طور پر نشان زد کر دیا گیا ہے",
+  "availabilityScheduleSaveError": "شیڈول محفوظ کرنے میں ناکامی",
+  "availabilityScheduleSaved": "شیڈول کامیابی سے محفوظ ہو گیا",
+  "availabilityStatusUpdateError": "دستیابی کی حالت اپ ڈیٹ کرنے میں ناکامی",
+  "availabilityStatusUpdated": "دستیابی {value1} پر سیٹ کر دی گئی",
+  "@availabilityStatusUpdated": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "availabilitySummarySubtitle": "آپ کے ہفتہ وار کام کے اوقات ایک نظر میں",
+  "availabilitySummaryTitle": "دستیابی کا خلاصہ",
+  "availabilityTitle": "دستیابی",
+  "availabilityUpdateError": "دستیابی اپ ڈیٹ کرنے میں ناکامی",
+  "availabilityWeeklySubtitle": "ہر دن کے لیے اپنے کام کے اوقات مقرر کریں",
+  "availabilityWeeklyTitle": "ہفتہ وار شیڈول",
+  "availableBalanceLabel": "دستیاب بیلنس: Rs {value1}",
+  "@availableBalanceLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "availableBalanceTitle": "دستیاب بیلنس",
+  "availableForBookingsLabel": "بکنگز کے لیے دستیاب",
+  "availableLabel": "دستیاب",
+  "availableNowLabel": "ابھی دستیاب",
+  "availableSubtitle": "نئی بکنگز قبول کرنے کے لیے تیار",
+  "averageRatingLabel": "اوسط ریٹنگ",
+  "averageRatingSubtext": "کسٹمرز کے جائزوں کی بنیاد پر",
+  "backCta": "واپس",
+  "backToBookingsCta": "بکنگز پر واپس جائیں",
+  "backToHomeCta": "ہوم پر واپس جائیں",
+  "backToLoginCta": "لاگ ان پر واپس جائیں",
+  "bankDetailsEmpty": "ابھی تک کوئی بینک تفصیلات شامل نہیں کی گئیں",
+  "bankDetailsLabel": "بینک تفصیلات",
+  "bankDetailsRequiredMessage": "رقم نکلوانے کی درخواست سے پہلے اپنی بینک تفصیلات شامل کریں",
+  "bankDetailsRequiredTitle": "بینک تفصیلات درکار ہیں",
+  "bankDetailsSubtitle": "آپ کے اکاؤنٹ میں رقم نکلوانے کے لیے استعمال ہوتی ہیں",
+  "bankNameLabel": "بینک کا نام",
+  "bioLabel": "تعارف",
+  "bookAppointmentTitle": "اپائنٹمنٹ بک کریں",
+  "bookCta": "بک کریں",
+  "bookNowCta": "ابھی بک کریں",
+  "bookingConfigurationTitle": "بکنگ کی ترتیب",
+  "bookingDateRequired": "براہ کرم تاریخ منتخب کریں",
+  "bookingDetailsTitle": "بکنگ کی تفصیلات",
+  "bookingFailed": "بکنگ ناکام ہو گئی۔ براہ کرم دوبارہ کوشش کریں۔",
+  "bookingManagementTitle": "بکنگز کا انتظام",
+  "bookingSoFarLabel": "اب تک کی بکنگز",
+  "bookingStatusUpdated": "بکنگ کو {value1} کے طور پر نشان زد کر دیا گیا",
+  "@bookingStatusUpdated": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingSuccessMessage": "{value1} کے ساتھ آپ کی بکنگ کی درخواست بھیج دی گئی ہے",
+  "@bookingSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingSuccessTitle": "بکنگ کی درخواست بھیج دی گئی",
+  "bookingTimeRequired": "براہ کرم وقت منتخب کریں",
+  "bookingTipText": "آپ اپائنٹمنٹ سے 24 گھنٹے پہلے تک مفت منسوخ کر سکتے ہیں",
+  "bookingUpdateError": "بکنگ اپ ڈیٹ کرنے میں ناکامی",
+  "bookingUpdatedToast": "بکنگ {value1} پر اپ ڈیٹ کر دی گئی",
+  "@bookingUpdatedToast": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingsActionLabel": "بکنگز",
+  "bookingsActionSubtitle": "اپنی بکنگ کی تاریخ دیکھیں",
+  "bookingsLabel": "بکنگز",
+  "bookingsStatLabel": "بکنگز",
+  "bufferMinLabel": "{value1} منٹ کا وقفہ",
+  "@bufferMinLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bufferNoneLabel": "کوئی وقفہ نہیں",
+  "bufferTimeSubtitle": "مسلسل بکنگز کے درمیان وقت",
+  "bufferTimeTitle": "وقفے کا وقت",
+  "calendarWeekDays": "اپمبججہ",
+  "cameraOptionLabel": "کیمرہ",
+  "cancelBookingCta": "بکنگ منسوخ کریں",
+  "cancelBookingTitle": "بکنگ منسوخ کریں",
+  "cancelConfirmationMessage": "کیا آپ واقعی اس بکنگ کو منسوخ کرنا چاہتے ہیں؟",
+  "cancelCta": "منسوخ کریں",
+  "cancelReasonHint": "ہمیں بتائیں کہ آپ کیوں منسوخ کر رہے ہیں",
+  "cancelReasonLabel": "منسوخی کی وجہ",
+  "cancellationPolicyLabel": "منسوخی کی پالیسی",
+  "bookingQuickNoteFirstTime": "پہلی بار کا کسٹمر",
+  "bookingQuickNoteUrgent": "فوری درخواست",
+  "bookingQuickNoteFollowUp": "فالو اپ وزٹ",
+  "bookingQuickNoteCallBefore": "براہِ کرم آنے سے پہلے کال کریں",
+  "cancellationPolicyPointFree": "جب تک آپ کی درخواست زیرِ غور ہے، کسی بھی وقت مفت منسوخی کی جا سکتی ہے۔",
+  "cancellationPolicyPointChat": "قبول ہونے کے بعد آپ چیٹ کے ذریعے پروفیشنل سے براہِ راست تبدیلیوں پر بات کر سکتے ہیں۔",
+  "walletJobCompletedWithName": "کام مکمل — {name}",
+  "walletJobCompleted": "کام مکمل",
+  "walletWithdrawalRequestLabel": "رقم نکالنے کی درخواست",
+  "cancelledByCustomerLabel": "کسٹمر نے منسوخ کیا",
+  "cancelledByYouLabel": "آپ نے منسوخ کیا",
+  "categoryLabel": "کیٹیگری",
+  "certificateAddError": "سرٹیفیکیٹ شامل کرنے میں ناکامی",
+  "certificateAddSuccess": "سرٹیفیکیٹ کامیابی سے شامل ہو گیا",
+  "certificateTitleHint": "مثلاً: مستند پلمبنگ ٹیکنیشن",
+  "certificateTitleLabelRequired": "سرٹیفیکیٹ کا عنوان",
+  "certificatesLabel": "سرٹیفیکیٹس",
+  "certificatesTitle": "سرٹیفیکیٹس",
+  "certificationsLabel": "اسناد",
+  "changePasswordLabel": "پاس ورڈ تبدیل کریں",
+  "changePasswordSubtitle": "اپنے اکاؤنٹ کا پاس ورڈ اپ ڈیٹ کریں",
+  "changePasswordTitle": "پاس ورڈ تبدیل کریں",
+  "changeProfilePhotoTitle": "پروفائل تصویر تبدیل کریں",
+  "chatMicPermissionRequired": "وائس میسج ریکارڈ کرنے کے لیے مائیکروفون کی اجازت درکار ہے",
+  "chatNoMessagesFound": "کوئی پیغام نہیں ملا",
+  "chatSearchMessagesHint": "پیغامات تلاش کریں",
+  "chatTypeToSearchConversation": "اس گفتگو میں تلاش کرنے کے لیے لکھیں",
+  "checkEmailHint": "موصول نہیں ہوا؟ اپنا اسپیم فولڈر چیک کریں۔",
+  "checkEmailMessage": "ہم نے آپ کے ای میل پر پاس ورڈ ری سیٹ کا لنک بھیج دیا ہے",
+  "checkEmailTitle": "اپنا ای میل چیک کریں",
+  "cityDisabledHint": "پہلے ملک منتخب کریں",
+  "cityEmptyMessage": "کوئی شہر نہیں ملا",
+  "cityHint": "شہر منتخب کریں",
+  "cityLabel": "شہر",
+  "cityRequiredError": "براہ کرم شہر منتخب کریں",
+  "citySearchHint": "شہر تلاش کریں",
+  "clearCta": "صاف کریں",
+  "clientsLabel": "کلائنٹس",
+  "closeCta": "بند کریں",
+  "comingSoonMessage": "{value1} جلد آ رہا ہے",
+  "@comingSoonMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "commentHint": "{value1} کے ساتھ اپنا تجربہ شیئر کریں",
+  "@commentHint": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "commentOptionalLabel": "تبصرہ (اختیاری)",
+  "completedLabel": "مکمل",
+  "confirmBookingCta": "بکنگ کی تصدیق کریں",
+  "confirmPasswordLabel": "پاس ورڈ کی تصدیق کریں",
+  "contactChatLabel": "ہم سے چیٹ کریں",
+  "contactChatSubtitle": "چیٹ میں فوری جواب حاصل کریں",
+  "contactChatTitle": "چیٹ سپورٹ",
+  "contactCta": "رابطہ کریں",
+  "contactEmailLabel": "ہمیں ای میل کریں",
+  "contactEmailSubtitle": "ہم 24 گھنٹوں کے اندر آپ سے رابطہ کریں گے",
+  "contactEmailTitle": "ای میل سپورٹ",
+  "contactSupportTitle": "سپورٹ سے رابطہ کریں",
+  "continueAsGuestCta": "مہمان کے طور پر جاری رکھیں",
+  "countryEmptyMessage": "کوئی ملک نہیں ملا",
+  "countryHint": "ملک منتخب کریں",
+  "countryRequiredError": "براہ کرم ملک منتخب کریں",
+  "countrySearchHint": "ملک تلاش کریں",
+  "currencyFeatureName": "کرنسی",
+  "currentPasswordLabel": "موجودہ پاس ورڈ",
+  "currentPlanLabel": "موجودہ پلان: {value1}",
+  "@currentPlanLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "currentlyBusyLabel": "فی الحال مصروف",
+  "customLocationHint": "اپنی مرضی کا مقام درج کریں",
+  "customLocationOption": "حسبِ ضرورت مقام",
+  "customLocationSubtitle": "پتہ خود درج کریں",
+  "customSlotDefaultLabel": "حسبِ ضرورت",
+  "customSlotHint": "دورانیہ منٹوں میں درج کریں",
+  "customSlotLabel": "حسبِ ضرورت ({value1})",
+  "@customSlotLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "customSlotTitle": "حسبِ ضرورت سلاٹ کا دورانیہ",
+  "customSlotValidation": "براہ کرم درست دورانیہ درج کریں",
+  "customerAccountDescription": "اپنے قریب قابل اعتماد پروفیشنلز بک کریں",
+  "customerDefault": "کسٹمر",
+  "customerLabel": "کسٹمر",
+  "dailyHoursLabel": "روزانہ کے اوقات",
+  "darkModeOffLabel": "لائٹ موڈ",
+  "darkModeOnLabel": "ڈارک موڈ",
+  "dashboardLoadError": "ڈیش بورڈ لوڈ کرنے میں ناکامی",
+  "dateLabel": "تاریخ",
+  "dateNotSet": "تاریخ مقرر نہیں",
+  "dateNotSetShort": "کوئی تاریخ نہیں",
+  "dateRequiredMessage": "براہ کرم تاریخ منتخب کریں",
+  "dateTipText": "وہ تاریخ منتخب کریں جو آپ کے لیے سب سے مناسب ہو",
+  "daysLabel": "{value1} دن",
+  "@daysLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "declineCta": "مسترد کریں",
+  "declineDescription": "اس بکنگ کو مسترد کریں",
+  "declineLabel": "مسترد کریں",
+  "deleteAccountDialogContent": "اس سے آپ کا اکاؤنٹ اور تمام متعلقہ ڈیٹا ہمیشہ کے لیے حذف ہو جائے گا۔ یہ عمل واپس نہیں ہو سکتا۔",
+  "deleteAccountDialogTitle": "اکاؤنٹ حذف کریں",
+  "deleteAccountLabel": "اکاؤنٹ حذف کریں",
+  "deleteConfirmationTitle": "کیا یہ آئٹم حذف کریں؟",
+  "deleteCta": "حذف کریں",
+  "deleteDialogContent": "کیا آپ واقعی \"{value1}\" کو حذف کرنا چاہتے ہیں؟",
+  "@deleteDialogContent": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "deleteDialogTitle": "آئٹم حذف کریں",
+  "deleteError": "حذف کرنے میں ناکامی",
+  "deleteGalleryDialogContent": "کیا آپ واقعی اس تصویر کو حذف کرنا چاہتے ہیں؟",
+  "deleteGalleryDialogTitle": "تصویر حذف کریں",
+  "deleteReviewConfirmationMessage": "کیا آپ واقعی اس جائزے کو حذف کرنا چاہتے ہیں؟",
+  "deleteSuccess": "کامیابی سے حذف ہو گیا",
+  "descriptionHint": "تفصیل شامل کریں",
+  "descriptionLabelOptional": "تفصیل (اختیاری)",
+  "detailsLabel": "تفصیلات",
+  "directChatLabel": "پیغام",
+  "discardCta": "رد کریں",
+  "doneCta": "مکمل",
+  "earningsLabel": "آمدنی",
+  "editCta": "ترمیم کریں",
+  "editLabel": "ترمیم کریں",
+  "editProfileActionLabel": "پروفائل میں ترمیم کریں",
+  "editProfileActionSubtitle": "اپنی ذاتی معلومات اپ ڈیٹ کریں",
+  "editReviewHint": "اپنا تبصرہ اپ ڈیٹ کریں",
+  "editReviewSubtitle": "اپنی ریٹنگ اور تبصرہ اپ ڈیٹ کریں",
+  "editReviewTitle": "جائزے میں ترمیم کریں",
+  "editorHeadingPlaceholder": "عنوان",
+  "editorHintText": "لکھنا شروع کریں...",
+  "editorInsertCta": "شامل کریں",
+  "editorInsertLinkTitle": "لنک شامل کریں",
+  "editorLinkHint": "https://example.com",
+  "editorLinkPlaceholder": "لنک کا متن",
+  "educationLabel": "تعلیم",
+  "emailAvailableLabel": "یہ ای میل دستیاب ہے",
+  "emailNotificationsLabel": "ای میل اطلاعات",
+  "emailTakenLabel": "یہ ای میل پہلے سے رجسٹرڈ ہے",
+  "emptyCertificatesSubtitle": "کسٹمرز کا اعتماد حاصل کرنے کے لیے اپنے سرٹیفیکیٹس شامل کریں",
+  "emptyCertificatesTitle": "ابھی تک کوئی سرٹیفیکیٹ نہیں",
+  "emptyGallerySubtitle": "اپنے کام کی نمائش کے لیے تصاویر شامل کریں",
+  "emptyGalleryTitle": "ابھی تک کوئی تصویر نہیں",
+  "emptyPortfolioSubtitle": "زیادہ کسٹمرز کو متوجہ کرنے کے لیے اپنا بہترین کام شامل کریں",
+  "emptyPortfolioTitle": "ابھی تک کوئی پورٹ فولیو آئٹم نہیں",
+  "endTimeLabel": "اختتامی وقت",
+  "enterAmountHint": "رقم درج کریں",
+  "exceedsBalanceError": "رقم آپ کے دستیاب بیلنس سے زیادہ ہے",
+  "exceptionsAddRange": "تاریخوں کی حد شامل کریں",
+  "exceptionsCalendarSubtitle": "استثنا مقرر کرنے کے لیے تاریخ پر ٹیپ کریں",
+  "exceptionsCalendarTitle": "کیلنڈر",
+  "exceptionsCustomChip": "حسبِ ضرورت",
+  "exceptionsEndDate": "اختتامی تاریخ",
+  "exceptionsIntroText": "وہ تاریخیں نشان زد کریں جب آپ کی دستیابی معمول کے شیڈول سے مختلف ہو",
+  "exceptionsLegendClosed": "بند",
+  "exceptionsLegendCustom": "حسبِ ضرورت اوقات",
+  "exceptionsLegendUnavailable": "دستیاب نہیں",
+  "exceptionsLegendVacation": "چھٹی",
+  "exceptionsLegendWorking": "کام کا دن",
+  "exceptionsLoadError": "استثنا لوڈ کرنے میں ناکامی",
+  "exceptionsNoOverrides": "کوئی استثنا مقرر نہیں",
+  "exceptionsOverridesSubtitle": "حسبِ ضرورت دستیابی والی تاریخیں",
+  "exceptionsOverridesTitle": "استثنا",
+  "exceptionsReasonLabel": "وجہ (اختیاری)",
+  "exceptionsSelectDate": "تاریخ منتخب کریں",
+  "exceptionsSetVacation": "چھٹی مقرر کریں",
+  "exceptionsStartDate": "آغاز کی تاریخ",
+  "exceptionsTimeError": "اختتامی وقت آغاز کے وقت کے بعد ہونا چاہیے",
+  "exceptionsTitle": "دستیابی میں استثنا",
+  "exceptionsUnavailableChip": "دستیاب نہیں",
+  "exceptionsUnavailableLabel": "دستیاب نہیں کے طور پر نشان زد کریں",
+  "exceptionsUpdateVacation": "چھٹی اپ ڈیٹ کریں",
+  "exceptionsVacationActive": "چھٹی فی الحال جاری ہے",
+  "exceptionsVacationScheduled": "چھٹی {value1} سے شیڈول ہے",
+  "@exceptionsVacationScheduled": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "exceptionsVacationSubtitle": "وہ تاریخیں مقرر کریں جب آپ دور ہوں",
+  "exceptionsVacationTitle": "چھٹی کا موڈ",
+  "experienceLabel": "تجربہ",
+  "experienceYearsLabel": "{value1} سال کا تجربہ",
+  "@experienceYearsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "exploreExpertsLabel": "ماہرین دریافت کریں",
+  "facebookSignInLabel": "Facebook کے ساتھ جاری رکھیں",
+  "faqBookingPendingA": "پروفیشنل کو جواب دینے میں کچھ وقت لگ سکتا ہے۔ جب وہ قبول یا مسترد کریں گے تو آپ کو اطلاع مل جائے گی۔",
+  "faqBookingPendingQ": "میری بکنگ ابھی تک زیر التوا کیوں ہے؟",
+  "faqChangeAvailabilityA": "اپنے پروفائل سے دستیابی کی ترتیبات میں جائیں اور اپنے کام کے اوقات اپ ڈیٹ کریں۔",
+  "faqChangeAvailabilityQ": "میں اپنی دستیابی کیسے تبدیل کروں؟",
+  "faqGetVerifiedA": "اپنا پروفائل مکمل کریں اور تصدیق کی درخواست کے لیے پروفائل کی ترتیبات سے مطلوبہ دستاویزات جمع کرائیں۔",
+  "faqGetVerifiedQ": "میں تصدیق شدہ کیسے بنوں؟",
+  "faqHowToBookA": "پروفیشنل تلاش کریں، ان کا پروفائل دیکھیں اور تاریخ اور وقت منتخب کرنے کے لیے ابھی بک کریں پر ٹیپ کریں۔",
+  "faqHowToBookQ": "میں پروفیشنل کو کیسے بک کروں؟",
+  "faqHowToCancelA": "میری بکنگز سے بکنگ کھولیں اور منسوخ کریں پر ٹیپ کریں۔ بروقت کی گئی منسوخی مفت ہے۔",
+  "faqHowToCancelQ": "میں بکنگ کیسے منسوخ کروں؟",
+  "faqImproveProfileA": "کسٹمرز کا اعتماد حاصل کرنے کے لیے پروفائل تصویر، پورٹ فولیو کے نمونے اور سرٹیفیکیٹس شامل کریں۔",
+  "faqImproveProfileQ": "میں اپنا پروفائل کیسے بہتر بنا سکتا ہوں؟",
+  "faqPaymentSecureA": "جی ہاں، تمام ادائیگیاں محفوظ طریقے سے پراسیس ہوتی ہیں اور آپ کی تفصیلات کبھی شیئر نہیں کی جاتیں۔",
+  "faqPaymentSecureQ": "کیا میری ادائیگی کی معلومات محفوظ ہیں؟",
+  "faqRefundsA": "اہل منسوخیوں پر رقم کی واپسی چند کاروباری دنوں میں خود بخود پراسیس ہو جاتی ہے۔",
+  "faqRefundsQ": "رقم کی واپسی کیسے کام کرتی ہے؟",
+  "faqSectionLabel": "عمومی سوالات",
+  "faqSectionTitle": "اکثر پوچھے جانے والے سوالات",
+  "faqWithdrawEarningsA": "اپنے والیٹ میں جائیں اور اپنی آمدنی بینک اکاؤنٹ میں منتقل کرنے کے لیے نکالیں پر ٹیپ کریں۔",
+  "faqWithdrawEarningsQ": "میں اپنی آمدنی کیسے نکالوں؟",
+  "fastResponseLabel": "فوری جواب",
+  "flexibleTimingLabel": "لچکدار اوقات",
+  "freeToCancelLabel": "مفت منسوخی",
+  "fullNameLabel": "پورا نام",
+  "galleryLabel": "گیلری",
+  "galleryOptionLabel": "گیلری",
+  "galleryTitle": "گیلری",
+  "galleryUploadError": "تصویر اپ لوڈ کرنے میں ناکامی",
+  "galleryUploadSuccess": "تصویر کامیابی سے اپ لوڈ ہو گئی",
+  "goBackCta": "واپس جائیں",
+  "goodAfternoon": "السلام علیکم",
+  "goodAfternoonComma": "السلام علیکم،",
+  "goodEvening": "شام بخیر",
+  "goodEveningComma": "شام بخیر،",
+  "goodMorning": "صبح بخیر",
+  "goodMorningComma": "صبح بخیر،",
+  "goodToKnowLabel": "جاننے کی باتیں",
+  "googleSignInLabel": "Google کے ساتھ جاری رکھیں",
+  "helpActionLabel": "مدد اور سپورٹ",
+  "helpActionSubtitle": "مدد حاصل کریں یا ہم سے رابطہ کریں",
+  "helpSupportLabel": "مدد اور سپورٹ",
+  "helpSupportTitle": "مدد اور سپورٹ",
+  "helpTitle": "مدد",
+  "homeDefaultPlanFree": "مفت",
+  "homeDefaultProfessionalName": "پروفیشنل",
+  "homeFilterAll": "سب",
+  "homeFilterAvailableNow": "ابھی دستیاب",
+  "homeFilterFastResponse": "فوری جواب",
+  "homeFilterHighestPrice": "سب سے زیادہ قیمت",
+  "homeFilterLowestPrice": "سب سے کم قیمت",
+  "homeFilterMostBooked": "سب سے زیادہ بک شدہ",
+  "homeFilterMostExperienced": "سب سے زیادہ تجربہ کار",
+  "homeFilterMostReviews": "سب سے زیادہ جائزے",
+  "homeFilterRating1Plus": "1+ ستارے",
+  "homeFilterRating2Plus": "2+ ستارے",
+  "homeFilterRating3Plus": "3+ ستارے",
+  "homeFilterRating4Plus": "4+ ستارے",
+  "homeFilterRating5Plus": "5 ستارے",
+  "homeFilterThisMonth": "اس مہینے",
+  "homeFilterThisWeek": "اس ہفتے",
+  "homeFilterToday": "آج",
+  "homeFilterTopRated": "سب سے بہتر ریٹنگ",
+  "homeFilterVerified": "تصدیق شدہ",
+  "homeFilterWithin10Km": "10 کلومیٹر کے اندر",
+  "homeFilterWithin2Km": "2 کلومیٹر کے اندر",
+  "homeFilterWithin5Km": "5 کلومیٹر کے اندر",
+  "homeGoBack": "واپس جائیں",
+  "homeNoProfessionalsFound": "کوئی پروفیشنل نہیں ملا",
+  "homeNoProfessionalsFoundHint": "اپنے فلٹرز تبدیل کریں یا کسی اور علاقے میں تلاش کریں",
+  "hour": "گھنٹہ",
+  "hourlyRateLabel": "فی گھنٹہ ریٹ",
+  "hoursDecimalLabel": "{value1} گھنٹے",
+  "@hoursDecimalLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursLabel": "{value1} گھنٹے",
+  "@hoursLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursMinutesShort": "{value1} گھنٹے {value2} منٹ",
+  "@hoursMinutesShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursShort": "{value1} گھنٹے",
+  "@hoursShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "idVerifiedLabel": "شناخت کی تصدیق شدہ",
+  "imagePickError": "تصویر منتخب کرنے میں ناکامی",
+  "instantLabel": "فوری",
+  "issueDateLabelOptional": "اجرا کی تاریخ (اختیاری)",
+  "issuingOrganizationHint": "مثلاً: نیشنل اسکلز بورڈ",
+  "issuingOrganizationLabel": "جاری کرنے والا ادارہ",
+  "jobsDoneLabel": "مکمل کام",
+  "languagesLabel": "زبانیں",
+  "lastUpdatedLabel": "آخری اپ ڈیٹ: {value1}",
+  "@lastUpdatedLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "laterCta": "بعد میں",
+  "loadBookingsError": "بکنگز لوڈ کرنے میں ناکامی",
+  "loadCertificatesError": "سرٹیفیکیٹس لوڈ کرنے میں ناکامی",
+  "loadGalleryError": "گیلری لوڈ کرنے میں ناکامی",
+  "loadPortfolioError": "پورٹ فولیو لوڈ کرنے میں ناکامی",
+  "loadSettingsError": "ترتیبات لوڈ کرنے میں ناکامی",
+  "loadWalletError": "والیٹ لوڈ کرنے میں ناکامی",
+  "loadingAnalyticsText": "تجزیات لوڈ ہو رہے ہیں...",
+  "loadingDashboard": "ڈیش بورڈ لوڈ ہو رہا ہے...",
+  "locationLabel": "مقام",
+  "locationNotSpecified": "مقام بتایا نہیں گیا",
+  "locationTipText": "زیادہ درست نتائج کے لیے لوکیشن آن کریں",
+  "loginCta": "لاگ ان",
+  "loginSubtitle": "خوش آمدید! جاری رکھنے کے لیے براہ کرم لاگ ان کریں",
+  "loginTitle": "لاگ ان",
+  "loginToBookCta": "بک کرنے کے لیے لاگ ان کریں",
+  "logoutActionLabel": "لاگ آؤٹ",
+  "logoutActionSubtitle": "اپنے اکاؤنٹ سے سائن آؤٹ کریں",
+  "logoutCta": "لاگ آؤٹ",
+  "logoutDialogContent": "کیا آپ واقعی لاگ آؤٹ کرنا چاہتے ہیں؟",
+  "logoutDialogTitle": "لاگ آؤٹ",
+  "magazineAllCategoriesLabel": "سب",
+  "magazineArticleCountPlural": "{value1} مضامین",
+  "@magazineArticleCountPlural": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "magazineArticleCountSingle": "1 مضمون",
+  "magazineClearSearchCta": "تلاش صاف کریں",
+  "magazineEmptyMessage": "ابھی کوئی مضمون دستیاب نہیں",
+  "magazineEmptySearchMessage": "کوئی مختلف سرچ لفظ آزمائیں",
+  "magazineEmptySearchTitle": "کوئی نتیجہ نہیں ملا",
+  "magazineEmptyTitle": "ابھی تک کوئی مضمون نہیں",
+  "magazineErrorMessage": "میگزین لوڈ کرتے وقت کچھ غلط ہو گیا",
+  "magazineErrorTitle": "لوڈ کرنے میں ناکامی",
+  "magazineLoadError": "میگزین لوڈ کرنے میں ناکامی",
+  "magazineLoadingText": "مضامین لوڈ ہو رہے ہیں...",
+  "magazineSearchHint": "مضامین تلاش کریں",
+  "magazineSearchResultsLabel": "تلاش کے نتائج",
+  "magazineSubtitle": "پروفیشنلز کے لیے مشورے اور کہانیاں",
+  "magazineTitle": "میگزین",
+  "manageCta": "انتظام کریں",
+  "manageLabel": "انتظام کریں",
+  "manualDescription": "بکنگز کا جائزہ لے کر خود قبول کریں",
+  "manualInfoFooter": "آپ اسے کسی بھی وقت ترتیبات میں تبدیل کر سکتے ہیں",
+  "manualInfoTitle": "دستی منظوری",
+  "manualLabel": "دستی",
+  "markCompletedCta": "مکمل شدہ نشان زد کریں",
+  "markCompletedCtaShort": "مکمل کریں",
+  "maxAdvanceSubtitle": "کسٹمرز کتنا پہلے سے بکنگ کر سکتے ہیں",
+  "maxAdvanceTitle": "زیادہ سے زیادہ پیشگی بکنگ",
+  "memberSinceLabel": "رکنیت کا آغاز",
+  "messagesEmptySubtitle": "کسی پروفیشنل یا کسٹمر کے ساتھ گفتگو شروع کریں",
+  "messagesEmptyTitle": "ابھی تک کوئی پیغام نہیں",
+  "messagesLoadError": "پیغامات لوڈ کرنے میں ناکامی",
+  "messagesLoadingText": "پیغامات لوڈ ہو رہے ہیں...",
+  "messagesTitle": "پیغامات",
+  "minAmountError": "نکلوانے کی کم از کم رقم Rs {value1} ہے",
+  "@minAmountError": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minNoticeSubtitle": "بکنگ شروع ہونے سے پہلے کم از کم وقت",
+  "minNoticeTitle": "کم از کم پیشگی اطلاع",
+  "minWithdrawalLabel": "کم از کم نکلوانے کی رقم: Rs {value1}",
+  "@minWithdrawalLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minute": "منٹ",
+  "minutesLabel": "{value1} منٹ",
+  "@minutesLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minutesShort": "{value1} منٹ",
+  "@minutesShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minutesZero": "0 منٹ",
+  "myPortfolioLabel": "میرا پورٹ فولیو",
+  "myPortfolioTitle": "میرا پورٹ فولیو",
+  "myReviewsEmptySubtitle": "آپ کے لکھے ہوئے جائزے یہاں نظر آئیں گے",
+  "myReviewsEmptyTitle": "ابھی تک کوئی جائزہ نہیں",
+  "myReviewsTitle": "میرے جائزے",
+  "navAnalytics": "تجزیات",
+  "navBookings": "بکنگز",
+  "navDashboard": "ڈیش بورڈ",
+  "navMagazine": "میگزین",
+  "navMessages": "پیغامات",
+  "navProfile": "پروفائل",
+  "nearbyLabel": "قریب",
+  "needMoreHelpLabel": "مزید مدد چاہیے؟",
+  "newPasswordLabel": "نیا پاس ورڈ",
+  "newPhotoSelectedHint": "نئی تصویر منتخب کی گئی",
+  "nextCta": "اگلا",
+  "noBookingsAccepted": "کوئی قبول شدہ بکنگ نہیں",
+  "noBookingsAll": "ابھی تک کوئی بکنگ نہیں",
+  "noBookingsCancelled": "کوئی منسوخ شدہ بکنگ نہیں",
+  "noBookingsCompleted": "کوئی مکمل شدہ بکنگ نہیں",
+  "noBookingsDefault": "کوئی بکنگ نہیں ملی",
+  "noBookingsPending": "کوئی زیر التوا بکنگ نہیں",
+  "noBookingsRescheduled": "کوئی نئے وقت پر منتقل شدہ بکنگ نہیں",
+  "noBookingsToday": "آج کوئی بکنگ نہیں",
+  "noBookingsYet": "ابھی تک کوئی بکنگ نہیں",
+  "noClientsFound": "کوئی کلائنٹ نہیں ملا",
+  "noLanguagesAdded": "ابھی تک کوئی زبان شامل نہیں کی گئی",
+  "noMessagesPlaceholder": "ابھی تک کوئی پیغام نہیں",
+  "noMessagesYet": "ابھی تک کوئی پیغام نہیں",
+  "noPaymentsSubtitle": "آپ کی ادائیگیوں کی تاریخ یہاں نظر آئے گی",
+  "noPaymentsTitle": "ابھی تک کوئی ادائیگی نہیں",
+  "noPortfolioSubtitle": "پورٹ فولیو آئٹمز یہاں نظر آئیں گے",
+  "noPortfolioTitle": "کوئی پورٹ فولیو آئٹم نہیں",
+  "noReviewsSubtitle": "جب کسٹمرز آپ کو ریٹنگ دیں گے تو جائزے یہاں نظر آئیں گے",
+  "noReviewsTitle": "ابھی تک کوئی جائزہ نہیں",
+  "noReviewsYet": "ابھی تک کوئی جائزہ نہیں",
+  "noServicesSubtitle": "کسٹمرز کو متوجہ کرنے کے لیے اپنی پیش کردہ سروسز شامل کریں",
+  "noServicesTitle": "کوئی سروس شامل نہیں",
+  "noSkillsAdded": "ابھی تک کوئی مہارت شامل نہیں کی گئی",
+  "noTransactionsLabel": "ابھی تک کوئی لین دین نہیں",
+  "noWorkingHoursMessage": "اس دن کے لیے کام کے اوقات مقرر نہیں",
+  "notAcceptingBookingsLabel": "بکنگز قبول نہیں کر رہے",
+  "notAvailableLabel": "دستیاب نہیں",
+  "notAvailableSubtitle": "فی الحال بکنگز قبول نہیں کر رہے",
+  "notSetPlaceholder": "مقرر نہیں",
+  "notSpecifiedLabel": "بتایا نہیں گیا",
+  "notVerifiedLabel": "تصدیق شدہ نہیں",
+  "notesHintText": "یہاں کوئی بھی نوٹ شامل کریں",
+  "notesInfoText": "نوٹس صرف آپ کو نظر آتے ہیں",
+  "notesLabel": "نوٹس",
+  "notesTipText": "کوئی خاص درخواست یا تفصیل شامل کریں",
+  "notificationsActionLabel": "اطلاعات",
+  "notificationsActionSubtitle": "اطلاعات کی ترجیحات کا انتظام کریں",
+  "notificationsDaysAgo": "{value1} دن پہلے",
+  "@notificationsDaysAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsEmptyMessage": "آپ سب کچھ دیکھ چکے ہیں!",
+  "notificationsEmptyTitle": "کوئی اطلاع نہیں",
+  "notificationsErrorTitle": "اطلاعات لوڈ نہیں ہو سکیں",
+  "notificationsHoursAgo": "{value1} گھنٹے پہلے",
+  "@notificationsHoursAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsJustNow": "ابھی ابھی",
+  "notificationsLoadError": "اطلاعات لوڈ کرنے میں ناکامی",
+  "notificationsLoadingText": "اطلاعات لوڈ ہو رہی ہیں...",
+  "notificationsMarkAllReadCta": "سب کو پڑھا ہوا نشان زد کریں",
+  "notificationsMarkAllReadSuccess": "تمام اطلاعات پڑھی ہوئی نشان زد کر دی گئیں",
+  "notificationsMinutesAgo": "{value1} منٹ پہلے",
+  "@notificationsMinutesAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsSectionLabel": "اطلاعات",
+  "notificationsSectionThisMonth": "اس مہینے",
+  "notificationsSectionThisWeek": "اس ہفتے",
+  "notificationsSectionToday": "آج",
+  "notificationsSectionYesterday": "کل",
+  "notificationsTitle": "اطلاعات",
+  "notifyCustomerMessage": "کیا کسٹمر کو نئے وقت کی اطلاع دیں: {value1} بجے {value2}؟",
+  "@notifyCustomerMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "notifyCustomerTitle": "کسٹمر کو اطلاع دیں",
+  "offlineLabel": "آف لائن",
+  "okCta": "ٹھیک ہے",
+  "onlineLabel": "آن لائن",
+  "openChatCta": "چیٹ کھولیں",
+  "openChatCtaShort": "چیٹ",
+  "openChatError": "چیٹ کھولنے میں ناکامی",
+  "orContinueWithLabel": "یا اس کے ساتھ جاری رکھیں",
+  "overrideRemoved": "استثنا ہٹا دیا گیا",
+  "overrideSaved": "{value1} کے لیے استثنا محفوظ کر لیا گیا",
+  "@overrideSaved": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "passwordChangeError": "پاس ورڈ تبدیل کرنے میں ناکامی",
+  "passwordChangeSuccess": "پاس ورڈ کامیابی سے تبدیل ہو گیا",
+  "passwordHelperText": "کم از کم 8 حروف ہونے چاہییں",
+  "passwordMinLengthError": "پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے",
+  "passwordMismatchError": "پاس ورڈ مماثل نہیں ہیں",
+  "passwordRequiredError": "پاس ورڈ ضروری ہے",
+  "paymentHistoryLabel": "ادائیگیوں کی تاریخ",
+  "paymentHistorySubtitle": "اپنی تمام پچھلی ادائیگیاں دیکھیں",
+  "paymentStatusCompleted": "مکمل",
+  "paymentStatusFailed": "ناکام",
+  "paymentStatusPending": "زیر التوا",
+  "paymentStatusRefunded": "واپس کی گئی",
+  "paymentsActionLabel": "ادائیگیاں",
+  "paymentsActionSubtitle": "اپنی ادائیگیوں کی تاریخ دیکھیں",
+  "paymentsTitle": "ادائیگیاں",
+  "pendingLabel": "زیر التوا",
+  "perHourLabel": "/گھنٹہ",
+  "performanceLabel": "کارکردگی",
+  "performanceScoreInfo": "آپ کی ریٹنگز، جواب کے وقت اور مکمل شدہ بکنگز کی بنیاد پر",
+  "performanceScoreLabel": "کارکردگی کا اسکور",
+  "performanceScoreOutOf": "100 میں سے {value1}",
+  "personalInfoLabel": "ذاتی معلومات",
+  "phoneLabel": "فون",
+  "photoLimitReached": "آپ زیادہ سے زیادہ {value1} تصاویر شامل کر سکتے ہیں",
+  "@photoLimitReached": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "photoPickError": "تصویر منتخب کرنے میں ناکامی",
+  "photosOptionalLabel": "تصاویر (اختیاری)",
+  "planStatLabel": "پلان",
+  "planUpgradeSubtitle": "مزید فیچرز حاصل کریں اور اپنا کاروبار بڑھائیں",
+  "planUpgradeTitle": "{value1} سے اپ گریڈ کریں",
+  "@planUpgradeTitle": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "portfolioInfoNote": "زیادہ کسٹمرز کو متوجہ کرنے کے لیے اپنا بہترین کام دکھائیں",
+  "portfolioLabel": "پورٹ فولیو",
+  "postReplyCta": "جواب پوسٹ کریں",
+  "preferencesGroupLabel": "ترجیحات",
+  "preferencesSectionLabel": "ترجیحات",
+  "premiumActiveSubtitle": "آپ کو تمام پریمیم فیچرز تک رسائی حاصل ہے",
+  "premiumMemberLabel": "پریمیم ممبر",
+  "premiumUpgradeSubtitle": "لامحدود AI سرچز اور بہت کچھ حاصل کریں",
+  "proBadgeLabel": "PRO",
+  "professionEmptyMessage": "کوئی پیشہ نہیں ملا",
+  "professionHint": "پیشہ منتخب کریں",
+  "professionLabel": "پیشہ",
+  "professionRequiredError": "براہ کرم پیشہ منتخب کریں",
+  "professionSearchHint": "پیشہ تلاش کریں",
+  "professionalAccountDescription": "کسٹمرز کو اپنی خدمات پیش کریں",
+  "professionalDefaultName": "پروفیشنل",
+  "professionalDetailLoadError": "پروفیشنل کی تفصیلات لوڈ کرنے میں ناکامی",
+  "professionalDetailsLabel": "پروفیشنل کی تفصیلات",
+  "professionalLabel": "پروفیشنل",
+  "professionalLocationLabel": "پروفیشنل کا مقام",
+  "professionalLocationOption": "پروفیشنل کا مقام",
+  "professionalReviewsLabel": "جائزے",
+  "professionalReviewsSubtitle": "کسٹمرز کیا کہہ رہے ہیں",
+  "profileCompletionHint": "زیادہ کسٹمرز کو متوجہ کرنے کے لیے اپنا پروفائل مکمل کریں",
+  "profileCompletionLabel": "پروفائل کی تکمیل",
+  "profileEditProfile": "پروفائل میں ترمیم کریں",
+  "profileLabel": "پروفائل",
+  "profileLoadError": "پروفائل لوڈ کرنے میں ناکامی",
+  "profileLoadingText": "پروفائل لوڈ ہو رہا ہے...",
+  "profileNotAvailable": "پروفائل دستیاب نہیں",
+  "profileOff": "بند",
+  "profileOn": "آن",
+  "profileReviewsLabel": "جائزے",
+  "profileSavedLabel": "محفوظ شدہ",
+  "profileTitle": "پروفائل",
+  "profileUpdateError": "پروفائل اپ ڈیٹ کرنے میں ناکامی",
+  "profileUpdateSuccess": "پروفائل کامیابی سے اپ ڈیٹ ہو گیا",
+  "profileViewsLabel": "پروفائل ویوز",
+  "profileViewsSubtext": "وہ لوگ جنہوں نے آپ کا پروفائل دیکھا",
+  "profileWalletLabel": "والیٹ",
+  "pushNotificationsLabel": "پش اطلاعات",
+  "quickActionsLabel": "فوری اقدامات",
+  "quickAddLabel": "فوری شامل کریں",
+  "rateLabel": "ریٹ",
+  "ratingLabel": "ریٹنگ",
+  "ratingRequiredError": "براہ کرم ریٹنگ منتخب کریں",
+  "recentBookingsLabel": "حالیہ بکنگز",
+  "recentMessagesLabel": "حالیہ پیغامات",
+  "recentReviewsLabel": "حالیہ جائزے",
+  "refreshTooltip": "ریفریش کریں",
+  "registerCategoryRequired": "براہ کرم کیٹیگری منتخب کریں",
+  "registerCta": "رجسٹر کریں",
+  "registerServerError": "رجسٹریشن ناکام ہو گئی۔ براہ کرم دوبارہ کوشش کریں۔",
+  "registerSubtitle": "شروع کرنے کے لیے سائن اپ کریں",
+  "registerTitle": "اکاؤنٹ بنائیں",
+  "rejectCta": "مسترد کریں",
+  "relatedProfessionalsLabel": "آپ کو یہ بھی پسند آ سکتے ہیں",
+  "removeCta": "ہٹائیں",
+  "replyHint": "جواب لکھیں",
+  "replySubtitle": "آپ کا جواب عوامی ہے اور سب کو نظر آئے گا",
+  "replyTitle": "جائزے کا جواب دیں",
+  "reportNoteHint": "کوئی اضافی تفصیل شامل کریں",
+  "reportSubtitle": "ہمیں سمجھنے میں مدد کریں کہ کیا غلط ہوا",
+  "reportTitle": "مسئلے کی رپورٹ کریں",
+  "requestSentLabel": "درخواست بھیج دی گئی",
+  "requestSentSubtitle": "آپ کی درخواست {value1} کو بھیج دی گئی ہے",
+  "@requestSentSubtitle": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "requestWithdrawCta": "نکلوانے کی درخواست کریں",
+  "rescheduledLabel": "نیا وقت مقرر",
+  "resendEmailCta": "ای میل دوبارہ بھیجیں",
+  "resetLinkError": "ری سیٹ لنک بھیجنے میں ناکامی",
+  "resetLinkSent": "پاس ورڈ ری سیٹ کا لنک {value1} کو بھیج دیا گیا",
+  "@resetLinkSent": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "resetPassSubtitle": "اپنا ای میل درج کریں، ہم آپ کو ری سیٹ لنک بھیجیں گے",
+  "resetPassTitle": "پاس ورڈ ری سیٹ کریں",
+  "resetPasswordDescription": "ہم پاس ورڈ ری سیٹ کا لنک {value1} کو بھیجیں گے",
+  "@resetPasswordDescription": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "resetPasswordLabel": "پاس ورڈ ری سیٹ کریں",
+  "responseLabel": "جواب",
+  "responseRateLabel": "جواب کی شرح",
+  "responseRateSubtext": "آپ کتنی بار پیغامات کا جواب دیتے ہیں",
+  "responseTimeLabel": "جواب کا وقت",
+  "retryCta": "دوبارہ کوشش کریں",
+  "reviewBookingLabel": "بکنگ کا جائزہ لیں",
+  "reviewSubmitErrorDefault": "جائزہ جمع کرانے میں ناکامی",
+  "reviewSubmittedSuccessMessage": "{value1} کے لیے آپ کا جائزہ جمع کر لیا گیا ہے",
+  "@reviewSubmittedSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewSubmittedSuccessTitle": "جائزہ جمع ہو گیا",
+  "reviewUpdateErrorDefault": "جائزہ اپ ڈیٹ کرنے میں ناکامی",
+  "reviewUpdatedSuccessMessage": "{value1} کے لیے آپ کا جائزہ اپ ڈیٹ کر دیا گیا ہے",
+  "@reviewUpdatedSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewUpdatedSuccessTitle": "جائزہ اپ ڈیٹ ہو گیا",
+  "reviewsActionLabel": "جائزے",
+  "reviewsActionSubtitle": "آپ کے لکھے ہوئے جائزے",
+  "reviewsCountLabel": "{value1} جائزے",
+  "@reviewsCountLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewsLabel": "جائزے",
+  "saveCertificateCta": "سرٹیفیکیٹ محفوظ کریں",
+  "saveChangesCta": "تبدیلیاں محفوظ کریں",
+  "saveCta": "محفوظ کریں",
+  "saveScheduleCta": "شیڈول محفوظ کریں",
+  "saveSettingsError": "ترتیبات محفوظ کرنے میں ناکامی",
+  "saveSettingsSuccess": "ترتیبات کامیابی سے محفوظ ہو گئیں",
+  "savedProfessionalsActionLabel": "محفوظ شدہ پروفیشنلز",
+  "savedProfessionalsActionSubtitle": "آپ کے محفوظ کیے ہوئے پروفیشنلز",
+  "savedProfessionalsEmptySubtitle": "آپ کے محفوظ کیے ہوئے پروفیشنلز یہاں نظر آئیں گے",
+  "savedProfessionalsEmptyTitle": "کوئی محفوظ شدہ پروفیشنل نہیں",
+  "savedProfessionalsTitle": "محفوظ شدہ پروفیشنلز",
+  "savedStatLabel": "محفوظ شدہ",
+  "searchAiPremiumActive": "AI سرچ پریمیم فعال ہے",
+  "searchAiRemainingToday": "آج {value1} AI سرچز باقی ہیں",
+  "@searchAiRemainingToday": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "searchBookingsHint": "بکنگز تلاش کریں",
+  "searchCategories": "کیٹیگریز",
+  "searchPopular": "مقبول",
+  "searchPopularCleaners": "صفائی کرنے والے",
+  "searchPopularDoctors": "ڈاکٹرز",
+  "searchPopularElectricians": "الیکٹریشنز",
+  "searchPopularEngineers": "انجینئرز",
+  "searchPopularLawyers": "وکلاء",
+  "searchPopularPlumbers": "پلمبرز",
+  "searchProfessionals": "پروفیشنلز",
+  "searchProfessions": "پیشے",
+  "searchRecent": "حالیہ",
+  "searchResultsLabel": "\"{value2}\" کے لیے {value1} نتائج",
+  "@searchResultsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "searchingLabel": "تلاش جاری ہے...",
+  "security": "سیکیورٹی",
+  "securityActionLabel": "سیکیورٹی",
+  "securityActionSubtitle": "پاس ورڈ اور اکاؤنٹ کی سیکیورٹی",
+  "securityBannerSubtitle": "اپنے اکاؤنٹ کو محفوظ رکھیں",
+  "securityBannerTitle": "اکاؤنٹ کی سیکیورٹی",
+  "securityFooterText": "اگر آپ نے یہ تبدیلی نہیں مانگی تو براہ کرم فوراً سپورٹ سے رابطہ کریں",
+  "securityTitle": "سیکیورٹی",
+  "seeAllLabel": "سب دیکھیں",
+  "selectedLabel": "منتخب شدہ",
+  "sendResetLinkCta": "ری سیٹ لنک بھیجیں",
+  "serviceLabel": "سروس",
+  "serviceProfessionalLabel": "سروس پروفیشنل",
+  "settingsActionLabel": "ترتیبات",
+  "settingsActionSubtitle": "ایپ کی ترجیحات",
+  "shareExperienceLabel": "اپنا تجربہ شیئر کریں",
+  "signInInsteadLabel": "اس کے بجائے لاگ ان کریں",
+  "skillsLabel": "مہارتیں",
+  "skillsPricingLabel": "مہارتیں اور قیمتیں",
+  "slotDurationSubtitle": "ہر بکنگ سلاٹ کا ڈیفالٹ دورانیہ",
+  "slotDurationTitle": "سلاٹ کا دورانیہ",
+  "startConversationError": "گفتگو شروع کرنے میں ناکامی",
+  "startTimeLabel": "آغاز کا وقت",
+  "startingFromLabel": "ابتدائی قیمت",
+  "statusApproved": "منظور شدہ",
+  "statusCompleted": "مکمل",
+  "statusPending": "زیر التوا",
+  "statusRejected": "مسترد شدہ",
+  "submitReportCta": "رپورٹ جمع کرائیں",
+  "submitReviewCta": "جائزہ جمع کریں",
+  "subscriptionActionLabel": "سبسکرپشن",
+  "subscriptionActiveStatus": "{value1} پلان فعال ہے",
+  "@subscriptionActiveStatus": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "subscriptionUpgradeLabel": "پلان اپ گریڈ کریں",
+  "subscriptionUpgradeStatus": "پریمیم میں اپ گریڈ کریں",
+  "suggestTimeCta": "کوئی دوسرا وقت تجویز کریں",
+  "suggestTimeCtaShort": "وقت تجویز کریں",
+  "suggestTimeDescription": "اس بکنگ کے لیے نئی تاریخ اور وقت تجویز کریں",
+  "suggestTimeLabel": "وقت تجویز کریں",
+  "suggestTimeSuccess": "کسٹمر کو نیا وقت تجویز کر دیا گیا",
+  "suggestedTimeLabel": "تجویز کردہ وقت",
+  "supportBannerSubtitle": "ہم 24/7 آپ کی مدد کے لیے حاضر ہیں",
+  "supportBannerTitle": "مدد چاہیے؟",
+  "supportTeamReplyLabel": "سپورٹ ٹیم",
+  "tapStarToRateLabel": "ریٹنگ دینے کے لیے ستارے پر ٹیپ کریں",
+  "thisMonthLabel": "اس مہینے",
+  "timeLabel": "وقت",
+  "timeSlotsLabel": "وقت کے سلاٹس",
+  "timeTipText": "وہ وقت منتخب کریں جو آپ کے لیے سب سے مناسب ہو",
+  "titleHint": "عنوان درج کریں",
+  "titleLabelRequired": "عنوان",
+  "titleValidationError": "براہ کرم عنوان درج کریں",
+  "todayLabel": "آج",
+  "todaysEarningsLabel": "آج کی آمدنی",
+  "todaysScheduleLabel": "آج کا شیڈول",
+  "topRatedLabel": "سب سے بہتر ریٹنگ",
+  "totalBookingsLabel": "کل بکنگز",
+  "totalEarnedLabel": "کل کمائی",
+  "totalSpentLabel": "کل خرچ",
+  "transactionCountLabel": "{value1} لین دین",
+  "@transactionCountLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "transactionHistoryTitle": "لین دین کی تاریخ",
+  "tryAgainCta": "دوبارہ کوشش کریں",
+  "twitterSignInLabel": "Twitter کے ساتھ جاری رکھیں",
+  "typicallyRepliesLabel": "عموماً جواب دیتے ہیں",
+  "unavailableLabel": "دستیاب نہیں",
+  "unknownRoleError": "نامعلوم اکاؤنٹ کی قسم",
+  "updateBookingError": "بکنگ اپ ڈیٹ کرنے میں ناکامی",
+  "updateCta": "اپ ڈیٹ کریں",
+  "updateReviewCta": "جائزہ اپ ڈیٹ کریں",
+  "upgradeCta": "اپ گریڈ کریں",
+  "uploadError": "اپ لوڈ ناکام ہو گیا",
+  "uploadSuccess": "کامیابی سے اپ لوڈ ہو گیا",
+  "userLabel": "صارف",
+  "vacationCleared": "چھٹی ختم کر دی گئی",
+  "vacationDateRequired": "براہ کرم چھٹی کی تاریخوں کی حد منتخب کریں",
+  "vacationSet": "چھٹی کامیابی سے مقرر ہو گئی",
+  "validAmountError": "براہ کرم درست رقم درج کریں",
+  "verificationAddPortfolio": "تصدیق کے لیے پورٹ فولیو آئٹمز شامل کریں",
+  "verificationLabel": "تصدیق",
+  "verificationPending": "تصدیق زیر التوا",
+  "verifiedLabel": "تصدیق شدہ",
+  "verifiedProfessionalLabel": "پروفیشنل",
+  "verifiedStatusLabel": "تصدیق شدہ {value1}",
+  "@verifiedStatusLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "viewMyBookingsCta": "میری بکنگز دیکھیں",
+  "viewProfileCta": "پروفائل دیکھیں",
+  "viewWalletLabel": "والیٹ دیکھیں",
+  "visitorsLabel": "وزیٹرز",
+  "visitorsSubtext": "وہ لوگ جنہوں نے آپ کا پروفائل دیکھا",
+  "walletActionLabel": "والیٹ",
+  "walletActionSubtitle": "بیلنس اور لین دین دیکھیں",
+  "walletEarningsLabel": "آمدنی",
+  "walletLabel": "والیٹ",
+  "walletTitle": "والیٹ",
+  "whatHappensNextLabel": "آگے کیا ہوگا؟",
+  "whyBookHereLabel": "ہمارے ساتھ بک کیوں کریں؟",
+  "withdrawCta": "نکالیں",
+  "withdrawErrorDefault": "رقم نکلوانا ناکام ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
+  "withdrawSuccess": "رقم نکلوانے کی درخواست کامیابی سے بھیج دی گئی",
+  "withdrawTitle": "رقم نکالیں",
+  "withdrawnLabel": "نکالی گئی",
+  "workingHoursLabel": "کام کے اوقات",
+  "writeReviewTitle": "جائزہ لکھیں",
+  "yearsLabel": "{value1} سال",
+  "@yearsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "yesCancelCta": "ہاں، منسوخ کریں",
+  "youAreNotifiedLabel": "آپ کو اطلاع دی جائے گی",
+  "youAreNotifiedSubtitle": "جواب آتے ہی ہم آپ کو اطلاع دیں گے",
+  "yourAccountEmailPlaceholder": "آپ کے اکاؤنٹ کا ای میل",
+  "tsErrForbidden": "آپ کو یہ کارروائی کرنے کی اجازت نہیں ہے۔",
+  "tsErrNetwork": "نیٹ ورک کا مسئلہ ہے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "tsErrGeneric": "کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
+  "tsRetry": "دوبارہ کوشش کریں",
+  "tsCopy": "کاپی کریں",
+  "tsCopied": "کلپ بورڈ پر کاپی ہو گیا",
+  "tsOpenLink": "لنک کھولیں",
+  "tsLinkOpenFailed": "یہ لنک نہیں کھل سکا۔",
+  "tsCancel": "منسوخ کریں",
+  "tsClose": "بند کریں",
+  "tsRefresh": "ریفریش کریں",
+  "tsAll": "سب",
+  "tsCatSpam": "اسپیم",
+  "tsCatHarassment": "ہراسانی",
+  "tsCatFraud": "فراڈ یا دھوکہ",
+  "tsCatFakeProfile": "جعلی پروفائل",
+  "tsCatInappropriate": "نامناسب مواد",
+  "tsCatPaymentFraud": "ادائیگی میں فراڈ",
+  "tsCatOffPlatform": "پلیٹ فارم سے باہر ادائیگی",
+  "tsCatThreats": "دھمکیاں یا حفاظتی تشویش",
+  "tsCatDiscrimination": "امتیازی سلوک",
+  "tsCatMisconduct": "سروس میں بدسلوکی",
+  "tsCatOther": "دیگر",
+  "tsStatusPending": "زیر التوا",
+  "tsStatusReviewed": "جائزہ لیا گیا",
+  "tsStatusActionTaken": "کارروائی کی گئی",
+  "tsStatusDismissed": "خارج کر دیا گیا",
+  "tsSevLow": "کم",
+  "tsSevMedium": "درمیانی",
+  "tsSevHigh": "زیادہ",
+  "tsSevCritical": "سنگین",
+  "tsRoleCustomer": "کسٹمر",
+  "tsRoleProfessional": "پروفیشنل",
+  "tsRoleAdmin": "ایڈمن",
+  "tsActWarning": "انتباہ",
+  "tsActRestrictMessaging": "پیغام رسانی پر پابندی",
+  "tsActRestrictBooking": "بکنگ پر پابندی",
+  "tsActSuspendTemporary": "عارضی معطلی",
+  "tsActSuspendPermanent": "مستقل معطلی",
+  "tsActWarningDesc": "باضابطہ انتباہ درج کرتا ہے۔ اکاؤنٹ پر کوئی پابندی نہیں لگاتا۔",
+  "tsActRestrictMessagingDesc": "اکاؤنٹ کو پیغام رسانی سے محدود کے طور پر نشان زد کرتا ہے۔",
+  "tsActRestrictBookingDesc": "اکاؤنٹ کو بکنگ بنانے سے محدود کے طور پر نشان زد کرتا ہے۔",
+  "tsActSuspendTemporaryDesc": "اکاؤنٹ کو آپ کی منتخب کردہ تاریخ تک معطل کے طور پر نشان زد کرتا ہے۔",
+  "tsActSuspendPermanentDesc": "اکاؤنٹ کو مستقل طور پر معطل کے طور پر نشان زد کرتا ہے۔ کوئی میعاد ختم ہونے کی تاریخ نہیں؛ اسے صرف ایڈمن ہی واپس لے سکتا ہے۔",
+  "tsStateActive": "فعال",
+  "tsStateScheduled": "مقررہ",
+  "tsStateExpired": "میعاد ختم",
+  "tsStateReversed": "واپس لی گئی",
+  "tsAppealPending": "زیر التوا",
+  "tsAppealApproved": "منظور شدہ",
+  "tsAppealRejected": "مسترد شدہ",
+  "tsReportsTitle": "رپورٹ کیے گئے صارفین",
+  "tsPendingReview": "{count} جائزے کے لیے زیر التوا",
+  "@tsPendingReview": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSearchReportsHint": "صارف، رپورٹ کرنے والے، زمرہ یا ID سے تلاش کریں",
+  "tsFilterSeverity": "شدت",
+  "tsFilterCategory": "زمرہ",
+  "tsFilterDate": "تاریخ",
+  "tsDateAny": "کوئی بھی وقت",
+  "tsDateToday": "آج",
+  "tsDate7": "پچھلے 7 دن",
+  "tsDate30": "پچھلے 30 دن",
+  "tsDateCustom": "اپنی مرضی کی مدت",
+  "tsSortNewest": "سب سے نئی پہلے",
+  "tsSortSeverity": "سب سے زیادہ شدت پہلے",
+  "tsClearFilters": "فلٹرز ہٹائیں",
+  "tsNoReports": "ابھی تک کوئی رپورٹ نہیں",
+  "tsNoReportsHint": "صارفین کی جمع کرائی گئی رپورٹس یہاں دکھائی دیں گی۔",
+  "tsNoMatches": "آپ کے فلٹرز سے کوئی رپورٹ میل نہیں کھاتی",
+  "tsNoMatchesHint": "فلٹرز بدل کر یا ہٹا کر دیکھیں۔",
+  "tsSelectReport": "کوئی رپورٹ منتخب کریں",
+  "tsSelectReportHint": "جائزہ لینے اور کارروائی کرنے کے لیے فہرست میں سے کوئی رپورٹ منتخب کریں۔",
+  "tsIndBooking": "بکنگ",
+  "tsIndMessage": "پیغام",
+  "tsIndEvidence": "ثبوت",
+  "tsReportedBy": "{name} نے رپورٹ کیا",
+  "@tsReportedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tsAccountBlocked": "اکاؤنٹ بلاک ہے",
+  "tsReportNumber": "رپورٹ #{id}",
+  "@tsReportNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSubmittedOn": "جمع کرائی گئی: {date}",
+  "@tsSubmittedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTakeAction": "کارروائی کریں",
+  "tsMarkReviewed": "جائزہ شدہ نشان زد کریں",
+  "tsDismiss": "خارج کریں",
+  "tsSecDescription": "رپورٹ کی تفصیل",
+  "tsNoDescription": "کوئی تفصیل فراہم نہیں کی گئی۔",
+  "tsSecEvidence": "ثبوت اور سیاق و سباق",
+  "tsEvidenceLabel": "ثبوت / حوالہ",
+  "tsNoEvidence": "ثبوت کا کوئی لنک فراہم نہیں کیا گیا۔",
+  "tsBookingLabel": "متعلقہ بکنگ",
+  "tsBookingNumber": "بکنگ #{id}",
+  "@tsBookingNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsMessageLabel": "متعلقہ پیغام",
+  "tsMessageNumber": "پیغام #{id}",
+  "@tsMessageNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsMessageDeleted": "یہ پیغام حذف کر دیا گیا تھا۔ اس کا مواد دستیاب نہیں ہے۔",
+  "tsMessageAttachments": "اٹیچمنٹس: {count}",
+  "@tsMessageAttachments": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsNoRelated": "اس رپورٹ سے کچھ بھی منسلک نہیں۔",
+  "tsFieldWhen": "کب",
+  "tsFieldParties": "فریقین",
+  "tsFieldSender": "بھیجنے والا",
+  "tsBookingWith": "{customer} اور {professional}",
+  "@tsBookingWith": {
+    "placeholders": {
+      "customer": {
+        "type": "String"
+      },
+      "professional": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSecPeople": "افراد",
+  "tsReportedUser": "رپورٹ کیا گیا صارف",
+  "tsReporterLabel": "رپورٹ کرنے والا",
+  "tsReporterAdminOnly": "صرف ایڈمنز کو نظر آتا ہے۔ رپورٹ کیے گئے صارف کو کبھی نہیں دکھایا جاتا۔",
+  "tsAccountBlockedNote": "یہ اکاؤنٹ اس وقت بلاک ہے (بلاکڈ ٹیب دیکھیں)۔ بلاک کرنا ماڈریشن کارروائیوں سے الگ ہے۔",
+  "tsSecActive": "فعال پابندیاں اور معطلی",
+  "tsNoActive": "کوئی فعال پابندی یا معطلی نہیں۔",
+  "tsSecTimeline": "رپورٹ کی تاریخ",
+  "tsSecHistory": "ماڈریشن کی تاریخ",
+  "tsSecOtherReports": "اس صارف کے بارے میں دیگر رپورٹس",
+  "tsHistoryLoadError": "ماڈریشن کی تاریخ لوڈ نہیں ہو سکی۔",
+  "tsHistoryEmpty": "اس صارف کے لیے کوئی ماڈریشن کارروائی درج نہیں ہے۔",
+  "tsTlSubmitted": "رپورٹ جمع کرائی گئی",
+  "tsTlReviewed": "{admin} نے {status} نشان زد کیا",
+  "@tsTlReviewed": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlInternalNote": "اندرونی نوٹ: {note}",
+  "@tsTlInternalNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlActionApplied": "{admin} نے {action} نافذ کیا",
+  "@tsTlActionApplied": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlActionReversed": "{admin} نے {action} واپس لیا",
+  "@tsTlActionReversed": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsThisReport": "یہ رپورٹ",
+  "tsHistPerformedBy": "{admin} کی طرف سے، {date} کو",
+  "@tsHistPerformedBy": {
+    "placeholders": {
+      "admin": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsStartsOn": "آغاز: {date}",
+  "@tsStartsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsExpiresOn": "اختتام: {date}",
+  "@tsExpiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsNoExpiryPermanent": "مستقل، کوئی میعاد نہیں",
+  "tsNoExpiryOpen": "کوئی اختتامی تاریخ نہیں، ہٹائے جانے تک فعال",
+  "tsReasonShownToUser": "وجہ (صارف کو دکھائی جائے گی)",
+  "tsInternalNoteLabel": "اندرونی نوٹ (صرف ایڈمن کے لیے)",
+  "tsHistReversedBy": "{admin} نے {date} کو واپس لیا",
+  "@tsHistReversedBy": {
+    "placeholders": {
+      "admin": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsReverse": "واپس لیں",
+  "tsAdminUnknown": "نامعلوم ایڈمن",
+  "tsReviewTitle": "رپورٹ کو جائزہ شدہ نشان زد کریں",
+  "tsReviewMessage": "تصدیق کریں کہ آپ نے اس رپورٹ کا جائزہ لے لیا ہے۔ آپ ایک اندرونی نوٹ شامل کر سکتے ہیں۔",
+  "tsReviewConfirm": "جائزہ شدہ نشان زد کریں",
+  "tsDismissTitle": "رپورٹ خارج کریں",
+  "tsDismissMessage": "اگر یہ رپورٹ قواعد کی خلاف ورزی نہیں کرتی تو اسے خارج کریں۔ رپورٹ کیے گئے صارف کے خلاف کوئی کارروائی نہیں کی جائے گی۔",
+  "tsDismissConfirm": "رپورٹ خارج کریں",
+  "tsResolveReporterNote": "رپورٹ کرنے والے کو نتیجے کی عمومی اطلاع ملتی ہے۔ رپورٹ کیے گئے صارف کو مطلع نہیں کیا جاتا۔",
+  "tsReportUpdated": "رپورٹ اپ ڈیٹ ہو گئی",
+  "tsTakeActionTitle": "ماڈریشن کارروائی کریں",
+  "tsRegardingReport": "رپورٹ #{id} کے بارے میں",
+  "@tsRegardingReport": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsChooseAction": "کوئی کارروائی منتخب کریں",
+  "tsChooseActionError": "آگے بڑھنے کے لیے کوئی کارروائی منتخب کریں۔",
+  "tsAlreadyActive": "اس صارف کے لیے پہلے سے فعال ہے۔",
+  "tsAlreadyPermanentlySuspended": "یہ صارف پہلے سے مستقل طور پر معطل ہے۔",
+  "tsDurationTitle": "مدت",
+  "tsDurationUntilLifted": "ہٹائے جانے تک",
+  "tsDurationPermanent": "مستقل",
+  "tsDurationDays": "{n} دن",
+  "@tsDurationDays": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "tsDurationCustom": "اپنی مرضی کی تاریخ",
+  "tsEndsAt": "اختتام: {when}",
+  "@tsEndsAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "tsUntilDate": "{date} تک",
+  "@tsUntilDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsExpiryRequired": "منتخب کریں کہ یہ کب ختم ہوگا۔",
+  "tsExpiryMustBeFuture": "اختتامی وقت مستقبل میں ہونا چاہیے۔",
+  "tsReasonLabel": "وجہ",
+  "tsReasonHint": "بتائیں کہ یہ کارروائی کیوں کی جا رہی ہے",
+  "tsReasonUserVisibleNote": "صارف کو اس کی اطلاع میں دکھایا جائے گا۔ رپورٹ کرنے والے یا دیگر صارفین کا ذکر نہ کریں۔",
+  "tsReasonTooShort": "براہ کرم کم از کم {min} حروف پر مشتمل وجہ درج کریں۔",
+  "@tsReasonTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "tsInternalNoteHint": "دیگر ایڈمنز کے لیے اختیاری سیاق و سباق",
+  "tsInternalNoteNote": "صرف اندرونی استعمال کے لیے۔ صارف کو کبھی نہیں دکھایا جاتا۔",
+  "tsMarkReportTaken": "اس رپورٹ کو \"کارروائی کی گئی\" نشان زد کریں",
+  "tsMarkReportTakenHint": "رپورٹ کرنے والے کو صرف نتیجے کی عمومی اطلاع ملتی ہے۔",
+  "tsApplyAction": "کارروائی نافذ کریں",
+  "tsConfirmTitle": "{action} نافذ کریں؟",
+  "@tsConfirmTitle": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "tsConfirmBody": "یہ {user} کی ماڈریشن کی تاریخ میں درج کیا جائے گا اور صارف کو مطلع کیا جائے گا۔",
+  "@tsConfirmBody": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "tsConfirmPermanentAck": "میں سمجھتا/سمجھتی ہوں کہ اس معطلی کی کوئی میعاد نہیں ہے اور اسے صرف ایڈمن ہی واپس لے سکتا ہے۔",
+  "tsFieldUser": "صارف",
+  "tsFieldAction": "کارروائی",
+  "tsFieldDuration": "مدت",
+  "tsFieldReason": "وجہ",
+  "tsActionApplied": "ماڈریشن کارروائی نافذ ہو گئی",
+  "tsActionAppliedReportFailed": "کارروائی نافذ ہو گئی، لیکن رپورٹ کی حالت اپ ڈیٹ نہیں ہو سکی۔",
+  "tsCannotActOnAdmin": "ماڈریشن کارروائیاں ایڈمن اکاؤنٹس پر نافذ نہیں کی جا سکتیں۔",
+  "tsFieldPerformedBy": "کس نے کیا",
+  "tsFieldCreated": "بنایا گیا",
+  "tsFieldExpires": "اختتام",
+  "tsFieldReport": "رپورٹ",
+  "tsFieldDecidedBy": "فیصلہ کس نے کیا",
+  "tsFieldDecidedOn": "فیصلے کی تاریخ",
+  "tsReverseTitle": "ماڈریشن کارروائی واپس لیں",
+  "tsReverseMessage": "کیا {action} واپس لیں؟ یہ ہٹا دی جائے گی اور ریکارڈ تاریخ میں برقرار رہے گا۔",
+  "@tsReverseMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "tsReversalReasonLabel": "واپس لینے کی وجہ",
+  "tsReversalReasonHint": "یہ کارروائی کیوں ہٹائی جا رہی ہے؟",
+  "tsReverseConfirm": "کارروائی واپس لیں",
+  "tsReverseAuditNote": "آپ کی وجہ اندرونی ہے۔ یہ ماڈریشن کی تاریخ میں درج ہوتی ہے اور صارف کو کبھی نہیں دکھائی جاتی۔",
+  "tsReverseNotifyNote": "صارف کو مطلع کیا جاتا ہے کہ یہ کارروائی ہٹا دی گئی ہے۔",
+  "tsReverseLegacyNote": "یہ کارروائی پرانے بین فلو سے آئی تھی۔ اسے واپس لینے پر اکاؤنٹ بھی دوبارہ فعال ہو جائے گا۔",
+  "tsActionReversed": "ماڈریشن کارروائی واپس لے لی گئی",
+  "tsAppealsTitle": "اپیلیں",
+  "tsPendingAppeals": "{count} اپیلیں زیر التوا",
+  "@tsPendingAppeals": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSearchAppealsHint": "صارف، ای میل یا اپیل کے متن سے تلاش کریں",
+  "tsNoAppeals": "یہاں کوئی اپیل نہیں",
+  "tsNoAppealsHint": "ماڈریشن کارروائیوں کے خلاف کی گئی اپیلیں یہاں دکھائی دیں گی۔",
+  "tsSelectAppeal": "کوئی اپیل منتخب کریں",
+  "tsSelectAppealHint": "جائزے کے لیے فہرست میں سے کوئی اپیل منتخب کریں۔",
+  "tsAppealNumber": "اپیل #{id}",
+  "@tsAppealNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSecAppealReason": "اپیل",
+  "tsSecAppealedAction": "جس کارروائی کی اپیل کی گئی",
+  "tsSecDecision": "فیصلہ",
+  "tsAppealApprove": "منظور کریں",
+  "tsAppealReject": "مسترد کریں",
+  "tsApproveTitle": "اپیل منظور کریں",
+  "tsApproveMessage": "اس اپیل کو منظور کرنے سے ماڈریشن کارروائی ہٹ جاتی ہے۔",
+  "tsApproveConfirm": "اپیل منظور کریں",
+  "tsRejectTitle": "اپیل مسترد کریں",
+  "tsRejectMessage": "مسترد کرنے پر ماڈریشن کارروائی برقرار رہتی ہے۔",
+  "tsRejectConfirm": "اپیل مسترد کریں",
+  "tsDecisionNoteLabel": "فیصلے کا نوٹ",
+  "tsDecisionNoteHint": "اپنے فیصلے کی وضاحت کریں",
+  "tsDecisionNoteNote": "صرف اندرونی استعمال کے لیے۔ صارف کو کبھی نہیں دکھایا جاتا۔",
+  "tsAppealApproveNote": "کارروائی واپس لے لی جاتی ہے اور صارف کو مطلع کیا جاتا ہے۔",
+  "tsAppealApproveInactive": "یہ کارروائی اب نافذ نہیں ہے، اس لیے منظور کرنے سے صرف اپیل بند ہوتی ہے۔ صارف کو مطلع کیا جاتا ہے۔",
+  "tsAppealRejectNote": "کارروائی برقرار رہتی ہے اور صارف کو نتیجے کی اطلاع دی جاتی ہے۔",
+  "tsAppealApprovedSnack": "اپیل منظور ہو گئی",
+  "tsAppealRejectedSnack": "اپیل مسترد ہو گئی",
+  "tsNoDecisionNote": "کوئی نوٹ درج نہیں کیا گیا۔",
   "tsEvidenceLinkOptional": "ثبوت کا لنک (اختیاری)",
   "tsInvalidHttpUrl": "ایک درست http یا https یو آر ایل درج کریں۔",
   "myTsMyReportsTitle": "میری رپورٹس",
@@ -1972,5 +3497,196 @@
   "myTsAppealSubmitError": "آپ کی اپیل جمع نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
   "myTsAppealAlreadyPending": "اس کے لیے آپ کی پہلے سے ایک اپیل زیر التوا ہے۔",
   "myTsAppealNotEligible": "اس کارروائی کے خلاف مزید اپیل نہیں کی جا سکتی۔",
-  "myTsAppealForLabel": "{action} کے لیے اپیل"
+  "myTsAppealForLabel": "{action} کے لیے اپیل",
+  "@myTsAppealForLabel": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "announcementDismiss": "اعلان بند کریں",
+  "chatMessageHint": "پیغام",
+  "voiceRecordStartFailed": "ریکارڈنگ شروع نہیں ہو سکی۔ براہ کرم مائیکروفون چیک کریں اور دوبارہ کوشش کریں۔",
+  "voiceRecordSaveFailed": "ریکارڈنگ محفوظ نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+  "voicePlayFailed": "یہ صوتی پیغام نہیں چلایا جا سکا۔",
+  "reviewSortBy": "ترتیب بلحاظ",
+  "reviewSortRelevant": "سب سے متعلقہ",
+  "reviewSortNewest": "تازہ ترین",
+  "reviewSortHighest": "سب سے زیادہ ریٹنگ",
+  "reviewSortLowest": "سب سے کم ریٹنگ",
+  "reviewSortHelpful": "سب سے مفید",
+  "reviewSortWithPhotos": "تصاویر کے ساتھ",
+  "reviewFilterAll": "تمام جائزے",
+  "promoSkip": "چھوڑیں",
+  "reviewCountPlural": "{count, plural, =1{1 جائزہ} other{{count} جائزے}}",
+  "@reviewCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "valEmailRequired": "ای میل ضروری ہے",
+  "valEmailInvalid": "درست ای میل درج کریں",
+  "valEmailTooLong": "ای میل بہت لمبی ہے",
+  "valPasswordRequired": "پاس ورڈ ضروری ہے",
+  "valPasswordMinLength": "پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے",
+  "valPasswordUpper": "کم از کم ایک بڑا حرف شامل کریں",
+  "valPasswordLower": "کم از کم ایک چھوٹا حرف شامل کریں",
+  "valPasswordNumber": "کم از کم ایک ہندسہ شامل کریں",
+  "valPasswordSpecial": "کم از کم ایک خاص علامت شامل کریں",
+  "valConfirmPassword": "براہ کرم اپنے پاس ورڈ کی تصدیق کریں",
+  "valPasswordsMismatch": "پاس ورڈ مماثل نہیں ہیں",
+  "valNameRequired": "نام ضروری ہے",
+  "valNameMinLength": "نام کم از کم 2 حروف کا ہونا چاہیے",
+  "valNameMaxLength": "نام 50 حروف سے کم ہونا چاہیے",
+  "valNameNoNumbers": "نام میں ہندسے نہیں ہو سکتے",
+  "valNameInvalidChars": "نام میں غلط حروف ہیں",
+  "valPhoneRequired": "فون نمبر ضروری ہے",
+  "valPhoneInvalid": "درست فون نمبر درج کریں",
+  "valFieldRequired": "یہ فیلڈ ضروری ہے",
+  "valFieldNamedRequired": "{field} ضروری ہے",
+  "@valFieldNamedRequired": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "pwReqMinLength": "کم از کم 8 حروف",
+  "pwReqUppercase": "بڑا حرف",
+  "pwReqLowercase": "چھوٹا حرف",
+  "pwReqNumber": "ہندسہ",
+  "pwReqSpecial": "خاص علامت",
+  "pwStrengthVeryWeak": "بہت کمزور",
+  "pwStrengthWeak": "کمزور",
+  "pwStrengthMedium": "درمیانی",
+  "pwStrengthStrong": "مضبوط",
+  "pwStrengthExcellent": "بہترین",
+  "pickerTapToSelect": "منتخب کرنے کے لیے ٹیپ کریں",
+  "pickerNoResults": "کوئی نتیجہ نہیں ملا",
+  "pickerSearchHint": "تلاش کریں...",
+  "pickerSelectAboveFirst": "پہلے اوپر منتخب کریں",
+  "bkStatusAll": "تمام",
+  "bkStatusPending": "زیر التوا",
+  "bkStatusAccepted": "قبول شدہ",
+  "bkStatusCompleted": "مکمل",
+  "bkStatusCancelled": "منسوخ",
+  "bkStatusRejected": "مسترد",
+  "bkStatusRescheduled": "نیا وقت مقرر",
+  "bkStatusBooked": "بک ہو گئی",
+  "bkSwipeHint": "سوائپ کریں",
+  "bkCountPlural": "{count, plural, =1{1 بکنگ} other{{count} بکنگز}}",
+  "@bkCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bkSectionDetails": "بکنگ کی تفصیلات",
+  "bkSectionService": "سروس",
+  "bkSectionNotes": "کسٹمر کے نوٹس",
+  "bkSectionTimeline": "بکنگ کی ٹائم لائن",
+  "bkFieldDate": "تاریخ",
+  "bkFieldTime": "وقت",
+  "bkFieldLocation": "مقام",
+  "bkFieldCategory": "زمرہ",
+  "bkCancelledByProfessional": "پروفیشنل نے منسوخ کی",
+  "bkCancelledByYou": "آپ نے منسوخ کی",
+  "bkWasRejected": "بکنگ مسترد کر دی گئی",
+  "bkWasCancelled": "بکنگ منسوخ کر دی گئی",
+  "bkCancelledSuccess": "بکنگ منسوخ ہو گئی",
+  "bkCancelFailed": "منسوخ نہیں ہو سکی، براہ کرم دوبارہ کوشش کریں",
+  "detailTabOverview": "جائزہ",
+  "detailTabPortfolio": "پورٹ فولیو ({count})",
+  "@detailTabPortfolio": {"placeholders": {"count": {"type": "int"}}},
+  "detailTabReviews": "جائزے ({count})",
+  "@detailTabReviews": {"placeholders": {"count": {"type": "int"}}},
+  "detailTabServices": "خدمات",
+  "detailTabAvailability": "دستیابی",
+  "detailNotAvailable": "دستیاب نہیں",
+  "detailCertificateDefault": "سرٹیفکیٹ",
+  "detailPortfolioItemDefault": "پورٹ فولیو آئٹم",
+  "categoryItTech": "آئی ٹی اور ٹیک",
+  "categoryEngineers": "انجینئرز",
+  "categoryLawyersLegal": "وکلاء اور قانونی",
+  "categoryDoctorsHealthcare": "ڈاکٹرز اور صحت",
+  "categoryArchitects": "آرکیٹیکٹس",
+  "categoryElectricians": "الیکٹریشنز",
+  "categoryPlumbers": "پلمبرز",
+  "categoryTutorsEducation": "ٹیوٹرز اور تعلیم",
+  "ctaGrowYourBusiness": "اپنا کاروبار بڑھائیں",
+  "ctaJoinProfessionalsSubtitle": "ProFinder پر 500+ پروفیشنلز کے ساتھ شامل ہوں",
+  "ctaJoinNow": "ابھی شامل ہوں",
+  "promoGetPremium": "پریمیم حاصل کریں",
+  "categoryCarpenters": "کارپینٹرز",
+  "errSomethingWentWrong": "کچھ غلط ہو گیا۔",
+  "errSomethingWentWrongTryAgain": "کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
+  "errNetworkCheckConnection": "نیٹ ورک کی خرابی۔ براہ کرم اپنا کنکشن چیک کریں۔",
+  "errNetworkProblemTryAgain": "نیٹ ورک کا مسئلہ۔ براہ کرم اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "errRequestFailedHttp": "درخواست ناکام ہو گئی (HTTP {code})۔",
+  "@errRequestFailedHttp": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "errNotLoggedIn": "آپ لاگ ان نہیں ہیں",
+  "bkStepTitleService": "سروس کا خلاصہ",
+  "bkStepTitleDate": "تاریخ منتخب کریں",
+  "bkStepTitleTime": "وقت منتخب کریں",
+  "bkStepTitleNotes": "اضافی نوٹس",
+  "bkStepTitleSummary": "بکنگ کا خلاصہ",
+  "bkStepDesc1": "جاری رکھنے سے پہلے پروفیشنل کی تفصیلات دیکھ لیں۔",
+  "bkStepDesc2": "اپنی اپائنٹمنٹ کے لیے موزوں تاریخ منتخب کریں۔",
+  "bkStepDesc3": "اپنی وزٹ کے لیے دستیاب وقت کا انتخاب کریں۔",
+  "bkStepDesc4": "پروفیشنل کو بتائیں کہ سروس کہاں فراہم کرنی ہے۔",
+  "bkStepDesc5": "کوئی بھی تفصیل شامل کریں جو پروفیشنل کی تیاری میں مدد دے۔",
+  "bkStepDesc6": "بکنگ کنفرم کرنے سے پہلے ہر چیز غور سے دیکھ لیں۔",
+  "bkWeekdayMon": "پیر",
+  "bkWeekdayTue": "منگل",
+  "bkWeekdayWed": "بدھ",
+  "bkWeekdayThu": "جمعرات",
+  "bkWeekdayFri": "جمعہ",
+  "bkWeekdaySat": "ہفتہ",
+  "bkWeekdaySun": "اتوار",
+  "bkGoodToKnow1": "درخواست بھیجنا مفت ہے اور صرف ایک منٹ لیتا ہے۔",
+  "bkGoodToKnow2": "پروفیشنل کے جواب دیتے ہی آپ کو اطلاع مل جائے گی۔",
+  "bkGoodToKnow3": "جب تک آپ کی درخواست زیرِ التوا ہے، آپ بغیر کسی لاگت کے منسوخ کر سکتے ہیں۔",
+  "bkTimeSlots1": "صرف پروفیشنل کے کام کے اوقات کے اندر کے سلاٹ دکھائے جاتے ہیں۔",
+  "bkTimeSlots2": "آج کے گزر چکے سلاٹ خودکار طور پر غیر فعال ہو جاتے ہیں۔",
+  "bkTimeSlots3": "تصدیق سے پہلے آپ کسی بھی وقت اپنا منتخب کردہ وقت تبدیل کر سکتے ہیں۔",
+  "chatCouldNotLoadConversations": "گفتگوئیں لوڈ نہیں ہو سکیں",
+  "chatVoiceMessagePreview": "🎤 صوتی پیغام",
+  "chatPhotoPreview": "📷 تصویر",
+  "reviewRatingPoor": "ناقص",
+  "reviewRatingFair": "مناسب",
+  "reviewRatingGood": "اچھا",
+  "reviewRatingVeryGood": "بہت اچھا",
+  "reviewRatingExcellent": "بہترین",
+  "reviewReportReasonSpam": "اسپیم",
+  "reviewReportReasonFake": "جعلی ریویو",
+  "reviewReportReasonAbusive": "بدزبانی",
+  "reviewReportReasonHarassment": "ہراسانی",
+  "reviewReportReasonOffTopic": "موضوع سے ہٹ کر",
+  "reviewReportReasonConflict": "مفادات کا ٹکراؤ",
+  "reviewReportReasonOther": "دیگر",
+  "availabilityStatusBusy": "مصروف",
+  "availabilityStatusOnLeave": "چھٹی پر",
+  "availabilityStatusDescAvailable": "گاہک ابھی آپ کو بک کر سکتے ہیں",
+  "availabilityStatusDescBusy": "آپ کام میں مصروف ہیں — نئی درخواستیں روک دی گئی ہیں",
+  "availabilityStatusDescOffline": "آپ نئی بکنگ درخواستوں میں نظر نہیں آئیں گے",
+  "availabilityStatusDescOnLeave": "واپسی تک آپ کو چھٹی پر ظاہر کیا جائے گا",
+  "professionalInvalidId": "پروفیشنل کی آئی ڈی درست نہیں",
+  "uploadFailedTryAgain": "اپ لوڈ ناکام ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
+  "editorListItemPlaceholder": "فہرست کا آئٹم",
+  "pushChannelGeneralName": "عمومی اطلاعات",
+  "pushChannelGeneralDesc": "بکنگز، اعلانات، رپورٹس اور دیگر الرٹس",
+  "pushChannelChatName": "چیٹ پیغامات",
+  "pushChannelChatDesc": "نئے چیٹ پیغامات",
+  "errBookingLimitReached": "بکنگ کی حد پوری ہو گئی۔",
+  "categoryCarpenter": "بڑھئی"
 }

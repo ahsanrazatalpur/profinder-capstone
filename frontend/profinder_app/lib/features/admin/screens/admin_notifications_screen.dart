@@ -14,6 +14,9 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../widgets/content_translations_editor.dart';
 
 /// Responsive breakpoints used by the list container and grid.
 class _Breakpoints {
@@ -38,11 +41,11 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
   String _statusFilter = 'all';
 
   static const _statuses = [
-    ('all', 'All', Color(0xFF374151)),
-    ('scheduled', 'Scheduled', Color(0xFFF59E0B)),
-    ('sent', 'Sent', Color(0xFF16A34A)),
-    ('cancelled', 'Cancelled', Color(0xFF64748B)),
-    ('failed', 'Failed', Color(0xFFEF4444)),
+    ('all', 'All', AppColors.gray700),
+    ('scheduled', 'Scheduled', AppColors.warningAmber),
+    ('sent', 'Sent', AppColors.greenDeep),
+    ('cancelled', 'Cancelled', AppColors.slate500),
+    ('failed', 'Failed', AppColors.favoriteRed),
   ];
 
   /// Drives a staggered entrance for cards whenever the list reloads.
@@ -89,6 +92,30 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
   }
 
   /// Cancels a scheduled broadcast. Behavior unchanged.
+  // Fields translated per language (backend registry: 'notificationbroadcast').
+  // Push goes out in each receiver's language at dispatch time, so translations
+  // matter only until the broadcast is sent.
+  static const _tFields = [
+    TranslatableField('title', 'Title'),
+    TranslatableField('message', 'Message', multiline: true),
+  ];
+
+  Future<void> _openTranslations(dynamic b) async {
+    final saved = await showContentTranslationsSheet(
+      context,
+      label: 'notificationbroadcast',
+      objectId: (b['id'] as num).toInt(),
+      title: b['title']?.toString() ?? '',
+      fields: _tFields,
+      existing: b['translations'] is List ? b['translations'] as List : null,
+      baseValues: {
+        'title': b['title']?.toString() ?? '',
+        'message': b['message']?.toString() ?? '',
+      },
+    );
+    if (saved) _load();
+  }
+
   Future<void> _cancel(dynamic broadcast) async {
     try {
       await _api.patch(
@@ -118,7 +145,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
     final maxWidth = isDesktop ? 1200.0 : (isTablet ? 900.0 : 720.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Notifications',
         subtitle: '${_broadcasts.length} ${_statusFilter == 'all' ? 'broadcast' : _statusFilter}${_broadcasts.length == 1 ? '' : 's'}',
@@ -242,7 +269,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: _statuses.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 8),
+          separatorBuilder: (_, _) => const SizedBox(width: 8),
           itemBuilder: (_, i) => _buildStatusChip(_statuses[i]),
         ),
       ),
@@ -259,7 +286,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(AppSizes.radius22),
           onTap: () {
             setState(() => _statusFilter = key);
             _load();
@@ -271,9 +298,9 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
             padding: const EdgeInsets.symmetric(horizontal: 14),
             decoration: BoxDecoration(
               color: isActive
-                  ? color.withOpacity(0.12)
-                  : const Color(0xFFF5F7FA),
-              borderRadius: BorderRadius.circular(22),
+                  ? color.withValues(alpha: 0.12)
+                  : AppColors.lightScaffold,
+              borderRadius: BorderRadius.circular(AppSizes.radius22),
               border: Border.all(
                 color: isActive ? color : Colors.transparent,
                 width: 1.4,
@@ -295,10 +322,10 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: AppFontSizes.small,
                     fontWeight:
                         isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isActive ? color : const Color(0xFF6B7280),
+                    color: isActive ? color : AppColors.grayDeep,
                   ),
                 ),
               ],
@@ -327,17 +354,17 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
     final statusDisplay = b['status_display']?.toString() ?? status;
 
     return _HoverLift(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(AppSizes.radius14),
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: AppColors.neutral200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.035),
+              color: Colors.black.withValues(alpha: 0.035),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -354,8 +381,8 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                   width: 34,
                   height: 34,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                   ),
                   child: Icon(Icons.campaign_rounded,
                       size: 17, color: color),
@@ -367,7 +394,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                     style: const TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF111827)),
+                        color: AppColors.gray900),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -377,10 +404,10 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 9, vertical: 4),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                     border:
-                        Border.all(color: color.withOpacity(0.25)),
+                        Border.all(color: color.withValues(alpha: 0.25)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -412,8 +439,8 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
               Text(
                 message,
                 style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF374151),
+                    fontSize: AppFontSizes.small,
+                    color: AppColors.gray700,
                     height: 1.45),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -426,13 +453,13 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
             Row(
               children: [
                 const Icon(Icons.people_outline_rounded,
-                    size: 13, color: Color(0xFF9CA3AF)),
+                    size: 13, color: AppColors.neutral400),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     audienceLabel,
                     style: const TextStyle(
-                        fontSize: 11, color: Color(0xFF9CA3AF)),
+                        fontSize: AppFontSizes.caption, color: AppColors.neutral400),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -461,10 +488,16 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
             // ── Cancel action (scheduled only) ─────
             if (isScheduled) ...[
               const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.centerRight,
-                child: _HoverLift(
-                  borderRadius: BorderRadius.circular(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TranslationsButton(
+                    count: countTranslations(b, _tFields),
+                    onPressed: () => _openTranslations(b),
+                  ),
+                  const SizedBox(width: 8),
+                  _HoverLift(
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
                   hoverScale: 1.02,
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
@@ -475,7 +508,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                           horizontal: 14, vertical: 10),
                       minimumSize: const Size(0, 44),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppSizes.radius10),
                       ),
                     ),
                     onPressed: () => _cancel(b),
@@ -483,10 +516,11 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                     label: const Text(
                       'Cancel',
                       style: TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.w600),
+                          fontSize: AppFontSizes.small, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
+                ],
               ),
             ],
           ],
@@ -509,7 +543,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
           child: Text(
             text,
             style: TextStyle(
-                fontSize: 11, color: color, fontWeight: FontWeight.w600),
+                fontSize: AppFontSizes.caption, color: color, fontWeight: FontWeight.w600),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -526,6 +560,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
     final titleCtrl = TextEditingController();
     final messageCtrl = TextEditingController();
     final userIdCtrl = TextEditingController();
+    final translations = TranslationsFormController();
     String audience = 'all';
     bool scheduleLater = false;
     DateTime? scheduledDateTime;
@@ -538,7 +573,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
         builder: (sheetContext, setSheetState) => Container(
           decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radius22)),
           ),
           child: Padding(
             padding: EdgeInsets.only(
@@ -559,8 +594,8 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                       height: 4,
                       margin: const EdgeInsets.only(bottom: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE5E7EB),
-                        borderRadius: BorderRadius.circular(4),
+                        color: AppColors.neutral200,
+                        borderRadius: BorderRadius.circular(AppSizes.radiusXs),
                       ),
                     ),
                   ),
@@ -572,8 +607,8 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: AppColors.adminColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          color: AppColors.adminColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         ),
                         child: const Icon(Icons.campaign_rounded,
                             color: AppColors.adminColor, size: 20),
@@ -583,9 +618,9 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                         child: Text(
                           'Compose Notification',
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: AppFontSizes.title,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF111827)),
+                              color: AppColors.gray900),
                         ),
                       ),
                     ],
@@ -598,7 +633,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                   const SizedBox(height: 6),
                   TextField(
                     controller: titleCtrl,
-                    style: const TextStyle(fontSize: 13),
+                    style: const TextStyle(fontSize: AppFontSizes.secondary),
                     decoration: _fieldDecoration(
                         hint: 'Short summary shown in the push'),
                   ),
@@ -611,7 +646,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                   TextField(
                     controller: messageCtrl,
                     maxLines: 3,
-                    style: const TextStyle(fontSize: 13),
+                    style: const TextStyle(fontSize: AppFontSizes.secondary),
                     decoration: _fieldDecoration(
                         hint: 'The body of the notification…'),
                   ),
@@ -634,7 +669,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                       return Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                           onTap: () =>
                               setSheetState(() => audience = e.$1),
                           child: AnimatedContainer(
@@ -647,9 +682,9 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                             decoration: BoxDecoration(
                               color: isActive
                                   ? AppColors.adminColor
-                                      .withOpacity(0.1)
-                                  : const Color(0xFFF5F7FA),
-                              borderRadius: BorderRadius.circular(20),
+                                      .withValues(alpha: 0.1)
+                                  : AppColors.lightScaffold,
+                              borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                               border: Border.all(
                                 color: isActive
                                     ? AppColors.adminColor
@@ -660,13 +695,13 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                             child: Text(
                               e.$2,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: AppFontSizes.small,
                                 fontWeight: isActive
                                     ? FontWeight.w700
                                     : FontWeight.w500,
                                 color: isActive
                                     ? AppColors.adminColor
-                                    : const Color(0xFF6B7280),
+                                    : AppColors.grayDeep,
                               ),
                             ),
                           ),
@@ -683,7 +718,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                     TextField(
                       controller: userIdCtrl,
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(fontSize: 13),
+                      style: const TextStyle(fontSize: AppFontSizes.secondary),
                       decoration: _fieldDecoration(
                           hint: 'Enter the numeric user id'),
                     ),
@@ -695,13 +730,13 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                   Container(
                     decoration: BoxDecoration(
                       color: scheduleLater
-                          ? AppColors.adminColor.withOpacity(0.05)
-                          : const Color(0xFFF9FAFB),
-                      borderRadius: BorderRadius.circular(12),
+                          ? AppColors.adminColor.withValues(alpha: 0.05)
+                          : AppColors.tintGray,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       border: Border.all(
                         color: scheduleLater
-                            ? AppColors.adminColor.withOpacity(0.25)
-                            : const Color(0xFFE5E7EB),
+                            ? AppColors.adminColor.withValues(alpha: 0.25)
+                            : AppColors.neutral200,
                       ),
                     ),
                     // CheckboxListTile paints its background/ink splashes on
@@ -723,12 +758,12 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                         title: const Text(
                           'Schedule for later',
                           style: TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.w600),
+                              fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600),
                         ),
                         subtitle: const Text(
                           'Leave off to send immediately',
                           style: TextStyle(
-                              fontSize: 11, color: Color(0xFF9CA3AF)),
+                              fontSize: AppFontSizes.caption, color: AppColors.neutral400),
                         ),
                       ),
                     ),
@@ -748,7 +783,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                             lastDate: DateTime.now()
                                 .add(const Duration(days: 365)),
                           );
-                          if (date == null) return;
+                          if (date == null || !sheetContext.mounted) return;
                           final time = await showTimePicker(
                             context: sheetContext,
                             initialTime: TimeOfDay.now(),
@@ -779,13 +814,19 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                               vertical: 12),
                           minimumSize: const Size(0, 44),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(AppSizes.radius10),
                           ),
                         ),
                       ),
                     ),
                   ],
 
+                  const SizedBox(height: 12),
+                  ContentTranslationsSection(
+                    controller: translations,
+                    fields: _tFields,
+                    helper: 'Each user receives the push in their own language.',
+                  ),
                   const SizedBox(height: 20),
 
                   // Action button
@@ -798,7 +839,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                             const EdgeInsets.symmetric(vertical: 14),
                         minimumSize: const Size(0, 50),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         ),
                         elevation: 0,
                       ),
@@ -829,6 +870,8 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                               'scheduled_at': scheduledDateTime!
                                   .toUtc()
                                   .toIso8601String(),
+                            if (translations.payload.isNotEmpty)
+                              'translations': translations.payload,
                           });
                           if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -876,21 +919,21 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
   InputDecoration _fieldDecoration({required String hint}) => InputDecoration(
         hintText: hint,
         hintStyle:
-            const TextStyle(fontSize: 12.5, color: Color(0xFF9CA3AF)),
+            const TextStyle(fontSize: 12.5, color: AppColors.neutral400),
         filled: true,
-        fillColor: const Color(0xFFF5F7FA),
+        fillColor: AppColors.lightScaffold,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           borderSide:
               const BorderSide(color: AppColors.adminColor, width: 1.4),
         ),
@@ -906,7 +949,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                 width: 88,
                 height: 88,
                 decoration: BoxDecoration(
-                  color: AppColors.adminColor.withOpacity(0.08),
+                  color: AppColors.adminColor.withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.notifications_none_rounded,
@@ -918,13 +961,13 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                 style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF6B7280)),
+                    color: AppColors.grayDeep),
               ),
               const SizedBox(height: 4),
               const Text(
                 'Tap Compose to send your first broadcast.',
                 style: TextStyle(
-                    fontSize: 12, color: Color(0xFF9CA3AF)),
+                    fontSize: AppFontSizes.small, color: AppColors.neutral400),
               ),
             ],
           ),
@@ -942,7 +985,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.error.withOpacity(0.08),
+                  color: AppColors.error.withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.error_outline_rounded,
@@ -952,9 +995,9 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
               const Text(
                 'Failed to load notifications',
                 style: TextStyle(
-                    fontSize: 15,
+                    fontSize: AppFontSizes.input,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF374151)),
+                    color: AppColors.gray700),
               ),
               const SizedBox(height: 18),
               ElevatedButton.icon(
@@ -966,7 +1009,7 @@ class _AdminNotificationsScreenState extends State<AdminNotificationsScreen>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10)),
                 ),
               ),
             ],
@@ -989,7 +1032,7 @@ class _FieldLabel extends StatelessWidget {
       style: const TextStyle(
         fontSize: 10.5,
         fontWeight: FontWeight.w800,
-        color: Color(0xFF6B7280),
+        color: AppColors.grayDeep,
         letterSpacing: 0.5,
       ),
     );

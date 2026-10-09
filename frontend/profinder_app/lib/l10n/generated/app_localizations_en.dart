@@ -3562,6 +3562,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancellationPolicyLabel => 'Cancellation Policy';
 
   @override
+  String get bookingQuickNoteFirstTime => 'First-time customer';
+
+  @override
+  String get bookingQuickNoteUrgent => 'Urgent request';
+
+  @override
+  String get bookingQuickNoteFollowUp => 'Follow-up visit';
+
+  @override
+  String get bookingQuickNoteCallBefore => 'Please call before arriving';
+
+  @override
+  String get cancellationPolicyPointFree =>
+      'Free cancellation any time while your request is pending.';
+
+  @override
+  String get cancellationPolicyPointChat =>
+      'Once accepted, you can coordinate changes directly with the professional via chat.';
+
+  @override
+  String walletJobCompletedWithName(String name) {
+    return 'Job completed — $name';
+  }
+
+  @override
+  String get walletJobCompleted => 'Job completed';
+
+  @override
+  String get walletWithdrawalRequestLabel => 'Withdrawal request';
+
+  @override
   String get cancelledByCustomerLabel => 'Cancelled by customer';
 
   @override
@@ -6429,4 +6460,512 @@ class AppLocalizationsEn extends AppLocalizations {
   String myTsAppealForLabel(String action) {
     return 'Appeal for $action';
   }
+
+  @override
+  String get announcementDismiss => 'Dismiss announcement';
+
+  @override
+  String get chatMessageHint => 'Message';
+
+  @override
+  String get voiceRecordStartFailed =>
+      'Could not start recording. Please check the microphone and try again.';
+
+  @override
+  String get voiceRecordSaveFailed =>
+      'Could not save the recording. Please try again.';
+
+  @override
+  String get voicePlayFailed => 'Could not play this voice message.';
+
+  @override
+  String get reviewSortBy => 'Sort by';
+
+  @override
+  String get reviewSortRelevant => 'Most Relevant';
+
+  @override
+  String get reviewSortNewest => 'Newest';
+
+  @override
+  String get reviewSortHighest => 'Highest Rating';
+
+  @override
+  String get reviewSortLowest => 'Lowest Rating';
+
+  @override
+  String get reviewSortHelpful => 'Most Helpful';
+
+  @override
+  String get reviewSortWithPhotos => 'With Photos';
+
+  @override
+  String get reviewFilterAll => 'All Reviews';
+
+  @override
+  String get promoSkip => 'Skip';
+
+  @override
+  String reviewCountPlural(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reviews',
+      one: '1 review',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get valEmailRequired => 'Email is required';
+
+  @override
+  String get valEmailInvalid => 'Enter a valid email';
+
+  @override
+  String get valEmailTooLong => 'Email is too long';
+
+  @override
+  String get valPasswordRequired => 'Password is required';
+
+  @override
+  String get valPasswordMinLength => 'Password must be at least 8 characters';
+
+  @override
+  String get valPasswordUpper => 'Add at least one uppercase letter';
+
+  @override
+  String get valPasswordLower => 'Add at least one lowercase letter';
+
+  @override
+  String get valPasswordNumber => 'Add at least one number';
+
+  @override
+  String get valPasswordSpecial => 'Add at least one special character';
+
+  @override
+  String get valConfirmPassword => 'Please confirm your password';
+
+  @override
+  String get valPasswordsMismatch => 'Passwords do not match';
+
+  @override
+  String get valNameRequired => 'Name is required';
+
+  @override
+  String get valNameMinLength => 'Name must be at least 2 characters';
+
+  @override
+  String get valNameMaxLength => 'Name must be under 50 characters';
+
+  @override
+  String get valNameNoNumbers => 'Name cannot contain numbers';
+
+  @override
+  String get valNameInvalidChars => 'Name contains invalid characters';
+
+  @override
+  String get valPhoneRequired => 'Phone number is required';
+
+  @override
+  String get valPhoneInvalid => 'Enter a valid phone number';
+
+  @override
+  String get valFieldRequired => 'This field is required';
+
+  @override
+  String valFieldNamedRequired(String field) {
+    return '$field is required';
+  }
+
+  @override
+  String get pwReqMinLength => 'Minimum 8 characters';
+
+  @override
+  String get pwReqUppercase => 'Uppercase letter';
+
+  @override
+  String get pwReqLowercase => 'Lowercase letter';
+
+  @override
+  String get pwReqNumber => 'Number';
+
+  @override
+  String get pwReqSpecial => 'Special character';
+
+  @override
+  String get pwStrengthVeryWeak => 'Very Weak';
+
+  @override
+  String get pwStrengthWeak => 'Weak';
+
+  @override
+  String get pwStrengthMedium => 'Medium';
+
+  @override
+  String get pwStrengthStrong => 'Strong';
+
+  @override
+  String get pwStrengthExcellent => 'Excellent';
+
+  @override
+  String get pickerTapToSelect => 'Tap to select';
+
+  @override
+  String get pickerNoResults => 'No results found';
+
+  @override
+  String get pickerSearchHint => 'Search...';
+
+  @override
+  String get pickerSelectAboveFirst => 'Select above first';
+
+  @override
+  String get bkStatusAll => 'All';
+
+  @override
+  String get bkStatusPending => 'Pending';
+
+  @override
+  String get bkStatusAccepted => 'Accepted';
+
+  @override
+  String get bkStatusCompleted => 'Completed';
+
+  @override
+  String get bkStatusCancelled => 'Cancelled';
+
+  @override
+  String get bkStatusRejected => 'Rejected';
+
+  @override
+  String get bkStatusRescheduled => 'Rescheduled';
+
+  @override
+  String get bkStatusBooked => 'Booked';
+
+  @override
+  String get bkSwipeHint => 'swipe';
+
+  @override
+  String bkCountPlural(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bookings',
+      one: '1 booking',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bkSectionDetails => 'Booking details';
+
+  @override
+  String get bkSectionService => 'Service';
+
+  @override
+  String get bkSectionNotes => 'Customer notes';
+
+  @override
+  String get bkSectionTimeline => 'Booking timeline';
+
+  @override
+  String get bkFieldDate => 'Date';
+
+  @override
+  String get bkFieldTime => 'Time';
+
+  @override
+  String get bkFieldLocation => 'Location';
+
+  @override
+  String get bkFieldCategory => 'Category';
+
+  @override
+  String get bkCancelledByProfessional => 'Cancelled by professional';
+
+  @override
+  String get bkCancelledByYou => 'Cancelled by you';
+
+  @override
+  String get bkWasRejected => 'Booking was rejected';
+
+  @override
+  String get bkWasCancelled => 'Booking was cancelled';
+
+  @override
+  String get bkCancelledSuccess => 'Booking cancelled';
+
+  @override
+  String get bkCancelFailed => 'Could not cancel, please try again';
+
+  @override
+  String get detailTabOverview => 'Overview';
+
+  @override
+  String detailTabPortfolio(int count) {
+    return 'Portfolio ($count)';
+  }
+
+  @override
+  String detailTabReviews(int count) {
+    return 'Reviews ($count)';
+  }
+
+  @override
+  String get detailTabServices => 'Services';
+
+  @override
+  String get detailTabAvailability => 'Availability';
+
+  @override
+  String get detailNotAvailable => 'Not available';
+
+  @override
+  String get detailCertificateDefault => 'Certificate';
+
+  @override
+  String get detailPortfolioItemDefault => 'Portfolio item';
+
+  @override
+  String get categoryItTech => 'IT & Tech';
+
+  @override
+  String get categoryEngineers => 'Engineers';
+
+  @override
+  String get categoryLawyersLegal => 'Lawyers & Legal';
+
+  @override
+  String get categoryDoctorsHealthcare => 'Doctors & Healthcare';
+
+  @override
+  String get categoryArchitects => 'Architects';
+
+  @override
+  String get categoryElectricians => 'Electricians';
+
+  @override
+  String get categoryPlumbers => 'Plumbers';
+
+  @override
+  String get categoryTutorsEducation => 'Tutors & Education';
+
+  @override
+  String get ctaGrowYourBusiness => 'Grow Your Business';
+
+  @override
+  String get ctaJoinProfessionalsSubtitle =>
+      'Join 500+ professionals on ProFinder';
+
+  @override
+  String get ctaJoinNow => 'Join Now';
+
+  @override
+  String get promoGetPremium => 'Get Premium';
+
+  @override
+  String get categoryCarpenters => 'Carpenters';
+
+  @override
+  String get errSomethingWentWrong => 'Something went wrong.';
+
+  @override
+  String get errSomethingWentWrongTryAgain =>
+      'Something went wrong. Please try again.';
+
+  @override
+  String get errNetworkCheckConnection =>
+      'Network error. Please check your connection.';
+
+  @override
+  String get errNetworkProblemTryAgain =>
+      'Network problem. Please check your connection and try again.';
+
+  @override
+  String errRequestFailedHttp(int code) {
+    return 'Request failed (HTTP $code).';
+  }
+
+  @override
+  String get errNotLoggedIn => 'Not logged in';
+
+  @override
+  String get bkStepTitleService => 'Service Summary';
+
+  @override
+  String get bkStepTitleDate => 'Select Date';
+
+  @override
+  String get bkStepTitleTime => 'Select Time';
+
+  @override
+  String get bkStepTitleNotes => 'Additional Notes';
+
+  @override
+  String get bkStepTitleSummary => 'Booking Summary';
+
+  @override
+  String get bkStepDesc1 =>
+      'Review the professional\'s details before you continue.';
+
+  @override
+  String get bkStepDesc2 =>
+      'Choose a date that works best for your appointment.';
+
+  @override
+  String get bkStepDesc3 => 'Pick an available time slot for your visit.';
+
+  @override
+  String get bkStepDesc4 =>
+      'Let the professional know where to provide the service.';
+
+  @override
+  String get bkStepDesc5 =>
+      'Add any details that help the professional prepare.';
+
+  @override
+  String get bkStepDesc6 =>
+      'Review everything carefully before confirming your booking.';
+
+  @override
+  String get bkWeekdayMon => 'Mon';
+
+  @override
+  String get bkWeekdayTue => 'Tue';
+
+  @override
+  String get bkWeekdayWed => 'Wed';
+
+  @override
+  String get bkWeekdayThu => 'Thu';
+
+  @override
+  String get bkWeekdayFri => 'Fri';
+
+  @override
+  String get bkWeekdaySat => 'Sat';
+
+  @override
+  String get bkWeekdaySun => 'Sun';
+
+  @override
+  String get bkGoodToKnow1 =>
+      'Sending a request is free and only takes a minute.';
+
+  @override
+  String get bkGoodToKnow2 =>
+      'You\'ll be notified as soon as the professional responds.';
+
+  @override
+  String get bkGoodToKnow3 =>
+      'You can cancel at no cost while your request is still pending.';
+
+  @override
+  String get bkTimeSlots1 =>
+      'Only slots within the professional\'s working hours are shown.';
+
+  @override
+  String get bkTimeSlots2 =>
+      'Slots already passed for today are automatically disabled.';
+
+  @override
+  String get bkTimeSlots3 =>
+      'You can change your selected time at any point before confirming.';
+
+  @override
+  String get chatCouldNotLoadConversations => 'Could not load conversations';
+
+  @override
+  String get chatVoiceMessagePreview => '🎤 Voice message';
+
+  @override
+  String get chatPhotoPreview => '📷 Photo';
+
+  @override
+  String get reviewRatingPoor => 'Poor';
+
+  @override
+  String get reviewRatingFair => 'Fair';
+
+  @override
+  String get reviewRatingGood => 'Good';
+
+  @override
+  String get reviewRatingVeryGood => 'Very Good';
+
+  @override
+  String get reviewRatingExcellent => 'Excellent';
+
+  @override
+  String get reviewReportReasonSpam => 'Spam';
+
+  @override
+  String get reviewReportReasonFake => 'Fake Review';
+
+  @override
+  String get reviewReportReasonAbusive => 'Abusive Language';
+
+  @override
+  String get reviewReportReasonHarassment => 'Harassment';
+
+  @override
+  String get reviewReportReasonOffTopic => 'Off-topic';
+
+  @override
+  String get reviewReportReasonConflict => 'Conflict of Interest';
+
+  @override
+  String get reviewReportReasonOther => 'Other';
+
+  @override
+  String get availabilityStatusBusy => 'Busy';
+
+  @override
+  String get availabilityStatusOnLeave => 'On Leave';
+
+  @override
+  String get availabilityStatusDescAvailable =>
+      'Customers can book you right now';
+
+  @override
+  String get availabilityStatusDescBusy =>
+      'You are working — new requests are paused';
+
+  @override
+  String get availabilityStatusDescOffline =>
+      'You won\'t appear in new booking requests';
+
+  @override
+  String get availabilityStatusDescOnLeave =>
+      'Marked as on leave until you return';
+
+  @override
+  String get professionalInvalidId => 'Invalid professional ID';
+
+  @override
+  String get uploadFailedTryAgain => 'Upload failed. Please try again.';
+
+  @override
+  String get editorListItemPlaceholder => 'List item';
+
+  @override
+  String get pushChannelGeneralName => 'General Notifications';
+
+  @override
+  String get pushChannelGeneralDesc =>
+      'Bookings, announcements, reports and other alerts';
+
+  @override
+  String get pushChannelChatName => 'Chat Messages';
+
+  @override
+  String get pushChannelChatDesc => 'New chat messages';
+
+  @override
+  String get errBookingLimitReached => 'Booking limit reached.';
+
+  @override
+  String get categoryCarpenter => 'Carpenter';
 }

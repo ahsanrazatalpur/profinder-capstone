@@ -4,6 +4,7 @@
 // to open the device's mail app — this package is already a common Flutter
 // dependency; add `url_launcher` to pubspec.yaml if not already present.
 
+import '../../../core/constants/app_sizes.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
@@ -25,15 +26,15 @@ class HelpSupportScreen extends StatelessWidget {
   String _getFaqQuestion(String key, BuildContext context) {
     switch (key) {
       case 'faq_get_verified':
-        return AppLocalizations.of(context)!.faqGetVerifiedQ;
+        return AppLocalizations.of(context).faqGetVerifiedQ;
       case 'faq_withdraw_earnings':
-        return AppLocalizations.of(context)!.faqWithdrawEarningsQ;
+        return AppLocalizations.of(context).faqWithdrawEarningsQ;
       case 'faq_booking_pending':
-        return AppLocalizations.of(context)!.faqBookingPendingQ;
+        return AppLocalizations.of(context).faqBookingPendingQ;
       case 'faq_improve_profile':
-        return AppLocalizations.of(context)!.faqImproveProfileQ;
+        return AppLocalizations.of(context).faqImproveProfileQ;
       case 'faq_change_availability':
-        return AppLocalizations.of(context)!.faqChangeAvailabilityQ;
+        return AppLocalizations.of(context).faqChangeAvailabilityQ;
       default:
         return '';
     }
@@ -42,15 +43,15 @@ class HelpSupportScreen extends StatelessWidget {
   String _getFaqAnswer(String key, BuildContext context) {
     switch (key) {
       case 'faq_get_verified':
-        return AppLocalizations.of(context)!.faqGetVerifiedA;
+        return AppLocalizations.of(context).faqGetVerifiedA;
       case 'faq_withdraw_earnings':
-        return AppLocalizations.of(context)!.faqWithdrawEarningsA;
+        return AppLocalizations.of(context).faqWithdrawEarningsA;
       case 'faq_booking_pending':
-        return AppLocalizations.of(context)!.faqBookingPendingA;
+        return AppLocalizations.of(context).faqBookingPendingA;
       case 'faq_improve_profile':
-        return AppLocalizations.of(context)!.faqImproveProfileA;
+        return AppLocalizations.of(context).faqImproveProfileA;
       case 'faq_change_availability':
-        return AppLocalizations.of(context)!.faqChangeAvailabilityA;
+        return AppLocalizations.of(context).faqChangeAvailabilityA;
       default:
         return '';
     }
@@ -73,7 +74,7 @@ class HelpSupportScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.helpSupportTitle,
+        title: AppLocalizations.of(context).helpSupportTitle,
         icon: Icons.help_outline_rounded,
       ),
       body: ListView(
@@ -87,14 +88,14 @@ class HelpSupportScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
+                colors: [AppColors.accentPurple, AppColors.violet800],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF7C3AED).withOpacity(0.3),
+                  color: AppColors.accentPurple.withValues(alpha: 0.3),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -105,8 +106,8 @@ class HelpSupportScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   ),
                   child: const Icon(
                     Icons.support_agent_rounded,
@@ -120,7 +121,7 @@ class HelpSupportScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.needMoreHelpLabel,
+                        AppLocalizations.of(context).needMoreHelpLabel,
                         style: TextStyle(
                           fontSize: isTablet ? 15 : 14,
                           fontWeight: FontWeight.w700,
@@ -130,10 +131,10 @@ class HelpSupportScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        AppLocalizations.of(context)!.supportTeamReplyLabel,
+                        AppLocalizations.of(context).supportTeamReplyLabel,
                         style: TextStyle(
                           fontSize: isTablet ? 12 : 11,
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -149,11 +150,11 @@ class HelpSupportScreen extends StatelessWidget {
                       vertical: isTablet ? 10 : 8,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                   ),
                   child: Text(
-                    AppLocalizations.of(context)!.contactCta,
+                    AppLocalizations.of(context).contactCta,
                     style: TextStyle(
                       fontSize: isTablet ? 13 : 12,
                       fontWeight: FontWeight.w700,
@@ -170,7 +171,7 @@ class HelpSupportScreen extends StatelessWidget {
 
           // ── FAQ Section ──────────────────────────────
           Text(
-            AppLocalizations.of(context)!.faqSectionLabel,
+            AppLocalizations.of(context).faqSectionLabel,
             style: TextStyle(
               fontSize: isTablet ? 16 : 15,
               fontWeight: FontWeight.w700,
@@ -200,17 +201,17 @@ class HelpSupportScreen extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
       ),
       builder: (_) => Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
           boxShadow: [
             BoxShadow(
               color: isDark
-                  ? Colors.black.withOpacity(0.3)
-                  : Colors.black.withOpacity(0.08),
+                  ? Colors.black.withValues(alpha: 0.3)
+                  : Colors.black.withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, -4),
             ),
@@ -231,14 +232,14 @@ class HelpSupportScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? Colors.white.withOpacity(0.15)
-                          : const Color(0xFFE5E7EB),
+                          ? Colors.white.withValues(alpha: 0.15)
+                          : AppColors.neutral200,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
                 Text(
-                  AppLocalizations.of(context)!.contactSupportTitle,
+                  AppLocalizations.of(context).contactSupportTitle,
                   style: TextStyle(
                     fontSize: isTablet ? 18 : 16,
                     fontWeight: FontWeight.w700,
@@ -252,8 +253,8 @@ class HelpSupportScreen extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.professionalColor.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.professionalColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                     child: const Icon(
                       Icons.email_outlined,
@@ -262,7 +263,7 @@ class HelpSupportScreen extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    AppLocalizations.of(context)!.contactEmailLabel,
+                    AppLocalizations.of(context).contactEmailLabel,
                     style: TextStyle(
                       fontSize: isTablet ? 15 : 14,
                       fontWeight: FontWeight.w600,
@@ -270,7 +271,7 @@ class HelpSupportScreen extends StatelessWidget {
                     ),
                   ),
                   subtitle: Text(
-                    AppLocalizations.of(context)!.contactEmailSubtitle,
+                    AppLocalizations.of(context).contactEmailSubtitle,
                     style: TextStyle(
                       fontSize: isTablet ? 13 : 12,
                       color: context.colors.textSecondary,
@@ -288,8 +289,8 @@ class HelpSupportScreen extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.professionalColor.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.professionalColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                     child: const Icon(
                       Icons.chat_bubble_outline_rounded,
@@ -298,7 +299,7 @@ class HelpSupportScreen extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    AppLocalizations.of(context)!.contactChatLabel,
+                    AppLocalizations.of(context).contactChatLabel,
                     style: TextStyle(
                       fontSize: isTablet ? 15 : 14,
                       fontWeight: FontWeight.w600,
@@ -306,7 +307,7 @@ class HelpSupportScreen extends StatelessWidget {
                     ),
                   ),
                   subtitle: Text(
-                    AppLocalizations.of(context)!.contactChatSubtitle,
+                    AppLocalizations.of(context).contactChatSubtitle,
                     style: TextStyle(
                       fontSize: isTablet ? 13 : 12,
                       color: context.colors.textSecondary,
@@ -341,17 +342,17 @@ class HelpSupportScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.08)
+              ? Colors.white.withValues(alpha: 0.08)
               : context.colors.divider,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.06)
-                : Colors.grey.withOpacity(0.03),
+                ? Colors.black.withValues(alpha: 0.06)
+                : Colors.grey.withValues(alpha: 0.03),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

@@ -13,12 +13,16 @@
 // relies on a proper type-based icon + accent color instead, so the UI
 // stays consistent no matter what the backend sends.
 
+import '../../../services/content_localizer.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/api_service.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -55,7 +59,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       setState(() { _loading = false; _notifications = list; });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = AppLocalizations.of(context)!.notificationsLoadError; });
+      setState(() { _loading = false; _error = AppLocalizations.of(context).notificationsLoadError; });
     }
   }
 
@@ -81,10 +85,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
         await _api.patch('/notifications/${n['id']}/read/', {});
       } catch (_) {}
     }
+    if (!mounted) return;
     setState(() {
-      for (final n in _notifications) n['is_read'] = true;
+      for (final n in _notifications) {
+        n['is_read'] = true;
+      }
     });
-    _showSnack(AppLocalizations.of(context)!.notificationsMarkAllReadSuccess);
+    _showSnack(AppLocalizations.of(context).notificationsMarkAllReadSuccess);
   }
 
   int get _unreadCount =>
@@ -149,11 +156,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
           child: Text(
             section.label.toUpperCase(),
             style: TextStyle(
-              fontSize: 11,
+              fontSize: AppFontSizes.caption,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.6,
               color: isDark
-                  ? Colors.white.withOpacity(0.5)
+                  ? Colors.white.withValues(alpha: 0.5)
                   : context.colors.textSecondary,
             ),
           ),
@@ -161,18 +168,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
         Container(
           decoration: BoxDecoration(
             color: context.colors.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             border: Border.all(
               color: isDark
-                  ? Colors.white.withOpacity(0.08)
+                  ? Colors.white.withValues(alpha: 0.08)
                   : context.colors.divider,
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
                 color: isDark
-                    ? Colors.black.withOpacity(0.1)
-                    : Colors.grey.withOpacity(0.04),
+                    ? Colors.black.withValues(alpha: 0.1)
+                    : Colors.grey.withValues(alpha: 0.04),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -189,7 +196,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     thickness: 1,
                     indent: 68,
                     color: isDark
-                        ? Colors.white.withOpacity(0.06)
+                        ? Colors.white.withValues(alpha: 0.06)
                         : context.colors.divider,
                   ),
               ],
@@ -209,7 +216,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final type       = notif['type']?.toString()    ?? 'general';
     final isRead     = notif['is_read'] == true;
     final createdAt  = notif['created_at']?.toString() ?? '';
-    final isDark     = Theme.of(context).brightness == Brightness.dark;
 
     final color = _typeColor(type);
     final icon  = _typeIcon(type);
@@ -217,11 +223,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Material(
       color: isRead
           ? Colors.transparent
-          : AppColors.customerColor.withOpacity(0.05),
+          : AppColors.customerColor.withValues(alpha: 0.05),
       child: InkWell(
         onTap: () => _markRead(notif),
-        splashColor: AppColors.customerColor.withOpacity(0.1),
-        highlightColor: AppColors.customerColor.withOpacity(0.05),
+        splashColor: AppColors.customerColor.withValues(alpha: 0.1),
+        highlightColor: AppColors.customerColor.withValues(alpha: 0.05),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
           child: Row(
@@ -232,10 +238,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: color.withOpacity(0.2),
+                    color: color.withValues(alpha: 0.2),
                     width: 1,
                   ),
                 ),
@@ -248,10 +254,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    LocalizedText(
                       title,
+                      kind: LocKind.text,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: AppFontSizes.body,
                         fontWeight: isRead ? FontWeight.w600 : FontWeight.w700,
                         color: context.colors.textPrimary,
                         height: 1.3,
@@ -261,10 +268,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 3),
-                    Text(
+                    LocalizedText(
                       message,
+                      kind: LocKind.text,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: AppFontSizes.secondary,
                         color: context.colors.textSecondary,
                         height: 1.4,
                         letterSpacing: 0.2,
@@ -276,8 +284,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     Text(
                       _formatDate(createdAt),
                       style: TextStyle(
-                        fontSize: 11,
-                        color: context.colors.textSecondary.withOpacity(0.6),
+                        fontSize: AppFontSizes.caption,
+                        color: context.colors.textSecondary.withValues(alpha: 0.6),
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.2,
                       ),
@@ -298,7 +306,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.customerColor.withOpacity(0.3),
+                          color: AppColors.customerColor.withValues(alpha: 0.3),
                           blurRadius: 4,
                         ),
                       ],
@@ -314,16 +322,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   // ── AppBar ────────────────────────────────────────────────
   PreferredSizeWidget _buildAppBar() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return UniversalAppBar(
-      title: AppLocalizations.of(context)!.notificationsTitle,
+      title: AppLocalizations.of(context).notificationsTitle,
       icon: Icons.notifications_rounded,
       actions: [
         if (_unreadCount > 0) ...[
           AppBarIconButton(
             icon: Icons.done_all_rounded,
-            tooltip: AppLocalizations.of(context)!.notificationsMarkAllReadCta,
+            tooltip: AppLocalizations.of(context).notificationsMarkAllReadCta,
             badgeCount: _unreadCount,
             onGradient: true,
             badgeBorderColor: universalBarColor(context),
@@ -368,17 +374,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final that  = DateTime(dt.year, dt.month, dt.day);
     final diff  = today.difference(that).inDays;
 
-    if (diff == 0) return AppLocalizations.of(context)!.notificationsSectionToday;
-    if (diff == 1) return AppLocalizations.of(context)!.notificationsSectionYesterday;
-    if (diff < 7)  return AppLocalizations.of(context)!.notificationsSectionThisWeek;
-    if (today.year == dt.year && today.month == dt.month) return AppLocalizations.of(context)!.notificationsSectionThisMonth;
-    return '${_monthName(dt.month)} ${dt.year}';
+    if (diff == 0) return AppLocalizations.of(context).notificationsSectionToday;
+    if (diff == 1) return AppLocalizations.of(context).notificationsSectionYesterday;
+    if (diff < 7)  return AppLocalizations.of(context).notificationsSectionThisWeek;
+    if (today.year == dt.year && today.month == dt.month) return AppLocalizations.of(context).notificationsSectionThisMonth;
+    return DateFormat.yMMMM(Localizations.localeOf(context).toString()).format(dt);
   }
-
-  String _monthName(int m) => const [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-      ][m - 1];
 
   // ── Helpers ───────────────────────────────────────────────
 
@@ -401,11 +402,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Color _typeColor(String type) {
     return switch (type) {
-      'review'       => const Color(0xFFF59E0B),
-      'payment'      => const Color(0xFF10B981),
-      'subscription' => const Color(0xFF8B5CF6),
+      'review'       => AppColors.warningAmber,
+      'payment'      => AppColors.emerald,
+      'subscription' => AppColors.violet,
       'booking'      => AppColors.customerColor,
-      'report'       => const Color(0xFFEF4444),
+      'report'       => AppColors.favoriteRed,
       _              => AppColors.customerColor,
     };
   }
@@ -427,12 +428,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
       final now  = DateTime.now();
       final diff = now.difference(dt);
 
-      if (diff.inMinutes < 1)  return AppLocalizations.of(context)!.notificationsJustNow;
-      if (diff.inMinutes < 60) return AppLocalizations.of(context)!.notificationsMinutesAgo(diff.inMinutes);
-      if (diff.inHours < 24)   return AppLocalizations.of(context)!.notificationsHoursAgo(diff.inHours);
-      if (diff.inDays < 7)     return AppLocalizations.of(context)!.notificationsDaysAgo(diff.inDays);
+      if (diff.inMinutes < 1)  return AppLocalizations.of(context).notificationsJustNow;
+      if (diff.inMinutes < 60) return AppLocalizations.of(context).notificationsMinutesAgo(diff.inMinutes);
+      if (diff.inHours < 24)   return AppLocalizations.of(context).notificationsHoursAgo(diff.inHours);
+      if (diff.inDays < 7)     return AppLocalizations.of(context).notificationsDaysAgo(diff.inDays);
 
-      return '${dt.day}/${dt.month}/${dt.year}';
+      return DateFormat.yMd(Localizations.localeOf(context).toString()).format(dt);
     } catch (_) {
       return '';
     }
@@ -452,9 +453,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              AppLocalizations.of(context)!.notificationsLoadingText,
+              AppLocalizations.of(context).notificationsLoadingText,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 color: context.colors.textSecondary,
                 fontWeight: FontWeight.w400,
                 letterSpacing: 0.2,
@@ -475,7 +476,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
+                color: AppColors.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -486,10 +487,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              AppLocalizations.of(context)!.notificationsErrorTitle,
+              AppLocalizations.of(context).notificationsErrorTitle,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
                 letterSpacing: -0.2,
@@ -500,7 +501,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               _error!,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 color: context.colors.textSecondary,
                 letterSpacing: 0.2,
               ),
@@ -510,7 +511,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               onPressed: _load,
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: Text(
-                AppLocalizations.of(context)!.retryCta,
+                AppLocalizations.of(context).retryCta,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.3,
@@ -521,7 +522,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 elevation: 0,
               ),
@@ -543,7 +544,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               width: 88,
               height: 88,
               decoration: BoxDecoration(
-                color: AppColors.customerColor.withOpacity(0.1),
+                color: AppColors.customerColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -554,9 +555,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              AppLocalizations.of(context)!.notificationsEmptyTitle,
+              AppLocalizations.of(context).notificationsEmptyTitle,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: AppFontSizes.title2,
                 fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
                 letterSpacing: -0.3,
@@ -564,10 +565,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              AppLocalizations.of(context)!.notificationsEmptyMessage,
+              AppLocalizations.of(context).notificationsEmptyMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 color: context.colors.textSecondary,
                 letterSpacing: 0.2,
                 height: 1.5,
@@ -593,11 +594,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ),
         ),
         backgroundColor: isDark
-            ? const Color(0xFF1E293B)
+            ? AppColors.surface
             : context.colors.accent,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
         ),
         duration: const Duration(seconds: 2),
         margin: const EdgeInsets.all(16),

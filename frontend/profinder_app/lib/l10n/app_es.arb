@@ -1929,6 +1929,1531 @@
   "chatReasonScamFraud": "Estafa o fraude",
   "chatReasonFakeProfile": "Perfil falso",
   "chatReasonOther": "Otro",
+  "aboutActionLabel": "Acerca de",
+  "aboutActionSubtitle": "Acerca de esta aplicación",
+  "aboutAppStoreLabel": "App Store",
+  "aboutDisabledBadgeLabel": "No disponible",
+  "aboutEmptyStateMessage": "No pudimos encontrar información para mostrar en este momento.",
+  "aboutEmptyStateTitle": "Nada que mostrar",
+  "aboutGooglePlayLabel": "Google Play",
+  "aboutLabel": "Acerca de",
+  "aboutLinkCouldNotOpen": "No se pudo abrir este enlace {value1}",
+  "@aboutLinkCouldNotOpen": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLinkError": "Algo salió mal al abrir el enlace {value1}",
+  "@aboutLinkError": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLinkNoAppFound": "No se encontró ninguna aplicación para abrir este enlace {value1}",
+  "@aboutLinkNoAppFound": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLoadError": "Error al cargar esta página",
+  "aboutLoadingText": "Cargando...",
+  "aboutTitle": "Acerca de",
+  "acceptCta": "Aceptar",
+  "acceptDescription": "Aceptar esta reserva",
+  "acceptLabel": "Aceptar",
+  "acceptanceRateLabel": "Tasa de aceptación",
+  "acceptanceRateSubtext": "De las reservas que aceptas",
+  "acceptedLabel": "Aceptada",
+  "acceptingBookingsLabel": "Aceptando reservas",
+  "accountGroupLabel": "Cuenta",
+  "accountHolderLabel": "Nombre del titular de la cuenta",
+  "accountNumberLabel": "Número de cuenta",
+  "accountSectionLabel": "Cuenta",
+  "accountTypeLabel": "Tipo de cuenta",
+  "addBankBannerSubtitle": "Agrega tus datos bancarios para recibir retiros",
+  "addBankBannerTitle": "Agregar datos bancarios",
+  "addBankCta": "Agregar cuenta bancaria",
+  "addCertificateImageLabel": "Imagen del certificado",
+  "addCertificateTitle": "Agregar certificado",
+  "addCertificateTooltip": "Agregar un certificado",
+  "addCta": "Agregar",
+  "addFirstCertificateCta": "Agrega tu primer certificado",
+  "addFirstItemCta": "Agrega tu primer elemento",
+  "addImageLabel": "Agregar imagen",
+  "addLanguageHint": "Escribe un idioma y pulsa Intro",
+  "addPhotoCta": "Agregar foto",
+  "addPhotoTooltip": "Agregar una foto",
+  "addPortfolioHint": "Muestra tus mejores trabajos para atraer más clientes",
+  "addPortfolioTitle": "Agregar elemento al portafolio",
+  "addPortfolioTooltip": "Agregar elemento al portafolio",
+  "addSkillHint": "Escribe una habilidad y pulsa Intro",
+  "addWorkSamplesLabel": "Agregar muestras de trabajo",
+  "adjustSearchTerms": "Intenta ajustar tus términos de búsqueda",
+  "adminNoteLabel": "Nota del administrador",
+  "allCategoriesTitle": "Todas las categorías",
+  "analyticsErrorTitle": "No se pudieron cargar las estadísticas",
+  "analyticsLoadError": "Error al cargar las estadísticas",
+  "analyticsTitle": "Estadísticas",
+  "applyCta": "Aplicar",
+  "approvalSubtitle": "Pendiente de aprobación del administrador",
+  "approvalTitle": "Estado de aprobación",
+  "articleFooterMagazineLabel": "Más de la revista",
+  "articleLoadingText": "Cargando artículo...",
+  "articleNotFoundError": "Artículo no encontrado",
+  "articleNotFoundMessage": "Es posible que este artículo se haya eliminado o no exista",
+  "articleReadTime": "{value1} min de lectura",
+  "@articleReadTime": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "articleReadTimeLabel": "{value1} min de lectura",
+  "@articleReadTimeLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "automaticDescription": "Aceptar automáticamente las reservas que cumplan tus criterios",
+  "automaticLabel": "Automático",
+  "availabilityClosedLabel": "Cerrado",
+  "availabilityLabel": "Disponibilidad",
+  "availabilityLoadError": "Error al cargar la disponibilidad",
+  "availabilityOffSuccess": "Ahora estás marcado como no disponible",
+  "availabilityOnSuccess": "Ahora estás marcado como disponible",
+  "availabilityScheduleSaveError": "Error al guardar el horario",
+  "availabilityScheduleSaved": "Horario guardado correctamente",
+  "availabilityStatusUpdateError": "Error al actualizar el estado de disponibilidad",
+  "availabilityStatusUpdated": "Disponibilidad establecida en {value1}",
+  "@availabilityStatusUpdated": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "availabilitySummarySubtitle": "Tu horario laboral semanal de un vistazo",
+  "availabilitySummaryTitle": "Resumen de disponibilidad",
+  "availabilityTitle": "Disponibilidad",
+  "availabilityUpdateError": "Error al actualizar la disponibilidad",
+  "availabilityWeeklySubtitle": "Establece tu horario laboral para cada día",
+  "availabilityWeeklyTitle": "Horario semanal",
+  "availableBalanceLabel": "Saldo disponible: Rs {value1}",
+  "@availableBalanceLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "availableBalanceTitle": "Saldo disponible",
+  "availableForBookingsLabel": "Disponible para reservas",
+  "availableLabel": "Disponible",
+  "availableNowLabel": "Disponible ahora",
+  "availableSubtitle": "Listo para aceptar nuevas reservas",
+  "averageRatingLabel": "Calificación promedio",
+  "averageRatingSubtext": "Basada en las reseñas de los clientes",
+  "backCta": "Atrás",
+  "backToBookingsCta": "Volver a reservas",
+  "backToHomeCta": "Volver al inicio",
+  "backToLoginCta": "Volver a iniciar sesión",
+  "bankDetailsEmpty": "Aún no se han agregado datos bancarios",
+  "bankDetailsLabel": "Datos bancarios",
+  "bankDetailsRequiredMessage": "Agrega tus datos bancarios antes de solicitar un retiro",
+  "bankDetailsRequiredTitle": "Se requieren datos bancarios",
+  "bankDetailsSubtitle": "Se usan para los retiros a tu cuenta",
+  "bankNameLabel": "Nombre del banco",
+  "bioLabel": "Biografía",
+  "bookAppointmentTitle": "Reservar cita",
+  "bookCta": "Reservar",
+  "bookNowCta": "Reservar ahora",
+  "bookingConfigurationTitle": "Configuración de reservas",
+  "bookingDateRequired": "Selecciona una fecha",
+  "bookingDetailsTitle": "Detalles de la reserva",
+  "bookingFailed": "La reserva falló. Inténtalo de nuevo.",
+  "bookingManagementTitle": "Gestionar reservas",
+  "bookingSoFarLabel": "Reservas hasta ahora",
+  "bookingStatusUpdated": "Reserva marcada como {value1}",
+  "@bookingStatusUpdated": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingSuccessMessage": "Tu solicitud de reserva con {value1} ha sido enviada",
+  "@bookingSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingSuccessTitle": "Reserva solicitada",
+  "bookingTimeRequired": "Selecciona una hora",
+  "bookingTipText": "Puedes cancelar gratis hasta 24 horas antes de la cita",
+  "bookingUpdateError": "Error al actualizar la reserva",
+  "bookingUpdatedToast": "Reserva actualizada a {value1}",
+  "@bookingUpdatedToast": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingsActionLabel": "Reservas",
+  "bookingsActionSubtitle": "Consulta tu historial de reservas",
+  "bookingsLabel": "Reservas",
+  "bookingsStatLabel": "Reservas",
+  "bufferMinLabel": "{value1} min de margen",
+  "@bufferMinLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bufferNoneLabel": "Sin margen",
+  "bufferTimeSubtitle": "Tiempo entre reservas consecutivas",
+  "bufferTimeTitle": "Tiempo de margen",
+  "calendarWeekDays": "D,L,M,X,J,V,S",
+  "cameraOptionLabel": "Cámara",
+  "cancelBookingCta": "Cancelar reserva",
+  "cancelBookingTitle": "Cancelar reserva",
+  "cancelConfirmationMessage": "¿Seguro que quieres cancelar esta reserva?",
+  "cancelCta": "Cancelar",
+  "cancelReasonHint": "Cuéntanos por qué estás cancelando",
+  "cancelReasonLabel": "Motivo de la cancelación",
+  "cancellationPolicyLabel": "Política de cancelación",
+  "bookingQuickNoteFirstTime": "Cliente nuevo",
+  "bookingQuickNoteUrgent": "Solicitud urgente",
+  "bookingQuickNoteFollowUp": "Visita de seguimiento",
+  "bookingQuickNoteCallBefore": "Por favor, llame antes de llegar",
+  "cancellationPolicyPointFree": "Cancelación gratuita en cualquier momento mientras tu solicitud esté pendiente.",
+  "cancellationPolicyPointChat": "Una vez aceptada, puedes coordinar cambios directamente con el profesional por chat.",
+  "walletJobCompletedWithName": "Trabajo completado — {name}",
+  "walletJobCompleted": "Trabajo completado",
+  "walletWithdrawalRequestLabel": "Solicitud de retiro",
+  "cancelledByCustomerLabel": "Cancelada por el cliente",
+  "cancelledByYouLabel": "Cancelada por ti",
+  "categoryLabel": "Categoría",
+  "certificateAddError": "Error al agregar el certificado",
+  "certificateAddSuccess": "Certificado agregado correctamente",
+  "certificateTitleHint": "p. ej. Técnico fontanero certificado",
+  "certificateTitleLabelRequired": "Título del certificado",
+  "certificatesLabel": "Certificados",
+  "certificatesTitle": "Certificados",
+  "certificationsLabel": "Certificaciones",
+  "changePasswordLabel": "Cambiar contraseña",
+  "changePasswordSubtitle": "Actualiza la contraseña de tu cuenta",
+  "changePasswordTitle": "Cambiar contraseña",
+  "changeProfilePhotoTitle": "Cambiar foto de perfil",
+  "chatMicPermissionRequired": "Se requiere permiso del micrófono para grabar mensajes de voz",
+  "chatNoMessagesFound": "No se encontraron mensajes",
+  "chatSearchMessagesHint": "Buscar mensajes",
+  "chatTypeToSearchConversation": "Escribe para buscar en esta conversación",
+  "checkEmailHint": "¿No lo recibiste? Revisa tu carpeta de spam.",
+  "checkEmailMessage": "Hemos enviado un enlace para restablecer la contraseña a tu correo electrónico",
+  "checkEmailTitle": "Revisa tu correo",
+  "cityDisabledHint": "Selecciona primero un país",
+  "cityEmptyMessage": "No se encontraron ciudades",
+  "cityHint": "Seleccionar ciudad",
+  "cityLabel": "Ciudad",
+  "cityRequiredError": "Selecciona una ciudad",
+  "citySearchHint": "Buscar ciudad",
+  "clearCta": "Borrar",
+  "clientsLabel": "Clientes",
+  "closeCta": "Cerrar",
+  "comingSoonMessage": "{value1} llegará pronto",
+  "@comingSoonMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "commentHint": "Comparte tu experiencia con {value1}",
+  "@commentHint": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "commentOptionalLabel": "Comentario opcional",
+  "completedLabel": "Completada",
+  "confirmBookingCta": "Confirmar reserva",
+  "confirmPasswordLabel": "Confirmar contraseña",
+  "contactChatLabel": "Chatea con nosotros",
+  "contactChatSubtitle": "Obtén una respuesta rápida por chat",
+  "contactChatTitle": "Soporte por chat",
+  "contactCta": "Contactar",
+  "contactEmailLabel": "Escríbenos",
+  "contactEmailSubtitle": "Te responderemos en un plazo de 24 horas",
+  "contactEmailTitle": "Soporte por correo",
+  "contactSupportTitle": "Contactar con soporte",
+  "continueAsGuestCta": "Continuar como invitado",
+  "countryEmptyMessage": "No se encontraron países",
+  "countryHint": "Seleccionar país",
+  "countryRequiredError": "Selecciona un país",
+  "countrySearchHint": "Buscar país",
+  "currencyFeatureName": "Moneda",
+  "currentPasswordLabel": "Contraseña actual",
+  "currentPlanLabel": "Plan actual: {value1}",
+  "@currentPlanLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "currentlyBusyLabel": "Ocupado actualmente",
+  "customLocationHint": "Introduce una ubicación personalizada",
+  "customLocationOption": "Ubicación personalizada",
+  "customLocationSubtitle": "Introduce una dirección manualmente",
+  "customSlotDefaultLabel": "Personalizado",
+  "customSlotHint": "Introduce la duración en minutos",
+  "customSlotLabel": "Personalizado ({value1})",
+  "@customSlotLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "customSlotTitle": "Duración de franja personalizada",
+  "customSlotValidation": "Introduce una duración válida",
+  "customerAccountDescription": "Reserva profesionales de confianza cerca de ti",
+  "customerDefault": "Cliente",
+  "customerLabel": "Cliente",
+  "dailyHoursLabel": "Horas diarias",
+  "darkModeOffLabel": "Modo claro",
+  "darkModeOnLabel": "Modo oscuro",
+  "dashboardLoadError": "Error al cargar el panel",
+  "dateLabel": "Fecha",
+  "dateNotSet": "Fecha no establecida",
+  "dateNotSetShort": "Sin fecha",
+  "dateRequiredMessage": "Selecciona una fecha",
+  "dateTipText": "Elige la fecha que mejor te convenga",
+  "daysLabel": "{value1} d",
+  "@daysLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "declineCta": "Rechazar",
+  "declineDescription": "Rechazar esta reserva",
+  "declineLabel": "Rechazar",
+  "deleteAccountDialogContent": "Esto eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+  "deleteAccountDialogTitle": "Eliminar cuenta",
+  "deleteAccountLabel": "Eliminar cuenta",
+  "deleteConfirmationTitle": "¿Eliminar este elemento?",
+  "deleteCta": "Eliminar",
+  "deleteDialogContent": "¿Seguro que quieres eliminar «{value1}»?",
+  "@deleteDialogContent": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "deleteDialogTitle": "Eliminar elemento",
+  "deleteError": "Error al eliminar",
+  "deleteGalleryDialogContent": "¿Seguro que quieres eliminar esta foto?",
+  "deleteGalleryDialogTitle": "Eliminar foto",
+  "deleteReviewConfirmationMessage": "¿Seguro que quieres eliminar esta reseña?",
+  "deleteSuccess": "Eliminado correctamente",
+  "descriptionHint": "Agrega una descripción",
+  "descriptionLabelOptional": "Descripción (opcional)",
+  "detailsLabel": "Detalles",
+  "directChatLabel": "Mensaje",
+  "discardCta": "Descartar",
+  "doneCta": "Listo",
+  "earningsLabel": "Ganancias",
+  "editCta": "Editar",
+  "editLabel": "Editar",
+  "editProfileActionLabel": "Editar perfil",
+  "editProfileActionSubtitle": "Actualiza tu información personal",
+  "editReviewHint": "Actualiza tu comentario",
+  "editReviewSubtitle": "Actualiza tu calificación y comentario",
+  "editReviewTitle": "Editar reseña",
+  "editorHeadingPlaceholder": "Encabezado",
+  "editorHintText": "Empieza a escribir...",
+  "editorInsertCta": "Insertar",
+  "editorInsertLinkTitle": "Insertar enlace",
+  "editorLinkHint": "https://example.com",
+  "editorLinkPlaceholder": "Texto del enlace",
+  "educationLabel": "Formación",
+  "emailAvailableLabel": "El correo electrónico está disponible",
+  "emailNotificationsLabel": "Notificaciones por correo",
+  "emailTakenLabel": "Este correo electrónico ya está registrado",
+  "emptyCertificatesSubtitle": "Agrega tus certificaciones para generar confianza con los clientes",
+  "emptyCertificatesTitle": "Aún no hay certificados",
+  "emptyGallerySubtitle": "Agrega fotos para mostrar tu trabajo",
+  "emptyGalleryTitle": "Aún no hay fotos",
+  "emptyPortfolioSubtitle": "Agrega tus mejores trabajos para atraer más clientes",
+  "emptyPortfolioTitle": "Aún no hay elementos en el portafolio",
+  "endTimeLabel": "Hora de finalización",
+  "enterAmountHint": "Introduce el monto",
+  "exceedsBalanceError": "El monto supera tu saldo disponible",
+  "exceptionsAddRange": "Agregar rango de fechas",
+  "exceptionsCalendarSubtitle": "Toca una fecha para establecer una excepción",
+  "exceptionsCalendarTitle": "Calendario",
+  "exceptionsCustomChip": "Personalizado",
+  "exceptionsEndDate": "Fecha de fin",
+  "exceptionsIntroText": "Marca las fechas en las que tu disponibilidad difiere de tu horario habitual",
+  "exceptionsLegendClosed": "Cerrado",
+  "exceptionsLegendCustom": "Horario personalizado",
+  "exceptionsLegendUnavailable": "No disponible",
+  "exceptionsLegendVacation": "Vacaciones",
+  "exceptionsLegendWorking": "Trabajando",
+  "exceptionsLoadError": "Error al cargar las excepciones",
+  "exceptionsNoOverrides": "No hay excepciones establecidas",
+  "exceptionsOverridesSubtitle": "Fechas con disponibilidad personalizada",
+  "exceptionsOverridesTitle": "Excepciones",
+  "exceptionsReasonLabel": "Motivo (opcional)",
+  "exceptionsSelectDate": "Selecciona una fecha",
+  "exceptionsSetVacation": "Establecer vacaciones",
+  "exceptionsStartDate": "Fecha de inicio",
+  "exceptionsTimeError": "La hora de fin debe ser posterior a la hora de inicio",
+  "exceptionsTitle": "Excepciones de disponibilidad",
+  "exceptionsUnavailableChip": "No disponible",
+  "exceptionsUnavailableLabel": "Marcar como no disponible",
+  "exceptionsUpdateVacation": "Actualizar vacaciones",
+  "exceptionsVacationActive": "Las vacaciones están activas actualmente",
+  "exceptionsVacationScheduled": "Vacaciones programadas desde el {value1}",
+  "@exceptionsVacationScheduled": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "exceptionsVacationSubtitle": "Establece un rango de fechas en el que estarás ausente",
+  "exceptionsVacationTitle": "Modo vacaciones",
+  "experienceLabel": "Experiencia",
+  "experienceYearsLabel": "{value1} años de experiencia",
+  "@experienceYearsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "exploreExpertsLabel": "Explorar expertos",
+  "facebookSignInLabel": "Continuar con Facebook",
+  "faqBookingPendingA": "El profesional puede tardar un poco en responder. Se te notificará cuando acepte o rechace.",
+  "faqBookingPendingQ": "¿Por qué mi reserva sigue pendiente?",
+  "faqChangeAvailabilityA": "Ve a los ajustes de Disponibilidad desde tu perfil para actualizar tu horario laboral.",
+  "faqChangeAvailabilityQ": "¿Cómo cambio mi disponibilidad?",
+  "faqGetVerifiedA": "Completa tu perfil y envía los documentos requeridos desde los ajustes de tu perfil para solicitar la verificación.",
+  "faqGetVerifiedQ": "¿Cómo me verifico?",
+  "faqHowToBookA": "Busca un profesional, consulta su perfil y toca Reservar ahora para elegir una fecha y una hora.",
+  "faqHowToBookQ": "¿Cómo reservo a un profesional?",
+  "faqHowToCancelA": "Abre la reserva desde Mis reservas y toca Cancelar. Las cancelaciones hechas a tiempo son gratuitas.",
+  "faqHowToCancelQ": "¿Cómo cancelo una reserva?",
+  "faqImproveProfileA": "Agrega una foto de perfil, muestras de portafolio y certificados para generar confianza con los clientes.",
+  "faqImproveProfileQ": "¿Cómo puedo mejorar mi perfil?",
+  "faqPaymentSecureA": "Sí, todos los pagos se procesan de forma segura y tus datos nunca se comparten.",
+  "faqPaymentSecureQ": "¿Es segura mi información de pago?",
+  "faqRefundsA": "Los reembolsos se procesan automáticamente para las cancelaciones elegibles en unos pocos días hábiles.",
+  "faqRefundsQ": "¿Cómo funcionan los reembolsos?",
+  "faqSectionLabel": "Preguntas frecuentes",
+  "faqSectionTitle": "Preguntas frecuentes",
+  "faqWithdrawEarningsA": "Ve a tu Billetera y toca Retirar para transferir tus ganancias a tu cuenta bancaria.",
+  "faqWithdrawEarningsQ": "¿Cómo retiro mis ganancias?",
+  "fastResponseLabel": "Respuesta rápida",
+  "flexibleTimingLabel": "Horario flexible",
+  "freeToCancelLabel": "Cancelación gratuita",
+  "fullNameLabel": "Nombre completo",
+  "galleryLabel": "Galería",
+  "galleryOptionLabel": "Galería",
+  "galleryTitle": "Galería",
+  "galleryUploadError": "Error al subir la foto",
+  "galleryUploadSuccess": "Foto subida correctamente",
+  "goBackCta": "Volver",
+  "goodAfternoon": "Buenas tardes",
+  "goodAfternoonComma": "Buenas tardes,",
+  "goodEvening": "Buenas noches",
+  "goodEveningComma": "Buenas noches,",
+  "goodMorning": "Buenos días",
+  "goodMorningComma": "Buenos días,",
+  "goodToKnowLabel": "Conviene saber",
+  "googleSignInLabel": "Continuar con Google",
+  "helpActionLabel": "Ayuda y soporte",
+  "helpActionSubtitle": "Obtén ayuda o contáctanos",
+  "helpSupportLabel": "Ayuda y soporte",
+  "helpSupportTitle": "Ayuda y soporte",
+  "helpTitle": "Ayuda",
+  "homeDefaultPlanFree": "Gratis",
+  "homeDefaultProfessionalName": "Profesional",
+  "homeFilterAll": "Todos",
+  "homeFilterAvailableNow": "Disponible ahora",
+  "homeFilterFastResponse": "Respuesta rápida",
+  "homeFilterHighestPrice": "Precio más alto",
+  "homeFilterLowestPrice": "Precio más bajo",
+  "homeFilterMostBooked": "Más reservados",
+  "homeFilterMostExperienced": "Más experimentados",
+  "homeFilterMostReviews": "Más reseñas",
+  "homeFilterRating1Plus": "1+ estrellas",
+  "homeFilterRating2Plus": "2+ estrellas",
+  "homeFilterRating3Plus": "3+ estrellas",
+  "homeFilterRating4Plus": "4+ estrellas",
+  "homeFilterRating5Plus": "5 estrellas",
+  "homeFilterThisMonth": "Este mes",
+  "homeFilterThisWeek": "Esta semana",
+  "homeFilterToday": "Hoy",
+  "homeFilterTopRated": "Mejor valorados",
+  "homeFilterVerified": "Verificados",
+  "homeFilterWithin10Km": "A menos de 10 km",
+  "homeFilterWithin2Km": "A menos de 2 km",
+  "homeFilterWithin5Km": "A menos de 5 km",
+  "homeGoBack": "Volver",
+  "homeNoProfessionalsFound": "No se encontraron profesionales",
+  "homeNoProfessionalsFoundHint": "Intenta ajustar tus filtros o buscar en otra zona",
+  "hour": "hora",
+  "hourlyRateLabel": "Tarifa por hora",
+  "hoursDecimalLabel": "{value1} h",
+  "@hoursDecimalLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursLabel": "{value1} h",
+  "@hoursLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursMinutesShort": "{value1} h {value2} min",
+  "@hoursMinutesShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursShort": "{value1} h",
+  "@hoursShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "idVerifiedLabel": "Identidad verificada",
+  "imagePickError": "Error al seleccionar la imagen",
+  "instantLabel": "Instantánea",
+  "issueDateLabelOptional": "Fecha de emisión (opcional)",
+  "issuingOrganizationHint": "p. ej. Consejo Nacional de Competencias",
+  "issuingOrganizationLabel": "Organización emisora",
+  "jobsDoneLabel": "Trabajos realizados",
+  "languagesLabel": "Idiomas",
+  "lastUpdatedLabel": "Última actualización: {value1}",
+  "@lastUpdatedLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "laterCta": "Más tarde",
+  "loadBookingsError": "Error al cargar las reservas",
+  "loadCertificatesError": "Error al cargar los certificados",
+  "loadGalleryError": "Error al cargar la galería",
+  "loadPortfolioError": "Error al cargar el portafolio",
+  "loadSettingsError": "Error al cargar los ajustes",
+  "loadWalletError": "Error al cargar la billetera",
+  "loadingAnalyticsText": "Cargando estadísticas...",
+  "loadingDashboard": "Cargando panel...",
+  "locationLabel": "Ubicación",
+  "locationNotSpecified": "Ubicación no especificada",
+  "locationTipText": "Activa la ubicación para obtener resultados más precisos",
+  "loginCta": "Iniciar sesión",
+  "loginSubtitle": "¡Bienvenido de nuevo! Inicia sesión para continuar",
+  "loginTitle": "Iniciar sesión",
+  "loginToBookCta": "Inicia sesión para reservar",
+  "logoutActionLabel": "Cerrar sesión",
+  "logoutActionSubtitle": "Cierra sesión en tu cuenta",
+  "logoutCta": "Cerrar sesión",
+  "logoutDialogContent": "¿Seguro que quieres cerrar sesión?",
+  "logoutDialogTitle": "Cerrar sesión",
+  "magazineAllCategoriesLabel": "Todos",
+  "magazineArticleCountPlural": "{value1} artículos",
+  "@magazineArticleCountPlural": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "magazineArticleCountSingle": "1 artículo",
+  "magazineClearSearchCta": "Borrar búsqueda",
+  "magazineEmptyMessage": "No hay artículos disponibles en este momento",
+  "magazineEmptySearchMessage": "Prueba con otro término de búsqueda",
+  "magazineEmptySearchTitle": "No se encontraron resultados",
+  "magazineEmptyTitle": "Aún no hay artículos",
+  "magazineErrorMessage": "Algo salió mal al cargar la revista",
+  "magazineErrorTitle": "Error al cargar",
+  "magazineLoadError": "Error al cargar la revista",
+  "magazineLoadingText": "Cargando artículos...",
+  "magazineSearchHint": "Buscar artículos",
+  "magazineSearchResultsLabel": "Resultados de búsqueda",
+  "magazineSubtitle": "Consejos e historias para profesionales",
+  "magazineTitle": "Revista",
+  "manageCta": "Gestionar",
+  "manageLabel": "Gestionar",
+  "manualDescription": "Revisa y acepta las reservas tú mismo",
+  "manualInfoFooter": "Puedes cambiarlo en cualquier momento en los ajustes",
+  "manualInfoTitle": "Aprobación manual",
+  "manualLabel": "Manual",
+  "markCompletedCta": "Marcar como completada",
+  "markCompletedCtaShort": "Completar",
+  "maxAdvanceSubtitle": "Con cuánta antelación pueden reservar los clientes",
+  "maxAdvanceTitle": "Reserva anticipada máxima",
+  "memberSinceLabel": "Miembro desde",
+  "messagesEmptySubtitle": "Inicia una conversación con un profesional o un cliente",
+  "messagesEmptyTitle": "Aún no hay mensajes",
+  "messagesLoadError": "Error al cargar los mensajes",
+  "messagesLoadingText": "Cargando mensajes...",
+  "messagesTitle": "Mensajes",
+  "minAmountError": "El monto mínimo de retiro es Rs {value1}",
+  "@minAmountError": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minNoticeSubtitle": "Tiempo mínimo antes de que pueda comenzar una reserva",
+  "minNoticeTitle": "Aviso mínimo",
+  "minWithdrawalLabel": "Retiro mínimo: Rs {value1}",
+  "@minWithdrawalLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minute": "minuto",
+  "minutesLabel": "{value1} min",
+  "@minutesLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minutesShort": "{value1} min",
+  "@minutesShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minutesZero": "0 minutos",
+  "myPortfolioLabel": "Mi portafolio",
+  "myPortfolioTitle": "Mi portafolio",
+  "myReviewsEmptySubtitle": "Las reseñas que escribas aparecerán aquí",
+  "myReviewsEmptyTitle": "Aún no hay reseñas",
+  "myReviewsTitle": "Mis reseñas",
+  "navAnalytics": "Estadísticas",
+  "navBookings": "Reservas",
+  "navDashboard": "Panel",
+  "navMagazine": "Revista",
+  "navMessages": "Mensajes",
+  "navProfile": "Perfil",
+  "nearbyLabel": "Cerca de ti",
+  "needMoreHelpLabel": "¿Necesitas más ayuda?",
+  "newPasswordLabel": "Nueva contraseña",
+  "newPhotoSelectedHint": "Nueva foto seleccionada",
+  "nextCta": "Siguiente",
+  "noBookingsAccepted": "No hay reservas aceptadas",
+  "noBookingsAll": "Aún no hay reservas",
+  "noBookingsCancelled": "No hay reservas canceladas",
+  "noBookingsCompleted": "No hay reservas completadas",
+  "noBookingsDefault": "No se encontraron reservas",
+  "noBookingsPending": "No hay reservas pendientes",
+  "noBookingsRescheduled": "No hay reservas reprogramadas",
+  "noBookingsToday": "No hay reservas hoy",
+  "noBookingsYet": "Aún no hay reservas",
+  "noClientsFound": "No se encontraron clientes",
+  "noLanguagesAdded": "Aún no se han agregado idiomas",
+  "noMessagesPlaceholder": "Aún no hay mensajes",
+  "noMessagesYet": "Aún no hay mensajes",
+  "noPaymentsSubtitle": "Tu historial de pagos aparecerá aquí",
+  "noPaymentsTitle": "Aún no hay pagos",
+  "noPortfolioSubtitle": "Los elementos del portafolio aparecerán aquí",
+  "noPortfolioTitle": "No hay elementos en el portafolio",
+  "noReviewsSubtitle": "Las reseñas aparecerán aquí cuando los clientes te califiquen",
+  "noReviewsTitle": "Aún no hay reseñas",
+  "noReviewsYet": "Aún no hay reseñas",
+  "noServicesSubtitle": "Agrega los servicios que ofreces para atraer clientes",
+  "noServicesTitle": "No se han agregado servicios",
+  "noSkillsAdded": "Aún no se han agregado habilidades",
+  "noTransactionsLabel": "Aún no hay transacciones",
+  "noWorkingHoursMessage": "No se ha establecido horario laboral para este día",
+  "notAcceptingBookingsLabel": "No acepta reservas",
+  "notAvailableLabel": "No disponible",
+  "notAvailableSubtitle": "No acepta reservas en este momento",
+  "notSetPlaceholder": "No establecido",
+  "notSpecifiedLabel": "No especificado",
+  "notVerifiedLabel": "No verificado",
+  "notesHintText": "Agrega tus notas aquí",
+  "notesInfoText": "Las notas solo son visibles para ti",
+  "notesLabel": "Notas",
+  "notesTipText": "Agrega solicitudes especiales o detalles",
+  "notificationsActionLabel": "Notificaciones",
+  "notificationsActionSubtitle": "Gestiona tus preferencias de notificación",
+  "notificationsDaysAgo": "hace {value1} d",
+  "@notificationsDaysAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsEmptyMessage": "¡Estás al día!",
+  "notificationsEmptyTitle": "Sin notificaciones",
+  "notificationsErrorTitle": "No se pudieron cargar las notificaciones",
+  "notificationsHoursAgo": "hace {value1} h",
+  "@notificationsHoursAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsJustNow": "Ahora mismo",
+  "notificationsLoadError": "Error al cargar las notificaciones",
+  "notificationsLoadingText": "Cargando notificaciones...",
+  "notificationsMarkAllReadCta": "Marcar todo como leído",
+  "notificationsMarkAllReadSuccess": "Todas las notificaciones marcadas como leídas",
+  "notificationsMinutesAgo": "hace {value1} min",
+  "@notificationsMinutesAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsSectionLabel": "Notificaciones",
+  "notificationsSectionThisMonth": "Este mes",
+  "notificationsSectionThisWeek": "Esta semana",
+  "notificationsSectionToday": "Hoy",
+  "notificationsSectionYesterday": "Ayer",
+  "notificationsTitle": "Notificaciones",
+  "notifyCustomerMessage": "¿Notificar al cliente la nueva hora: {value1} a las {value2}?",
+  "@notifyCustomerMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "notifyCustomerTitle": "Notificar al cliente",
+  "offlineLabel": "Sin conexión",
+  "okCta": "Aceptar",
+  "onlineLabel": "En línea",
+  "openChatCta": "Abrir chat",
+  "openChatCtaShort": "Chat",
+  "openChatError": "Error al abrir el chat",
+  "orContinueWithLabel": "O continúa con",
+  "overrideRemoved": "Excepción eliminada",
+  "overrideSaved": "Excepción guardada para {value1}",
+  "@overrideSaved": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "passwordChangeError": "Error al cambiar la contraseña",
+  "passwordChangeSuccess": "Contraseña cambiada correctamente",
+  "passwordHelperText": "Debe tener al menos 8 caracteres",
+  "passwordMinLengthError": "La contraseña debe tener al menos 8 caracteres",
+  "passwordMismatchError": "Las contraseñas no coinciden",
+  "passwordRequiredError": "La contraseña es obligatoria",
+  "paymentHistoryLabel": "Historial de pagos",
+  "paymentHistorySubtitle": "Consulta todos tus pagos anteriores",
+  "paymentStatusCompleted": "Completado",
+  "paymentStatusFailed": "Fallido",
+  "paymentStatusPending": "Pendiente",
+  "paymentStatusRefunded": "Reembolsado",
+  "paymentsActionLabel": "Pagos",
+  "paymentsActionSubtitle": "Consulta tu historial de pagos",
+  "paymentsTitle": "Pagos",
+  "pendingLabel": "Pendiente",
+  "perHourLabel": "/h",
+  "performanceLabel": "Rendimiento",
+  "performanceScoreInfo": "Basado en tus calificaciones, tiempo de respuesta y reservas completadas",
+  "performanceScoreLabel": "Puntuación de rendimiento",
+  "performanceScoreOutOf": "{value1} de 100",
+  "personalInfoLabel": "Información personal",
+  "phoneLabel": "Teléfono",
+  "photoLimitReached": "Puedes agregar hasta {value1} fotos",
+  "@photoLimitReached": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "photoPickError": "Error al seleccionar la foto",
+  "photosOptionalLabel": "Fotos (opcional)",
+  "planStatLabel": "Plan",
+  "planUpgradeSubtitle": "Desbloquea más funciones y haz crecer tu negocio",
+  "planUpgradeTitle": "Mejorar desde {value1}",
+  "@planUpgradeTitle": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "portfolioInfoNote": "Muestra tus mejores trabajos para atraer más clientes",
+  "portfolioLabel": "Portafolio",
+  "postReplyCta": "Publicar respuesta",
+  "preferencesGroupLabel": "Preferencias",
+  "preferencesSectionLabel": "Preferencias",
+  "premiumActiveSubtitle": "Tienes acceso a todas las funciones premium",
+  "premiumMemberLabel": "Miembro Premium",
+  "premiumUpgradeSubtitle": "Obtén búsquedas con IA ilimitadas y más",
+  "proBadgeLabel": "PRO",
+  "professionEmptyMessage": "No se encontraron profesiones",
+  "professionHint": "Seleccionar profesión",
+  "professionLabel": "Profesión",
+  "professionRequiredError": "Selecciona una profesión",
+  "professionSearchHint": "Buscar profesión",
+  "professionalAccountDescription": "Ofrece tus servicios a los clientes",
+  "professionalDefaultName": "Profesional",
+  "professionalDetailLoadError": "Error al cargar los datos del profesional",
+  "professionalDetailsLabel": "Datos del profesional",
+  "professionalLabel": "Profesional",
+  "professionalLocationLabel": "Ubicación del profesional",
+  "professionalLocationOption": "Ubicación del profesional",
+  "professionalReviewsLabel": "Reseñas",
+  "professionalReviewsSubtitle": "Lo que dicen los clientes",
+  "profileCompletionHint": "Completa tu perfil para atraer más clientes",
+  "profileCompletionLabel": "Perfil completado",
+  "profileEditProfile": "Editar perfil",
+  "profileLabel": "Perfil",
+  "profileLoadError": "Error al cargar el perfil",
+  "profileLoadingText": "Cargando perfil...",
+  "profileNotAvailable": "Perfil no disponible",
+  "profileOff": "Desactivado",
+  "profileOn": "Activado",
+  "profileReviewsLabel": "Reseñas",
+  "profileSavedLabel": "Guardados",
+  "profileTitle": "Perfil",
+  "profileUpdateError": "Error al actualizar el perfil",
+  "profileUpdateSuccess": "Perfil actualizado correctamente",
+  "profileViewsLabel": "Visitas al perfil",
+  "profileViewsSubtext": "Personas que vieron tu perfil",
+  "profileWalletLabel": "Billetera",
+  "pushNotificationsLabel": "Notificaciones push",
+  "quickActionsLabel": "Acciones rápidas",
+  "quickAddLabel": "Agregar rápido",
+  "rateLabel": "Tarifa",
+  "ratingLabel": "Calificación",
+  "ratingRequiredError": "Selecciona una calificación",
+  "recentBookingsLabel": "Reservas recientes",
+  "recentMessagesLabel": "Mensajes recientes",
+  "recentReviewsLabel": "Reseñas recientes",
+  "refreshTooltip": "Actualizar",
+  "registerCategoryRequired": "Selecciona una categoría",
+  "registerCta": "Registrarse",
+  "registerServerError": "El registro falló. Inténtalo de nuevo.",
+  "registerSubtitle": "Regístrate para empezar",
+  "registerTitle": "Crear cuenta",
+  "rejectCta": "Rechazar",
+  "relatedProfessionalsLabel": "También te puede gustar",
+  "removeCta": "Quitar",
+  "replyHint": "Escribe una respuesta",
+  "replySubtitle": "Tu respuesta es pública y visible para todos",
+  "replyTitle": "Responder a la reseña",
+  "reportNoteHint": "Agrega más detalles",
+  "reportSubtitle": "Ayúdanos a entender qué salió mal",
+  "reportTitle": "Informar de un problema",
+  "requestSentLabel": "Solicitud enviada",
+  "requestSentSubtitle": "Tu solicitud ha sido enviada a {value1}",
+  "@requestSentSubtitle": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "requestWithdrawCta": "Solicitar retiro",
+  "rescheduledLabel": "Reprogramada",
+  "resendEmailCta": "Reenviar correo",
+  "resetLinkError": "Error al enviar el enlace de restablecimiento",
+  "resetLinkSent": "Enlace de restablecimiento de contraseña enviado a {value1}",
+  "@resetLinkSent": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "resetPassSubtitle": "Introduce tu correo electrónico y te enviaremos un enlace de restablecimiento",
+  "resetPassTitle": "Restablecer contraseña",
+  "resetPasswordDescription": "Enviaremos un enlace de restablecimiento de contraseña a {value1}",
+  "@resetPasswordDescription": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "resetPasswordLabel": "Restablecer contraseña",
+  "responseLabel": "Respuesta",
+  "responseRateLabel": "Tasa de respuesta",
+  "responseRateSubtext": "Con qué frecuencia respondes a los mensajes",
+  "responseTimeLabel": "Tiempo de respuesta",
+  "retryCta": "Reintentar",
+  "reviewBookingLabel": "Valorar reserva",
+  "reviewSubmitErrorDefault": "Error al enviar la reseña",
+  "reviewSubmittedSuccessMessage": "Tu reseña de {value1} ha sido enviada",
+  "@reviewSubmittedSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewSubmittedSuccessTitle": "Reseña enviada",
+  "reviewUpdateErrorDefault": "Error al actualizar la reseña",
+  "reviewUpdatedSuccessMessage": "Tu reseña de {value1} ha sido actualizada",
+  "@reviewUpdatedSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewUpdatedSuccessTitle": "Reseña actualizada",
+  "reviewsActionLabel": "Reseñas",
+  "reviewsActionSubtitle": "Las reseñas que has escrito",
+  "reviewsCountLabel": "{value1} reseñas",
+  "@reviewsCountLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewsLabel": "Reseñas",
+  "saveCertificateCta": "Guardar certificado",
+  "saveChangesCta": "Guardar cambios",
+  "saveCta": "Guardar",
+  "saveScheduleCta": "Guardar horario",
+  "saveSettingsError": "Error al guardar los ajustes",
+  "saveSettingsSuccess": "Ajustes guardados correctamente",
+  "savedProfessionalsActionLabel": "Profesionales guardados",
+  "savedProfessionalsActionSubtitle": "Los profesionales que has guardado",
+  "savedProfessionalsEmptySubtitle": "Los profesionales que guardes aparecerán aquí",
+  "savedProfessionalsEmptyTitle": "No hay profesionales guardados",
+  "savedProfessionalsTitle": "Profesionales guardados",
+  "savedStatLabel": "Guardados",
+  "searchAiPremiumActive": "Búsqueda con IA Premium activa",
+  "searchAiRemainingToday": "{value1} búsquedas con IA restantes hoy",
+  "@searchAiRemainingToday": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "searchBookingsHint": "Buscar reservas",
+  "searchCategories": "Categorías",
+  "searchPopular": "Populares",
+  "searchPopularCleaners": "Limpieza",
+  "searchPopularDoctors": "Médicos",
+  "searchPopularElectricians": "Electricistas",
+  "searchPopularEngineers": "Ingenieros",
+  "searchPopularLawyers": "Abogados",
+  "searchPopularPlumbers": "Fontaneros",
+  "searchProfessionals": "Profesionales",
+  "searchProfessions": "Profesiones",
+  "searchRecent": "Recientes",
+  "searchResultsLabel": "{value1} resultados para «{value2}»",
+  "@searchResultsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "searchingLabel": "Buscando...",
+  "security": "Seguridad",
+  "securityActionLabel": "Seguridad",
+  "securityActionSubtitle": "Contraseña y seguridad de la cuenta",
+  "securityBannerSubtitle": "Mantén tu cuenta segura y protegida",
+  "securityBannerTitle": "Seguridad de la cuenta",
+  "securityFooterText": "Si no solicitaste este cambio, contacta con soporte de inmediato",
+  "securityTitle": "Seguridad",
+  "seeAllLabel": "Ver todo",
+  "selectedLabel": "Seleccionado",
+  "sendResetLinkCta": "Enviar enlace de restablecimiento",
+  "serviceLabel": "Servicio",
+  "serviceProfessionalLabel": "Profesional de servicios",
+  "settingsActionLabel": "Ajustes",
+  "settingsActionSubtitle": "Preferencias de la aplicación",
+  "shareExperienceLabel": "Comparte tu experiencia",
+  "signInInsteadLabel": "Iniciar sesión en su lugar",
+  "skillsLabel": "Habilidades",
+  "skillsPricingLabel": "Habilidades y precios",
+  "slotDurationSubtitle": "Duración predeterminada de cada franja de reserva",
+  "slotDurationTitle": "Duración de la franja",
+  "startConversationError": "Error al iniciar la conversación",
+  "startTimeLabel": "Hora de inicio",
+  "startingFromLabel": "Desde",
+  "statusApproved": "Aprobado",
+  "statusCompleted": "Completado",
+  "statusPending": "Pendiente",
+  "statusRejected": "Rechazado",
+  "submitReportCta": "Enviar informe",
+  "submitReviewCta": "Enviar reseña",
+  "subscriptionActionLabel": "Suscripción",
+  "subscriptionActiveStatus": "Plan {value1} activo",
+  "@subscriptionActiveStatus": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "subscriptionUpgradeLabel": "Mejorar plan",
+  "subscriptionUpgradeStatus": "Pasar a premium",
+  "suggestTimeCta": "Sugerir otra hora",
+  "suggestTimeCtaShort": "Sugerir hora",
+  "suggestTimeDescription": "Propón una nueva fecha y hora para esta reserva",
+  "suggestTimeLabel": "Sugerir una hora",
+  "suggestTimeSuccess": "Nueva hora sugerida al cliente",
+  "suggestedTimeLabel": "Hora sugerida",
+  "supportBannerSubtitle": "Estamos aquí para ayudarte, las 24 horas",
+  "supportBannerTitle": "¿Necesitas ayuda?",
+  "supportTeamReplyLabel": "Equipo de soporte",
+  "tapStarToRateLabel": "Toca una estrella para calificar",
+  "thisMonthLabel": "Este mes",
+  "timeLabel": "Hora",
+  "timeSlotsLabel": "Franjas horarias",
+  "timeTipText": "Elige la hora que mejor te convenga",
+  "titleHint": "Introduce un título",
+  "titleLabelRequired": "Título",
+  "titleValidationError": "Introduce un título",
+  "todayLabel": "Hoy",
+  "todaysEarningsLabel": "Ganancias de hoy",
+  "todaysScheduleLabel": "Agenda de hoy",
+  "topRatedLabel": "Mejor valorados",
+  "totalBookingsLabel": "Total de reservas",
+  "totalEarnedLabel": "Total ganado",
+  "totalSpentLabel": "Total gastado",
+  "transactionCountLabel": "{value1} transacciones",
+  "@transactionCountLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "transactionHistoryTitle": "Historial de transacciones",
+  "tryAgainCta": "Intentar de nuevo",
+  "twitterSignInLabel": "Continuar con Twitter",
+  "typicallyRepliesLabel": "Suele responder",
+  "unavailableLabel": "No disponible",
+  "unknownRoleError": "Tipo de cuenta desconocido",
+  "updateBookingError": "Error al actualizar la reserva",
+  "updateCta": "Actualizar",
+  "updateReviewCta": "Actualizar reseña",
+  "upgradeCta": "Mejorar",
+  "uploadError": "Error al subir",
+  "uploadSuccess": "Subido correctamente",
+  "userLabel": "Usuario",
+  "vacationCleared": "Vacaciones eliminadas",
+  "vacationDateRequired": "Selecciona un rango de fechas de vacaciones",
+  "vacationSet": "Vacaciones establecidas correctamente",
+  "validAmountError": "Introduce un monto válido",
+  "verificationAddPortfolio": "Agrega elementos al portafolio para ayudar a que te verifiquen",
+  "verificationLabel": "Verificación",
+  "verificationPending": "Verificación pendiente",
+  "verifiedLabel": "Verificado",
+  "verifiedProfessionalLabel": "Profesional",
+  "verifiedStatusLabel": "Verificado {value1}",
+  "@verifiedStatusLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "viewMyBookingsCta": "Ver mis reservas",
+  "viewProfileCta": "Ver perfil",
+  "viewWalletLabel": "Ver billetera",
+  "visitorsLabel": "Visitantes",
+  "visitorsSubtext": "Personas que vieron tu perfil",
+  "walletActionLabel": "Billetera",
+  "walletActionSubtitle": "Consulta tu saldo y transacciones",
+  "walletEarningsLabel": "Ganancias",
+  "walletLabel": "Billetera",
+  "walletTitle": "Billetera",
+  "whatHappensNextLabel": "¿Qué pasa después?",
+  "whyBookHereLabel": "¿Por qué reservar con nosotros?",
+  "withdrawCta": "Retirar",
+  "withdrawErrorDefault": "El retiro falló. Inténtalo de nuevo.",
+  "withdrawSuccess": "Retiro solicitado correctamente",
+  "withdrawTitle": "Retirar fondos",
+  "withdrawnLabel": "Retirado",
+  "workingHoursLabel": "Horario laboral",
+  "writeReviewTitle": "Escribir una reseña",
+  "yearsLabel": "{value1} años",
+  "@yearsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "yesCancelCta": "Sí, cancelar",
+  "youAreNotifiedLabel": "Se te notificará",
+  "youAreNotifiedSubtitle": "Te avisaremos en cuanto haya una respuesta",
+  "yourAccountEmailPlaceholder": "el correo de tu cuenta",
+  "tsErrForbidden": "No tienes permiso para realizar esta acción.",
+  "tsErrNetwork": "Problema de red. Comprueba tu conexión e inténtalo de nuevo.",
+  "tsErrGeneric": "Algo salió mal. Inténtalo de nuevo.",
+  "tsRetry": "Reintentar",
+  "tsCopy": "Copiar",
+  "tsCopied": "Copiado al portapapeles",
+  "tsOpenLink": "Abrir enlace",
+  "tsLinkOpenFailed": "No se pudo abrir este enlace.",
+  "tsCancel": "Cancelar",
+  "tsClose": "Cerrar",
+  "tsRefresh": "Actualizar",
+  "tsAll": "Todos",
+  "tsCatSpam": "Spam",
+  "tsCatHarassment": "Acoso",
+  "tsCatFraud": "Fraude o estafa",
+  "tsCatFakeProfile": "Perfil falso",
+  "tsCatInappropriate": "Contenido inapropiado",
+  "tsCatPaymentFraud": "Fraude de pago",
+  "tsCatOffPlatform": "Pago fuera de la plataforma",
+  "tsCatThreats": "Amenazas o problema de seguridad",
+  "tsCatDiscrimination": "Discriminación",
+  "tsCatMisconduct": "Mala conducta en el servicio",
+  "tsCatOther": "Otro",
+  "tsStatusPending": "Pendiente",
+  "tsStatusReviewed": "Revisado",
+  "tsStatusActionTaken": "Acción tomada",
+  "tsStatusDismissed": "Descartado",
+  "tsSevLow": "Baja",
+  "tsSevMedium": "Media",
+  "tsSevHigh": "Alta",
+  "tsSevCritical": "Crítica",
+  "tsRoleCustomer": "Cliente",
+  "tsRoleProfessional": "Profesional",
+  "tsRoleAdmin": "Administrador",
+  "tsActWarning": "Advertencia",
+  "tsActRestrictMessaging": "Restricción de mensajería",
+  "tsActRestrictBooking": "Restricción de reservas",
+  "tsActSuspendTemporary": "Suspensión temporal",
+  "tsActSuspendPermanent": "Suspensión permanente",
+  "tsActWarningDesc": "Registra una advertencia formal. No limita la cuenta.",
+  "tsActRestrictMessagingDesc": "Marca la cuenta como restringida para enviar mensajes.",
+  "tsActRestrictBookingDesc": "Marca la cuenta como restringida para crear reservas.",
+  "tsActSuspendTemporaryDesc": "Marca la cuenta como suspendida hasta la fecha que elijas.",
+  "tsActSuspendPermanentDesc": "Marca la cuenta como suspendida de forma permanente. Sin vencimiento; solo un administrador puede revertirla.",
+  "tsStateActive": "Activa",
+  "tsStateScheduled": "Programada",
+  "tsStateExpired": "Vencida",
+  "tsStateReversed": "Revertida",
+  "tsAppealPending": "Pendiente",
+  "tsAppealApproved": "Aprobada",
+  "tsAppealRejected": "Rechazada",
+  "tsReportsTitle": "Usuarios denunciados",
+  "tsPendingReview": "{count} pendientes de revisión",
+  "@tsPendingReview": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSearchReportsHint": "Buscar por usuario, denunciante, categoría o ID",
+  "tsFilterSeverity": "Gravedad",
+  "tsFilterCategory": "Categoría",
+  "tsFilterDate": "Fecha",
+  "tsDateAny": "Cualquier momento",
+  "tsDateToday": "Hoy",
+  "tsDate7": "Últimos 7 días",
+  "tsDate30": "Últimos 30 días",
+  "tsDateCustom": "Rango personalizado",
+  "tsSortNewest": "Más recientes primero",
+  "tsSortSeverity": "Mayor gravedad primero",
+  "tsClearFilters": "Borrar filtros",
+  "tsNoReports": "Aún no hay denuncias",
+  "tsNoReportsHint": "Las denuncias enviadas por los usuarios aparecerán aquí.",
+  "tsNoMatches": "Ninguna denuncia coincide con tus filtros",
+  "tsNoMatchesHint": "Prueba a cambiar o borrar los filtros.",
+  "tsSelectReport": "Selecciona una denuncia",
+  "tsSelectReportHint": "Elige una denuncia de la lista para revisarla y actuar.",
+  "tsIndBooking": "Reserva",
+  "tsIndMessage": "Mensaje",
+  "tsIndEvidence": "Prueba",
+  "tsReportedBy": "Denunciado por {name}",
+  "@tsReportedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tsAccountBlocked": "Cuenta bloqueada",
+  "tsReportNumber": "Denuncia n.º {id}",
+  "@tsReportNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSubmittedOn": "Enviada el {date}",
+  "@tsSubmittedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTakeAction": "Tomar medidas",
+  "tsMarkReviewed": "Marcar como revisada",
+  "tsDismiss": "Descartar",
+  "tsSecDescription": "Descripción de la denuncia",
+  "tsNoDescription": "No se proporcionó ninguna descripción.",
+  "tsSecEvidence": "Pruebas y contexto",
+  "tsEvidenceLabel": "PRUEBA / REFERENCIA",
+  "tsNoEvidence": "No se proporcionó enlace de prueba.",
+  "tsBookingLabel": "RESERVA RELACIONADA",
+  "tsBookingNumber": "Reserva n.º {id}",
+  "@tsBookingNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsMessageLabel": "MENSAJE RELACIONADO",
+  "tsMessageNumber": "Mensaje n.º {id}",
+  "@tsMessageNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsMessageDeleted": "Este mensaje fue eliminado. Su contenido no está disponible.",
+  "tsMessageAttachments": "Archivos adjuntos: {count}",
+  "@tsMessageAttachments": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsNoRelated": "Nada vinculado a esta denuncia.",
+  "tsFieldWhen": "Cuándo",
+  "tsFieldParties": "Partes",
+  "tsFieldSender": "Remitente",
+  "tsBookingWith": "{customer} con {professional}",
+  "@tsBookingWith": {
+    "placeholders": {
+      "customer": {
+        "type": "String"
+      },
+      "professional": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSecPeople": "Personas",
+  "tsReportedUser": "USUARIO DENUNCIADO",
+  "tsReporterLabel": "DENUNCIANTE",
+  "tsReporterAdminOnly": "Visible solo para administradores. Nunca se muestra al usuario denunciado.",
+  "tsAccountBlockedNote": "Esta cuenta está bloqueada actualmente (consulta la pestaña Bloqueados). El bloqueo es independiente de las acciones de moderación.",
+  "tsSecActive": "Restricciones y suspensión activas",
+  "tsNoActive": "No hay restricciones ni suspensión activas.",
+  "tsSecTimeline": "Historial de la denuncia",
+  "tsSecHistory": "Historial de moderación",
+  "tsSecOtherReports": "Otras denuncias sobre este usuario",
+  "tsHistoryLoadError": "No se pudo cargar el historial de moderación.",
+  "tsHistoryEmpty": "No hay acciones de moderación registradas para este usuario.",
+  "tsTlSubmitted": "Denuncia enviada",
+  "tsTlReviewed": "Marcada como {status} por {admin}",
+  "@tsTlReviewed": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlInternalNote": "Nota interna: {note}",
+  "@tsTlInternalNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlActionApplied": "{action} aplicada por {admin}",
+  "@tsTlActionApplied": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlActionReversed": "{action} revertida por {admin}",
+  "@tsTlActionReversed": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsThisReport": "Esta denuncia",
+  "tsHistPerformedBy": "Por {admin} el {date}",
+  "@tsHistPerformedBy": {
+    "placeholders": {
+      "admin": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsStartsOn": "Comienza el {date}",
+  "@tsStartsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsExpiresOn": "Vence el {date}",
+  "@tsExpiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsNoExpiryPermanent": "Permanente, sin vencimiento",
+  "tsNoExpiryOpen": "Sin fecha de fin, activa hasta que se levante",
+  "tsReasonShownToUser": "MOTIVO (SE MUESTRA AL USUARIO)",
+  "tsInternalNoteLabel": "Nota interna (solo administradores)",
+  "tsHistReversedBy": "Revertida por {admin} el {date}",
+  "@tsHistReversedBy": {
+    "placeholders": {
+      "admin": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsReverse": "Revertir",
+  "tsAdminUnknown": "Administrador desconocido",
+  "tsReviewTitle": "Marcar la denuncia como revisada",
+  "tsReviewMessage": "Confirma que has revisado esta denuncia. Puedes agregar una nota interna.",
+  "tsReviewConfirm": "Marcar como revisada",
+  "tsDismissTitle": "Descartar denuncia",
+  "tsDismissMessage": "Descarta esta denuncia si no infringe las normas. No se toma ninguna medida contra el usuario denunciado.",
+  "tsDismissConfirm": "Descartar denuncia",
+  "tsResolveReporterNote": "El denunciante recibe una notificación genérica del resultado. El usuario denunciado no es notificado.",
+  "tsReportUpdated": "Denuncia actualizada",
+  "tsTakeActionTitle": "Tomar medida de moderación",
+  "tsRegardingReport": "Sobre la denuncia n.º {id}",
+  "@tsRegardingReport": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsChooseAction": "Elige una acción",
+  "tsChooseActionError": "Selecciona una acción para continuar.",
+  "tsAlreadyActive": "Ya está activa para este usuario.",
+  "tsAlreadyPermanentlySuspended": "Este usuario ya está suspendido de forma permanente.",
+  "tsDurationTitle": "Duración",
+  "tsDurationUntilLifted": "Hasta que se levante",
+  "tsDurationPermanent": "Permanente",
+  "tsDurationDays": "{n} días",
+  "@tsDurationDays": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "tsDurationCustom": "Fecha personalizada",
+  "tsEndsAt": "Termina {when}",
+  "@tsEndsAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "tsUntilDate": "Hasta el {date}",
+  "@tsUntilDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsExpiryRequired": "Elige cuándo termina.",
+  "tsExpiryMustBeFuture": "La hora de finalización debe estar en el futuro.",
+  "tsReasonLabel": "Motivo",
+  "tsReasonHint": "Explica por qué se toma esta acción",
+  "tsReasonUserVisibleNote": "Se muestra al usuario en su notificación. No menciones al denunciante ni a otros usuarios.",
+  "tsReasonTooShort": "Introduce un motivo de al menos {min} caracteres.",
+  "@tsReasonTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "tsInternalNoteHint": "Contexto opcional para otros administradores",
+  "tsInternalNoteNote": "Solo uso interno. Nunca se muestra al usuario.",
+  "tsMarkReportTaken": "Marcar esta denuncia como «Acción tomada»",
+  "tsMarkReportTakenHint": "El denunciante recibe únicamente una notificación genérica del resultado.",
+  "tsApplyAction": "Aplicar acción",
+  "tsConfirmTitle": "¿Aplicar {action}?",
+  "@tsConfirmTitle": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "tsConfirmBody": "Esto queda registrado en el historial de moderación de {user} y se notifica al usuario.",
+  "@tsConfirmBody": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "tsConfirmPermanentAck": "Entiendo que esta suspensión no tiene vencimiento y solo puede ser revertida por un administrador.",
+  "tsFieldUser": "Usuario",
+  "tsFieldAction": "Acción",
+  "tsFieldDuration": "Duración",
+  "tsFieldReason": "Motivo",
+  "tsActionApplied": "Acción de moderación aplicada",
+  "tsActionAppliedReportFailed": "La acción se aplicó, pero no se pudo actualizar el estado de la denuncia.",
+  "tsCannotActOnAdmin": "Las acciones de moderación no pueden dirigirse a cuentas de administrador.",
+  "tsFieldPerformedBy": "Realizada por",
+  "tsFieldCreated": "Creada",
+  "tsFieldExpires": "Vence",
+  "tsFieldReport": "Denuncia",
+  "tsFieldDecidedBy": "Decidida por",
+  "tsFieldDecidedOn": "Decidida el",
+  "tsReverseTitle": "Revertir acción de moderación",
+  "tsReverseMessage": "¿Revertir {action}? Se levanta y el registro permanece en el historial.",
+  "@tsReverseMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "tsReversalReasonLabel": "Motivo de la reversión",
+  "tsReversalReasonHint": "¿Por qué se levanta esta acción?",
+  "tsReverseConfirm": "Revertir acción",
+  "tsReverseAuditNote": "Tu motivo es interno. Se registra en el historial de moderación y nunca se muestra al usuario.",
+  "tsReverseNotifyNote": "Se notifica al usuario que esta acción fue levantada.",
+  "tsReverseLegacyNote": "Esta acción proviene del antiguo flujo de bloqueo. Revertirla también reactiva la cuenta.",
+  "tsActionReversed": "Acción de moderación revertida",
+  "tsAppealsTitle": "Apelaciones",
+  "tsPendingAppeals": "{count} apelaciones pendientes",
+  "@tsPendingAppeals": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSearchAppealsHint": "Buscar por usuario, correo o texto de la apelación",
+  "tsNoAppeals": "No hay apelaciones aquí",
+  "tsNoAppealsHint": "Las apelaciones contra acciones de moderación aparecerán aquí.",
+  "tsSelectAppeal": "Selecciona una apelación",
+  "tsSelectAppealHint": "Elige una apelación de la lista para revisarla.",
+  "tsAppealNumber": "Apelación n.º {id}",
+  "@tsAppealNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSecAppealReason": "Apelación",
+  "tsSecAppealedAction": "Acción apelada",
+  "tsSecDecision": "Decisión",
+  "tsAppealApprove": "Aprobar",
+  "tsAppealReject": "Rechazar",
+  "tsApproveTitle": "Aprobar apelación",
+  "tsApproveMessage": "Aprobar esta apelación levanta la acción de moderación.",
+  "tsApproveConfirm": "Aprobar apelación",
+  "tsRejectTitle": "Rechazar apelación",
+  "tsRejectMessage": "Rechazarla mantiene la acción de moderación vigente.",
+  "tsRejectConfirm": "Rechazar apelación",
+  "tsDecisionNoteLabel": "Nota de la decisión",
+  "tsDecisionNoteHint": "Explica tu decisión",
+  "tsDecisionNoteNote": "Solo uso interno. Nunca se muestra al usuario.",
+  "tsAppealApproveNote": "La acción se revierte y se notifica al usuario.",
+  "tsAppealApproveInactive": "Esta acción ya no está en vigor, por lo que aprobar solo cierra la apelación. Se notifica al usuario.",
+  "tsAppealRejectNote": "La acción se mantiene y se notifica al usuario del resultado.",
+  "tsAppealApprovedSnack": "Apelación aprobada",
+  "tsAppealRejectedSnack": "Apelación rechazada",
+  "tsNoDecisionNote": "No se registró ninguna nota.",
   "tsEvidenceLinkOptional": "Enlace de evidencia (opcional)",
   "tsInvalidHttpUrl": "Introduce una URL http o https válida.",
   "myTsMyReportsTitle": "Mis reportes",
@@ -1972,5 +3497,196 @@
   "myTsAppealSubmitError": "No se pudo enviar tu apelación. Inténtalo de nuevo.",
   "myTsAppealAlreadyPending": "Ya tienes una apelación pendiente para esto.",
   "myTsAppealNotEligible": "Ya no se puede apelar esta acción.",
-  "myTsAppealForLabel": "Apelación de {action}"
+  "myTsAppealForLabel": "Apelación de {action}",
+  "@myTsAppealForLabel": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "announcementDismiss": "Cerrar anuncio",
+  "chatMessageHint": "Mensaje",
+  "voiceRecordStartFailed": "No se pudo iniciar la grabación. Comprueba el micrófono e inténtalo de nuevo.",
+  "voiceRecordSaveFailed": "No se pudo guardar la grabación. Inténtalo de nuevo.",
+  "voicePlayFailed": "No se pudo reproducir este mensaje de voz.",
+  "reviewSortBy": "Ordenar por",
+  "reviewSortRelevant": "Más relevantes",
+  "reviewSortNewest": "Más recientes",
+  "reviewSortHighest": "Mayor valoración",
+  "reviewSortLowest": "Menor valoración",
+  "reviewSortHelpful": "Más útiles",
+  "reviewSortWithPhotos": "Con fotos",
+  "reviewFilterAll": "Todas las reseñas",
+  "promoSkip": "Omitir",
+  "reviewCountPlural": "{count, plural, =1{1 reseña} other{{count} reseñas}}",
+  "@reviewCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "valEmailRequired": "El correo electrónico es obligatorio",
+  "valEmailInvalid": "Introduce un correo electrónico válido",
+  "valEmailTooLong": "El correo electrónico es demasiado largo",
+  "valPasswordRequired": "La contraseña es obligatoria",
+  "valPasswordMinLength": "La contraseña debe tener al menos 8 caracteres",
+  "valPasswordUpper": "Añade al menos una letra mayúscula",
+  "valPasswordLower": "Añade al menos una letra minúscula",
+  "valPasswordNumber": "Añade al menos un número",
+  "valPasswordSpecial": "Añade al menos un carácter especial",
+  "valConfirmPassword": "Confirma tu contraseña",
+  "valPasswordsMismatch": "Las contraseñas no coinciden",
+  "valNameRequired": "El nombre es obligatorio",
+  "valNameMinLength": "El nombre debe tener al menos 2 caracteres",
+  "valNameMaxLength": "El nombre debe tener menos de 50 caracteres",
+  "valNameNoNumbers": "El nombre no puede contener números",
+  "valNameInvalidChars": "El nombre contiene caracteres no válidos",
+  "valPhoneRequired": "El número de teléfono es obligatorio",
+  "valPhoneInvalid": "Introduce un número de teléfono válido",
+  "valFieldRequired": "Este campo es obligatorio",
+  "valFieldNamedRequired": "{field} es obligatorio",
+  "@valFieldNamedRequired": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "pwReqMinLength": "Mínimo 8 caracteres",
+  "pwReqUppercase": "Letra mayúscula",
+  "pwReqLowercase": "Letra minúscula",
+  "pwReqNumber": "Número",
+  "pwReqSpecial": "Carácter especial",
+  "pwStrengthVeryWeak": "Muy débil",
+  "pwStrengthWeak": "Débil",
+  "pwStrengthMedium": "Media",
+  "pwStrengthStrong": "Fuerte",
+  "pwStrengthExcellent": "Excelente",
+  "pickerTapToSelect": "Toca para seleccionar",
+  "pickerNoResults": "No se encontraron resultados",
+  "pickerSearchHint": "Buscar...",
+  "pickerSelectAboveFirst": "Selecciona primero el campo anterior",
+  "bkStatusAll": "Todas",
+  "bkStatusPending": "Pendiente",
+  "bkStatusAccepted": "Aceptada",
+  "bkStatusCompleted": "Completada",
+  "bkStatusCancelled": "Cancelada",
+  "bkStatusRejected": "Rechazada",
+  "bkStatusRescheduled": "Reprogramada",
+  "bkStatusBooked": "Reservada",
+  "bkSwipeHint": "desliza",
+  "bkCountPlural": "{count, plural, =1{1 reserva} other{{count} reservas}}",
+  "@bkCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bkSectionDetails": "Detalles de la reserva",
+  "bkSectionService": "Servicio",
+  "bkSectionNotes": "Notas del cliente",
+  "bkSectionTimeline": "Cronología de la reserva",
+  "bkFieldDate": "Fecha",
+  "bkFieldTime": "Hora",
+  "bkFieldLocation": "Ubicación",
+  "bkFieldCategory": "Categoría",
+  "bkCancelledByProfessional": "Cancelada por el profesional",
+  "bkCancelledByYou": "Cancelada por ti",
+  "bkWasRejected": "La reserva fue rechazada",
+  "bkWasCancelled": "La reserva fue cancelada",
+  "bkCancelledSuccess": "Reserva cancelada",
+  "bkCancelFailed": "No se pudo cancelar, inténtalo de nuevo",
+  "detailTabOverview": "Resumen",
+  "detailTabPortfolio": "Portafolio ({count})",
+  "@detailTabPortfolio": {"placeholders": {"count": {"type": "int"}}},
+  "detailTabReviews": "Reseñas ({count})",
+  "@detailTabReviews": {"placeholders": {"count": {"type": "int"}}},
+  "detailTabServices": "Servicios",
+  "detailTabAvailability": "Disponibilidad",
+  "detailNotAvailable": "No disponible",
+  "detailCertificateDefault": "Certificado",
+  "detailPortfolioItemDefault": "Elemento del portafolio",
+  "categoryItTech": "TI y Tecnología",
+  "categoryEngineers": "Ingenieros",
+  "categoryLawyersLegal": "Abogados y Legal",
+  "categoryDoctorsHealthcare": "Médicos y Salud",
+  "categoryArchitects": "Arquitectos",
+  "categoryElectricians": "Electricistas",
+  "categoryPlumbers": "Plomeros",
+  "categoryTutorsEducation": "Tutores y Educación",
+  "ctaGrowYourBusiness": "Haz crecer tu negocio",
+  "ctaJoinProfessionalsSubtitle": "Únete a más de 500 profesionales en ProFinder",
+  "ctaJoinNow": "Únete ahora",
+  "promoGetPremium": "Obtén Premium",
+  "categoryCarpenters": "Carpinteros",
+  "errSomethingWentWrong": "Algo salió mal.",
+  "errSomethingWentWrongTryAgain": "Algo salió mal. Inténtalo de nuevo.",
+  "errNetworkCheckConnection": "Error de red. Revisa tu conexión.",
+  "errNetworkProblemTryAgain": "Problema de red. Revisa tu conexión e inténtalo de nuevo.",
+  "errRequestFailedHttp": "La solicitud falló (HTTP {code}).",
+  "@errRequestFailedHttp": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "errNotLoggedIn": "No has iniciado sesión",
+  "bkStepTitleService": "Resumen del servicio",
+  "bkStepTitleDate": "Selecciona la fecha",
+  "bkStepTitleTime": "Selecciona la hora",
+  "bkStepTitleNotes": "Notas adicionales",
+  "bkStepTitleSummary": "Resumen de la reserva",
+  "bkStepDesc1": "Revisa los datos del profesional antes de continuar.",
+  "bkStepDesc2": "Elige la fecha que mejor se adapte a tu cita.",
+  "bkStepDesc3": "Elige un horario disponible para tu visita.",
+  "bkStepDesc4": "Indica al profesional dónde debe prestar el servicio.",
+  "bkStepDesc5": "Añade cualquier detalle que ayude al profesional a prepararse.",
+  "bkStepDesc6": "Revisa todo con atención antes de confirmar tu reserva.",
+  "bkWeekdayMon": "Lun",
+  "bkWeekdayTue": "Mar",
+  "bkWeekdayWed": "Mié",
+  "bkWeekdayThu": "Jue",
+  "bkWeekdayFri": "Vie",
+  "bkWeekdaySat": "Sáb",
+  "bkWeekdaySun": "Dom",
+  "bkGoodToKnow1": "Enviar una solicitud es gratis y solo toma un minuto.",
+  "bkGoodToKnow2": "Recibirás una notificación en cuanto el profesional responda.",
+  "bkGoodToKnow3": "Puedes cancelar sin coste mientras tu solicitud siga pendiente.",
+  "bkTimeSlots1": "Solo se muestran los horarios dentro de la jornada del profesional.",
+  "bkTimeSlots2": "Los horarios de hoy que ya pasaron se desactivan automáticamente.",
+  "bkTimeSlots3": "Puedes cambiar la hora elegida en cualquier momento antes de confirmar.",
+  "chatCouldNotLoadConversations": "No se pudieron cargar las conversaciones",
+  "chatVoiceMessagePreview": "🎤 Mensaje de voz",
+  "chatPhotoPreview": "📷 Foto",
+  "reviewRatingPoor": "Malo",
+  "reviewRatingFair": "Regular",
+  "reviewRatingGood": "Bueno",
+  "reviewRatingVeryGood": "Muy bueno",
+  "reviewRatingExcellent": "Excelente",
+  "reviewReportReasonSpam": "Spam",
+  "reviewReportReasonFake": "Reseña falsa",
+  "reviewReportReasonAbusive": "Lenguaje abusivo",
+  "reviewReportReasonHarassment": "Acoso",
+  "reviewReportReasonOffTopic": "Fuera de tema",
+  "reviewReportReasonConflict": "Conflicto de intereses",
+  "reviewReportReasonOther": "Otro",
+  "availabilityStatusBusy": "Ocupado",
+  "availabilityStatusOnLeave": "De permiso",
+  "availabilityStatusDescAvailable": "Los clientes pueden reservarte ahora mismo",
+  "availabilityStatusDescBusy": "Estás trabajando — las nuevas solicitudes están en pausa",
+  "availabilityStatusDescOffline": "No aparecerás en las nuevas solicitudes de reserva",
+  "availabilityStatusDescOnLeave": "Marcado como de permiso hasta que regreses",
+  "professionalInvalidId": "ID de profesional no válido",
+  "uploadFailedTryAgain": "Error al subir. Inténtalo de nuevo.",
+  "editorListItemPlaceholder": "Elemento de lista",
+  "pushChannelGeneralName": "Notificaciones generales",
+  "pushChannelGeneralDesc": "Reservas, anuncios, reportes y otras alertas",
+  "pushChannelChatName": "Mensajes de chat",
+  "pushChannelChatDesc": "Nuevos mensajes de chat",
+  "errBookingLimitReached": "Se alcanzó el límite de reservas.",
+  "categoryCarpenter": "Carpintero"
 }

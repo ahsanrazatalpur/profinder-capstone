@@ -59,6 +59,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/app_helpers.dart';
 import '../../core/theme/theme_context_ext.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../services/content_localizer.dart';
 
 class ProfessionalCard extends StatelessWidget {
   const ProfessionalCard({
@@ -180,7 +182,7 @@ class ProfessionalCard extends StatelessWidget {
     final clampedTextScaler = MediaQuery.textScalerOf(context).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.25);
 
     final id           = pro['id']?.toString() ?? pro['user_id']?.toString() ?? '';
-    final name         = pro['name']?.toString() ?? AppLocalizations.of(context)!.professionalDefaultName;
+    final name         = pro['name']?.toString() ?? AppLocalizations.of(context).professionalDefaultName;
     final profession   = pro['category_name']?.toString().trim().isNotEmpty == true
         ? pro['category_name'].toString()
         : (pro['specialization']?.toString() ?? '');
@@ -194,9 +196,9 @@ class ProfessionalCard extends StatelessWidget {
     final isVerified   = pro['is_verified'] == true; // admin-controlled — never inferred client-side
     final isPremium    = pro['is_premium'] == true;
 
-    final badgeText  = sectionTag ?? (isPremium ? AppLocalizations.of(context)!.proBadgeLabel : null);
+    final badgeText  = sectionTag ?? (isPremium ? AppLocalizations.of(context).proBadgeLabel : null);
     final badgeIcon  = sectionTag != null ? sectionTagIcon : (isPremium ? Icons.workspace_premium_rounded : null);
-    final badgeColor = sectionTag != null ? (sectionTagColor ?? context.colors.primary) : const Color(0xFF7C3AED);
+    final badgeColor = sectionTag != null ? (sectionTagColor ?? context.colors.primary) : AppColors.accentPurple;
 
     final bodyHeight = _bodyHeightFor(context);
 
@@ -271,8 +273,10 @@ class ProfessionalCard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  profession.isNotEmpty ? profession : AppLocalizations.of(context)!.serviceProfessionalLabel,
+                                ListenableBuilder(
+                                  listenable: ContentLocalizer.instance,
+                                  builder: (context, _) => Text(
+                                  profession.isNotEmpty ? AppHelpers.localizedCategoryName(context, profession) : AppLocalizations.of(context).serviceProfessionalLabel,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -282,12 +286,14 @@ class ProfessionalCard extends StatelessWidget {
                                     height:     1.12,
                                     letterSpacing: 0.1,
                                   ),
+                                  ),
                                 ),
                                 SizedBox(height: _sp(3, scale, min: 2, max: 4)),
                                 // 5. Name — clearly secondary to the profession above:
                                 //    smaller, lighter weight, muted color.
-                                Text(
+                                LocalizedText(
                                   name,
+                                  kind: LocKind.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -315,7 +321,7 @@ class ProfessionalCard extends StatelessWidget {
                       //    meant to be one of the first things the eye
                       //    lands on, per the redesign brief.
                       Text(
-                        AppLocalizations.of(context)!.startingFromLabel,
+                        AppLocalizations.of(context).startingFromLabel,
                         style: TextStyle(
                           fontSize: _sp(9.5, scale, min: 8.5, max: 11),
                           fontWeight: FontWeight.w700,
@@ -338,7 +344,7 @@ class ProfessionalCard extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: AppLocalizations.of(context)!.perHourLabel,
+                            text: AppLocalizations.of(context).perHourLabel,
                             style: TextStyle(
                               fontSize: _sp(12, scale, min: 10.5, max: 13.5),
                               fontWeight: FontWeight.w600,
@@ -386,8 +392,8 @@ class ProfessionalCard extends StatelessWidget {
                       memCacheHeight: memCacheH,
                       fadeInDuration: const Duration(milliseconds: 220),
                       fadeInCurve:    Curves.easeOut,
-                      placeholder:    (_, __) => const _ShimmerBox(),
-                      errorWidget:    (_, __, ___) => _avatarFallback(context, name, scale),
+                      placeholder:    (_, _) => const _ShimmerBox(),
+                      errorWidget:    (_, _, _) => _avatarFallback(context, name, scale),
                     )
                   : _avatarFallback(context, name, scale),
             ),
@@ -398,7 +404,7 @@ class ProfessionalCard extends StatelessWidget {
                 child: _pill(
                   color: context.colors.accent,
                   icon: Icons.verified_rounded,
-                  text: AppLocalizations.of(context)!.verifiedLabel,
+                  text: AppLocalizations.of(context).verifiedLabel,
                   scale: scale,
                 ),
               ),
@@ -424,13 +430,13 @@ class ProfessionalCard extends StatelessWidget {
                       width: _sp(31, scale, min: 27, max: 35), height: _sp(31, scale, min: 27, max: 35),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF1E293B)
+                            ? AppColors.surface
                             : Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [BoxShadow(
                           color: isDark
-                              ? Colors.black.withOpacity(0.3)
-                              : Colors.black.withOpacity(0.18),
+                              ? Colors.black.withValues(alpha: 0.3)
+                              : Colors.black.withValues(alpha: 0.18),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         )],
@@ -464,8 +470,8 @@ class ProfessionalCard extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: _sp(8, scale, min: 6.5, max: 10), vertical: _sp(4, scale, min: 3.5, max: 5)),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [BoxShadow(color: color.withOpacity(0.35), blurRadius: 8, offset: const Offset(0, 2))],
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.35), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -486,20 +492,20 @@ class ProfessionalCard extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: _sp(7, scale, min: 6, max: 8.5), vertical: _sp(3, scale, min: 2.5, max: 4)),
         decoration: BoxDecoration(
           color: isDark
-              ? const Color(0xFFF59E0B).withOpacity(0.15)
+              ? AppColors.warningAmber.withValues(alpha: 0.15)
               : const Color(0xFFFEF3C7),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.star_rounded, color: const Color(0xFFF59E0B), size: _sp(14.5, scale, min: 13, max: 16.5)),
+          Icon(Icons.star_rounded, color: AppColors.warningAmber, size: _sp(14.5, scale, min: 13, max: 16.5)),
           SizedBox(width: _sp(2, scale, min: 1.5, max: 3)),
           Text(rating.toStringAsFixed(1),
               style: TextStyle(
                 fontSize: _sp(12, scale, min: 10.5, max: 14),
                 fontWeight: FontWeight.w700,
                 color: isDark
-                    ? const Color(0xFFFCD34D)
-                    : const Color(0xFF92400E),
+                    ? AppColors.starGold
+                    : AppColors.amber800,
                 letterSpacing: 0.2,
               )),
         ]),
@@ -507,13 +513,17 @@ class ProfessionalCard extends StatelessWidget {
       if (reviews != null) ...[
         SizedBox(width: _sp(6, scale, min: 5, max: 8)),
         Flexible(
-          child: Text(AppLocalizations.of(context)!.reviewsCountLabel(reviews),
-              maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: _sp(12, scale, min: 10.5, max: 14),
-                color: context.colors.textSecondary,
-                letterSpacing: 0.2,
-              )),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(AppLocalizations.of(context).reviewsCountLabel(reviews),
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: _sp(12, scale, min: 10.5, max: 14),
+                  color: context.colors.textSecondary,
+                  letterSpacing: 0.2,
+                )),
+          ),
         ),
       ],
       if (experience != null) ...[
@@ -521,13 +531,17 @@ class ProfessionalCard extends StatelessWidget {
         Icon(Icons.work_outline_rounded, size: _sp(13, scale, min: 11.5, max: 15), color: context.colors.textSecondary),
         SizedBox(width: _sp(2, scale, min: 1.5, max: 3)),
         Flexible(
-          child: Text(AppLocalizations.of(context)!.experienceYearsLabel(experience),
-              maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: _sp(12, scale, min: 10.5, max: 14),
-                color: context.colors.textSecondary,
-                letterSpacing: 0.2,
-              )),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(AppLocalizations.of(context).experienceYearsLabel(experience),
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: _sp(12, scale, min: 10.5, max: 14),
+                  color: context.colors.textSecondary,
+                  letterSpacing: 0.2,
+                )),
+          ),
         ),
       ],
     ]);
@@ -535,17 +549,43 @@ class ProfessionalCard extends StatelessWidget {
 
   // ── 7. City + distance ─────────────────────────────────────────────────
   Widget _buildLocationRow(BuildContext context, String city, dynamic distance, double scale) {
-    final label = distance != null
-        ? (city.isNotEmpty ? '$city  •  ${distance}km away' : '${distance}km away')
-        : (city.isNotEmpty ? city : AppLocalizations.of(context)!.nearbyLabel);
+    // FIX (bidi): pehle city + bullet + distance ek hi string thi. Urdu (RTL)
+    // mein English city ("Islamabad") aur number mix hone se order bigar jata
+    // tha. Ab city aur distance alag Text widgets hain, number ko LRI..PDI
+    // isolate mein rakha hai taa-ke "1083.3" kabhi ulta/ bikhra na ho.
+    final t = AppLocalizations.of(context);
+    final km = distance == null ? null : double.tryParse(distance.toString());
+    String? distLabel;
+    if (km != null) {
+      final num_ = km < 1 ? (km * 1000).round().toString() : km.toStringAsFixed(1);
+      final isolated = '\u2066$num_\u2069';
+      distLabel = km < 1 ? t.searchMetersAway(isolated) : t.searchKmAway(isolated);
+    }
+    final style = TextStyle(
+      fontSize: _sp(12.5, scale, min: 11, max: 14.5),
+      color: context.colors.textSecondary,
+      letterSpacing: 0.2,
+    );
+    final cityText = city.isNotEmpty ? city : (distLabel == null ? t.nearbyLabel : '');
     return Row(children: [
       Icon(Icons.location_on_outlined, size: _sp(14, scale, min: 12.5, max: 16), color: context.colors.textSecondary),
       SizedBox(width: _sp(4, scale, min: 3, max: 5)),
-      Expanded(
-        child: Text(label,
-            maxLines: 1, overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: _sp(12.5, scale, min: 11, max: 14.5), color: context.colors.textSecondary, letterSpacing: 0.2)),
-      ),
+      if (cityText.isNotEmpty)
+        Flexible(
+          child: cityText == t.nearbyLabel
+              ? Text('\u2068$cityText\u2069', maxLines: 1, overflow: TextOverflow.ellipsis, style: style)
+              : LocalizedText(cityText, kind: LocKind.city, isolate: true, maxLines: 1, overflow: TextOverflow.ellipsis, style: style),
+        ),
+      if (cityText.isNotEmpty && distLabel != null) Text('  •  ', style: style),
+      if (distLabel != null)
+        Flexible(
+          flex: 2,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(distLabel, maxLines: 1, style: style),
+          ),
+        ),
     ]);
   }
 
@@ -553,7 +593,7 @@ class ProfessionalCard extends StatelessWidget {
   Widget _buildActionRow(BuildContext context, double scale) {
     final vPad  = _sp(15, scale, min: 12.5, max: 18);
     final fSize = _sp(13, scale, min: 11.5, max: 15);
-    final btnRadius = BorderRadius.circular(12);
+    final btnRadius = BorderRadius.circular(AppSizes.radiusMd);
     return Row(children: [
       Expanded(
         child: OutlinedButton(
@@ -570,7 +610,7 @@ class ProfessionalCard extends StatelessWidget {
             minimumSize:  Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          child: Text(AppLocalizations.of(context)!.viewProfileCta,
+          child: Text(AppLocalizations.of(context).viewProfileCta,
               maxLines: 1, overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: fSize, fontWeight: FontWeight.w700, letterSpacing: 0.2)),
         ),
@@ -583,7 +623,7 @@ class ProfessionalCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: btnRadius,
-            boxShadow: [BoxShadow(color: context.colors.primary.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 5))],
+            boxShadow: [BoxShadow(color: context.colors.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 5))],
           ),
           child: ElevatedButton(
             onPressed: onBookNow,
@@ -597,7 +637,7 @@ class ProfessionalCard extends StatelessWidget {
               minimumSize:  Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: Text(AppLocalizations.of(context)!.bookNowCta,
+            child: Text(AppLocalizations.of(context).bookNowCta,
                 maxLines: 1, overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: fSize, fontWeight: FontWeight.w700, letterSpacing: 0.3)),
           ),
@@ -704,9 +744,9 @@ class _PressableCardState extends State<_PressableCard> {
               borderRadius: borderRadius,
               border: Border.all(
                 color: _hovering
-                    ? context.colors.primary.withOpacity(0.35)
+                    ? context.colors.primary.withValues(alpha: 0.35)
                     : (isDark
-                        ? Colors.white.withOpacity(0.08)
+                        ? Colors.white.withValues(alpha: 0.08)
                         : context.colors.divider),
               ),
               // Single soft shadow — enough to lift the card off the page
@@ -714,8 +754,8 @@ class _PressableCardState extends State<_PressableCard> {
               boxShadow: [
                 BoxShadow(
                   color: isDark
-                      ? Colors.black.withOpacity(_hovering ? 0.3 : 0.2)
-                      : Colors.black.withOpacity(_hovering ? 0.10 : 0.07),
+                      ? Colors.black.withValues(alpha: _hovering ? 0.3 : 0.2)
+                      : Colors.black.withValues(alpha: _hovering ? 0.10 : 0.07),
                   blurRadius: _hovering ? 16 : 12,
                   offset: Offset(0, _hovering ? 6 : 4),
                 ),
@@ -766,14 +806,14 @@ class _ShimmerBoxState extends State<_ShimmerBox> with SingleTickerProviderState
             begin:  Alignment(sweep - 0.6, 0),
             end:    Alignment(sweep + 0.6, 0),
             colors: isDark
-                ? const [Color(0xFF1E293B), Color(0xFF334155), Color(0xFF1E293B)]
-                : const [Color(0xFFE2E8F0), Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
+                ? const [AppColors.surface, AppColors.divider, AppColors.surface]
+                : const [AppColors.slate200, AppColors.slate50, AppColors.slate200],
             stops:  const [0.15, 0.5, 0.85],
           ).createShader(rect),
           child: Container(
             color: isDark
-                ? const Color(0xFF1E293B)
-                : const Color(0xFFE2E8F0),
+                ? AppColors.surface
+                : AppColors.slate200,
           ),
         );
       },

@@ -21,6 +21,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 // Responsive breakpoints for the booking list layout.
 const double _kTabletBreakpoint = 720;
@@ -47,12 +49,12 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
   // Status filter options — label + accent color used for the chip, badge,
   // and card border. Kept alongside the status key so UI stays in sync.
   static const _filters = [
-    ('all',       'All',       Color(0xFF374151)),
-    ('pending',   'Pending',   Color(0xFFF59E0B)),
-    ('accepted',  'Accepted',  Color(0xFF3B82F6)),
-    ('completed', 'Completed', Color(0xFF10B981)),
-    ('rejected',  'Rejected',  Color(0xFFEF4444)),
-    ('cancelled', 'Cancelled', Color(0xFF9CA3AF)),
+    ('all',       'All',       AppColors.gray700),
+    ('pending',   'Pending',   AppColors.warningAmber),
+    ('accepted',  'Accepted',  AppColors.primary),
+    ('completed', 'Completed', AppColors.emerald),
+    ('rejected',  'Rejected',  AppColors.favoriteRed),
+    ('cancelled', 'Cancelled', AppColors.neutral400),
   ];
 
   /// Live count per status key, recomputed from [_all] every time it
@@ -179,7 +181,7 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: _buildAppBar(),
       body: SafeArea(
         top: false,
@@ -320,13 +322,13 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
         textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText:   'Search customer or professional…',
-          hintStyle:  const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
+          hintStyle:  const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
           prefixIcon: const Icon(Icons.search_rounded,
-              size: 20, color: Color(0xFF9CA3AF)),
+              size: 20, color: AppColors.neutral400),
           suffixIcon: _searchCtrl.text.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.close_rounded,
-                      size: 18, color: Color(0xFF9CA3AF)),
+                      size: 18, color: AppColors.neutral400),
                   tooltip: 'Clear search',
                   onPressed: () {
                     _searchCtrl.clear();
@@ -335,16 +337,16 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
                 )
               : null,
           filled:         true,
-          fillColor:      const Color(0xFFF3F4F6),
+          fillColor:      AppColors.neutral100,
           contentPadding: const EdgeInsets.symmetric(vertical: 14),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             borderSide:   BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             borderSide: BorderSide(
-              color: AppColors.adminColor.withOpacity(0.45),
+              color: AppColors.adminColor.withValues(alpha: 0.45),
               width: 1.6,
             ),
           ),
@@ -401,9 +403,9 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
               '${_filtered.length} bookings',
               key: ValueKey(_filtered.length),
               style: const TextStyle(
-                fontSize:   13,
+                fontSize: AppFontSizes.secondary,
                 fontWeight: FontWeight.w700,
-                color:      Color(0xFF374151),
+                color:      AppColors.gray700,
                 letterSpacing: -0.1,
               ),
             ),
@@ -412,8 +414,8 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
           Text(
             'Total: ${_all.length}',
             style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF9CA3AF),
+              fontSize: AppFontSizes.small,
+              color: AppColors.neutral400,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -443,11 +445,11 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: statusColor.withOpacity(0.22)),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: statusColor.withValues(alpha: 0.22)),
           boxShadow: [
             BoxShadow(
-              color:      Colors.black.withOpacity(0.04),
+              color:      Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset:     const Offset(0, 2),
             ),
@@ -463,7 +465,7 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
-                    color:        statusColor.withOpacity(0.10),
+                    color:        statusColor.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(11),
                   ),
                   alignment: Alignment.center,
@@ -488,7 +490,7 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
                         style: const TextStyle(
                           fontSize:   13.5,
                           fontWeight: FontWeight.w700,
-                          color:      Color(0xFF111827),
+                          color:      AppColors.gray900,
                           letterSpacing: -0.1,
                         ),
                         maxLines: 1,
@@ -499,8 +501,8 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
                         Text(
                           'Created $createdAt',
                           style: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF9CA3AF),
+                            fontSize: AppFontSizes.caption,
+                            color: AppColors.neutral400,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -515,7 +517,7 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
             ),
 
             const SizedBox(height: 10),
-            const Divider(height: 1, color: Color(0xFFF3F4F6)),
+            const Divider(height: 1, color: AppColors.neutral100),
             const SizedBox(height: 10),
 
             // ── Meta: date / time / note ─────────────────────────
@@ -573,12 +575,12 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
   /// a neutral grey so the UI never breaks on unexpected values.
   Color _statusColor(String s) {
     return switch (s) {
-      'pending'   => const Color(0xFFF59E0B),
-      'accepted'  => const Color(0xFF3B82F6),
-      'completed' => const Color(0xFF10B981),
-      'rejected'  => const Color(0xFFEF4444),
-      'cancelled' => const Color(0xFF9CA3AF),
-      _           => const Color(0xFF9CA3AF),
+      'pending'   => AppColors.warningAmber,
+      'accepted'  => AppColors.primary,
+      'completed' => AppColors.emerald,
+      'rejected'  => AppColors.favoriteRed,
+      'cancelled' => AppColors.neutral400,
+      _           => AppColors.neutral400,
     };
   }
 
@@ -598,9 +600,9 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
         decoration: BoxDecoration(
-          color:        color.withOpacity(0.10),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.28)),
+          color:        color.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+          border: Border.all(color: color.withValues(alpha: 0.28)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -628,15 +630,15 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 13, color: const Color(0xFF9CA3AF)),
+        Icon(icon, size: 13, color: AppColors.neutral400),
         const SizedBox(width: 4),
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth ?? 140),
           child: Text(
             text,
             style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF374151),
+              fontSize: AppFontSizes.small,
+              color: AppColors.gray700,
               fontWeight: FontWeight.w500,
             ),
             maxLines: 1,
@@ -660,12 +662,12 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
             Container(
               width: 88, height: 88,
               decoration: BoxDecoration(
-                color: const Color(0xFFD1D5DB).withOpacity(0.20),
+                color: AppColors.neutral300.withValues(alpha: 0.20),
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
               child: const Icon(Icons.calendar_today_outlined,
-                  size: 40, color: Color(0xFF9CA3AF)),
+                  size: 40, color: AppColors.neutral400),
             ),
             const SizedBox(height: 16),
             Text(
@@ -674,9 +676,9 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
                   : 'No $_activeFilter bookings',
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize:   14,
+                fontSize: AppFontSizes.body,
                 fontWeight: FontWeight.w700,
-                color:      Color(0xFF6B7280),
+                color:      AppColors.grayDeep,
                 letterSpacing: -0.1,
               ),
             ),
@@ -710,7 +712,7 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
             Container(
               width: 84, height: 84,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.09),
+                color: AppColors.error.withValues(alpha: 0.09),
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
@@ -721,9 +723,9 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
             const Text(
               'Failed to load bookings',
               style: TextStyle(
-                fontSize:   15,
+                fontSize: AppFontSizes.input,
                 fontWeight: FontWeight.w700,
-                color:      Color(0xFF374151),
+                color:      AppColors.gray700,
                 letterSpacing: -0.1,
               ),
             ),
@@ -745,7 +747,7 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
                 minimumSize: const Size(0, 46),
                 padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
               ),
             ),
           ],
@@ -764,11 +766,11 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
           context: context,
           builder: (_) => AlertDialog(
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18)),
+                borderRadius: BorderRadius.circular(AppSizes.radius18)),
             icon: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.08),
+                color: AppColors.error.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.cancel_outlined,
@@ -787,8 +789,8 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
               message,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 13,
-                color: Color(0xFF6B7280),
+                fontSize: AppFontSizes.secondary,
+                color: AppColors.grayDeep,
                 height: 1.45,
               ),
             ),
@@ -796,12 +798,12 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
             actions: [
               TextButton(
                 style: TextButton.styleFrom(
-                  foregroundColor: const Color(0xFF6B7280),
+                  foregroundColor: AppColors.grayDeep,
                   minimumSize: const Size(0, 44),
                   padding: const EdgeInsets.symmetric(
                       horizontal: 18, vertical: 12),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10)),
                 ),
                 onPressed: () => Navigator.pop(context, false),
                 child: const Text('Cancel',
@@ -816,7 +818,7 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 18, vertical: 12),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10)),
                 ),
                 onPressed: () => Navigator.pop(context, true),
                 child: const Text('Yes, Cancel',
@@ -844,7 +846,7 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
-                  fontSize: 13,
+                  fontSize: AppFontSizes.secondary,
                 ),
               ),
             ),
@@ -853,7 +855,7 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen>
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12)),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
         elevation: 2,
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 2),
@@ -919,13 +921,13 @@ class _FilterChipState extends State<_FilterChip> {
               color: widget.isActive
                   ? widget.color
                   : (_hovering
-                      ? const Color(0xFFE5E7EB)
-                      : const Color(0xFFF3F4F6)),
-              borderRadius: BorderRadius.circular(22),
+                      ? AppColors.neutral200
+                      : AppColors.neutral100),
+              borderRadius: BorderRadius.circular(AppSizes.radius22),
               boxShadow: widget.isActive
                   ? [
                       BoxShadow(
-                        color: widget.color.withOpacity(0.28),
+                        color: widget.color.withValues(alpha: 0.28),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
@@ -959,14 +961,14 @@ class _FilterChipState extends State<_FilterChip> {
                         horizontal: 7, vertical: 2),
                     decoration: BoxDecoration(
                       color: widget.isActive
-                          ? Colors.white.withOpacity(0.25)
-                          : widget.color.withOpacity(0.14),
-                      borderRadius: BorderRadius.circular(10),
+                          ? Colors.white.withValues(alpha: 0.25)
+                          : widget.color.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10),
                     ),
                     child: Text(
                       '${widget.count}',
                       style: TextStyle(
-                        fontSize:   11,
+                        fontSize: AppFontSizes.caption,
                         fontWeight: FontWeight.w800,
                         color:      widget.isActive
                             ? Colors.white
@@ -1014,7 +1016,7 @@ class _HoverLiftState extends State<_HoverLift> {
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
         transform: _hovering
-            ? (Matrix4.identity()..translate(0.0, -2.0))
+            ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0))
             : Matrix4.identity(),
         child: widget.child,
       ),

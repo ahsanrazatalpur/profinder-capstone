@@ -1,15 +1,17 @@
 // lib/features/magazine/screens/magazine_screen.dart
 
+import '../../../services/content_localizer.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
-import '../../../core/utils/responsive_utils.dart';
 import '../models/article_model.dart';
 import '../services/magazine_service.dart';
 import '../widgets/article_card.dart';
 import 'article_detail_screen.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class MagazineScreen extends StatefulWidget {
   /// Back action when embedded as a bottom-nav tab (no route to pop).
@@ -65,7 +67,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = AppLocalizations.of(context)!.magazineLoadError;
+        _error = AppLocalizations.of(context).magazineLoadError;
       });
     }
   }
@@ -114,7 +116,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.magazineTitle,
+        title: AppLocalizations.of(context).magazineTitle,
         icon: Icons.menu_book_rounded,
         onBack: widget.onBackWhenEmbedded,
       ),
@@ -146,20 +148,20 @@ class _MagazineScreenState extends State<MagazineScreen> {
         curve: Curves.easeOut,
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
           boxShadow: [
             BoxShadow(
               color: isDark
-                  ? Colors.black.withOpacity(0.2)
-                  : Colors.black.withOpacity(0.05),
+                  ? Colors.black.withValues(alpha: 0.2)
+                  : Colors.black.withValues(alpha: 0.05),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
           ],
           border: Border.all(
             color: isDark
-                ? Colors.white.withOpacity(0.08)
-                : Colors.grey.withOpacity(0.12),
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.grey.withValues(alpha: 0.12),
             width: 1,
           ),
         ),
@@ -171,20 +173,20 @@ class _MagazineScreenState extends State<MagazineScreen> {
           },
           textInputAction: TextInputAction.search,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: AppFontSizes.input,
             letterSpacing: 0.2,
             color: context.colors.textPrimary,
           ),
           decoration: InputDecoration(
-            hintText: AppLocalizations.of(context)!.magazineSearchHint,
+            hintText: AppLocalizations.of(context).magazineSearchHint,
             hintStyle: TextStyle(
-              color: context.colors.textSecondary.withOpacity(0.6),
-              fontSize: 15,
+              color: context.colors.textSecondary.withValues(alpha: 0.6),
+              fontSize: AppFontSizes.input,
               letterSpacing: 0.2,
             ),
             prefixIcon: Icon(
               Icons.search_rounded,
-              color: context.colors.textSecondary.withOpacity(0.6),
+              color: context.colors.textSecondary.withValues(alpha: 0.6),
               size: 22,
             ),
             suffixIcon: _searchQuery.isNotEmpty
@@ -196,7 +198,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
                     child: Container(
                       margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: context.colors.textSecondary.withOpacity(0.1),
+                        color: context.colors.textSecondary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -227,7 +229,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         itemCount: _categories.length + 1,
         itemBuilder: (_, i) {
-          if (i == 0) return _chip(null, AppLocalizations.of(context)!.magazineAllCategoriesLabel, isDark);
+          if (i == 0) return _chip(null, AppLocalizations.of(context).magazineAllCategoriesLabel, isDark);
           final cat = _categories[i - 1];
           return _chip(cat.id, cat.name, isDark);
         },
@@ -249,7 +251,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
               ? LinearGradient(
                   colors: [
                     AppColors.customerColor,
-                    AppColors.customerColor.withOpacity(0.8),
+                    AppColors.customerColor.withValues(alpha: 0.8),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -258,31 +260,32 @@ class _MagazineScreenState extends State<MagazineScreen> {
           color: isSelected
               ? null
               : isDark
-                  ? context.colors.surface.withOpacity(0.5)
+                  ? context.colors.surface.withValues(alpha: 0.5)
                   : context.colors.surface,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(AppSizes.radius22),
           border: Border.all(
             color: isSelected
                 ? AppColors.customerColor
                 : isDark
-                    ? Colors.white.withOpacity(0.1)
-                    : context.colors.divider.withOpacity(0.5),
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : context.colors.divider.withValues(alpha: 0.5),
             width: isSelected ? 0 : 1,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.customerColor.withOpacity(0.3),
+                    color: AppColors.customerColor.withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ]
               : [],
         ),
-        child: Text(
+        child: LocalizedText(
           label,
+          kind: LocKind.category,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: AppFontSizes.secondary,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             letterSpacing: 0.2,
             color: isSelected
@@ -297,8 +300,8 @@ class _MagazineScreenState extends State<MagazineScreen> {
   // ── Enhanced Count Line ──────────────────────────────────────
   Widget _buildCountLine() {
     final label = _articles.length == 1
-        ? AppLocalizations.of(context)!.magazineArticleCountSingle
-        : AppLocalizations.of(context)!.magazineArticleCountPlural(_articles.length);
+        ? AppLocalizations.of(context).magazineArticleCountSingle
+        : AppLocalizations.of(context).magazineArticleCountPlural(_articles.length);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
@@ -311,19 +314,19 @@ class _MagazineScreenState extends State<MagazineScreen> {
               gradient: LinearGradient(
                 colors: [
                   AppColors.customerColor,
-                  AppColors.customerColor.withOpacity(0.4),
+                  AppColors.customerColor.withValues(alpha: 0.4),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppSizes.radiusTiny),
             ),
           ),
           const SizedBox(width: 10),
           Text(
             label,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: AppFontSizes.body,
               letterSpacing: 0.3,
               color: context.colors.textSecondary,
               fontWeight: FontWeight.w600,
@@ -334,13 +337,13 @@ class _MagazineScreenState extends State<MagazineScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.customerColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
+                color: AppColors.customerColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
               ),
               child: Text(
-                AppLocalizations.of(context)!.magazineSearchResultsLabel,
+                AppLocalizations.of(context).magazineSearchResultsLabel,
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: AppFontSizes.caption,
                   color: AppColors.customerColor,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.2,
@@ -370,9 +373,9 @@ class _MagazineScreenState extends State<MagazineScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                AppLocalizations.of(context)!.magazineLoadingText,
+                AppLocalizations.of(context).magazineLoadingText,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.body,
                   color: context.colors.textSecondary,
                   fontWeight: FontWeight.w400,
                   letterSpacing: 0.2,
@@ -403,33 +406,45 @@ class _MagazineScreenState extends State<MagazineScreen> {
           final columns = (crossAxisExtent / maxCrossAxisExtent)
               .ceil()
               .clamp(1, 6);
-          final cardWidth = (crossAxisExtent - crossAxisSpacing * (columns - 1)) /
-              columns;
-          final cardHeight = ArticleCard.heightFor(
-            context,
-            cardWidth: cardWidth,
-          );
+          // Cards size themselves (no fixed cell height), so taller scripts
+          // like Urdu Nastaliq or large system fonts can never overflow.
+          // Cards in one row are stretched to the same height.
+          final rowCount = (_articles.length / columns).ceil();
 
-          return SliverGrid(
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: maxCrossAxisExtent,
-              mainAxisExtent: cardHeight,
-              crossAxisSpacing: crossAxisSpacing,
-              mainAxisSpacing: mainAxisSpacing,
-            ),
+          return SliverList(
             delegate: SliverChildBuilderDelegate(
-              (_, i) => ArticleCard(
-                article: _articles[i],
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ArticleDetailScreen(
-                      slug: _articles[i].slug,
+              (_, rowIndex) {
+                final start = rowIndex * columns;
+                return Padding(
+                  padding: EdgeInsets.only(bottom: rowIndex == rowCount - 1 ? 0 : mainAxisSpacing),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (var c = 0; c < columns; c++) ...[
+                          if (c > 0) const SizedBox(width: crossAxisSpacing),
+                          Expanded(
+                            child: start + c < _articles.length
+                                ? ArticleCard(
+                                    article: _articles[start + c],
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ArticleDetailScreen(
+                                          slug: _articles[start + c].slug,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
-                ),
-              ),
-              childCount: _articles.length,
+                );
+              },
+              childCount: rowCount,
             ),
           );
         },
@@ -451,8 +466,8 @@ class _MagazineScreenState extends State<MagazineScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.customerColor.withOpacity(0.1),
-                    AppColors.customerColor.withOpacity(0.05),
+                    AppColors.customerColor.withValues(alpha: 0.1),
+                    AppColors.customerColor.withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -467,9 +482,9 @@ class _MagazineScreenState extends State<MagazineScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              AppLocalizations.of(context)!.magazineErrorTitle,
+              AppLocalizations.of(context).magazineErrorTitle,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: AppFontSizes.title2,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.3,
                 color: context.colors.textPrimary,
@@ -477,10 +492,10 @@ class _MagazineScreenState extends State<MagazineScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              AppLocalizations.of(context)!.magazineErrorMessage,
+              AppLocalizations.of(context).magazineErrorMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 letterSpacing: 0.2,
                 height: 1.5,
                 color: context.colors.textSecondary,
@@ -490,13 +505,13 @@ class _MagazineScreenState extends State<MagazineScreen> {
             ElevatedButton.icon(
               onPressed: _loadAll,
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: Text(AppLocalizations.of(context)!.tryAgainCta),
+              label: Text(AppLocalizations.of(context).tryAgainCta),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.customerColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 elevation: 0,
               ),
@@ -521,31 +536,31 @@ class _MagazineScreenState extends State<MagazineScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.customerColor.withOpacity(0.12),
-                    AppColors.customerColor.withOpacity(0.05),
+                    AppColors.customerColor.withValues(alpha: 0.12),
+                    AppColors.customerColor.withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.customerColor.withOpacity(0.1),
+                  color: AppColors.customerColor.withValues(alpha: 0.1),
                   width: 2,
                 ),
               ),
               child: Icon(
                 Icons.auto_stories_rounded,
-                color: AppColors.customerColor.withOpacity(0.6),
+                color: AppColors.customerColor.withValues(alpha: 0.6),
                 size: 44,
               ),
             ),
             const SizedBox(height: 20),
             Text(
               _isSearching
-                  ? AppLocalizations.of(context)!.magazineEmptySearchTitle
-                  : AppLocalizations.of(context)!.magazineEmptyTitle,
+                  ? AppLocalizations.of(context).magazineEmptySearchTitle
+                  : AppLocalizations.of(context).magazineEmptyTitle,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: AppFontSizes.h3,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.3,
                 color: context.colors.textPrimary,
@@ -554,11 +569,11 @@ class _MagazineScreenState extends State<MagazineScreen> {
             const SizedBox(height: 10),
             Text(
               _isSearching
-                  ? AppLocalizations.of(context)!.magazineEmptySearchMessage
-                  : AppLocalizations.of(context)!.magazineEmptyMessage,
+                  ? AppLocalizations.of(context).magazineEmptySearchMessage
+                  : AppLocalizations.of(context).magazineEmptyMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 letterSpacing: 0.2,
                 height: 1.5,
                 color: context.colors.textSecondary,
@@ -572,15 +587,15 @@ class _MagazineScreenState extends State<MagazineScreen> {
                   _search('');
                 },
                 icon: const Icon(Icons.clear_rounded, size: 18),
-                label: Text(AppLocalizations.of(context)!.magazineClearSearchCta),
+                label: Text(AppLocalizations.of(context).magazineClearSearchCta),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.customerColor,
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                   ),
                   side: BorderSide(
-                    color: AppColors.customerColor.withOpacity(0.3),
+                    color: AppColors.customerColor.withValues(alpha: 0.3),
                   ),
                 ),
               ),

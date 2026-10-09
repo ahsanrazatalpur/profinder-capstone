@@ -6,6 +6,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/app_validators.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 /// Live password-strength widget shown under the password field on Step 1
 /// of Register. Renders an animated segmented bar + level label + a
@@ -17,20 +18,22 @@ class PasswordStrengthMeter extends StatelessWidget {
   const PasswordStrengthMeter({super.key, required this.password});
 
   static const Map<PasswordStrengthLevel, Color> _levelColors = {
-    PasswordStrengthLevel.veryWeak:  Color(0xFFEF4444), // 🔴
-    PasswordStrengthLevel.weak:      Color(0xFFF97316), // 🟠
-    PasswordStrengthLevel.medium:    Color(0xFFF59E0B), // 🟡
-    PasswordStrengthLevel.strong:    Color(0xFF22C55E), // 🟢
-    PasswordStrengthLevel.excellent: Color(0xFF059669), // 💚
+    PasswordStrengthLevel.veryWeak:  AppColors.favoriteRed, // 🔴
+    PasswordStrengthLevel.weak:      AppColors.badgeTrending, // 🟠
+    PasswordStrengthLevel.medium:    AppColors.warningAmber, // 🟡
+    PasswordStrengthLevel.strong:    AppColors.onlineGreen, // 🟢
+    PasswordStrengthLevel.excellent: AppColors.walletGradientStart, // 💚
   };
 
-  static const Map<PasswordStrengthLevel, String> _levelLabels = {
-    PasswordStrengthLevel.veryWeak:  'Very Weak',
-    PasswordStrengthLevel.weak:      'Weak',
-    PasswordStrengthLevel.medium:    'Medium',
-    PasswordStrengthLevel.strong:    'Strong',
-    PasswordStrengthLevel.excellent: 'Excellent',
-  };
+  static String _levelLabel(PasswordStrengthLevel level, AppLocalizations t) {
+    switch (level) {
+      case PasswordStrengthLevel.veryWeak:  return t.pwStrengthVeryWeak;
+      case PasswordStrengthLevel.weak:      return t.pwStrengthWeak;
+      case PasswordStrengthLevel.medium:    return t.pwStrengthMedium;
+      case PasswordStrengthLevel.strong:    return t.pwStrengthStrong;
+      case PasswordStrengthLevel.excellent: return t.pwStrengthExcellent;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +48,10 @@ class PasswordStrengthMeter extends StatelessWidget {
   }
 
   Widget _buildMeter(BuildContext context) {
-    final result = AppValidators.passwordStrength(password);
+    final t      = AppLocalizations.of(context);
+    final result = AppValidators.passwordStrength(password, t);
     final color  = _levelColors[result.level]!;
-    final label  = _levelLabels[result.level]!;
+    final label  = _levelLabel(result.level, t);
 
     return Padding(
       padding: const EdgeInsets.only(top: AppSizes.sm),

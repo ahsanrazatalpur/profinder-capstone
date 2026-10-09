@@ -21,11 +21,11 @@
 // real average_rating / response_time_hrs numbers already on the profile —
 // no new field is invented.
 
+import '../../../services/content_localizer.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_sizes.dart';
-import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/app_helpers.dart';
@@ -149,7 +149,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
     final id = widget.professional['id']?.toString();
     if (id == null || id.isEmpty) {
-      setState(() { _isLoading = false; _loadError = 'Invalid professional ID'; });
+      setState(() { _isLoading = false; _loadError = AppLocalizations.of(context).professionalInvalidId; });
       return;
     }
     final categoryId = widget.professional['category_id']?.toString();
@@ -230,12 +230,12 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       });
 
       if (results[0]['success'] != true && _fullProfile == null) {
-        setState(() { _loadError = 'Failed to load data'; });
+        setState(() { _loadError = AppLocalizations.of(context).professionalDetailLoadError; });
       }
     } catch (e, st) {
       debugPrint('[ProfessionalDetail] _loadData failed for id=$id: $e\n$st');
       if (!mounted) return;
-      setState(() { _isLoading = false; _loadError = 'Failed to load data'; });
+      setState(() { _isLoading = false; _loadError = AppLocalizations.of(context).professionalDetailLoadError; });
     }
   }
 
@@ -243,7 +243,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   dynamic _get(String key) =>
       _fullProfile?[key] ?? widget.professional[key];
 
-  String get _name      => _get('name')?.toString()      ?? AppLocalizations.of(context)!.professionalDefaultName;
+  String get _name      => _get('name')?.toString()      ?? AppLocalizations.of(context).professionalDefaultName;
   String get _photoUrl  => (_get('photo_url') ?? '').toString();
   bool   get _verified  => _get('is_verified') == true;
   double get _rating    => double.tryParse(_get('average_rating')?.toString() ?? '0') ?? 0.0;
@@ -260,10 +260,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
   String get _responseTimeLabel {
     final hrs = _responseTimeHrs;
-    if (hrs <= 0) return AppLocalizations.of(context)!.instantLabel;
-    if (hrs < 1) return AppLocalizations.of(context)!.minutesLabel((hrs * 60).round());
-    if (hrs == hrs.roundToDouble()) return AppLocalizations.of(context)!.hoursLabel(hrs.round());
-    return AppLocalizations.of(context)!.hoursDecimalLabel(hrs.toStringAsFixed(1));
+    if (hrs <= 0) return AppLocalizations.of(context).instantLabel;
+    if (hrs < 1) return AppLocalizations.of(context).minutesLabel((hrs * 60).round());
+    if (hrs == hrs.roundToDouble()) return AppLocalizations.of(context).hoursLabel(hrs.round());
+    return AppLocalizations.of(context).hoursDecimalLabel(hrs.toStringAsFixed(1));
   }
 
   String get _memberSinceLabel {
@@ -295,8 +295,8 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
     return Scaffold(
       backgroundColor: isDark
-          ? const Color(0xFF0F172A)
-          : const Color(0xFFF5F7FA),
+          ? AppColors.background
+          : AppColors.lightScaffold,
       body: _isLoading
           ? const AppFullLoader()
           : _loadError != null
@@ -344,8 +344,8 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               height: 80,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
-                    : const Color(0xFFF3F4F6),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : AppColors.neutral100,
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -356,9 +356,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             ),
             const SizedBox(height: 20),
             Text(
-              _loadError ?? AppLocalizations.of(context)!.professionalDetailLoadError,
+              _loadError ?? AppLocalizations.of(context).professionalDetailLoadError,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w600,
                 color: context.colors.textPrimary,
                 letterSpacing: -0.2,
@@ -369,7 +369,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               onPressed: _loadData,
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: Text(
-                AppLocalizations.of(context)!.retryCta,
+                AppLocalizations.of(context).retryCta,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.3,
@@ -380,7 +380,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 elevation: 0,
               ),
@@ -417,7 +417,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           child: Center(
             child: AppBarIconButton(
               icon: _isFavorite ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-              tooltip: AppLocalizations.of(context)!.save,
+              tooltip: AppLocalizations.of(context).save,
               onGradient: true,
               onPressed: _toggleFavorite,
             ),
@@ -445,10 +445,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.4), width: 3),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 3),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 16,
                             offset: const Offset(0, 4),
                           ),
@@ -456,10 +456,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                       ),
                       child: CircleAvatar(
                         radius: avatarR,
-                        backgroundColor: Colors.white.withOpacity(0.2),
+                        backgroundColor: Colors.white.withValues(alpha: 0.2),
                         backgroundImage: photo.isNotEmpty ? NetworkImage(photo) : null,
                         onBackgroundImageError: photo.isNotEmpty
-                            ? (_, __) {}
+                            ? (_, _) {}
                             : null,
                         child: photo.isEmpty
                             ? Text(
@@ -482,7 +482,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                         width: ResponsiveUtils.sp(18, scale, min: 16, max: 22),
                         height: ResponsiveUtils.sp(18, scale, min: 16, max: 22),
                         decoration: BoxDecoration(
-                          color:  _isOnline ? const Color(0xFF34D399) : const Color(0xFF9CA3AF),
+                          color:  _isOnline ? AppColors.success : AppColors.neutral400,
                           shape:  BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2.5),
                         ),
@@ -500,9 +500,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (_verified) _headerBadge(Icons.verified_rounded, AppLocalizations.of(context)!.verifiedLabel, context.colors.accent),
+                        if (_verified) _headerBadge(Icons.verified_rounded, AppLocalizations.of(context).verifiedLabel, context.colors.accent),
                         if (_verified && _isTopRated) const SizedBox(width: 8),
-                        if (_isTopRated) _headerBadge(Icons.star_rounded, AppLocalizations.of(context)!.topRatedLabel, AppColors.badgeTopRated),
+                        if (_isTopRated) _headerBadge(Icons.star_rounded, AppLocalizations.of(context).topRatedLabel, AppColors.badgeTopRated),
                       ],
                     ),
                   ),
@@ -515,8 +515,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Flexible(
-                        child: Text(
+                        child: LocalizedText(
                           _name,
+                          kind: LocKind.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
@@ -545,10 +546,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
                 if (_get('category_name') != null && _get('category_name').toString().isNotEmpty)
                   Text(
-                    _get('category_name').toString(),
+                    AppHelpers.localizedCategoryName(context, _get('category_name').toString()),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: ResponsiveUtils.sp(14, scale, min: 12.5, max: 17), color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: ResponsiveUtils.sp(14, scale, min: 12.5, max: 17), color: Colors.white.withValues(alpha: 0.85), fontWeight: FontWeight.w500),
                   ),
 
                 const SizedBox(height: 6),
@@ -560,8 +561,8 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     const Icon(Icons.star_rounded, color: AppColors.badgeTopRated, size: 16),
                     const SizedBox(width: 4),
                     Text(
-                      '${_rating.toStringAsFixed(1)} (${_reviewsTotal} ${AppLocalizations.of(context)!.reviewsLabel})',
-                      style: TextStyle(fontSize: ResponsiveUtils.sp(12.5, scale, min: 11.5, max: 15), color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.w600),
+                      '${_rating.toStringAsFixed(1)} (${AppLocalizations.of(context).reviewCountPlural(_reviewsTotal)})',
+                      style: TextStyle(fontSize: ResponsiveUtils.sp(12.5, scale, min: 11.5, max: 15), color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -575,24 +576,26 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.location_on_outlined, color: Colors.white.withOpacity(0.8), size: ResponsiveUtils.sp(13, scale, min: 12, max: 16)),
+                        Icon(Icons.location_on_outlined, color: Colors.white.withValues(alpha: 0.8), size: ResponsiveUtils.sp(13, scale, min: 12, max: 16)),
                         const SizedBox(width: 3),
                         Flexible(
-                          child: Text(
+                          child: LocalizedText(
                             _get('city').toString(),
+                            kind: LocKind.city,
+                            isolate: true,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 15), color: Colors.white.withOpacity(0.8)),
+                            style: TextStyle(fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 15), color: Colors.white.withValues(alpha: 0.8)),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Container(width: 4, height: 4, decoration: BoxDecoration(color: Colors.white.withOpacity(0.5), shape: BoxShape.circle)),
+                        Container(width: 4, height: 4, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.5), shape: BoxShape.circle)),
                         const SizedBox(width: 8),
-                        Container(width: 7, height: 7, decoration: BoxDecoration(color: _isOnline ? const Color(0xFF34D399) : Colors.white.withOpacity(0.4), shape: BoxShape.circle)),
+                        Container(width: 7, height: 7, decoration: BoxDecoration(color: _isOnline ? AppColors.success : Colors.white.withValues(alpha: 0.4), shape: BoxShape.circle)),
                         const SizedBox(width: 4),
                         Text(
-                          _isOnline ? AppLocalizations.of(context)!.onlineLabel : AppLocalizations.of(context)!.offlineLabel,
-                          style: TextStyle(fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 15), color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w600),
+                          _isOnline ? AppLocalizations.of(context).onlineLabel : AppLocalizations.of(context).offlineLabel,
+                          style: TextStyle(fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 15), color: Colors.white.withValues(alpha: 0.85), fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
@@ -608,13 +611,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.screenPadding(width, base: 16)),
                   child: Row(
                     children: [
-                      Expanded(child: _heroStatPill(Icons.star_rounded, _rating.toStringAsFixed(1), AppLocalizations.of(context)!.ratingLabel, scale)),
+                      Expanded(child: _heroStatPill(Icons.star_rounded, _rating.toStringAsFixed(1), AppLocalizations.of(context).ratingLabel, scale)),
                       SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
-                      Expanded(child: _heroStatPill(Icons.forum_outlined, '${_reviewsTotal}', AppLocalizations.of(context)!.reviewsLabel, scale)),
+                      Expanded(child: _heroStatPill(Icons.forum_outlined, '$_reviewsTotal', AppLocalizations.of(context).reviewsLabel, scale)),
                       SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
-                      Expanded(child: _heroStatPill(Icons.work_outline_rounded, '$_completedJobs', AppLocalizations.of(context)!.jobsDoneLabel, scale)),
+                      Expanded(child: _heroStatPill(Icons.work_outline_rounded, '$_completedJobs', AppLocalizations.of(context).jobsDoneLabel, scale)),
                       SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
-                      Expanded(child: _heroStatPill(Icons.bolt_rounded, _responseTimeLabel, AppLocalizations.of(context)!.responseLabel, scale)),
+                      Expanded(child: _heroStatPill(Icons.bolt_rounded, _responseTimeLabel, AppLocalizations.of(context).responseLabel, scale)),
                     ],
                   ),
                 ),
@@ -632,9 +635,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     return Container(
       padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.sp(10, scale, min: 8, max: 13)),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.22)),
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
       ),
       child: Column(
         children: [
@@ -647,7 +650,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             style: TextStyle(fontSize: ResponsiveUtils.sp(13, scale, min: 11.5, max: 16), fontWeight: FontWeight.w800, color: Colors.white),
           ),
           SizedBox(height: ResponsiveUtils.sp(1, scale, min: 1, max: 2)),
-          Text(label, style: TextStyle(fontSize: ResponsiveUtils.sp(10, scale, min: 9, max: 12.5), color: Colors.white.withOpacity(0.75), fontWeight: FontWeight.w500)),
+          Text(label, style: TextStyle(fontSize: ResponsiveUtils.sp(10, scale, min: 9, max: 12.5), color: Colors.white.withValues(alpha: 0.75), fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -657,16 +660,16 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.16),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: Colors.white, size: 13),
           const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w700)),
+          Text(label, style: const TextStyle(fontSize: AppFontSizes.caption, color: Colors.white, fontWeight: FontWeight.w700)),
         ],
       ),
     );
@@ -675,16 +678,16 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   // ── Quick Information Cards (replaces the old CTA button row) ──────
   Widget _buildQuickInfoRow() {
     final items = <Map<String, dynamic>>[
-      {'icon': Icons.calendar_today_outlined, 'label': AppLocalizations.of(context)!.memberSinceLabel, 'value': _memberSinceLabel},
-      {'icon': Icons.event_available_outlined, 'label': AppLocalizations.of(context)!.availabilityLabel, 'value': _isAvailable ? AppLocalizations.of(context)!.availableNowLabel : AppLocalizations.of(context)!.currentlyBusyLabel},
-      {'icon': Icons.language_rounded, 'label': AppLocalizations.of(context)!.languagesLabel, 'value': _languagesList.isNotEmpty ? _languagesList.join(', ') : AppLocalizations.of(context)!.notSpecifiedLabel},
-      {'icon': Icons.work_history_outlined, 'label': AppLocalizations.of(context)!.experienceLabel, 'value': AppLocalizations.of(context)!.yearsLabel(_get('experience_years') ?? 0)},
+      {'icon': Icons.calendar_today_outlined, 'label': AppLocalizations.of(context).memberSinceLabel, 'value': _memberSinceLabel},
+      {'icon': Icons.event_available_outlined, 'label': AppLocalizations.of(context).availabilityLabel, 'value': _isAvailable ? AppLocalizations.of(context).availableNowLabel : AppLocalizations.of(context).currentlyBusyLabel},
+      {'icon': Icons.language_rounded, 'label': AppLocalizations.of(context).languagesLabel, 'value': _languagesList.isNotEmpty ? _languagesList.join(', ') : AppLocalizations.of(context).notSpecifiedLabel},
+      {'icon': Icons.work_history_outlined, 'label': AppLocalizations.of(context).experienceLabel, 'value': AppLocalizations.of(context).yearsLabel(_get('experience_years') ?? 0)},
     ];
 
     return SliverToBoxAdapter(
       child: Container(
         color: Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xFF0F172A)
+            ? AppColors.background
             : Colors.white,
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
         child: GridView.count(
@@ -707,13 +710,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withOpacity(0.04)
-            : const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(12),
+            ? Colors.white.withValues(alpha: 0.04)
+            : AppColors.tintGray,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.08)
-              : const Color(0xFFE5E7EB),
+              ? Colors.white.withValues(alpha: 0.08)
+              : AppColors.neutral200,
         ),
       ),
       child: Row(
@@ -723,9 +726,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             height: 32,
             decoration: BoxDecoration(
               color: isDark
-                  ? AppColors.customerColor.withOpacity(0.15)
+                  ? AppColors.customerColor.withValues(alpha: 0.15)
                   : context.colors.primaryLight,
-              borderRadius: BorderRadius.circular(9),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
             child: Icon(
               icon,
@@ -742,10 +745,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 10.5,
+                    fontSize: AppFontSizes.caption,
                     color: isDark
-                        ? Colors.white.withOpacity(0.5)
-                        : const Color(0xFF9CA3AF),
+                        ? Colors.white.withValues(alpha: 0.5)
+                        : AppColors.neutral400,
                   ),
                 ),
                 Text(
@@ -753,7 +756,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 12.5,
+                    fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w700,
                     color: context.colors.textPrimary,
                   ),
@@ -775,16 +778,16 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           controller:           _tabController,
           isScrollable:         true,
           labelColor:           AppColors.customerColor,
-          unselectedLabelColor: const Color(0xFF9CA3AF),
+          unselectedLabelColor: context.colors.textSecondary,
           indicatorColor:       AppColors.customerColor,
           indicatorWeight:      2.5,
-          labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          labelStyle: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600),
           tabs: [
-            const Tab(text: 'Overview'),
-            Tab(text: 'Portfolio (${_portfolio.length})'),
-            Tab(text: 'Reviews (${_reviewsTotal})'),
-            const Tab(text: 'Services'),
-            const Tab(text: 'Availability'),
+            Tab(text: AppLocalizations.of(context).detailTabOverview),
+            Tab(text: AppLocalizations.of(context).detailTabPortfolio(_portfolio.length)),
+            Tab(text: AppLocalizations.of(context).detailTabReviews(_reviewsTotal)),
+            Tab(text: AppLocalizations.of(context).detailTabServices),
+            Tab(text: AppLocalizations.of(context).detailTabAvailability),
           ],
         ),
       ),
@@ -803,25 +806,25 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (bio.isNotEmpty) ...[
-            _sectionTitle(AppLocalizations.of(context)!.aboutLabel),
+            _sectionTitle(AppLocalizations.of(context).aboutLabel),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.04)
+                    ? Colors.white.withValues(alpha: 0.04)
                     : Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 border: Border.all(
                   color: isDark
-                      ? Colors.white.withOpacity(0.08)
-                      : const Color(0xFFE5E7EB),
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : AppColors.neutral200,
                 ),
               ),
               child: Text(
                 bio,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: AppFontSizes.secondary,
                   color: context.colors.textPrimary,
                   height: 1.6,
                 ),
@@ -830,41 +833,41 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             const SizedBox(height: 20),
           ],
 
-          _sectionTitle(AppLocalizations.of(context)!.detailsLabel),
+          _sectionTitle(AppLocalizations.of(context).detailsLabel),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withOpacity(0.04)
+                  ? Colors.white.withValues(alpha: 0.04)
                   : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withOpacity(0.08)
-                    : const Color(0xFFE5E7EB),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : AppColors.neutral200,
               ),
             ),
             child: Column(
               children: [
-                _detailRow(Icons.work_outline_rounded, AppLocalizations.of(context)!.experienceLabel, AppLocalizations.of(context)!.yearsLabel(exp)),
+                _detailRow(Icons.work_outline_rounded, AppLocalizations.of(context).experienceLabel, AppLocalizations.of(context).yearsLabel(exp)),
                 const Divider(height: 20),
-                _detailRow(Icons.attach_money_rounded, AppLocalizations.of(context)!.hourlyRateLabel,
+                _detailRow(Icons.attach_money_rounded, AppLocalizations.of(context).hourlyRateLabel,
                     '\$${_get('hourly_rate') ?? 0}/hr'),
                 const Divider(height: 20),
-                _detailRow(Icons.location_on_outlined, AppLocalizations.of(context)!.cityLabel,
-                    (_get('city') ?? 'N/A').toString()),
+                _detailRow(Icons.location_on_outlined, AppLocalizations.of(context).cityLabel,
+                    ContentLocalizer.instance.peek((_get('city') ?? AppLocalizations.of(context).detailNotAvailable).toString(), LocKind.city)),
                 const Divider(height: 20),
                 _detailRow(
                   Icons.verified_outlined,
-                  AppLocalizations.of(context)!.verificationLabel,
-                  _verified ? AppLocalizations.of(context)!.verifiedProfessionalLabel : AppLocalizations.of(context)!.notVerifiedLabel,
+                  AppLocalizations.of(context).verificationLabel,
+                  _verified ? AppLocalizations.of(context).verifiedProfessionalLabel : AppLocalizations.of(context).notVerifiedLabel,
                   valueColor: _verified ? context.colors.accent : AppColors.warning,
                 ),
                 if ((_get('category_name') ?? '').toString().isNotEmpty) ...[
                   const Divider(height: 20),
-                  _detailRow(Icons.category_outlined, AppLocalizations.of(context)!.categoryLabel,
-                      _get('category_name').toString()),
+                  _detailRow(Icons.category_outlined, AppLocalizations.of(context).categoryLabel,
+                      AppHelpers.localizedCategoryName(context, _get('category_name').toString())),
                 ],
               ],
             ),
@@ -872,7 +875,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
           if (_skillsList.isNotEmpty) ...[
             const SizedBox(height: 20),
-            _sectionTitle(AppLocalizations.of(context)!.skillsLabel),
+            _sectionTitle(AppLocalizations.of(context).skillsLabel),
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
@@ -883,15 +886,15 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
           if (_verified || _isTopRated || _isFastResponder || _certificates.isNotEmpty) ...[
             const SizedBox(height: 20),
-            _sectionTitle(AppLocalizations.of(context)!.certificationsLabel),
+            _sectionTitle(AppLocalizations.of(context).certificationsLabel),
             const SizedBox(height: 10),
             Wrap(
               spacing: 10,
               runSpacing: 10,
               children: [
-                if (_verified) _badgeTile(Icons.verified_user_rounded, AppLocalizations.of(context)!.idVerifiedLabel, context.colors.accent),
-                if (_isTopRated) _badgeTile(Icons.workspace_premium_rounded, AppLocalizations.of(context)!.topRatedLabel, AppColors.badgeTopRated),
-                if (_isFastResponder) _badgeTile(Icons.bolt_rounded, AppLocalizations.of(context)!.fastResponseLabel, AppColors.info),
+                if (_verified) _badgeTile(Icons.verified_user_rounded, AppLocalizations.of(context).idVerifiedLabel, context.colors.accent),
+                if (_isTopRated) _badgeTile(Icons.workspace_premium_rounded, AppLocalizations.of(context).topRatedLabel, AppColors.badgeTopRated),
+                if (_isFastResponder) _badgeTile(Icons.bolt_rounded, AppLocalizations.of(context).fastResponseLabel, AppColors.info),
               ],
             ),
             if (_certificates.isNotEmpty) ...[
@@ -902,14 +905,14 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
           if (_related.isNotEmpty) ...[
             const SizedBox(height: 24),
-            _sectionTitle(AppLocalizations.of(context)!.relatedProfessionalsLabel),
+            _sectionTitle(AppLocalizations.of(context).relatedProfessionalsLabel),
             const SizedBox(height: 10),
             SizedBox(
               height: ProfessionalCard.heightFor(context),
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: _related.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                separatorBuilder: (_, _) => const SizedBox(width: 12),
                 itemBuilder: (ctx, i) {
                   final item = Map<String, dynamic>.from(_related[i] as Map);
                   return SizedBox(
@@ -942,9 +945,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: isDark
-            ? AppColors.customerColor.withOpacity(0.15)
+            ? AppColors.customerColor.withValues(alpha: 0.15)
             : context.colors.primaryLight,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -958,7 +961,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: AppFontSizes.small,
               fontWeight: FontWeight.w600,
               color: AppColors.customerColor,
             ),
@@ -972,9 +975,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.25)),
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -984,7 +987,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: AppFontSizes.small,
               fontWeight: FontWeight.w700,
               color: color,
             ),
@@ -995,7 +998,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   }
 
   Widget _certificateRow(dynamic cert) {
-    final title = cert['title']?.toString() ?? 'Certificate';
+    final title = cert['title']?.toString() ?? AppLocalizations.of(context).detailCertificateDefault;
     final org   = cert['issuing_organization']?.toString() ?? '';
     final date  = cert['issue_date'] != null ? _formatDate(cert['issue_date'].toString()) : '';
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -1005,13 +1008,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withOpacity(0.04)
+            ? Colors.white.withValues(alpha: 0.04)
             : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.08)
-              : const Color(0xFFE5E7EB),
+              ? Colors.white.withValues(alpha: 0.08)
+              : AppColors.neutral200,
         ),
       ),
       child: Row(
@@ -1021,9 +1024,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             height: 34,
             decoration: BoxDecoration(
               color: isDark
-                  ? AppColors.customerColor.withOpacity(0.15)
+                  ? AppColors.customerColor.withValues(alpha: 0.15)
                   : context.colors.primaryLight,
-              borderRadius: BorderRadius.circular(9),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
             child: Icon(
               Icons.school_outlined,
@@ -1039,7 +1042,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w700,
                     color: context.colors.textPrimary,
                   ),
@@ -1048,7 +1051,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   Text(
                     org,
                     style: TextStyle(
-                      fontSize: 11.5,
+                      fontSize: AppFontSizes.small,
                       color: context.colors.textSecondary,
                     ),
                   ),
@@ -1059,7 +1062,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             Text(
               date,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: AppFontSizes.caption,
                 color: context.colors.textSecondary,
               ),
             ),
@@ -1075,25 +1078,25 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     if (_servicesList.isEmpty) {
       return _emptyTabState(
         Icons.design_services_outlined,
-        AppLocalizations.of(context)!.noServicesTitle,
-        AppLocalizations.of(context)!.noServicesSubtitle,
+        AppLocalizations.of(context).noServicesTitle,
+        AppLocalizations.of(context).noServicesSubtitle,
       );
     }
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: _servicesList.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (ctx, i) => Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isDark
-              ? Colors.white.withOpacity(0.04)
+              ? Colors.white.withValues(alpha: 0.04)
               : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           border: Border.all(
             color: isDark
-                ? Colors.white.withOpacity(0.08)
-                : const Color(0xFFE5E7EB),
+                ? Colors.white.withValues(alpha: 0.08)
+                : AppColors.neutral200,
           ),
         ),
         child: Row(
@@ -1103,9 +1106,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               height: 32,
               decoration: BoxDecoration(
                 color: isDark
-                    ? AppColors.customerColor.withOpacity(0.15)
+                    ? AppColors.customerColor.withValues(alpha: 0.15)
                     : context.colors.accentLight,
-                borderRadius: BorderRadius.circular(9),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               ),
               child: Icon(
                 Icons.check_rounded,
@@ -1118,7 +1121,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               child: Text(
                 _servicesList[i],
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: AppFontSizes.body,
                   fontWeight: FontWeight.w600,
                   color: context.colors.textPrimary,
                 ),
@@ -1146,30 +1149,30 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             decoration: BoxDecoration(
               color: _isAvailable
                   ? (isDark
-                      ? const Color(0xFF10B981).withOpacity(0.15)
+                      ? AppColors.emerald.withValues(alpha: 0.15)
                       : context.colors.accentLight)
                   : (isDark
-                      ? Colors.white.withOpacity(0.05)
-                      : const Color(0xFFF3F4F6)),
-              borderRadius: BorderRadius.circular(14),
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : AppColors.neutral100),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             ),
             child: Row(
               children: [
                 Icon(
                   _isAvailable ? Icons.check_circle_rounded : Icons.pause_circle_outline_rounded,
-                  color: _isAvailable ? context.colors.accent : const Color(0xFF9CA3AF),
+                  color: _isAvailable ? context.colors.accent : context.colors.textSecondary,
                   size: 22,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     _isAvailable
-                        ? AppLocalizations.of(context)!.acceptingBookingsLabel
-                        : AppLocalizations.of(context)!.notAcceptingBookingsLabel,
+                        ? AppLocalizations.of(context).acceptingBookingsLabel
+                        : AppLocalizations.of(context).notAcceptingBookingsLabel,
                     style: TextStyle(
-                      fontSize: 13.5,
+                      fontSize: AppFontSizes.body,
                       fontWeight: FontWeight.w700,
-                      color: _isAvailable ? context.colors.accent : const Color(0xFF6B7280),
+                      color: _isAvailable ? context.colors.accent : context.colors.textSecondary,
                     ),
                   ),
                 ),
@@ -1177,40 +1180,40 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             ),
           ),
           const SizedBox(height: 16),
-          _sectionTitle(AppLocalizations.of(context)!.workingHoursLabel),
+          _sectionTitle(AppLocalizations.of(context).workingHoursLabel),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withOpacity(0.04)
+                  ? Colors.white.withValues(alpha: 0.04)
                   : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withOpacity(0.08)
-                    : const Color(0xFFE5E7EB),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : AppColors.neutral200,
               ),
             ),
-            child: _detailRow(Icons.schedule_rounded, AppLocalizations.of(context)!.dailyHoursLabel, '$start – $end'),
+            child: _detailRow(Icons.schedule_rounded, AppLocalizations.of(context).dailyHoursLabel, '$start – $end'),
           ),
           const SizedBox(height: 16),
-          _sectionTitle(AppLocalizations.of(context)!.responseTimeLabel),
+          _sectionTitle(AppLocalizations.of(context).responseTimeLabel),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withOpacity(0.04)
+                  ? Colors.white.withValues(alpha: 0.04)
                   : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withOpacity(0.08)
-                    : const Color(0xFFE5E7EB),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : AppColors.neutral200,
               ),
             ),
-            child: _detailRow(Icons.bolt_rounded, AppLocalizations.of(context)!.typicallyRepliesLabel, _responseTimeLabel),
+            child: _detailRow(Icons.bolt_rounded, AppLocalizations.of(context).typicallyRepliesLabel, _responseTimeLabel),
           ),
         ],
       ),
@@ -1231,23 +1234,23 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               height: 88,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
-                    : const Color(0xFFF3F4F6),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : AppColors.neutral100,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
                 size: 40,
                 color: isDark
-                    ? Colors.white.withOpacity(0.3)
-                    : const Color(0xFFD1D5DB),
+                    ? Colors.white.withValues(alpha: 0.3)
+                    : AppColors.neutral300,
               ),
             ),
             const SizedBox(height: 18),
             Text(
               title,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w600,
                 color: context.colors.textPrimary,
                 letterSpacing: -0.2,
@@ -1260,7 +1263,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                 subtitle,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: AppFontSizes.secondary,
                   color: context.colors.textSecondary,
                   letterSpacing: 0.2,
                 ),
@@ -1279,8 +1282,8 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     if (_reviews.isEmpty) {
       return _emptyTabState(
         Icons.rate_review_outlined,
-        AppLocalizations.of(context)!.noReviewsTitle,
-        AppLocalizations.of(context)!.noReviewsSubtitle,
+        AppLocalizations.of(context).noReviewsTitle,
+        AppLocalizations.of(context).noReviewsSubtitle,
       );
     }
 
@@ -1299,13 +1302,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: isDark
-                ? Colors.white.withOpacity(0.04)
+                ? Colors.white.withValues(alpha: 0.04)
                 : Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             border: Border.all(
               color: isDark
-                  ? Colors.white.withOpacity(0.08)
-                  : const Color(0xFFE5E7EB),
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : AppColors.neutral200,
             ),
           ),
           child: Column(
@@ -1320,9 +1323,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          review['reviewer_name']?.toString() ?? AppLocalizations.of(context)!.userLabel,
+                          review['reviewer_name']?.toString() ?? AppLocalizations.of(context).userLabel,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: AppFontSizes.body,
                             fontWeight: FontWeight.w600,
                             color: context.colors.textPrimary,
                           ),
@@ -1331,7 +1334,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                           Text(
                             date,
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: AppFontSizes.caption,
                               color: context.colors.textSecondary,
                             ),
                           ),
@@ -1343,7 +1346,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                       index < rating
                           ? Icons.star_rounded
                           : Icons.star_outline_rounded,
-                      color: const Color(0xFFF59E0B),
+                      color: AppColors.warningAmber,
                       size:  14,
                     )),
                   ),
@@ -1354,7 +1357,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                 Text(
                   review['comment'].toString(),
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     color: context.colors.textSecondary,
                     height: 1.5,
                   ),
@@ -1374,8 +1377,8 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     if (_portfolio.isEmpty) {
       return _emptyTabState(
         Icons.photo_library_outlined,
-        AppLocalizations.of(context)!.noPortfolioTitle,
-        AppLocalizations.of(context)!.noPortfolioSubtitle,
+        AppLocalizations.of(context).noPortfolioTitle,
+        AppLocalizations.of(context).noPortfolioSubtitle,
       );
     }
 
@@ -1403,19 +1406,19 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             curve: Curves.easeOut,
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withOpacity(0.04)
+                  ? Colors.white.withValues(alpha: 0.04)
                   : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withOpacity(0.08)
-                    : const Color(0xFFE5E7EB),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : AppColors.neutral200,
               ),
               boxShadow: [
                 BoxShadow(
                   color: isDark
-                      ? Colors.black.withOpacity(0.15)
-                      : Colors.black.withOpacity(0.04),
+                      ? Colors.black.withValues(alpha: 0.15)
+                      : Colors.black.withValues(alpha: 0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -1432,21 +1435,21 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                           imageUrl,
                           width:      double.infinity,
                           fit:        BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
+                          errorBuilder: (_, _, _) => Container(
                             color: isDark
-                                ? Colors.white.withOpacity(0.05)
-                                : const Color(0xFFF3F4F6),
+                                ? Colors.white.withValues(alpha: 0.05)
+                                : AppColors.neutral100,
                             child: const Center(
                               child: Icon(Icons.broken_image_outlined,
-                                  color: Color(0xFFD1D5DB), size: 32),
+                                  color: AppColors.neutral300, size: 32),
                             ),
                           ),
                           loadingBuilder: (ctx, child, progress) {
                             if (progress == null) return child;
                             return Container(
                               color: isDark
-                                  ? Colors.white.withOpacity(0.05)
-                                  : const Color(0xFFF3F4F6),
+                                  ? Colors.white.withValues(alpha: 0.05)
+                                  : AppColors.neutral100,
                               child: Center(
                                 child: CircularProgressIndicator(
                                   value: progress.expectedTotalBytes != null
@@ -1462,13 +1465,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                         )
                       : Container(
                           color: isDark
-                              ? Colors.white.withOpacity(0.05)
+                              ? Colors.white.withValues(alpha: 0.05)
                               : context.colors.primaryLight,
                           child: Center(
                             child: Icon(Icons.image_outlined,
                                 color: isDark
-                                    ? Colors.white.withOpacity(0.3)
-                                    : context.colors.primary.withOpacity(0.4),
+                                    ? Colors.white.withValues(alpha: 0.3)
+                                    : context.colors.primary.withValues(alpha: 0.4),
                                 size: 36),
                           ),
                         ),
@@ -1485,7 +1488,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: AppFontSizes.small,
                             fontWeight: FontWeight.w700,
                             color: context.colors.textPrimary,
                           ),
@@ -1497,7 +1500,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: AppFontSizes.caption,
                             color: context.colors.textSecondary,
                           ),
                         ),
@@ -1516,7 +1519,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   // ── Portfolio Detail Bottom Sheet ─────────────────────────
   void _showPortfolioDetail(Map<String, dynamic> item) {
     final imageUrl = item['image_url']?.toString() ?? '';
-    final title    = item['title']?.toString() ?? 'Portfolio Item';
+    final title    = item['title']?.toString() ?? AppLocalizations.of(context).detailPortfolioItemDefault;
     final desc     = item['description']?.toString() ?? '';
     final date     = item['created_at'] != null
         ? _formatDate(item['created_at'].toString())
@@ -1530,9 +1533,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       builder: (_) => Container(
         decoration: BoxDecoration(
           color: isDark
-              ? const Color(0xFF1E293B)
+              ? AppColors.surface
               : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1542,8 +1545,8 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               width: 36, height: 4,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.15)
-                    : const Color(0xFFE5E7EB),
+                    ? Colors.white.withValues(alpha: 0.15)
+                    : AppColors.neutral200,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -1552,21 +1555,21 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                 margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                 height: 240,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   color: isDark
-                      ? Colors.white.withOpacity(0.05)
-                      : const Color(0xFFF3F4F6),
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : AppColors.neutral100,
                 ),
                 clipBehavior: Clip.hardEdge,
                 child: Image.network(
                   imageUrl,
                   width:  double.infinity,
                   fit:    BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Center(
+                  errorBuilder: (_, _, _) => Center(
                     child: Icon(Icons.broken_image_outlined,
                         color: isDark
-                            ? Colors.white.withOpacity(0.3)
-                            : const Color(0xFFD1D5DB),
+                            ? Colors.white.withValues(alpha: 0.3)
+                            : AppColors.neutral300,
                         size: 48),
                   ),
                 ),
@@ -1583,7 +1586,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                         child: Text(
                           title,
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: AppFontSizes.title2,
                             fontWeight: FontWeight.w700,
                             color: context.colors.textPrimary,
                           ),
@@ -1593,7 +1596,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                         Text(
                           date,
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: AppFontSizes.caption,
                             color: context.colors.textSecondary,
                           ),
                         ),
@@ -1604,7 +1607,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     Text(
                       desc,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: AppFontSizes.secondary,
                         color: context.colors.textSecondary,
                         height: 1.6,
                       ),
@@ -1628,7 +1631,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
     final pro = {
       ...widget.professional,
-      if (_fullProfile != null) ..._fullProfile!,
+      ...?_fullProfile,
       'id':      originalUserId,
       'user_id': originalUserId,
     };
@@ -1636,10 +1639,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     return Container(
       decoration: BoxDecoration(
         color: context.colors.surface,
-        border: const Border(top: BorderSide(color: Color(0xFFE5E7EB))),
+        border: Border(top: BorderSide(color: context.colors.divider)),
         boxShadow: [
           BoxShadow(
-              color:      Colors.black.withOpacity(0.06),
+              color:      Colors.black.withValues(alpha: 0.06),
               blurRadius: 12,
               offset:     const Offset(0, -4)),
         ],
@@ -1657,10 +1660,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.hourlyRateLabel,
+                      AppLocalizations.of(context).hourlyRateLabel,
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 14),
-                        color: const Color(0xFF9CA3AF),
+                        color: context.colors.textSecondary,
                       ),
                     ),
                     Text(
@@ -1680,13 +1683,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   onTap: _isStartingChat ? null : () => _startConversation(pro),
                   child: Container(
                     width: btnSize, height: btnSize,
                     decoration: BoxDecoration(
                       border: Border.all(color: context.colors.primary, width: 1.5),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                     ),
                     child: _isStartingChat
                         ? const Padding(
@@ -1713,12 +1716,12 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     minimumSize: Size(0, btnSize),
                     elevation: 2,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
                   ),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
-                      AppLocalizations.of(context)!.bookNowCta,
+                      AppLocalizations.of(context).bookNowCta,
                       style: TextStyle(
                           fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
                           fontWeight: FontWeight.w700),
@@ -1746,14 +1749,14 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           padding: EdgeInsets.fromLTRB(ResponsiveUtils.screenPadding(width, base: 16), 12, ResponsiveUtils.screenPadding(width, base: 16), 12),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF9CA3AF),
+              backgroundColor: AppColors.neutral400,
               minimumSize:     Size(double.infinity, ResponsiveUtils.sp(50, scale, min: 48, max: 62)),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
             ),
             onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
             child: Text(
-              AppLocalizations.of(context)!.loginToBookCta,
+              AppLocalizations.of(context).loginToBookCta,
               style: TextStyle(
                 fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
                 fontWeight: FontWeight.w700,
@@ -1782,13 +1785,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           builder: (_) => ChatScreen(
               conversationId: data['id'] is int ? data['id'] as int : int.parse(data['id'].toString()),
               currentUserId: myId,
-              otherUserName: data['other_user_name']?.toString() ?? pro['name']?.toString() ?? AppLocalizations.of(context)!.professionalDefaultName,
+              otherUserName: data['other_user_name']?.toString() ?? pro['name']?.toString() ?? AppLocalizations.of(context).professionalDefaultName,
               otherUserPhoto: data['other_user_photo']?.toString(),
               conversationSnapshot: ConversationModel.fromJson(data),
             )));
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context)!.startConversationError);
+      AppHelpers.showError(context, AppLocalizations.of(context).startConversationError);
     } finally {
       if (mounted) setState(() => _isStartingChat = false);
     }
@@ -1808,7 +1811,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     return Text(
       title,
       style: TextStyle(
-        fontSize: 15,
+        fontSize: AppFontSizes.body,
         fontWeight: FontWeight.w700,
         color: context.colors.textPrimary,
         letterSpacing: -0.1,
@@ -1827,9 +1830,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           height: 34,
           decoration: BoxDecoration(
             color: isDark
-                ? AppColors.customerColor.withOpacity(0.15)
+                ? AppColors.customerColor.withValues(alpha: 0.15)
                 : context.colors.primaryLight,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppSizes.radiusSm),
           ),
           child: Icon(
             icon,
@@ -1845,16 +1848,16 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: AppFontSizes.caption,
                   color: isDark
-                      ? Colors.white.withOpacity(0.5)
-                      : const Color(0xFF9CA3AF),
+                      ? Colors.white.withValues(alpha: 0.5)
+                      : AppColors.neutral400,
                 ),
               ),
               Text(
                 value,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: AppFontSizes.secondary,
                   fontWeight: FontWeight.w600,
                   color: valueColor ?? context.colors.textPrimary,
                 ),
@@ -1877,7 +1880,7 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       color: isDark
-          ? const Color(0xFF0F172A)
+          ? AppColors.background
           : Colors.white,
       child: tabBar,
     );

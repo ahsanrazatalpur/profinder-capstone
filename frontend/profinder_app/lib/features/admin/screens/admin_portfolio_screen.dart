@@ -21,6 +21,8 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 /// Responsive breakpoints shared across the screen.
 class _Breakpoints {
@@ -108,6 +110,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
         '/profiles/admin/portfolio/${item['id']}/',
         {'status': 'approved'},
       );
+      if (!mounted) return;
       // Remove from list immediately so the queue reflects the change.
       setState(() => _items.removeWhere((i) => i['id'] == item['id']));
       _showSnack('"$title" approved', context.colors.accent,
@@ -147,7 +150,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: _buildAppBar(),
       body: SafeArea(
         top: false,
@@ -227,12 +230,12 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: _HoverLift(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   hoverScale: 1.015,
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       onTap: () {
                         setState(() => _activeStatus = t.$1);
                         _load();
@@ -246,18 +249,18 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                         decoration: BoxDecoration(
                           color: isActive
                               ? t.$3
-                              : const Color(0xFFF3F4F6),
-                          borderRadius: BorderRadius.circular(12),
+                              : AppColors.neutral100,
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           border: Border.all(
                             color: isActive
                                 ? t.$3
-                                : const Color(0xFFE5E7EB),
+                                : AppColors.neutral200,
                             width: 1,
                           ),
                           boxShadow: isActive
                               ? [
                                   BoxShadow(
-                                    color: t.$3.withOpacity(0.25),
+                                    color: t.$3.withValues(alpha: 0.25),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -272,7 +275,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                               size: 16,
                               color: isActive
                                   ? Colors.white
-                                  : const Color(0xFF6B7280),
+                                  : AppColors.grayDeep,
                             ),
                             const SizedBox(width: 6),
                             Flexible(
@@ -287,7 +290,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                                   letterSpacing: 0.1,
                                   color: isActive
                                       ? Colors.white
-                                      : const Color(0xFF6B7280),
+                                      : AppColors.grayDeep,
                                 ),
                               ),
                             ),
@@ -401,15 +404,15 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
             : AppColors.warning;
 
     return _HoverLift(
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(AppSizes.radius18),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radius18),
+          border: Border.all(color: AppColors.neutral200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 14,
               offset: const Offset(0, 6),
             ),
@@ -441,9 +444,9 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: AppFontSizes.title,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF111827),
+                        color: AppColors.gray900,
                         letterSpacing: -0.2,
                         height: 1.25,
                       ),
@@ -455,8 +458,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                       Text(
                         desc,
                         style: const TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF6B7280),
+                          fontSize: AppFontSizes.secondary,
+                          color: AppColors.grayDeep,
                           height: 1.5,
                         ),
                         maxLines: 2,
@@ -504,13 +507,13 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
           child: Image.network(
             imageUrl,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
+            errorBuilder: (_, _, _) => Container(
               height: 170,
-              color: const Color(0xFFF3F4F6),
+              color: AppColors.neutral100,
               child: const Center(
                 child: Icon(
                   Icons.broken_image_outlined,
-                  color: Color(0xFFD1D5DB),
+                  color: AppColors.neutral300,
                   size: 48,
                 ),
               ),
@@ -519,7 +522,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               if (prog == null) return child;
               return Container(
                 height: 170,
-                color: const Color(0xFFF3F4F6),
+                color: AppColors.neutral100,
                 child: Center(
                   child: SizedBox(
                     width: 26,
@@ -548,7 +551,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withOpacity(0.30),
+                    Colors.black.withValues(alpha: 0.30),
                   ],
                   stops: const [0.55, 1.0],
                 ),
@@ -576,7 +579,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
           child: Center(
             child: Icon(
               Icons.image_outlined,
-              color: context.colors.primary.withOpacity(0.35),
+              color: context.colors.primary.withValues(alpha: 0.35),
               size: 42,
             ),
           ),
@@ -596,10 +599,10 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.35),
+            color: color.withValues(alpha: 0.35),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -620,7 +623,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
           Text(
             text.toUpperCase(),
             style: const TextStyle(
-              fontSize: 10,
+              fontSize: AppFontSizes.micro,
               fontWeight: FontWeight.w800,
               color: Colors.white,
               letterSpacing: 0.6,
@@ -636,9 +639,9 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        color: AppColors.slate50,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        border: Border.all(color: AppColors.neutral200),
       ),
       child: Row(
         children: [
@@ -648,8 +651,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
             child: Text(
               AppHelpers.getInitials(proName),
               style: const TextStyle(
-                fontSize: 10,
-                color: Color(0xFF7C3AED),
+                fontSize: AppFontSizes.micro,
+                color: AppColors.accentPurple,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.3,
               ),
@@ -663,9 +666,9 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                 Text(
                   proName,
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF374151),
+                    color: AppColors.gray700,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -675,8 +678,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                       ? Text(
                           proEmail,
                           style: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF9CA3AF),
+                            fontSize: AppFontSizes.caption,
+                            color: AppColors.neutral400,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -688,7 +691,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
           const Icon(
             Icons.person_outline_rounded,
             size: 16,
-            color: Color(0xFF9CA3AF),
+            color: AppColors.neutral400,
           ),
         ],
       ),
@@ -701,9 +704,9 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: AppColors.error.withOpacity(0.06),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.error.withOpacity(0.22)),
+        color: AppColors.error.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.22)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -718,7 +721,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
             child: Text(
               adminNote,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: AppFontSizes.small,
                 color: AppColors.error,
                 height: 1.45,
               ),
@@ -738,7 +741,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
       children: [
         Expanded(
           child: _HoverLift(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             hoverScale: 1.02,
             child: ElevatedButton.icon(
               onPressed: () => _approve(item),
@@ -746,7 +749,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               label: const Text(
                 'Approve',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: AppFontSizes.secondary,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.1,
                 ),
@@ -757,7 +760,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 minimumSize: const Size(0, 48),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 elevation: 0,
               ),
@@ -767,7 +770,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
         const SizedBox(width: 10),
         Expanded(
           child: _HoverLift(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             hoverScale: 1.02,
             child: OutlinedButton.icon(
               onPressed: () => _reject(item),
@@ -775,7 +778,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               label: const Text(
                 'Reject',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: AppFontSizes.secondary,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.1,
                 ),
@@ -786,7 +789,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 minimumSize: const Size(0, 48),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
               ),
             ),
@@ -827,7 +830,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               width: 92,
               height: 92,
               decoration: BoxDecoration(
-                color: accent.withOpacity(0.09),
+                color: accent.withValues(alpha: 0.09),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, size: 44, color: accent),
@@ -836,9 +839,9 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
             Text(
               label,
               style: const TextStyle(
-                fontSize: 15,
+                fontSize: AppFontSizes.input,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF374151),
+                color: AppColors.gray700,
                 letterSpacing: -0.1,
               ),
             ),
@@ -847,7 +850,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               const Text(
                 'All portfolios reviewed!',
                 style: TextStyle(
-                    fontSize: 13, color: Color(0xFF9CA3AF)),
+                    fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
               ),
             ],
           ],
@@ -882,7 +885,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               width: 84,
               height: 84,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.09),
+                color: AppColors.error.withValues(alpha: 0.09),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -895,9 +898,9 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
             const Text(
               'Failed to load portfolios',
               style: TextStyle(
-                fontSize: 15,
+                fontSize: AppFontSizes.input,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF374151),
+                color: AppColors.gray700,
                 letterSpacing: -0.1,
               ),
             ),
@@ -918,7 +921,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                 minimumSize: const Size(0, 46),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
               ),
             ),
@@ -942,7 +945,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
           context: context,
           builder: (_) => AlertDialog(
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18)),
+                borderRadius: BorderRadius.circular(AppSizes.radius18)),
             titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
             contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
             title: Row(
@@ -951,8 +954,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                   width: 34,
                   height: 34,
                   decoration: BoxDecoration(
-                    color: confirmColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(10),
+                    color: confirmColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                   ),
                   child: Icon(icon, color: confirmColor, size: 18),
                 ),
@@ -961,7 +964,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                   child: Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: AppFontSizes.title,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.1,
                     ),
@@ -972,8 +975,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
             content: Text(
               message,
               style: const TextStyle(
-                fontSize: 13,
-                color: Color(0xFF6B7280),
+                fontSize: AppFontSizes.secondary,
+                color: AppColors.grayDeep,
                 height: 1.5,
               ),
             ),
@@ -987,7 +990,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                 child: const Text(
                   'Cancel',
                   style: TextStyle(
-                    color: Color(0xFF9CA3AF),
+                    color: AppColors.neutral400,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1000,7 +1003,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 18),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                   ),
                 ),
                 onPressed: () => Navigator.pop(context, true),
@@ -1026,7 +1029,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18)),
+            borderRadius: BorderRadius.circular(AppSizes.radius18)),
         titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
         contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
         title: Row(
@@ -1035,8 +1038,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(10),
+                color: AppColors.error.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
               ),
               child: const Icon(Icons.cancel_outlined,
                   color: AppColors.error, size: 18),
@@ -1046,7 +1049,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: AppFontSizes.input,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.1,
                 ),
@@ -1057,20 +1060,20 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
         content: TextField(
           controller: ctrl,
           maxLines: 3,
-          style: const TextStyle(fontSize: 13),
+          style: const TextStyle(fontSize: AppFontSizes.secondary),
           textCapitalization: TextCapitalization.sentences,
           decoration: InputDecoration(
             hintText: 'Write reason (optional)…',
-            hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
+            hintStyle: const TextStyle(color: AppColors.neutral400),
             filled: true,
-            fillColor: const Color(0xFFF3F4F6),
+            fillColor: AppColors.neutral100,
             contentPadding: const EdgeInsets.all(14),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               borderSide: const BorderSide(
                   color: AppColors.error, width: 1.4),
             ),
@@ -1086,7 +1089,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
             child: const Text(
               'Skip',
               style: TextStyle(
-                color: Color(0xFF9CA3AF),
+                color: AppColors.neutral400,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -1099,7 +1102,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               padding: const EdgeInsets.symmetric(horizontal: 18),
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
               ),
             ),
             onPressed: () => Navigator.pop(context, ctrl.text.trim()),
@@ -1133,7 +1136,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
-                  fontSize: 13,
+                  fontSize: AppFontSizes.secondary,
                 ),
               ),
             ),
@@ -1143,7 +1146,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(14),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
         duration: const Duration(seconds: 2),
       ),

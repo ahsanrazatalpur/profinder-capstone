@@ -35,7 +35,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
 
     // This screen appears before the user has ever chosen a theme
     // preference (it's the very first thing shown on a fresh install),
@@ -97,7 +97,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   child: ListView.separated(
                     padding: EdgeInsets.zero,
                     itemCount: SupportedLanguages.all.length,
-                    separatorBuilder: (_, __) => Divider(height: 1, color: context.colors.divider),
+                    separatorBuilder: (_, _) => Divider(height: 1, color: context.colors.divider),
                     itemBuilder: (_, i) {
                       final lang = SupportedLanguages.all[i];
                       final selected = lang.code == _selectedCode;

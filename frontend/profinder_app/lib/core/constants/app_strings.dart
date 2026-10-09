@@ -132,4 +132,32 @@ class AppStrings {
   static String get retry          => _t?.retry ?? 'Retry';
   static String get noData         => _t?.noData ?? 'Nothing to show here';
   static String get seeAll         => _t?.seeAll ?? 'See All';
+
+  // ─── Service / network errors (services have no BuildContext) ───
+  static String get errSomethingWentWrong =>
+      _t?.errSomethingWentWrong ?? 'Something went wrong.';
+  static String get errSomethingWentWrongTryAgain =>
+      _t?.errSomethingWentWrongTryAgain ?? 'Something went wrong. Please try again.';
+  static String get errNetworkCheckConnection =>
+      _t?.errNetworkCheckConnection ?? 'Network error. Please check your connection.';
+  static String get errNetworkProblemTryAgain =>
+      _t?.errNetworkProblemTryAgain ?? 'Network problem. Please check your connection and try again.';
+  static String get errNotLoggedIn =>
+      _t?.errNotLoggedIn ?? 'Not logged in';
+  static String errRequestFailedHttp(int code) =>
+      _t?.errRequestFailedHttp(code) ?? 'Request failed (HTTP $code).';
+
+  // ─── Chat (providers have no BuildContext) ───────────────
+  static String get chatCouldNotLoadMessages =>
+      _t?.chatCouldNotLoadMessages ?? 'Could not load messages';
+  static String get chatCouldNotLoadConversations =>
+      _t?.chatCouldNotLoadConversations ?? 'Could not load conversations';
+  static String get chatMessageWasDeleted =>
+      _t?.chatMessageWasDeleted ?? 'This message was deleted';
+  static String get chatVoiceMessagePreview =>
+      _t?.chatVoiceMessagePreview ?? '🎤 Voice message';
+  static String get chatPhotoPreview =>
+      _t?.chatPhotoPreview ?? '📷 Photo';
+  static String get errBookingLimitReached =>
+      _t?.errBookingLimitReached ?? 'Booking limit reached.';
 }

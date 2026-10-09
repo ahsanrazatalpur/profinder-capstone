@@ -12,6 +12,8 @@ import '../../../shared/widgets/simple_rich_text_editor.dart';
 import '../../about/models/about_page_model.dart';
 import 'admin_about_page_screen.dart' show sectionTypeLabel, suggestIconKeyForType;
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminAboutSectionEditorScreen extends StatefulWidget {
   final AboutSection section;
@@ -105,7 +107,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
           backgroundColor: Colors.green.shade600,
           content: const Row(
             children: [
@@ -126,11 +128,11 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         icon: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.orange.withOpacity(0.12),
+            color: Colors.orange.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
           child: const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 26),
@@ -143,7 +145,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
           FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: Colors.red.shade600,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
               onPressed: () => Navigator.pop(ctx, true), child: const Text('Discard')),
         ],
@@ -156,7 +158,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
     final selected = await showDialog<String>(
       context: context,
       builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
         child: Padding(
           padding: const EdgeInsets.all(18),
           child: ConstrainedBox(
@@ -168,7 +170,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
                 Row(
                   children: [
                     const Expanded(
-                      child: Text('Choose Icon', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      child: Text('Choose Icon', style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
                     ),
                     IconButton(
                       visualDensity: VisualDensity.compact,
@@ -214,7 +216,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
           content: const Row(
             children: [
               Icon(Icons.info_outline_rounded, color: Colors.white, size: 18),
@@ -242,7 +244,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
       canPop: !_dirty,
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
-        if (await _confirmDiscard() && mounted) Navigator.pop(context);
+        if (await _confirmDiscard() && mounted) Navigator.pop(this.context);
       },
       child: Scaffold(
         backgroundColor: context.colors.background,
@@ -251,7 +253,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
           icon: Icons.edit_note_rounded,
           // Keep the existing "discard unsaved changes?" confirmation.
           onBackPressed: () async {
-            if (await _confirmDiscard() && mounted) Navigator.pop(context);
+            if (await _confirmDiscard() && mounted) Navigator.pop(this.context);
           },
           actions: [
             AppBarIconButton(
@@ -288,9 +290,9 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
                                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                                 margin: const EdgeInsets.only(bottom: 16),
                                 decoration: BoxDecoration(
-                                  color: Colors.red.withOpacity(0.08),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.red.withOpacity(0.25)),
+                                  color: Colors.red.withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                                  border: Border.all(color: Colors.red.withValues(alpha: 0.25)),
                                 ),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -396,15 +398,15 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
                 border: Border.all(color: context.colors.divider),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: AppColors.adminColor.withOpacity(0.10),
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.adminColor.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                     ),
                     child: Icon(resolveAboutIcon(_icon), size: 18, color: AppColors.adminColor),
                   ),
@@ -413,7 +415,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
                     child: Text(
                       _icon.isEmpty ? 'Choose an icon…' : _icon,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: AppFontSizes.secondary,
                         color: _icon.isEmpty ? context.colors.textSecondary : null,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -436,9 +438,9 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
       decoration: InputDecoration(
         labelText: label,
         isDense: true,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: BorderSide(color: AppColors.adminColor, width: 1.6),
         ),
       ),
@@ -460,7 +462,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
           decoration: InputDecoration(
             labelText: 'Style',
             isDense: true,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
           ),
           items: const [
             DropdownMenuItem(value: 'primary', child: Text('Primary Button')),
@@ -523,9 +525,9 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
       decoration: InputDecoration(
         labelText: label,
         isDense: true,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: BorderSide(color: AppColors.adminColor, width: 1.6),
         ),
       ),
@@ -570,7 +572,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: context.colors.background,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
                   border: Border.all(color: context.colors.divider),
                 ),
                 child: Row(
@@ -582,7 +584,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
                         decoration: InputDecoration(
                           labelText: 'Label',
                           isDense: true,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
                         ),
                         onChanged: (v) { links[i]['label'] = v; _extraData['links'] = links; _markDirty(); },
                       ),
@@ -594,7 +596,7 @@ class _AdminAboutSectionEditorScreenState extends State<AdminAboutSectionEditorS
                         decoration: InputDecoration(
                           labelText: 'URL',
                           isDense: true,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
                         ),
                         onChanged: (v) { links[i]['url'] = v; _extraData['links'] = links; _markDirty(); },
                       ),
@@ -640,11 +642,11 @@ class _SectionCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
         border: Border.all(color: context.colors.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -658,9 +660,9 @@ class _SectionCard extends StatelessWidget {
               Icon(icon, size: 16, color: AppColors.adminColor),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                child: Text(title, style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700)),
               ),
-              if (headerTrailing != null) headerTrailing!,
+              ?headerTrailing,
             ],
           ),
           const SizedBox(height: 14),
@@ -727,7 +729,7 @@ class _HoverIconButtonState extends State<_HoverIconButton> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 120),
         decoration: BoxDecoration(
-          color: _hovering ? Colors.white.withOpacity(0.12) : Colors.transparent,
+          color: _hovering ? Colors.white.withValues(alpha: 0.12) : Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: IconButton(
@@ -797,15 +799,15 @@ class _HoverableIconTileState extends State<_HoverableIconTile> {
       cursor: SystemMouseCursors.click,
       child: InkWell(
         onTap: widget.onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 130),
           margin: const EdgeInsets.all(3),
           decoration: BoxDecoration(
             color: widget.selected
-                ? AppColors.adminColor.withOpacity(0.15)
-                : (_hovering ? AppColors.adminColor.withOpacity(0.06) : Colors.transparent),
-            borderRadius: BorderRadius.circular(10),
+                ? AppColors.adminColor.withValues(alpha: 0.15)
+                : (_hovering ? AppColors.adminColor.withValues(alpha: 0.06) : Colors.transparent),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
             border: widget.selected ? Border.all(color: AppColors.adminColor) : null,
           ),
           child: Icon(widget.icon, size: 20),
@@ -854,7 +856,7 @@ class _TranslationsSheetState extends State<_TranslationsSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
         backgroundColor: Colors.green.shade600,
         content: const Row(
           children: [
@@ -872,7 +874,7 @@ class _TranslationsSheetState extends State<_TranslationsSheet> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
       ),
       child: Padding(
         padding: EdgeInsets.only(
@@ -889,8 +891,8 @@ class _TranslationsSheetState extends State<_TranslationsSheet> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.4),
-                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.grey.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusXs),
                 ),
               ),
             ),
@@ -898,7 +900,7 @@ class _TranslationsSheetState extends State<_TranslationsSheet> {
               children: [
                 const Icon(Icons.translate_rounded, size: 18, color: AppColors.adminColor),
                 const SizedBox(width: 8),
-                const Text('Translate Section', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                const Text('Translate Section', style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
               ],
             ),
             const SizedBox(height: 16),
@@ -907,7 +909,7 @@ class _TranslationsSheetState extends State<_TranslationsSheet> {
               decoration: InputDecoration(
                 labelText: 'Language',
                 isDense: true,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
               items: widget.languages
                   .map((l) => DropdownMenuItem<int>(value: l['id'], child: Text('${l['name']} (${l['code']})')))
@@ -918,20 +920,20 @@ class _TranslationsSheetState extends State<_TranslationsSheet> {
             TextField(
               controller: _titleCtrl,
               decoration: InputDecoration(
-                  labelText: 'Title', isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                  labelText: 'Title', isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10))),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _subtitleCtrl,
               decoration: InputDecoration(
-                  labelText: 'Subtitle', isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                  labelText: 'Subtitle', isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10))),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _descriptionCtrl,
               maxLines: 4,
               decoration: InputDecoration(
-                  labelText: 'Description', isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                  labelText: 'Description', isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10))),
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -940,7 +942,7 @@ class _TranslationsSheetState extends State<_TranslationsSheet> {
               child: FilledButton.icon(
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.adminColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                 ),
                 onPressed: _saving ? null : _save,
                 icon: _saving

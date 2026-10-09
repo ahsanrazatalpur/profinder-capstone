@@ -73,7 +73,7 @@ class AboutPageContent extends StatelessWidget {
         if (context.mounted) {
           ScaffoldMessenger.maybeOf(context)?.showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.aboutLinkNoAppFound(uri.toString())),
+              content: Text(AppLocalizations.of(context).aboutLinkNoAppFound(uri.toString())),
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
@@ -85,7 +85,7 @@ class AboutPageContent extends StatelessWidget {
       if (!ok && context.mounted) {
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.aboutLinkCouldNotOpen(uri.toString())),
+            content: Text(AppLocalizations.of(context).aboutLinkCouldNotOpen(uri.toString())),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
@@ -95,7 +95,7 @@ class AboutPageContent extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.aboutLinkError(e.toString())),
+            content: Text(AppLocalizations.of(context).aboutLinkError(e.toString())),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
@@ -165,7 +165,7 @@ class AboutPageContent extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                AppLocalizations.of(context)!.aboutDisabledBadgeLabel,
+                AppLocalizations.of(context).aboutDisabledBadgeLabel,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 10,
@@ -210,7 +210,7 @@ class AboutPageContent extends StatelessWidget {
                 height: 160,
                 width: double.infinity,
                 fit: BoxFit.contain,
-                errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                errorWidget: (_, _, _) => const SizedBox.shrink(),
               ),
             ),
           if (s.imageUrl.isNotEmpty) const SizedBox(height: 20),
@@ -229,8 +229,8 @@ class AboutPageContent extends StatelessWidget {
             Text(
               s.subtitle,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
-                fontSize: 14.5,
+                color: Colors.white.withValues(alpha: 0.9),
+                fontSize: 15,
                 height: 1.4,
               ),
             ),
@@ -262,7 +262,7 @@ class AboutPageContent extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(9),
                     decoration: BoxDecoration(
-                      color: context.colors.primary.withOpacity(0.12),
+                      color: context.colors.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -293,7 +293,7 @@ class AboutPageContent extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: context.colors.primary.withOpacity(0.7),
+                color: context.colors.primary.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -362,8 +362,8 @@ class AboutPageContent extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.black.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.04),
+                ? Colors.black.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -375,7 +375,7 @@ class AboutPageContent extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: context.colors.primary.withOpacity(0.1),
+              color: context.colors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -388,7 +388,7 @@ class AboutPageContent extends StatelessWidget {
           Text(
             item.title,
             style: TextStyle(
-              fontSize: 13.5,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
               color: context.colors.textPrimary,
             ),
@@ -400,7 +400,7 @@ class AboutPageContent extends StatelessWidget {
               child: Text(
                 item.description,
                 style: TextStyle(
-                  fontSize: 11.5,
+                  fontSize: 12,
                   color: context.colors.textSecondary,
                   height: 1.35,
                 ),
@@ -477,7 +477,7 @@ class AboutPageContent extends StatelessWidget {
                             Text(
                               item.description,
                               style: TextStyle(
-                                fontSize: 12.5,
+                                fontSize: 13,
                                 color: context.colors.textSecondary,
                                 height: 1.4,
                               ),
@@ -518,8 +518,8 @@ class AboutPageContent extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.black.withOpacity(0.1)
-                          : Colors.grey.withOpacity(0.04),
+                          ? Colors.black.withValues(alpha: 0.1)
+                          : Colors.grey.withValues(alpha: 0.04),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -566,7 +566,7 @@ class AboutPageContent extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: s.items.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (context, i) {
                 final m = s.items[i];
                 final designation = m.extraData['designation']?.toString() ?? '';
@@ -580,8 +580,8 @@ class AboutPageContent extends StatelessWidget {
                     boxShadow: [
                       BoxShadow(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.black.withOpacity(0.1)
-                            : Colors.grey.withOpacity(0.04),
+                            ? Colors.black.withValues(alpha: 0.1)
+                            : Colors.grey.withValues(alpha: 0.04),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -591,7 +591,7 @@ class AboutPageContent extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 32,
-                        backgroundColor: context.colors.primary.withOpacity(0.1),
+                        backgroundColor: context.colors.primary.withValues(alpha: 0.1),
                         backgroundImage: m.imageUrl.isNotEmpty
                             ? CachedNetworkImageProvider(m.imageUrl)
                             : null,
@@ -605,7 +605,7 @@ class AboutPageContent extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: context.colors.textPrimary,
                         ),
@@ -616,7 +616,7 @@ class AboutPageContent extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 10.5,
+                            fontSize: 11,
                             color: context.colors.textSecondary,
                           ),
                         ),
@@ -657,8 +657,8 @@ class AboutPageContent extends StatelessWidget {
                     boxShadow: [
                       BoxShadow(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.black.withOpacity(0.1)
-                            : Colors.grey.withOpacity(0.04),
+                            ? Colors.black.withValues(alpha: 0.1)
+                            : Colors.grey.withValues(alpha: 0.04),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -765,14 +765,14 @@ class AboutPageContent extends StatelessWidget {
                 child: InkWell(
                   onTap: () => _safeLaunch(context, Uri.parse(entry.value), mode: LaunchMode.externalApplication),
                   borderRadius: BorderRadius.circular(24),
-                  splashColor: context.colors.primary.withOpacity(0.1),
+                  splashColor: context.colors.primary.withValues(alpha: 0.1),
                   child: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: context.colors.primary.withOpacity(0.1),
+                      color: context.colors.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: context.colors.primary.withOpacity(0.15),
+                        color: context.colors.primary.withValues(alpha: 0.15),
                         width: 1,
                       ),
                     ),
@@ -807,10 +807,10 @@ class AboutPageContent extends StatelessWidget {
           Row(
             children: [
               if (playStore.isNotEmpty)
-                Expanded(child: _storeButton(context, AppLocalizations.of(context)!.aboutGooglePlayLabel, Icons.shop_rounded, playStore)),
+                Expanded(child: _storeButton(context, AppLocalizations.of(context).aboutGooglePlayLabel, Icons.shop_rounded, playStore)),
               if (playStore.isNotEmpty && appStore.isNotEmpty) const SizedBox(width: 10),
               if (appStore.isNotEmpty)
-                Expanded(child: _storeButton(context, AppLocalizations.of(context)!.aboutAppStoreLabel, Icons.apple_rounded, appStore)),
+                Expanded(child: _storeButton(context, AppLocalizations.of(context).aboutAppStoreLabel, Icons.apple_rounded, appStore)),
             ],
           ),
         ],
@@ -824,11 +824,11 @@ class AboutPageContent extends StatelessWidget {
       icon: Icon(icon, size: 18),
       label: Text(
         label,
-        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
       ),
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 12),
-        side: BorderSide(color: context.colors.primary.withOpacity(0.3)),
+        side: BorderSide(color: context.colors.primary.withValues(alpha: 0.3)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
@@ -880,7 +880,7 @@ class AboutPageContent extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(9),
                   decoration: BoxDecoration(
-                    color: context.colors.primary.withOpacity(0.12),
+                    color: context.colors.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -909,9 +909,9 @@ class AboutPageContent extends StatelessWidget {
           Text(
             s.subtitle,
             style: TextStyle(
-              fontSize: 12.5,
+              fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: context.colors.primary.withOpacity(0.7),
+              color: context.colors.primary.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -950,7 +950,7 @@ class AboutPageContent extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
-      splashColor: context.colors.primary.withOpacity(0.05),
+      splashColor: context.colors.primary.withValues(alpha: 0.05),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
@@ -965,7 +965,7 @@ class AboutPageContent extends StatelessWidget {
                   color: isLink ? context.colors.primary : context.colors.textPrimary,
                   fontWeight: isLink ? FontWeight.w600 : FontWeight.normal,
                   decoration: isLink ? TextDecoration.underline : TextDecoration.none,
-                  decorationColor: context.colors.primary.withOpacity(0.4),
+                  decorationColor: context.colors.primary.withValues(alpha: 0.4),
                 ),
               ),
             ),

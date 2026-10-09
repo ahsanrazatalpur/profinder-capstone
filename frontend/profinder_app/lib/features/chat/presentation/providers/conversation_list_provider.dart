@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/conversation_entity.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../../data/repositories/chat_repository_impl.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class ConversationListProvider extends ChangeNotifier {
   final ChatRepository _repo;
@@ -31,7 +32,7 @@ class ConversationListProvider extends ChangeNotifier {
     try {
       _conversations = await _repo.getConversations();
     } catch (e) {
-      _error = 'Could not load conversations';
+      _error = AppStrings.chatCouldNotLoadConversations;
     }
 
     _isLoading = false;

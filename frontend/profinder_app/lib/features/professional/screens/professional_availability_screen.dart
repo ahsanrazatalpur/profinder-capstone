@@ -25,6 +25,7 @@
 //     backend addition (e.g. a JSON field) — intentionally out of scope
 //     here since backend/API/model changes were explicitly not requested.
 
+import '../../../core/constants/app_sizes.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -43,29 +44,29 @@ import '../../../l10n/generated/app_localizations.dart';
 enum AvailabilityStatus { availableNow, busy, offline, onLeave }
 
 extension _AvailabilityStatusX on AvailabilityStatus {
-  String get label {
+  String label(AppLocalizations t) {
     switch (this) {
       case AvailabilityStatus.availableNow:
-        return 'Available Now';
+        return t.availableNowLabel;
       case AvailabilityStatus.busy:
-        return 'Busy';
+        return t.availabilityStatusBusy;
       case AvailabilityStatus.offline:
-        return 'Offline';
+        return t.offlineLabel;
       case AvailabilityStatus.onLeave:
-        return 'On Leave';
+        return t.availabilityStatusOnLeave;
     }
   }
 
-  String get description {
+  String description(AppLocalizations t) {
     switch (this) {
       case AvailabilityStatus.availableNow:
-        return 'Customers can book you right now';
+        return t.availabilityStatusDescAvailable;
       case AvailabilityStatus.busy:
-        return 'You are working — new requests are paused';
+        return t.availabilityStatusDescBusy;
       case AvailabilityStatus.offline:
-        return 'You won\'t appear in new booking requests';
+        return t.availabilityStatusDescOffline;
       case AvailabilityStatus.onLeave:
-        return 'Marked as on leave until you return';
+        return t.availabilityStatusDescOnLeave;
     }
   }
 
@@ -99,11 +100,11 @@ Color _statusColor(BuildContext context, AvailabilityStatus status) {
     case AvailabilityStatus.availableNow:
       return context.colors.accent;
     case AvailabilityStatus.busy:
-      return const Color(0xFFF59E0B);
+      return AppColors.warningAmber;
     case AvailabilityStatus.offline:
       return context.colors.textSecondary;
     case AvailabilityStatus.onLeave:
-      return const Color(0xFF8B5CF6);
+      return AppColors.violet;
   }
 }
 
@@ -251,7 +252,7 @@ class _ProfessionalAvailabilityScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, AppLocalizations.of(context)!.availabilityLoadError);
+      AppHelpers.showError(context, AppLocalizations.of(context).availabilityLoadError);
     }
   }
 
@@ -285,11 +286,11 @@ class _ProfessionalAvailabilityScreenState
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_prefsStatusKey, status.name);
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.availabilityStatusUpdated(status.label));
+      AppHelpers.showSuccess(context, AppLocalizations.of(context).availabilityStatusUpdated(status.label(AppLocalizations.of(context))));
     } catch (e) {
       if (!mounted) return;
       setState(() => _status = previous);
-      AppHelpers.showError(context, AppLocalizations.of(context)!.availabilityStatusUpdateError);
+      AppHelpers.showError(context, AppLocalizations.of(context).availabilityStatusUpdateError);
     } finally {
       if (mounted) setState(() => _isSavingStatus = false);
     }
@@ -356,11 +357,11 @@ class _ProfessionalAvailabilityScreenState
         _scheduleDirty = false;
         _isSavingSchedule = false;
       });
-      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.availabilityScheduleSaved);
+      AppHelpers.showSuccess(context, AppLocalizations.of(context).availabilityScheduleSaved);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSavingSchedule = false);
-      AppHelpers.showError(context, AppLocalizations.of(context)!.availabilityScheduleSaveError);
+      AppHelpers.showError(context, AppLocalizations.of(context).availabilityScheduleSaveError);
     }
   }
 
@@ -399,7 +400,7 @@ class _ProfessionalAvailabilityScreenState
         backgroundColor: context.colors.surface,
         elevation: 0,
         title: Text(
-          AppLocalizations.of(context)!.availabilityTitle,
+          AppLocalizations.of(context).availabilityTitle,
           style: TextStyle(
             fontSize: isTablet ? 19.0 : 17.0,
             fontWeight: FontWeight.w700,
@@ -430,8 +431,8 @@ class _ProfessionalAvailabilityScreenState
                   SizedBox(height: isTablet ? 24 : 20),
                   _sectionHeader(
                     icon: Icons.calendar_view_week_rounded,
-                    title: AppLocalizations.of(context)!.availabilityWeeklyTitle,
-                    subtitle: AppLocalizations.of(context)!.availabilityWeeklySubtitle,
+                    title: AppLocalizations.of(context).availabilityWeeklyTitle,
+                    subtitle: AppLocalizations.of(context).availabilityWeeklySubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -439,8 +440,8 @@ class _ProfessionalAvailabilityScreenState
                   SizedBox(height: isTablet ? 24 : 20),
                   _sectionHeader(
                     icon: Icons.event_available_rounded,
-                    title: AppLocalizations.of(context)!.availabilitySummaryTitle,
-                    subtitle: AppLocalizations.of(context)!.availabilitySummarySubtitle,
+                    title: AppLocalizations.of(context).availabilitySummaryTitle,
+                    subtitle: AppLocalizations.of(context).availabilitySummarySubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -467,8 +468,8 @@ class _ProfessionalAvailabilityScreenState
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.professionalColor.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(10),
+            color: AppColors.professionalColor.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
           child: Icon(icon, size: isTablet ? 20 : 18, color: AppColors.professionalColor),
         ),
@@ -510,13 +511,13 @@ class _ProfessionalAvailabilityScreenState
       padding: EdgeInsets.all(isTablet ? 22 : 18),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.withOpacity(0.1),
+          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.12) : Colors.grey.withOpacity(0.06),
+            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -532,7 +533,7 @@ class _ProfessionalAvailabilityScreenState
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.14),
+                  color: color.withValues(alpha: 0.14),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(_status.icon, color: color, size: 24),
@@ -545,7 +546,7 @@ class _ProfessionalAvailabilityScreenState
                     Row(
                       children: [
                         Text(
-                          _status.label,
+                          _status.label(AppLocalizations.of(context)),
                           style: TextStyle(
                             fontSize: isTablet ? 18 : 16.5,
                             fontWeight: FontWeight.w700,
@@ -568,7 +569,7 @@ class _ProfessionalAvailabilityScreenState
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      _status.description,
+                      _status.description(AppLocalizations.of(context)),
                       style: TextStyle(
                         fontSize: isTablet ? 13.5 : 12.5,
                         color: context.colors.textSecondary,
@@ -609,18 +610,18 @@ class _ProfessionalAvailabilityScreenState
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         onTap: () => _setStatus(status),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: selected
-                ? color.withOpacity(isDark ? 0.18 : 0.12)
-                : (isDark ? Colors.white.withOpacity(0.03) : Colors.grey.withOpacity(0.05)),
-            borderRadius: BorderRadius.circular(14),
+                ? color.withValues(alpha: isDark ? 0.18 : 0.12)
+                : (isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.05)),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             border: Border.all(
-              color: selected ? color.withOpacity(0.55) : Colors.transparent,
+              color: selected ? color.withValues(alpha: 0.55) : Colors.transparent,
               width: 1.2,
             ),
           ),
@@ -631,7 +632,7 @@ class _ProfessionalAvailabilityScreenState
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
-                  status.label,
+                  status.label(AppLocalizations.of(context)),
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: isTablet ? 13 : 12,
@@ -653,13 +654,13 @@ class _ProfessionalAvailabilityScreenState
     return Container(
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.withOpacity(0.1),
+          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.12) : Colors.grey.withOpacity(0.06),
+            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -676,7 +677,7 @@ class _ProfessionalAvailabilityScreenState
                   height: 1,
                   indent: isTablet ? 20 : 16,
                   endIndent: isTablet ? 20 : 16,
-                  color: context.colors.divider.withOpacity(0.6),
+                  color: context.colors.divider.withValues(alpha: 0.6),
                 ),
             ],
           );
@@ -716,18 +717,18 @@ class _ProfessionalAvailabilityScreenState
                         child: Icon(
                           Icons.arrow_forward_rounded,
                           size: 14,
-                          color: context.colors.textSecondary.withOpacity(0.6),
+                          color: context.colors.textSecondary.withValues(alpha: 0.6),
                         ),
                       ),
                       Expanded(child: _buildTimeChip(index, isStart: false, isDark: isDark, isTablet: isTablet)),
                     ],
                   )
                 : Text(
-                    AppLocalizations.of(context)!.availabilityClosedLabel,
+                    AppLocalizations.of(context).availabilityClosedLabel,
                     style: TextStyle(
                       fontSize: isTablet ? 14 : 13,
                       fontWeight: FontWeight.w500,
-                      color: context.colors.textSecondary.withOpacity(0.7),
+                      color: context.colors.textSecondary.withValues(alpha: 0.7),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -738,9 +739,9 @@ class _ProfessionalAvailabilityScreenState
             child: Switch(
               value: day.enabled,
               onChanged: (v) => _toggleDay(index, v),
-              activeColor: context.colors.accent,
-              activeTrackColor: context.colors.accent.withOpacity(0.3),
-              inactiveTrackColor: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.withOpacity(0.3),
+              activeThumbColor: context.colors.accent,
+              activeTrackColor: context.colors.accent.withValues(alpha: 0.3),
+              inactiveTrackColor: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.3),
             ),
           ),
         ],
@@ -756,10 +757,10 @@ class _ProfessionalAvailabilityScreenState
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: isTablet ? 12 : 10, vertical: isTablet ? 9 : 8),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.04) : context.colors.background,
-          borderRadius: BorderRadius.circular(10),
+          color: isDark ? Colors.white.withValues(alpha: 0.04) : context.colors.background,
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.08) : context.colors.divider,
+            color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider,
           ),
         ),
         child: Row(
@@ -793,13 +794,13 @@ class _ProfessionalAvailabilityScreenState
       padding: EdgeInsets.all(isTablet ? 20 : 16),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.withOpacity(0.1),
+          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.12) : Colors.grey.withOpacity(0.06),
+            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -823,8 +824,8 @@ class _ProfessionalAvailabilityScreenState
                   height: 34,
                   decoration: BoxDecoration(
                     color: (g.enabled ? context.colors.accent : context.colors.textSecondary)
-                        .withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(10),
+                        .withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   ),
                   child: Icon(
                     g.enabled ? Icons.event_available_rounded : Icons.event_busy_rounded,
@@ -845,7 +846,7 @@ class _ProfessionalAvailabilityScreenState
                   ),
                 ),
                 Text(
-                  g.enabled ? '${g.start.format(context)} – ${g.end.format(context)}' : AppLocalizations.of(context)!.availabilityClosedLabel,
+                  g.enabled ? '${g.start.format(context)} – ${g.end.format(context)}' : AppLocalizations.of(context).availabilityClosedLabel,
                   style: TextStyle(
                     fontSize: isTablet ? 13.5 : 12.5,
                     fontWeight: FontWeight.w500,
@@ -875,7 +876,7 @@ class _ProfessionalAvailabilityScreenState
           color: context.colors.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, -3),
             ),
@@ -889,10 +890,10 @@ class _ProfessionalAvailabilityScreenState
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: BorderSide(color: context.colors.divider),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)!.discardCta,
+                  AppLocalizations.of(context).discardCta,
                   style: TextStyle(fontWeight: FontWeight.w600, color: context.colors.textSecondary),
                 ),
               ),
@@ -907,7 +908,7 @@ class _ProfessionalAvailabilityScreenState
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                 ),
                 child: _isSavingSchedule
                     ? const SizedBox(
@@ -916,7 +917,7 @@ class _ProfessionalAvailabilityScreenState
                         child: CircularProgressIndicator(strokeWidth: 2.2, color: Colors.white),
                       )
                     : Text(
-                        AppLocalizations.of(context)!.saveScheduleCta,
+                        AppLocalizations.of(context).saveScheduleCta,
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
               ),

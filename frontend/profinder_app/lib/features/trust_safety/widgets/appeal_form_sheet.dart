@@ -16,6 +16,8 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../models/user_ts_models.dart';
 import '../services/user_trust_safety_service.dart';
 import 'ts_labels.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 /// Shows the sheet and returns `true` if an appeal was submitted
 /// successfully (so the caller knows to refresh), or `null`/`false` if the
@@ -65,7 +67,7 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
 
   Future<void> _submit() async {
     if (_isSubmitting) return; // guard against double-tap / duplicate submits
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     setState(() => _isSubmitting = true);
@@ -98,7 +100,7 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Padding(
@@ -106,7 +108,7 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
       child: Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
         ),
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
         child: SingleChildScrollView(
@@ -123,14 +125,14 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
                       color: context.colors.divider,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusTiny),
                     ),
                   ),
                 ),
                 Text(
                   t.myTsSubmitAppealTitle,
                   style: TextStyle(
-                    fontSize: 17,
+                    fontSize: AppFontSizes.titleMd,
                     fontWeight: FontWeight.w700,
                     color: context.colors.textPrimary,
                     letterSpacing: -0.2,
@@ -139,13 +141,13 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
                 const SizedBox(height: 4),
                 Text(
                   moderationActionTypeLabel(t, widget.action.actionType, fallback: widget.action.actionTypeDisplay),
-                  style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                  style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
                 ),
                 const SizedBox(height: 18),
                 Text(
                   t.myTsAppealReasonLabel,
                   style: TextStyle(
-                    fontSize: 12.5,
+                    fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w600,
                     color: context.colors.textPrimary,
                   ),
@@ -168,7 +170,7 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
                 Text(
                   t.tsEvidenceLinkOptional,
                   style: TextStyle(
-                    fontSize: 12.5,
+                    fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w600,
                     color: context.colors.textPrimary,
                   ),
@@ -201,7 +203,7 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
                       backgroundColor: widget.accentColor,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                       elevation: 0,
                     ),
                     child: _isSubmitting
@@ -212,7 +214,7 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
                           )
                         : Text(
                             t.myTsAppealSubmitCta,
-                            style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700),
+                            style: const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700),
                           ),
                   ),
                 ),

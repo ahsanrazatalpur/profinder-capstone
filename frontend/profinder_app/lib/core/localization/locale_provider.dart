@@ -12,6 +12,11 @@ class LocaleProvider extends ChangeNotifier {
   static const _prefsKey = 'app_locale_code';
   static const _prefsHasChosenKey = 'app_locale_has_chosen';
 
+  /// Active language code, readable WITHOUT a BuildContext — for services that
+  /// call the API with `?lang=` (announcements, promo banners, categories...).
+  /// Kept in sync in init() and setLocale() below, always before listeners fire.
+  static String currentCode = SupportedLanguages.fallback.locale.languageCode;
+
   Locale _locale = SupportedLanguages.fallback.locale;
   bool _hasChosenLanguage = false;
   bool _isLoading = true;
@@ -40,6 +45,7 @@ class LocaleProvider extends ChangeNotifier {
       _locale = SupportedLanguages.fromDeviceLocale(deviceLocale).locale;
     }
 
+    currentCode = _locale.languageCode;
     _isLoading = false;
     notifyListeners();
   }
@@ -51,6 +57,7 @@ class LocaleProvider extends ChangeNotifier {
     if (!SupportedLanguages.isSupported(languageCode)) return;
 
     _locale = Locale(languageCode);
+    currentCode = languageCode;
     if (markAsChosen) _hasChosenLanguage = true;
     notifyListeners();
 

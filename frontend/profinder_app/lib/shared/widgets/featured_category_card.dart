@@ -16,8 +16,9 @@
 
 import 'package:flutter/material.dart';
 import '../../core/constants/app_sizes.dart';
-import '../../core/theme/theme_context_ext.dart';
+import '../../core/utils/app_helpers.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../core/theme/app_text_styles.dart';
 
 class FeaturedCategoryCard extends StatelessWidget {
   final String title;
@@ -63,16 +64,16 @@ class FeaturedCategoryCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: (isDark
-                      ? Colors.black.withOpacity(0.4)
-                      : gradient.last.withOpacity(0.35))
-                  .withOpacity(0.35),
+                      ? Colors.black.withValues(alpha: 0.4)
+                      : gradient.last.withValues(alpha: 0.35))
+                  .withValues(alpha: 0.35),
               blurRadius: 16,
               offset: const Offset(0, 8),
             ),
             BoxShadow(
               color: isDark
-                  ? Colors.black.withOpacity(0.15)
-                  : gradient.last.withOpacity(0.15),
+                  ? Colors.black.withValues(alpha: 0.15)
+                  : gradient.last.withValues(alpha: 0.15),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -92,8 +93,8 @@ class FeaturedCategoryCard extends StatelessWidget {
                 icon,
                 size: height * 0.7,
                 color: isDark
-                    ? Colors.white.withOpacity(0.3)
-                    : Colors.white.withOpacity(0.45),
+                    ? Colors.white.withValues(alpha: 0.3)
+                    : Colors.white.withValues(alpha: 0.45),
               ),
             ),
             Padding(
@@ -107,24 +108,24 @@ class FeaturedCategoryCard extends StatelessWidget {
                   SizedBox(
                     width: width * 0.58,
                     child: Text(
-                      title,
+                      AppHelpers.localizedCategoryName(context, title),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 17,
+                        fontSize: AppFontSizes.titleMd,
                         fontWeight: FontWeight.w800,
                         height: 1.15,
                       ),
                     ),
                   ),
                   Text(
-                    AppLocalizations.of(context)!.exploreExpertsLabel,
+                    AppLocalizations.of(context).exploreExpertsLabel,
                     style: TextStyle(
                       color: isDark
-                          ? Colors.white.withOpacity(0.85)
-                          : Colors.white.withOpacity(0.92),
-                      fontSize: 12,
+                          ? Colors.white.withValues(alpha: 0.85)
+                          : Colors.white.withValues(alpha: 0.92),
+                      fontSize: AppFontSizes.small,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.2,
                     ),

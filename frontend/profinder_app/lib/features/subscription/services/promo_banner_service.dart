@@ -2,6 +2,7 @@
 
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/localization/locale_provider.dart';
 import '../models/promo_banner_model.dart';
 
 class PromoBannerService {
@@ -17,7 +18,7 @@ class PromoBannerService {
   }) async {
     try {
       final res = await _api.get(
-        '${AppConstants.activeBanner}?trigger=$trigger&user_type=$userType',
+        '${AppConstants.activeBanner}?trigger=$trigger&user_type=$userType&lang=${LocaleProvider.currentCode}',
       );
       final data = res.data as Map<String, dynamic>;
 

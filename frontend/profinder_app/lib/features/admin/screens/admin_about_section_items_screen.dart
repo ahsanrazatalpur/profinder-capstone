@@ -16,6 +16,8 @@ import '../../../shared/widgets/about_image_picker_field.dart';
 import '../../about/models/about_page_model.dart';
 import 'admin_about_page_screen.dart' show suggestIconKeyForType;
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminAboutSectionItemsScreen extends StatefulWidget {
   final AboutSection section;
@@ -51,7 +53,6 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
 
   Future<void> _reorder(int oldIndex, int newIndex) async {
     setState(() {
-      if (newIndex > oldIndex) newIndex--;
       final item = _items.removeAt(oldIndex);
       _items.insert(newIndex, item);
     });
@@ -75,7 +76,7 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
           content: Row(
             children: [
               const Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
@@ -92,10 +93,10 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         icon: Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
+          decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), shape: BoxShape.circle),
           child: const Icon(Icons.delete_outline_rounded, color: Colors.red, size: 26),
         ),
         title: const Text('Delete Item?', textAlign: TextAlign.center),
@@ -106,7 +107,7 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
           FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: Colors.red.shade600,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
               onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
         ],
@@ -170,16 +171,16 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.adminColor.withOpacity(0.08),
+                color: AppColors.adminColor.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.inbox_outlined, size: 36, color: AppColors.adminColor.withOpacity(0.7)),
+              child: Icon(Icons.inbox_outlined, size: 36, color: AppColors.adminColor.withValues(alpha: 0.7)),
             ),
             const SizedBox(height: 16),
             Text(
               'No items yet. Tap "Add Item" to add your first one.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: context.colors.textSecondary, fontSize: 13, height: 1.4),
+              style: TextStyle(color: context.colors.textSecondary, fontSize: AppFontSizes.secondary, height: 1.4),
             ),
           ],
         ),
@@ -203,7 +204,7 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
               child: ReorderableListView.builder(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
                 itemCount: _items.length,
-                onReorder: _reorder,
+                onReorderItem: _reorder,
                 proxyDecorator: (child, index, animation) {
                   return AnimatedBuilder(
                     animation: animation,
@@ -213,7 +214,7 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
                         scale: 1.0 + (0.02 * t),
                         child: Material(
                           elevation: 6 * t,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(AppSizes.radius14),
                           color: Colors.transparent,
                           child: child,
                         ),
@@ -237,10 +238,10 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
         border: Border.all(color: context.colors.divider),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 6, offset: const Offset(0, 2)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 6, offset: const Offset(0, 2)),
         ],
       ),
       child: Row(
@@ -249,13 +250,13 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
             index: index,
             child: MouseRegion(
               cursor: SystemMouseCursors.grab,
-              child: Icon(Icons.drag_indicator_rounded, color: context.colors.textSecondary.withOpacity(0.5)),
+              child: Icon(Icons.drag_indicator_rounded, color: context.colors.textSecondary.withValues(alpha: 0.5)),
             ),
           ),
           const SizedBox(width: 10),
           if (item.imageUrl.isNotEmpty)
             ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               child: Image.network(
                 item.imageUrl,
                 width: 40,
@@ -266,7 +267,7 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
                   return Container(
                     width: 40,
                     height: 40,
-                    color: context.colors.divider.withOpacity(0.3),
+                    color: context.colors.divider.withValues(alpha: 0.3),
                     child: const Center(
                       child: SizedBox(
                         width: 16, height: 16,
@@ -277,7 +278,7 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
                 },
                 errorBuilder: (context, error, stackTrace) => Container(
                   width: 40, height: 40,
-                  decoration: BoxDecoration(color: AppColors.adminColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                  decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
                   child: Icon(resolveAboutIcon(item.icon), color: AppColors.adminColor, size: 18),
                 ),
               ),
@@ -285,7 +286,7 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
           else
             Container(
               width: 40, height: 40,
-              decoration: BoxDecoration(color: AppColors.adminColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
               child: Icon(resolveAboutIcon(item.icon), color: AppColors.adminColor, size: 18),
             ),
           const SizedBox(width: 12),
@@ -312,7 +313,7 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
             activeThumbColor: AppColors.adminColor,
             inactiveThumbColor: context.colors.textSecondary,
             inactiveTrackColor: context.colors.divider,
-            trackOutlineColor: WidgetStateProperty.all(context.colors.textSecondary.withOpacity(0.4)),
+            trackOutlineColor: WidgetStateProperty.all(context.colors.textSecondary.withValues(alpha: 0.4)),
           ),
           _hoverIcon(
             icon: Icons.edit_outlined,
@@ -358,7 +359,7 @@ class _HoverIconActionState extends State<_HoverIconAction> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 120),
         decoration: BoxDecoration(
-          color: _hovering ? (widget.color ?? AppColors.adminColor).withOpacity(0.08) : Colors.transparent,
+          color: _hovering ? (widget.color ?? AppColors.adminColor).withValues(alpha: 0.08) : Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: IconButton(
@@ -469,9 +470,9 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
         decoration: InputDecoration(
           labelText: label,
           isDense: true,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
             borderSide: BorderSide(color: AppColors.adminColor, width: 1.6),
           ),
         ),
@@ -487,9 +488,9 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
     return InputDecoration(
       labelText: label,
       isDense: true,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
         borderSide: BorderSide(color: AppColors.adminColor, width: 1.6),
       ),
     );
@@ -500,7 +501,7 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
       ),
       child: SafeArea(
         top: false,
@@ -522,8 +523,8 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                       height: 4,
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.grey.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusXs),
                       ),
                     ),
                   ),
@@ -533,7 +534,7 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                           size: 18, color: AppColors.adminColor),
                       const SizedBox(width: 8),
                       Text(_isEdit ? 'Edit Item' : 'Add Item',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                          style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -546,15 +547,15 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                             margin: const EdgeInsets.only(bottom: 12),
                             decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.08),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.red.withOpacity(0.25)),
+                              color: Colors.red.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(AppSizes.radius10),
+                              border: Border.all(color: Colors.red.withValues(alpha: 0.25)),
                             ),
                             child: Row(
                               children: [
                                 const Icon(Icons.error_outline_rounded, color: Colors.red, size: 16),
                                 const SizedBox(width: 8),
-                                Expanded(child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 12))),
+                                Expanded(child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: AppFontSizes.small))),
                               ],
                             ),
                           )
@@ -591,7 +592,7 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                           onPressed: () => Navigator.pop(context),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                           ),
                           child: const Text('Cancel'),
                         ),
@@ -603,7 +604,7 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.adminColor,
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                           ),
                           icon: _saving
                               ? const SizedBox.shrink()
@@ -630,7 +631,7 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
         final selected = await showDialog<String>(
           context: context,
           builder: (ctx) => Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
             child: Padding(
               padding: const EdgeInsets.all(18),
               child: ConstrainedBox(
@@ -642,7 +643,7 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                     Row(
                       children: [
                         const Expanded(
-                          child: Text('Choose Icon', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                          child: Text('Choose Icon', style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
                         ),
                         IconButton(
                           visualDensity: VisualDensity.compact,
@@ -686,15 +687,15 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             border: Border.all(color: Theme.of(context).dividerColor),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppColors.adminColor.withOpacity(0.10),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.adminColor.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
                 child: Icon(resolveAboutIcon(_icon), size: 18, color: AppColors.adminColor),
               ),
@@ -733,15 +734,15 @@ class _HoverableIconChoiceState extends State<_HoverableIconChoice> {
       cursor: SystemMouseCursors.click,
       child: InkWell(
         onTap: widget.onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 130),
           margin: const EdgeInsets.all(3),
           decoration: BoxDecoration(
             color: widget.selected
-                ? AppColors.adminColor.withOpacity(0.15)
-                : (_hovering ? AppColors.adminColor.withOpacity(0.06) : Colors.transparent),
-            borderRadius: BorderRadius.circular(10),
+                ? AppColors.adminColor.withValues(alpha: 0.15)
+                : (_hovering ? AppColors.adminColor.withValues(alpha: 0.06) : Colors.transparent),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
             border: widget.selected ? Border.all(color: AppColors.adminColor) : null,
           ),
           child: Icon(widget.icon, size: 20),

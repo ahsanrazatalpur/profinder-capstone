@@ -1,5 +1,6 @@
 // lib/core/utils/app_validators.dart
 
+import '../../l10n/generated/app_localizations.dart';
 class AppValidators {
   AppValidators._();
 
@@ -10,41 +11,41 @@ class AppValidators {
       RegExp(r'''[!@#$%^&*()_+\-=\[\]{};:'",.<>/?\\|`~]''');
 
   // ─── Email ──────────────────────────────────────────────
-  static String? email(String? value) {
+  static String? email(String? value, [AppLocalizations? t]) {
     if (value == null || value.trim().isEmpty) {
-      return 'Email is required';
+      return t?.valEmailRequired ?? 'Email is required';
     }
     // Simple email format check
     final emailRegex = RegExp(r'^[\w.-]+@[\w.-]+\.\w+$');
     if (!emailRegex.hasMatch(value.trim())) {
-      return 'Enter a valid email';
+      return t?.valEmailInvalid ?? 'Enter a valid email';
     }
     if (value.trim().length > 254) {
-      return 'Email is too long';
+      return t?.valEmailTooLong ?? 'Email is too long';
     }
     return null; // null mean valid
   }
 
   // ─── Password ───────────────────────────────────────────
   // Requires: 8+ chars, 1 uppercase, 1 lowercase, 1 number, 1 special char.
-  static String? password(String? value) {
+  static String? password(String? value, [AppLocalizations? t]) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return t?.valPasswordRequired ?? 'Password is required';
     }
     if (value.length < 8) {
-      return 'Password must be at least 8 characters';
+      return t?.valPasswordMinLength ?? 'Password must be at least 8 characters';
     }
     if (!RegExp(r'[A-Z]').hasMatch(value)) {
-      return 'Add at least one uppercase letter';
+      return t?.valPasswordUpper ?? 'Add at least one uppercase letter';
     }
     if (!RegExp(r'[a-z]').hasMatch(value)) {
-      return 'Add at least one lowercase letter';
+      return t?.valPasswordLower ?? 'Add at least one lowercase letter';
     }
     if (!RegExp(r'[0-9]').hasMatch(value)) {
-      return 'Add at least one number';
+      return t?.valPasswordNumber ?? 'Add at least one number';
     }
     if (!_specialCharPattern.hasMatch(value)) {
-      return 'Add at least one special character';
+      return t?.valPasswordSpecial ?? 'Add at least one special character';
     }
     return null;
   }
@@ -55,20 +56,20 @@ class AppValidators {
   // Those only matter at registration time. Here we only confirm the
   // field isn't empty; the backend is the sole source of truth on whether
   // the credentials are actually correct.
-  static String? loginPassword(String? value) {
+  static String? loginPassword(String? value, [AppLocalizations? t]) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return t?.valPasswordRequired ?? 'Password is required';
     }
     return null;
   }
 
   // ─── Confirm Password ───────────────────────────────────
-  static String? confirmPassword(String? value, String original) {
+  static String? confirmPassword(String? value, String original, [AppLocalizations? t]) {
     if (value == null || value.isEmpty) {
-      return 'Please confirm your password';
+      return t?.valConfirmPassword ?? 'Please confirm your password';
     }
     if (value != original) {
-      return 'Passwords do not match';
+      return t?.valPasswordsMismatch ?? 'Passwords do not match';
     }
     return null;
   }
@@ -76,25 +77,25 @@ class AppValidators {
   // ─── Name ───────────────────────────────────────────────
   // Required, 2–50 chars (after trim + space-collapse), unicode letters
   // supported (so non-English names work), numbers not allowed.
-  static String? name(String? value) {
-    if (value == null) return 'Name is required';
+  static String? name(String? value, [AppLocalizations? t]) {
+    if (value == null) return t?.valNameRequired ?? 'Name is required';
     final collapsed = normalizeName(value);
     if (collapsed.isEmpty) {
-      return 'Name is required';
+      return t?.valNameRequired ?? 'Name is required';
     }
     if (collapsed.length < 2) {
-      return 'Name must be at least 2 characters';
+      return t?.valNameMinLength ?? 'Name must be at least 2 characters';
     }
     if (collapsed.length > 50) {
-      return 'Name must be under 50 characters';
+      return t?.valNameMaxLength ?? 'Name must be under 50 characters';
     }
     if (RegExp(r'[0-9]').hasMatch(collapsed)) {
-      return 'Name cannot contain numbers';
+      return t?.valNameNoNumbers ?? 'Name cannot contain numbers';
     }
     // Unicode letters/marks, spaces, and common name punctuation only.
     final validPattern = RegExp(r"^[\p{L}\p{M} '.-]+$", unicode: true);
     if (!validPattern.hasMatch(collapsed)) {
-      return 'Name contains invalid characters';
+      return t?.valNameInvalidChars ?? 'Name contains invalid characters';
     }
     return null;
   }
@@ -107,20 +108,21 @@ class AppValidators {
   }
 
   // ─── Phone ──────────────────────────────────────────────
-  static String? phone(String? value) {
+  static String? phone(String? value, [AppLocalizations? t]) {
     if (value == null || value.trim().isEmpty) {
-      return 'Phone number is required';
+      return t?.valPhoneRequired ?? 'Phone number is required';
     }
     if (value.trim().length < 7) {
-      return 'Enter a valid phone number';
+      return t?.valPhoneInvalid ?? 'Enter a valid phone number';
     }
     return null;
   }
 
   // ─── Required field (generic) ───────────────────────────
-  static String? required(String? value, {String fieldName = 'This field'}) {
+  static String? required(String? value, {String? fieldName, AppLocalizations? t}) {
     if (value == null || value.trim().isEmpty) {
-      return '$fieldName is required';
+      if (fieldName == null) return t?.valFieldRequired ?? 'This field is required';
+      return t?.valFieldNamedRequired(fieldName) ?? '$fieldName is required';
     }
     return null;
   }
@@ -129,7 +131,7 @@ class AppValidators {
   // Distinct from `password()` above: that's pass/fail for form submission,
   // this is graduated (0–1 score + per-requirement checklist) for realtime
   // feedback while the user is still typing.
-  static PasswordStrengthResult passwordStrength(String value) {
+  static PasswordStrengthResult passwordStrength(String value, [AppLocalizations? t]) {
     final hasMinLength = value.length >= 8;
     final hasUpper     = RegExp(r'[A-Z]').hasMatch(value);
     final hasLower     = RegExp(r'[a-z]').hasMatch(value);
@@ -137,11 +139,11 @@ class AppValidators {
     final hasSpecial   = _specialCharPattern.hasMatch(value);
 
     final requirements = <PasswordRequirement>[
-      PasswordRequirement('Minimum 8 characters', hasMinLength),
-      PasswordRequirement('Uppercase letter',     hasUpper),
-      PasswordRequirement('Lowercase letter',     hasLower),
-      PasswordRequirement('Number',               hasNumber),
-      PasswordRequirement('Special character',    hasSpecial),
+      PasswordRequirement(t?.pwReqMinLength ?? 'Minimum 8 characters', hasMinLength),
+      PasswordRequirement(t?.pwReqUppercase ?? 'Uppercase letter', hasUpper),
+      PasswordRequirement(t?.pwReqLowercase ?? 'Lowercase letter', hasLower),
+      PasswordRequirement(t?.pwReqNumber ?? 'Number', hasNumber),
+      PasswordRequirement(t?.pwReqSpecial ?? 'Special character', hasSpecial),
     ];
 
     if (value.isEmpty) {

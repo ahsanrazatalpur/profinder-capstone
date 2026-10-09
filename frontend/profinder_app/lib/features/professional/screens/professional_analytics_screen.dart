@@ -1,5 +1,6 @@
 // lib/features/professional/screens/professional_analytics_screen.dart
 
+import '../../../core/constants/app_sizes.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
@@ -44,7 +45,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _error = AppLocalizations.of(context)!.analyticsLoadError;
+        _error = AppLocalizations.of(context).analyticsLoadError;
       });
     }
   }
@@ -66,12 +67,12 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.analyticsTitle,
+        title: AppLocalizations.of(context).analyticsTitle,
         icon: Icons.insights_rounded,
         actions: [
           AppBarIconButton(
             icon: Icons.refresh_rounded,
-            tooltip: AppLocalizations.of(context)!.refreshTooltip,
+            tooltip: AppLocalizations.of(context).refreshTooltip,
             onGradient: true,
             onPressed: _load,
           ),
@@ -92,7 +93,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    AppLocalizations.of(context)!.loadingAnalyticsText,
+                    AppLocalizations.of(context).loadingAnalyticsText,
                     style: TextStyle(
                       fontSize: isDesktop ? 16.0 : 14.0,
                       color: context.colors.textSecondary,
@@ -174,8 +175,8 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.error.withOpacity(0.1),
-                    AppColors.error.withOpacity(0.04),
+                    AppColors.error.withValues(alpha: 0.1),
+                    AppColors.error.withValues(alpha: 0.04),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -190,7 +191,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
             ),
             const SizedBox(height: 20),
             Text(
-              AppLocalizations.of(context)!.analyticsErrorTitle,
+              AppLocalizations.of(context).analyticsErrorTitle,
               style: TextStyle(
                 fontSize: isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0),
                 fontWeight: FontWeight.w700,
@@ -215,7 +216,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
               onPressed: _load,
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: Text(
-                AppLocalizations.of(context)!.tryAgainCta,
+                AppLocalizations.of(context).tryAgainCta,
                 style: TextStyle(
                   fontSize: isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0),
                   fontWeight: FontWeight.w600,
@@ -230,7 +231,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
                   vertical: isDesktop ? 16.0 : (isTablet ? 14.0 : 12.0),
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 elevation: 0,
               ),
@@ -250,10 +251,10 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
     double scale,
   ) {
     final color = score >= 80 
-        ? const Color(0xFF10B981) 
+        ? AppColors.emerald 
         : (score >= 50 
-            ? const Color(0xFFF59E0B) 
-            : const Color(0xFFEF4444));
+            ? AppColors.warningAmber 
+            : AppColors.dangerRed);
     
     final scoreSize = ResponsiveUtils.sp(
       isDesktop ? 56 : (isTablet ? 48 : 40),
@@ -274,16 +275,16 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
         gradient: LinearGradient(
           colors: [
             color,
-            color.withOpacity(0.7),
+            color.withValues(alpha: 0.7),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       ),
       child: Stack(clipBehavior: Clip.none, children: [
-        Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)))),
-        Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
+        Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.10)))),
+        Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.08)))),
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -292,12 +293,12 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
               children: [
                 Icon(
                   Icons.analytics_rounded,
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   size: isDesktop ? 28.0 : (isTablet ? 24.0 : 20.0),
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  AppLocalizations.of(context)!.performanceScoreLabel,
+                  AppLocalizations.of(context).performanceScoreLabel,
                   style: TextStyle(
                     fontSize: isDesktop ? 16.0 : (isTablet ? 14.0 : 13.0),
                     fontWeight: FontWeight.w600,
@@ -319,21 +320,21 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
             ),
             const SizedBox(height: 4),
             Text(
-              AppLocalizations.of(context)!.performanceScoreOutOf(score.toStringAsFixed(0)),
+              AppLocalizations.of(context).performanceScoreOutOf(score.toStringAsFixed(0)),
               style: TextStyle(
                 fontSize: isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0),
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 fontWeight: FontWeight.w400,
                 letterSpacing: 0.5,
               ),
             ),
             const SizedBox(height: 16),
             ClipRRect(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
               child: LinearProgressIndicator(
                 value: score / 100,
                 minHeight: isDesktop ? 10.0 : (isTablet ? 8.0 : 7.0),
-                backgroundColor: Colors.white.withOpacity(0.2),
+                backgroundColor: Colors.white.withValues(alpha: 0.2),
                 valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
               ),
             ),
@@ -345,7 +346,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
                   '0',
                   style: TextStyle(
                     fontSize: isDesktop ? 11.0 : 10.0,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -353,7 +354,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
                   '100',
                   style: TextStyle(
                     fontSize: isDesktop ? 11.0 : 10.0,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -377,39 +378,39 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
   ) {
     final stats = [
       {
-        'label': AppLocalizations.of(context)!.profileViewsLabel,
+        'label': AppLocalizations.of(context).profileViewsLabel,
         'value': '${a['profile_views'] ?? 0}',
         'icon': Icons.visibility_outlined,
-        'color': const Color(0xFF3B82F6),
-        'subtext': AppLocalizations.of(context)!.profileViewsSubtext,
+        'color': AppColors.primary,
+        'subtext': AppLocalizations.of(context).profileViewsSubtext,
       },
       {
-        'label': AppLocalizations.of(context)!.visitorsLabel,
+        'label': AppLocalizations.of(context).visitorsLabel,
         'value': '${a['visitors'] ?? 0}',
         'icon': Icons.people_outline_rounded,
-        'color': const Color(0xFF8B5CF6),
-        'subtext': AppLocalizations.of(context)!.visitorsSubtext,
+        'color': AppColors.violet,
+        'subtext': AppLocalizations.of(context).visitorsSubtext,
       },
       {
-        'label': AppLocalizations.of(context)!.acceptanceRateLabel,
+        'label': AppLocalizations.of(context).acceptanceRateLabel,
         'value': '${a['acceptance_rate'] ?? 0}%',
         'icon': Icons.check_circle_outline_rounded,
-        'color': const Color(0xFF10B981),
-        'subtext': AppLocalizations.of(context)!.acceptanceRateSubtext,
+        'color': AppColors.emerald,
+        'subtext': AppLocalizations.of(context).acceptanceRateSubtext,
       },
       {
-        'label': AppLocalizations.of(context)!.responseRateLabel,
+        'label': AppLocalizations.of(context).responseRateLabel,
         'value': '${a['response_rate'] ?? 0}%',
         'icon': Icons.reply_rounded,
-        'color': const Color(0xFFF59E0B),
-        'subtext': AppLocalizations.of(context)!.responseRateSubtext,
+        'color': AppColors.warningAmber,
+        'subtext': AppLocalizations.of(context).responseRateSubtext,
       },
       {
-        'label': AppLocalizations.of(context)!.averageRatingLabel,
+        'label': AppLocalizations.of(context).averageRatingLabel,
         'value': '${a['average_rating'] ?? 0} / 5',
         'icon': Icons.star_rounded,
-        'color': const Color(0xFFEF4444),
-        'subtext': AppLocalizations.of(context)!.averageRatingSubtext,
+        'color': AppColors.dangerRed,
+        'subtext': AppLocalizations.of(context).averageRatingSubtext,
       },
     ];
 
@@ -476,15 +477,15 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
         borderRadius: BorderRadius.circular(isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0)),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.06)
-              : Colors.grey.withOpacity(0.1),
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.04),
+                ? Colors.black.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -498,8 +499,8 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
             padding: EdgeInsets.all(isDesktop ? 8.0 : (isTablet ? 7.0 : 6.0)),
             decoration: BoxDecoration(
               color: isDark 
-                  ? color.withOpacity(0.12) 
-                  : color.withOpacity(0.08),
+                  ? color.withValues(alpha: 0.12) 
+                  : color.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(isDesktop ? 10.0 : (isTablet ? 9.0 : 8.0)),
             ),
             child: Icon(
@@ -539,7 +540,7 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
                   subtext,
                   style: TextStyle(
                     fontSize: isDesktop ? 10.0 : 9.0,
-                    color: context.colors.textSecondary.withOpacity(0.5),
+                    color: context.colors.textSecondary.withValues(alpha: 0.5),
                     fontWeight: FontWeight.w400,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -566,19 +567,19 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
           end: Alignment.bottomRight,
           colors: isDark
               ? [
-                  const Color(0xFF312E81).withOpacity(0.2),
-                  const Color(0xFF1E1B4B).withOpacity(0.1),
+                  AppColors.indigo900.withValues(alpha: 0.2),
+                  AppColors.indigo950.withValues(alpha: 0.1),
                 ]
               : [
-                  const Color(0xFF6366F1).withOpacity(0.06),
-                  const Color(0xFF818CF8).withOpacity(0.03),
+                  AppColors.indigo.withValues(alpha: 0.06),
+                  AppColors.indigo400.withValues(alpha: 0.03),
                 ],
         ),
         borderRadius: BorderRadius.circular(isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0)),
         border: Border.all(
           color: isDark
-              ? const Color(0xFF818CF8).withOpacity(0.15)
-              : const Color(0xFF6366F1).withOpacity(0.1),
+              ? AppColors.indigo400.withValues(alpha: 0.15)
+              : AppColors.indigo.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -588,16 +589,16 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
           Icon(
             Icons.info_outline_rounded,
             size: isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0),
-            color: const Color(0xFF6366F1),
+            color: AppColors.indigo,
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              AppLocalizations.of(context)!.performanceScoreInfo,
+              AppLocalizations.of(context).performanceScoreInfo,
               style: TextStyle(
                 fontSize: isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0),
                 color: isDark 
-                    ? const Color(0xFFC4B5FD)
+                    ? AppColors.violet300
                     : context.colors.textSecondary,
                 fontWeight: FontWeight.w400,
                 height: 1.5,
@@ -614,10 +615,10 @@ class _ProfessionalAnalyticsScreenState extends State<ProfessionalAnalyticsScree
   Widget _buildLastUpdated(bool isDark, bool isDesktop, bool isTablet) {
     return Center(
       child: Text(
-        AppLocalizations.of(context)!.lastUpdatedLabel(DateTime.now().toString().substring(0, 16)),
+        AppLocalizations.of(context).lastUpdatedLabel(DateTime.now().toString().substring(0, 16)),
         style: TextStyle(
           fontSize: isDesktop ? 12.0 : (isTablet ? 11.0 : 10.0),
-          color: context.colors.textSecondary.withOpacity(0.4),
+          color: context.colors.textSecondary.withValues(alpha: 0.4),
           fontWeight: FontWeight.w400,
           letterSpacing: 0.3,
         ),

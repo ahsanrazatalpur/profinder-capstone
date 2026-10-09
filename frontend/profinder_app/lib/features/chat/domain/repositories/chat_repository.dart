@@ -9,7 +9,7 @@ import '../entities/message_entity.dart';
 
 /// Base type for anything the live WebSocket connection can push at us.
 /// Modeled as a small sealed-style hierarchy instead of a generic
-/// Map<String,dynamic> so the provider gets exhaustive-switch safety.
+/// `Map<String,dynamic>` so the provider gets exhaustive-switch safety.
 abstract class ChatSocketEvent {
   const ChatSocketEvent();
 }

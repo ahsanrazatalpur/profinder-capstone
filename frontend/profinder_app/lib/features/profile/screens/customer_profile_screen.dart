@@ -1,5 +1,7 @@
 // lib/features/profile/screens/customer_profile_screen.dart
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -25,6 +27,9 @@ import 'payments_screen.dart';
 import 'saved_professionals_screen.dart';
 import 'my_reviews_screen.dart';
 import 'settings_screen.dart';
+import 'language_settings_screen.dart';
+import '../../../core/localization/locale_provider.dart';
+import '../../../core/localization/supported_languages.dart';
 import 'security_screen.dart';
 import 'help_screen.dart';
 import '../../trust_safety/screens/my_reports_screen.dart';
@@ -130,7 +135,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       print('❌ _loadProfile error: $e'); // TEMP DEBUG — console mein pura error dekhne ke liye
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, AppLocalizations.of(context)!.profileLoadError);
+      AppHelpers.showError(context, AppLocalizations.of(context).profileLoadError);
     }
   }
 
@@ -257,7 +262,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context)!.imagePickError);
+      AppHelpers.showError(context, AppLocalizations.of(context).imagePickError);
     }
   }
 
@@ -269,17 +274,17 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusChip)),
       ),
       builder: (_) => Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusChip)),
           boxShadow: [
             BoxShadow(
               color: isDark
-                  ? Colors.black.withOpacity(0.3)
-                  : Colors.black.withOpacity(0.08),
+                  ? Colors.black.withValues(alpha: 0.3)
+                  : Colors.black.withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, -4),
             ),
@@ -297,15 +302,15 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? Colors.white.withOpacity(0.15)
-                        : const Color(0xFFE5E7EB),
+                        ? Colors.white.withValues(alpha: 0.15)
+                        : AppColors.neutral200,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
                 Text(
-                  AppLocalizations.of(context)!.changeProfilePhotoTitle,
+                  AppLocalizations.of(context).changeProfilePhotoTitle,
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: AppFontSizes.body,
                     fontWeight: FontWeight.w700,
                     color: context.colors.textPrimary,
                     letterSpacing: -0.2,
@@ -318,7 +323,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                     height: 40,
                     decoration: BoxDecoration(
                       color: context.colors.primaryLight,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                     child: Icon(
                       Icons.photo_library_outlined,
@@ -327,9 +332,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                     ),
                   ),
                   title: Text(
-                    AppLocalizations.of(context)!.galleryOptionLabel,
+                    AppLocalizations.of(context).galleryOptionLabel,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: AppFontSizes.body,
                       fontWeight: FontWeight.w500,
                       color: context.colors.textPrimary,
                     ),
@@ -344,7 +349,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                       height: 40,
                       decoration: BoxDecoration(
                         color: context.colors.accentLight,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       ),
                       child: Icon(
                         Icons.camera_alt_outlined,
@@ -353,9 +358,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                       ),
                     ),
                     title: Text(
-                      AppLocalizations.of(context)!.cameraOptionLabel,
+                      AppLocalizations.of(context).cameraOptionLabel,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: AppFontSizes.body,
                         fontWeight: FontWeight.w500,
                         color: context.colors.textPrimary,
                       ),
@@ -400,7 +405,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         'phone':     _phoneController.text.trim(),
         'city':      _selectedCity?['name']    ?? '',
         'country':   _selectedCountry?['name'] ?? '',
-        if (photoMultipart != null) 'photo': photoMultipart,
+        'photo': ?photoMultipart,
       });
 
       await _api.patchForm(AppConstants.userProfile, formData);
@@ -413,12 +418,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         _pickedXFile   = null;
         _webImageBytes = null;
       });
-      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.profileUpdateSuccess);
+      AppHelpers.showSuccess(context, AppLocalizations.of(context).profileUpdateSuccess);
       _loadProfile();
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      AppHelpers.showError(context, AppLocalizations.of(context)!.profileUpdateError);
+      AppHelpers.showError(context, AppLocalizations.of(context).profileUpdateError);
     }
   }
 
@@ -483,7 +488,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 
   // ── AppBar ───────────────────────────────────────────────
   PreferredSizeWidget _buildAppBar(bool isDark) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return UniversalAppBar(
       title: t.profileTitle,
       icon: Icons.person_rounded,
@@ -571,7 +576,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF59E0B),
+                    color: AppColors.warningAmber,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
                   ),
@@ -582,34 +587,34 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   ),
                 )
               : null,
-          statusText: _isPremium ? AppLocalizations.of(context)!.premiumMemberLabel : null,
+          statusText: _isPremium ? AppLocalizations.of(context).premiumMemberLabel : null,
           statusIcon: Icons.workspace_premium_rounded,
           description: (_profile?['email'] as String?)?.isNotEmpty == true ? _profile!['email'] as String : null,
           stats: [
             ProfileHeaderStat(
               icon: Icons.calendar_today_rounded,
               value: '$_bookingsCount',
-              label: AppLocalizations.of(context)!.bookingsStatLabel,
+              label: AppLocalizations.of(context).bookingsStatLabel,
             ),
             ProfileHeaderStat(
               icon: Icons.favorite_rounded,
               value: '$_savedCount',
-              label: AppLocalizations.of(context)!.savedStatLabel,
+              label: AppLocalizations.of(context).savedStatLabel,
             ),
             ProfileHeaderStat(
               icon: Icons.workspace_premium_rounded,
               value: _planName,
-              label: AppLocalizations.of(context)!.planStatLabel,
+              label: AppLocalizations.of(context).planStatLabel,
             ),
           ],
         ),
         if (_isEditing && _pickedXFile != null) ...[
           const SizedBox(height: 8),
           Text(
-            AppLocalizations.of(context)!.newPhotoSelectedHint,
+            AppLocalizations.of(context).newPhotoSelectedHint,
             style: TextStyle(
-              fontSize: 11,
-              color: isDark ? const Color(0xFFFCD34D) : const Color(0xFFB45309),
+              fontSize: AppFontSizes.caption,
+              color: isDark ? AppColors.starGold : AppColors.amberDarkest,
             ),
           ),
         ],
@@ -627,17 +632,17 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.08)
+              ? Colors.white.withValues(alpha: 0.08)
               : context.colors.divider,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.04),
+                ? Colors.black.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -655,9 +660,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
               ),
               const SizedBox(width: 6),
               Text(
-                AppLocalizations.of(context)!.personalInfoLabel,
+                AppLocalizations.of(context).personalInfoLabel,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.body,
                   fontWeight: FontWeight.w700,
                   color: context.colors.textPrimary,
                   letterSpacing: -0.1,
@@ -667,20 +672,20 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
           ),
           const SizedBox(height: 16),
           _buildField(
-            AppLocalizations.of(context)!.fullNameLabel,
+            AppLocalizations.of(context).fullNameLabel,
             _nameController,
             Icons.person_outline_rounded,
           ),
           const SizedBox(height: 12),
           _buildField(
-            AppLocalizations.of(context)!.phoneLabel,
+            AppLocalizations.of(context).phoneLabel,
             _phoneController,
             Icons.phone_outlined,
             type: TextInputType.phone,
           ),
           const SizedBox(height: 12),
           _buildLocationField(
-            label: AppLocalizations.of(context)!.countryLabel,
+            label: AppLocalizations.of(context).countryLabel,
             icon: Icons.public_outlined,
             displayValue: (_selectedCountry?['name'] as String?) ??
                 (_profile?['country'] as String?),
@@ -690,20 +695,20 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
               itemLabel:  (c) => c['name'] as String,
               itemLeading: (c) {
                 final flag = CountryFlags.flagFor(c['name'] as String);
-                return Text(flag ?? '🌐', style: const TextStyle(fontSize: 18));
+                return Text(flag ?? '🌐', style: const TextStyle(fontSize: AppFontSizes.title2));
               },
-              label:      AppLocalizations.of(context)!.countryLabel,
-              hint:       AppLocalizations.of(context)!.countryHint,
+              label:      AppLocalizations.of(context).countryLabel,
+              hint:       AppLocalizations.of(context).countryHint,
               prefixIcon: Icons.public_outlined,
               loading:    _loadingCountries,
-              searchHint: AppLocalizations.of(context)!.countrySearchHint,
-              emptyMessage: AppLocalizations.of(context)!.countryEmptyMessage,
+              searchHint: AppLocalizations.of(context).countrySearchHint,
+              emptyMessage: AppLocalizations.of(context).countryEmptyMessage,
               onChanged:  _onCountrySelected,
             ),
           ),
           const SizedBox(height: 12),
           _buildLocationField(
-            label: AppLocalizations.of(context)!.cityLabel,
+            label: AppLocalizations.of(context).cityLabel,
             icon: Icons.location_city_outlined,
             displayValue: (_selectedCity?['name'] as String?) ??
                 (_profile?['city'] as String?),
@@ -712,14 +717,14 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
               value:      _selectedCity,
               items:      _cities,
               itemLabel:  (c) => c['name'] as String,
-              label:      AppLocalizations.of(context)!.cityLabel,
-              hint:       AppLocalizations.of(context)!.cityHint,
+              label:      AppLocalizations.of(context).cityLabel,
+              hint:       AppLocalizations.of(context).cityHint,
               prefixIcon: Icons.location_city_outlined,
               enabled:    _selectedCountry != null,
               loading:    _loadingCities,
-              disabledHint: AppLocalizations.of(context)!.cityDisabledHint,
-              searchHint: AppLocalizations.of(context)!.citySearchHint,
-              emptyMessage: AppLocalizations.of(context)!.cityEmptyMessage,
+              disabledHint: AppLocalizations.of(context).cityDisabledHint,
+              searchHint: AppLocalizations.of(context).citySearchHint,
+              emptyMessage: AppLocalizations.of(context).cityEmptyMessage,
               onChanged:  (city) => setState(() => _selectedCity = city),
             ),
           ),
@@ -734,148 +739,163 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _groupLabel(AppLocalizations.of(context)!.accountGroupLabel),
+        _groupLabel(AppLocalizations.of(context).accountGroupLabel),
         _menuGroup([
           _actionTile(
             Icons.edit_outlined,
-            AppLocalizations.of(context)!.editProfileActionLabel,
-            AppLocalizations.of(context)!.editProfileActionSubtitle,
+            AppLocalizations.of(context).editProfileActionLabel,
+            AppLocalizations.of(context).editProfileActionSubtitle,
             () => setState(() => _isEditing = true),
-            iconColor: const Color(0xFF3B82F6),
+            iconColor: AppColors.primary,
           ),
           _actionTile(
             Icons.workspace_premium_rounded,
-            AppLocalizations.of(context)!.subscriptionActionLabel,
+            AppLocalizations.of(context).subscriptionActionLabel,
             _isPremium
-                ? AppLocalizations.of(context)!.subscriptionActiveStatus(_planName)
-                : AppLocalizations.of(context)!.subscriptionUpgradeStatus,
+                ? AppLocalizations.of(context).subscriptionActiveStatus(_planName)
+                : AppLocalizations.of(context).subscriptionUpgradeStatus,
             () => Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (_) => const SubscriptionScreen(userRole: 'customer'),
               ),
             ),
-            iconColor: const Color(0xFFF59E0B),
+            iconColor: AppColors.warningAmber,
           ),
           _actionTile(
             Icons.account_balance_wallet_outlined,
-            AppLocalizations.of(context)!.walletActionLabel,
-            AppLocalizations.of(context)!.walletActionSubtitle,
+            AppLocalizations.of(context).walletActionLabel,
+            AppLocalizations.of(context).walletActionSubtitle,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const WalletScreen()),
             ),
-            iconColor: const Color(0xFFF97316),
+            iconColor: AppColors.badgeTrending,
           ),
           _actionTile(
             Icons.calendar_today_outlined,
-            AppLocalizations.of(context)!.bookingsActionLabel,
-            AppLocalizations.of(context)!.bookingsActionSubtitle,
+            AppLocalizations.of(context).bookingsActionLabel,
+            AppLocalizations.of(context).bookingsActionSubtitle,
             () => Navigator.pushNamed(context, '/bookings'),
-            iconColor: const Color(0xFF06B6D4),
+            iconColor: AppColors.cyan,
           ),
           _actionTile(
             Icons.favorite_border_rounded,
-            AppLocalizations.of(context)!.savedProfessionalsActionLabel,
-            AppLocalizations.of(context)!.savedProfessionalsActionSubtitle,
+            AppLocalizations.of(context).savedProfessionalsActionLabel,
+            AppLocalizations.of(context).savedProfessionalsActionSubtitle,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SavedProfessionalsScreen()),
             ),
-            iconColor: const Color(0xFFEC4899),
+            iconColor: AppColors.pink,
           ),
           _actionTile(
             Icons.rate_review_outlined,
-            AppLocalizations.of(context)!.reviewsActionLabel,
-            AppLocalizations.of(context)!.reviewsActionSubtitle,
+            AppLocalizations.of(context).reviewsActionLabel,
+            AppLocalizations.of(context).reviewsActionSubtitle,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const MyReviewsScreen()),
             ),
-            iconColor: const Color(0xFF8B5CF6),
+            iconColor: AppColors.violet,
           ),
           _actionTile(
             Icons.receipt_long_outlined,
-            AppLocalizations.of(context)!.paymentsActionLabel,
-            AppLocalizations.of(context)!.paymentsActionSubtitle,
+            AppLocalizations.of(context).paymentsActionLabel,
+            AppLocalizations.of(context).paymentsActionSubtitle,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PaymentsScreen()),
             ),
-            iconColor: const Color(0xFF6366F1),
+            iconColor: AppColors.indigo,
           ),
         ]),
 
         const SizedBox(height: 16),
-        _groupLabel(AppLocalizations.of(context)!.preferencesGroupLabel),
+        _groupLabel(AppLocalizations.of(context).preferencesGroupLabel),
         _menuGroup([
           _actionTile(
             Icons.notifications_outlined,
-            AppLocalizations.of(context)!.notificationsActionLabel,
-            AppLocalizations.of(context)!.notificationsActionSubtitle,
+            AppLocalizations.of(context).notificationsActionLabel,
+            AppLocalizations.of(context).notificationsActionSubtitle,
             () => Navigator.pushNamed(context, '/notifications'),
-            iconColor: const Color(0xFFF43F5E),
+            iconColor: AppColors.rose,
+          ),
+          // FIX: language ka direct shortcut — pehle sirf Settings ke andar
+          // chhupa hua tha. Same LanguageSettingsScreen, current language
+          // subtitle mein live dikhti hai.
+          _actionTile(
+            Icons.language_rounded,
+            AppLocalizations.of(context).languageLabel,
+            SupportedLanguages.byCode(
+              context.watch<LocaleProvider>().locale.languageCode,
+            ).nativeName,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const LanguageSettingsScreen()),
+            ),
+            iconColor: AppColors.cyan,
           ),
           _actionTile(
             Icons.settings_outlined,
-            AppLocalizations.of(context)!.settingsActionLabel,
-            AppLocalizations.of(context)!.settingsActionSubtitle,
+            AppLocalizations.of(context).settingsActionLabel,
+            AppLocalizations.of(context).settingsActionSubtitle,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SettingsScreen()),
             ),
-            iconColor: const Color(0xFF64748B),
+            iconColor: AppColors.slate500,
           ),
           _actionTile(
             Icons.security_rounded,
-            AppLocalizations.of(context)!.securityActionLabel,
-            AppLocalizations.of(context)!.securityActionSubtitle,
+            AppLocalizations.of(context).securityActionLabel,
+            AppLocalizations.of(context).securityActionSubtitle,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SecurityScreen()),
             ),
-            iconColor: const Color(0xFF10B981),
+            iconColor: AppColors.emerald,
           ),
           // ✅ Trust & Safety Part 8 — user-facing account status + reports.
           _actionTile(
             Icons.shield_outlined,
-            AppLocalizations.of(context)!.myTsAccountStatusTitle,
-            AppLocalizations.of(context)!.myTsAccountStatusActionSubtitle,
+            AppLocalizations.of(context).myTsAccountStatusTitle,
+            AppLocalizations.of(context).myTsAccountStatusActionSubtitle,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const AccountStatusScreen()),
             ),
-            iconColor: const Color(0xFFEF4444),
+            iconColor: AppColors.dangerRed,
           ),
           _actionTile(
             Icons.outlined_flag_rounded,
-            AppLocalizations.of(context)!.myTsMyReportsTitle,
-            AppLocalizations.of(context)!.myTsMyReportsActionSubtitle,
+            AppLocalizations.of(context).myTsMyReportsTitle,
+            AppLocalizations.of(context).myTsMyReportsActionSubtitle,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const MyReportsScreen()),
             ),
-            iconColor: const Color(0xFF0EA5E9),
+            iconColor: AppColors.sky,
           ),
           _actionTile(
             Icons.help_outline_rounded,
-            AppLocalizations.of(context)!.helpActionLabel,
-            AppLocalizations.of(context)!.helpActionSubtitle,
+            AppLocalizations.of(context).helpActionLabel,
+            AppLocalizations.of(context).helpActionSubtitle,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const HelpScreen()),
             ),
-            iconColor: const Color(0xFF14B8A6),
+            iconColor: AppColors.teal,
           ),
           _actionTile(
             Icons.info_outline_rounded,
-            AppLocalizations.of(context)!.aboutActionLabel,
-            AppLocalizations.of(context)!.aboutActionSubtitle,
+            AppLocalizations.of(context).aboutActionLabel,
+            AppLocalizations.of(context).aboutActionSubtitle,
             () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const AboutScreen()),
             ),
-            iconColor: const Color(0xFF6366F1),
+            iconColor: AppColors.indigo,
           ),
         ]),
       ],
@@ -887,7 +907,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         child: Text(
           text.toUpperCase(),
           style: TextStyle(
-            fontSize: 11,
+            fontSize: AppFontSizes.caption,
             fontWeight: FontWeight.bold,
             color: context.colors.textSecondary,
             letterSpacing: 0.6,
@@ -903,10 +923,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     }
     return Material(
       color: context.colors.surface,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(color: context.colors.divider),
         ),
         child: Column(children: withDividers),
@@ -918,15 +938,15 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   Widget _buildLogoutButton(AuthProvider auth) {
     return Material(
       color: context.colors.surface,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(color: context.colors.divider),
         ),
         child: _actionTile(
           Icons.logout_rounded,
-          AppLocalizations.of(context)!.logoutActionLabel,
+          AppLocalizations.of(context).logoutActionLabel,
           null,
           () => _confirmLogout(auth),
           iconColor: AppColors.error,
@@ -950,7 +970,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         Text(
           label,
           style: TextStyle(
-            fontSize: 11,
+            fontSize: AppFontSizes.caption,
             color: context.colors.textSecondary,
             fontWeight: FontWeight.w500,
           ),
@@ -964,10 +984,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   const SizedBox(width: 8),
                   Text(
                     (displayValue == null || displayValue.isEmpty)
-                        ? AppLocalizations.of(context)!.notSetPlaceholder
+                        ? AppLocalizations.of(context).notSetPlaceholder
                         : displayValue,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: AppFontSizes.body,
                       color: (displayValue == null || displayValue.isEmpty)
                           ? context.colors.textSecondary
                           : context.colors.textPrimary,
@@ -990,7 +1010,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         Text(
           label,
           style: TextStyle(
-            fontSize: 11,
+            fontSize: AppFontSizes.caption,
             color: context.colors.textSecondary,
             fontWeight: FontWeight.w500,
           ),
@@ -1001,7 +1021,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                 controller: controller,
                 keyboardType: type,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.body,
                   color: context.colors.textPrimary,
                 ),
                 decoration: InputDecoration(
@@ -1013,18 +1033,18 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   filled: true,
                   fillColor: isDark
-                      ? Colors.white.withOpacity(0.04)
+                      ? Colors.white.withValues(alpha: 0.04)
                       : context.colors.background,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     borderSide: BorderSide(color: context.colors.divider),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     borderSide: BorderSide(color: context.colors.divider),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     borderSide: BorderSide(
                       color: AppColors.customerColor,
                       width: 1.5,
@@ -1037,9 +1057,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   Icon(icon, size: 16, color: context.colors.textSecondary),
                   const SizedBox(width: 8),
                   Text(
-                    controller.text.isEmpty ? AppLocalizations.of(context)!.notSetPlaceholder : controller.text,
+                    controller.text.isEmpty ? AppLocalizations.of(context).notSetPlaceholder : controller.text,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: AppFontSizes.body,
                       color: controller.text.isEmpty
                           ? context.colors.textSecondary
                           : context.colors.textPrimary,
@@ -1061,15 +1081,15 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         width: 38,
         height: 38,
         decoration: BoxDecoration(
-          color: c.withOpacity(0.14),
-          borderRadius: BorderRadius.circular(11),
+          color: c.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
         child: Icon(icon, color: c, size: 19),
       ),
       title: Text(
         label,
         style: TextStyle(
-          fontSize: 14,
+          fontSize: AppFontSizes.body,
           fontWeight: FontWeight.w600,
           color: titleColor ?? context.colors.textPrimary,
         ),
@@ -1079,7 +1099,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
           : Text(
               subtitle,
               style: TextStyle(
-                fontSize: 11.5,
+                fontSize: AppFontSizes.small,
                 color: context.colors.textSecondary,
               ),
             ),
@@ -1093,99 +1113,104 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   }
 
   // ── Logout Dialog ─────────────────────────────────────────
-  void _confirmLogout(AuthProvider auth) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    showDialog(
+  // Centered layout + two equal buttons side by side, so it looks even in every
+  // language (LTR and RTL). No letterSpacing: it breaks joined Urdu/Arabic letters.
+  Future<void> _confirmLogout(AuthProvider auth) async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: context.colors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
-        elevation: 0,
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.12),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.logout_rounded,
-                color: AppColors.error,
-                size: 22,
+      builder: (ctx) {
+        final t = AppLocalizations.of(ctx);
+        return Dialog(
+          backgroundColor: ctx.colors.surface,
+          elevation: 0,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 380),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 24, 22, 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.error.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.logout_rounded, color: AppColors.error, size: 26),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    t.logoutDialogTitle,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: AppFontSizes.title,
+                      fontWeight: FontWeight.w700,
+                      color: ctx.colors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    t.logoutDialogContent,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: AppFontSizes.body,
+                      color: ctx.colors.textSecondary,
+                      height: 1.6,
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(46),
+                            foregroundColor: ctx.colors.textSecondary,
+                            side: BorderSide(color: ctx.colors.divider),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                          ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(t.cancelCta, maxLines: 1, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(46),
+                            backgroundColor: AppColors.error,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                          ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(t.logoutCta, maxLines: 1, style: const TextStyle(fontWeight: FontWeight.w700)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            const SizedBox(width: 12),
-            Text(
-              AppLocalizations.of(context)!.logoutDialogTitle,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-                letterSpacing: -0.3,
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          AppLocalizations.of(context)!.logoutDialogContent,
-          style: TextStyle(
-            fontSize: 14,
-            color: context.colors.textSecondary,
-            height: 1.5,
-            letterSpacing: 0.2,
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              foregroundColor: context.colors.textSecondary,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text(
-              AppLocalizations.of(context)!.cancelCta,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.3,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              elevation: 0,
-            ),
-            onPressed: () async {
-              Navigator.pop(context);
-              await auth.logout();
-              if (!mounted) return;
-              // ✅ FIX: pushNamedAndRemoveUntil clears the whole stack.
-              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-            },
-            child: Text(
-              AppLocalizations.of(context)!.logoutCta,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
+    if (confirmed != true || !mounted) return;
+    await auth.logout();
+    if (!mounted) return;
+    // pushNamedAndRemoveUntil clears the whole stack.
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
 }

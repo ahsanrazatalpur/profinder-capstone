@@ -22,6 +22,7 @@ import '../widgets/message_search_sheet.dart'; // ✅ NEW
 import '../../../../core/theme/theme_context_ext.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../shared/widgets/universal_app_bar.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 /// Sealed-ish helper: one entry in the rendered list is either a message
 /// bubble or a date separator. Keeping both in one flat list lets us use a
@@ -197,11 +198,11 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
                 size: 36,
                 avatar: CircleAvatar(
                   radius: 18,
-                  backgroundColor: Colors.white.withOpacity(0.25),
+                  backgroundColor: Colors.white.withValues(alpha: 0.25),
                   backgroundImage: widget.otherUserPhoto != null ? CachedNetworkImageProvider(widget.otherUserPhoto!) : null,
                   child: widget.otherUserPhoto == null
                       ? Text(AppHelpers.getInitials(widget.otherUserName),
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white))
+                          style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.bold, color: Colors.white))
                       : null,
                 ),
               ),
@@ -213,12 +214,12 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
                   children: [
                     Text(widget.otherUserName,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+                        style: const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: Colors.white)),
                     Text(
                       _statusSubtitle(context, provider),
                       style: TextStyle(
-                        fontSize: 11.5,
-                        color: Colors.white.withOpacity(provider.otherUserTyping ? 1 : 0.8),
+                        fontSize: AppFontSizes.small,
+                        color: Colors.white.withValues(alpha: provider.otherUserTyping ? 1 : 0.8),
                       ),
                     ),
                   ],
@@ -231,7 +232,7 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
           AppBarIconButton(
             icon: Icons.search_rounded,
             onGradient: true,
-            tooltip: AppLocalizations.of(context)!.chatSearchChat,
+            tooltip: AppLocalizations.of(context).chatSearchChat,
             onPressed: () => showModalBottomSheet(
               context: context,
               isScrollControlled: true,
@@ -242,20 +243,20 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
             icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
             onSelected: (value) => _onMenuSelected(context, value),
             itemBuilder: (menuContext) => [
-              PopupMenuItem(value: 'media', child: Text(AppLocalizations.of(menuContext)!.chatSharedMedia2)),
+              PopupMenuItem(value: 'media', child: Text(AppLocalizations.of(menuContext).chatSharedMedia2)),
               PopupMenuItem(
                 value: 'mute',
                 child: Text(isMutedNow
-                    ? AppLocalizations.of(menuContext)!.chatUnmuteConversation
-                    : AppLocalizations.of(menuContext)!.chatMuteConversation),
+                    ? AppLocalizations.of(menuContext).chatUnmuteConversation
+                    : AppLocalizations.of(menuContext).chatMuteConversation),
               ),
               PopupMenuItem(
                 value: 'block',
                 child: Text(chatProvider.isBlockedByMe
-                    ? AppLocalizations.of(menuContext)!.chatUnblockUser
-                    : AppLocalizations.of(menuContext)!.chatBlockUser),
+                    ? AppLocalizations.of(menuContext).chatUnblockUser
+                    : AppLocalizations.of(menuContext).chatBlockUser),
               ),
-              PopupMenuItem(value: 'report', child: Text(AppLocalizations.of(menuContext)!.chatReportUser)),
+              PopupMenuItem(value: 'report', child: Text(AppLocalizations.of(menuContext).chatReportUser)),
             ],
           ),
         ],
@@ -324,7 +325,7 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
         if (conv != null) {
           final willBeMuted = !conv.isMuted;
           listProvider.toggleMute(conv);
-          final t = AppLocalizations.of(context)!;
+          final t = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(willBeMuted ? t.chatConversationMuted : t.chatConversationUnmuted),
@@ -347,7 +348,7 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
   }
 
   void _confirmBlock(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -377,7 +378,7 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
   //  - They blocked me (or role/account issue): a generic "message
   //    unavailable" notice that never confirms who blocked whom.
   Widget _buildBlockedBanner(BuildContext context, ChatProvider provider) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(16, 14, 16, MediaQuery.of(context).padding.bottom + 14),
@@ -395,12 +396,12 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
                     children: [
                       Text(
                         t.chatYouBlockedUser(widget.otherUserName),
-                        style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                        style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         t.chatBlockedBannerSubtitle,
-                        style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+                        style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
                       ),
                     ],
                   ),
@@ -419,7 +420,7 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
                 const SizedBox(width: 8),
                 Text(
                   t.chatMessageUnavailable,
-                  style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                  style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
                 ),
               ],
             ),
@@ -427,7 +428,7 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
   }
 
   String _statusSubtitle(BuildContext context, ChatProvider provider) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     if (provider.otherUserTyping) return t.chatTyping;
     if (provider.otherUserOnline) return t.searchOnline;
     if (provider.otherUserLastSeen != null) {
@@ -437,7 +438,7 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
   }
 
   Widget _buildMessageList(ChatProvider provider) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     if (provider.isLoadingInitial) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -454,7 +455,7 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
       );
     }
     if (provider.messages.isEmpty) {
-      return Center(child: Text(t.chatSayHello, style: TextStyle(fontSize: 14, color: context.colors.textSecondary)));
+      return Center(child: Text(t.chatSayHello, style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary)));
     }
 
     final items = _buildItems(provider.messages);

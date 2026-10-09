@@ -20,6 +20,8 @@ import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
@@ -98,7 +100,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
   Future<void> _addPhoto() async {
     if (_photos.length >= _maxPhotos) {
-      AppHelpers.showInfo(context, AppLocalizations.of(context)!.photoLimitReached(_maxPhotos));
+      AppHelpers.showInfo(context, AppLocalizations.of(context).photoLimitReached(_maxPhotos));
       return;
     }
     try {
@@ -111,7 +113,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
       setState(() => _photos.add(_PickedPhoto(file: picked, webBytes: bytes)));
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context)!.photoPickError);
+      AppHelpers.showError(context, AppLocalizations.of(context).photoPickError);
     }
   }
 
@@ -121,7 +123,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
   Future<void> _submit() async {
     if (_rating == 0) {
-      AppHelpers.showError(context, AppLocalizations.of(context)!.ratingRequiredError);
+      AppHelpers.showError(context, AppLocalizations.of(context).ratingRequiredError);
       return;
     }
 
@@ -168,8 +170,8 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
       // Already reviewed check
       String msg = widget.isEditMode
-          ? AppLocalizations.of(context)!.reviewUpdateErrorDefault
-          : AppLocalizations.of(context)!.reviewSubmitErrorDefault;
+          ? AppLocalizations.of(context).reviewUpdateErrorDefault
+          : AppLocalizations.of(context).reviewSubmitErrorDefault;
       try {
         final err = (e as dynamic).response?.data;
         if (err is Map && err['error'] != null) {
@@ -190,7 +192,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: widget.isEditMode ? AppLocalizations.of(context)!.editReviewTitle : AppLocalizations.of(context)!.writeReviewTitle,
+        title: widget.isEditMode ? AppLocalizations.of(context).editReviewTitle : AppLocalizations.of(context).writeReviewTitle,
         icon: Icons.rate_review_rounded,
         onBackPressed: () => Navigator.pop(context, _submitted),
       ),
@@ -214,17 +216,17 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
             padding: EdgeInsets.all(isTablet ? 18 : 16),
             decoration: BoxDecoration(
               color: context.colors.surface,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withOpacity(0.08)
-                    : const Color(0xFFE5E7EB),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : AppColors.neutral200,
               ),
               boxShadow: [
                 BoxShadow(
                   color: isDark
-                      ? Colors.black.withOpacity(0.06)
-                      : Colors.grey.withOpacity(0.04),
+                      ? Colors.black.withValues(alpha: 0.06)
+                      : Colors.grey.withValues(alpha: 0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -235,7 +237,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                 CircleAvatar(
                   radius: isTablet ? 30 : 26,
                   backgroundColor: isDark
-                      ? Colors.white.withOpacity(0.08)
+                      ? Colors.white.withValues(alpha: 0.08)
                       : context.colors.primaryLight,
                   child: Text(
                     AppHelpers.getInitials(widget.professionalName),
@@ -262,7 +264,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        AppLocalizations.of(context)!.shareExperienceLabel,
+                        AppLocalizations.of(context).shareExperienceLabel,
                         style: TextStyle(
                           fontSize: isTablet ? 13 : 12,
                           color: context.colors.textSecondary,
@@ -279,7 +281,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
           // ── Stars ─────────────────────────────────────
           Text(
-            AppLocalizations.of(context)!.ratingLabel,
+            AppLocalizations.of(context).ratingLabel,
             style: TextStyle(
               fontSize: isTablet ? 15 : 14,
               fontWeight: FontWeight.w700,
@@ -295,17 +297,17 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
             padding: EdgeInsets.all(isTablet ? 24 : 20),
             decoration: BoxDecoration(
               color: context.colors.surface,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withOpacity(0.08)
-                    : const Color(0xFFE5E7EB),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : AppColors.neutral200,
               ),
               boxShadow: [
                 BoxShadow(
                   color: isDark
-                      ? Colors.black.withOpacity(0.06)
-                      : Colors.grey.withOpacity(0.04),
+                      ? Colors.black.withValues(alpha: 0.06)
+                      : Colors.grey.withValues(alpha: 0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -332,10 +334,10 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                               ? Icons.star_rounded
                               : Icons.star_outline_rounded,
                           color: isActive
-                              ? const Color(0xFFF59E0B)
+                              ? AppColors.warningAmber
                               : (isDark
-                                  ? Colors.white.withOpacity(0.2)
-                                  : const Color(0xFFD1D5DB)),
+                                  ? Colors.white.withValues(alpha: 0.2)
+                                  : AppColors.neutral300),
                           size: isTablet ? 48 : 40,
                         ),
                       ),
@@ -350,13 +352,13 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                   child: Text(
                     _rating > 0
                         ? _ratingLabels[_rating]
-                        : AppLocalizations.of(context)!.tapStarToRateLabel,
+                        : AppLocalizations.of(context).tapStarToRateLabel,
                     key: ValueKey(_rating),
                     style: TextStyle(
                       fontSize: isTablet ? 15 : 14,
                       fontWeight: FontWeight.w600,
                       color: _rating > 0
-                          ? const Color(0xFFF59E0B)
+                          ? AppColors.warningAmber
                           : context.colors.textSecondary,
                     ),
                   ),
@@ -369,7 +371,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
           // ── Comment ───────────────────────────────────
           Text(
-            AppLocalizations.of(context)!.commentOptionalLabel,
+            AppLocalizations.of(context).commentOptionalLabel,
             style: TextStyle(
               fontSize: isTablet ? 15 : 14,
               fontWeight: FontWeight.w700,
@@ -388,32 +390,32 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
               color: context.colors.textPrimary,
             ),
             decoration: InputDecoration(
-              hintText: AppLocalizations.of(context)!.commentHint(widget.professionalName),
+              hintText: AppLocalizations.of(context).commentHint(widget.professionalName),
               hintStyle: TextStyle(
                 fontSize: isTablet ? 14 : 13,
                 color: context.colors.textSecondary,
               ),
               filled: true,
               fillColor: isDark
-                  ? Colors.white.withOpacity(0.04)
+                  ? Colors.white.withValues(alpha: 0.04)
                   : Colors.white,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 borderSide: BorderSide(color: context.colors.divider),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 borderSide: BorderSide(color: context.colors.divider),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 borderSide: BorderSide(
                   color: AppColors.customerColor,
                   width: 1.5,
                 ),
               ),
               counterStyle: TextStyle(
-                fontSize: 11,
+                fontSize: AppFontSizes.caption,
                 color: context.colors.textSecondary,
               ),
             ),
@@ -428,7 +430,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
             Row(
               children: [
                 Text(
-                  AppLocalizations.of(context)!.photosOptionalLabel,
+                  AppLocalizations.of(context).photosOptionalLabel,
                   style: TextStyle(
                     fontSize: isTablet ? 15 : 14,
                     fontWeight: FontWeight.w700,
@@ -452,7 +454,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: _photos.length + (_photos.length < _maxPhotos ? 1 : 0),
-                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                separatorBuilder: (_, _) => const SizedBox(width: 10),
                 itemBuilder: (context, index) {
                   if (index == _photos.length) {
                     return _AddPhotoTile(onTap: _addPhoto, isDark: isDark);
@@ -478,7 +480,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 52),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 elevation: 0,
               ),
@@ -493,8 +495,8 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                     )
                   : Text(
                       widget.isEditMode
-                          ? AppLocalizations.of(context)!.updateReviewCta
-                          : AppLocalizations.of(context)!.submitReviewCta,
+                          ? AppLocalizations.of(context).updateReviewCta
+                          : AppLocalizations.of(context).submitReviewCta,
                       style: TextStyle(
                         fontSize: isTablet ? 16 : 15,
                         fontWeight: FontWeight.w700,
@@ -521,7 +523,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
               height: 80,
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF10B981).withOpacity(0.15)
+                    ? AppColors.emerald.withValues(alpha: 0.15)
                     : context.colors.accentLight,
                 shape: BoxShape.circle,
               ),
@@ -534,8 +536,8 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
             const SizedBox(height: 20),
             Text(
               widget.isEditMode
-                  ? AppLocalizations.of(context)!.reviewUpdatedSuccessTitle
-                  : AppLocalizations.of(context)!.reviewSubmittedSuccessTitle,
+                  ? AppLocalizations.of(context).reviewUpdatedSuccessTitle
+                  : AppLocalizations.of(context).reviewSubmittedSuccessTitle,
               style: TextStyle(
                 fontSize: isTablet ? 22 : 20,
                 fontWeight: FontWeight.w700,
@@ -546,8 +548,8 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
             const SizedBox(height: 8),
             Text(
               widget.isEditMode
-                  ? AppLocalizations.of(context)!.reviewUpdatedSuccessMessage(widget.professionalName)
-                  : AppLocalizations.of(context)!.reviewSubmittedSuccessMessage(widget.professionalName),
+                  ? AppLocalizations.of(context).reviewUpdatedSuccessMessage(widget.professionalName)
+                  : AppLocalizations.of(context).reviewSubmittedSuccessMessage(widget.professionalName),
               style: TextStyle(
                 fontSize: isTablet ? 14 : 13,
                 color: context.colors.textSecondary,
@@ -565,7 +567,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                 i < _rating
                     ? Icons.star_rounded
                     : Icons.star_outline_rounded,
-                color: const Color(0xFFF59E0B),
+                color: AppColors.warningAmber,
                 size: isTablet ? 32 : 28,
               )),
             ),
@@ -573,9 +575,9 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
             Text(
               _ratingLabels[_rating],
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFFF59E0B),
+                color: AppColors.warningAmber,
               ),
             ),
 
@@ -588,14 +590,14 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                 foregroundColor: Colors.white,
                 minimumSize: const Size(200, 48),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 elevation: 0,
               ),
               child: Text(
                 widget.isEditMode
-                    ? AppLocalizations.of(context)!.doneCta
-                    : AppLocalizations.of(context)!.backToBookingsCta,
+                    ? AppLocalizations.of(context).doneCta
+                    : AppLocalizations.of(context).backToBookingsCta,
                 style: TextStyle(
                   fontSize: isTablet ? 15 : 14,
                   fontWeight: FontWeight.w700,
@@ -625,13 +627,13 @@ class _AddPhotoTile extends StatelessWidget {
         height: 84,
         decoration: BoxDecoration(
           color: isDark
-              ? Colors.white.withOpacity(0.04)
+              ? Colors.white.withValues(alpha: 0.04)
               : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           border: Border.all(
             color: isDark
-                ? Colors.white.withOpacity(0.15)
-                : const Color(0xFFD1D5DB),
+                ? Colors.white.withValues(alpha: 0.15)
+                : AppColors.neutral300,
             style: BorderStyle.solid,
           ),
         ),
@@ -656,7 +658,7 @@ class _PhotoThumb extends StatelessWidget {
     return Stack(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           child: kIsWeb
               ? Image.memory(photo.webBytes!, width: 84, height: 84, fit: BoxFit.cover)
               : Image.file(File(photo.file.path), width: 84, height: 84, fit: BoxFit.cover),
@@ -671,7 +673,7 @@ class _PhotoThumb extends StatelessWidget {
               height: 20,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.black.withOpacity(0.7)
+                    ? Colors.black.withValues(alpha: 0.7)
                     : Colors.black54,
                 shape: BoxShape.circle,
               ),

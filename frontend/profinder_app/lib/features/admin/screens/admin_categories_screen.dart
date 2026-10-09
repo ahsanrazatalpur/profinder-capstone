@@ -15,11 +15,13 @@ import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../widgets/content_translations_editor.dart';
 
 // Content is centered and width-capped on tablet/desktop so rows of text
 // don't stretch uncomfortably wide on large screens.
 const double _kWideContentMaxWidth = 760;
-const double _kTabletBreakpoint = 720;
 
 class AdminCategoriesScreen extends StatefulWidget {
   const AdminCategoriesScreen({super.key});
@@ -77,7 +79,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Categories',
         icon: Icons.category_rounded,
@@ -98,16 +100,16 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
             Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
-                border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1)),
+                border: Border(bottom: BorderSide(color: AppColors.neutral200, width: 1)),
               ),
               child: TabBar(
                 controller: _tabController,
                 labelColor: AppColors.adminColor,
-                unselectedLabelColor: const Color(0xFF9CA3AF),
+                unselectedLabelColor: AppColors.neutral400,
                 indicatorColor: AppColors.adminColor,
                 indicatorSize: TabBarIndicatorSize.label,
-                labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-                unselectedLabelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                labelStyle: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700),
+                unselectedLabelStyle: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600),
                 tabs: [
                   Tab(text: 'Categories (${_categories.length})'),
                   Tab(text: 'Subcategories (${_subcategories.length})'),
@@ -150,7 +152,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
           child: ReorderableListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
             itemCount: _categories.length,
-            onReorder: _reorderCategories,
+            onReorderItem: _reorderCategories,
             // A custom drag handle (the 6-dot icon) is already built into
             // each row on the left via ReorderableDragStartListener, so the
             // library's own auto-generated handle on the right is disabled
@@ -167,8 +169,8 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                   margin: const EdgeInsets.only(bottom: 10),
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: Colors.white, borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                    color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radius14),
+                    border: Border.all(color: AppColors.neutral200),
                   ),
                   child: Row(
                     children: [
@@ -176,13 +178,13 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                         index: i,
                         child: const Padding(
                           padding: EdgeInsets.symmetric(vertical: 4),
-                          child: Icon(Icons.drag_indicator_rounded, color: Color(0xFFCBD5E1)),
+                          child: Icon(Icons.drag_indicator_rounded, color: AppColors.slate300),
                         ),
                       ),
                       const SizedBox(width: 10),
                       Container(
                         width: 38, height: 38,
-                        decoration: BoxDecoration(color: context.colors.primary.withOpacity(0.1), shape: BoxShape.circle),
+                        decoration: BoxDecoration(color: context.colors.primary.withValues(alpha: 0.1), shape: BoxShape.circle),
                         child: Icon(Icons.category_outlined, size: 18, color: context.colors.primary),
                       ),
                       const SizedBox(width: 10),
@@ -191,12 +193,12 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(c['name']?.toString() ?? '',
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                                style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700),
                                 maxLines: 1, overflow: TextOverflow.ellipsis),
                             const SizedBox(height: 2),
                             Text(
                                 '${c['professional_count'] ?? 0} pros · ${c['booking_count'] ?? 0} bookings · ${c['subcategory_count'] ?? 0} subcategories',
-                                style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF)),
+                                style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400),
                                 maxLines: 1, overflow: TextOverflow.ellipsis),
                           ],
                         ),
@@ -215,15 +217,25 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                         onPressed: () => _toggleFeatured(c),
                         tooltip: c['is_featured'] == true ? 'Featured — tap to unfeature' : 'Not featured — tap to feature',
                         icon: c['is_featured'] == true ? Icons.star_rounded : Icons.star_outline_rounded,
-                        color: c['is_featured'] == true ? const Color(0xFFF59E0B) : const Color(0xFF9CA3AF),
+                        color: c['is_featured'] == true ? AppColors.warningAmber : AppColors.neutral400,
                         size: 18,
+                      ),
+                      const SizedBox(width: 4),
+                      _HoverIconButton(
+                        onPressed: () => _openTranslations('category', c),
+                        tooltip: countTranslations(c, _tFields) > 0
+                            ? 'Translations (${countTranslations(c, _tFields)})'
+                            : 'Translations',
+                        icon: Icons.translate_rounded,
+                        color: countTranslations(c, _tFields) > 0 ? AppColors.success : AppColors.slate500,
+                        size: 17,
                       ),
                       const SizedBox(width: 4),
                       _HoverIconButton(
                         onPressed: () => _showCategoryDialog(category: c),
                         tooltip: 'Edit',
                         icon: Icons.edit_outlined,
-                        color: const Color(0xFF64748B),
+                        color: AppColors.slate500,
                         size: 17,
                       ),
                       const SizedBox(width: 4),
@@ -245,9 +257,25 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
     );
   }
 
+  // Category + subcategory share one translatable field ('name').
+  static const _tFields = [TranslatableField('name', 'Name')];
+
+  /// label: 'category' | 'subcategory'
+  Future<void> _openTranslations(String label, dynamic item) async {
+    final saved = await showContentTranslationsSheet(
+      context,
+      label: label,
+      objectId: (item['id'] as num).toInt(),
+      title: item['name']?.toString() ?? '',
+      fields: _tFields,
+      existing: item['translations'] is List ? item['translations'] as List : null,
+      baseValues: {'name': item['name']?.toString() ?? ''},
+    );
+    if (saved) _load();
+  }
+
   Future<void> _reorderCategories(int oldIndex, int newIndex) async {
     setState(() {
-      if (newIndex > oldIndex) newIndex--;
       final item = _categories.removeAt(oldIndex);
       _categories.insert(newIndex, item);
     });
@@ -267,14 +295,14 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
       context: context,
       builder: (_) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
           title: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.adminColor.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(10),
+                  color: AppColors.adminColor.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
                 ),
                 child: Icon(
                   category == null ? Icons.add_rounded : Icons.edit_rounded,
@@ -284,7 +312,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: Text(category == null ? 'Add Category' : 'Edit Category',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                    style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
               ),
             ],
           ),
@@ -294,23 +322,23 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
             children: [
               TextField(
                 controller: nameCtrl,
-                style: const TextStyle(fontSize: 13),
+                style: const TextStyle(fontSize: AppFontSizes.secondary),
                 decoration: _dialogFieldDecoration('Name'),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: iconCtrl,
-                style: const TextStyle(fontSize: 13),
+                style: const TextStyle(fontSize: AppFontSizes.secondary),
                 decoration: _dialogFieldDecoration('Icon (optional)'),
               ),
               const SizedBox(height: 6),
               SwitchListTile.adaptive(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Featured', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                title: const Text('Featured', style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600)),
                 subtitle: const Text('Show on Guest Home\'s Featured Categories (max 6)',
-                    style: TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+                    style: TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
                 value: isFeatured,
-                activeColor: AppColors.adminColor,
+                activeThumbColor: AppColors.adminColor,
                 onChanged: (v) => setDialogState(() => isFeatured = v),
               ),
             ],
@@ -318,7 +346,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
           actionsAlignment: MainAxisAlignment.end,
           actions: [
             TextButton(
-              style: TextButton.styleFrom(foregroundColor: const Color(0xFF6B7280)),
+              style: TextButton.styleFrom(foregroundColor: AppColors.grayDeep),
               onPressed: () => Navigator.pop(dialogContext),
               child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
             ),
@@ -327,7 +355,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                 backgroundColor: AppColors.adminColor,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
               onPressed: () async {
                 Navigator.pop(dialogContext);
@@ -432,15 +460,15 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                               margin: const EdgeInsets.only(bottom: 8),
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.white, borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: const Color(0xFFE5E7EB)),
+                                color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                                border: Border.all(color: AppColors.neutral200),
                               ),
                               child: Row(
                                 children: [
                                   Container(
                                     width: 32, height: 32,
                                     decoration: BoxDecoration(
-                                      color: context.colors.primary.withOpacity(0.08),
+                                      color: context.colors.primary.withValues(alpha: 0.08),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(Icons.subdirectory_arrow_right_rounded,
@@ -452,13 +480,22 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(s['name']?.toString() ?? '',
-                                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                                            style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700),
                                             maxLines: 1, overflow: TextOverflow.ellipsis),
                                         Text(s['category_name']?.toString() ?? '',
-                                            style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF)),
+                                            style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400),
                                             maxLines: 1, overflow: TextOverflow.ellipsis),
                                       ],
                                     ),
+                                  ),
+                                  _HoverIconButton(
+                                    onPressed: () => _openTranslations('subcategory', s),
+                                    tooltip: countTranslations(s, _tFields) > 0
+                                        ? 'Translations (${countTranslations(s, _tFields)})'
+                                        : 'Translations',
+                                    icon: Icons.translate_rounded,
+                                    color: countTranslations(s, _tFields) > 0 ? AppColors.success : AppColors.slate500,
+                                    size: 17,
                                   ),
                                   _HoverIconButton(
                                     onPressed: () async {
@@ -491,20 +528,20 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
           title: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.adminColor.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(10),
+                  color: AppColors.adminColor.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
                 ),
                 child: const Icon(Icons.add_rounded, color: AppColors.adminColor, size: 18),
               ),
               const SizedBox(width: 10),
               const Expanded(
-                child: Text('Add Subcategory', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                child: Text('Add Subcategory', style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
               ),
             ],
           ),
@@ -513,20 +550,20 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               DropdownButtonFormField<int>(
-                value: selectedCategory,
+                initialValue: selectedCategory,
                 isExpanded: true,
-                icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF9CA3AF)),
+                icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.neutral400),
                 decoration: _dialogFieldDecoration('Parent Category'),
                 items: _categories
                     .map<DropdownMenuItem<int>>((c) => DropdownMenuItem(
-                        value: c['id'], child: Text(c['name'], style: const TextStyle(fontSize: 13))))
+                        value: c['id'], child: Text(c['name'], style: const TextStyle(fontSize: AppFontSizes.secondary))))
                     .toList(),
                 onChanged: (v) => setDialogState(() => selectedCategory = v),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: nameCtrl,
-                style: const TextStyle(fontSize: 13),
+                style: const TextStyle(fontSize: AppFontSizes.secondary),
                 decoration: _dialogFieldDecoration('Name'),
               ),
             ],
@@ -534,7 +571,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
           actionsAlignment: MainAxisAlignment.end,
           actions: [
             TextButton(
-              style: TextButton.styleFrom(foregroundColor: const Color(0xFF6B7280)),
+              style: TextButton.styleFrom(foregroundColor: AppColors.grayDeep),
               onPressed: () => Navigator.pop(dialogContext),
               child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
             ),
@@ -543,7 +580,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                 backgroundColor: AppColors.adminColor,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
               onPressed: () async {
                 Navigator.pop(dialogContext);
@@ -567,22 +604,22 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
   // ── Shared helpers ─────────────────────────────────────────
   InputDecoration _dialogFieldDecoration(String label) => InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
+        labelStyle: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderSide: const BorderSide(color: AppColors.neutral200),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderSide: const BorderSide(color: AppColors.neutral200),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           borderSide: const BorderSide(color: AppColors.adminColor, width: 1.5),
         ),
         filled: true,
-        fillColor: const Color(0xFFF9FAFB),
+        fillColor: AppColors.tintGray,
       );
 
   Widget _filterChip(String label, bool active, VoidCallback onTap) => _HoverScaleChip(
@@ -608,9 +645,9 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                     child: Icon(Icons.category_outlined, size: 40, color: Colors.grey.shade300),
                   ),
                   const SizedBox(height: 14),
-                  Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF374151))),
+                  Text(title, style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray700)),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey.shade400)),
+                  Text(subtitle, style: TextStyle(fontSize: AppFontSizes.small, color: Colors.grey.shade400)),
                 ],
               ),
             ),
@@ -625,11 +662,11 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
           children: [
             Container(
               padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(color: AppColors.error.withOpacity(0.08), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.08), shape: BoxShape.circle),
               child: const Icon(Icons.error_outline_rounded, size: 40, color: AppColors.error),
             ),
             const SizedBox(height: 14),
-            const Text('Failed to load', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF374151))),
+            const Text('Failed to load', style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: AppColors.gray700)),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _load,
@@ -640,7 +677,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
               ),
             ),
           ],
@@ -650,23 +687,23 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
   Future<bool?> _confirm(String title, String message) => showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
           icon: Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: AppColors.error.withOpacity(0.08), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.08), shape: BoxShape.circle),
             child: const Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 26),
           ),
-          title: Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+          title: Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
           content: Text(message,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280), height: 1.4)),
+              style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep, height: 1.4)),
           actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF6B7280),
+                foregroundColor: AppColors.grayDeep,
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
               onPressed: () => Navigator.pop(context, false),
               child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -677,7 +714,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
               onPressed: () => Navigator.pop(context, true),
               child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.w700)),
@@ -702,7 +739,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
         ),
         backgroundColor: isError ? AppColors.error : AppColors.adminColor,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
         elevation: 2,
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 2),
@@ -776,7 +813,7 @@ class _HoverIconButtonState extends State<_HoverIconButton> {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: _hovering
-                    ? (widget.color ?? const Color(0xFF374151)).withOpacity(0.08)
+                    ? (widget.color ?? AppColors.gray700).withValues(alpha: 0.08)
                     : Colors.transparent,
                 shape: BoxShape.circle,
               ),
@@ -818,13 +855,13 @@ class _HoverLiftState extends State<_HoverLift> {
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
         transform: _hovering
-            ? (Matrix4.identity()..translate(0.0, -2.0))
+            ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0))
             : Matrix4.identity(),
         decoration: _hovering
             ? BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppSizes.radius14),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12, offset: const Offset(0, 4)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, 4)),
                 ],
               )
             : null,
@@ -870,16 +907,16 @@ class _HoverScaleChipState extends State<_HoverScaleChip> {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: widget.active
-                ? AppColors.adminColor.withOpacity(0.12)
-                : (_hovering ? const Color(0xFFEDEFF3) : const Color(0xFFF5F7FA)),
-            borderRadius: BorderRadius.circular(20),
+                ? AppColors.adminColor.withValues(alpha: 0.12)
+                : (_hovering ? const Color(0xFFEDEFF3) : AppColors.lightScaffold),
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(color: widget.active ? AppColors.adminColor : Colors.transparent),
           ),
           child: Text(widget.label,
               style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppFontSizes.small,
                   fontWeight: widget.active ? FontWeight.w700 : FontWeight.w500,
-                  color: widget.active ? AppColors.adminColor : const Color(0xFF6B7280))),
+                  color: widget.active ? AppColors.adminColor : AppColors.grayDeep)),
         ),
       ),
     );

@@ -5,6 +5,7 @@
 // as shared/widgets/professional_card.dart's _ShimmerBox so it matches the
 // rest of the app's loading language.
 
+import '../../../core/constants/app_sizes.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/theme_context_ext.dart';
 
@@ -16,7 +17,7 @@ class _ShimmerBlock extends StatefulWidget {
   const _ShimmerBlock({
     required this.width,
     required this.height,
-    this.borderRadius = const BorderRadius.all(Radius.circular(8)),
+    this.borderRadius = const BorderRadius.all(Radius.circular(AppSizes.radiusSm)),
   });
 
   @override
@@ -72,7 +73,7 @@ class ReviewSummaryShimmer extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(color: context.colors.divider),
       ),
       child: Column(
@@ -86,9 +87,9 @@ class ReviewSummaryShimmer extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _ShimmerBlock(width: 120, height: 14, borderRadius: BorderRadius.circular(4)),
+                    _ShimmerBlock(width: 120, height: 14, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
                     const SizedBox(height: 8),
-                    _ShimmerBlock(width: 90, height: 12, borderRadius: BorderRadius.circular(4)),
+                    _ShimmerBlock(width: 90, height: 12, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
                   ],
                 ),
               ),
@@ -98,7 +99,7 @@ class ReviewSummaryShimmer extends StatelessWidget {
           ...List.generate(5, (i) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _ShimmerBlock(
-                    width: double.infinity, height: 10, borderRadius: BorderRadius.circular(6)),
+                    width: double.infinity, height: 10, borderRadius: BorderRadius.circular(AppSizes.radiusBadge)),
               )),
         ],
       ),
@@ -116,7 +117,7 @@ class ReviewCardShimmer extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(color: context.colors.divider),
       ),
       child: Column(
@@ -125,24 +126,24 @@ class ReviewCardShimmer extends StatelessWidget {
           Row(
             children: [
               const _ShimmerBlock(
-                  width: 40, height: 40, borderRadius: BorderRadius.all(Radius.circular(20))),
+                  width: 40, height: 40, borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusChip))),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _ShimmerBlock(width: 100, height: 12, borderRadius: BorderRadius.circular(4)),
+                    _ShimmerBlock(width: 100, height: 12, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
                     const SizedBox(height: 6),
-                    _ShimmerBlock(width: 70, height: 10, borderRadius: BorderRadius.circular(4)),
+                    _ShimmerBlock(width: 70, height: 10, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 14),
-          _ShimmerBlock(width: double.infinity, height: 10, borderRadius: BorderRadius.circular(4)),
+          _ShimmerBlock(width: double.infinity, height: 10, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
           const SizedBox(height: 6),
-          _ShimmerBlock(width: 200, height: 10, borderRadius: BorderRadius.circular(4)),
+          _ShimmerBlock(width: 200, height: 10, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
         ],
       ),
     );

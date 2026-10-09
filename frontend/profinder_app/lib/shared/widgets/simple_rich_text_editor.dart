@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_context_ext.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/theme/app_text_styles.dart';
 
 class SimpleRichTextEditor extends StatefulWidget {
   final TextEditingController controller;
@@ -69,7 +71,7 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
     final text = controller.text;
 
     if (!selection.isValid || selection.isCollapsed) {
-      _wrap('<ul>\n  <li>', '</li>\n</ul>', placeholder: 'List item');
+      _wrap('<ul>\n  <li>', '</li>\n</ul>', placeholder: AppLocalizations.of(context).editorListItemPlaceholder);
       return;
     }
     final selected = text.substring(selection.start, selection.end);
@@ -90,13 +92,13 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
       builder: (ctx) => AlertDialog(
         backgroundColor: context.colors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         ),
         elevation: 0,
         title: Text(
-          AppLocalizations.of(context)!.editorInsertLinkTitle,
+          AppLocalizations.of(context).editorInsertLinkTitle,
           style: TextStyle(
-            fontSize: 17,
+            fontSize: AppFontSizes.titleMd,
             fontWeight: FontWeight.w700,
             color: context.colors.textPrimary,
             letterSpacing: -0.3,
@@ -106,27 +108,27 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
           controller: urlController,
           autofocus: true,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: AppFontSizes.body,
             color: context.colors.textPrimary,
           ),
           decoration: InputDecoration(
-            hintText: AppLocalizations.of(context)!.editorLinkHint,
+            hintText: AppLocalizations.of(context).editorLinkHint,
             hintStyle: TextStyle(
-              fontSize: 13,
+              fontSize: AppFontSizes.secondary,
               color: context.colors.textSecondary,
             ),
             filled: true,
             fillColor: context.colors.background,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
               borderSide: BorderSide(color: context.colors.divider),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
               borderSide: BorderSide(color: context.colors.divider),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
               borderSide: BorderSide(
                 color: AppColors.customerColor,
                 width: 1.5,
@@ -141,11 +143,11 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
               foregroundColor: context.colors.textSecondary,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               ),
             ),
             child: Text(
-              AppLocalizations.of(context)!.cancelCta,
+              AppLocalizations.of(context).cancelCta,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.3,
@@ -159,12 +161,12 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               ),
               elevation: 0,
             ),
             child: Text(
-              AppLocalizations.of(context)!.editorInsertCta,
+              AppLocalizations.of(context).editorInsertCta,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.3,
@@ -174,8 +176,8 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
         ],
       ),
     );
-    if (url == null || url.isEmpty) return;
-    _wrap('<a href="$url">', '</a>', placeholder: AppLocalizations.of(context)!.editorLinkPlaceholder);
+    if (url == null || url.isEmpty || !mounted) return;
+    _wrap('<a href="$url">', '</a>', placeholder: AppLocalizations.of(context).editorLinkPlaceholder);
   }
 
   @override
@@ -188,7 +190,7 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
         Text(
           widget.label,
           style: TextStyle(
-            fontSize: 12.5,
+            fontSize: AppFontSizes.secondary,
             fontWeight: FontWeight.w600,
             color: context.colors.textSecondary,
             letterSpacing: 0.3,
@@ -199,15 +201,15 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
           decoration: BoxDecoration(
             border: Border.all(
               color: isDark
-                  ? Colors.white.withOpacity(0.12)
+                  ? Colors.white.withValues(alpha: 0.12)
                   : context.colors.divider,
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             boxShadow: [
               BoxShadow(
                 color: isDark
-                    ? Colors.black.withOpacity(0.15)
-                    : Colors.grey.withOpacity(0.04),
+                    ? Colors.black.withValues(alpha: 0.15)
+                    : Colors.grey.withValues(alpha: 0.04),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -220,13 +222,13 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? Colors.white.withOpacity(0.04)
+                      ? Colors.white.withValues(alpha: 0.04)
                       : context.colors.surface,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusMd)),
                   border: Border(
                     bottom: BorderSide(
                       color: isDark
-                          ? Colors.white.withOpacity(0.08)
+                          ? Colors.white.withValues(alpha: 0.08)
                           : context.colors.divider,
                     ),
                   ),
@@ -235,9 +237,9 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
                   spacing: 2,
                   runSpacing: 2,
                   children: [
-                    _toolBtn('H1', () => _wrap('<h1>', '</h1>', placeholder: AppLocalizations.of(context)!.editorHeadingPlaceholder)),
-                    _toolBtn('H2', () => _wrap('<h2>', '</h2>', placeholder: AppLocalizations.of(context)!.editorHeadingPlaceholder)),
-                    _toolBtn('H3', () => _wrap('<h3>', '</h3>', placeholder: AppLocalizations.of(context)!.editorHeadingPlaceholder)),
+                    _toolBtn('H1', () => _wrap('<h1>', '</h1>', placeholder: AppLocalizations.of(context).editorHeadingPlaceholder)),
+                    _toolBtn('H2', () => _wrap('<h2>', '</h2>', placeholder: AppLocalizations.of(context).editorHeadingPlaceholder)),
+                    _toolBtn('H3', () => _wrap('<h3>', '</h3>', placeholder: AppLocalizations.of(context).editorHeadingPlaceholder)),
                     _divider(isDark),
                     _iconBtn(Icons.format_bold_rounded, () => _wrap('<b>', '</b>'), isDark),
                     _iconBtn(Icons.format_italic_rounded, () => _wrap('<i>', '</i>'), isDark),
@@ -256,15 +258,15 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
                   minLines: widget.minLines,
                   maxLines: widget.maxLines,
                   style: TextStyle(
-                    fontSize: 13.5,
+                    fontSize: AppFontSizes.body,
                     height: 1.4,
                     color: context.colors.textPrimary,
                   ),
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: AppLocalizations.of(context)!.editorHintText,
+                    hintText: AppLocalizations.of(context).editorHintText,
                     hintStyle: TextStyle(
-                      fontSize: 13,
+                      fontSize: AppFontSizes.secondary,
                       color: context.colors.textSecondary,
                       letterSpacing: 0.2,
                     ),
@@ -284,18 +286,18 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      splashColor: AppColors.customerColor.withOpacity(0.1),
-      highlightColor: AppColors.customerColor.withOpacity(0.05),
+      borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
+      splashColor: AppColors.customerColor.withValues(alpha: 0.1),
+      highlightColor: AppColors.customerColor.withValues(alpha: 0.05),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: AppFontSizes.small,
             fontWeight: FontWeight.w700,
             color: isDark
-                ? Colors.white.withOpacity(0.8)
+                ? Colors.white.withValues(alpha: 0.8)
                 : context.colors.textPrimary,
             letterSpacing: 0.3,
           ),
@@ -307,16 +309,16 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
   Widget _iconBtn(IconData icon, VoidCallback onTap, bool isDark) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      splashColor: AppColors.customerColor.withOpacity(0.1),
-      highlightColor: AppColors.customerColor.withOpacity(0.05),
+      borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
+      splashColor: AppColors.customerColor.withValues(alpha: 0.1),
+      highlightColor: AppColors.customerColor.withValues(alpha: 0.05),
       child: Padding(
         padding: const EdgeInsets.all(6),
         child: Icon(
           icon,
           size: 18,
           color: isDark
-              ? Colors.white.withOpacity(0.7)
+              ? Colors.white.withValues(alpha: 0.7)
               : context.colors.textSecondary,
         ),
       ),
@@ -328,8 +330,8 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
         height: 20,
         margin: const EdgeInsets.symmetric(horizontal: 4),
         color: isDark
-            ? Colors.white.withOpacity(0.1)
-            : Colors.grey.withOpacity(0.3),
+            ? Colors.white.withValues(alpha: 0.1)
+            : Colors.grey.withValues(alpha: 0.3),
       );
 }
 

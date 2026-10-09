@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../models/ts_models.dart';
 import 'ts_ui.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/constants/app_sizes.dart';
 
 class ModerationHistoryList extends StatelessWidget {
   final List<ModerationAction> actions;
@@ -100,7 +102,7 @@ class _ActionTile extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: dimmed ? TsColors.bg : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: highlight ? TsColors.accent.withValues(alpha: 0.5) : TsColors.border,
         ),
@@ -116,7 +118,7 @@ class _ActionTile extends StatelessWidget {
                 height: 34,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
                 ),
                 child: Icon(tsActionIcon(action.actionType), size: 18, color: color),
               ),
@@ -231,15 +233,15 @@ class _ActionTile extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: const Color(0xFFFEF9C3).withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFFDE68A)),
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+        border: Border.all(color: AppColors.amber200),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.lock_outline_rounded, size: 12, color: Color(0xFF92400E)),
+              const Icon(Icons.lock_outline_rounded, size: 12, color: AppColors.amber800),
               const SizedBox(width: 5),
               Expanded(
                 child: Text(
@@ -247,7 +249,7 @@ class _ActionTile extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF92400E),
+                    color: AppColors.amber800,
                   ),
                 ),
               ),

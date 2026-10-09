@@ -6,7 +6,6 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/app_helpers.dart';
-import '../../../services/auth_provider.dart';
 import '../../../services/home_provider.dart';
 import '../../../services/location_service.dart';
 import '../../../shared/widgets/professional_card.dart';
@@ -120,12 +119,12 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
 
   void _requireLogin(String message) {
     if (!mounted) return;
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: context.colors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusXl)),
       ),
       builder: (_) => Padding(
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
@@ -137,7 +136,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
               height: 4,
               decoration: BoxDecoration(
                 color: context.colors.divider,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(AppSizes.radiusTiny),
               ),
             ),
             const SizedBox(height: AppSizes.lg),
@@ -191,12 +190,12 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   ),
                 ),
                 child: Text(
                   t.login,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -214,12 +213,12 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   ),
                 ),
                 child: Text(
                   t.homeCreateAccount,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -235,17 +234,17 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     final home = context.watch<HomeProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final topRated = home.topRatedFeed ?? [];
-    final nearby = home.nearbyInCity ?? [];
-    final trending = home.trendingFeed ?? [];
-    final recentlyAdded = home.recentlyAddedFeed ?? [];
-    final popular = home.popularProfessionalsFeed ?? [];
+    final topRated = home.topRatedFeed;
+    final nearby = home.nearbyInCity;
+    final trending = home.trendingFeed;
+    final recentlyAdded = home.recentlyAddedFeed;
+    final popular = home.popularProfessionalsFeed;
 
     final hasAnyProfessionals = topRated.isNotEmpty || trending.isNotEmpty ||
         recentlyAdded.isNotEmpty || nearby.isNotEmpty ||
         popular.isNotEmpty;
     final feedStillLoading = home.feedLoading && !hasAnyProfessionals;
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: context.colors.background,
@@ -270,23 +269,23 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
               ),
               SliverToBoxAdapter(child: _buildHeader(nearby, isDark)),
               SliverToBoxAdapter(child: _buildHeroSearch(isDark)),
-              SliverToBoxAdapter(child: _buildQuickActionChips(home.categories ?? [], isDark)),
+              SliverToBoxAdapter(child: _buildQuickActionChips(home.categories, isDark)),
 
               if (feedStillLoading)
                 SliverToBoxAdapter(child: _buildLoadingSkeleton(isDark))
               else ...[
                 SliverToBoxAdapter(
                   child: _buildSectionHeader(t.homePopularCategories,
-                      onViewAll: () => _showAllCategories(home.categories ?? [], isDark)),
+                      onViewAll: () => _showAllCategories(home.categories, isDark)),
                 ),
                 SliverToBoxAdapter(
-                    child: _buildPopularCategories(home.categories ?? [], isDark)),
+                    child: _buildPopularCategories(home.categories, isDark)),
 
                 SliverToBoxAdapter(
                   child: _buildSectionHeader(t.homeFeaturedCategoriesSection),
                 ),
                 SliverToBoxAdapter(
-                    child: _buildFeaturedCategories(home.featuredCategories ?? [], isDark)),
+                    child: _buildFeaturedCategories(home.featuredCategories, isDark)),
 
                 if (!hasAnyProfessionals) ...[
                   SliverToBoxAdapter(child: _buildEmptyState(isDark)),
@@ -299,7 +298,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                       badgeColor: AppColors.badgeTopRated,
                       isDark: isDark),
 
-                  ..._buildNearbySection(nearby, home.feedNearbyMeta ?? {}, isDark),
+                  ..._buildNearbySection(nearby, home.feedNearbyMeta, isDark),
 
                   SliverToBoxAdapter(
                     child: CtaBanner(
@@ -358,9 +357,6 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     );
   }
 
-  double _num(dynamic v) =>
-      v == null ? 0.0 : double.tryParse(v.toString()) ?? 0.0;
-
   void _openSearch({int? categoryId, String? categoryName}) {
     if (!mounted) return;
     Navigator.push(
@@ -378,7 +374,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // HEADER
   // ═══════════════════════════════════════════════════════════════════
   Widget _buildHeader(List<dynamic> pros, bool isDark) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(
           AppSizes.screenPadding, AppSizes.md, AppSizes.screenPadding, AppSizes.sm),
@@ -422,8 +418,8 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             width: 60,
             height: 3,
             decoration: BoxDecoration(
-              color: context.colors.primary.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(2),
+              color: context.colors.primary.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(AppSizes.radiusTiny),
             ),
           ),
         ],
@@ -435,7 +431,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // HERO SEARCH
   // ═══════════════════════════════════════════════════════════════════
   Widget _buildHeroSearch(bool isDark) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(
           AppSizes.screenPadding, 0, AppSizes.screenPadding, AppSizes.lg),
@@ -446,7 +442,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             t.homeWhatAreYouLookingForToday,
             style: AppTextStyles.h1.copyWith(
               color: context.colors.textPrimary,
-              fontSize: 24,
+              fontSize: AppFontSizes.h2,
               height: 1.2,
               fontWeight: FontWeight.w700,
               letterSpacing: -0.5,
@@ -459,17 +455,17 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
               decoration: BoxDecoration(
                 color: context.colors.surface,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+                    color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
                     blurRadius: 24,
                     offset: const Offset(0, 8),
                   ),
                 ],
                 border: Border.all(
                   color: isDark
-                      ? Colors.white.withOpacity(0.1)
+                      ? Colors.white.withValues(alpha: 0.1)
                       : context.colors.divider,
                 ),
               ),
@@ -478,8 +474,8 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: context.colors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      color: context.colors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                     child: Icon(
                       Icons.search_rounded,
@@ -493,7 +489,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                       t.homeSearchDoctorsLawyersPlumbers,
                       style: AppTextStyles.bodyLarge.copyWith(
                         color: isDark
-                            ? Colors.white.withOpacity(0.6)
+                            ? Colors.white.withValues(alpha: 0.6)
                             : context.colors.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
@@ -504,7 +500,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                         horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: context.colors.primary,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                     child: Row(
                       children: [
@@ -518,7 +514,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                           t.homeFilter,
                           style: const TextStyle(
                             color: AppColors.white,
-                            fontSize: 12,
+                            fontSize: AppFontSizes.small,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -538,7 +534,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // QUICK ACTION CHIPS
   // ═══════════════════════════════════════════════════════════════════
   Widget _buildQuickActionChips(List<dynamic> categories, bool isDark) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final top = categories.take(6).toList();
     return Container(
       color: context.colors.background,
@@ -549,7 +545,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
           itemCount: top.length + 1,
-          separatorBuilder: (_, __) => const SizedBox(width: 10),
+          separatorBuilder: (_, _) => const SizedBox(width: 10),
           itemBuilder: (_, i) {
             if (i == 0) {
               return _chip(
@@ -587,12 +583,12 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: filled ? color : context.colors.surface,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(AppSizes.radiusXl),
           border: Border.all(
             color: filled
                 ? color
                 : isDark
-                    ? Colors.white.withOpacity(0.1)
+                    ? Colors.white.withValues(alpha: 0.1)
                     : context.colors.divider,
             width: 1.5,
           ),
@@ -600,7 +596,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
               ? null
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                    color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -620,7 +616,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             Text(
               label,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: AppFontSizes.secondary,
                 fontWeight: FontWeight.w600,
                 color: filled ? AppColors.white : context.colors.textPrimary,
                 letterSpacing: 0.2,
@@ -646,8 +642,8 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: context.colors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
+                color: context.colors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
               child: Icon(
                 icon,
@@ -687,15 +683,15 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: context.colors.primary.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(12),
+                  color: context.colors.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 child: Row(
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.homeViewAll,
+                      AppLocalizations.of(context).homeViewAll,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: AppFontSizes.small,
                         fontWeight: FontWeight.w600,
                         color: context.colors.primary,
                       ),
@@ -760,7 +756,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
         itemCount: items.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        separatorBuilder: (_, _) => const SizedBox(width: 14),
         itemBuilder: (_, i) {
           final cat = items[i] as Map;
           final style = CategoryStyles.forName(cat['name']?.toString() ?? '', i);
@@ -785,7 +781,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // ═══════════════════════════════════════════════════════════════════
   List<Widget> _buildNearbySection(
       List<dynamic> nearby, Map<String, dynamic> meta, bool isDark) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final source = meta['results_source'] as String?;
     final unavailableMessage = meta['city_unavailable_message'] as String?;
     final otherCitiesLabel = meta['other_cities_section'] as String?;
@@ -842,17 +838,6 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     ];
   }
 
-  String? _mostCommonCity(List<dynamic> list) {
-    final counts = <String, int>{};
-    for (final p in list) {
-      final city = (p as Map)['city']?.toString().trim();
-      if (city == null || city.isEmpty) continue;
-      counts[city] = (counts[city] ?? 0) + 1;
-    }
-    if (counts.isEmpty) return null;
-    return counts.entries.reduce((a, b) => b.value > a.value ? b : a).key;
-  }
-
   Widget _buildLocationFallbackBanner(String line1, String? line2, bool isDark) {
     return Container(
       margin: const EdgeInsets.fromLTRB(
@@ -863,13 +848,13 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            context.colors.primary.withOpacity(isDark ? 0.15 : 0.08),
-            context.colors.primary.withOpacity(isDark ? 0.05 : 0.03),
+            context.colors.primary.withValues(alpha: isDark ? 0.15 : 0.08),
+            context.colors.primary.withValues(alpha: isDark ? 0.05 : 0.03),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
-          color: context.colors.primary.withOpacity(isDark ? 0.2 : 0.12),
+          color: context.colors.primary.withValues(alpha: isDark ? 0.2 : 0.12),
           width: 1.5,
         ),
       ),
@@ -879,8 +864,8 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: context.colors.primary.withOpacity(isDark ? 0.15 : 0.1),
-              borderRadius: BorderRadius.circular(10),
+              color: context.colors.primary.withValues(alpha: isDark ? 0.15 : 0.1),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
             child: Icon(
               Icons.info_outline_rounded,
@@ -944,7 +929,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
               padding:
                   const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
               itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 14),
+              separatorBuilder: (_, _) => const SizedBox(width: 14),
               itemBuilder: (_, i) => _buildProfessionalCard(
                 items[i] as Map,
                 badgeTag: badgeTag,
@@ -967,7 +952,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
       IconData? badgeIcon,
       Color? badgeColor,
       required bool isDark}) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final id = pro['id']?.toString() ?? '';
     final name = pro['name']?.toString() ?? 'Professional';
     final isFav = _favourites.contains(id);
@@ -1002,12 +987,12 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
           itemCount: 3,
-          separatorBuilder: (_, __) => const SizedBox(width: 14),
-          itemBuilder: (_, __) => Container(
+          separatorBuilder: (_, _) => const SizedBox(width: 14),
+          itemBuilder: (_, _) => Container(
             width: 240,
             decoration: BoxDecoration(
-              color: context.colors.divider.withOpacity(isDark ? 0.2 : 0.3),
-              borderRadius: BorderRadius.circular(16),
+              color: context.colors.divider.withValues(alpha: isDark ? 0.2 : 0.3),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             ),
           ),
         ),
@@ -1026,7 +1011,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
           itemCount: items.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 14),
+          separatorBuilder: (_, _) => const SizedBox(width: 14),
           itemBuilder: (_, i) {
             final a = items[i];
             final cover = AppHelpers.getFullImageUrl(a.coverImage);
@@ -1039,16 +1024,16 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                 width: 240,
                 decoration: BoxDecoration(
                   color: context.colors.surface,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   border: Border.all(
                     color: isDark
-                        ? Colors.white.withOpacity(0.08)
-                        : context.colors.divider.withOpacity(0.3),
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : context.colors.divider.withValues(alpha: 0.3),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                      color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
@@ -1060,7 +1045,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                   children: [
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(18)),
+                          top: Radius.circular(AppSizes.radiusLg)),
                       child: Container(
                         height: 100,
                         width: double.infinity,
@@ -1069,7 +1054,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                             ? Image.network(
                                 cover,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Icon(
+                                errorBuilder: (_, _, _) => Icon(
                                   Icons.menu_book_rounded,
                                   color: context.colors.primary,
                                   size: 40,
@@ -1093,7 +1078,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: AppFontSizes.secondary,
                               fontWeight: FontWeight.w700,
                               height: 1.3,
                               color: context.colors.textPrimary,
@@ -1110,9 +1095,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                AppLocalizations.of(context)!.magazineMinRead('${a.readTime}'),
+                                AppLocalizations.of(context).magazineMinRead('${a.readTime}'),
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: AppFontSizes.caption,
                                   color: context.colors.textSecondary,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -1122,13 +1107,13 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: context.colors.primary.withOpacity(0.08),
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: context.colors.primary.withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                                 ),
                                 child: Text(
-                                  AppLocalizations.of(context)!.homeArticleLabel,
+                                  AppLocalizations.of(context).homeArticleLabel,
                                   style: TextStyle(
-                                    fontSize: 9,
+                                    fontSize: AppFontSizes.micro,
                                     fontWeight: FontWeight.w600,
                                     color: context.colors.primary,
                                   ),
@@ -1153,7 +1138,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // LOGIN BANNER
   // ═══════════════════════════════════════════════════════════════════
   Widget _buildLoginBanner(bool isDark) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.fromLTRB(
           AppSizes.screenPadding, AppSizes.md, AppSizes.screenPadding, 0),
@@ -1163,13 +1148,13 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            context.colors.primary.withOpacity(isDark ? 0.15 : 0.08),
-            context.colors.primary.withOpacity(isDark ? 0.05 : 0.03),
+            context.colors.primary.withValues(alpha: isDark ? 0.15 : 0.08),
+            context.colors.primary.withValues(alpha: isDark ? 0.05 : 0.03),
           ],
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
-          color: context.colors.primary.withOpacity(isDark ? 0.2 : 0.12),
+          color: context.colors.primary.withValues(alpha: isDark ? 0.2 : 0.12),
           width: 1.5,
         ),
       ),
@@ -1178,8 +1163,8 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: context.colors.primary.withOpacity(isDark ? 0.15 : 0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: context.colors.primary.withValues(alpha: isDark ? 0.15 : 0.1),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
             child: Icon(
               Icons.waving_hand_rounded,
@@ -1196,7 +1181,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                   t.homeUnlockFullExperience,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: AppFontSizes.body,
                     color: context.colors.textPrimary,
                     letterSpacing: -0.3,
                   ),
@@ -1205,7 +1190,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                 Text(
                   t.homeBookProfessionalsSaveFavouritesTrackRequests,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: AppFontSizes.small,
                     color: context.colors.textSecondary,
                     height: 1.3,
                   ),
@@ -1218,7 +1203,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
               minimumSize: const Size(0, 40),
               padding: const EdgeInsets.symmetric(horizontal: 20),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
             ),
             onPressed: () => Navigator.push(
@@ -1226,7 +1211,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             child: Text(
               t.login,
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: AppFontSizes.secondary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -1240,7 +1225,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // EMPTY & LOADING STATES
   // ═══════════════════════════════════════════════════════════════════
   Widget _buildEmptyState(bool isDark) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.all(40),
       child: Column(
@@ -1248,20 +1233,20 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: context.colors.primary.withOpacity(isDark ? 0.1 : 0.06),
+              color: context.colors.primary.withValues(alpha: isDark ? 0.1 : 0.06),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.travel_explore_rounded,
               size: 64,
-              color: context.colors.primary.withOpacity(0.4),
+              color: context.colors.primary.withValues(alpha: 0.4),
             ),
           ),
           const SizedBox(height: 20),
           Text(
             t.homeNoProfessionalsNearbyYet,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: AppFontSizes.title2,
               fontWeight: FontWeight.w700,
               color: context.colors.textPrimary,
               letterSpacing: -0.3,
@@ -1271,7 +1256,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           Text(
             t.homeTrySearchingCategoryCheckBackSoon,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: AppFontSizes.body,
               color: context.colors.textSecondary,
               height: 1.4,
             ),
@@ -1283,12 +1268,12 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               ),
             ),
             child: Text(
               t.homeSearchNow,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -1302,8 +1287,8 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           height: h,
           margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
-            color: context.colors.divider.withOpacity(isDark ? 0.2 : 0.4),
-            borderRadius: BorderRadius.circular(10),
+            color: context.colors.divider.withValues(alpha: isDark ? 0.2 : 0.4),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
         );
     return Padding(

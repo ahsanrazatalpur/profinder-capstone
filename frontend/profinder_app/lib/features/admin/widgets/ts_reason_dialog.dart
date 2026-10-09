@@ -13,6 +13,8 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import 'ts_ui.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 Future<T?> showTsReasonDialog<T>(
   BuildContext context, {
@@ -134,7 +136,7 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
       child: AlertDialog(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
         actionsPadding: const EdgeInsets.fromLTRB(12, 12, 16, 14),
@@ -145,7 +147,7 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
               height: 36,
               decoration: BoxDecoration(
                 color: widget.color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
               ),
               child: Icon(widget.icon, size: 19, color: widget.color),
             ),
@@ -154,7 +156,7 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
               child: Text(
                 widget.title,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: AppFontSizes.title,
                   fontWeight: FontWeight.w800,
                   color: TsColors.textPrimary,
                 ),
@@ -173,7 +175,7 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
                   Text(
                     widget.message!,
                     style: const TextStyle(
-                      fontSize: 13,
+                      fontSize: AppFontSizes.secondary,
                       color: TsColors.textBody,
                       height: 1.4,
                     ),
@@ -203,7 +205,7 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
                   onChanged: (_) {
                     if (_touched) setState(() {});
                   },
-                  style: const TextStyle(fontSize: 13, color: TsColors.textPrimary),
+                  style: const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textPrimary),
                   decoration: InputDecoration(
                     hintText: widget.fieldHint,
                     hintStyle: const TextStyle(fontSize: 12.5, color: TsColors.textFaint),
@@ -214,11 +216,11 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
                         ? l.tsReasonTooShort(widget.minLength.toString())
                         : null,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       borderSide: BorderSide.none,
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       borderSide: BorderSide(color: widget.color, width: 1.4),
                     ),
                   ),
@@ -252,7 +254,7 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
               disabledBackgroundColor: widget.color.withValues(alpha: 0.6),
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             ),
             child: _submitting
                 ? const SizedBox(

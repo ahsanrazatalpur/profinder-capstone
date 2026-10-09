@@ -34,6 +34,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_context_ext.dart';
 import '../../services/auth_provider.dart';
 import 'role_app_bar.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/theme/app_text_styles.dart';
 
 export 'role_app_bar.dart' show AppBarIconButton;
 
@@ -65,7 +67,7 @@ class _BarGlassCircle extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withOpacity(opacity),
+          color: Colors.white.withValues(alpha: opacity),
         ),
       );
 }
@@ -121,16 +123,16 @@ class AppBarPopupButton<T> extends StatelessWidget {
     return PopupMenuButton<T>(
       tooltip: tooltip,
       padding: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
       onSelected: onSelected,
       itemBuilder: itemBuilder,
       child: Container(
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.18),
+          color: Colors.white.withValues(alpha: 0.18),
           borderRadius: BorderRadius.circular(13),
-          border: Border.all(color: Colors.white.withOpacity(0.28)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
         ),
         child: Icon(icon, size: 22, color: Colors.white),
       ),
@@ -201,8 +203,8 @@ class UniversalAppBar extends StatelessWidget implements PreferredSizeWidget {
         (onBack != null || onBackPressed != null || Navigator.of(context).canPop());
 
     const radius = BorderRadius.only(
-      bottomLeft: Radius.circular(24),
-      bottomRight: Radius.circular(24),
+      bottomLeft: Radius.circular(AppSizes.radiusXl),
+      bottomRight: Radius.circular(AppSizes.radiusXl),
     );
 
     final defaultTitle = Row(
@@ -235,9 +237,9 @@ class UniversalAppBar extends StatelessWidget implements PreferredSizeWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 11.5,
+                    fontSize: AppFontSizes.small,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white.withOpacity(0.85),
+                    color: Colors.white.withValues(alpha: 0.85),
                   ),
                 ),
             ],
@@ -256,7 +258,7 @@ class UniversalAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 4,
-      shadowColor: bg.withOpacity(0.45),
+      shadowColor: bg.withValues(alpha: 0.45),
       shape: const RoundedRectangleBorder(borderRadius: radius),
       systemOverlayStyle: SystemUiOverlayStyle.light,
       flexibleSpace: ClipRRect(
@@ -289,7 +291,7 @@ class UniversalAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       titleSpacing: back ? 0 : pad,
-      title: this.titleWidget ?? defaultTitle,
+      title: titleWidget ?? defaultTitle,
       actions: [...actions, SizedBox(width: pad)],
     );
   }

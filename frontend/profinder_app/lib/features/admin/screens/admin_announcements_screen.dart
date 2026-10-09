@@ -7,7 +7,7 @@
 //
 // Backend:
 //   GET    /api/admin-panel/announcements/
-//   POST   /api/admin-panel/announcements/       { title, message, type, audience, start_date, end_date }
+//   POST   /api/admin-panel/announcements/       { title, message, type, audience, start_date, end_date, translations? }
 //   PATCH  /api/admin-panel/announcements/<id>/   { is_active, ... }
 //   DELETE /api/admin-panel/announcements/<id>/
 
@@ -15,6 +15,9 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../widgets/content_translations_editor.dart';
 
 class AdminAnnouncementsScreen extends StatefulWidget {
   const AdminAnnouncementsScreen({super.key});
@@ -33,11 +36,11 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
   // pulling in a theme extension) since the original file didn't depend on
   // one; this keeps the visual language self-contained and unchanged for
   // any screen that doesn't already use the shared theme context.
-  static const _bgColor = Color(0xFFF5F7FA);
+  static const _bgColor = AppColors.lightScaffold;
   static const _cardColor = Colors.white;
-  static const _borderColor = Color(0xFFE5E7EB);
-  static const _textMuted = Color(0xFF6B7280);
-  static const _textFaint = Color(0xFF9CA3AF);
+  static const _borderColor = AppColors.neutral200;
+  static const _textMuted = AppColors.grayDeep;
+  static const _textFaint = AppColors.neutral400;
 
   // Responsive breakpoints for the card grid / dialog width.
   static const double _tabletBreakpoint  = 700;
@@ -45,10 +48,32 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
   static const double _maxContentWidth   = 1000;
 
   static const _typeStyles = {
-    'info':        (Color(0xFF3B82F6), Icons.info_outline_rounded),
-    'warning':     (Color(0xFFF59E0B), Icons.warning_amber_rounded),
-    'maintenance': (Color(0xFFEF4444), Icons.build_circle_outlined),
+    'info':        (AppColors.primary, Icons.info_outline_rounded),
+    'warning':     (AppColors.warningAmber, Icons.warning_amber_rounded),
+    'maintenance': (AppColors.favoriteRed, Icons.build_circle_outlined),
   };
+
+  // Fields translated per language (backend registry: 'announcement').
+  static const _tFields = [
+    TranslatableField('title', 'Title'),
+    TranslatableField('message', 'Message', multiline: true),
+  ];
+
+  Future<void> _openTranslations(dynamic a) async {
+    final saved = await showContentTranslationsSheet(
+      context,
+      label: 'announcement',
+      objectId: (a['id'] as num).toInt(),
+      title: a['title']?.toString() ?? '',
+      fields: _tFields,
+      existing: a['translations'] is List ? a['translations'] as List : null,
+      baseValues: {
+        'title': a['title']?.toString() ?? '',
+        'message': a['message']?.toString() ?? '',
+      },
+    );
+    if (saved) _load();
+  }
 
   @override
   void initState() {
@@ -90,7 +115,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: const Text('Delete Announcement?'),
         content: Text('Remove "${a['title']}"?'),
         actions: [
@@ -98,7 +123,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             ),
             onPressed: () => Navigator.pop(c, true),
             child: const Text('Delete', style: TextStyle(color: Colors.white)),
@@ -148,7 +173,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                   alignment: Alignment.topCenter,
                   children: [
                     ...previousChildren,
-                    if (currentChild != null) currentChild,
+                    ?currentChild,
                   ],
                 ),
                 child: _loading
@@ -268,10 +293,10 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: _cardColor,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: isActive ? color.withOpacity(0.3) : _borderColor),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: isActive ? color.withValues(alpha: 0.3) : _borderColor),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3)),
           ],
         ),
         child: Column(
@@ -283,7 +308,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                 Container(
                   width: 30, height: 30,
                   margin: const EdgeInsets.only(top: 1),
-                  decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(9)),
+                  decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(9)),
                   child: Icon(icon, size: 16, color: color),
                 ),
                 const SizedBox(width: 10),
@@ -292,7 +317,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                     padding: const EdgeInsets.only(top: 5),
                     child: Text(
                       a['title']?.toString() ?? '',
-                      style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+                      style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.gray900),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -306,7 +331,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                     message: isActive ? 'Deactivate' : 'Activate',
                     child: Switch(
                       value: isActive,
-                      activeColor: color,
+                      activeThumbColor: color,
                       onChanged: (_) => _toggleActive(a),
                     ),
                   ),
@@ -316,7 +341,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
             const SizedBox(height: 8),
             Text(
               a['message']?.toString() ?? '',
-              style: const TextStyle(fontSize: 12, color: Color(0xFF374151), height: 1.45),
+              style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.gray700, height: 1.45),
               maxLines: 4,
               overflow: TextOverflow.ellipsis,
             ),
@@ -325,10 +350,10 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(20)),
+                  decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
                   child: Text(
                     a['type_display']?.toString() ?? type,
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: color, letterSpacing: 0.3),
+                    style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w800, color: color, letterSpacing: 0.3),
                   ),
                 ),
                 const SizedBox(width: 6),
@@ -339,6 +364,10 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                ),
+                TranslationsButton(
+                  count: countTranslations(a, _tFields),
+                  onPressed: () => _openTranslations(a),
                 ),
                 // Delete affordance — hover-only tint handled by IconButton's
                 // own splash; sized to the 36px minimum touch target.
@@ -374,6 +403,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
     // be created, when really the second attempt was just silently
     // rejected. Now we surface why via this inline error string.
     String? formError;
+    final translations = TranslationsFormController();
 
     showDialog(
       context: context,
@@ -387,7 +417,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
             // hardcoded for a light background, and M3's default surface
             // is near-black in dark mode, which made the form unreadable.
             backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: maxWidth),
               child: Padding(
@@ -402,15 +432,15 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: AppColors.adminColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
+                              color: AppColors.adminColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(AppSizes.radius10),
                             ),
                             child: const Icon(Icons.campaign_rounded, color: AppColors.adminColor, size: 18),
                           ),
                           const SizedBox(width: 10),
                           const Expanded(
                             child: Text('New Announcement',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF111827))),
+                                style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900)),
                           ),
                         ],
                       ),
@@ -432,7 +462,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      const Text('Type', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _textMuted)),
+                      const Text('Type', style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: _textMuted)),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
@@ -450,7 +480,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                         }).toList(),
                       ),
                       const SizedBox(height: 16),
-                      const Text('Audience', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _textMuted)),
+                      const Text('Audience', style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: _textMuted)),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
@@ -474,12 +504,18 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                             Expanded(
                               child: Text(
                                 formError!,
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.error),
+                                style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: AppColors.error),
                               ),
                             ),
                           ],
                         ),
                       ],
+                      const SizedBox(height: 10),
+                      ContentTranslationsSection(
+                        controller: translations,
+                        fields: _tFields,
+                        helper: 'The push notification also goes out in each user\'s language.',
+                      ),
                       const SizedBox(height: 22),
                       // FIX: this used to be a Row(mainAxisAlignment: end, ...)
                       // wrapping the Cancel/Publish buttons. Inside this
@@ -511,7 +547,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.adminColor,
                               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                               elevation: 0,
                             ),
                             onPressed: () async {
@@ -537,6 +573,8 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                                 await _api.post('/admin-panel/announcements/', {
                                   'title': titleCtrl.text.trim(), 'message': messageCtrl.text.trim(),
                                   'type': type, 'audience': audience,
+                                  if (translations.payload.isNotEmpty)
+                                    'translations': translations.payload,
                                 });
                                 _load();
                               } catch (e) {
@@ -564,13 +602,13 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
         filled: true,
         fillColor: _bgColor,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: const BorderSide(color: _borderColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: const BorderSide(color: AppColors.adminColor, width: 1.4),
         ),
       );
@@ -583,13 +621,13 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(color: Color(0xFFF3F4F6), shape: BoxShape.circle),
+                decoration: const BoxDecoration(color: AppColors.neutral100, shape: BoxShape.circle),
                 child: Icon(Icons.campaign_outlined, size: 40, color: Colors.grey.shade400),
               ),
               const SizedBox(height: 14),
               const Text(
                 'No announcements yet',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF374151)),
+                style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600, color: AppColors.gray700),
               ),
               const SizedBox(height: 4),
               const Text(
@@ -609,12 +647,12 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
           children: [
             Container(
               padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(color: AppColors.error.withOpacity(0.08), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.08), shape: BoxShape.circle),
               child: const Icon(Icons.error_outline_rounded, size: 40, color: AppColors.error),
             ),
             const SizedBox(height: 14),
             const Text('Failed to load announcements',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
+                style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray900)),
             const SizedBox(height: 16),
             _HoverLift(
               child: ElevatedButton.icon(
@@ -626,7 +664,7 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                   foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                 ),
               ),
             ),
@@ -657,23 +695,23 @@ class _SelectableChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? color.withOpacity(0.12) : const Color(0xFFF5F7FA),
-      borderRadius: BorderRadius.circular(20),
+      color: selected ? color.withValues(alpha: 0.12) : AppColors.lightScaffold,
+      borderRadius: BorderRadius.circular(AppSizes.radiusChip),
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 160),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(color: selected ? color : Colors.transparent),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 13, color: selected ? color : const Color(0xFF6B7280)),
+                Icon(icon, size: 13, color: selected ? color : AppColors.grayDeep),
                 const SizedBox(width: 5),
               ],
               Text(
@@ -681,7 +719,7 @@ class _SelectableChip extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
-                  color: selected ? color : const Color(0xFF6B7280),
+                  color: selected ? color : AppColors.grayDeep,
                 ),
               ),
             ],

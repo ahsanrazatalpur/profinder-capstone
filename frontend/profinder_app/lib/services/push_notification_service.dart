@@ -22,6 +22,7 @@ import '../features/chat/domain/entities/conversation_entity.dart';
 import '../features/chat/presentation/providers/conversation_list_provider.dart';
 import '../features/chat/presentation/screens/chat_screen.dart';
 import '../features/professional/screens/professional_main_screen.dart';
+import '../l10n/generated/app_localizations.dart';
 
 /// IMPORTANT: Background handler top-level (class ke bahar) function
 /// hona zaroori hai — Flutter ka requirement hai, warna kaam nahi karega.
@@ -70,6 +71,39 @@ class PushNotificationService {
     playSound: true,
     enableVibration: true,
   );
+
+  String? _channelLang;
+
+  /// Android channel name/description are what the user sees in system
+  /// Settings > Notifications. Re-creating a channel with the same id only
+  /// updates its name/description (importance is kept), so this is safe to
+  /// call on every language change. Called from main.dart's MaterialApp builder.
+  Future<void> updateChannelLocalization(AppLocalizations t) async {
+    if (!_isAndroid || _channelLang == t.localeName) return;
+    _channelLang = t.localeName;
+    try {
+      final impl = _local.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+      await impl?.createNotificationChannel(AndroidNotificationChannel(
+        _generalChannel.id,
+        t.pushChannelGeneralName,
+        description: t.pushChannelGeneralDesc,
+        importance: Importance.max,
+        playSound: true,
+        enableVibration: true,
+      ));
+      await impl?.createNotificationChannel(AndroidNotificationChannel(
+        _chatChannel.id,
+        t.pushChannelChatName,
+        description: t.pushChannelChatDesc,
+        importance: Importance.max,
+        playSound: true,
+        enableVibration: true,
+      ));
+    } catch (e) {
+      debugPrint('[FCM] updateChannelLocalization failed: $e');
+    }
+  }
 
   bool get _isAndroid => !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 

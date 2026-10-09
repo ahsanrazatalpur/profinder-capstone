@@ -1,5 +1,7 @@
 // lib/features/profile/screens/settings_screen.dart
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:provider/provider.dart';
@@ -25,11 +27,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _comingSoon(String feature) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(AppLocalizations.of(context)!.comingSoonMessage(feature)),
+        content: Text(AppLocalizations.of(context).comingSoonMessage(feature)),
         behavior: SnackBarBehavior.floating,
         backgroundColor: context.colors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           side: BorderSide(color: context.colors.divider),
         ),
       ),
@@ -45,7 +47,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.settingsTitle,
+        title: AppLocalizations.of(context).settingsTitle,
         icon: Icons.settings_rounded,
       ),
       body: ListView(
@@ -53,12 +55,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           // ── Notifications Section ──────────────────────
-          _sectionLabel(AppLocalizations.of(context)!.notificationsSectionLabel, isDark),
+          _sectionLabel(AppLocalizations.of(context).notificationsSectionLabel, isDark),
           _switchTile(
             context,
             Icons.notifications_active_outlined,
-            AppLocalizations.of(context)!.pushNotificationsLabel,
-            AppLocalizations.of(context)!.pushNotificationsSubtitle,
+            AppLocalizations.of(context).pushNotificationsLabel,
+            AppLocalizations.of(context).pushNotificationsSubtitle,
             _pushEnabled,
             (v) => setState(() => _pushEnabled = v),
             isDark,
@@ -67,8 +69,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _switchTile(
             context,
             Icons.email_outlined,
-            AppLocalizations.of(context)!.emailNotificationsLabel,
-            AppLocalizations.of(context)!.emailNotificationsSubtitle,
+            AppLocalizations.of(context).emailNotificationsLabel,
+            AppLocalizations.of(context).emailNotificationsSubtitle,
             _emailEnabled,
             (v) => setState(() => _emailEnabled = v),
             isDark,
@@ -78,14 +80,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 16),
 
           // ── Preferences Section ────────────────────────
-          _sectionLabel(AppLocalizations.of(context)!.preferencesSectionLabel, isDark),
+          _sectionLabel(AppLocalizations.of(context).preferencesSectionLabel, isDark),
           Builder(builder: (context) {
             final currentCode = context.watch<LocaleProvider>().locale.languageCode;
             final currentLang = SupportedLanguages.byCode(currentCode);
             return _tile(
               context,
               Icons.language_rounded,
-              AppLocalizations.of(context)!.languageLabel,
+              AppLocalizations.of(context).languageLabel,
               currentLang.nativeName,
               () => Navigator.push(
                 context,
@@ -98,9 +100,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _tile(
             context,
             Icons.attach_money_rounded,
-            AppLocalizations.of(context)!.currencyLabel,
+            AppLocalizations.of(context).currencyLabel,
             'USD',
-            () => _comingSoon(AppLocalizations.of(context)!.currencyFeatureName),
+            () => _comingSoon(AppLocalizations.of(context).currencyFeatureName),
             isDark: isDark,
             isTablet: isTablet,
           ),
@@ -109,8 +111,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             return _switchTile(
               context,
               Icons.dark_mode_outlined,
-              AppLocalizations.of(context)!.darkModeLabel,
-              themeProvider.isDarkMode ? AppLocalizations.of(context)!.darkModeOnLabel : AppLocalizations.of(context)!.darkModeOffLabel,
+              AppLocalizations.of(context).darkModeLabel,
+              themeProvider.isDarkMode ? AppLocalizations.of(context).darkModeOnLabel : AppLocalizations.of(context).darkModeOffLabel,
               themeProvider.isDarkMode,
               (v) => context.read<ThemeProvider>().toggleTheme(),
               isDark,
@@ -121,12 +123,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 16),
 
           // ── Account Section ────────────────────────────
-          _sectionLabel(AppLocalizations.of(context)!.accountSectionLabel, isDark),
+          _sectionLabel(AppLocalizations.of(context).accountSectionLabel, isDark),
           _tile(
             context,
             Icons.delete_outline_rounded,
-            AppLocalizations.of(context)!.deleteAccountLabel,
-            AppLocalizations.of(context)!.deleteAccountSubtitle,
+            AppLocalizations.of(context).deleteAccountLabel,
+            AppLocalizations.of(context).deleteAccountSubtitle,
             () => _confirmDelete(context),
             color: AppColors.error,
             isDark: isDark,
@@ -143,10 +145,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Text(
           text.toUpperCase(),
           style: TextStyle(
-            fontSize: 11,
+            fontSize: AppFontSizes.caption,
             fontWeight: FontWeight.bold,
             color: isDark
-                ? Colors.white.withOpacity(0.5)
+                ? Colors.white.withValues(alpha: 0.5)
                 : context.colors.textSecondary,
             letterSpacing: 0.6,
           ),
@@ -171,17 +173,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.08)
+              ? Colors.white.withValues(alpha: 0.08)
               : context.colors.divider,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.06)
-                : Colors.grey.withOpacity(0.03),
+                ? Colors.black.withValues(alpha: 0.06)
+                : Colors.grey.withValues(alpha: 0.03),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -193,8 +195,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: c.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(8),
+            color: c.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusSm),
           ),
           child: Icon(icon, color: c, size: 18),
         ),
@@ -240,17 +242,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.08)
+              ? Colors.white.withValues(alpha: 0.08)
               : context.colors.divider,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.06)
-                : Colors.grey.withOpacity(0.03),
+                ? Colors.black.withValues(alpha: 0.06)
+                : Colors.grey.withValues(alpha: 0.03),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -261,8 +263,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: AppColors.customerColor.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(8),
+            color: AppColors.customerColor.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusSm),
           ),
           child: Icon(
             icon,
@@ -288,11 +290,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         trailing: Switch(
           value: value,
-          activeColor: AppColors.customerColor,
-          activeTrackColor: AppColors.customerColor.withOpacity(0.3),
+          activeThumbColor: AppColors.customerColor,
+          activeTrackColor: AppColors.customerColor.withValues(alpha: 0.3),
           inactiveThumbColor: isDark
-              ? Colors.white.withOpacity(0.3)
-              : Colors.grey.withOpacity(0.3),
+              ? Colors.white.withValues(alpha: 0.3)
+              : Colors.grey.withValues(alpha: 0.3),
           onChanged: onChanged,
         ),
       ),
@@ -301,14 +303,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // ── Delete Account Confirmation ────────────────────────
   void _confirmDelete(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: context.colors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         ),
         elevation: 0,
         title: Row(
@@ -316,7 +316,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.12),
+                color: AppColors.error.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -327,9 +327,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(width: 12),
             Text(
-              AppLocalizations.of(context)!.deleteAccountDialogTitle,
+              AppLocalizations.of(context).deleteAccountDialogTitle,
               style: TextStyle(
-                fontSize: 17,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
                 letterSpacing: -0.3,
@@ -338,9 +338,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ],
         ),
         content: Text(
-          AppLocalizations.of(context)!.deleteAccountDialogContent,
+          AppLocalizations.of(context).deleteAccountDialogContent,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: AppFontSizes.body,
             color: context.colors.textSecondary,
             height: 1.5,
             letterSpacing: 0.2,
@@ -353,13 +353,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               foregroundColor: context.colors.textSecondary,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
             ),
             child: Text(
-              AppLocalizations.of(context)!.okCta,
+              AppLocalizations.of(context).okCta,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.3,
               ),

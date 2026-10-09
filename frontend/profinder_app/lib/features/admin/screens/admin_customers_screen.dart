@@ -17,6 +17,8 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 enum _StatusFilter { all, active, blocked }
 enum _SortOption { spentHigh, bookingsHigh, nameAsc, dateNew }
@@ -127,6 +129,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
 
     try {
       await _api.patch('/admin-panel/users/${user['id']}/ban/', {'action': isBanned ? 'unban' : 'ban'});
+      if (!mounted) return;
       setState(() {
         final idx = _all.indexWhere((u) => u['id'] == user['id']);
         if (idx != -1) _all[idx]['is_active'] = isBanned;
@@ -169,6 +172,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         success++;
       } catch (_) {}
     }
+    if (!mounted) return;
     _applyFilters();
     setState(() { _selectionMode = false; _selectedIds.clear(); });
     _showSnack(
@@ -210,20 +214,20 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                  color: AppColors.adminColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                  color: AppColors.adminColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
               child: const Icon(Icons.download_rounded, color: AppColors.adminColor, size: 22),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text('Export (${rows.length} customers)',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF111827))),
+                  style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900)),
             ),
           ],
         ),
@@ -233,13 +237,13 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
+              color: AppColors.tintGray,
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
+              border: Border.all(color: AppColors.neutral200),
             ),
             child: SingleChildScrollView(
               child: SelectableText(buffer.toString(),
-                  style: const TextStyle(fontSize: 11, fontFamily: 'monospace', height: 1.5)),
+                  style: const TextStyle(fontSize: AppFontSizes.caption, fontFamily: 'monospace', height: 1.5)),
             ),
           ),
         ),
@@ -247,14 +251,14 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close', style: TextStyle(color: Color(0xFF9CA3AF))),
+            child: const Text('Close', style: TextStyle(color: AppColors.neutral400)),
           ),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.adminColor,
               foregroundColor: Colors.white,
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
             ),
             onPressed: () {
@@ -291,7 +295,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: _buildAppBar(),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -374,14 +378,14 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
           child: TextField(
             controller: _searchCtrl,
             onChanged: (_) => _applyFilters(),
-            style: const TextStyle(fontSize: 13),
+            style: const TextStyle(fontSize: AppFontSizes.secondary),
             decoration: InputDecoration(
               hintText:   'Search by name or email…',
-              hintStyle:  const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
-              prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF9CA3AF)),
+              hintStyle:  const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
+              prefixIcon: const Icon(Icons.search, size: 18, color: AppColors.neutral400),
               suffixIcon: _searchCtrl.text.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear, size: 16, color: Color(0xFF9CA3AF)),
+                      icon: const Icon(Icons.clear, size: 16, color: AppColors.neutral400),
                       onPressed: () {
                         _searchCtrl.clear();
                         _applyFilters();
@@ -389,12 +393,12 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
                     )
                   : null,
               filled:         true,
-              fillColor:      const Color(0xFFF3F4F6),
+              fillColor:      AppColors.neutral100,
               contentPadding: const EdgeInsets.symmetric(vertical: 10),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                  borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
                 borderSide: const BorderSide(color: AppColors.adminColor, width: 1.4),
               ),
             ),
@@ -407,7 +411,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
   // ── Status Filter Chips ───────────────────────────────────
   Widget _buildStatusChips() {
     final filters = [
-      (_StatusFilter.all,     'All',     const Color(0xFF374151)),
+      (_StatusFilter.all,     'All',     AppColors.gray700),
       (_StatusFilter.active,  'Active',  context.colors.accent),
       (_StatusFilter.blocked, 'Blocked', AppColors.error),
     ];
@@ -447,13 +451,13 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            _countPill(Icons.groups_rounded, '$total Total',     const Color(0xFF374151)),
+            _countPill(Icons.groups_rounded, '$total Total',     AppColors.gray700),
             const SizedBox(width: 8),
             _countPill(Icons.check_circle_outline_rounded, '$active Active',   context.colors.accent),
             const SizedBox(width: 8),
             _countPill(Icons.block_rounded, '$blocked Blocked', AppColors.error),
             const SizedBox(width: 8),
-            _countPill(Icons.payments_rounded, 'Rs ${totalSpent.toStringAsFixed(0)} Spent', const Color(0xFF16A34A)),
+            _countPill(Icons.payments_rounded, 'Rs ${totalSpent.toStringAsFixed(0)} Spent', AppColors.greenDeep),
           ],
         ),
       ),
@@ -463,13 +467,13 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
   Widget _countPill(IconData icon, String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 12, color: color),
           const SizedBox(width: 4),
-          Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+          Text(label, style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: color)),
         ],
       ),
     );
@@ -479,7 +483,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
   Widget _buildBulkActionBar() {
     return Container(
       width: double.infinity,
-      color: AppColors.adminColor.withOpacity(0.06),
+      color: AppColors.adminColor.withValues(alpha: 0.06),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
@@ -487,23 +491,23 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         spacing: 8,
         children: [
           Text('${_selectedIds.length} selected',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
+              style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
           Wrap(
             children: [
               TextButton.icon(
                 onPressed: _selectedIds.isEmpty ? null : () => _bulkSetStatus(block: true),
                 icon: const Icon(Icons.block_rounded, size: 16, color: AppColors.error),
-                label: const Text('Block', style: TextStyle(color: AppColors.error, fontSize: 12)),
+                label: const Text('Block', style: TextStyle(color: AppColors.error, fontSize: AppFontSizes.small)),
               ),
               TextButton.icon(
                 onPressed: _selectedIds.isEmpty ? null : () => _bulkSetStatus(block: false),
                 icon: Icon(Icons.lock_open_rounded, size: 16, color: context.colors.accent),
-                label: Text('Unblock', style: TextStyle(color: context.colors.accent, fontSize: 12)),
+                label: Text('Unblock', style: TextStyle(color: context.colors.accent, fontSize: AppFontSizes.small)),
               ),
               TextButton.icon(
                 onPressed: _selectedIds.isEmpty ? null : _exportCsv,
-                icon: const Icon(Icons.download_rounded, size: 16, color: Color(0xFF6B7280)),
-                label: const Text('Export', style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
+                icon: const Icon(Icons.download_rounded, size: 16, color: AppColors.grayDeep),
+                label: const Text('Export', style: TextStyle(color: AppColors.grayDeep, fontSize: AppFontSizes.small)),
               ),
             ],
           ),
@@ -519,11 +523,11 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.people_outline, size: 60, color: Color(0xFFD1D5DB)),
+            const Icon(Icons.people_outline, size: 60, color: AppColors.neutral300),
             const SizedBox(height: 12),
             Text(
               _searchCtrl.text.isNotEmpty ? 'No results for "${_searchCtrl.text}"' : 'No customers found',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF9CA3AF)),
+              style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w500, color: AppColors.neutral400),
             ),
           ],
         ),
@@ -579,7 +583,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet))),
       builder: (_) => DraggableScrollableSheet(
         initialChildSize: 0.5,
         minChildSize: 0.3,
@@ -595,7 +599,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
                 child: Container(
                   width: 40, height: 4,
                   decoration: BoxDecoration(
-                      color: const Color(0xFFE5E7EB), borderRadius: BorderRadius.circular(2)),
+                      color: AppColors.neutral200, borderRadius: BorderRadius.circular(AppSizes.radiusTiny)),
                 ),
               ),
               const SizedBox(height: 20),
@@ -608,7 +612,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
                     child: photoUrl.isEmpty
                         ? Text(AppHelpers.getInitials(name),
                             style: TextStyle(
-                                color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: 18))
+                                color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: AppFontSizes.title2))
                         : null,
                   ),
                   const SizedBox(width: 14),
@@ -616,9 +620,9 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                        Text(name, style: const TextStyle(fontSize: AppFontSizes.titleMd, fontWeight: FontWeight.w800)),
                         const SizedBox(height: 2),
-                        Text(email, style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+                        Text(email, style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
                         const SizedBox(height: 6),
                         isBanned
                             ? statusBadge('BLOCKED', AppColors.error)
@@ -643,7 +647,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
                     backgroundColor: isBanned ? context.colors.accent : AppColors.error,
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   onPressed: () {
@@ -675,12 +679,12 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(color: AppColors.error.withOpacity(0.08), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.08), shape: BoxShape.circle),
             child: const Icon(Icons.error_outline_rounded, size: 44, color: AppColors.error),
           ),
           const SizedBox(height: 14),
           const Text('Failed to load customers',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF374151))),
+              style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: AppColors.gray700)),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: _load,
@@ -691,7 +695,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             ),
           ),
         ],
@@ -720,15 +724,15 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
     return await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
             title: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: confirmColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    color: confirmColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                   ),
                   child: Icon(icon, color: confirmColor, size: 20),
                 ),
@@ -736,24 +740,24 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
                 Expanded(
                   child: Text(title,
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF111827))),
+                          fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900)),
                 ),
               ],
             ),
             content: Text(message,
-                style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280), height: 1.4)),
+                style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep, height: 1.4)),
             actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel', style: TextStyle(color: Color(0xFF9CA3AF))),
+                child: const Text('Cancel', style: TextStyle(color: AppColors.neutral400)),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: confirmColor,
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 ),
                 onPressed: () => Navigator.pop(context, true),
@@ -777,7 +781,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
         ]),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
         margin: const EdgeInsets.all(14),
         duration: const Duration(seconds: 2),
       ),
@@ -790,18 +794,18 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
 Widget statusBadge(String label, Color color) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-    decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
-    child: Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: color)),
+    decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
+    child: Text(label, style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w700, color: color)),
   );
 }
 
-Widget infoChip(IconData icon, String text, {Color color = const Color(0xFF9CA3AF)}) {
+Widget infoChip(IconData icon, String text, {Color color = AppColors.neutral400}) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
       Icon(icon, size: 11, color: color),
       const SizedBox(width: 2),
-      Text(text, style: const TextStyle(fontSize: 11, color: Color(0xFF6B7280))),
+      Text(text, style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.grayDeep)),
     ],
   );
 }
@@ -811,12 +815,12 @@ Widget detailRow(IconData icon, String label, String value) {
     padding: const EdgeInsets.symmetric(vertical: 8),
     child: Row(
       children: [
-        Icon(icon, size: 16, color: const Color(0xFF9CA3AF)),
+        Icon(icon, size: 16, color: AppColors.neutral400),
         const SizedBox(width: 10),
-        Text(label, style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+        Text(label, style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
         const Spacer(),
         Text(value,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF111827))),
+            style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: AppColors.gray900)),
       ],
     ),
   );
@@ -851,14 +855,14 @@ class _StatusChipState extends State<_StatusChip> {
           decoration: BoxDecoration(
             color: widget.isActive
                 ? widget.color
-                : (_hovered ? const Color(0xFFEAECEF) : const Color(0xFFF3F4F6)),
-            borderRadius: BorderRadius.circular(20),
+                : (_hovered ? const Color(0xFFEAECEF) : AppColors.neutral100),
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
           ),
           child: Text(widget.label,
               style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppFontSizes.small,
                   fontWeight: FontWeight.w600,
-                  color: widget.isActive ? Colors.white : const Color(0xFF6B7280))),
+                  color: widget.isActive ? Colors.white : AppColors.grayDeep)),
         ),
       ),
     );
@@ -919,18 +923,18 @@ class _CustomerCardState extends State<_CustomerCard> {
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.adminColor.withOpacity(0.06) : Colors.white,
-            borderRadius: BorderRadius.circular(14),
+            color: isSelected ? AppColors.adminColor.withValues(alpha: 0.06) : Colors.white,
+            borderRadius: BorderRadius.circular(AppSizes.radius14),
             border: Border.all(
               color: isSelected
                   ? AppColors.adminColor
                   : isBanned
-                      ? AppColors.error.withOpacity(0.3)
-                      : (_hovered ? const Color(0xFFD1D5DB) : const Color(0xFFE5E7EB)),
+                      ? AppColors.error.withValues(alpha: 0.3)
+                      : (_hovered ? AppColors.neutral300 : AppColors.neutral200),
             ),
             boxShadow: [
               BoxShadow(
-                color: _hovered ? Colors.black.withOpacity(0.06) : Colors.black.withOpacity(0.03),
+                color: _hovered ? Colors.black.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.03),
                 blurRadius: _hovered ? 12 : 6,
                 offset: Offset(0, _hovered ? 3 : 1),
               ),
@@ -955,7 +959,7 @@ class _CustomerCardState extends State<_CustomerCard> {
                     child: photoUrl.isEmpty
                         ? Text(AppHelpers.getInitials(name),
                             style: TextStyle(
-                                color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: 13))
+                                color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: AppFontSizes.secondary))
                         : null,
                   ),
                   if (isBanned)
@@ -982,7 +986,7 @@ class _CustomerCardState extends State<_CustomerCard> {
                         Expanded(
                           child: Text(name,
                               style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+                                  fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray900),
                               maxLines: 1, overflow: TextOverflow.ellipsis),
                         ),
                         isBanned
@@ -992,7 +996,7 @@ class _CustomerCardState extends State<_CustomerCard> {
                     ),
                     const SizedBox(height: 2),
                     Text(email,
-                        style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                        style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.grayDeep),
                         maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 4),
                     Wrap(
@@ -1000,7 +1004,7 @@ class _CustomerCardState extends State<_CustomerCard> {
                       runSpacing: 4,
                       children: [
                         infoChip(Icons.event_available_rounded, '$bookings bookings'),
-                        infoChip(Icons.payments_rounded, 'Rs $spent spent', color: const Color(0xFF16A34A)),
+                        infoChip(Icons.payments_rounded, 'Rs $spent spent', color: AppColors.greenDeep),
                         if (city.isNotEmpty) infoChip(Icons.location_on_outlined, city),
                         if (joined.isNotEmpty) infoChip(Icons.calendar_today_outlined, 'Joined $joined'),
                       ],
@@ -1045,9 +1049,9 @@ class _BanToggleButtonState extends State<_BanToggleButton> {
           duration: const Duration(milliseconds: 140),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: color.withOpacity(_hovered ? 0.16 : 0.1),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: color.withOpacity(_hovered ? 0.5 : 0.3)),
+            color: color.withValues(alpha: _hovered ? 0.16 : 0.1),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
+            border: Border.all(color: color.withValues(alpha: _hovered ? 0.5 : 0.3)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1055,7 +1059,7 @@ class _BanToggleButtonState extends State<_BanToggleButton> {
               Icon(widget.isBanned ? Icons.lock_open_rounded : Icons.block_rounded, size: 16, color: color),
               const SizedBox(height: 2),
               Text(widget.isBanned ? 'Unban' : 'Block',
-                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: color)),
+                  style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w700, color: color)),
             ],
           ),
         ),

@@ -1,5 +1,7 @@
 // lib/features/profile/screens/guest_profile_screen.dart
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/utils/responsive_utils.dart';
@@ -13,13 +15,16 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/profile_header_card.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../about/screens/about_screen.dart';
+import '../../../core/localization/locale_provider.dart';
+import '../../../core/localization/supported_languages.dart';
+import 'language_settings_screen.dart';
 
 class GuestProfileScreen extends StatelessWidget {
   const GuestProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final width = MediaQuery.sizeOf(context).width;
     final scale = ResponsiveUtils.scaleForWidth(width);
 
@@ -96,7 +101,7 @@ class GuestProfileScreen extends StatelessWidget {
                   child: _menuTile(
                     context,
                     icon: Icons.edit_outlined,
-                    iconColor: const Color(0xFF0EA5E9),
+                    iconColor: AppColors.sky,
                     title: t.profileEditProfile,
                     subtitle: t.profileNotAvailable,
                     scale: scale,
@@ -107,7 +112,7 @@ class GuestProfileScreen extends StatelessWidget {
                 _menuTile(
                   context,
                   icon: Icons.login_rounded,
-                  iconColor: const Color(0xFF6366F1),
+                  iconColor: AppColors.indigo,
                   title: t.login,
                   subtitle: t.profileAccessBookingsProfile,
                   scale: scale,
@@ -116,7 +121,7 @@ class GuestProfileScreen extends StatelessWidget {
                 _menuTile(
                   context,
                   icon: Icons.person_add_rounded,
-                  iconColor: const Color(0xFF10B981),
+                  iconColor: AppColors.emerald,
                   title: t.register,
                   subtitle: t.profileCreateFreeCustomerAccount,
                   scale: scale,
@@ -125,7 +130,7 @@ class GuestProfileScreen extends StatelessWidget {
                 _menuTile(
                   context,
                   icon: Icons.workspace_premium_rounded,
-                  iconColor: const Color(0xFF7C3AED),
+                  iconColor: AppColors.accentPurple,
                   title: t.profileBecomeProfessional,
                   subtitle: t.profileListServicesGetHired,
                   scale: scale,
@@ -145,7 +150,7 @@ class GuestProfileScreen extends StatelessWidget {
                   child: _menuTile(
                     context,
                     icon: Icons.notifications_outlined,
-                    iconColor: const Color(0xFFDB2777),
+                    iconColor: AppColors.badgePopular,
                     title: t.notifications,
                     subtitle: t.profileNotAvailable,
                     scale: scale,
@@ -153,26 +158,39 @@ class GuestProfileScreen extends StatelessWidget {
                     trailing: const SizedBox.shrink(),
                   ),
                 ),
-                _menuTile(
-                  context,
-                  icon: Icons.language_rounded,
-                  iconColor: const Color(0xFF06B6D4),
-                  title: t.languageLabel,
-                  subtitle: t.profileEnglish,
-                  scale: scale,
-                  onTap: () => _showComingSoon(context, t.languageLabel),
-                  trailing: Icon(
-                    Icons.chevron_right_rounded,
-                    color: context.colors.textSecondary.withOpacity(0.4),
-                    size: ResponsiveUtils.sp(20, scale, min: 18, max: 24),
-                  ),
-                ),
+                // FIX: language ab guest ke liye bhi kaam karta hai — pehle
+                // sirf "coming soon" snackbar tha aur subtitle hamesha
+                // "English" dikhata tha. Ab wahi LanguageSettingsScreen
+                // khulti hai jo customer/professional use karte hain
+                // (guest ke liye backend sync skip hota hai, sirf local).
+                Builder(builder: (context) {
+                  final currentLang = SupportedLanguages.byCode(
+                    context.watch<LocaleProvider>().locale.languageCode,
+                  );
+                  return _menuTile(
+                    context,
+                    icon: Icons.language_rounded,
+                    iconColor: AppColors.cyan,
+                    title: t.languageLabel,
+                    subtitle: currentLang.nativeName,
+                    scale: scale,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LanguageSettingsScreen()),
+                    ),
+                    trailing: Icon(
+                      Icons.chevron_right_rounded,
+                      color: context.colors.textSecondary.withValues(alpha: 0.4),
+                      size: ResponsiveUtils.sp(20, scale, min: 18, max: 24),
+                    ),
+                  );
+                }),
                 Builder(builder: (context) {
                   final themeProvider = context.watch<ThemeProvider>();
                   return _menuSwitchTile(
                     context,
                     icon: Icons.dark_mode_rounded,
-                    iconColor: const Color(0xFF4F46E5),
+                    iconColor: AppColors.indigoDeep,
                     title: t.darkModeLabel,
                     subtitle: themeProvider.isDarkMode ? t.profileOn : t.profileOff,
                     scale: scale,
@@ -185,7 +203,7 @@ class GuestProfileScreen extends StatelessWidget {
                   child: _menuTile(
                     context,
                     icon: Icons.security_rounded,
-                    iconColor: const Color(0xFF16A34A),
+                    iconColor: AppColors.greenDeep,
                     title: t.security,
                     subtitle: t.profileNotAvailable,
                     scale: scale,
@@ -202,7 +220,7 @@ class GuestProfileScreen extends StatelessWidget {
                 _menuTile(
                   context,
                   icon: Icons.help_center_rounded,
-                  iconColor: const Color(0xFFF59E0B),
+                  iconColor: AppColors.warningAmber,
                   title: t.profileHelpSupport,
                   scale: scale,
                   onTap: () => _showComingSoon(context, t.homeHelpCenter),
@@ -210,7 +228,7 @@ class GuestProfileScreen extends StatelessWidget {
                 _menuTile(
                   context,
                   icon: Icons.privacy_tip_rounded,
-                  iconColor: const Color(0xFF10B981),
+                  iconColor: AppColors.emerald,
                   title: t.profilePrivacyPolicy,
                   scale: scale,
                   onTap: () => _showComingSoon(context, t.profilePrivacyPolicy),
@@ -218,7 +236,7 @@ class GuestProfileScreen extends StatelessWidget {
                 _menuTile(
                   context,
                   icon: Icons.info_rounded,
-                  iconColor: const Color(0xFF6366F1),
+                  iconColor: AppColors.indigo,
                   title: t.profileAboutProfinder,
                   // FIX: dummy static dialog ki jagah ab wahi AboutScreen
                   // jo customer/professional profile use karte hain — admin
@@ -242,7 +260,7 @@ class GuestProfileScreen extends StatelessWidget {
                           fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 14),
                           fontWeight: FontWeight.w400,
                           letterSpacing: 0.5,
-                          color: context.colors.textSecondary.withOpacity(0.6),
+                          color: context.colors.textSecondary.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
@@ -266,15 +284,15 @@ class GuestProfileScreen extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  const Color(0xFF6366F1).withOpacity(0.12),
-                  const Color(0xFF6366F1).withOpacity(0.05),
+                  AppColors.indigo.withValues(alpha: 0.12),
+                  AppColors.indigo.withValues(alpha: 0.05),
                 ],
               ),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
             child: Icon(
               icon,
-              color: const Color(0xFF6366F1),
+              color: AppColors.indigo,
               size: ResponsiveUtils.sp(15, scale, min: 13, max: 17),
             ),
           ),
@@ -284,7 +302,7 @@ class GuestProfileScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 13),
               fontWeight: FontWeight.w700,
-              color: const Color(0xFF6366F1),
+              color: AppColors.indigo,
               letterSpacing: 1.0,
             ),
           ),
@@ -299,21 +317,21 @@ class GuestProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.06),
+            color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.06),
           ),
         ),
         child: Column(
           children: [
             Container(
               width: 38, height: 38,
-              decoration: BoxDecoration(color: context.colors.textSecondary.withOpacity(0.12), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: context.colors.textSecondary.withValues(alpha: 0.12), shape: BoxShape.circle),
               child: Icon(icon, size: 18, color: context.colors.textSecondary),
             ),
             const SizedBox(height: 8),
             Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
+                style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
           ],
         ),
       ),
@@ -337,18 +355,18 @@ class GuestProfileScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark 
-              ? Colors.white.withOpacity(0.06) 
-              : Colors.black.withOpacity(0.06),
+              ? Colors.white.withValues(alpha: 0.06) 
+              : Colors.black.withValues(alpha: 0.06),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark 
-                ? Colors.black.withOpacity(0.15) 
-                : Colors.black.withOpacity(0.03),
+                ? Colors.black.withValues(alpha: 0.15) 
+                : Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -356,10 +374,10 @@ class GuestProfileScreen extends StatelessWidget {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
@@ -372,11 +390,11 @@ class GuestProfileScreen extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        iconColor.withOpacity(0.12),
-                        iconColor.withOpacity(0.04),
+                        iconColor.withValues(alpha: 0.12),
+                        iconColor.withValues(alpha: 0.04),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   ),
                   child: Icon(
                     icon,
@@ -410,14 +428,14 @@ class GuestProfileScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: ResponsiveUtils.sp(12.5, scale, min: 12, max: 14),
                             fontWeight: FontWeight.w400,
-                            color: context.colors.textSecondary.withOpacity(0.6),
+                            color: context.colors.textSecondary.withValues(alpha: 0.6),
                           ),
                         ),
                       ],
                     ],
                   ),
                 ),
-                if (trailing != null) trailing,
+                ?trailing,
               ],
             ),
           ),
@@ -443,18 +461,18 @@ class GuestProfileScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark 
-              ? Colors.white.withOpacity(0.06) 
-              : Colors.black.withOpacity(0.06),
+              ? Colors.white.withValues(alpha: 0.06) 
+              : Colors.black.withValues(alpha: 0.06),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark 
-                ? Colors.black.withOpacity(0.15) 
-                : Colors.black.withOpacity(0.03),
+                ? Colors.black.withValues(alpha: 0.15) 
+                : Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -472,11 +490,11 @@ class GuestProfileScreen extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    iconColor.withOpacity(0.12),
-                    iconColor.withOpacity(0.04),
+                    iconColor.withValues(alpha: 0.12),
+                    iconColor.withValues(alpha: 0.04),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
               child: Icon(
                 icon,
@@ -510,7 +528,7 @@ class GuestProfileScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(12.5, scale, min: 12, max: 14),
                         fontWeight: FontWeight.w400,
-                        color: context.colors.textSecondary.withOpacity(0.6),
+                        color: context.colors.textSecondary.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -519,10 +537,10 @@ class GuestProfileScreen extends StatelessWidget {
             ),
             Switch(
               value: value,
-              activeColor: const Color(0xFF6366F1),
-              activeTrackColor: const Color(0xFF6366F1).withOpacity(0.25),
-              inactiveThumbColor: isDark ? const Color(0xFF475569) : const Color(0xFF94A3B8),
-              inactiveTrackColor: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+              activeThumbColor: AppColors.indigo,
+              activeTrackColor: AppColors.indigo.withValues(alpha: 0.25),
+              inactiveThumbColor: isDark ? AppColors.slate600 : AppColors.textSecondary,
+              inactiveTrackColor: isDark ? AppColors.divider : AppColors.slate300,
               onChanged: onChanged,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
@@ -533,13 +551,13 @@ class GuestProfileScreen extends StatelessWidget {
   }
 
   void _showComingSoon(BuildContext context, String feature) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(t.comingSoon(feature)),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFF6366F1),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: AppColors.indigo,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
         duration: const Duration(seconds: 2),
       ),
     );

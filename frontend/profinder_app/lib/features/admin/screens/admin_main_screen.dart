@@ -31,6 +31,8 @@ import 'admin_announcements_screen.dart';
 import 'admin_blocked_users_screen.dart';
 import 'admin_verification_requests_screen.dart';
 import 'admin_about_page_screen.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminMainScreen extends StatefulWidget {
   const AdminMainScreen({super.key});
@@ -195,8 +197,8 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                 Container(
                   width: 52, height: 52,
                   decoration: BoxDecoration(
-                    color:        Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(14),
+                    color:        Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(AppSizes.radius14),
                   ),
                   child: const Icon(Icons.admin_panel_settings_rounded,
                       color: Colors.white, size: 28),
@@ -204,14 +206,14 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                 const SizedBox(height: 12),
                 const Text('ProFinder Admin',
                     style: TextStyle(
-                        fontSize:   18,
+                        fontSize: AppFontSizes.title2,
                         fontWeight: FontWeight.w800,
                         color:      Colors.white)),
                 const SizedBox(height: 2),
                 Text('Admin Panel',
                     style: TextStyle(
-                        fontSize: 12,
-                        color:    Colors.white.withOpacity(0.8))),
+                        fontSize: AppFontSizes.small,
+                        color:    Colors.white.withValues(alpha: 0.8))),
               ],
             ),
           ),
@@ -249,7 +251,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                   color: AppColors.error, size: 22),
               title: const Text('Logout',
                   style: TextStyle(
-                      fontSize:   14,
+                      fontSize: AppFontSizes.body,
                       fontWeight: FontWeight.w600,
                       color:      AppColors.error)),
               onTap: () => _confirmLogout(auth),
@@ -271,32 +273,32 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       decoration: BoxDecoration(
         color: isActive
-            ? AppColors.adminColor.withOpacity(0.08)
+            ? AppColors.adminColor.withValues(alpha: 0.08)
             : Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
       ),
       // ✅ FIX: Drawer ke andar ListView ke ListTile ko bhi Material wrap kiya
       // taake ink splash aur background sahi se render ho.
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
         child: ListTile(
           leading: Icon(icon,
-              color: isActive ? AppColors.adminColor : const Color(0xFF9CA3AF),
+              color: isActive ? AppColors.adminColor : AppColors.neutral400,
               size:  22),
           title: Text(label,
               style: TextStyle(
-                  fontSize:   14,
+                  fontSize: AppFontSizes.body,
                   fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                   color:      isActive
                       ? AppColors.adminColor
-                      : const Color(0xFF374151))),
+                      : AppColors.gray700)),
           trailing: isActive
               ? Container(
                   width: 4, height: 24,
                   decoration: BoxDecoration(
                     color:        AppColors.adminColor,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusTiny),
                   ),
                 )
               : null,
@@ -314,7 +316,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-              color:      Colors.black.withOpacity(0.08),
+              color:      Colors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset:     const Offset(0, -2)),
         ],
@@ -341,28 +343,28 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                               horizontal: 16, vertical: 4),
                           decoration: BoxDecoration(
                             color: isActive
-                                ? AppColors.adminColor.withOpacity(0.12)
+                                ? AppColors.adminColor.withValues(alpha: 0.12)
                                 : Colors.transparent,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                           ),
                           child: Icon(
                             isActive ? item.activeIcon : item.icon,
                             color: isActive
                                 ? AppColors.adminColor
-                                : const Color(0xFF9CA3AF),
+                                : AppColors.neutral400,
                             size: 22,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(item.label,
                             style: TextStyle(
-                                fontSize:   10,
+                                fontSize: AppFontSizes.micro,
                                 fontWeight: isActive
                                     ? FontWeight.w700
                                     : FontWeight.w500,
                                 color: isActive
                                     ? AppColors.adminColor
-                                    : const Color(0xFF9CA3AF))),
+                                    : AppColors.neutral400)),
                       ],
                     ),
                   ),
@@ -383,28 +385,28 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                             horizontal: 16, vertical: 4),
                         decoration: BoxDecoration(
                           color: _currentIndex >= 4
-                              ? AppColors.adminColor.withOpacity(0.12)
+                              ? AppColors.adminColor.withValues(alpha: 0.12)
                               : Colors.transparent,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                         ),
                         child: Icon(
                           Icons.menu_rounded,
                           color: _currentIndex >= 4
                               ? AppColors.adminColor
-                              : const Color(0xFF9CA3AF),
+                              : AppColors.neutral400,
                           size: 22,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text('More',
                           style: TextStyle(
-                              fontSize:   10,
+                              fontSize: AppFontSizes.micro,
                               fontWeight: _currentIndex >= 4
                                   ? FontWeight.w700
                                   : FontWeight.w500,
                               color: _currentIndex >= 4
                                   ? AppColors.adminColor
-                                  : const Color(0xFF9CA3AF))),
+                                  : AppColors.neutral400)),
                     ],
                   ),
                 ),
@@ -422,28 +424,28 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: const Row(
           children: [
             Icon(Icons.logout_rounded, color: AppColors.error, size: 20),
             SizedBox(width: 8),
             Text('Logout?',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
           ],
         ),
         content: const Text('You will be logged out of the admin panel.',
-            style: TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+            style: TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel',
-                style: TextStyle(color: Color(0xFF9CA3AF))),
+                style: TextStyle(color: AppColors.neutral400)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8))),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Logout',
                 style: TextStyle(color: Colors.white)),

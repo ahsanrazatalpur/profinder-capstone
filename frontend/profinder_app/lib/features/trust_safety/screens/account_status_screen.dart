@@ -19,6 +19,8 @@ import '../services/user_trust_safety_service.dart';
 import '../widgets/moderation_action_card.dart';
 import '../widgets/appeal_form_sheet.dart';
 import '../widgets/ts_labels.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AccountStatusScreen extends StatefulWidget {
   const AccountStatusScreen({super.key});
@@ -73,11 +75,9 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final auth = context.watch<AuthProvider>();
     final accent = AppHelpers.getRoleColor(auth.role ?? 'customer');
-    final width = MediaQuery.sizeOf(context).width;
-    final isTablet = width > 600;
 
     return Scaffold(
       backgroundColor: context.colors.background,
@@ -135,7 +135,7 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
             Text(
               t.myTsStatusLoadError,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13.5, color: context.colors.textSecondary),
+              style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary),
             ),
             const SizedBox(height: 16),
             OutlinedButton(onPressed: _load, child: Text(t.tsRetry)),
@@ -152,11 +152,11 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.success.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.1) : Colors.grey.withOpacity(0.05),
+            color: isDark ? Colors.black.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -167,19 +167,19 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
           Container(
             width: 52,
             height: 52,
-            decoration: BoxDecoration(color: AppColors.success.withOpacity(0.14), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.14), shape: BoxShape.circle),
             child: const Icon(Icons.verified_user_rounded, color: AppColors.success, size: 26),
           ),
           const SizedBox(height: 12),
           Text(
             t.myTsGoodStandingTitle,
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+            style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
           ),
           const SizedBox(height: 4),
           Text(
             t.myTsGoodStandingMessage,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary),
+            style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
           ),
         ],
       ),
@@ -194,7 +194,7 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
           padding: const EdgeInsets.only(left: 4, bottom: 10),
           child: Text(
             t.myTsMyAppealsTitle.toUpperCase(),
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: context.colors.textSecondary, letterSpacing: 0.6),
+            style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.bold, color: context.colors.textSecondary, letterSpacing: 0.6),
           ),
         ),
         if (_appeals.isEmpty)
@@ -202,7 +202,7 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
               t.myTsMyAppealsEmpty,
-              style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary),
+              style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
             ),
           )
         else
@@ -217,15 +217,15 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
         ? AppColors.success
         : appeal.isRejected
             ? AppColors.error
-            : const Color(0xFFF59E0B);
+            : AppColors.warningAmber;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: isDark ? Colors.white.withOpacity(0.08) : context.colors.divider),
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
+        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,20 +236,20 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
               children: [
                 Text(
                   moderationActionTypeLabel(t, appeal.actionType, fallback: appeal.actionTypeDisplay),
-                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                  style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   appeal.reason,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+                  style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
                 ),
                 if (appeal.createdAt != null) ...[
                   const SizedBox(height: 6),
                   Text(
                     AppHelpers.formatDate(appeal.createdAt!),
-                    style: TextStyle(fontSize: 11, color: context.colors.textSecondary.withOpacity(0.8)),
+                    style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary.withValues(alpha: 0.8)),
                   ),
                 ],
               ],
@@ -258,10 +258,10 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
           const SizedBox(width: 10),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(color: statusColor.withOpacity(0.14), borderRadius: BorderRadius.circular(20)),
+            decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
             child: Text(
               appealStatusLabel(t, appeal.status),
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: statusColor),
+              style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: statusColor),
             ),
           ),
         ],

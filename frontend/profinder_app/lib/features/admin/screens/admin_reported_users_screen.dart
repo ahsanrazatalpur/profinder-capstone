@@ -25,6 +25,8 @@ import '../widgets/report_detail_panel.dart';
 import '../widgets/ts_ui.dart';
 import 'admin_report_detail_screen.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 enum _DateFilter { any, today, week, month, custom }
 
@@ -310,10 +312,10 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
             child: TextField(
               controller: _searchCtrl,
               onChanged: (v) => setState(() => _search = v),
-              style: const TextStyle(fontSize: 13, color: TsColors.textPrimary),
+              style: const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textPrimary),
               decoration: InputDecoration(
                 hintText: l.tsSearchReportsHint,
-                hintStyle: const TextStyle(fontSize: 13, color: TsColors.textFaint),
+                hintStyle: const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textFaint),
                 prefixIcon: const Icon(Icons.search_rounded,
                     size: 20, color: TsColors.textFaint),
                 suffixIcon: _search.isEmpty
@@ -331,7 +333,7 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   borderSide: BorderSide.none,
                 ),
               ),
@@ -383,7 +385,7 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
           onTap: () => setState(() => _status = value),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
@@ -391,7 +393,7 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: selected ? color : color.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppSizes.radiusChip),
               border: Border.all(
                 color: selected ? color : color.withValues(alpha: 0.25),
               ),
@@ -402,7 +404,7 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: AppFontSizes.small,
                     fontWeight: FontWeight.w700,
                     color: selected ? Colors.white : color,
                   ),
@@ -411,7 +413,7 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
                 Text(
                   count.toString(),
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: AppFontSizes.caption,
                     fontWeight: FontWeight.w800,
                     color: selected ? Colors.white : color,
                   ),
@@ -440,7 +442,7 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: AppFontSizes.secondary,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 color: TsColors.textPrimary,
               ),
@@ -464,7 +466,7 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
         offset: const Offset(0, 38),
         color: Colors.white,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
         itemBuilder: itemBuilder,
         onSelected: onSelected,
         child: Container(
@@ -472,7 +474,7 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: active ? TsColors.accent.withValues(alpha: 0.1) : TsColors.bg,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(
               color: active ? TsColors.accent : TsColors.border,
             ),
@@ -485,7 +487,7 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppFontSizes.small,
                   fontWeight: FontWeight.w700,
                   color: active ? TsColors.accent : TsColors.textBody,
                 ),
@@ -645,7 +647,7 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 24),
         itemCount: rows.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
         itemBuilder: (_, i) {
           final r = rows[i];
           return _ReportCard(
@@ -699,7 +701,7 @@ class _ReportCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: AppFontSizes.body,
                         fontWeight: FontWeight.w800,
                         color: TsColors.textPrimary,
                       ),
@@ -714,7 +716,7 @@ class _ReportCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 tsFmtDate(r.createdAt),
-                style: const TextStyle(fontSize: 11, color: TsColors.textMuted),
+                style: const TextStyle(fontSize: AppFontSizes.caption, color: TsColors.textMuted),
               ),
             ],
           ),
@@ -777,7 +779,7 @@ class _ReportCard extends StatelessWidget {
                   l.tsReportedBy(r.reporterName.isEmpty ? '—' : r.reporterName),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 11, color: TsColors.textFaint),
+                  style: const TextStyle(fontSize: AppFontSizes.caption, color: TsColors.textFaint),
                 ),
               ),
             ],
@@ -803,7 +805,7 @@ class _Indicator extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 11,
+            fontSize: AppFontSizes.caption,
             fontWeight: FontWeight.w600,
             color: TsColors.info,
           ),

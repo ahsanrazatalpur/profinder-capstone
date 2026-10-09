@@ -24,6 +24,8 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../models/ts_models.dart';
 import '../services/trust_safety_service.dart';
 import 'ts_ui.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class TakeActionResult {
   final ModerationAction action;
@@ -56,7 +58,7 @@ class TakeActionSheet {
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.transparent,
           insetPadding: const EdgeInsets.all(24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
           child: ConstrainedBox(
             constraints: BoxConstraints(
               maxWidth: 620,
@@ -288,8 +290,8 @@ class _TakeActionFormState extends State<_TakeActionForm> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final radius = widget.asDialog
-        ? BorderRadius.circular(20)
-        : const BorderRadius.vertical(top: Radius.circular(22));
+        ? BorderRadius.circular(AppSizes.radiusChip)
+        : const BorderRadius.vertical(top: Radius.circular(AppSizes.radius22));
     final bottomInset =
         widget.asDialog ? 0.0 : MediaQuery.viewInsetsOf(context).bottom;
 
@@ -340,7 +342,7 @@ class _TakeActionFormState extends State<_TakeActionForm> {
             height: 40,
             decoration: BoxDecoration(
               color: AppColors.error.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
             child: const Icon(Icons.gavel_rounded, color: AppColors.error, size: 20),
           ),
@@ -352,14 +354,14 @@ class _TakeActionFormState extends State<_TakeActionForm> {
                 Text(
                   l.tsTakeActionTitle,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: AppFontSizes.title,
                     fontWeight: FontWeight.w800,
                     color: TsColors.textPrimary,
                   ),
                 ),
                 Text(
                   l.tsRegardingReport(widget.report.id.toString()),
-                  style: const TextStyle(fontSize: 12, color: TsColors.textMuted),
+                  style: const TextStyle(fontSize: AppFontSizes.small, color: TsColors.textMuted),
                 ),
               ],
             ),
@@ -384,7 +386,7 @@ class _TakeActionFormState extends State<_TakeActionForm> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: TsColors.bg,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
         child: Row(
           children: [
@@ -429,7 +431,7 @@ class _TakeActionFormState extends State<_TakeActionForm> {
           padding: const EdgeInsets.only(top: 2),
           child: Text(
             l.tsChooseActionError,
-            style: const TextStyle(fontSize: 12, color: AppColors.error),
+            style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.error),
           ),
         ),
 
@@ -466,7 +468,7 @@ class _TakeActionFormState extends State<_TakeActionForm> {
           const SizedBox(height: 6),
           Text(
             expiryError,
-            style: const TextStyle(fontSize: 12, color: AppColors.error),
+            style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.error),
           ),
         ],
       ],
@@ -511,7 +513,7 @@ class _TakeActionFormState extends State<_TakeActionForm> {
           title: Text(
             l.tsMarkReportTaken,
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: AppFontSizes.secondary,
               fontWeight: FontWeight.w600,
               color: TsColors.textPrimary,
             ),
@@ -559,7 +561,7 @@ class _TakeActionFormState extends State<_TakeActionForm> {
                 disabledForegroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
               child: _submitting
                   ? const SizedBox(
@@ -604,7 +606,7 @@ class _TakeActionFormState extends State<_TakeActionForm> {
       maxLines: lines + 2,
       maxLength: 2000,
       onChanged: onChanged,
-      style: const TextStyle(fontSize: 13, color: TsColors.textPrimary),
+      style: const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textPrimary),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(fontSize: 12.5, color: TsColors.textFaint),
@@ -613,11 +615,11 @@ class _TakeActionFormState extends State<_TakeActionForm> {
         contentPadding: const EdgeInsets.all(12),
         errorText: errorText,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           borderSide: const BorderSide(color: TsColors.accent, width: 1.4),
         ),
       ),
@@ -628,13 +630,13 @@ class _TakeActionFormState extends State<_TakeActionForm> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         onTap: _submitting ? null : onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: selected ? TsColors.accent.withValues(alpha: 0.1) : TsColors.bg,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(
               color: selected ? TsColors.accent : Colors.transparent,
               width: 1.4,
@@ -675,14 +677,14 @@ class _TakeActionFormState extends State<_TakeActionForm> {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             onTap: (disabled || _submitting) ? null : () => _selectType(type),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: selected ? color.withValues(alpha: 0.07) : Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 border: Border.all(
                   color: selected ? color : TsColors.border,
                   width: selected ? 1.6 : 1,
@@ -696,7 +698,7 @@ class _TakeActionFormState extends State<_TakeActionForm> {
                     height: 34,
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10),
                     ),
                     child: Icon(tsActionIcon(type), size: 18, color: color),
                   ),
@@ -717,7 +719,7 @@ class _TakeActionFormState extends State<_TakeActionForm> {
                         Text(
                           disabledReason ?? tsActionTypeDescription(l, type),
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: AppFontSizes.small,
                             color: TsColors.textMuted,
                             height: 1.35,
                           ),
@@ -772,7 +774,7 @@ class _ConfirmActionDialogState extends State<_ConfirmActionDialog> {
     return AlertDialog(
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
       titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
       actionsPadding: const EdgeInsets.fromLTRB(12, 12, 16, 14),
@@ -783,7 +785,7 @@ class _ConfirmActionDialogState extends State<_ConfirmActionDialog> {
             height: 36,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
             ),
             child: Icon(tsActionIcon(widget.actionType), size: 19, color: color),
           ),
@@ -792,7 +794,7 @@ class _ConfirmActionDialogState extends State<_ConfirmActionDialog> {
             child: Text(
               l.tsConfirmTitle(widget.actionLabel),
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w800,
                 color: TsColors.textPrimary,
               ),
@@ -810,7 +812,7 @@ class _ConfirmActionDialogState extends State<_ConfirmActionDialog> {
               Text(
                 l.tsConfirmBody(widget.userName),
                 style: const TextStyle(
-                  fontSize: 13,
+                  fontSize: AppFontSizes.secondary,
                   color: TsColors.textBody,
                   height: 1.4,
                 ),
@@ -859,7 +861,7 @@ class _ConfirmActionDialogState extends State<_ConfirmActionDialog> {
             disabledForegroundColor: Colors.white,
             elevation: 0,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
           ),
           child: Text(
             l.tsApplyAction,

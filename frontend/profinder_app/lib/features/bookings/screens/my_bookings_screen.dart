@@ -1,8 +1,12 @@
 // lib/features/bookings/screens/my_bookings_screen.dart
 
+import '../../../services/content_localizer.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/booking_service.dart';
 import 'write_review_screen.dart';
@@ -58,6 +62,33 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     super.dispose();
   }
 
+  AppLocalizations get _t => AppLocalizations.of(context);
+  String get _lang => Localizations.localeOf(context).toString();
+
+  // Tab keys stay English (they're used for filtering); only the label is localized.
+  String _tabLabel(String tab) {
+    switch (tab) {
+      case 'Pending':   return _t.bkStatusPending;
+      case 'Accepted':  return _t.bkStatusAccepted;
+      case 'Completed': return _t.bkStatusCompleted;
+      case 'Cancelled': return _t.bkStatusCancelled;
+      default:          return _t.bkStatusAll;
+    }
+  }
+
+  // Backend status string → localized label (falls back to the raw status).
+  String _statusLabel(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':     return _t.bkStatusPending;
+      case 'accepted':    return _t.bkStatusAccepted;
+      case 'completed':   return _t.bkStatusCompleted;
+      case 'cancelled':   return _t.bkStatusCancelled;
+      case 'rejected':    return _t.bkStatusRejected;
+      case 'rescheduled': return _t.bkStatusRescheduled;
+      default:            return AppHelpers.capitalize(status);
+    }
+  }
+
   Future<void> _loadBookings() async {
     setState(() => _isLoading = true);
     final result = await _service.getMyBookings();
@@ -87,7 +118,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
       case 'cancelled':
         return context.colors.textSecondary;
       default:
-        return const Color(0xFFF59E0B); // pending
+        return AppColors.warningAmber; // pending
     }
   }
 
@@ -110,7 +141,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   String _prettyDate(String raw) {
     if (raw.isEmpty) return '—';
     try {
-      return AppHelpers.formatDate(DateTime.parse(raw));
+      return DateFormat('dd MMM yyyy', _lang).format(DateTime.parse(raw));
     } catch (_) {
       return raw;
     }
@@ -120,16 +151,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     if (raw.isEmpty) return '';
     try {
       final d = DateTime.parse(raw);
-      const days = [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday'
-      ];
-      return days[d.weekday - 1];
+      return DateFormat.EEEE(_lang).format(d);
     } catch (_) {
       return '';
     }
@@ -140,7 +162,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     try {
       final parts = raw.split(':');
       final d = DateTime(2000, 1, 1, int.parse(parts[0]), int.parse(parts[1]));
-      return AppHelpers.formatTime(d);
+      return DateFormat('hh:mm a', _lang).format(d);
     } catch (_) {
       return raw;
     }
@@ -149,7 +171,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   String _prettyBookedAt(String raw) {
     if (raw.isEmpty) return '';
     try {
-      return AppHelpers.formatDateTime(DateTime.parse(raw).toLocal());
+      return DateFormat('dd MMM yyyy • hh:mm a', _lang).format(DateTime.parse(raw).toLocal());
     } catch (_) {
       return '';
     }
@@ -168,14 +190,14 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.myBookings,
+        title: AppLocalizations.of(context).myBookings,
         icon: Icons.calendar_month_rounded,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(44),
           child: TabBar(
             controller: _tabController,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.white.withOpacity(0.7),
+            unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
             indicatorColor: Colors.white,
             dividerColor: Colors.transparent,
             indicatorWeight: 2.4,
@@ -183,10 +205,10 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
             tabAlignment: TabAlignment.start,
             labelPadding: const EdgeInsets.symmetric(horizontal: 14),
             labelStyle:
-                const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+                const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
             unselectedLabelStyle:
-                const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500),
-            tabs: _tabs.map((t) => Tab(height: 44, text: t)).toList(),
+                const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w500),
+            tabs: _tabs.map((t) => Tab(height: 44, text: _tabLabel(t))).toList(),
           ),
         ),
       ),
@@ -218,9 +240,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           child: Row(
             children: [
               Text(
-                '${list.length} ${list.length == 1 ? "booking" : "bookings"}',
+                _t.bkCountPlural(list.length),
                 style: TextStyle(
-                  fontSize: 12.5,
+                  fontSize: AppFontSizes.secondary,
                   fontWeight: FontWeight.w600,
                   color: context.colors.textSecondary,
                 ),
@@ -230,9 +252,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                   size: 16, color: context.colors.textSecondary),
               const SizedBox(width: 4),
               Text(
-                'swipe',
+                _t.bkSwipeHint,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppFontSizes.small,
                   color: context.colors.textSecondary,
                 ),
               ),
@@ -298,24 +320,24 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
             const SizedBox(height: 14),
             Text(
               tab == 'All'
-                  ? AppLocalizations.of(context)!
+                  ? AppLocalizations.of(context)
                       .professionalNoBookingsYet
-                  : AppLocalizations.of(context)!
-                      .professionalNoBookings(tab),
+                  : AppLocalizations.of(context)
+                      .professionalNoBookings(_tabLabel(tab)),
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              AppLocalizations.of(context)!
+              AppLocalizations.of(context)
                   .bookingsBookProfessionalFromHomeScreen,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 13, color: context.colors.textSecondary),
+                  fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
             ),
           ],
         ),
@@ -328,7 +350,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   // ══════════════════════════════════════════════════════════════════
   Widget _buildCard(dynamic booking, {required int index, required int total}) {
     final proName =
-        booking['professional_name']?.toString() ?? 'Professional';
+        booking['professional_name']?.toString() ?? _t.professional;
     final profession = booking['profession']?.toString() ?? '';
     final rating = double.tryParse(
             booking['professional_rating']?.toString() ?? '') ??
@@ -360,18 +382,18 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     return Container(
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(color: context.colors.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         child: Column(
           children: [
             // ── Scrollable content ────────────────────────────────
@@ -394,7 +416,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                             style: TextStyle(
                               color: context.colors.primary,
                               fontWeight: FontWeight.w700,
-                              fontSize: 15,
+                              fontSize: AppFontSizes.body,
                             ),
                           ),
                         ),
@@ -406,11 +428,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                               Row(
                                 children: [
                                   Flexible(
-                                    child: Text(
+                                    child: LocalizedText(
                                       proName,
+                                      kind: LocKind.name,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                        fontSize: 16.5,
+                                        fontSize: AppFontSizes.title,
                                         fontWeight: FontWeight.w700,
                                         letterSpacing: -0.2,
                                         color: context.colors.textPrimary,
@@ -428,10 +451,10 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                               if (profession.isNotEmpty) ...[
                                 const SizedBox(height: 2),
                                 Text(
-                                  profession,
+                                  AppHelpers.localizedCategoryName(context, profession),
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: AppFontSizes.secondary,
                                     fontWeight: FontWeight.w500,
                                     color: context.colors.textSecondary,
                                   ),
@@ -443,12 +466,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                                   children: [
                                     const Icon(Icons.star_rounded,
                                         size: 14,
-                                        color: Color(0xFFF59E0B)),
+                                        color: AppColors.warningAmber),
                                     const SizedBox(width: 3),
                                     Text(
                                       rating.toStringAsFixed(1),
                                       style: TextStyle(
-                                        fontSize: 12.5,
+                                        fontSize: AppFontSizes.secondary,
                                         fontWeight: FontWeight.w700,
                                         color: context.colors.textPrimary,
                                       ),
@@ -456,9 +479,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                                     if (reviewCount > 0) ...[
                                       const SizedBox(width: 3),
                                       Text(
-                                        '($reviewCount ${AppLocalizations.of(context)!.reviews})',
+                                        '(${AppLocalizations.of(context).reviewCountPlural(reviewCount)})',
                                         style: TextStyle(
-                                          fontSize: 11.5,
+                                          fontSize: AppFontSizes.small,
                                           color: context.colors.textSecondary,
                                         ),
                                       ),
@@ -479,7 +502,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                     const SizedBox(height: 14),
 
                     // ── Booking Details ──────────────────────────
-                    _sectionLabel('BOOKING DETAILS'),
+                    _sectionLabel(_t.bkSectionDetails.toUpperCase()),
                     const SizedBox(height: 10),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -487,7 +510,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                         Expanded(
                           child: _infoTile(
                             Icons.calendar_today_outlined,
-                            'DATE',
+                            _t.bkFieldDate.toUpperCase(),
                             _prettyDate(date),
                             sub: _weekday(date),
                           ),
@@ -496,7 +519,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                         Expanded(
                           child: _infoTile(
                             Icons.access_time_rounded,
-                            'TIME',
+                            _t.bkFieldTime.toUpperCase(),
                             _prettyTime(time),
                           ),
                         ),
@@ -504,7 +527,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                     ),
                     if (location.isNotEmpty) ...[
                       const SizedBox(height: 12),
-                      _infoTile(Icons.location_on_outlined, 'LOCATION',
+                      _infoTile(Icons.location_on_outlined, _t.bkFieldLocation.toUpperCase(),
                           location),
                     ],
 
@@ -513,9 +536,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                       const SizedBox(height: 14),
                       _thinDivider(context),
                       const SizedBox(height: 14),
-                      _sectionLabel('SERVICE'),
+                      _sectionLabel(_t.bkSectionService.toUpperCase()),
                       const SizedBox(height: 10),
-                      _infoTile(Icons.build_outlined, 'CATEGORY', profession),
+                      _infoTile(Icons.build_outlined, _t.bkFieldCategory.toUpperCase(), AppHelpers.localizedCategoryName(context, profession)),
                     ],
 
                     // ── Notes ───────────────────────────────────
@@ -523,7 +546,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                       const SizedBox(height: 14),
                       _thinDivider(context),
                       const SizedBox(height: 14),
-                      _sectionLabel('CUSTOMER NOTES'),
+                      _sectionLabel(_t.bkSectionNotes.toUpperCase()),
                       const SizedBox(height: 10),
                       _notesCard(_noteLines(note)),
                     ],
@@ -536,8 +559,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                       _infoTile(
                         Icons.info_outline_rounded,
                         cancelledBy == 'professional'
-                            ? 'CANCELLED BY PROFESSIONAL'
-                            : 'CANCELLED BY YOU',
+                            ? _t.bkCancelledByProfessional.toUpperCase()
+                            : _t.bkCancelledByYou.toUpperCase(),
                         cancelReason,
                         accent: AppColors.error,
                       ),
@@ -547,7 +570,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                     const SizedBox(height: 14),
                     _thinDivider(context),
                     const SizedBox(height: 14),
-                    _sectionLabel('BOOKING TIMELINE'),
+                    _sectionLabel(_t.bkSectionTimeline.toUpperCase()),
                     const SizedBox(height: 12),
                     isCancelledOrRejected
                         ? _cancelledTimeline(status, sColor)
@@ -583,7 +606,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     return Text(
       text,
       style: TextStyle(
-        fontSize: 11,
+        fontSize: AppFontSizes.caption,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.9,
         color: context.colors.textSecondary,
@@ -595,9 +618,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withOpacity(0.35)),
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -605,9 +628,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           Icon(icon, size: 12, color: color),
           const SizedBox(width: 4),
           Text(
-            AppHelpers.capitalize(status),
+            _statusLabel(status),
             style: TextStyle(
-                fontSize: 11.5, fontWeight: FontWeight.w700, color: color),
+                fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, color: color),
           ),
         ],
       ),
@@ -624,8 +647,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
+            color: iconColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
           child: Icon(icon, size: 16, color: iconColor),
         ),
@@ -637,7 +660,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: AppFontSizes.caption,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.6,
                   color: context.colors.textSecondary,
@@ -647,7 +670,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
               Text(
                 value,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.body,
                   fontWeight: FontWeight.w600,
                   height: 1.3,
                   color: context.colors.textPrimary,
@@ -657,7 +680,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                 Text(
                   sub,
                   style: TextStyle(
-                    fontSize: 11.5,
+                    fontSize: AppFontSizes.small,
                     fontWeight: FontWeight.w500,
                     color: context.colors.textSecondary,
                   ),
@@ -675,7 +698,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.colors.background,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -701,7 +724,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                   child: Text(
                     line,
                     style: TextStyle(
-                      fontSize: 13.5,
+                      fontSize: AppFontSizes.body,
                       height: 1.4,
                       color: context.colors.textPrimary,
                     ),
@@ -717,7 +740,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
 
   // Booked → Accepted → Completed stepper
   Widget _stepperTimeline(String status, String bookedAt, Color sColor) {
-    const stages = ['Booked', 'Accepted', 'Completed'];
+    final stages = [_t.bkStatusBooked, _t.bkStatusAccepted, _t.bkStatusCompleted];
     int current;
     switch (status) {
       case 'accepted':
@@ -781,7 +804,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                 stages[stageIndex],
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: AppFontSizes.caption,
                   fontWeight: FontWeight.w600,
                   color: (isDone || isActive)
                       ? context.colors.textPrimary
@@ -798,7 +821,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                     _prettyBookedAt(bookedAt),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 9.5,
+                      fontSize: AppFontSizes.caption,
                       color: context.colors.textSecondary,
                     ),
                   ),
@@ -817,7 +840,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color: sColor.withOpacity(0.12),
+            color: sColor.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
           child: Icon(
@@ -832,10 +855,10 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
         Expanded(
           child: Text(
             status == 'rejected'
-                ? 'Booking was rejected'
-                : 'Booking was cancelled',
+                ? _t.bkWasRejected
+                : _t.bkWasCancelled,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: AppFontSizes.secondary,
               fontWeight: FontWeight.w600,
               color: context.colors.textPrimary,
             ),
@@ -855,9 +878,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           icon: const Icon(Icons.cancel_outlined,
               size: 17, color: AppColors.error),
           label: Text(
-            AppLocalizations.of(context)!.professionalCancelBooking,
+            AppLocalizations.of(context).professionalCancelBooking,
             style: const TextStyle(
-              fontSize: 14.5,
+              fontSize: AppFontSizes.body,
               fontWeight: FontWeight.w600,
               color: AppColors.error,
             ),
@@ -865,7 +888,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: AppColors.error, width: 1.4),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
           ),
         ),
       );
@@ -879,7 +902,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
         onPressed: () async {
           final proId = int.parse(booking['professional'].toString());
           final proName =
-              booking['professional_name']?.toString() ?? 'Professional';
+              booking['professional_name']?.toString() ?? _t.professional;
           final bookId = (booking['id'] as num).toInt();
           final result = await Navigator.push(
             context,
@@ -895,18 +918,18 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
         },
         icon: const Icon(Icons.star_rounded, size: 17, color: Colors.white),
         label: Text(
-          AppLocalizations.of(context)!.writeReview,
+          AppLocalizations.of(context).writeReview,
           style: const TextStyle(
-            fontSize: 14.5,
+            fontSize: AppFontSizes.body,
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFF59E0B),
+          backgroundColor: AppColors.warningAmber,
           elevation: 0,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
         ),
       ),
     );
@@ -915,12 +938,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   // ── Cancel with Reason Dialog ──────────────────────────────
   Future<void> _confirmCancel(int bookingId) async {
     final reasonCtrl = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: Row(
           children: [
             const Icon(Icons.cancel_outlined,
@@ -928,9 +952,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                '${AppLocalizations.of(context)!.professionalCancelBooking}?',
+                '${AppLocalizations.of(context).professionalCancelBooking}?',
                 style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w700),
+                    fontSize: AppFontSizes.title, fontWeight: FontWeight.w700),
               ),
             ),
           ],
@@ -940,43 +964,43 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context)!
+              AppLocalizations.of(context)
                   .professionalSureWantCancelBooking,
-              style: const TextStyle(
-                  fontSize: 13, color: Color(0xFF6B7280)),
+              style: TextStyle(
+                  fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
             ),
             const SizedBox(height: 14),
             Text(
-              AppLocalizations.of(context)!
+              AppLocalizations.of(context)
                   .professionalReasonCancellingOptional,
-              style: const TextStyle(
-                fontSize: 12,
+              style: TextStyle(
+                fontSize: AppFontSizes.small,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF374151),
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: reasonCtrl,
               maxLines: 3,
-              style: const TextStyle(fontSize: 13),
+              style: const TextStyle(fontSize: AppFontSizes.secondary),
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!
+                hintText: AppLocalizations.of(context)
                     .bookingsEGScheduleChangedNoLonger,
-                hintStyle: const TextStyle(
-                    fontSize: 12, color: Color(0xFF9CA3AF)),
+                hintStyle: TextStyle(
+                    fontSize: AppFontSizes.small, color: context.colors.textSecondary),
                 filled: true,
-                fillColor: const Color(0xFFF9FAFB),
+                fillColor: isDark ? context.colors.background : AppColors.tintGray,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  borderSide: BorderSide(color: context.colors.divider),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  borderSide: BorderSide(color: context.colors.divider),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   borderSide: const BorderSide(
                       color: AppColors.error, width: 1.5),
                 ),
@@ -988,19 +1012,19 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              AppLocalizations.of(context)!.magazineGoBack,
-              style: const TextStyle(color: Color(0xFF9CA3AF)),
+              AppLocalizations.of(context).magazineGoBack,
+              style: TextStyle(color: context.colors.textSecondary),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
             ),
             onPressed: () => Navigator.pop(context, true),
             child: Text(
-              AppLocalizations.of(context)!.professionalYesCancelIt,
+              AppLocalizations.of(context).professionalYesCancelIt,
               style: const TextStyle(color: Colors.white),
             ),
           ),
@@ -1015,11 +1039,11 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
     if (!mounted) return;
 
     if (result['success']) {
-      AppHelpers.showSuccess(context, 'Booking cancelled');
+      AppHelpers.showSuccess(context, _t.bkCancelledSuccess);
       _loadBookings();
     } else {
       AppHelpers.showError(
-          context, result['message'] ?? 'Could not cancel, please try again');
+          context, result['message'] ?? _t.bkCancelFailed);
     }
   }
 }

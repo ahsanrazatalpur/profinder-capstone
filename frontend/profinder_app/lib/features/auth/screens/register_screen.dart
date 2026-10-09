@@ -253,7 +253,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     // Professional must select category
     if (_selectedRole == 'professional' && _selectedCategory == null) {
       _shakeController.forward(from: 0);
-      AppHelpers.showError(context, AppLocalizations.of(context)!.registerCategoryRequired);
+      AppHelpers.showError(context, AppLocalizations.of(context).registerCategoryRequired);
       return;
     }
 
@@ -284,7 +284,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     } else {
       AppHelpers.showError(
         context,
-        auth.errorMessage ?? AppLocalizations.of(context)!.registerServerError,
+        auth.errorMessage ?? AppLocalizations.of(context).registerServerError,
       );
     }
   }
@@ -322,7 +322,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         Navigator.pushNamedAndRemoveUntil(context, '/admin', (route) => false);
         break;
       default:
-        AppHelpers.showError(context, AppLocalizations.of(context)!.unknownRoleError);
+        AppHelpers.showError(context, AppLocalizations.of(context).unknownRoleError);
     }
   }
 
@@ -361,11 +361,12 @@ class _RegisterScreenState extends State<RegisterScreen>
         if (!mounted) return;
         AppHelpers.showError(
           context,
-          AppLocalizations.of(context)!.registerServerError,
+          AppLocalizations.of(context).registerServerError,
         );
         return;
       }
 
+      if (!mounted) return;
       final auth = context.read<AuthProvider>();
       final success = await auth.loginWithGoogle(
         idToken: idToken,
@@ -379,7 +380,7 @@ class _RegisterScreenState extends State<RegisterScreen>
       } else {
         AppHelpers.showError(
           context,
-          auth.errorMessage ?? AppLocalizations.of(context)!.registerServerError,
+          auth.errorMessage ?? AppLocalizations.of(context).registerServerError,
         );
       }
     } catch (e) {
@@ -387,7 +388,7 @@ class _RegisterScreenState extends State<RegisterScreen>
       // TEMP DEBUG — remove once Google Sign-In is confirmed working.
       // ignore: avoid_print
       print('[GOOGLE SIGN-IN DEBUG] $e');
-      AppHelpers.showError(context, AppLocalizations.of(context)!.registerServerError);
+      AppHelpers.showError(context, AppLocalizations.of(context).registerServerError);
     }
   }
 
@@ -423,9 +424,9 @@ class _RegisterScreenState extends State<RegisterScreen>
             const Icon(Icons.check_circle, size: 14, color: AppColors.success),
             const SizedBox(width: 6),
             Text(
-              AppLocalizations.of(context)!.emailAvailableLabel,
+              AppLocalizations.of(context).emailAvailableLabel,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: AppFontSizes.small,
                 fontWeight: FontWeight.w600,
                 color: AppColors.success,
               ),
@@ -443,9 +444,9 @@ class _RegisterScreenState extends State<RegisterScreen>
             const SizedBox(width: 6),
             Expanded(
               child: Text(
-                AppLocalizations.of(context)!.emailTakenLabel,
+                AppLocalizations.of(context).emailTakenLabel,
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: AppFontSizes.small,
                   fontWeight: FontWeight.w600,
                   color: AppColors.error,
                 ),
@@ -466,9 +467,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                 ),
               ),
               child: Text(
-                AppLocalizations.of(context)!.signInInsteadLabel,
+                AppLocalizations.of(context).signInInsteadLabel,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppFontSizes.small,
                   fontWeight: FontWeight.w700,
                   color: context.colors.primary,
                 ),
@@ -515,12 +516,12 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                     // ── Heading ───────────────────────────────
                     Text(
-                      AppLocalizations.of(context)!.registerTitle,
+                      AppLocalizations.of(context).registerTitle,
                       style: context.textStyles.h2,
                     ),
                     const SizedBox(height: AppSizes.xs),
                     Text(
-                      AppLocalizations.of(context)!.registerSubtitle,
+                      AppLocalizations.of(context).registerSubtitle,
                       style: context.textStyles.bodyMedium,
                     ),
 
@@ -528,7 +529,7 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                     // ── Account Type ───────────────────────────
                     Text(
-                      AppLocalizations.of(context)!.accountTypeLabel,
+                      AppLocalizations.of(context).accountTypeLabel,
                       style: AppTextStyles.label,
                     ),
                     const SizedBox(height: AppSizes.sm),
@@ -538,7 +539,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         children: [
                           AccountTypeCard(
                             title:       AppStrings.customer,
-                            description: AppLocalizations.of(context)!.customerAccountDescription,
+                            description: AppLocalizations.of(context).customerAccountDescription,
                             icon:        Icons.person_outline,
                             accentColor: AppColors.customerColor,
                             isSelected:  _selectedRole == 'customer',
@@ -550,7 +551,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           const SizedBox(width: AppSizes.sm),
                           AccountTypeCard(
                             title:       AppStrings.professional,
-                            description: AppLocalizations.of(context)!.professionalAccountDescription,
+                            description: AppLocalizations.of(context).professionalAccountDescription,
                             icon:        Icons.work_outline,
                             accentColor: AppColors.professionalColor,
                             isSelected:  _selectedRole == 'professional',
@@ -573,11 +574,11 @@ class _RegisterScreenState extends State<RegisterScreen>
                       onFieldSubmitted: (_) =>
                           FocusScope.of(context).requestFocus(_emailFocusNode),
                       decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context)!.fullNameLabel,
-                        hintText: AppLocalizations.of(context)!.fullNameHint,
+                        labelText: AppLocalizations.of(context).fullNameLabel,
+                        hintText: AppLocalizations.of(context).fullNameHint,
                         prefixIcon: const Icon(Icons.person_outline),
                       ),
-                      validator: AppValidators.name,
+                      validator: (v) => AppValidators.name(v, AppLocalizations.of(context)),
                     ),
 
                     const SizedBox(height: AppSizes.sm),
@@ -595,11 +596,11 @@ class _RegisterScreenState extends State<RegisterScreen>
                           FocusScope.of(context).requestFocus(_passwordFocusNode),
                       decoration: InputDecoration(
                         labelText:  AppStrings.email,
-                        hintText:   AppLocalizations.of(context)!.emailHint,
+                        hintText:   AppLocalizations.of(context).emailHint,
                         prefixIcon: const Icon(Icons.email_outlined),
                         suffixIcon: _emailSuffixIcon(),
                       ),
-                      validator: AppValidators.email,
+                      validator: (v) => AppValidators.email(v, AppLocalizations.of(context)),
                     ),
                     _buildEmailHint(),
 
@@ -613,20 +614,20 @@ class _RegisterScreenState extends State<RegisterScreen>
                       itemLeading: (c) {
                         final flag = CountryFlags.flagFor(c['name'] as String);
                         return flag != null
-                            ? Text(flag, style: const TextStyle(fontSize: 20))
+                            ? Text(flag, style: const TextStyle(fontSize: AppFontSizes.h3))
                             : const Icon(Icons.public, size: 20);
                       },
-                      label:      AppLocalizations.of(context)!.countryLabel,
-                      hint:       AppLocalizations.of(context)!.countryHint,
+                      label:      AppLocalizations.of(context).countryLabel,
+                      hint:       AppLocalizations.of(context).countryHint,
                       prefixIcon: Icons.public_outlined,
                       loading:    _loadingCountries,
-                      searchHint: AppLocalizations.of(context)!.countrySearchHint,
-                      emptyMessage: AppLocalizations.of(context)!.countryEmptyMessage,
+                      searchHint: AppLocalizations.of(context).countrySearchHint,
+                      emptyMessage: AppLocalizations.of(context).countryEmptyMessage,
                       onChanged: (country) {
                         if (country != null) _onCountrySelected(country);
                       },
                       validator: (value) =>
-                          value == null ? AppLocalizations.of(context)!.countryRequiredError : null,
+                          value == null ? AppLocalizations.of(context).countryRequiredError : null,
                     ),
 
                     const SizedBox(height: AppSizes.sm),
@@ -637,17 +638,17 @@ class _RegisterScreenState extends State<RegisterScreen>
                       value:      _selectedCity,
                       items:      List<Map<String, dynamic>>.from(_cities),
                       itemLabel:  (c) => c['name'] as String,
-                      label:      AppLocalizations.of(context)!.cityLabel,
-                      hint:       AppLocalizations.of(context)!.cityHint,
+                      label:      AppLocalizations.of(context).cityLabel,
+                      hint:       AppLocalizations.of(context).cityHint,
                       prefixIcon: Icons.location_city_outlined,
                       enabled:    _selectedCountry != null,
                       loading:    _loadingCities,
-                      disabledHint: AppLocalizations.of(context)!.cityDisabledHint,
-                      searchHint: AppLocalizations.of(context)!.citySearchHint,
-                      emptyMessage: AppLocalizations.of(context)!.cityEmptyMessage,
+                      disabledHint: AppLocalizations.of(context).cityDisabledHint,
+                      searchHint: AppLocalizations.of(context).citySearchHint,
+                      emptyMessage: AppLocalizations.of(context).cityEmptyMessage,
                       onChanged: (city) => setState(() => _selectedCity = city),
                       validator: (value) =>
-                          value == null ? AppLocalizations.of(context)!.cityRequiredError : null,
+                          value == null ? AppLocalizations.of(context).cityRequiredError : null,
                     ),
 
                     // ── Category — only for professionals ─────
@@ -666,16 +667,16 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   value: _selectedCategory,
                                   items: List<Map<String, dynamic>>.from(_categories),
                                   itemLabel: (cat) => cat['name'] ?? '',
-                                  label:      AppLocalizations.of(context)!.professionLabel,
-                                  hint:       AppLocalizations.of(context)!.professionHint,
+                                  label:      AppLocalizations.of(context).professionLabel,
+                                  hint:       AppLocalizations.of(context).professionHint,
                                   prefixIcon: Icons.category_outlined,
-                                  searchHint: AppLocalizations.of(context)!.professionSearchHint,
-                                  emptyMessage: AppLocalizations.of(context)!.professionEmptyMessage,
+                                  searchHint: AppLocalizations.of(context).professionSearchHint,
+                                  emptyMessage: AppLocalizations.of(context).professionEmptyMessage,
                                   onChanged: (cat) =>
                                       setState(() => _selectedCategory = cat),
                                   validator: (value) {
                                     if (_selectedRole == 'professional' && value == null) {
-                                      return AppLocalizations.of(context)!.professionRequiredError;
+                                      return AppLocalizations.of(context).professionRequiredError;
                                     }
                                     return null;
                                   },
@@ -698,7 +699,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           FocusScope.of(context).requestFocus(_confirmFocusNode),
                       decoration: InputDecoration(
                         labelText:  AppStrings.password,
-                        hintText:   AppLocalizations.of(context)!.passwordHint,
+                        hintText:   AppLocalizations.of(context).passwordHint,
                         prefixIcon: const Icon(Icons.lock_outlined),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -710,7 +711,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               setState(() => _obscurePassword = !_obscurePassword),
                         ),
                       ),
-                      validator: AppValidators.password,
+                      validator: (v) => AppValidators.password(v, AppLocalizations.of(context)),
                     ),
                     if (_showCapsLockHint && _capsLockOn && _passwordFocusNode.hasFocus)
                       Padding(
@@ -721,9 +722,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                             const Icon(Icons.info_outline, size: 14, color: AppColors.warning),
                             const SizedBox(width: 6),
                             Text(
-                              AppLocalizations.of(context)!.capsLockOnHint,
+                              AppLocalizations.of(context).capsLockOnHint,
                               style: const TextStyle(
-                                fontSize: 12,
+                                fontSize: AppFontSizes.small,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.warning,
                               ),
@@ -746,7 +747,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                       onFieldSubmitted: (_) => _onRegisterPressed(),
                       decoration: InputDecoration(
                         labelText:  AppStrings.confirmPass,
-                        hintText:   AppLocalizations.of(context)!.confirmPasswordHint,
+                        hintText:   AppLocalizations.of(context).confirmPasswordHint,
                         prefixIcon: const Icon(Icons.lock_outlined),
                         suffixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -776,6 +777,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                       validator: (value) => AppValidators.confirmPassword(
                         value,
                         _passwordController.text,
+                        AppLocalizations.of(context),
                       ),
                     ),
 
@@ -789,15 +791,15 @@ class _RegisterScreenState extends State<RegisterScreen>
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           ),
                         ),
                         child: auth.isLoading
                             ? const AppButtonLoader()
                             : Text(
-                                AppLocalizations.of(context)!.registerCta,
+                                AppLocalizations.of(context).registerCta,
                                 style: const TextStyle(
-                                  fontSize: 16,
+                                  fontSize: AppFontSizes.title,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -812,22 +814,22 @@ class _RegisterScreenState extends State<RegisterScreen>
                         Expanded(
                           child: Divider(
                             color: isDark
-                                ? Colors.white.withOpacity(0.1)
-                                : Colors.grey.withOpacity(0.2),
+                                ? Colors.white.withValues(alpha: 0.1)
+                                : Colors.grey.withValues(alpha: 0.2),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm),
                           child: Text(
-                            AppLocalizations.of(context)!.orContinueWithLabel,
+                            AppLocalizations.of(context).orContinueWithLabel,
                             style: AppTextStyles.label,
                           ),
                         ),
                         Expanded(
                           child: Divider(
                             color: isDark
-                                ? Colors.white.withOpacity(0.1)
-                                : Colors.grey.withOpacity(0.2),
+                                ? Colors.white.withValues(alpha: 0.1)
+                                : Colors.grey.withValues(alpha: 0.2),
                           ),
                         ),
                       ],
@@ -842,7 +844,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                       // about the button (size, colors, border, spacing,
                       // onTap) is unchanged.
                       logo: const GoogleLogo(size: 18),
-                      label: AppLocalizations.of(context)!.googleSignInLabel,
+                      label: AppLocalizations.of(context).googleSignInLabel,
                       background: isDark ? const Color(0xFF2C2C2E) : AppColors.white,
                       textColor: context.colors.textPrimary,
                       borderColor: context.colors.divider,
@@ -865,7 +867,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             AppStrings.login,
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: AppColors.professionalColor,
+                              color: context.colors.primary,
                             ),
                           ),
                         ),

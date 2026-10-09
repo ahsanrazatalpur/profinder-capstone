@@ -1,6 +1,9 @@
 // lib/features/chat/presentation/widgets/typing_indicator.dart
 
 import 'package:flutter/material.dart';
+import '../../../../core/theme/theme_context_ext.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/theme/app_colors.dart';
 
 /// The classic 3-dot "someone is typing" bubble, left-aligned like an
 /// incoming message. Dots pulse in a staggered wave.
@@ -29,14 +32,14 @@ class _TypingIndicatorBubbleState extends State<TypingIndicatorBubble> with Sing
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.colors.surface,
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(14),
-            topRight: Radius.circular(14),
-            bottomRight: Radius.circular(14),
-            bottomLeft: Radius.circular(2),
+            topLeft: Radius.circular(AppSizes.radiusLg),
+            topRight: Radius.circular(AppSizes.radiusLg),
+            bottomRight: Radius.circular(AppSizes.radiusLg),
+            bottomLeft: Radius.circular(AppSizes.radiusTiny),
           ),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
+          border: Border.all(color: context.colors.divider),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -56,7 +59,7 @@ class _Dot extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
-      builder: (_, __) {
+      builder: (_, _) {
         final t = (controller.value + delay) % 1.0;
         final scale = 0.6 + 0.4 * (1 - (2 * t - 1).abs()); // triangle wave, 0.6 -> 1.0 -> 0.6
         return Padding(
@@ -66,7 +69,7 @@ class _Dot extends StatelessWidget {
             child: Container(
               width: 7,
               height: 7,
-              decoration: const BoxDecoration(color: Color(0xFF94A3B8), shape: BoxShape.circle),
+              decoration: const BoxDecoration(color: AppColors.slate400, shape: BoxShape.circle),
             ),
           ),
         );

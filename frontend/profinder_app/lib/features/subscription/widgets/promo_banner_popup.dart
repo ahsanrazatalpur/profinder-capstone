@@ -16,6 +16,9 @@ import '../models/promo_banner_model.dart';
 import '../screens/subscription_screen.dart';
 import '../../search/screens/search_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 const int _kSkipLockSeconds = 5;
 
@@ -39,7 +42,7 @@ class PromoBannerPopup extends StatefulWidget {
     final result = await showDialog<bool>(
       context:           context,
       barrierDismissible: false,   // lock period mein tap-outside blocked
-      barrierColor:      Colors.black.withOpacity(0.65),
+      barrierColor:      Colors.black.withValues(alpha: 0.65),
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
         insetPadding:    const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
@@ -65,13 +68,13 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
   // ── Role ke hisaab se gradient colors ──────────────────────────────────
   List<Color> get _gradientColors {
     if (widget.userRole == 'professional') {
-      return [const Color(0xFF6D28D9), const Color(0xFF4C1D95)]; // purple
+      return [const Color(0xFF6D28D9), AppColors.violet900]; // purple
     }
-    return [const Color(0xFF2563EB), const Color(0xFF1E40AF)]; // blue
+    return [AppColors.customerColor, const Color(0xFF1E40AF)]; // blue
   }
 
   Color get _accentColor =>
-      widget.userRole == 'professional' ? const Color(0xFF8B5CF6) : context.colors.primary;
+      widget.userRole == 'professional' ? AppColors.violet : context.colors.primary;
 
   @override
   void initState() {
@@ -185,10 +188,10 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       decoration: BoxDecoration(
         color:        Colors.white,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(AppSizes.radius28),
         boxShadow: [
           BoxShadow(
-            color:      Colors.black.withOpacity(0.25),
+            color:      Colors.black.withValues(alpha: 0.25),
             blurRadius: 40,
             spreadRadius: 0,
             offset:     const Offset(0, 8),
@@ -196,7 +199,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(AppSizes.radius28),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -214,7 +217,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                     style: const TextStyle(
                       fontSize:      22,
                       fontWeight:    FontWeight.w800,
-                      color:         Color(0xFF0F172A),
+                      color:         AppColors.background,
                       letterSpacing: -0.5,
                       height:        1.2,
                     ),
@@ -226,8 +229,8 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                   Text(
                     widget.banner.description,
                     style: const TextStyle(
-                      fontSize: 14,
-                      color:    Color(0xFF64748B),
+                      fontSize: AppFontSizes.body,
+                      color:    AppColors.slate500,
                       height:   1.6,
                     ),
                     textAlign: TextAlign.center,
@@ -263,9 +266,9 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
             imageUrl:    widget.banner.imageUrl.trim(),
             fit:         BoxFit.cover,
             // Jab tak load ho raha — shimmer placeholder
-            placeholder: (_, __) => _buildShimmer(),
+            placeholder: (_, _) => _buildShimmer(),
             // Load fail ho — gradient fallback
-            errorWidget: (_, __, ___) => _buildGradientHeader(),
+            errorWidget: (_, _, _) => _buildGradientHeader(),
           ),
           // Gradient overlay — text readability ke liye
           DecoratedBox(
@@ -275,7 +278,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                 end:    Alignment.bottomCenter,
                 colors: [
                   Colors.transparent,
-                  Colors.black.withOpacity(0.15),
+                  Colors.black.withValues(alpha: 0.15),
                 ],
               ),
             ),
@@ -292,7 +295,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
       height: 220,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFFE2E8F0), Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
+          colors: [AppColors.slate200, AppColors.slate50, AppColors.slate200],
         ),
       ),
     );
@@ -321,9 +324,9 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                   ),
@@ -336,14 +339,14 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                   decoration: BoxDecoration(
-                    color:        Colors.white.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
+                    color:        Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                   ),
-                  child: const Text(
-                    'ProFinder Premium',
+                  child: Text(
+                    AppLocalizations.of(context).subscriptionProfinderPremium,
                     style: TextStyle(
                       color:         Colors.white,
-                      fontSize:      12,
+                      fontSize: AppFontSizes.small,
                       fontWeight:    FontWeight.w700,
                       letterSpacing: 1.2,
                     ),
@@ -367,17 +370,17 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
-            color:        Colors.black.withOpacity(0.55),
-            borderRadius: BorderRadius.circular(20),
+            color:        Colors.black.withValues(alpha: 0.55),
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Skip',
+                AppLocalizations.of(context).promoSkip,
                 style: TextStyle(
                   color:      Colors.white,
-                  fontSize:   12,
+                  fontSize: AppFontSizes.small,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -394,7 +397,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
       width:  38,
       height: 38,
       decoration: BoxDecoration(
-        color:  Colors.black.withOpacity(0.55),
+        color:  Colors.black.withValues(alpha: 0.55),
         shape:  BoxShape.circle,
       ),
       child: Center(
@@ -402,7 +405,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
           '$_secondsLeft',
           style: const TextStyle(
             color:      Colors.white,
-            fontSize:   15,
+            fontSize: AppFontSizes.input,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -423,7 +426,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
           elevation:       0,
           shadowColor:     Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           ),
         ),
         child: Row(
@@ -432,9 +435,11 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
             const Icon(Icons.bolt_rounded, size: 20),
             const SizedBox(width: 8),
             Text(
-              widget.banner.buttonText,
+              widget.banner.buttonText.trim().isEmpty
+                  ? AppLocalizations.of(context).promoGetPremium
+                  : widget.banner.buttonText,
               style: const TextStyle(
-                fontSize:      16,
+                fontSize: AppFontSizes.title,
                 fontWeight:    FontWeight.w800,
                 letterSpacing: 0.3,
               ),
@@ -456,10 +461,10 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              _canSkip ? 'No thanks, maybe later' : 'Please wait $_secondsLeft seconds...',
+              _canSkip ? AppLocalizations.of(context).subscriptionNoThanksMaybeLater : AppLocalizations.of(context).subscriptionPleaseWaitSeconds('$_secondsLeft'),
               style: const TextStyle(
-                fontSize:   13,
-                color:      Color(0xFF94A3B8),
+                fontSize: AppFontSizes.secondary,
+                color:      AppColors.slate400,
                 fontWeight: FontWeight.w500,
               ),
             ),

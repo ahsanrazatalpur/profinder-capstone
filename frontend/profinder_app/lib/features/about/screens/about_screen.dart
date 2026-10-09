@@ -49,7 +49,7 @@ class _AboutScreenState extends State<AboutScreen> {
       if (result['success'] == true) {
         _data = result['data'] as AboutPageData;
       } else {
-        _error = result['error'] as String? ?? AppLocalizations.of(context)!.aboutLoadError;
+        _error = result['error'] as String? ?? AppLocalizations.of(context).aboutLoadError;
       }
     });
   }
@@ -63,7 +63,7 @@ class _AboutScreenState extends State<AboutScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.aboutTitle,
+        title: AppLocalizations.of(context).aboutTitle,
         icon: Icons.info_outline_rounded,
       ),
       body: _buildBody(isDark, isTablet),
@@ -86,7 +86,7 @@ class _AboutScreenState extends State<AboutScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              AppLocalizations.of(context)!.aboutLoadingText,
+              AppLocalizations.of(context).aboutLoadingText,
               style: TextStyle(
                 fontSize: 14,
                 color: context.colors.textSecondary,
@@ -127,7 +127,7 @@ class _AboutScreenState extends State<AboutScreen> {
               height: 80,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
+                    ? Colors.white.withValues(alpha: 0.05)
                     : const Color(0xFFF3F4F6),
                 shape: BoxShape.circle,
               ),
@@ -139,7 +139,7 @@ class _AboutScreenState extends State<AboutScreen> {
             ),
             const SizedBox(height: 18),
             Text(
-              _error ?? AppLocalizations.of(context)!.aboutLoadError,
+              _error ?? AppLocalizations.of(context).aboutLoadError,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: isTablet ? 16 : 14,
@@ -153,7 +153,7 @@ class _AboutScreenState extends State<AboutScreen> {
               onPressed: _load,
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: Text(
-                AppLocalizations.of(context)!.tryAgainCta,
+                AppLocalizations.of(context).tryAgainCta,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.3,
@@ -187,7 +187,7 @@ class _AboutScreenState extends State<AboutScreen> {
               height: 88,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
+                    ? Colors.white.withValues(alpha: 0.05)
                     : const Color(0xFFF3F4F6),
                 shape: BoxShape.circle,
               ),
@@ -199,7 +199,7 @@ class _AboutScreenState extends State<AboutScreen> {
             ),
             const SizedBox(height: 18),
             Text(
-              AppLocalizations.of(context)!.aboutEmptyStateTitle,
+              AppLocalizations.of(context).aboutEmptyStateTitle,
               style: TextStyle(
                 fontSize: isTablet ? 18 : 16,
                 fontWeight: FontWeight.w700,
@@ -209,7 +209,7 @@ class _AboutScreenState extends State<AboutScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              AppLocalizations.of(context)!.aboutEmptyStateMessage,
+              AppLocalizations.of(context).aboutEmptyStateMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: isTablet ? 15 : 13.5,

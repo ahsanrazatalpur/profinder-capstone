@@ -20,6 +20,7 @@ import '../../domain/entities/message_status.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../../data/repositories/chat_repository_impl.dart';
 import '../../data/models/message_model.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class ChatProvider extends ChangeNotifier {
   final ChatRepository _repo;
@@ -142,7 +143,7 @@ class ChatProvider extends ChangeNotifier {
         ..addAll(page.messages);
       hasMoreHistory = page.hasMore;
     } catch (_) {
-      loadError = 'Could not load messages';
+      loadError = AppStrings.chatCouldNotLoadMessages;
     }
 
     isLoadingInitial = false;
@@ -545,8 +546,8 @@ class ChatProvider extends ChangeNotifier {
     if (_messages.isEmpty) return null;
     final last = _messages.last;
     final preview = last.isDeleted
-        ? 'This message was deleted'
-        : (last.text.isNotEmpty ? last.text : (last.hasAudio ? '🎤 Voice message' : (last.hasImage ? '📷 Photo' : '')));
+        ? AppStrings.chatMessageWasDeleted
+        : (last.text.isNotEmpty ? last.text : (last.hasAudio ? AppStrings.chatVoiceMessagePreview : (last.hasImage ? AppStrings.chatPhotoPreview : '')));
     return base.copyWith(
       lastMessage: preview,
       lastMessageAt: last.createdAt,

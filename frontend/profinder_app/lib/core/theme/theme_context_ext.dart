@@ -28,6 +28,27 @@ class AdaptiveColors {
   Color get accent         => _dark ? const Color(0xFF34D399) : const Color(0xFF10B981);
   Color get accentLight    => _dark ? const Color(0xFF064E3B) : const Color(0xFFD1FAE5);
 
+  // Warning / info box (e.g. "daily limit reached") — adaptive amber tones.
+  Color get warningBg      => _dark ? const Color(0xFF451A03) : const Color(0xFFFFFBEB);
+  Color get warningBorder  => _dark ? const Color(0xFF78350F) : const Color(0xFFFDE68A);
+  Color get warningText    => _dark ? const Color(0xFFFDE68A) : const Color(0xFF92400E);
+  Color get warningIcon    => _dark ? const Color(0xFFFBBF24) : const Color(0xFFD97706);
+  Color get warningSoft    => _dark ? const Color(0xFF451A03) : const Color(0xFFFEF3C7);
+
+  // Info box (blue)
+  Color get infoBg         => _dark ? const Color(0xFF172554) : const Color(0xFFEFF6FF);
+  Color get infoBorder     => _dark ? const Color(0xFF1E40AF) : const Color(0xFFBFDBFE);
+  Color get infoText       => _dark ? const Color(0xFF93C5FD) : const Color(0xFF1E40AF);
+
+  // Danger / error box (red)
+  Color get danger         => _dark ? const Color(0xFFF87171) : const Color(0xFFEF4444);
+  Color get dangerBg       => _dark ? const Color(0xFF450A0A) : const Color(0xFFFEF2F2);
+  Color get dangerBorder   => _dark ? const Color(0xFF7F1D1D) : const Color(0xFFFCA5A5);
+  Color get dangerText     => _dark ? const Color(0xFFFCA5A5) : const Color(0xFF991B1B);
+
+  // Success text on light tints (darker green in light mode for contrast)
+  Color get successText    => _dark ? const Color(0xFF34D399) : const Color(0xFF059669);
+
   // Text-on-white pill buttons (social login etc.) — those keep a fixed
   // white background by design, so this is deliberately NOT dark/light
   // dependent; only exists here so screens don't need a raw literal.

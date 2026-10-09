@@ -25,6 +25,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 // Responsive breakpoints for switching between a single-column list
 // (mobile) and a multi-column grid (tablet/desktop).
@@ -134,8 +136,8 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
           ],
         ),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFF1F2937),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: AppColors.gray800,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
         margin: const EdgeInsets.all(14),
       ),
     );
@@ -211,7 +213,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
               ),
               actions: [
                 TextButton(
-                  style: TextButton.styleFrom(foregroundColor: const Color(0xFF6B7280)),
+                  style: TextButton.styleFrom(foregroundColor: AppColors.grayDeep),
                   onPressed: submitting ? null : () => Navigator.pop(dialogContext),
                   child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
@@ -219,9 +221,9 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.adminColor,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.adminColor.withOpacity(0.6),
+                    disabledBackgroundColor: AppColors.adminColor.withValues(alpha: 0.6),
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                   onPressed: submitting ? null : submit,
@@ -298,7 +300,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
 
           return Dialog(
             backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420, maxHeight: 480),
               child: Padding(
@@ -310,15 +312,15 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: AppColors.adminColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        color: AppColors.adminColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       ),
                       child: const Icon(Icons.public_rounded, color: AppColors.adminColor, size: 22),
                     ),
                     const SizedBox(height: 14),
                     const Text(
                       'Which country is this city in?',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF111827)),
+                      style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900),
                     ),
                     const SizedBox(height: 14),
                     _StyledTextField(
@@ -345,7 +347,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
                                   ? const Padding(
                                       padding: EdgeInsets.symmetric(vertical: 24),
                                       child: Center(
-                                        child: Text('No countries found.', style: TextStyle(color: Color(0xFF9CA3AF))),
+                                        child: Text('No countries found.', style: TextStyle(color: AppColors.neutral400)),
                                       ),
                                     )
                                   : ListView.builder(
@@ -355,10 +357,10 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
                                         final country = filtered[i];
                                         return ListTile(
                                           contentPadding: EdgeInsets.zero,
-                                          leading: const Icon(Icons.flag_rounded, size: 18, color: Color(0xFF6B7280)),
+                                          leading: const Icon(Icons.flag_rounded, size: 18, color: AppColors.grayDeep),
                                           title: Text(
                                             country['name']?.toString() ?? '',
-                                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: AppFontSizes.body),
                                           ),
                                           onTap: () {
                                             Navigator.pop(dialogContext);
@@ -372,7 +374,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        style: TextButton.styleFrom(foregroundColor: const Color(0xFF6B7280)),
+                        style: TextButton.styleFrom(foregroundColor: AppColors.grayDeep),
                         onPressed: () => Navigator.pop(dialogContext),
                         child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
                       ),
@@ -439,7 +441,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
                 children: [
                   const Text(
                     'Enter typo/variant spellings, comma-separated.',
-                    style: TextStyle(fontSize: 12.5, color: Color(0xFF6B7280), height: 1.4),
+                    style: TextStyle(fontSize: 12.5, color: AppColors.grayDeep, height: 1.4),
                   ),
                   const SizedBox(height: 12),
                   _StyledTextField(
@@ -457,7 +459,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
               ),
               actions: [
                 TextButton(
-                  style: TextButton.styleFrom(foregroundColor: const Color(0xFF6B7280)),
+                  style: TextButton.styleFrom(foregroundColor: AppColors.grayDeep),
                   onPressed: submitting ? null : () => Navigator.pop(dialogContext),
                   child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
@@ -465,9 +467,9 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.adminColor,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.adminColor.withOpacity(0.6),
+                    disabledBackgroundColor: AppColors.adminColor.withValues(alpha: 0.6),
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                   onPressed: submitting ? null : submit,
@@ -490,7 +492,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: isNested ? 'Cities — ${widget.country['name']}' : 'All Cities',
         icon: Icons.location_city_rounded,
@@ -750,18 +752,18 @@ class _CountryGroupHeader extends StatelessWidget {
         Container(
           width: 4,
           height: 18,
-          decoration: BoxDecoration(color: AppColors.adminColor, borderRadius: BorderRadius.circular(2)),
+          decoration: BoxDecoration(color: AppColors.adminColor, borderRadius: BorderRadius.circular(AppSizes.radiusTiny)),
         ),
         const SizedBox(width: 8),
-        Text(name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF111827))),
+        Text(name, style: const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w800, color: AppColors.gray900)),
         const SizedBox(width: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(color: const Color(0xFFF3F4F6), borderRadius: BorderRadius.circular(20)),
-          child: Text('$count', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF6B7280))),
+          decoration: BoxDecoration(color: AppColors.neutral100, borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+          child: Text('$count', style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, color: AppColors.grayDeep)),
         ),
         const SizedBox(width: 12),
-        const Expanded(child: Divider(color: Color(0xFFE5E7EB))),
+        const Expanded(child: Divider(color: AppColors.neutral200)),
       ],
     );
   }
@@ -806,14 +808,14 @@ class _CityCardState extends State<_CityCard> {
         padding: const EdgeInsets.all(14),
         // Subtle lift-on-hover for desktop/web; a no-op on touch devices
         // since MouseRegion never fires enter/exit there.
-        transform: _hovered ? (Matrix4.identity()..translate(0.0, -2.0)) : Matrix4.identity(),
+        transform: _hovered ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0)) : Matrix4.identity(),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _hovered ? AppColors.adminColor.withOpacity(0.35) : const Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          border: Border.all(color: _hovered ? AppColors.adminColor.withValues(alpha: 0.35) : AppColors.neutral200),
           boxShadow: [
             BoxShadow(
-              color: _hovered ? Colors.black.withOpacity(0.08) : Colors.black.withOpacity(0.03),
+              color: _hovered ? Colors.black.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
               blurRadius: _hovered ? 16 : 6,
               offset: Offset(0, _hovered ? 6 : 2),
             ),
@@ -836,7 +838,7 @@ class _CityCardState extends State<_CityCard> {
                     children: [
                       Text(
                         c['name']?.toString() ?? '',
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF111827)),
+                        style: const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w800, color: AppColors.gray900),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -845,12 +847,12 @@ class _CityCardState extends State<_CityCard> {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.public_rounded, size: 11, color: Color(0xFF9CA3AF)),
+                            const Icon(Icons.public_rounded, size: 11, color: AppColors.neutral400),
                             const SizedBox(width: 3),
                             Flexible(
                               child: Text(
                                 c['country_name']?.toString() ?? '',
-                                style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
+                                style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -888,7 +890,7 @@ class _CityCardState extends State<_CityCard> {
                 _HoverIconButton(
                   icon: Icons.delete_outline_rounded,
                   color: AppColors.error,
-                  background: AppColors.error.withOpacity(0.08),
+                  background: AppColors.error.withValues(alpha: 0.08),
                   onPressed: () => widget.onDelete(c),
                 ),
               ],
@@ -915,14 +917,14 @@ class _StatusSwitch extends StatelessWidget {
       children: [
         Transform.scale(
           scale: 0.85,
-          child: Switch(value: isActive, activeColor: context.colors.accent, onChanged: onChanged),
+          child: Switch(value: isActive, activeThumbColor: context.colors.accent, onChanged: onChanged),
         ),
         Text(
           isActive ? 'Active' : 'Coming soon',
           style: TextStyle(
             fontSize: 9.5,
             fontWeight: FontWeight.w600,
-            color: isActive ? context.colors.accent : const Color(0xFF9CA3AF),
+            color: isActive ? context.colors.accent : AppColors.neutral400,
           ),
         ),
       ],
@@ -939,13 +941,13 @@ class _StatChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(color: const Color(0xFFF3F4F6), borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(color: AppColors.neutral100, borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: const Color(0xFF6B7280)),
+          Icon(icon, size: 12, color: AppColors.grayDeep),
           const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: Color(0xFF6B7280))),
+          Text(label, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.grayDeep)),
         ],
       ),
     );
@@ -978,9 +980,9 @@ class _HoverOutlinedButtonState extends State<_HoverOutlinedButton> {
           onPressed: widget.onPressed,
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.adminColor,
-            backgroundColor: _hovered ? AppColors.adminColor.withOpacity(0.06) : Colors.transparent,
-            side: BorderSide(color: AppColors.adminColor.withOpacity(_hovered ? 0.6 : 0.35)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            backgroundColor: _hovered ? AppColors.adminColor.withValues(alpha: 0.06) : Colors.transparent,
+            side: BorderSide(color: AppColors.adminColor.withValues(alpha: _hovered ? 0.6 : 0.35)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
           ),
           icon: Icon(widget.icon, size: 15),
           label: Text(widget.label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
@@ -1009,7 +1011,7 @@ class _HoverIconButtonState extends State<_HoverIconButton> {
   @override
   Widget build(BuildContext context) {
     final baseColor = widget.color ?? Colors.white;
-    final baseBg = widget.background ?? Colors.white.withOpacity(0.16);
+    final baseBg = widget.background ?? Colors.white.withValues(alpha: 0.16);
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -1018,7 +1020,7 @@ class _HoverIconButtonState extends State<_HoverIconButton> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: _hovered ? baseBg.withOpacity((baseBg.opacity + 0.10).clamp(0.0, 1.0)) : baseBg,
+          color: _hovered ? baseBg.withValues(alpha: (baseBg.a + 0.10).clamp(0.0, 1.0)) : baseBg,
           borderRadius: BorderRadius.circular(11),
         ),
         child: IconButton(
@@ -1059,15 +1061,15 @@ class _StyledTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         filled: true,
-        fillColor: const Color(0xFFF9FAFB),
+        fillColor: AppColors.tintGray,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+          borderSide: const BorderSide(color: AppColors.neutral200),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: const BorderSide(color: AppColors.adminColor, width: 1.4),
         ),
       ),
@@ -1087,9 +1089,9 @@ class _InlineFormError extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.error.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.error.withOpacity(0.25)),
+        color: AppColors.error.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.25)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1099,7 +1101,7 @@ class _InlineFormError extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.error),
+              style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: AppColors.error),
             ),
           ),
         ],
@@ -1127,15 +1129,15 @@ class _StyledDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      // This screen's text/fill colors (e.g. Color(0xFF111827) titles on a
-      // Color(0xFFF9FAFB) field) are hardcoded for a light surface. Material
+      // This screen's text/fill colors (e.g. AppColors.gray900 titles on a
+      // AppColors.tintGray field) are hardcoded for a light surface. Material
       // 3's Dialog defaults its background to Theme.of(context).colorScheme
       // .surface, which is a dark near-black slate in this app's dark theme
       // — that combination made the dialog render as an unreadable black
       // box in dark mode. Forcing white here keeps it legible regardless of
       // the active app theme.
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420),
         child: Padding(
@@ -1146,11 +1148,11 @@ class _StyledDialog extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: iconColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: iconColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                 child: Icon(icon, color: iconColor, size: 22),
               ),
               const SizedBox(height: 14),
-              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF111827))),
+              Text(title, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900)),
               const SizedBox(height: 14),
               content,
               const SizedBox(height: 20),
@@ -1181,16 +1183,16 @@ class _EmptyState extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(20),
-                  decoration: const BoxDecoration(color: Color(0xFFF3F4F6), shape: BoxShape.circle),
+                  decoration: const BoxDecoration(color: AppColors.neutral100, shape: BoxShape.circle),
                   child: Icon(Icons.location_city_rounded, size: 44, color: Colors.grey.shade400),
                 ),
                 const SizedBox(height: 14),
                 const Text(
                   'No cities added yet',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF374151)),
+                  style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600, color: AppColors.gray700),
                 ),
                 const SizedBox(height: 4),
-                const Text('Tap "Add City" to get started', style: TextStyle(fontSize: 12.5, color: Color(0xFF9CA3AF))),
+                const Text('Tap "Add City" to get started', style: TextStyle(fontSize: 12.5, color: AppColors.neutral400)),
               ],
             ),
           ),
@@ -1213,11 +1215,11 @@ class _ErrorState extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(color: AppColors.error.withOpacity(0.08), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.08), shape: BoxShape.circle),
             child: const Icon(Icons.error_outline_rounded, size: 40, color: AppColors.error),
           ),
           const SizedBox(height: 14),
-          const Text('Failed to load cities', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
+          const Text('Failed to load cities', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray900)),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: onRetry,
@@ -1228,7 +1230,7 @@ class _ErrorState extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             ),
           ),
         ],

@@ -1,5 +1,7 @@
 // lib/features/professional/screens/professional_wallet_screen.dart
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../../core/theme/app_colors.dart';
@@ -10,6 +12,7 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../shared/widgets/cta_banner.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../services/content_localizer.dart';
 
 class ProfessionalWalletScreen extends StatefulWidget {
   const ProfessionalWalletScreen({super.key});
@@ -43,7 +46,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, AppLocalizations.of(context)!.loadWalletError);
+      AppHelpers.showError(context, AppLocalizations.of(context).loadWalletError);
     }
   }
 
@@ -63,7 +66,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet))),
       builder: (sheetContext) => StatefulBuilder(
         builder: (sheetContext, setSheetState) => Padding(
           padding: EdgeInsets.only(
@@ -75,43 +78,43 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppLocalizations.of(context)!.withdrawTitle,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                AppLocalizations.of(context).withdrawTitle,
+                style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
               ),
               const SizedBox(height: 6),
               Text(
-                AppLocalizations.of(context)!.availableBalanceLabel(available.toStringAsFixed(2)),
-                style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                AppLocalizations.of(context).availableBalanceLabel(available.toStringAsFixed(2)),
+                style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: AppFontSizes.title),
                 decoration: InputDecoration(
                   prefixText: '\$ ',
-                  hintText: AppLocalizations.of(context)!.enterAmountHint,
+                  hintText: AppLocalizations.of(context).enterAmountHint,
                   errorText: errorText,
                   filled: true,
                   fillColor: context.colors.background,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     borderSide: BorderSide(color: context.colors.divider),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     borderSide: BorderSide(color: context.colors.divider),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5),
                   ),
                 ),
               ),
               const SizedBox(height: 6),
               Text(
-                AppLocalizations.of(context)!.minWithdrawalLabel(minAmount.toStringAsFixed(0)),
-                style: TextStyle(fontSize: 11, color: context.colors.textSecondary),
+                AppLocalizations.of(context).minWithdrawalLabel(minAmount.toStringAsFixed(0)),
+                style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary),
               ),
               const SizedBox(height: 18),
               SizedBox(
@@ -120,27 +123,27 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
                   onPressed: _isRequesting ? null : () async {
                     final amount = double.tryParse(amountController.text.trim());
                     if (amount == null || amount <= 0) {
-                      setSheetState(() => errorText = AppLocalizations.of(context)!.validAmountError);
+                      setSheetState(() => errorText = AppLocalizations.of(context).validAmountError);
                       return;
                     }
                     if (amount < minAmount) {
-                      setSheetState(() => errorText = AppLocalizations.of(context)!.minAmountError(minAmount.toStringAsFixed(0)));
+                      setSheetState(() => errorText = AppLocalizations.of(context).minAmountError(minAmount.toStringAsFixed(0)));
                       return;
                     }
                     if (amount > available) {
-                      setSheetState(() => errorText = AppLocalizations.of(context)!.exceedsBalanceError);
+                      setSheetState(() => errorText = AppLocalizations.of(context).exceedsBalanceError);
                       return;
                     }
                     setSheetState(() { errorText = null; });
                     setState(() => _isRequesting = true);
                     try {
                       await _api.post(AppConstants.withdrawals, {'amount': amount});
-                      if (!mounted) return;
+                      if (!mounted || !sheetContext.mounted) return;
                       Navigator.pop(sheetContext);
-                      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.withdrawSuccess);
+                      AppHelpers.showSuccess(context, AppLocalizations.of(context).withdrawSuccess);
                       _loadWallet();
                     } catch (e) {
-                      String msg = AppLocalizations.of(context)!.withdrawErrorDefault;
+                      String msg = AppLocalizations.of(context).withdrawErrorDefault;
                       if (e is DioException) {
                         final data = e.response?.data;
                         if (data is Map && data['error'] != null) msg = data['error'].toString();
@@ -154,11 +157,11 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
                     backgroundColor: context.colors.accent,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                   ),
                   child: _isRequesting
                       ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : Text(AppLocalizations.of(context)!.requestWithdrawCta, style: const TextStyle(fontWeight: FontWeight.w700)),
+                      : Text(AppLocalizations.of(context).requestWithdrawCta, style: const TextStyle(fontWeight: FontWeight.w700)),
                 ),
               ),
             ],
@@ -172,19 +175,19 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: Text(
-          AppLocalizations.of(context)!.bankDetailsRequiredTitle,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          AppLocalizations.of(context).bankDetailsRequiredTitle,
+          style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700),
         ),
         content: Text(
-          AppLocalizations.of(context)!.bankDetailsRequiredMessage,
-          style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+          AppLocalizations.of(context).bankDetailsRequiredMessage,
+          style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.okCta),
+            child: Text(AppLocalizations.of(context).okCta),
           ),
         ],
       ),
@@ -199,7 +202,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.walletTitle,
+        title: AppLocalizations.of(context).walletTitle,
         icon: Icons.account_balance_wallet_rounded,
       ),
       body: _isLoading
@@ -227,7 +230,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
                   const SizedBox(height: 12),
                   _buildStatsRow(),
                   const SizedBox(height: 20),
-                  _buildSectionHeader(AppLocalizations.of(context)!.transactionHistoryTitle),
+                  _buildSectionHeader(AppLocalizations.of(context).transactionHistoryTitle),
                   const SizedBox(height: 10),
                   _buildTransactionList(),
                   const SizedBox(height: 32),
@@ -244,19 +247,19 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
   Widget _buildAddBankBanner(bool isDark) {
     return CtaBanner(
       isDark: isDark,
-      title: AppLocalizations.of(context)!.addBankBannerTitle,
-      subtitle: AppLocalizations.of(context)!.addBankBannerSubtitle,
-      ctaLabel: AppLocalizations.of(context)!.addBankCta,
+      title: AppLocalizations.of(context).addBankBannerTitle,
+      subtitle: AppLocalizations.of(context).addBankBannerSubtitle,
+      ctaLabel: AppLocalizations.of(context).addBankCta,
       emoji: '🏦',
-      accentStart: const Color(0xFF2DD4BF),
-      accentEnd: const Color(0xFF14B8A6),
+      accentStart: AppColors.tealLight,
+      accentEnd: AppColors.teal,
       onTap: _showAddBankNote,
     );
   }
 
   Widget _buildSectionHeader(String title) => Text(
         title,
-        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+        style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
       );
 
   // ── Available Balance — hero card, Withdraw CTA seedha yahin ──────
@@ -271,33 +274,33 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
           clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF10B981), Color(0xFF059669)],
+          colors: [AppColors.emerald, AppColors.successDeep],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF10B981).withOpacity(0.3),
+            color: AppColors.emerald.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Stack(children: [
-          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)))),
-          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
+          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.10)))),
+          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.08)))),
           Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppLocalizations.of(context)!.availableBalanceTitle,
-            style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.85), fontWeight: FontWeight.w600),
+            AppLocalizations.of(context).availableBalanceTitle,
+            style: TextStyle(fontSize: AppFontSizes.secondary, color: Colors.white.withValues(alpha: 0.85), fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 6),
           Text(
             '\$${available.toStringAsFixed(2)}',
-            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white),
+            style: const TextStyle(fontSize: AppFontSizes.h1, fontWeight: FontWeight.w800, color: Colors.white),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -305,12 +308,12 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
             child: ElevatedButton.icon(
               onPressed: _showWithdrawSheet,
               icon: const Icon(Icons.account_balance_wallet_outlined, size: 18),
-              label: Text(AppLocalizations.of(context)!.withdrawCta, style: const TextStyle(fontWeight: FontWeight.w700)),
+              label: Text(AppLocalizations.of(context).withdrawCta, style: const TextStyle(fontWeight: FontWeight.w700)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
-                foregroundColor: const Color(0xFF059669),
+                foregroundColor: AppColors.successDeep,
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
               ),
             ),
           ),
@@ -327,11 +330,11 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
 
     return Row(
       children: [
-        Expanded(child: _miniStat(AppLocalizations.of(context)!.totalEarnedLabel, totalEarned, Icons.savings_outlined, context.colors.primary)),
+        Expanded(child: _miniStat(AppLocalizations.of(context).totalEarnedLabel, totalEarned, Icons.savings_outlined, context.colors.primary)),
         const SizedBox(width: 10),
-        Expanded(child: _miniStat(AppLocalizations.of(context)!.withdrawnLabel, totalWithdrawn, Icons.check_circle_outline_rounded, context.colors.accent)),
+        Expanded(child: _miniStat(AppLocalizations.of(context).withdrawnLabel, totalWithdrawn, Icons.check_circle_outline_rounded, context.colors.accent)),
         const SizedBox(width: 10),
-        Expanded(child: _miniStat(AppLocalizations.of(context)!.pendingLabel, pending, Icons.access_time_rounded, AppColors.warning)),
+        Expanded(child: _miniStat(AppLocalizations.of(context).pendingLabel, pending, Icons.access_time_rounded, AppColors.warning)),
       ],
     );
   }
@@ -341,11 +344,11 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(color: context.colors.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.04),
+            color: Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -358,10 +361,10 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
           const SizedBox(height: 6),
           Text(
             '\$${amount.toStringAsFixed(0)}',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+            style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
             overflow: TextOverflow.ellipsis,
           ),
-          Text(label, style: TextStyle(fontSize: 10, color: context.colors.textSecondary)),
+          Text(label, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
         ],
       ),
     );
@@ -377,7 +380,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           border: Border.all(color: context.colors.divider),
         ),
         child: Column(
@@ -385,8 +388,8 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
             Icon(Icons.receipt_long_outlined, color: context.colors.textDisabled, size: 32),
             const SizedBox(height: 8),
             Text(
-              AppLocalizations.of(context)!.noTransactionsLabel,
-              style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+              AppLocalizations.of(context).noTransactionsLabel,
+              style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
             ),
           ],
         ),
@@ -400,6 +403,32 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
         children: transactions.map((t) => _buildTransactionTile(t)).toList(),
       ),
     );
+  }
+
+  /// The backend sends the history label as a fixed English sentence
+  /// ("Job completed — <customer>", "Withdrawal request"). Static wording
+  /// comes from the .arb files; only the customer name is dynamic content.
+  Widget _txnLabel(String label) {
+    final t = AppLocalizations.of(context);
+    final style = TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.textPrimary);
+    const sep = ' — ';
+    if (label == 'Withdrawal request') {
+      return Text(t.walletWithdrawalRequestLabel, style: style, maxLines: 1, overflow: TextOverflow.ellipsis);
+    }
+    if (label == 'Job completed') {
+      return Text(t.walletJobCompleted, style: style, maxLines: 1, overflow: TextOverflow.ellipsis);
+    }
+    if (label.startsWith('Job completed$sep')) {
+      final name = label.substring('Job completed$sep'.length);
+      return ListenableBuilder(
+        listenable: ContentLocalizer.instance,
+        builder: (context, _) => Text(
+          t.walletJobCompletedWithName(ContentLocalizer.instance.peek(name, LocKind.name)),
+          style: style, maxLines: 1, overflow: TextOverflow.ellipsis,
+        ),
+      );
+    }
+    return Text(label, style: style, maxLines: 1, overflow: TextOverflow.ellipsis);
   }
 
   Widget _buildTransactionTile(dynamic t) {
@@ -416,15 +445,15 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
       case 'paid':
       case 'approved':
         statusColor = context.colors.accent;
-        statusLabel = AppLocalizations.of(context)!.statusCompleted;
+        statusLabel = AppLocalizations.of(context).statusCompleted;
         break;
       case 'rejected':
         statusColor = AppColors.error;
-        statusLabel = AppLocalizations.of(context)!.statusRejected;
+        statusLabel = AppLocalizations.of(context).statusRejected;
         break;
       default:
         statusColor = AppColors.warning;
-        statusLabel = AppLocalizations.of(context)!.statusPending;
+        statusLabel = AppLocalizations.of(context).statusPending;
     }
 
     return AnimatedContainer(
@@ -434,11 +463,11 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(color: context.colors.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.03),
+            color: Colors.grey.withValues(alpha: 0.03),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -449,8 +478,8 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: (isCredit ? context.colors.accent : AppColors.error).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              color: (isCredit ? context.colors.accent : AppColors.error).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
             child: Icon(
               isCredit ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
@@ -463,14 +492,9 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: context.colors.textPrimary),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                _txnLabel(label),
                 if (date.isNotEmpty)
-                  Text(date, style: TextStyle(fontSize: 11, color: context.colors.textSecondary)),
+                  Text(date, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
               ],
             ),
           ),
@@ -480,7 +504,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
               Text(
                 '${isCredit ? '+' : '-'}\$${amount.toStringAsFixed(2)}',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: AppFontSizes.secondary,
                   fontWeight: FontWeight.w700,
                   color: isCredit ? context.colors.accent : context.colors.textPrimary,
                 ),
@@ -489,12 +513,12 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
                 margin: const EdgeInsets.only(top: 2),
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(5),
+                  color: statusColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusXs),
                 ),
                 child: Text(
                   statusLabel,
-                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600, color: statusColor),
+                  style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: statusColor),
                 ),
               ),
             ],

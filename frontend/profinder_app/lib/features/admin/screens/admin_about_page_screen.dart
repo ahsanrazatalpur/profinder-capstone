@@ -21,6 +21,8 @@ import 'admin_about_seo_screen.dart';
 import 'admin_about_version_history_screen.dart';
 import 'admin_about_preview_screen.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 /// (type value, display label, icon) — mirrors the backend's
 /// SECTION_TYPE_CHOICES so "Add Section" always matches what the public
@@ -158,7 +160,6 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
   Future<void> _reorder(int oldIndex, int newIndex) async {
     final previous = List<AboutSection>.from(_sections);
     setState(() {
-      if (newIndex > oldIndex) newIndex--;
       final item = _sections.removeAt(oldIndex);
       _sections.insert(newIndex, item);
     });
@@ -181,8 +182,8 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
   Future<void> _move(int index, int delta) async {
     final target = index + delta;
     if (target < 0 || target >= _sections.length) return;
-    // ReorderableListView semantics: moving down needs newIndex + 1.
-    await _reorder(index, delta > 0 ? target + 1 : target);
+    // onReorderItem semantics: newIndex is already adjusted for the removal.
+    await _reorder(index, target);
   }
 
   Future<void> _toggleEnabled(AboutSection section) async {
@@ -239,7 +240,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
         title: const Text('Delete Section?'),
         content: Text('"${section.title.isNotEmpty ? section.title : section.sectionKey}" and all '
             'its items and translations will be permanently deleted. This cannot be undone.'),
@@ -249,7 +250,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete'),
@@ -272,7 +273,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
           title: const Text('Add Section'),
           content: SingleChildScrollView(
             child: Column(
@@ -288,7 +289,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
                   initialValue: selectedType,
                   isExpanded: true,
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   ),
@@ -322,7 +323,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
                   controller: titleController,
                   decoration: InputDecoration(
                     labelText: 'Title',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                     isDense: true,
                   ),
                 ),
@@ -331,7 +332,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
                   controller: keyController,
                   decoration: InputDecoration(
                     labelText: 'Section Key (unique, no spaces)',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                     isDense: true,
                   ),
                 ),
@@ -345,7 +346,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
                               const Icon(Icons.error_outline_rounded, size: 15, color: Colors.red),
                               const SizedBox(width: 6),
                               Expanded(
-                                child: Text(error!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                                child: Text(error!, style: const TextStyle(color: Colors.red, fontSize: AppFontSizes.small)),
                               ),
                             ],
                           ),
@@ -361,7 +362,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
             FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.adminColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
               onPressed: () async {
                 final key = keyController.text.trim().replaceAll(' ', '_').toLowerCase();
@@ -483,7 +484,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
             PopupMenuItem(
               value: 'publish',
               child: Row(children: [
-                Icon(Icons.cloud_upload_rounded, size: 18, color: Color(0xFF16A34A)),
+                Icon(Icons.cloud_upload_rounded, size: 18, color: AppColors.greenDeep),
                 SizedBox(width: 10),
                 Text('Publish'),
               ]),
@@ -507,7 +508,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
         title: const Text('Publish About Page'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -519,7 +520,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
               controller: labelController,
               decoration: InputDecoration(
                   labelText: 'Version note (optional)',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                   isDense: true),
             ),
           ],
@@ -528,7 +529,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           FilledButton(
-            style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10))),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Publish'),
           ),
@@ -541,7 +542,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(result['success'] == true ? 'About page published.' : (result['error']?.toString() ?? 'Publish failed.')),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
         margin: const EdgeInsets.all(16)));
     _load();
   }
@@ -550,7 +551,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
         title: const Text('Unpublish About Page?'),
         content: const Text('The public About page will show as not-available until you publish again. '
             'Your content and version history are kept.'),
@@ -560,7 +561,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
           FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: Colors.orange.shade700,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
               onPressed: () => Navigator.pop(ctx, true), child: const Text('Unpublish')),
         ],
@@ -572,7 +573,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(result['success'] == true ? 'About page unpublished.' : (result['error']?.toString() ?? 'Failed.')),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
         margin: const EdgeInsets.all(16)));
     _load();
   }
@@ -588,7 +589,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline_rounded, size: 44, color: context.colors.textSecondary.withOpacity(0.5)),
+              Icon(Icons.error_outline_rounded, size: 44, color: context.colors.textSecondary.withValues(alpha: 0.5)),
               const SizedBox(height: 12),
               Text(_error!, textAlign: TextAlign.center, style: TextStyle(color: context.colors.textSecondary)),
               const SizedBox(height: 14),
@@ -597,7 +598,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
                 icon: const Icon(Icons.refresh_rounded, size: 18),
                 label: const Text('Try Again'),
                 style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 ),
               ),
@@ -636,10 +637,10 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
                       filled: true,
                       fillColor: context.colors.surface,
                       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide.none),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: AppColors.adminColor.withOpacity(0.4), width: 1.5),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                        borderSide: BorderSide(color: AppColors.adminColor.withValues(alpha: 0.4), width: 1.5),
                       ),
                     ),
                   ),
@@ -685,7 +686,7 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
                               : ReorderableListView.builder(
                                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
                                   itemCount: _sections.length,
-                                  onReorder: _reorder,
+                                  onReorderItem: _reorder,
                                   // ReorderableListView.builder adds its own
                                   // default drag-handle icon automatically unless
                                   // told not to — since this list already has a
@@ -718,10 +719,10 @@ class _AdminAboutPageScreenState extends State<AdminAboutPageScreen> {
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: AppColors.adminColor.withOpacity(0.06),
+                color: AppColors.adminColor.withValues(alpha: 0.06),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.dashboard_customize_outlined, size: 40, color: context.colors.textSecondary.withOpacity(0.6)),
+              child: Icon(Icons.dashboard_customize_outlined, size: 40, color: context.colors.textSecondary.withValues(alpha: 0.6)),
             ),
             const SizedBox(height: 16),
             Text(_isSearching ? 'No sections match your search.' : 'No sections yet.',
@@ -833,13 +834,13 @@ class _AboutSectionCardState extends State<_AboutSectionCard> {
         margin: const EdgeInsets.only(bottom: 14),  // was 10 — cards felt stuck together
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
           border: Border.all(
-            color: _hovering ? AppColors.adminColor.withOpacity(0.25) : context.colors.divider,
+            color: _hovering ? AppColors.adminColor.withValues(alpha: 0.25) : context.colors.divider,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(_hovering ? 0.07 : 0.04),
+              color: Colors.black.withValues(alpha: _hovering ? 0.07 : 0.04),
               blurRadius: _hovering ? 12 : 8,
               offset: const Offset(0, 2),
             ),
@@ -849,7 +850,7 @@ class _AboutSectionCardState extends State<_AboutSectionCard> {
           children: [
             InkWell(
               onTap: () => setState(() => _expanded = !_expanded),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppSizes.radius14),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Row(
@@ -859,7 +860,7 @@ class _AboutSectionCardState extends State<_AboutSectionCard> {
                         index: widget.index,
                         child: MouseRegion(
                           cursor: SystemMouseCursors.grab,
-                          child: Icon(Icons.drag_indicator_rounded, color: context.colors.textSecondary.withOpacity(0.5)),
+                          child: Icon(Icons.drag_indicator_rounded, color: context.colors.textSecondary.withValues(alpha: 0.5)),
                         ),
                       )
                     else
@@ -872,13 +873,13 @@ class _AboutSectionCardState extends State<_AboutSectionCard> {
                         width: 22,
                         child: Text('${widget.index + 1}',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: context.colors.textSecondary)),
+                            style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w800, color: context.colors.textSecondary)),
                       ),
                       const SizedBox(width: 4),
                     ],
                     Container(
                       width: 36, height: 36,
-                      decoration: BoxDecoration(color: AppColors.adminColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                      decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radius10)),
                       child: Icon(resolveAboutIcon(s.icon, fallback: Icons.widgets_outlined), color: AppColors.adminColor, size: 18),
                     ),
                     const SizedBox(width: 10),
@@ -890,7 +891,7 @@ class _AboutSectionCardState extends State<_AboutSectionCard> {
                               maxLines: 1, overflow: TextOverflow.ellipsis,
                               style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
                           Text(sectionTypeLabel(s.sectionType),
-                              style: TextStyle(fontSize: 11, color: context.colors.textSecondary)),
+                              style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
                         ],
                       ),
                     ),
@@ -915,9 +916,9 @@ class _AboutSectionCardState extends State<_AboutSectionCard> {
                                 : context.colors.textSecondary),
                         trackColor: WidgetStateProperty.resolveWith((states) =>
                             states.contains(WidgetState.selected)
-                                ? AppColors.adminColor.withOpacity(0.22)
+                                ? AppColors.adminColor.withValues(alpha: 0.22)
                                 : context.colors.divider),
-                        trackOutlineColor: WidgetStateProperty.all(context.colors.textSecondary.withOpacity(0.4)),
+                        trackOutlineColor: WidgetStateProperty.all(context.colors.textSecondary.withValues(alpha: 0.4)),
                         // Removes the invisible ~48dp tap-target box Switch
                         // reserves around its visible track by default —
                         // without this, spacing after it never actually grows
@@ -1005,14 +1006,14 @@ class _HoverChipState extends State<_HoverChip> {
         color: Colors.transparent,
         child: InkWell(
           onTap: widget.onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 140),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
             decoration: BoxDecoration(
-              color: widget.color.withOpacity(_hovering ? 0.14 : 0.08),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: widget.color.withOpacity(_hovering ? 0.25 : 0), width: 1),
+              color: widget.color.withValues(alpha: _hovering ? 0.14 : 0.08),
+              borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+              border: Border.all(color: widget.color.withValues(alpha: _hovering ? 0.25 : 0), width: 1),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

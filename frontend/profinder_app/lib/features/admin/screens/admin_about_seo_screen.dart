@@ -7,6 +7,8 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/about_page_service.dart';
 import '../../../shared/widgets/about_image_picker_field.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminAboutSeoScreen extends StatefulWidget {
   const AdminAboutSeoScreen({super.key});
@@ -74,7 +76,7 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
           backgroundColor: Colors.green.shade600,
           content: const Row(
             children: [
@@ -129,9 +131,9 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
                                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                                     margin: const EdgeInsets.only(bottom: 16),
                                     decoration: BoxDecoration(
-                                      color: Colors.red.withOpacity(0.08),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: Colors.red.withOpacity(0.25)),
+                                      color: Colors.red.withValues(alpha: 0.08),
+                                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                                      border: Border.all(color: Colors.red.withValues(alpha: 0.25)),
                                     ),
                                     child: Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,16 +214,16 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
           decoration: InputDecoration(
             labelText: label,
             isDense: true,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
               borderSide: BorderSide(color: AppColors.adminColor, width: 1.6),
             ),
             helperText: recommended != null
                 ? '$length characters · recommended up to $recommended'
                 : null,
             helperStyle: TextStyle(
-              fontSize: 11,
+              fontSize: AppFontSizes.caption,
               color: overRecommended ? Colors.orange.shade700 : context.colors.textSecondary,
             ),
           ),
@@ -244,10 +246,10 @@ class _SectionCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
         border: Border.all(color: context.colors.divider),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -257,7 +259,7 @@ class _SectionCard extends StatelessWidget {
             children: [
               Icon(icon, size: 16, color: AppColors.adminColor),
               const SizedBox(width: 8),
-              Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+              Text(title, style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700)),
             ],
           ),
           const SizedBox(height: 14),

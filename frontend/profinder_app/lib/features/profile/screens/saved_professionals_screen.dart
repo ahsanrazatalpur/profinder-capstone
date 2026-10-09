@@ -3,6 +3,9 @@
 // SAVED PROFESSIONALS — reads from the on-device FavoritesStore (see
 // services/favorites_store.dart for why this is local, not server-synced).
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../services/content_localizer.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
@@ -57,7 +60,7 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.savedProfessionalsTitle,
+        title: AppLocalizations.of(context).savedProfessionalsTitle,
         icon: Icons.bookmark_rounded,
       ),
       body: _loading
@@ -79,7 +82,7 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
                   child: ListView.separated(
                     padding: EdgeInsets.all(isTablet ? 20 : 16),
                     itemCount: _favorites.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
                     itemBuilder: (_, i) => _card(_favorites[i], isDark, isTablet),
                   ),
                 ),
@@ -95,23 +98,23 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
               height: 88,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
-                    : const Color(0xFFF3F4F6),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : AppColors.neutral100,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.favorite_border_rounded,
                 size: 40,
                 color: isDark
-                    ? Colors.white.withOpacity(0.3)
-                    : const Color(0xFFD1D5DB),
+                    ? Colors.white.withValues(alpha: 0.3)
+                    : AppColors.neutral300,
               ),
             ),
             const SizedBox(height: 18),
             Text(
-              AppLocalizations.of(context)!.savedProfessionalsEmptyTitle,
+              AppLocalizations.of(context).savedProfessionalsEmptyTitle,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
                 letterSpacing: -0.2,
@@ -119,9 +122,9 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              AppLocalizations.of(context)!.savedProfessionalsEmptySubtitle,
+              AppLocalizations.of(context).savedProfessionalsEmptySubtitle,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: AppFontSizes.secondary,
                 color: context.colors.textSecondary,
               ),
               textAlign: TextAlign.center,
@@ -132,7 +135,7 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
 
   Widget _card(Map<String, dynamic> pro, bool isDark, bool isTablet) {
     final id         = pro['id']?.toString() ?? '';
-    final name       = pro['name']?.toString() ?? AppLocalizations.of(context)!.professionalDefaultName;
+    final name       = pro['name']?.toString() ?? AppLocalizations.of(context).professionalDefaultName;
     final profession = pro['category_name']?.toString() ?? pro['specialization']?.toString() ?? '';
     final photo      = AppHelpers.getFullImageUrl(pro['photo_url']?.toString());
     final rating     = _num(pro['average_rating']);
@@ -145,17 +148,17 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
       padding: EdgeInsets.all(isTablet ? 16 : 12),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.08)
-              : const Color(0xFFE5E7EB),
+              ? Colors.white.withValues(alpha: 0.08)
+              : AppColors.neutral200,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.12)
-                : Colors.grey.withOpacity(0.06),
+                ? Colors.black.withValues(alpha: 0.12)
+                : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -172,18 +175,18 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
               ),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               child: Container(
                 width: isTablet ? 72 : 64,
                 height: isTablet ? 72 : 64,
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
+                    ? Colors.white.withValues(alpha: 0.05)
                     : context.colors.primaryLight,
                 child: photo.isNotEmpty
                     ? Image.network(
                         photo,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Center(
+                        errorBuilder: (_, _, _) => Center(
                           child: Text(
                             AppHelpers.getInitials(name),
                             style: TextStyle(
@@ -217,8 +220,9 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
                 Row(
                   children: [
                     Flexible(
-                      child: Text(
+                      child: LocalizedText(
                         name,
+                        kind: LocKind.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -241,7 +245,7 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
                 ),
                 if (profession.isNotEmpty)
                   Text(
-                    profession,
+                    AppHelpers.localizedCategoryName(context, profession),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -255,12 +259,12 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
                   children: [
                     Icon(
                       Icons.star_rounded,
-                      color: const Color(0xFFF59E0B),
+                      color: AppColors.warningAmber,
                       size: isTablet ? 15 : 14,
                     ),
                     const SizedBox(width: 2),
                     Text(
-                      ' ${rating.toStringAsFixed(1)}  •  \$${price.toStringAsFixed(0)}/hr',
+                      ' ${AppLocalizations.of(context).profileHr(rating.toStringAsFixed(1), price.toStringAsFixed(0))}',
                       style: TextStyle(
                         fontSize: isTablet ? 12.0 : 11.5,
                         color: context.colors.textSecondary,
@@ -280,7 +284,7 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
               Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                   onTap: () => _remove(id),
                   child: Container(
                     padding: const EdgeInsets.all(6),
@@ -303,7 +307,7 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
                   backgroundColor: AppColors.customerColor,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                   ),
                   elevation: 0,
                 ),
@@ -314,7 +318,7 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
                   ),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)!.bookCta,
+                  AppLocalizations.of(context).bookCta,
                   style: TextStyle(
                     fontSize: isTablet ? 12.0 : 11.5,
                     fontWeight: FontWeight.w600,

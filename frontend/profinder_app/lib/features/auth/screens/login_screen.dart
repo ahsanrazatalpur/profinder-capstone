@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/app_validators.dart';
@@ -93,6 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('just_logged_in_banner_flag', true);
+      if (!mounted) return;
       final String? role = auth.role;
       switch (role) {
         case 'customer':
@@ -114,15 +114,15 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushNamedAndRemoveUntil(context, '/admin', (route) => false);
           break;
         default:
-          AppHelpers.showError(context, AppLocalizations.of(context)!.unknownRoleError);
+          AppHelpers.showError(context, AppLocalizations.of(context).unknownRoleError);
       }
     } else {
       // 401 = bad credentials. Always show the same generic copy here —
       // never surface whether it was the email or the password that was
       // wrong, and never say "no account with that email".
       final message = auth.errorStatusCode == 401
-          ? AppLocalizations.of(context)!.invalidLoginCredentials
-          : (auth.errorMessage ?? AppLocalizations.of(context)!.serverError);
+          ? AppLocalizations.of(context).invalidLoginCredentials
+          : (auth.errorMessage ?? AppLocalizations.of(context).serverError);
       AppHelpers.showError(context, message);
     }
   }
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // ── Heading ───────────────────────────────
                       Text(
-                        AppLocalizations.of(context)!.loginTitle,
+                        AppLocalizations.of(context).loginTitle,
                         style: AppTextStyles.h2.copyWith(
                           fontSize: ResponsiveUtils.sp(24, scale, min: 22, max: 29),
                           color: context.colors.textPrimary,
@@ -187,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: AppSizes.xs),
                       Text(
-                        AppLocalizations.of(context)!.loginSubtitle,
+                        AppLocalizations.of(context).loginSubtitle,
                         style: AppTextStyles.bodyMedium.copyWith(
                           fontSize: ResponsiveUtils.sp(14, scale, min: 13, max: 17),
                           color: context.colors.textSecondary,
@@ -204,15 +204,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         style:        AppTextStyles.inputText.copyWith(color: context.colors.textPrimary),
                         decoration: InputDecoration(
                           labelText:  AppStrings.email,
-                          hintText:   AppLocalizations.of(context)!.emailHint,
+                          hintText:   AppLocalizations.of(context).emailHint,
                           prefixIcon: Icon(
                             Icons.email_outlined,
                             color: isDark
-                                ? context.colors.textSecondary.withOpacity(0.6)
+                                ? context.colors.textSecondary.withValues(alpha: 0.6)
                                 : null,
                           ),
                         ),
-                        validator: AppValidators.email,
+                        validator: (v) => AppValidators.email(v, AppLocalizations.of(context)),
                       ),
 
                       const SizedBox(height: AppSizes.md),
@@ -224,11 +224,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         style:       AppTextStyles.inputText.copyWith(color: context.colors.textPrimary),
                         decoration: InputDecoration(
                           labelText:  AppStrings.password,
-                          hintText:   AppLocalizations.of(context)!.passwordHint,
+                          hintText:   AppLocalizations.of(context).passwordHint,
                           prefixIcon: Icon(
                             Icons.lock_outlined,
                             color: isDark
-                                ? context.colors.textSecondary.withOpacity(0.6)
+                                ? context.colors.textSecondary.withValues(alpha: 0.6)
                                 : null,
                           ),
                           suffixIcon: IconButton(
@@ -241,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 setState(() => _obscurePassword = !_obscurePassword),
                           ),
                         ),
-                        validator: AppValidators.loginPassword,
+                        validator: (v) => AppValidators.loginPassword(v, AppLocalizations.of(context)),
                       ),
 
                       const SizedBox(height: AppSizes.xs),
@@ -260,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             AppStrings.forgotPass,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: AppColors.professionalColor,
+                              color: context.colors.primary,
                             ),
                           ),
                         ),
@@ -276,15 +276,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             ),
                           ),
                           child: auth.isLoading
                               ? const AppButtonLoader()
                               : Text(
-                                  AppLocalizations.of(context)!.loginCta,
+                                  AppLocalizations.of(context).loginCta,
                                   style: const TextStyle(
-                                    fontSize: 16,
+                                    fontSize: AppFontSizes.title,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -302,17 +302,17 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             side: BorderSide(
                               color: isDark
-                                  ? Colors.white.withOpacity(0.2)
-                                  : Colors.grey.withOpacity(0.3),
+                                  ? Colors.white.withValues(alpha: 0.2)
+                                  : Colors.grey.withValues(alpha: 0.3),
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             ),
                           ),
                           child: Text(
-                            AppLocalizations.of(context)!.continueAsGuestCta,
+                            AppLocalizations.of(context).continueAsGuestCta,
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: AppFontSizes.title,
                               fontWeight: FontWeight.w600,
                               color: context.colors.textSecondary,
                             ),
@@ -347,7 +347,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               AppStrings.register,
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.professionalColor,
+                                color: context.colors.primary,
                               ),
                             ),
                           ),

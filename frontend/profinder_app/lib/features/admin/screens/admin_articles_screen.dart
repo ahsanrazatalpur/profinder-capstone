@@ -13,6 +13,8 @@ import '../../magazine/screens/article_detail_screen.dart';
 import 'admin_magazine_analytics_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Responsive breakpoints used throughout this screen. Centralizing them
@@ -39,8 +41,6 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
 
   late TabController _tabCtrl;
   late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _slideAnimation;
 
   bool                  _loading    = true;
   String?               _error;
@@ -58,16 +58,6 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    );
-    _slideAnimation = Tween<double>(begin: 20, end: 0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutCubic,
-      ),
     );
     _loadAll();
   }
@@ -110,6 +100,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
     if (!mounted) return;
     if (result['success'] == true) {
       await _loadAll();
+      if (!mounted) return;
       _showSnack(
         a.isPublished ? 'Article unpublished' : 'Article published',
         a.isPublished ? AppColors.warning : context.colors.accent,
@@ -123,30 +114,30 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
         icon: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.error.withOpacity(0.08),
+            color: AppColors.error.withValues(alpha: 0.08),
             shape: BoxShape.circle,
           ),
           child: Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 26),
         ),
         title: const Text('Delete Article',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700),
             textAlign: TextAlign.center),
         content: Text(
           '"${a.title}" will be permanently deleted.',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280), height: 1.4),
+          style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep, height: 1.4),
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
           TextButton(
             style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF6B7280),
+              foregroundColor: AppColors.grayDeep,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             ),
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -157,7 +148,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             ),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.w700)),
@@ -311,17 +302,17 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
         indicatorColor: Colors.white,
         indicatorSize: TabBarIndicatorSize.label,
         indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
-        splashBorderRadius: BorderRadius.circular(8),
+        splashBorderRadius: BorderRadius.circular(AppSizes.radiusSm),
         dividerColor: Colors.transparent,
         labelColor: Colors.white,
         unselectedLabelColor: Colors.white70,
         labelStyle: const TextStyle(
-          fontSize: 13,
+          fontSize: AppFontSizes.secondary,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.2,
         ),
         unselectedLabelStyle: const TextStyle(
-          fontSize: 13,
+          fontSize: AppFontSizes.secondary,
           fontWeight: FontWeight.w600,
         ),
         tabs: [
@@ -349,13 +340,13 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
               key: ValueKey(count),
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.22),
-                borderRadius: BorderRadius.circular(10),
+                color: Colors.white.withValues(alpha: 0.22),
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
               ),
               child: Text(
                 '$count',
                 style: const TextStyle(
-                  fontSize: 10,
+                  fontSize: AppFontSizes.micro,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),
@@ -374,7 +365,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
       ('Published', '${_summary['published_this_month'] ?? 0}', Icons.check_rounded, context.colors.accent),
       ('Views', '${_summary['total_views'] ?? 0}', Icons.visibility_rounded, AppColors.info),
       ('Popular', _summary['most_read_title'] != null
-          ? '${_summary['most_read_views']}' : '—', Icons.trending_up_rounded, const Color(0xFF7C3AED)),
+          ? '${_summary['most_read_views']}' : '—', Icons.trending_up_rounded, AppColors.accentPurple),
     ];
 
     return Container(
@@ -386,7 +377,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
           itemCount: cards.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 12),
+          separatorBuilder: (_, _) => const SizedBox(width: 12),
           itemBuilder: (_, i) {
             final (label, value, icon, color) = cards[i];
             return _SummaryCard(label: label, value: value, icon: icon, color: color);
@@ -413,12 +404,12 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppColors.adminColor.withOpacity(0.06),
+              color: AppColors.adminColor.withValues(alpha: 0.06),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.article_outlined,
-              color: AppColors.adminColor.withOpacity(0.4),
+              color: AppColors.adminColor.withValues(alpha: 0.4),
               size: 36,
             ),
           ),
@@ -426,17 +417,17 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
           const Text(
             'No articles found',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: AppFontSizes.title,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF374151),
+              color: AppColors.gray700,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             'Tap the + button to create one',
             style: TextStyle(
-              fontSize: 13,
-              color: const Color(0xFF9CA3AF),
+              fontSize: AppFontSizes.secondary,
+              color: AppColors.neutral400,
             ),
           ),
         ]),
@@ -515,7 +506,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
       Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.error.withOpacity(0.06),
+          color: AppColors.error.withValues(alpha: 0.06),
           shape: BoxShape.circle,
         ),
         child: Icon(Icons.error_outline_rounded, size: 56, color: AppColors.error),
@@ -524,8 +515,8 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
       Text(
         _error!,
         style: const TextStyle(
-          fontSize: 16,
-          color: Color(0xFF374151),
+          fontSize: AppFontSizes.title,
+          color: AppColors.gray700,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -533,8 +524,8 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
       const Text(
         'Please check your connection and try again',
         style: TextStyle(
-          fontSize: 13,
-          color: Color(0xFF9CA3AF),
+          fontSize: AppFontSizes.secondary,
+          color: AppColors.neutral400,
         ),
       ),
       const SizedBox(height: 24),
@@ -547,7 +538,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
           elevation: 0,
         ),
@@ -579,7 +570,7 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
         ),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
         elevation: 2,
         duration: const Duration(seconds: 2),
         margin: const EdgeInsets.all(16),
@@ -627,16 +618,16 @@ class _SummaryCardState extends State<_SummaryCard> {
         width: 128,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         transform: _hovering
-            ? (Matrix4.identity()..translate(0.0, -2.0))
+            ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0))
             : Matrix4.identity(),
         decoration: BoxDecoration(
-          color: widget.color.withOpacity(_hovering ? 0.09 : 0.06),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: widget.color.withOpacity(0.14), width: 1.5),
+          color: widget.color.withValues(alpha: _hovering ? 0.09 : 0.06),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: widget.color.withValues(alpha: 0.14), width: 1.5),
           boxShadow: _hovering
               ? [
                   BoxShadow(
-                    color: widget.color.withOpacity(0.15),
+                    color: widget.color.withValues(alpha: 0.15),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -649,8 +640,8 @@ class _SummaryCardState extends State<_SummaryCard> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: widget.color.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(10),
+                color: widget.color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
               ),
               child: Icon(widget.icon, size: 18, color: widget.color),
             ),
@@ -663,7 +654,7 @@ class _SummaryCardState extends State<_SummaryCard> {
                   Text(
                     widget.value,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: AppFontSizes.input,
                       fontWeight: FontWeight.w800,
                       color: widget.color,
                     ),
@@ -673,8 +664,8 @@ class _SummaryCardState extends State<_SummaryCard> {
                   Text(
                     widget.label,
                     style: const TextStyle(
-                      fontSize: 10,
-                      color: Color(0xFF9CA3AF),
+                      fontSize: AppFontSizes.micro,
+                      color: AppColors.neutral400,
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 1,
@@ -723,7 +714,7 @@ class _HoverIconButtonState extends State<_HoverIconButton> {
           duration: const Duration(milliseconds: 150),
           margin: const EdgeInsets.symmetric(horizontal: 2),
           decoration: BoxDecoration(
-            color: _hovering ? const Color(0xFFF1F5F9) : Colors.transparent,
+            color: _hovering ? AppColors.slate100 : Colors.transparent,
             shape: BoxShape.circle,
           ),
           // `Semantics` label mirrors the tooltip so screen readers announce
@@ -732,7 +723,7 @@ class _HoverIconButtonState extends State<_HoverIconButton> {
             label: widget.tooltip,
             button: true,
             child: IconButton(
-              icon: Icon(widget.icon, color: widget.color ?? const Color(0xFF374151), size: 22),
+              icon: Icon(widget.icon, color: widget.color ?? AppColors.gray700, size: 22),
               onPressed: widget.onPressed,
             ),
           ),
@@ -769,7 +760,7 @@ class _HoverScaleState extends State<_HoverScale> {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             onTap: widget.onTap,
             child: widget.child,
           ),
@@ -816,21 +807,21 @@ class _ArticleCardState extends State<_ArticleCard> {
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
         transform: _hovering
-            ? (Matrix4.identity()..translate(0.0, -2.0))
+            ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0))
             : Matrix4.identity(),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(_hovering ? 0.08 : 0.04),
+              color: Colors.black.withValues(alpha: _hovering ? 0.08 : 0.04),
               blurRadius: _hovering ? 18 : 12,
               offset: Offset(0, _hovering ? 6 : 2),
               spreadRadius: 0,
             ),
           ],
           border: Border.all(
-            color: _hovering ? AppColors.adminColor.withOpacity(0.15) : const Color(0xFFF1F5F9),
+            color: _hovering ? AppColors.adminColor.withValues(alpha: 0.15) : AppColors.slate100,
             width: 1,
           ),
         ),
@@ -840,20 +831,20 @@ class _ArticleCardState extends State<_ArticleCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 child: a.coverImage.isNotEmpty
                     ? Image.network(
                         a.coverImage,
                         width: 80,
                         height: 80,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _thumb(context, a.categoryColor),
+                        errorBuilder: (_, _, _) => _thumb(context, a.categoryColor),
                         loadingBuilder: (_, child, progress) {
                           if (progress == null) return child;
                           return Container(
                             width: 80,
                             height: 80,
-                            color: const Color(0xFFF1F5F9),
+                            color: AppColors.slate100,
                             child: Center(
                               child: SizedBox(
                                 width: 20,
@@ -885,9 +876,9 @@ class _ArticleCardState extends State<_ArticleCard> {
                           ),
                           decoration: BoxDecoration(
                             color: a.isPublished
-                                ? context.colors.accent.withOpacity(0.10)
-                                : const Color(0xFFF59E0B).withOpacity(0.10),
-                            borderRadius: BorderRadius.circular(6),
+                                ? context.colors.accent.withValues(alpha: 0.10)
+                                : AppColors.warningAmber.withValues(alpha: 0.10),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -899,17 +890,17 @@ class _ArticleCardState extends State<_ArticleCard> {
                                 size: 12,
                                 color: a.isPublished
                                     ? context.colors.accent
-                                    : const Color(0xFFF59E0B),
+                                    : AppColors.warningAmber,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 a.isPublished ? 'Published' : 'Draft',
                                 style: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: AppFontSizes.micro,
                                   fontWeight: FontWeight.w700,
                                   color: a.isPublished
                                       ? context.colors.accent
-                                      : const Color(0xFFF59E0B),
+                                      : AppColors.warningAmber,
                                 ),
                               ),
                             ],
@@ -924,15 +915,15 @@ class _ArticleCardState extends State<_ArticleCard> {
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF1F5F9),
-                                borderRadius: BorderRadius.circular(6),
+                                color: AppColors.slate100,
+                                borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
                               ),
                               child: Text(
                                 a.categoryName,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
-                                  fontSize: 10,
-                                  color: Color(0xFF64748B),
+                                  fontSize: AppFontSizes.micro,
+                                  color: AppColors.slate500,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -944,9 +935,9 @@ class _ArticleCardState extends State<_ArticleCard> {
                     Text(
                       a.title,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: AppFontSizes.body,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF111827),
+                        color: AppColors.gray900,
                         height: 1.3,
                       ),
                       maxLines: 2,
@@ -956,8 +947,8 @@ class _ArticleCardState extends State<_ArticleCard> {
                     Text(
                       a.editorialLabel,
                       style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF6B7280),
+                        fontSize: AppFontSizes.caption,
+                        color: AppColors.grayDeep,
                         fontWeight: FontWeight.w500,
                       ),
                       maxLines: 1,
@@ -969,28 +960,28 @@ class _ArticleCardState extends State<_ArticleCard> {
                         const Icon(
                           Icons.access_time_rounded,
                           size: 12,
-                          color: Color(0xFF9CA3AF),
+                          color: AppColors.neutral400,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '${a.readTime} min read',
                           style: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF9CA3AF),
+                            fontSize: AppFontSizes.caption,
+                            color: AppColors.neutral400,
                           ),
                         ),
                         const SizedBox(width: 10),
                         const Icon(
                           Icons.visibility_rounded,
                           size: 12,
-                          color: Color(0xFF9CA3AF),
+                          color: AppColors.neutral400,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           _fmtCount(a.viewsCount),
                           style: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF9CA3AF),
+                            fontSize: AppFontSizes.caption,
+                            color: AppColors.neutral400,
                           ),
                         ),
                       ],
@@ -1002,13 +993,13 @@ class _ArticleCardState extends State<_ArticleCard> {
                       children: [
                         _btn(
                           'Preview',
-                          const Color(0xFF64748B),
+                          AppColors.slate500,
                           Icons.visibility_rounded,
                           widget.onPreview,
                         ),
                         _btn(
                           a.isPublished ? 'Unpublish' : 'Publish',
-                          a.isPublished ? const Color(0xFFF59E0B) : context.colors.accent,
+                          a.isPublished ? AppColors.warningAmber : context.colors.accent,
                           a.isPublished ? Icons.unpublished_rounded : Icons.publish_rounded,
                           widget.onTogglePublish,
                         ),
@@ -1043,8 +1034,8 @@ class _ArticleCardState extends State<_ArticleCard> {
     return Container(
       width: 80,
       height: 80,
-      color: c.withOpacity(0.08),
-      child: Icon(Icons.image_rounded, color: c.withOpacity(0.3), size: 32),
+      color: c.withValues(alpha: 0.08),
+      child: Icon(Icons.image_rounded, color: c.withValues(alpha: 0.3), size: 32),
     );
   }
 
@@ -1057,9 +1048,9 @@ class _ArticleCardState extends State<_ArticleCard> {
         constraints: const BoxConstraints(minHeight: 34),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.15), width: 1),
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+          border: Border.all(color: color.withValues(alpha: 0.15), width: 1),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1069,7 +1060,7 @@ class _ArticleCardState extends State<_ArticleCard> {
             Text(
               label,
               style: TextStyle(
-                fontSize: 10,
+                fontSize: AppFontSizes.micro,
                 fontWeight: FontWeight.w700,
                 color: color,
               ),
@@ -1230,7 +1221,7 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
         : screenSize.width - 32;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusXl)),
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       // TweenAnimationBuilder gives the dialog a light fade + scale-in on
       // open without needing a manually managed AnimationController.
@@ -1257,8 +1248,8 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.adminColor.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.adminColor.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   ),
                   child: Icon(
                     isEditing ? Icons.edit_rounded : Icons.add_rounded,
@@ -1271,16 +1262,16 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                   child: Text(
                     isEditing ? 'Edit Article' : 'Create Article',
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: AppFontSizes.title2,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF111827),
+                      color: AppColors.gray900,
                     ),
                   ),
                 ),
                 _HoverIconButton(
                   icon: Icons.close_rounded,
                   tooltip: 'Close',
-                  color: const Color(0xFF9CA3AF),
+                  color: AppColors.neutral400,
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -1334,7 +1325,7 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                           Expanded(
                             child: TextField(
                               controller: _imageCtrl,
-                              style: const TextStyle(fontSize: 13),
+                              style: const TextStyle(fontSize: AppFontSizes.secondary),
                               decoration: _buildInputDecoration(
                                 'Enter image URL',
                                 null,
@@ -1352,10 +1343,10 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                                 width: 48,
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  color: AppColors.adminColor.withOpacity(0.08),
-                                  borderRadius: BorderRadius.circular(12),
+                                  color: AppColors.adminColor.withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                                   border: Border.all(
-                                    color: AppColors.adminColor.withOpacity(0.2),
+                                    color: AppColors.adminColor.withValues(alpha: 0.2),
                                     width: 1.5,
                                   ),
                                 ),
@@ -1387,13 +1378,13 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                             ? Padding(
                                 padding: const EdgeInsets.only(top: 10),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                                   child: Image.network(
                                     _imageCtrl.text.trim(),
                                     height: 120,
                                     width: double.infinity,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
                                   ),
                                 ),
                               )
@@ -1405,7 +1396,7 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                       const SizedBox(height: 6),
                       TextField(
                         controller: _editorialCtrl,
-                        style: const TextStyle(fontSize: 13),
+                        style: const TextStyle(fontSize: AppFontSizes.secondary),
                         decoration: _buildInputDecoration(
                           'e.g. ProFinder Health Desk',
                           null,
@@ -1430,23 +1421,23 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? AppColors.adminColor
-                                    : const Color(0xFFF1F5F9),
-                                borderRadius: BorderRadius.circular(20),
+                                    : AppColors.slate100,
+                                borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                                 border: Border.all(
                                   color: isSelected
                                       ? AppColors.adminColor
-                                      : const Color(0xFFE5E7EB),
+                                      : AppColors.neutral200,
                                   width: 1.5,
                                 ),
                               ),
                               child: Text(
                                 s,
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: AppFontSizes.caption,
                                   fontWeight: FontWeight.w600,
                                   color: isSelected
                                       ? Colors.white
-                                      : const Color(0xFF374151),
+                                      : AppColors.gray700,
                                 ),
                               ),
                             ),
@@ -1466,15 +1457,15 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                                 _buildLabel('Category', false),
                                 const SizedBox(height: 6),
                                 DropdownButtonFormField<int>(
-                                  value: _catId,
+                                  initialValue: _catId,
                                   isExpanded: true,
                                   icon: const Icon(Icons.keyboard_arrow_down_rounded,
-                                      color: Color(0xFF9CA3AF)),
+                                      color: AppColors.neutral400),
                                   hint: const Text(
                                     'Select category',
                                     style: TextStyle(
-                                      fontSize: 13,
-                                      color: Color(0xFF9CA3AF),
+                                      fontSize: AppFontSizes.secondary,
+                                      color: AppColors.neutral400,
                                     ),
                                   ),
                                   decoration: InputDecoration(
@@ -1483,33 +1474,33 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                                       vertical: 12,
                                     ),
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                                       borderSide: const BorderSide(
-                                        color: Color(0xFFE5E7EB),
+                                        color: AppColors.neutral200,
                                       ),
                                     ),
                                     enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                                       borderSide: const BorderSide(
-                                        color: Color(0xFFE5E7EB),
+                                        color: AppColors.neutral200,
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                                       borderSide: const BorderSide(
                                         color: AppColors.adminColor,
                                         width: 1.5,
                                       ),
                                     ),
                                     filled: true,
-                                    fillColor: const Color(0xFFF9FAFB),
+                                    fillColor: AppColors.tintGray,
                                   ),
                                   items: widget.categories
                                       .map((c) => DropdownMenuItem(
                                             value: c.id,
                                             child: Text(
                                               c.name,
-                                              style: const TextStyle(fontSize: 13),
+                                              style: const TextStyle(fontSize: AppFontSizes.secondary),
                                             ),
                                           ))
                                       .toList(),
@@ -1529,15 +1520,15 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                                 TextField(
                                   controller: _readCtrl,
                                   keyboardType: TextInputType.number,
-                                  style: const TextStyle(fontSize: 13),
+                                  style: const TextStyle(fontSize: AppFontSizes.secondary),
                                   decoration: _buildInputDecoration(
                                     'Minutes',
                                     null,
                                   ).copyWith(
                                     suffixText: 'min',
                                     suffixStyle: const TextStyle(
-                                      fontSize: 11,
-                                      color: Color(0xFF9CA3AF),
+                                      fontSize: AppFontSizes.caption,
+                                      color: AppColors.neutral400,
                                     ),
                                   ),
                                 ),
@@ -1553,13 +1544,13 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: _isPublished
-                              ? context.colors.accent.withOpacity(0.04)
-                              : const Color(0xFFF9FAFB),
-                          borderRadius: BorderRadius.circular(14),
+                              ? context.colors.accent.withValues(alpha: 0.04)
+                              : AppColors.tintGray,
+                          borderRadius: BorderRadius.circular(AppSizes.radius14),
                           border: Border.all(
                             color: _isPublished
-                                ? context.colors.accent.withOpacity(0.2)
-                                : const Color(0xFFE5E7EB),
+                                ? context.colors.accent.withValues(alpha: 0.2)
+                                : AppColors.neutral200,
                             width: 1.5,
                           ),
                         ),
@@ -1569,8 +1560,8 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: _isPublished
-                                    ? context.colors.accent.withOpacity(0.12)
-                                    : const Color(0xFFF1F5F9),
+                                    ? context.colors.accent.withValues(alpha: 0.12)
+                                    : AppColors.slate100,
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -1579,7 +1570,7 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                                     : Icons.lock_outline_rounded,
                                 color: _isPublished
                                     ? context.colors.accent
-                                    : const Color(0xFF9CA3AF),
+                                    : AppColors.neutral400,
                                 size: 18,
                               ),
                             ),
@@ -1591,11 +1582,11 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                                   Text(
                                     _isPublished ? 'Published' : 'Draft',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: AppFontSizes.body,
                                       fontWeight: FontWeight.w700,
                                       color: _isPublished
                                           ? context.colors.accent
-                                          : const Color(0xFF374151),
+                                          : AppColors.gray700,
                                     ),
                                   ),
                                   Text(
@@ -1603,8 +1594,8 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                                         ? 'Visible to all users'
                                         : 'Only visible to admins',
                                     style: const TextStyle(
-                                      fontSize: 11,
-                                      color: Color(0xFF9CA3AF),
+                                      fontSize: AppFontSizes.caption,
+                                      color: AppColors.neutral400,
                                     ),
                                   ),
                                 ],
@@ -1612,7 +1603,7 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                             ),
                             Switch(
                               value: _isPublished,
-                              activeColor: context.colors.accent,
+                              activeThumbColor: context.colors.accent,
                               onChanged: (v) => setState(() => _isPublished = v),
                             ),
                           ],
@@ -1627,10 +1618,10 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                                 child: Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: AppColors.error.withOpacity(0.06),
-                                    borderRadius: BorderRadius.circular(10),
+                                    color: AppColors.error.withValues(alpha: 0.06),
+                                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                                     border: Border.all(
-                                      color: AppColors.error.withOpacity(0.2),
+                                      color: AppColors.error.withValues(alpha: 0.2),
                                     ),
                                   ),
                                   child: Row(
@@ -1645,7 +1636,7 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                                         child: Text(
                                           _dialogError!,
                                           style: const TextStyle(
-                                            fontSize: 12,
+                                            fontSize: AppFontSizes.small,
                                             color: AppColors.error,
                                             fontWeight: FontWeight.w500,
                                           ),
@@ -1673,9 +1664,9 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                 onPressed: _saving ? null : _save,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.adminColor,
-                  disabledBackgroundColor: AppColors.adminColor.withOpacity(0.5),
+                  disabledBackgroundColor: AppColors.adminColor.withValues(alpha: 0.5),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppSizes.radius14),
                   ),
                   elevation: 0,
                 ),
@@ -1706,7 +1697,7 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
                             Text(
                               isEditing ? 'Save Changes' : 'Create Article',
                               style: const TextStyle(
-                                fontSize: 15,
+                                fontSize: AppFontSizes.input,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
                               ),
@@ -1739,7 +1730,7 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
         TextField(
           controller: ctrl,
           maxLines: maxLines,
-          style: const TextStyle(fontSize: 13),
+          style: const TextStyle(fontSize: AppFontSizes.secondary),
           decoration: _buildInputDecoration(hint, helper),
         ),
       ],
@@ -1752,9 +1743,9 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
         Text(
           text,
           style: const TextStyle(
-            fontSize: 13,
+            fontSize: AppFontSizes.secondary,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF374151),
+            color: AppColors.gray700,
           ),
         ),
         if (required) ...[
@@ -1762,7 +1753,7 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
           Text(
             '*',
             style: TextStyle(
-              fontSize: 14,
+              fontSize: AppFontSizes.body,
               color: AppColors.error,
               fontWeight: FontWeight.w700,
             ),
@@ -1775,24 +1766,24 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
   InputDecoration _buildInputDecoration(String hint, String? helper) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+      hintStyle: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.neutral400),
       helperText: helper,
-      helperStyle: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
+      helperStyle: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        borderSide: const BorderSide(color: AppColors.neutral200),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        borderSide: const BorderSide(color: AppColors.neutral200),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         borderSide: const BorderSide(color: AppColors.adminColor, width: 1.5),
       ),
       filled: true,
-      fillColor: const Color(0xFFF9FAFB),
+      fillColor: AppColors.tintGray,
     );
   }
 }
@@ -1873,7 +1864,7 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
         : screenSize.width - 40;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       // Same lightweight fade + scale entrance as the article form dialog.
       child: TweenAnimationBuilder<double>(
@@ -1896,8 +1887,8 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.adminColor.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.adminColor.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                   ),
                   child: const Icon(
                     Icons.folder_rounded,
@@ -1910,16 +1901,16 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
                   child: Text(
                     'Manage Categories',
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: AppFontSizes.titleMd,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF111827),
+                      color: AppColors.gray900,
                     ),
                   ),
                 ),
                 _HoverIconButton(
                   icon: Icons.close_rounded,
                   tooltip: 'Close',
-                  color: const Color(0xFF9CA3AF),
+                  color: AppColors.neutral400,
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -1935,14 +1926,14 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
                       Icon(
                         Icons.folder_outlined,
                         size: 48,
-                        color: const Color(0xFF9CA3AF).withOpacity(0.3),
+                        color: AppColors.neutral400.withValues(alpha: 0.3),
                       ),
                       const SizedBox(height: 8),
                       const Text(
                         'No categories',
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF9CA3AF),
+                          fontSize: AppFontSizes.body,
+                          color: AppColors.neutral400,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -1981,9 +1972,9 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
             const Text(
               'Add New Category',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: AppFontSizes.secondary,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF374151),
+                color: AppColors.gray700,
               ),
             ),
             const SizedBox(height: 10),
@@ -1992,34 +1983,34 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
                 Expanded(
                   child: TextField(
                     controller: _nameCtrl,
-                    style: const TextStyle(fontSize: 13),
+                    style: const TextStyle(fontSize: AppFontSizes.secondary),
                     decoration: InputDecoration(
                       hintText: 'Category name',
                       hintStyle: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF9CA3AF),
+                        fontSize: AppFontSizes.small,
+                        color: AppColors.neutral400,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14,
                         vertical: 12,
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                        borderSide: const BorderSide(color: AppColors.neutral200),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                        borderSide: const BorderSide(color: AppColors.neutral200),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         borderSide: const BorderSide(
                           color: AppColors.adminColor,
                           width: 1.5,
                         ),
                       ),
                       filled: true,
-                      fillColor: const Color(0xFFF9FAFB),
+                      fillColor: AppColors.tintGray,
                     ),
                     onSubmitted: (_) => _add(),
                   ),
@@ -2034,7 +2025,7 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
                       backgroundColor: AppColors.adminColor,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       ),
                       elevation: 0,
                       padding: EdgeInsets.zero,
@@ -2070,7 +2061,7 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
                           Text(
                             _err!,
                             style: const TextStyle(
-                              fontSize: 11,
+                              fontSize: AppFontSizes.caption,
                               color: AppColors.error,
                               fontWeight: FontWeight.w600,
                             ),
@@ -2120,10 +2111,10 @@ class _CategoryRowState extends State<_CategoryRow> {
         margin: const EdgeInsets.only(bottom: 6),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         decoration: BoxDecoration(
-          color: widget.color.withOpacity(_hovering ? 0.08 : 0.04),
-          borderRadius: BorderRadius.circular(10),
+          color: widget.color.withValues(alpha: _hovering ? 0.08 : 0.04),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
           border: Border.all(
-            color: widget.color.withOpacity(_hovering ? 0.2 : 0.1),
+            color: widget.color.withValues(alpha: _hovering ? 0.2 : 0.1),
           ),
         ),
         child: ListTile(
@@ -2132,7 +2123,7 @@ class _CategoryRowState extends State<_CategoryRow> {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: widget.color.withOpacity(0.12),
+              color: widget.color.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -2144,15 +2135,15 @@ class _CategoryRowState extends State<_CategoryRow> {
           title: Text(
             widget.name,
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: AppFontSizes.secondary,
               fontWeight: FontWeight.w600,
             ),
           ),
           subtitle: Text(
             '${widget.articlesCount} articles',
             style: const TextStyle(
-              fontSize: 11,
-              color: Color(0xFF9CA3AF),
+              fontSize: AppFontSizes.caption,
+              color: AppColors.neutral400,
             ),
           ),
           trailing: Tooltip(

@@ -1,5 +1,7 @@
 // lib/features/profile/screens/payments_screen.dart
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
@@ -43,13 +45,13 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   Color _statusColor(String status) {
     switch (status) {
       case 'completed':
-        return const Color(0xFF10B981);
+        return AppColors.emerald;
       case 'pending':
-        return const Color(0xFFF59E0B);
+        return AppColors.warningAmber;
       case 'failed':
         return AppColors.error;
       case 'refunded':
-        return const Color(0xFF6366F1);
+        return AppColors.indigo;
       default:
         return context.colors.textSecondary;
     }
@@ -58,13 +60,13 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   String _statusLabel(String status) {
     switch (status) {
       case 'completed':
-        return AppLocalizations.of(context)!.paymentStatusCompleted;
+        return AppLocalizations.of(context).paymentStatusCompleted;
       case 'pending':
-        return AppLocalizations.of(context)!.paymentStatusPending;
+        return AppLocalizations.of(context).paymentStatusPending;
       case 'failed':
-        return AppLocalizations.of(context)!.paymentStatusFailed;
+        return AppLocalizations.of(context).paymentStatusFailed;
       case 'refunded':
-        return AppLocalizations.of(context)!.paymentStatusRefunded;
+        return AppLocalizations.of(context).paymentStatusRefunded;
       default:
         return AppHelpers.capitalize(status);
     }
@@ -79,7 +81,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.paymentsTitle,
+        title: AppLocalizations.of(context).paymentsTitle,
         icon: Icons.payments_rounded,
       ),
       body: _loading
@@ -101,7 +103,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                   child: ListView.separated(
                     padding: EdgeInsets.all(isTablet ? 20 : 16),
                     itemCount: _payments.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
                     itemBuilder: (_, i) {
                       final p = _payments[i];
                       final amount = double.tryParse('${p['amount']}') ?? 0;
@@ -118,17 +120,17 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                         padding: EdgeInsets.all(isTablet ? 16 : 14),
                         decoration: BoxDecoration(
                           color: context.colors.surface,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           border: Border.all(
                             color: isDark
-                                ? Colors.white.withOpacity(0.08)
-                                : const Color(0xFFE5E7EB),
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : AppColors.neutral200,
                           ),
                           boxShadow: [
                             BoxShadow(
                               color: isDark
-                                  ? Colors.black.withOpacity(0.1)
-                                  : Colors.grey.withOpacity(0.04),
+                                  ? Colors.black.withValues(alpha: 0.1)
+                                  : Colors.grey.withValues(alpha: 0.04),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -140,8 +142,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: statusColor.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(10),
+                                color: statusColor.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                               ),
                               child: Icon(
                                 Icons.receipt_rounded,
@@ -177,8 +179,8 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: statusColor.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(8),
+                                color: statusColor.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                               ),
                               child: Text(
                                 statusLabel,
@@ -208,23 +210,23 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
               height: 88,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
-                    : const Color(0xFFF3F4F6),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : AppColors.neutral100,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.receipt_long_outlined,
                 size: 40,
                 color: isDark
-                    ? Colors.white.withOpacity(0.3)
-                    : const Color(0xFFD1D5DB),
+                    ? Colors.white.withValues(alpha: 0.3)
+                    : AppColors.neutral300,
               ),
             ),
             const SizedBox(height: 18),
             Text(
-              AppLocalizations.of(context)!.noPaymentsTitle,
+              AppLocalizations.of(context).noPaymentsTitle,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
                 letterSpacing: -0.2,
@@ -232,9 +234,9 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              AppLocalizations.of(context)!.noPaymentsSubtitle,
+              AppLocalizations.of(context).noPaymentsSubtitle,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: AppFontSizes.secondary,
                 color: context.colors.textSecondary,
               ),
               textAlign: TextAlign.center,

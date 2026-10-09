@@ -31,13 +31,18 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_context_ext.dart';
 import '../../core/constants/app_sizes.dart';
+import '../../core/theme/app_text_styles.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class CtaBanner extends StatelessWidget {
   final bool isDark;
   final VoidCallback onTap;
-  final String title;
-  final String subtitle;
-  final String ctaLabel;
+  // FIX: pehle defaults English mein hardcoded the ('Grow Your Business'
+  // etc.) isliye Urdu/Hindi/Arabic mein bhi English dikhta tha. Ab null
+  // ho to current language ke ARB keys use hote hain.
+  final String? title;
+  final String? subtitle;
+  final String? ctaLabel;
 
   /// Emoji badge — pass karo to yeh IconData `icon` se zyada priority
   /// leta hai (e.g. '🚀', '🏦', '✨', '👑').
@@ -56,9 +61,9 @@ class CtaBanner extends StatelessWidget {
     super.key,
     required this.isDark,
     required this.onTap,
-    this.title = 'Grow Your Business',
-    this.subtitle = 'Join 500+ professionals on ProFinder',
-    this.ctaLabel = 'Join Now',
+    this.title,
+    this.subtitle,
+    this.ctaLabel,
     this.emoji,
     this.icon = Icons.workspace_premium_rounded,
     this.accentStart = AppColors.ctaGradientStart,
@@ -78,10 +83,10 @@ class CtaBanner extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           splashColor: isDark
-              ? Colors.white.withOpacity(0.05)
-              : accentStart.withOpacity(0.1),
+              ? Colors.white.withValues(alpha: 0.05)
+              : accentStart.withValues(alpha: 0.1),
           highlightColor: Colors.transparent,
           child: Container(
             width: double.infinity,
@@ -91,21 +96,21 @@ class CtaBanner extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: isDark
-                    ? const [Color(0xFF1E293B), Color(0xFF0F172A)]
-                    : const [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+                    ? const [AppColors.surface, AppColors.background]
+                    : const [AppColors.slate50, AppColors.slate100],
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withOpacity(0.2)
-                    : accentStart.withOpacity(0.35),
+                    ? Colors.white.withValues(alpha: 0.2)
+                    : accentStart.withValues(alpha: 0.35),
                 width: 2,
               ),
               boxShadow: [
                 BoxShadow(
                   color: isDark
-                      ? Colors.black.withOpacity(0.3)
-                      : accentStart.withOpacity(0.1),
+                      ? Colors.black.withValues(alpha: 0.3)
+                      : accentStart.withValues(alpha: 0.1),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -132,7 +137,7 @@ class CtaBanner extends StatelessWidget {
         const SizedBox(width: 14),
         Expanded(child: _texts(context)),
         const SizedBox(width: 10),
-        _ctaButton(),
+        _ctaButton(context),
       ],
     );
   }
@@ -153,7 +158,7 @@ class CtaBanner extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        _ctaButton(fullWidth: true),
+        _ctaButton(context, fullWidth: true),
       ],
     );
   }
@@ -173,19 +178,22 @@ class CtaBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(13),
         boxShadow: [
           BoxShadow(
-            color: accentStart.withOpacity(0.3),
+            color: accentStart.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: emoji != null
-          ? Text(emoji!, style: const TextStyle(fontSize: 20, height: 1))
+          ? Text(emoji!, style: const TextStyle(fontSize: AppFontSizes.h3, height: 1))
           : Icon(icon, color: Colors.white, size: 21),
     );
   }
 
   Widget _texts(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final title = this.title ?? t.ctaGrowYourBusiness;
+    final subtitle = this.subtitle ?? t.ctaJoinProfessionalsSubtitle;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -195,7 +203,7 @@ class CtaBanner extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: AppFontSizes.input,
             fontWeight: FontWeight.w700,
             color: context.colors.textPrimary,
             letterSpacing: -0.3,
@@ -208,7 +216,7 @@ class CtaBanner extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontSize: 12.5,
+            fontSize: AppFontSizes.secondary,
             color: context.colors.textSecondary,
             fontWeight: FontWeight.w400,
             height: 1.3,
@@ -218,7 +226,8 @@ class CtaBanner extends StatelessWidget {
     );
   }
 
-  Widget _ctaButton({bool fullWidth = false}) {
+  Widget _ctaButton(BuildContext context, {bool fullWidth = false}) {
+    final ctaLabel = this.ctaLabel ?? AppLocalizations.of(context).ctaJoinNow;
     return Container(
       width: fullWidth ? double.infinity : null,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
@@ -228,10 +237,10 @@ class CtaBanner extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [accentStart, accentEnd],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         boxShadow: [
           BoxShadow(
-            color: accentStart.withOpacity(0.35),
+            color: accentStart.withValues(alpha: 0.35),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -245,7 +254,7 @@ class CtaBanner extends StatelessWidget {
             ctaLabel,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 13,
+              fontSize: AppFontSizes.secondary,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.2,
             ),

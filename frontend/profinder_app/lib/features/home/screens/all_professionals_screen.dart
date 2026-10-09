@@ -9,12 +9,13 @@
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/theme_context_ext.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/professional_card.dart';
 import '../../../services/favorites_store.dart';
 import '../../search/screens/professional_detail_screen.dart';
 import '../../bookings/screens/booking_screen.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 /// Which dashboard section opened this screen. Each value gets its own
 /// filter-chip set from [_optionsFor] instead of one shared filter bar.
@@ -147,7 +148,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
   final Map<String, Future<bool>> _favCache = {};
 
   late final List<_FilterOption> _options =
-      _optionsFor(widget.section, AppLocalizations.of(context)!);
+      _optionsFor(widget.section, AppLocalizations.of(context));
   int _selectedIndex = 0;
   late List<dynamic> _list;
 
@@ -204,7 +205,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
                     child: ListView.separated(
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                       itemCount: _list.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 14),
+                      separatorBuilder: (_, _) => const SizedBox(height: 14),
                       itemBuilder: (_, i) => _buildCard(_list[i] as Map),
                     ),
                   ),
@@ -235,7 +236,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
                 curve: Curves.easeOut,
                 child: ChoiceChip(
                   label: Text(_options[i].label,
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
+                      style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600,
                           color: selected ? Colors.white : context.colors.textPrimary)),
                   selected: selected,
                   onSelected: (_) => _applyFilter(i),
@@ -284,7 +285,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
 
   /// Empty-state shown when the current filter yields no results.
   Widget _buildEmpty() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -298,17 +299,17 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
             ),
             const SizedBox(height: 20),
             Text(t.homeNoProfessionalsFound,
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+                style: TextStyle(fontSize: AppFontSizes.titleMd, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
             const SizedBox(height: 8),
             Text(t.homeNoProfessionalsFoundHint,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: context.colors.textSecondary)),
+                style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary)),
             const SizedBox(height: 24),
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                 side: BorderSide(color: context.colors.primary),
               ),
               child: Text(t.homeGoBack, style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.w600)),

@@ -21,6 +21,8 @@ import '../../../services/api_service.dart';
 import '../../../services/auth_provider.dart';
 import '../../notifications/screens/notification_screen.dart';
 import '../../../shared/widgets/role_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 /// Responsive breakpoints used throughout the dashboard for adaptive layout.
 class _Breakpoints {
@@ -50,7 +52,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   int _totalUsers = 0;
   int _totalCustomers = 0;
   int _totalPros = 0;
-  int _totalRevenue = 0;
   String _revenueDisplay = '0';
   int _todayBookings = 0;
   int _pendingVerification = 0;
@@ -298,9 +299,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.adminColor.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.adminColor.withOpacity(0.22)),
+        color: AppColors.adminColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        border: Border.all(color: AppColors.adminColor.withValues(alpha: 0.22)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -309,7 +310,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           const SizedBox(width: 6),
           Text(
             '$label: ',
-            style: TextStyle(fontSize: 11, color: c.textSecondary, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: AppFontSizes.caption, color: c.textSecondary, fontWeight: FontWeight.w500),
           ),
           Text(
             value,
@@ -326,7 +327,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
       ),
       builder: (_) => SafeArea(
         child: Padding(
@@ -341,8 +342,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: AppColors.adminColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(14),
+                      color: AppColors.adminColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppSizes.radius14),
                     ),
                     child: const Icon(
                       Icons.admin_panel_settings_rounded,
@@ -358,7 +359,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                         Text(
                           _adminName,
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: AppFontSizes.input,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -366,8 +367,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                           Text(
                             _adminEmail,
                             style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF9CA3AF),
+                              fontSize: AppFontSizes.small,
+                              color: AppColors.neutral400,
                             ),
                           ),
                       ],
@@ -425,7 +426,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
       ),
       builder: (_) => _AdminSearchSheet(api: _api),
     );
@@ -439,15 +440,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       _QuickAction('Review Approvals', Icons.fact_check_rounded,
           () => widget.onNavigateToTab?.call(4), AppColors.warning),
       _QuickAction('View Bookings', Icons.calendar_month_rounded,
-          () => widget.onNavigateToTab?.call(5), const Color(0xFF0EA5E9)),
+          () => widget.onNavigateToTab?.call(5), AppColors.sky),
       _QuickAction('Reported Users', Icons.flag_rounded,
           () => widget.onNavigateToTab?.call(9), AppColors.error),
       _QuickAction('Analytics', Icons.insights_rounded,
-          () => widget.onNavigateToTab?.call(10), const Color(0xFF16A34A)),
+          () => widget.onNavigateToTab?.call(10), AppColors.greenDeep),
       _QuickAction('Manage Banners', Icons.campaign_rounded,
-          () => widget.onNavigateToTab?.call(7), const Color(0xFF7C3AED)),
+          () => widget.onNavigateToTab?.call(7), AppColors.accentPurple),
       _QuickAction('View Logs', Icons.history_rounded,
-          () => widget.onNavigateToTab?.call(6), const Color(0xFF64748B)),
+          () => widget.onNavigateToTab?.call(6), AppColors.slate500),
     ];
 
     return SizedBox(
@@ -456,7 +457,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         scrollDirection: Axis.horizontal,
         itemCount: actions.length,
         physics: const BouncingScrollPhysics(),
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (_, i) => _buildQuickActionChip(actions[i]),
       ),
     );
@@ -464,19 +465,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
 
   Widget _buildQuickActionChip(_QuickAction a) {
     return _HoverLift(
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(AppSizes.radius22),
       hoverScale: 1.02,
       child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(AppSizes.radius22),
         child: InkWell(
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(AppSizes.radius22),
           onTap: a.onTap,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
+              borderRadius: BorderRadius.circular(AppSizes.radius22),
+              border: Border.all(color: AppColors.neutral200),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -485,7 +486,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                   width: 22,
                   height: 22,
                   decoration: BoxDecoration(
-                    color: a.color.withOpacity(0.12),
+                    color: a.color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(7),
                   ),
                   child: Icon(a.icon, size: 13, color: a.color),
@@ -496,7 +497,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                   style: const TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF374151),
+                    color: AppColors.gray700,
                   ),
                 ),
               ],
@@ -523,21 +524,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         label: 'Professionals',
         value: '$_totalPros',
         icon: Icons.work_outline_rounded,
-        color: const Color(0xFF7C3AED),
+        color: AppColors.accentPurple,
         onTap: () => widget.onNavigateToTab?.call(3),
       ),
       _StatCard(
         label: 'Customers',
         value: '$_totalCustomers',
         icon: Icons.person_outline_rounded,
-        color: const Color(0xFF0EA5E9),
+        color: AppColors.sky,
         onTap: () => widget.onNavigateToTab?.call(2),
       ),
       _StatCard(
         label: 'Revenue',
         value: 'Rs $_revenueDisplay',
         icon: Icons.payments_rounded,
-        color: const Color(0xFF16A34A),
+        color: AppColors.greenDeep,
       ),
       _StatCard(
         label: "Today's Bookings",
@@ -565,7 +566,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         label: 'Blocked Users',
         value: '$_blockedUsers',
         icon: Icons.block_rounded,
-        color: const Color(0xFF64748B),
+        color: AppColors.slate500,
         onTap: () => widget.onNavigateToTab?.call(1),
       ),
     ];
@@ -605,11 +606,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(color: const Color(0xFFEEF1F4)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.035),
+            color: Colors.black.withValues(alpha: 0.035),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -625,7 +626,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: card.color.withOpacity(0.12),
+                  color: card.color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(11),
                 ),
                 child: Icon(card.icon, color: card.color, size: 19),
@@ -635,7 +636,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                 Icon(
                   Icons.arrow_outward_rounded,
                   size: 14,
-                  color: card.color.withOpacity(0.55),
+                  color: card.color.withValues(alpha: 0.55),
                 ),
             ],
           ),
@@ -645,7 +646,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
               Text(
                 card.value,
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: AppFontSizes.h3,
                   fontWeight: FontWeight.w800,
                   color: card.color,
                   letterSpacing: -0.2,
@@ -661,7 +662,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                       card.label,
                       style: const TextStyle(
                         fontSize: 11.5,
-                        color: Color(0xFF6B7280),
+                        color: AppColors.grayDeep,
                         fontWeight: FontWeight.w500,
                       ),
                       maxLines: 1,
@@ -675,7 +676,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                       child: const Icon(
                         Icons.info_outline_rounded,
                         size: 12,
-                        color: Color(0xFFCBD5E1),
+                        color: AppColors.slate300,
                       ),
                     ),
                   ],
@@ -691,13 +692,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
 
     // Only tappable cards get the hover-lift affordance.
     return _HoverLift(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       hoverScale: 1.015,
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           onTap: card.onTap,
           child: content,
         ),
@@ -793,7 +794,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         final date = u['created_at']?.toString() ?? '';
 
         final roleColor = role == 'professional'
-            ? const Color(0xFF7C3AED)
+            ? AppColors.accentPurple
             : role == 'admin'
                 ? AppColors.adminColor
                 : context.colors.primary;
@@ -815,9 +816,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.18)),
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
       ),
       child: Text(
         text,
@@ -847,7 +848,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(color: const Color(0xFFEEF1F4)),
       ),
       child: Row(
@@ -856,7 +857,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: leadingColor.withOpacity(0.1),
+              color: leadingColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(leadingIcon, size: 17, color: leadingColor),
@@ -871,7 +872,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                   style: const TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF111827),
+                    color: AppColors.gray900,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -882,8 +883,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                     child: Text(
                       subtitle,
                       style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF9CA3AF),
+                        fontSize: AppFontSizes.caption,
+                        color: AppColors.neutral400,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -895,8 +896,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                     child: Text(
                       _formatDate(dateStr),
                       style: const TextStyle(
-                        fontSize: 10,
-                        color: Color(0xFFCBD5E1),
+                        fontSize: AppFontSizes.micro,
+                        color: AppColors.slate300,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -920,7 +921,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
         border: Border.all(color: const Color(0xFFEEF1F4)),
       ),
       child: Center(
@@ -930,18 +931,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
               width: 56,
               height: 56,
               decoration: const BoxDecoration(
-                color: Color(0xFFF3F4F6),
+                color: AppColors.neutral100,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 26, color: const Color(0xFF9CA3AF)),
+              child: Icon(icon, size: 26, color: AppColors.neutral400),
             ),
             const SizedBox(height: 10),
             Text(
               message,
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: AppFontSizes.secondary,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF9CA3AF),
+                color: AppColors.neutral400,
               ),
             ),
           ],
@@ -988,7 +989,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         icon = Icons.cancel_outlined;
         break;
       default:
-        color = const Color(0xFF9CA3AF);
+        color = AppColors.neutral400;
         icon = Icons.info_outline_rounded;
     }
 
@@ -1024,9 +1025,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         Text(
           title,
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: AppFontSizes.input,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF111827),
+            color: AppColors.gray900,
             letterSpacing: -0.1,
           ),
         ),
@@ -1057,7 +1058,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
+                color: AppColors.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -1070,9 +1071,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
             const Text(
               'Failed to load dashboard',
               style: TextStyle(
-                fontSize: 15,
+                fontSize: AppFontSizes.input,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF374151),
+                color: AppColors.gray700,
               ),
             ),
             const SizedBox(height: 18),
@@ -1085,7 +1086,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
               ),
             ),
@@ -1183,8 +1184,8 @@ class _HoverTintState extends State<_HoverTint> {
         duration: const Duration(milliseconds: 140),
         curve: Curves.easeOut,
         decoration: BoxDecoration(
-          color: _hovered ? const Color(0xFFF9FAFB) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          color: _hovered ? AppColors.tintGray : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
         child: widget.child,
       ),
@@ -1323,8 +1324,8 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: AppColors.adminColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.adminColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                   ),
                   child: const Icon(
                     Icons.search_rounded,
@@ -1335,7 +1336,7 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
                 const SizedBox(width: 10),
                 const Text(
                   'Search',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -1356,9 +1357,9 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
                         },
                       ),
                 filled: true,
-                fillColor: const Color(0xFFF5F7FA),
+                fillColor: AppColors.lightScaffold,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   borderSide: BorderSide.none,
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 14),
@@ -1399,7 +1400,7 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
         padding: const EdgeInsets.symmetric(vertical: 40),
         child: Center(
           child: Text(_error!,
-              style: const TextStyle(color: Color(0xFF6B7280), fontSize: 13)),
+              style: const TextStyle(color: AppColors.grayDeep, fontSize: AppFontSizes.secondary)),
         ),
       );
     }
@@ -1409,7 +1410,7 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
         child: Center(
           child: Text(
             'Type at least 2 characters to search',
-            style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
+            style: TextStyle(color: AppColors.neutral400, fontSize: AppFontSizes.secondary),
           ),
         ),
       );
@@ -1420,7 +1421,7 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
         child: Center(
           child: Text(
             'No matching users or bookings',
-            style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
+            style: TextStyle(color: AppColors.neutral400, fontSize: AppFontSizes.secondary),
           ),
         ),
       );
@@ -1449,7 +1450,7 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
             fontSize: 10.5,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.4,
-            color: Color(0xFF9CA3AF),
+            color: AppColors.neutral400,
           ),
         ),
       );
@@ -1460,13 +1461,13 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
     final role = u['role']?.toString() ?? '';
     final isVerified = u['is_verified'] == true;
     final roleColor = role == 'professional'
-        ? const Color(0xFF7C3AED)
-        : const Color(0xFF0EA5E9);
+        ? AppColors.accentPurple
+        : AppColors.sky;
 
     return _resultCard(
       leading: CircleAvatar(
         radius: 18,
-        backgroundColor: roleColor.withOpacity(0.12),
+        backgroundColor: roleColor.withValues(alpha: 0.12),
         child: Text(
           name.isNotEmpty ? name[0].toUpperCase() : '?',
           style: TextStyle(color: roleColor, fontWeight: FontWeight.w700),
@@ -1481,13 +1482,13 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
             const Padding(
               padding: EdgeInsets.only(right: 4),
               child: Icon(Icons.verified_rounded,
-                  size: 15, color: Color(0xFF10B981)),
+                  size: 15, color: AppColors.emerald),
             ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              color: roleColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
+              color: roleColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             ),
             child: Text(
               role,
@@ -1507,10 +1508,10 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
     final professional = b['professional_name']?.toString() ?? 'Professional';
     final status = b['status']?.toString() ?? '';
     final statusColor = switch (status) {
-      'completed' => const Color(0xFF10B981),
-      'cancelled' => const Color(0xFFEF4444),
-      'pending' => const Color(0xFFF59E0B),
-      _ => const Color(0xFF0EA5E9),
+      'completed' => AppColors.emerald,
+      'cancelled' => AppColors.favoriteRed,
+      'pending' => AppColors.warningAmber,
+      _ => AppColors.sky,
     };
 
     return _resultCard(
@@ -1518,8 +1519,8 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: statusColor.withOpacity(0.12),
-          borderRadius: BorderRadius.circular(10),
+          color: statusColor.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
         ),
         child: Icon(Icons.calendar_month_rounded, size: 18, color: statusColor),
       ),
@@ -1528,8 +1529,8 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: statusColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
+          color: statusColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         ),
         child: Text(
           status,
@@ -1552,7 +1553,7 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
           child: Row(
@@ -1569,13 +1570,13 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
                         style: const TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF111827))),
+                            color: AppColors.gray900)),
                     const SizedBox(height: 2),
                     Text(subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            fontSize: 11.5, color: Color(0xFF6B7280))),
+                            fontSize: 11.5, color: AppColors.grayDeep)),
                   ],
                 ),
               ),
@@ -1603,7 +1604,7 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
       ),
       builder: (_) => Padding(
         padding: const EdgeInsets.all(20),
@@ -1616,12 +1617,12 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
                 Expanded(
                   child: Text(name,
                       style: const TextStyle(
-                          fontSize: 17, fontWeight: FontWeight.w800)),
+                          fontSize: AppFontSizes.titleMd, fontWeight: FontWeight.w800)),
                 ),
                 if (isBanned)
-                  _pill('BANNED', const Color(0xFFEF4444))
+                  _pill('BANNED', AppColors.favoriteRed)
                 else if (isVerified)
-                  _pill('VERIFIED', const Color(0xFF10B981)),
+                  _pill('VERIFIED', AppColors.emerald),
               ],
             ),
             const SizedBox(height: 6),
@@ -1635,7 +1636,7 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
               _detailRow(Icons.payments_outlined, 'Rs $hourlyRate/hr'),
             const SizedBox(height: 4),
             _pill(role.toUpperCase(),
-                isPro ? const Color(0xFF7C3AED) : const Color(0xFF0EA5E9)),
+                isPro ? AppColors.accentPurple : AppColors.sky),
           ],
         ),
       ),
@@ -1656,7 +1657,7 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
       ),
       builder: (_) => Padding(
         padding: const EdgeInsets.all(20),
@@ -1666,7 +1667,7 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
           children: [
             Text('Booking #$id',
                 style: const TextStyle(
-                    fontSize: 17, fontWeight: FontWeight.w800)),
+                    fontSize: AppFontSizes.titleMd, fontWeight: FontWeight.w800)),
             const SizedBox(height: 6),
             _detailRow(Icons.person_outline_rounded, 'Customer: $customer'),
             _detailRow(Icons.badge_outlined,
@@ -1678,10 +1679,10 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
             if (note.isNotEmpty) _detailRow(Icons.notes_rounded, note),
             const SizedBox(height: 4),
             _pill(status.toUpperCase(), switch (status) {
-              'completed' => const Color(0xFF10B981),
-              'cancelled' => const Color(0xFFEF4444),
-              'pending' => const Color(0xFFF59E0B),
-              _ => const Color(0xFF0EA5E9),
+              'completed' => AppColors.emerald,
+              'cancelled' => AppColors.favoriteRed,
+              'pending' => AppColors.warningAmber,
+              _ => AppColors.sky,
             }),
           ],
         ),
@@ -1694,12 +1695,12 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 15, color: const Color(0xFF9CA3AF)),
+            Icon(icon, size: 15, color: AppColors.neutral400),
             const SizedBox(width: 8),
             Expanded(
               child: Text(text,
                   style: const TextStyle(
-                      fontSize: 13, color: Color(0xFF374151))),
+                      fontSize: AppFontSizes.secondary, color: AppColors.gray700)),
             ),
           ],
         ),
@@ -1709,8 +1710,8 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
         margin: const EdgeInsets.only(top: 4),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         ),
         child: Text(text,
             style: TextStyle(

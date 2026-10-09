@@ -2,13 +2,39 @@
 
 import 'api_service.dart';
 import '../core/constants/app_constants.dart';
+import '../core/constants/app_strings.dart';
+import '../core/localization/locale_provider.dart';
+import 'content_localizer.dart';
 
 class HomeService {
   final ApiService _api = ApiService();
 
+  /// Category rows carry `name` (English) + `localized_name` (admin-entered
+  /// translation, or the English fallback). Register real translations and
+  /// warm the cache for the rest so chips/cards render localized right away.
+  Future<void> _localizeCategoryRows(dynamic rows) async {
+    if (rows is! List) return;
+    final lang = LocaleProvider.currentCode;
+    if (lang == 'en') return;
+    final missing = <String>[];
+    for (final r in rows) {
+      if (r is! Map) continue;
+      final name = r['name']?.toString() ?? '';
+      final loc  = r['localized_name']?.toString() ?? '';
+      if (name.isEmpty) continue;
+      if (loc.isNotEmpty && loc != name) {
+        ContentLocalizer.instance.register(lang, LocKind.category, name, loc);
+      } else {
+        missing.add(name);
+      }
+    }
+    await ContentLocalizer.instance.prefetch(missing, LocKind.category);
+  }
+
   Future<Map<String, dynamic>> getCategories() async {
     try {
-      final response = await _api.get(AppConstants.categories);
+      final response = await _api.get('${AppConstants.categories}?lang=${LocaleProvider.currentCode}');
+      await _localizeCategoryRows(response.data);
       return {'success': true, 'data': response.data};
     } catch (e) {
       return {'success': false, 'data': []};
@@ -20,8 +46,9 @@ class HomeService {
   /// categories when nothing has been marked featured yet.
   Future<Map<String, dynamic>> getFeaturedCategories() async {
     try {
-      final response = await _api.get(AppConstants.featuredCategories);
+      final response = await _api.get('${AppConstants.featuredCategories}?lang=${LocaleProvider.currentCode}');
       final body = response.data as Map<String, dynamic>? ?? {};
+      await _localizeCategoryRows(body['categories']);
       return {
         'success': true,
         'data':    body['categories'] as List? ?? [],
@@ -227,7 +254,7 @@ class HomeService {
 
       return {'success': true, 'data': merged};
     } catch (e) {
-      return {'success': false, 'message': 'Not logged in'};
+      return {'success': false, 'message': AppStrings.errNotLoggedIn};
     }
   }
 }

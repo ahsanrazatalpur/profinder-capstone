@@ -1929,6 +1929,1531 @@
   "chatReasonScamFraud": "احتيال أو نصب",
   "chatReasonFakeProfile": "ملف تعريف مزيف",
   "chatReasonOther": "أخرى",
+  "aboutActionLabel": "حول",
+  "aboutActionSubtitle": "حول هذا التطبيق",
+  "aboutAppStoreLabel": "App Store",
+  "aboutDisabledBadgeLabel": "غير متاح",
+  "aboutEmptyStateMessage": "لم نتمكن من العثور على أي معلومات لعرضها الآن.",
+  "aboutEmptyStateTitle": "لا يوجد ما يمكن عرضه",
+  "aboutGooglePlayLabel": "Google Play",
+  "aboutLabel": "حول",
+  "aboutLinkCouldNotOpen": "تعذّر فتح هذا الرابط {value1}",
+  "@aboutLinkCouldNotOpen": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLinkError": "حدث خطأ أثناء فتح الرابط {value1}",
+  "@aboutLinkError": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLinkNoAppFound": "لم يتم العثور على تطبيق لفتح هذا الرابط {value1}",
+  "@aboutLinkNoAppFound": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLoadError": "فشل تحميل هذه الصفحة",
+  "aboutLoadingText": "جارٍ التحميل...",
+  "aboutTitle": "حول",
+  "acceptCta": "قبول",
+  "acceptDescription": "قبول هذا الحجز",
+  "acceptLabel": "قبول",
+  "acceptanceRateLabel": "معدل القبول",
+  "acceptanceRateSubtext": "من الحجوزات التي تقبلها",
+  "acceptedLabel": "مقبول",
+  "acceptingBookingsLabel": "استقبال الحجوزات",
+  "accountGroupLabel": "الحساب",
+  "accountHolderLabel": "اسم صاحب الحساب",
+  "accountNumberLabel": "رقم الحساب",
+  "accountSectionLabel": "الحساب",
+  "accountTypeLabel": "نوع الحساب",
+  "addBankBannerSubtitle": "أضف بياناتك المصرفية لاستلام عمليات السحب",
+  "addBankBannerTitle": "إضافة البيانات المصرفية",
+  "addBankCta": "إضافة حساب مصرفي",
+  "addCertificateImageLabel": "صورة الشهادة",
+  "addCertificateTitle": "إضافة شهادة",
+  "addCertificateTooltip": "إضافة شهادة",
+  "addCta": "إضافة",
+  "addFirstCertificateCta": "أضف شهادتك الأولى",
+  "addFirstItemCta": "أضف عنصرك الأول",
+  "addImageLabel": "إضافة صورة",
+  "addLanguageHint": "اكتب لغة واضغط على إدخال",
+  "addPhotoCta": "إضافة صورة",
+  "addPhotoTooltip": "إضافة صورة",
+  "addPortfolioHint": "اعرض أفضل أعمالك لجذب المزيد من العملاء",
+  "addPortfolioTitle": "إضافة عنصر إلى معرض الأعمال",
+  "addPortfolioTooltip": "إضافة عنصر إلى معرض الأعمال",
+  "addSkillHint": "اكتب مهارة واضغط على إدخال",
+  "addWorkSamplesLabel": "إضافة نماذج من الأعمال",
+  "adjustSearchTerms": "جرّب تعديل كلمات البحث",
+  "adminNoteLabel": "ملاحظة المسؤول",
+  "allCategoriesTitle": "جميع الفئات",
+  "analyticsErrorTitle": "تعذّر تحميل التحليلات",
+  "analyticsLoadError": "فشل تحميل التحليلات",
+  "analyticsTitle": "التحليلات",
+  "applyCta": "تطبيق",
+  "approvalSubtitle": "بانتظار موافقة المسؤول",
+  "approvalTitle": "حالة الموافقة",
+  "articleFooterMagazineLabel": "المزيد من المجلة",
+  "articleLoadingText": "جارٍ تحميل المقال...",
+  "articleNotFoundError": "المقال غير موجود",
+  "articleNotFoundMessage": "ربما تمت إزالة هذا المقال أو أنه غير موجود",
+  "articleReadTime": "{value1} دقيقة للقراءة",
+  "@articleReadTime": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "articleReadTimeLabel": "{value1} دقيقة للقراءة",
+  "@articleReadTimeLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "automaticDescription": "قبول الحجوزات التي تستوفي معاييرك تلقائيًا",
+  "automaticLabel": "تلقائي",
+  "availabilityClosedLabel": "مغلق",
+  "availabilityLabel": "التوفر",
+  "availabilityLoadError": "فشل تحميل التوفر",
+  "availabilityOffSuccess": "تم تعيين حالتك الآن على غير متاح",
+  "availabilityOnSuccess": "تم تعيين حالتك الآن على متاح",
+  "availabilityScheduleSaveError": "فشل حفظ الجدول",
+  "availabilityScheduleSaved": "تم حفظ الجدول بنجاح",
+  "availabilityStatusUpdateError": "فشل تحديث حالة التوفر",
+  "availabilityStatusUpdated": "تم تعيين التوفر إلى {value1}",
+  "@availabilityStatusUpdated": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "availabilitySummarySubtitle": "نظرة سريعة على ساعات عملك الأسبوعية",
+  "availabilitySummaryTitle": "ملخص التوفر",
+  "availabilityTitle": "التوفر",
+  "availabilityUpdateError": "فشل تحديث التوفر",
+  "availabilityWeeklySubtitle": "حدّد ساعات عملك لكل يوم",
+  "availabilityWeeklyTitle": "الجدول الأسبوعي",
+  "availableBalanceLabel": "الرصيد المتاح: {value1} روبية",
+  "@availableBalanceLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "availableBalanceTitle": "الرصيد المتاح",
+  "availableForBookingsLabel": "متاح للحجوزات",
+  "availableLabel": "متاح",
+  "availableNowLabel": "متاح الآن",
+  "availableSubtitle": "جاهز لقبول حجوزات جديدة",
+  "averageRatingLabel": "متوسط التقييم",
+  "averageRatingSubtext": "بناءً على تقييمات العملاء",
+  "backCta": "رجوع",
+  "backToBookingsCta": "العودة إلى الحجوزات",
+  "backToHomeCta": "العودة إلى الرئيسية",
+  "backToLoginCta": "العودة إلى تسجيل الدخول",
+  "bankDetailsEmpty": "لم تتم إضافة بيانات مصرفية بعد",
+  "bankDetailsLabel": "البيانات المصرفية",
+  "bankDetailsRequiredMessage": "يرجى إضافة بياناتك المصرفية قبل طلب السحب",
+  "bankDetailsRequiredTitle": "البيانات المصرفية مطلوبة",
+  "bankDetailsSubtitle": "تُستخدم لعمليات السحب إلى حسابك",
+  "bankNameLabel": "اسم البنك",
+  "bioLabel": "نبذة تعريفية",
+  "bookAppointmentTitle": "حجز موعد",
+  "bookCta": "احجز",
+  "bookNowCta": "احجز الآن",
+  "bookingConfigurationTitle": "إعدادات الحجز",
+  "bookingDateRequired": "يرجى اختيار تاريخ",
+  "bookingDetailsTitle": "تفاصيل الحجز",
+  "bookingFailed": "فشل الحجز. يرجى المحاولة مرة أخرى.",
+  "bookingManagementTitle": "إدارة الحجوزات",
+  "bookingSoFarLabel": "الحجوزات حتى الآن",
+  "bookingStatusUpdated": "تم تعيين الحجز على {value1}",
+  "@bookingStatusUpdated": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingSuccessMessage": "تم إرسال طلب حجزك مع {value1}",
+  "@bookingSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingSuccessTitle": "تم طلب الحجز",
+  "bookingTimeRequired": "يرجى اختيار وقت",
+  "bookingTipText": "يمكنك الإلغاء مجانًا حتى 24 ساعة قبل الموعد",
+  "bookingUpdateError": "فشل تحديث الحجز",
+  "bookingUpdatedToast": "تم تحديث الحجز إلى {value1}",
+  "@bookingUpdatedToast": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bookingsActionLabel": "الحجوزات",
+  "bookingsActionSubtitle": "عرض سجل حجوزاتك",
+  "bookingsLabel": "الحجوزات",
+  "bookingsStatLabel": "الحجوزات",
+  "bufferMinLabel": "فاصل {value1} دقيقة",
+  "@bufferMinLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "bufferNoneLabel": "بدون فاصل",
+  "bufferTimeSubtitle": "الوقت بين الحجوزات المتتالية",
+  "bufferTimeTitle": "وقت الفاصل",
+  "calendarWeekDays": "ح,ن,ث,ر,خ,ج,س",
+  "cameraOptionLabel": "الكاميرا",
+  "cancelBookingCta": "إلغاء الحجز",
+  "cancelBookingTitle": "إلغاء الحجز",
+  "cancelConfirmationMessage": "هل أنت متأكد أنك تريد إلغاء هذا الحجز؟",
+  "cancelCta": "إلغاء",
+  "cancelReasonHint": "أخبرنا لماذا تقوم بالإلغاء",
+  "cancelReasonLabel": "سبب الإلغاء",
+  "cancellationPolicyLabel": "سياسة الإلغاء",
+  "bookingQuickNoteFirstTime": "عميل لأول مرة",
+  "bookingQuickNoteUrgent": "طلب عاجل",
+  "bookingQuickNoteFollowUp": "زيارة متابعة",
+  "bookingQuickNoteCallBefore": "يرجى الاتصال قبل الوصول",
+  "cancellationPolicyPointFree": "إلغاء مجاني في أي وقت أثناء انتظار طلبك.",
+  "cancellationPolicyPointChat": "بعد القبول، يمكنك تنسيق التغييرات مباشرة مع المحترف عبر الدردشة.",
+  "walletJobCompletedWithName": "اكتملت المهمة — {name}",
+  "walletJobCompleted": "اكتملت المهمة",
+  "walletWithdrawalRequestLabel": "طلب سحب",
+  "cancelledByCustomerLabel": "ألغاه العميل",
+  "cancelledByYouLabel": "ألغيته أنت",
+  "categoryLabel": "الفئة",
+  "certificateAddError": "فشلت إضافة الشهادة",
+  "certificateAddSuccess": "تمت إضافة الشهادة بنجاح",
+  "certificateTitleHint": "مثال: فني سباكة معتمد",
+  "certificateTitleLabelRequired": "عنوان الشهادة",
+  "certificatesLabel": "الشهادات",
+  "certificatesTitle": "الشهادات",
+  "certificationsLabel": "الاعتمادات",
+  "changePasswordLabel": "تغيير كلمة المرور",
+  "changePasswordSubtitle": "تحديث كلمة مرور حسابك",
+  "changePasswordTitle": "تغيير كلمة المرور",
+  "changeProfilePhotoTitle": "تغيير صورة الملف الشخصي",
+  "chatMicPermissionRequired": "يلزم إذن الميكروفون لتسجيل الرسائل الصوتية",
+  "chatNoMessagesFound": "لم يتم العثور على رسائل",
+  "chatSearchMessagesHint": "البحث في الرسائل",
+  "chatTypeToSearchConversation": "اكتب للبحث في هذه المحادثة",
+  "checkEmailHint": "لم تصلك الرسالة؟ تحقق من مجلد الرسائل غير المرغوب فيها.",
+  "checkEmailMessage": "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني",
+  "checkEmailTitle": "تحقق من بريدك الإلكتروني",
+  "cityDisabledHint": "اختر الدولة أولاً",
+  "cityEmptyMessage": "لم يتم العثور على مدن",
+  "cityHint": "اختر المدينة",
+  "cityLabel": "المدينة",
+  "cityRequiredError": "يرجى اختيار مدينة",
+  "citySearchHint": "ابحث عن مدينة",
+  "clearCta": "مسح",
+  "clientsLabel": "العملاء",
+  "closeCta": "إغلاق",
+  "comingSoonMessage": "{value1} قريبًا",
+  "@comingSoonMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "commentHint": "شاركنا تجربتك مع {value1}",
+  "@commentHint": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "commentOptionalLabel": "تعليق (اختياري)",
+  "completedLabel": "مكتمل",
+  "confirmBookingCta": "تأكيد الحجز",
+  "confirmPasswordLabel": "تأكيد كلمة المرور",
+  "contactChatLabel": "تحدث معنا",
+  "contactChatSubtitle": "احصل على رد سريع عبر الدردشة",
+  "contactChatTitle": "دعم الدردشة",
+  "contactCta": "اتصل",
+  "contactEmailLabel": "راسلنا",
+  "contactEmailSubtitle": "سنرد عليك خلال 24 ساعة",
+  "contactEmailTitle": "الدعم عبر البريد الإلكتروني",
+  "contactSupportTitle": "التواصل مع الدعم",
+  "continueAsGuestCta": "المتابعة كضيف",
+  "countryEmptyMessage": "لم يتم العثور على دول",
+  "countryHint": "اختر الدولة",
+  "countryRequiredError": "يرجى اختيار دولة",
+  "countrySearchHint": "ابحث عن دولة",
+  "currencyFeatureName": "العملة",
+  "currentPasswordLabel": "كلمة المرور الحالية",
+  "currentPlanLabel": "الخطة الحالية: {value1}",
+  "@currentPlanLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "currentlyBusyLabel": "مشغول حاليًا",
+  "customLocationHint": "أدخل موقعًا مخصصًا",
+  "customLocationOption": "موقع مخصص",
+  "customLocationSubtitle": "أدخل العنوان يدويًا",
+  "customSlotDefaultLabel": "مخصص",
+  "customSlotHint": "أدخل المدة بالدقائق",
+  "customSlotLabel": "مخصص ({value1})",
+  "@customSlotLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "customSlotTitle": "مدة الفترة المخصصة",
+  "customSlotValidation": "يرجى إدخال مدة صالحة",
+  "customerAccountDescription": "احجز مع محترفين موثوقين بالقرب منك",
+  "customerDefault": "عميل",
+  "customerLabel": "عميل",
+  "dailyHoursLabel": "الساعات اليومية",
+  "darkModeOffLabel": "الوضع الفاتح",
+  "darkModeOnLabel": "الوضع الداكن",
+  "dashboardLoadError": "فشل تحميل لوحة التحكم",
+  "dateLabel": "التاريخ",
+  "dateNotSet": "لم يتم تحديد التاريخ",
+  "dateNotSetShort": "بلا تاريخ",
+  "dateRequiredMessage": "يرجى اختيار تاريخ",
+  "dateTipText": "اختر التاريخ الأنسب لك",
+  "daysLabel": "{value1} ي",
+  "@daysLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "declineCta": "رفض",
+  "declineDescription": "رفض هذا الحجز",
+  "declineLabel": "رفض",
+  "deleteAccountDialogContent": "سيؤدي هذا إلى حذف حسابك وجميع البيانات المرتبطة به نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+  "deleteAccountDialogTitle": "حذف الحساب",
+  "deleteAccountLabel": "حذف الحساب",
+  "deleteConfirmationTitle": "هل تريد حذف هذا العنصر؟",
+  "deleteCta": "حذف",
+  "deleteDialogContent": "هل أنت متأكد أنك تريد حذف \"{value1}\"؟",
+  "@deleteDialogContent": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "deleteDialogTitle": "حذف العنصر",
+  "deleteError": "فشل الحذف",
+  "deleteGalleryDialogContent": "هل أنت متأكد أنك تريد حذف هذه الصورة؟",
+  "deleteGalleryDialogTitle": "حذف الصورة",
+  "deleteReviewConfirmationMessage": "هل أنت متأكد أنك تريد حذف هذا التقييم؟",
+  "deleteSuccess": "تم الحذف بنجاح",
+  "descriptionHint": "أضف وصفًا",
+  "descriptionLabelOptional": "الوصف (اختياري)",
+  "detailsLabel": "التفاصيل",
+  "directChatLabel": "مراسلة",
+  "discardCta": "تجاهل",
+  "doneCta": "تم",
+  "earningsLabel": "الأرباح",
+  "editCta": "تعديل",
+  "editLabel": "تعديل",
+  "editProfileActionLabel": "تعديل الملف الشخصي",
+  "editProfileActionSubtitle": "تحديث معلوماتك الشخصية",
+  "editReviewHint": "حدّث تعليقك",
+  "editReviewSubtitle": "حدّث تقييمك وتعليقك",
+  "editReviewTitle": "تعديل التقييم",
+  "editorHeadingPlaceholder": "عنوان",
+  "editorHintText": "ابدأ الكتابة...",
+  "editorInsertCta": "إدراج",
+  "editorInsertLinkTitle": "إدراج رابط",
+  "editorLinkHint": "https://example.com",
+  "editorLinkPlaceholder": "نص الرابط",
+  "educationLabel": "التعليم",
+  "emailAvailableLabel": "البريد الإلكتروني متاح",
+  "emailNotificationsLabel": "إشعارات البريد الإلكتروني",
+  "emailTakenLabel": "هذا البريد الإلكتروني مسجّل بالفعل",
+  "emptyCertificatesSubtitle": "أضف شهاداتك لبناء الثقة مع العملاء",
+  "emptyCertificatesTitle": "لا توجد شهادات بعد",
+  "emptyGallerySubtitle": "أضف صورًا لعرض أعمالك",
+  "emptyGalleryTitle": "لا توجد صور بعد",
+  "emptyPortfolioSubtitle": "أضف أفضل أعمالك لجذب المزيد من العملاء",
+  "emptyPortfolioTitle": "لا توجد عناصر في معرض الأعمال بعد",
+  "endTimeLabel": "وقت الانتهاء",
+  "enterAmountHint": "أدخل المبلغ",
+  "exceedsBalanceError": "المبلغ يتجاوز رصيدك المتاح",
+  "exceptionsAddRange": "إضافة نطاق تواريخ",
+  "exceptionsCalendarSubtitle": "اضغط على تاريخ لتعيين استثناء",
+  "exceptionsCalendarTitle": "التقويم",
+  "exceptionsCustomChip": "مخصص",
+  "exceptionsEndDate": "تاريخ الانتهاء",
+  "exceptionsIntroText": "حدّد التواريخ التي يختلف فيها توفرك عن جدولك المعتاد",
+  "exceptionsLegendClosed": "مغلق",
+  "exceptionsLegendCustom": "ساعات مخصصة",
+  "exceptionsLegendUnavailable": "غير متاح",
+  "exceptionsLegendVacation": "إجازة",
+  "exceptionsLegendWorking": "عمل",
+  "exceptionsLoadError": "فشل تحميل الاستثناءات",
+  "exceptionsNoOverrides": "لم يتم تعيين استثناءات",
+  "exceptionsOverridesSubtitle": "التواريخ ذات التوفر المخصص",
+  "exceptionsOverridesTitle": "التجاوزات",
+  "exceptionsReasonLabel": "السبب (اختياري)",
+  "exceptionsSelectDate": "اختر تاريخًا",
+  "exceptionsSetVacation": "تعيين إجازة",
+  "exceptionsStartDate": "تاريخ البدء",
+  "exceptionsTimeError": "يجب أن يكون وقت الانتهاء بعد وقت البدء",
+  "exceptionsTitle": "استثناءات التوفر",
+  "exceptionsUnavailableChip": "غير متاح",
+  "exceptionsUnavailableLabel": "تحديد كغير متاح",
+  "exceptionsUpdateVacation": "تحديث الإجازة",
+  "exceptionsVacationActive": "الإجازة سارية حاليًا",
+  "exceptionsVacationScheduled": "الإجازة مجدولة بدءًا من {value1}",
+  "@exceptionsVacationScheduled": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "exceptionsVacationSubtitle": "حدّد نطاق تواريخ تكون فيه بعيدًا",
+  "exceptionsVacationTitle": "وضع الإجازة",
+  "experienceLabel": "الخبرة",
+  "experienceYearsLabel": "خبرة {value1} سنوات",
+  "@experienceYearsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "exploreExpertsLabel": "استكشف الخبراء",
+  "facebookSignInLabel": "المتابعة باستخدام Facebook",
+  "faqBookingPendingA": "قد يستغرق رد المحترف بعض الوقت. سيتم إشعارك بمجرد قبوله أو رفضه.",
+  "faqBookingPendingQ": "لماذا لا يزال حجزي قيد الانتظار؟",
+  "faqChangeAvailabilityA": "انتقل إلى إعدادات التوفر من ملفك الشخصي لتحديث ساعات عملك.",
+  "faqChangeAvailabilityQ": "كيف أغيّر توفري؟",
+  "faqGetVerifiedA": "أكمل ملفك الشخصي وأرسل المستندات المطلوبة من إعدادات الملف الشخصي لطلب التوثيق.",
+  "faqGetVerifiedQ": "كيف أحصل على التوثيق؟",
+  "faqHowToBookA": "ابحث عن محترف، واطلع على ملفه الشخصي، ثم اضغط على احجز الآن لاختيار التاريخ والوقت.",
+  "faqHowToBookQ": "كيف أحجز مع محترف؟",
+  "faqHowToCancelA": "افتح الحجز من حجوزاتي واضغط على إلغاء. الإلغاءات التي تتم في الوقت المناسب مجانية.",
+  "faqHowToCancelQ": "كيف ألغي حجزًا؟",
+  "faqImproveProfileA": "أضف صورة شخصية ونماذج من أعمالك وشهاداتك لبناء الثقة مع العملاء.",
+  "faqImproveProfileQ": "كيف يمكنني تحسين ملفي الشخصي؟",
+  "faqPaymentSecureA": "نعم، تتم معالجة جميع المدفوعات بشكل آمن ولا تتم مشاركة بياناتك أبدًا.",
+  "faqPaymentSecureQ": "هل معلومات الدفع الخاصة بي آمنة؟",
+  "faqRefundsA": "تتم معالجة المبالغ المستردة تلقائيًا للإلغاءات المؤهلة خلال بضعة أيام عمل.",
+  "faqRefundsQ": "كيف تعمل المبالغ المستردة؟",
+  "faqSectionLabel": "الأسئلة الشائعة",
+  "faqSectionTitle": "الأسئلة المتكررة",
+  "faqWithdrawEarningsA": "انتقل إلى محفظتك واضغط على سحب لتحويل أرباحك إلى حسابك المصرفي.",
+  "faqWithdrawEarningsQ": "كيف أسحب أرباحي؟",
+  "fastResponseLabel": "استجابة سريعة",
+  "flexibleTimingLabel": "مواعيد مرنة",
+  "freeToCancelLabel": "إلغاء مجاني",
+  "fullNameLabel": "الاسم الكامل",
+  "galleryLabel": "المعرض",
+  "galleryOptionLabel": "المعرض",
+  "galleryTitle": "المعرض",
+  "galleryUploadError": "فشل رفع الصورة",
+  "galleryUploadSuccess": "تم رفع الصورة بنجاح",
+  "goBackCta": "رجوع",
+  "goodAfternoon": "مساء الخير",
+  "goodAfternoonComma": "مساء الخير،",
+  "goodEvening": "مساء الخير",
+  "goodEveningComma": "مساء الخير،",
+  "goodMorning": "صباح الخير",
+  "goodMorningComma": "صباح الخير،",
+  "goodToKnowLabel": "من الجيد معرفته",
+  "googleSignInLabel": "المتابعة باستخدام Google",
+  "helpActionLabel": "المساعدة والدعم",
+  "helpActionSubtitle": "احصل على مساعدة أو تواصل معنا",
+  "helpSupportLabel": "المساعدة والدعم",
+  "helpSupportTitle": "المساعدة والدعم",
+  "helpTitle": "المساعدة",
+  "homeDefaultPlanFree": "مجاني",
+  "homeDefaultProfessionalName": "محترف",
+  "homeFilterAll": "الكل",
+  "homeFilterAvailableNow": "متاح الآن",
+  "homeFilterFastResponse": "استجابة سريعة",
+  "homeFilterHighestPrice": "الأعلى سعرًا",
+  "homeFilterLowestPrice": "الأقل سعرًا",
+  "homeFilterMostBooked": "الأكثر حجزًا",
+  "homeFilterMostExperienced": "الأكثر خبرة",
+  "homeFilterMostReviews": "الأكثر تقييمات",
+  "homeFilterRating1Plus": "نجمة واحدة فأكثر",
+  "homeFilterRating2Plus": "نجمتان فأكثر",
+  "homeFilterRating3Plus": "3 نجوم فأكثر",
+  "homeFilterRating4Plus": "4 نجوم فأكثر",
+  "homeFilterRating5Plus": "5 نجوم",
+  "homeFilterThisMonth": "هذا الشهر",
+  "homeFilterThisWeek": "هذا الأسبوع",
+  "homeFilterToday": "اليوم",
+  "homeFilterTopRated": "الأعلى تقييمًا",
+  "homeFilterVerified": "موثّق",
+  "homeFilterWithin10Km": "ضمن 10 كم",
+  "homeFilterWithin2Km": "ضمن 2 كم",
+  "homeFilterWithin5Km": "ضمن 5 كم",
+  "homeGoBack": "رجوع",
+  "homeNoProfessionalsFound": "لم يتم العثور على محترفين",
+  "homeNoProfessionalsFoundHint": "جرّب تعديل عوامل التصفية أو ابحث في منطقة أخرى",
+  "hour": "ساعة",
+  "hourlyRateLabel": "السعر بالساعة",
+  "hoursDecimalLabel": "{value1} س",
+  "@hoursDecimalLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursLabel": "{value1} س",
+  "@hoursLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursMinutesShort": "{value1} س {value2} د",
+  "@hoursMinutesShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "hoursShort": "{value1} س",
+  "@hoursShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "idVerifiedLabel": "الهوية موثّقة",
+  "imagePickError": "فشل اختيار الصورة",
+  "instantLabel": "فوري",
+  "issueDateLabelOptional": "تاريخ الإصدار (اختياري)",
+  "issuingOrganizationHint": "مثال: المجلس الوطني للمهارات",
+  "issuingOrganizationLabel": "الجهة المصدرة",
+  "jobsDoneLabel": "الأعمال المنجزة",
+  "languagesLabel": "اللغات",
+  "lastUpdatedLabel": "آخر تحديث: {value1}",
+  "@lastUpdatedLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "laterCta": "لاحقًا",
+  "loadBookingsError": "فشل تحميل الحجوزات",
+  "loadCertificatesError": "فشل تحميل الشهادات",
+  "loadGalleryError": "فشل تحميل المعرض",
+  "loadPortfolioError": "فشل تحميل معرض الأعمال",
+  "loadSettingsError": "فشل تحميل الإعدادات",
+  "loadWalletError": "فشل تحميل المحفظة",
+  "loadingAnalyticsText": "جارٍ تحميل التحليلات...",
+  "loadingDashboard": "جارٍ تحميل لوحة التحكم...",
+  "locationLabel": "الموقع",
+  "locationNotSpecified": "الموقع غير محدد",
+  "locationTipText": "فعّل الموقع للحصول على نتائج أكثر دقة",
+  "loginCta": "تسجيل الدخول",
+  "loginSubtitle": "مرحبًا بعودتك! يرجى تسجيل الدخول للمتابعة",
+  "loginTitle": "تسجيل الدخول",
+  "loginToBookCta": "سجّل الدخول للحجز",
+  "logoutActionLabel": "تسجيل الخروج",
+  "logoutActionSubtitle": "تسجيل الخروج من حسابك",
+  "logoutCta": "تسجيل الخروج",
+  "logoutDialogContent": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "logoutDialogTitle": "تسجيل الخروج",
+  "magazineAllCategoriesLabel": "الكل",
+  "magazineArticleCountPlural": "{value1} مقالات",
+  "@magazineArticleCountPlural": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "magazineArticleCountSingle": "مقال واحد",
+  "magazineClearSearchCta": "مسح البحث",
+  "magazineEmptyMessage": "لا توجد مقالات متاحة حاليًا",
+  "magazineEmptySearchMessage": "جرّب كلمة بحث مختلفة",
+  "magazineEmptySearchTitle": "لم يتم العثور على نتائج",
+  "magazineEmptyTitle": "لا توجد مقالات بعد",
+  "magazineErrorMessage": "حدث خطأ أثناء تحميل المجلة",
+  "magazineErrorTitle": "فشل التحميل",
+  "magazineLoadError": "فشل تحميل المجلة",
+  "magazineLoadingText": "جارٍ تحميل المقالات...",
+  "magazineSearchHint": "البحث في المقالات",
+  "magazineSearchResultsLabel": "نتائج البحث",
+  "magazineSubtitle": "نصائح وقصص للمحترفين",
+  "magazineTitle": "المجلة",
+  "manageCta": "إدارة",
+  "manageLabel": "إدارة",
+  "manualDescription": "راجع الحجوزات واقبلها بنفسك",
+  "manualInfoFooter": "يمكنك تغيير هذا في أي وقت من الإعدادات",
+  "manualInfoTitle": "الموافقة اليدوية",
+  "manualLabel": "يدوي",
+  "markCompletedCta": "تحديد كمكتمل",
+  "markCompletedCtaShort": "إكمال",
+  "maxAdvanceSubtitle": "إلى أي مدى مسبقًا يمكن للعملاء الحجز",
+  "maxAdvanceTitle": "أقصى مدة للحجز المسبق",
+  "memberSinceLabel": "عضو منذ",
+  "messagesEmptySubtitle": "ابدأ محادثة مع محترف أو عميل",
+  "messagesEmptyTitle": "لا توجد رسائل بعد",
+  "messagesLoadError": "فشل تحميل الرسائل",
+  "messagesLoadingText": "جارٍ تحميل الرسائل...",
+  "messagesTitle": "الرسائل",
+  "minAmountError": "الحد الأدنى للسحب هو {value1} روبية",
+  "@minAmountError": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minNoticeSubtitle": "الحد الأدنى للوقت قبل أن يبدأ الحجز",
+  "minNoticeTitle": "الحد الأدنى للإشعار المسبق",
+  "minWithdrawalLabel": "الحد الأدنى للسحب: {value1} روبية",
+  "@minWithdrawalLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minute": "دقيقة",
+  "minutesLabel": "{value1} د",
+  "@minutesLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minutesShort": "{value1} د",
+  "@minutesShort": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "minutesZero": "0 دقيقة",
+  "myPortfolioLabel": "معرض أعمالي",
+  "myPortfolioTitle": "معرض أعمالي",
+  "myReviewsEmptySubtitle": "ستظهر هنا التقييمات التي تكتبها",
+  "myReviewsEmptyTitle": "لا توجد تقييمات بعد",
+  "myReviewsTitle": "تقييماتي",
+  "navAnalytics": "التحليلات",
+  "navBookings": "الحجوزات",
+  "navDashboard": "لوحة التحكم",
+  "navMagazine": "المجلة",
+  "navMessages": "الرسائل",
+  "navProfile": "الملف الشخصي",
+  "nearbyLabel": "بالقرب منك",
+  "needMoreHelpLabel": "هل تحتاج إلى مزيد من المساعدة؟",
+  "newPasswordLabel": "كلمة المرور الجديدة",
+  "newPhotoSelectedHint": "تم اختيار صورة جديدة",
+  "nextCta": "التالي",
+  "noBookingsAccepted": "لا توجد حجوزات مقبولة",
+  "noBookingsAll": "لا توجد حجوزات بعد",
+  "noBookingsCancelled": "لا توجد حجوزات ملغاة",
+  "noBookingsCompleted": "لا توجد حجوزات مكتملة",
+  "noBookingsDefault": "لم يتم العثور على حجوزات",
+  "noBookingsPending": "لا توجد حجوزات قيد الانتظار",
+  "noBookingsRescheduled": "لا توجد حجوزات معاد جدولتها",
+  "noBookingsToday": "لا توجد حجوزات اليوم",
+  "noBookingsYet": "لا توجد حجوزات بعد",
+  "noClientsFound": "لم يتم العثور على عملاء",
+  "noLanguagesAdded": "لم تتم إضافة لغات بعد",
+  "noMessagesPlaceholder": "لا توجد رسائل بعد",
+  "noMessagesYet": "لا توجد رسائل بعد",
+  "noPaymentsSubtitle": "سيظهر سجل مدفوعاتك هنا",
+  "noPaymentsTitle": "لا توجد مدفوعات بعد",
+  "noPortfolioSubtitle": "ستظهر عناصر معرض الأعمال هنا",
+  "noPortfolioTitle": "لا توجد عناصر في معرض الأعمال",
+  "noReviewsSubtitle": "ستظهر التقييمات هنا بمجرد أن يقيّمك العملاء",
+  "noReviewsTitle": "لا توجد تقييمات بعد",
+  "noReviewsYet": "لا توجد تقييمات بعد",
+  "noServicesSubtitle": "أضف الخدمات التي تقدمها لجذب العملاء",
+  "noServicesTitle": "لم تتم إضافة خدمات",
+  "noSkillsAdded": "لم تتم إضافة مهارات بعد",
+  "noTransactionsLabel": "لا توجد معاملات بعد",
+  "noWorkingHoursMessage": "لم يتم تعيين ساعات عمل لهذا اليوم",
+  "notAcceptingBookingsLabel": "لا يقبل الحجوزات",
+  "notAvailableLabel": "غير متاح",
+  "notAvailableSubtitle": "لا يقبل الحجوزات حاليًا",
+  "notSetPlaceholder": "غير محدد",
+  "notSpecifiedLabel": "غير محدد",
+  "notVerifiedLabel": "غير موثّق",
+  "notesHintText": "أضف أي ملاحظات هنا",
+  "notesInfoText": "الملاحظات مرئية لك فقط",
+  "notesLabel": "ملاحظات",
+  "notesTipText": "أضف أي طلبات أو تفاصيل خاصة",
+  "notificationsActionLabel": "الإشعارات",
+  "notificationsActionSubtitle": "إدارة تفضيلات الإشعارات",
+  "notificationsDaysAgo": "منذ {value1} ي",
+  "@notificationsDaysAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsEmptyMessage": "لا يوجد جديد!",
+  "notificationsEmptyTitle": "لا توجد إشعارات",
+  "notificationsErrorTitle": "تعذّر تحميل الإشعارات",
+  "notificationsHoursAgo": "منذ {value1} س",
+  "@notificationsHoursAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsJustNow": "الآن",
+  "notificationsLoadError": "فشل تحميل الإشعارات",
+  "notificationsLoadingText": "جارٍ تحميل الإشعارات...",
+  "notificationsMarkAllReadCta": "تحديد الكل كمقروء",
+  "notificationsMarkAllReadSuccess": "تم تحديد جميع الإشعارات كمقروءة",
+  "notificationsMinutesAgo": "منذ {value1} د",
+  "@notificationsMinutesAgo": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "notificationsSectionLabel": "الإشعارات",
+  "notificationsSectionThisMonth": "هذا الشهر",
+  "notificationsSectionThisWeek": "هذا الأسبوع",
+  "notificationsSectionToday": "اليوم",
+  "notificationsSectionYesterday": "أمس",
+  "notificationsTitle": "الإشعارات",
+  "notifyCustomerMessage": "هل تريد إشعار العميل بالموعد الجديد: {value1} في {value2}؟",
+  "@notifyCustomerMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "notifyCustomerTitle": "إشعار العميل",
+  "offlineLabel": "غير متصل",
+  "okCta": "موافق",
+  "onlineLabel": "متصل",
+  "openChatCta": "فتح المحادثة",
+  "openChatCtaShort": "محادثة",
+  "openChatError": "فشل فتح المحادثة",
+  "orContinueWithLabel": "أو تابع باستخدام",
+  "overrideRemoved": "تمت إزالة الاستثناء",
+  "overrideSaved": "تم حفظ الاستثناء لـ {value1}",
+  "@overrideSaved": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "passwordChangeError": "فشل تغيير كلمة المرور",
+  "passwordChangeSuccess": "تم تغيير كلمة المرور بنجاح",
+  "passwordHelperText": "يجب ألا تقل عن 8 أحرف",
+  "passwordMinLengthError": "يجب ألا تقل كلمة المرور عن 8 أحرف",
+  "passwordMismatchError": "كلمتا المرور غير متطابقتين",
+  "passwordRequiredError": "كلمة المرور مطلوبة",
+  "paymentHistoryLabel": "سجل المدفوعات",
+  "paymentHistorySubtitle": "عرض جميع مدفوعاتك السابقة",
+  "paymentStatusCompleted": "مكتمل",
+  "paymentStatusFailed": "فشل",
+  "paymentStatusPending": "قيد الانتظار",
+  "paymentStatusRefunded": "تم الاسترداد",
+  "paymentsActionLabel": "المدفوعات",
+  "paymentsActionSubtitle": "عرض سجل مدفوعاتك",
+  "paymentsTitle": "المدفوعات",
+  "pendingLabel": "قيد الانتظار",
+  "perHourLabel": "/ساعة",
+  "performanceLabel": "الأداء",
+  "performanceScoreInfo": "بناءً على تقييماتك ووقت استجابتك والحجوزات المكتملة",
+  "performanceScoreLabel": "درجة الأداء",
+  "performanceScoreOutOf": "{value1} من 100",
+  "personalInfoLabel": "المعلومات الشخصية",
+  "phoneLabel": "الهاتف",
+  "photoLimitReached": "يمكنك إضافة ما يصل إلى {value1} صور",
+  "@photoLimitReached": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "photoPickError": "فشل اختيار الصورة",
+  "photosOptionalLabel": "الصور (اختياري)",
+  "planStatLabel": "الخطة",
+  "planUpgradeSubtitle": "افتح المزيد من الميزات وطوّر عملك",
+  "planUpgradeTitle": "الترقية من {value1}",
+  "@planUpgradeTitle": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "portfolioInfoNote": "اعرض أفضل أعمالك لجذب المزيد من العملاء",
+  "portfolioLabel": "معرض الأعمال",
+  "postReplyCta": "نشر الرد",
+  "preferencesGroupLabel": "التفضيلات",
+  "preferencesSectionLabel": "التفضيلات",
+  "premiumActiveSubtitle": "لديك إمكانية الوصول إلى جميع الميزات المميزة",
+  "premiumMemberLabel": "عضو مميز",
+  "premiumUpgradeSubtitle": "احصل على عمليات بحث غير محدودة بالذكاء الاصطناعي والمزيد",
+  "proBadgeLabel": "PRO",
+  "professionEmptyMessage": "لم يتم العثور على مهن",
+  "professionHint": "اختر المهنة",
+  "professionLabel": "المهنة",
+  "professionRequiredError": "يرجى اختيار مهنة",
+  "professionSearchHint": "ابحث عن مهنة",
+  "professionalAccountDescription": "قدّم خدماتك للعملاء",
+  "professionalDefaultName": "محترف",
+  "professionalDetailLoadError": "فشل تحميل تفاصيل المحترف",
+  "professionalDetailsLabel": "تفاصيل المحترف",
+  "professionalLabel": "محترف",
+  "professionalLocationLabel": "موقع المحترف",
+  "professionalLocationOption": "موقع المحترف",
+  "professionalReviewsLabel": "التقييمات",
+  "professionalReviewsSubtitle": "ماذا يقول العملاء",
+  "profileCompletionHint": "أكمل ملفك الشخصي لجذب المزيد من العملاء",
+  "profileCompletionLabel": "اكتمال الملف الشخصي",
+  "profileEditProfile": "تعديل الملف الشخصي",
+  "profileLabel": "الملف الشخصي",
+  "profileLoadError": "فشل تحميل الملف الشخصي",
+  "profileLoadingText": "جارٍ تحميل الملف الشخصي...",
+  "profileNotAvailable": "الملف الشخصي غير متاح",
+  "profileOff": "إيقاف",
+  "profileOn": "تشغيل",
+  "profileReviewsLabel": "التقييمات",
+  "profileSavedLabel": "المحفوظات",
+  "profileTitle": "الملف الشخصي",
+  "profileUpdateError": "فشل تحديث الملف الشخصي",
+  "profileUpdateSuccess": "تم تحديث الملف الشخصي بنجاح",
+  "profileViewsLabel": "مشاهدات الملف الشخصي",
+  "profileViewsSubtext": "الأشخاص الذين شاهدوا ملفك الشخصي",
+  "profileWalletLabel": "المحفظة",
+  "pushNotificationsLabel": "الإشعارات الفورية",
+  "quickActionsLabel": "إجراءات سريعة",
+  "quickAddLabel": "إضافة سريعة",
+  "rateLabel": "السعر",
+  "ratingLabel": "التقييم",
+  "ratingRequiredError": "يرجى اختيار تقييم",
+  "recentBookingsLabel": "الحجوزات الأخيرة",
+  "recentMessagesLabel": "الرسائل الأخيرة",
+  "recentReviewsLabel": "التقييمات الأخيرة",
+  "refreshTooltip": "تحديث",
+  "registerCategoryRequired": "يرجى اختيار فئة",
+  "registerCta": "التسجيل",
+  "registerServerError": "فشل التسجيل. يرجى المحاولة مرة أخرى.",
+  "registerSubtitle": "سجّل للبدء",
+  "registerTitle": "إنشاء حساب",
+  "rejectCta": "رفض",
+  "relatedProfessionalsLabel": "قد يعجبك أيضًا",
+  "removeCta": "إزالة",
+  "replyHint": "اكتب ردًا",
+  "replySubtitle": "ردك علني ومرئي للجميع",
+  "replyTitle": "الرد على التقييم",
+  "reportNoteHint": "أضف أي تفاصيل إضافية",
+  "reportSubtitle": "ساعدنا في فهم ما حدث من خطأ",
+  "reportTitle": "الإبلاغ عن مشكلة",
+  "requestSentLabel": "تم إرسال الطلب",
+  "requestSentSubtitle": "تم إرسال طلبك إلى {value1}",
+  "@requestSentSubtitle": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "requestWithdrawCta": "طلب سحب",
+  "rescheduledLabel": "أُعيدت جدولته",
+  "resendEmailCta": "إعادة إرسال البريد الإلكتروني",
+  "resetLinkError": "فشل إرسال رابط إعادة التعيين",
+  "resetLinkSent": "تم إرسال رابط إعادة تعيين كلمة المرور إلى {value1}",
+  "@resetLinkSent": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "resetPassSubtitle": "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين",
+  "resetPassTitle": "إعادة تعيين كلمة المرور",
+  "resetPasswordDescription": "سنرسل رابط إعادة تعيين كلمة المرور إلى {value1}",
+  "@resetPasswordDescription": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "resetPasswordLabel": "إعادة تعيين كلمة المرور",
+  "responseLabel": "الاستجابة",
+  "responseRateLabel": "معدل الاستجابة",
+  "responseRateSubtext": "عدد المرات التي ترد فيها على الرسائل",
+  "responseTimeLabel": "وقت الاستجابة",
+  "retryCta": "إعادة المحاولة",
+  "reviewBookingLabel": "تقييم الحجز",
+  "reviewSubmitErrorDefault": "فشل إرسال التقييم",
+  "reviewSubmittedSuccessMessage": "تم إرسال تقييمك لـ {value1}",
+  "@reviewSubmittedSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewSubmittedSuccessTitle": "تم إرسال التقييم",
+  "reviewUpdateErrorDefault": "فشل تحديث التقييم",
+  "reviewUpdatedSuccessMessage": "تم تحديث تقييمك لـ {value1}",
+  "@reviewUpdatedSuccessMessage": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewUpdatedSuccessTitle": "تم تحديث التقييم",
+  "reviewsActionLabel": "التقييمات",
+  "reviewsActionSubtitle": "التقييمات التي كتبتها",
+  "reviewsCountLabel": "{value1} تقييمات",
+  "@reviewsCountLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "reviewsLabel": "التقييمات",
+  "saveCertificateCta": "حفظ الشهادة",
+  "saveChangesCta": "حفظ التغييرات",
+  "saveCta": "حفظ",
+  "saveScheduleCta": "حفظ الجدول",
+  "saveSettingsError": "فشل حفظ الإعدادات",
+  "saveSettingsSuccess": "تم حفظ الإعدادات بنجاح",
+  "savedProfessionalsActionLabel": "المحترفون المحفوظون",
+  "savedProfessionalsActionSubtitle": "المحترفون الذين حفظتهم",
+  "savedProfessionalsEmptySubtitle": "سيظهر هنا المحترفون الذين تحفظهم",
+  "savedProfessionalsEmptyTitle": "لا يوجد محترفون محفوظون",
+  "savedProfessionalsTitle": "المحترفون المحفوظون",
+  "savedStatLabel": "المحفوظات",
+  "searchAiPremiumActive": "البحث بالذكاء الاصطناعي المميز مفعّل",
+  "searchAiRemainingToday": "تبقّى {value1} عمليات بحث بالذكاء الاصطناعي اليوم",
+  "@searchAiRemainingToday": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "searchBookingsHint": "البحث في الحجوزات",
+  "searchCategories": "الفئات",
+  "searchPopular": "الأكثر رواجًا",
+  "searchPopularCleaners": "عمال النظافة",
+  "searchPopularDoctors": "أطباء",
+  "searchPopularElectricians": "كهربائيون",
+  "searchPopularEngineers": "مهندسون",
+  "searchPopularLawyers": "محامون",
+  "searchPopularPlumbers": "سباكون",
+  "searchProfessionals": "المحترفون",
+  "searchProfessions": "المهن",
+  "searchRecent": "الأخيرة",
+  "searchResultsLabel": "{value1} نتائج لـ \"{value2}\"",
+  "@searchResultsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      },
+      "value2": {
+        "type": "Object"
+      }
+    }
+  },
+  "searchingLabel": "جارٍ البحث...",
+  "security": "الأمان",
+  "securityActionLabel": "الأمان",
+  "securityActionSubtitle": "كلمة المرور وأمان الحساب",
+  "securityBannerSubtitle": "حافظ على أمان حسابك وحمايته",
+  "securityBannerTitle": "أمان الحساب",
+  "securityFooterText": "إذا لم تطلب هذا التغيير، يرجى التواصل مع الدعم فورًا",
+  "securityTitle": "الأمان",
+  "seeAllLabel": "عرض الكل",
+  "selectedLabel": "محدد",
+  "sendResetLinkCta": "إرسال رابط إعادة التعيين",
+  "serviceLabel": "الخدمة",
+  "serviceProfessionalLabel": "مقدّم خدمة",
+  "settingsActionLabel": "الإعدادات",
+  "settingsActionSubtitle": "تفضيلات التطبيق",
+  "shareExperienceLabel": "شاركنا تجربتك",
+  "signInInsteadLabel": "تسجيل الدخول بدلاً من ذلك",
+  "skillsLabel": "المهارات",
+  "skillsPricingLabel": "المهارات والأسعار",
+  "slotDurationSubtitle": "المدة الافتراضية لكل فترة حجز",
+  "slotDurationTitle": "مدة الفترة",
+  "startConversationError": "فشل بدء المحادثة",
+  "startTimeLabel": "وقت البدء",
+  "startingFromLabel": "ابتداءً من",
+  "statusApproved": "موافق عليه",
+  "statusCompleted": "مكتمل",
+  "statusPending": "قيد الانتظار",
+  "statusRejected": "مرفوض",
+  "submitReportCta": "إرسال البلاغ",
+  "submitReviewCta": "إرسال التقييم",
+  "subscriptionActionLabel": "الاشتراك",
+  "subscriptionActiveStatus": "خطة {value1} مفعّلة",
+  "@subscriptionActiveStatus": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "subscriptionUpgradeLabel": "ترقية الخطة",
+  "subscriptionUpgradeStatus": "الترقية إلى الخطة المميزة",
+  "suggestTimeCta": "اقتراح وقت مختلف",
+  "suggestTimeCtaShort": "اقتراح وقت",
+  "suggestTimeDescription": "اقترح تاريخًا ووقتًا جديدين لهذا الحجز",
+  "suggestTimeLabel": "اقتراح وقت",
+  "suggestTimeSuccess": "تم اقتراح وقت جديد للعميل",
+  "suggestedTimeLabel": "الوقت المقترح",
+  "supportBannerSubtitle": "نحن هنا لمساعدتك على مدار الساعة",
+  "supportBannerTitle": "هل تحتاج إلى مساعدة؟",
+  "supportTeamReplyLabel": "فريق الدعم",
+  "tapStarToRateLabel": "اضغط على نجمة للتقييم",
+  "thisMonthLabel": "هذا الشهر",
+  "timeLabel": "الوقت",
+  "timeSlotsLabel": "الفترات الزمنية",
+  "timeTipText": "اختر الوقت الأنسب لك",
+  "titleHint": "أدخل عنوانًا",
+  "titleLabelRequired": "العنوان",
+  "titleValidationError": "يرجى إدخال عنوان",
+  "todayLabel": "اليوم",
+  "todaysEarningsLabel": "أرباح اليوم",
+  "todaysScheduleLabel": "جدول اليوم",
+  "topRatedLabel": "الأعلى تقييمًا",
+  "totalBookingsLabel": "إجمالي الحجوزات",
+  "totalEarnedLabel": "إجمالي الأرباح",
+  "totalSpentLabel": "إجمالي المصروف",
+  "transactionCountLabel": "{value1} معاملات",
+  "@transactionCountLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "transactionHistoryTitle": "سجل المعاملات",
+  "tryAgainCta": "حاول مرة أخرى",
+  "twitterSignInLabel": "المتابعة باستخدام Twitter",
+  "typicallyRepliesLabel": "يرد عادةً",
+  "unavailableLabel": "غير متاح",
+  "unknownRoleError": "نوع حساب غير معروف",
+  "updateBookingError": "فشل تحديث الحجز",
+  "updateCta": "تحديث",
+  "updateReviewCta": "تحديث التقييم",
+  "upgradeCta": "ترقية",
+  "uploadError": "فشل الرفع",
+  "uploadSuccess": "تم الرفع بنجاح",
+  "userLabel": "مستخدم",
+  "vacationCleared": "تم مسح الإجازة",
+  "vacationDateRequired": "يرجى اختيار نطاق تواريخ الإجازة",
+  "vacationSet": "تم تعيين الإجازة بنجاح",
+  "validAmountError": "يرجى إدخال مبلغ صالح",
+  "verificationAddPortfolio": "أضف عناصر إلى معرض أعمالك للمساعدة في الحصول على التوثيق",
+  "verificationLabel": "التوثيق",
+  "verificationPending": "التوثيق قيد الانتظار",
+  "verifiedLabel": "موثّق",
+  "verifiedProfessionalLabel": "محترف",
+  "verifiedStatusLabel": "موثّق {value1}",
+  "@verifiedStatusLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "viewMyBookingsCta": "عرض حجوزاتي",
+  "viewProfileCta": "عرض الملف الشخصي",
+  "viewWalletLabel": "عرض المحفظة",
+  "visitorsLabel": "الزوار",
+  "visitorsSubtext": "الأشخاص الذين شاهدوا ملفك الشخصي",
+  "walletActionLabel": "المحفظة",
+  "walletActionSubtitle": "عرض الرصيد والمعاملات",
+  "walletEarningsLabel": "الأرباح",
+  "walletLabel": "المحفظة",
+  "walletTitle": "المحفظة",
+  "whatHappensNextLabel": "ماذا يحدث بعد ذلك؟",
+  "whyBookHereLabel": "لماذا تحجز معنا؟",
+  "withdrawCta": "سحب",
+  "withdrawErrorDefault": "فشل السحب. يرجى المحاولة مرة أخرى.",
+  "withdrawSuccess": "تم طلب السحب بنجاح",
+  "withdrawTitle": "سحب الأموال",
+  "withdrawnLabel": "تم سحبه",
+  "workingHoursLabel": "ساعات العمل",
+  "writeReviewTitle": "اكتب تقييمًا",
+  "yearsLabel": "{value1} سنوات",
+  "@yearsLabel": {
+    "placeholders": {
+      "value1": {
+        "type": "Object"
+      }
+    }
+  },
+  "yesCancelCta": "نعم، إلغاء",
+  "youAreNotifiedLabel": "سيتم إشعارك",
+  "youAreNotifiedSubtitle": "سنخبرك فور وصول رد",
+  "yourAccountEmailPlaceholder": "البريد الإلكتروني لحسابك",
+  "tsErrForbidden": "ليس لديك إذن لتنفيذ هذا الإجراء.",
+  "tsErrNetwork": "مشكلة في الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "tsErrGeneric": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  "tsRetry": "إعادة المحاولة",
+  "tsCopy": "نسخ",
+  "tsCopied": "تم النسخ إلى الحافظة",
+  "tsOpenLink": "فتح الرابط",
+  "tsLinkOpenFailed": "تعذّر فتح هذا الرابط.",
+  "tsCancel": "إلغاء",
+  "tsClose": "إغلاق",
+  "tsRefresh": "تحديث",
+  "tsAll": "الكل",
+  "tsCatSpam": "بريد مزعج",
+  "tsCatHarassment": "تحرش",
+  "tsCatFraud": "احتيال أو نصب",
+  "tsCatFakeProfile": "ملف شخصي مزيف",
+  "tsCatInappropriate": "محتوى غير لائق",
+  "tsCatPaymentFraud": "احتيال في الدفع",
+  "tsCatOffPlatform": "دفع خارج المنصة",
+  "tsCatThreats": "تهديدات أو مخاوف تتعلق بالسلامة",
+  "tsCatDiscrimination": "تمييز",
+  "tsCatMisconduct": "سوء سلوك في الخدمة",
+  "tsCatOther": "أخرى",
+  "tsStatusPending": "قيد الانتظار",
+  "tsStatusReviewed": "تمت المراجعة",
+  "tsStatusActionTaken": "تم اتخاذ إجراء",
+  "tsStatusDismissed": "مرفوض",
+  "tsSevLow": "منخفضة",
+  "tsSevMedium": "متوسطة",
+  "tsSevHigh": "عالية",
+  "tsSevCritical": "حرجة",
+  "tsRoleCustomer": "عميل",
+  "tsRoleProfessional": "محترف",
+  "tsRoleAdmin": "مسؤول",
+  "tsActWarning": "تحذير",
+  "tsActRestrictMessaging": "تقييد المراسلة",
+  "tsActRestrictBooking": "تقييد الحجز",
+  "tsActSuspendTemporary": "تعليق مؤقت",
+  "tsActSuspendPermanent": "تعليق دائم",
+  "tsActWarningDesc": "يسجّل تحذيرًا رسميًا. لا يقيّد الحساب.",
+  "tsActRestrictMessagingDesc": "يضع الحساب في وضع مقيّد من المراسلة.",
+  "tsActRestrictBookingDesc": "يضع الحساب في وضع مقيّد من إنشاء الحجوزات.",
+  "tsActSuspendTemporaryDesc": "يعلّق الحساب حتى التاريخ الذي تختاره.",
+  "tsActSuspendPermanentDesc": "يعلّق الحساب بشكل دائم. بلا تاريخ انتهاء؛ ولا يمكن إلغاؤه إلا بواسطة مسؤول.",
+  "tsStateActive": "نشط",
+  "tsStateScheduled": "مجدول",
+  "tsStateExpired": "منتهي",
+  "tsStateReversed": "تم إلغاؤه",
+  "tsAppealPending": "قيد الانتظار",
+  "tsAppealApproved": "تمت الموافقة",
+  "tsAppealRejected": "مرفوض",
+  "tsReportsTitle": "المستخدمون المبلّغ عنهم",
+  "tsPendingReview": "{count} قيد المراجعة",
+  "@tsPendingReview": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSearchReportsHint": "ابحث بالمستخدم أو المبلّغ أو الفئة أو المعرّف",
+  "tsFilterSeverity": "الخطورة",
+  "tsFilterCategory": "الفئة",
+  "tsFilterDate": "التاريخ",
+  "tsDateAny": "في أي وقت",
+  "tsDateToday": "اليوم",
+  "tsDate7": "آخر 7 أيام",
+  "tsDate30": "آخر 30 يومًا",
+  "tsDateCustom": "نطاق مخصص",
+  "tsSortNewest": "الأحدث أولاً",
+  "tsSortSeverity": "الأعلى خطورة أولاً",
+  "tsClearFilters": "مسح عوامل التصفية",
+  "tsNoReports": "لا توجد بلاغات بعد",
+  "tsNoReportsHint": "ستظهر هنا البلاغات التي يرسلها المستخدمون.",
+  "tsNoMatches": "لا توجد بلاغات تطابق عوامل التصفية",
+  "tsNoMatchesHint": "جرّب تغيير عوامل التصفية أو مسحها.",
+  "tsSelectReport": "اختر بلاغًا",
+  "tsSelectReportHint": "اختر بلاغًا من القائمة لمراجعته واتخاذ إجراء.",
+  "tsIndBooking": "حجز",
+  "tsIndMessage": "رسالة",
+  "tsIndEvidence": "دليل",
+  "tsReportedBy": "بلّغ عنه {name}",
+  "@tsReportedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tsAccountBlocked": "الحساب محظور",
+  "tsReportNumber": "البلاغ رقم {id}",
+  "@tsReportNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSubmittedOn": "أُرسل في {date}",
+  "@tsSubmittedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTakeAction": "اتخاذ إجراء",
+  "tsMarkReviewed": "تحديد كمراجَع",
+  "tsDismiss": "رفض",
+  "tsSecDescription": "وصف البلاغ",
+  "tsNoDescription": "لم يتم تقديم وصف.",
+  "tsSecEvidence": "الأدلة والسياق",
+  "tsEvidenceLabel": "الدليل / المرجع",
+  "tsNoEvidence": "لم يتم تقديم رابط دليل.",
+  "tsBookingLabel": "الحجز المرتبط",
+  "tsBookingNumber": "الحجز رقم {id}",
+  "@tsBookingNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsMessageLabel": "الرسالة المرتبطة",
+  "tsMessageNumber": "الرسالة رقم {id}",
+  "@tsMessageNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsMessageDeleted": "تم حذف هذه الرسالة. محتواها غير متاح.",
+  "tsMessageAttachments": "المرفقات: {count}",
+  "@tsMessageAttachments": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsNoRelated": "لا يوجد شيء مرتبط بهذا البلاغ.",
+  "tsFieldWhen": "الوقت",
+  "tsFieldParties": "الأطراف",
+  "tsFieldSender": "المرسِل",
+  "tsBookingWith": "{customer} مع {professional}",
+  "@tsBookingWith": {
+    "placeholders": {
+      "customer": {
+        "type": "String"
+      },
+      "professional": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSecPeople": "الأشخاص",
+  "tsReportedUser": "المستخدم المبلّغ عنه",
+  "tsReporterLabel": "المبلِّغ",
+  "tsReporterAdminOnly": "مرئي للمسؤولين فقط. لا يظهر أبدًا للمستخدم المبلّغ عنه.",
+  "tsAccountBlockedNote": "هذا الحساب محظور حاليًا (انظر تبويب المحظورين). الحظر منفصل عن إجراءات الإشراف.",
+  "tsSecActive": "القيود والتعليق النشطة",
+  "tsNoActive": "لا توجد قيود أو تعليق نشط.",
+  "tsSecTimeline": "سجل البلاغ",
+  "tsSecHistory": "سجل الإشراف",
+  "tsSecOtherReports": "بلاغات أخرى عن هذا المستخدم",
+  "tsHistoryLoadError": "تعذّر تحميل سجل الإشراف.",
+  "tsHistoryEmpty": "لا توجد إجراءات إشراف مسجلة لهذا المستخدم.",
+  "tsTlSubmitted": "تم إرسال البلاغ",
+  "tsTlReviewed": "تم تحديده {status} بواسطة {admin}",
+  "@tsTlReviewed": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlInternalNote": "ملاحظة داخلية: {note}",
+  "@tsTlInternalNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlActionApplied": "تم تطبيق {action} بواسطة {admin}",
+  "@tsTlActionApplied": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsTlActionReversed": "تم إلغاء {action} بواسطة {admin}",
+  "@tsTlActionReversed": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "admin": {
+        "type": "String"
+      }
+    }
+  },
+  "tsThisReport": "هذا البلاغ",
+  "tsHistPerformedBy": "بواسطة {admin} في {date}",
+  "@tsHistPerformedBy": {
+    "placeholders": {
+      "admin": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsStartsOn": "يبدأ في {date}",
+  "@tsStartsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsExpiresOn": "ينتهي في {date}",
+  "@tsExpiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsNoExpiryPermanent": "دائم، بلا تاريخ انتهاء",
+  "tsNoExpiryOpen": "بلا تاريخ انتهاء، ساري حتى يتم رفعه",
+  "tsReasonShownToUser": "السبب (يظهر للمستخدم)",
+  "tsInternalNoteLabel": "ملاحظة داخلية (للمسؤولين فقط)",
+  "tsHistReversedBy": "أُلغي بواسطة {admin} في {date}",
+  "@tsHistReversedBy": {
+    "placeholders": {
+      "admin": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsReverse": "إلغاء الإجراء",
+  "tsAdminUnknown": "مسؤول غير معروف",
+  "tsReviewTitle": "تحديد البلاغ كمراجَع",
+  "tsReviewMessage": "أكّد أنك راجعت هذا البلاغ. يمكنك إضافة ملاحظة داخلية.",
+  "tsReviewConfirm": "تحديد كمراجَع",
+  "tsDismissTitle": "رفض البلاغ",
+  "tsDismissMessage": "ارفض هذا البلاغ إذا كان لا ينتهك القواعد. لن يتم اتخاذ أي إجراء ضد المستخدم المبلّغ عنه.",
+  "tsDismissConfirm": "رفض البلاغ",
+  "tsResolveReporterNote": "يتلقى المبلِّغ إشعارًا عامًا بالنتيجة. لا يتم إشعار المستخدم المبلّغ عنه.",
+  "tsReportUpdated": "تم تحديث البلاغ",
+  "tsTakeActionTitle": "اتخاذ إجراء إشرافي",
+  "tsRegardingReport": "بخصوص البلاغ رقم {id}",
+  "@tsRegardingReport": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsChooseAction": "اختر إجراءً",
+  "tsChooseActionError": "اختر إجراءً للمتابعة.",
+  "tsAlreadyActive": "نشط بالفعل لهذا المستخدم.",
+  "tsAlreadyPermanentlySuspended": "هذا المستخدم معلّق بشكل دائم بالفعل.",
+  "tsDurationTitle": "المدة",
+  "tsDurationUntilLifted": "حتى يتم الرفع",
+  "tsDurationPermanent": "دائم",
+  "tsDurationDays": "{n} أيام",
+  "@tsDurationDays": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "tsDurationCustom": "تاريخ مخصص",
+  "tsEndsAt": "ينتهي {when}",
+  "@tsEndsAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "tsUntilDate": "حتى {date}",
+  "@tsUntilDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "tsExpiryRequired": "اختر موعد انتهاء هذا الإجراء.",
+  "tsExpiryMustBeFuture": "يجب أن يكون وقت الانتهاء في المستقبل.",
+  "tsReasonLabel": "السبب",
+  "tsReasonHint": "اشرح سبب اتخاذ هذا الإجراء",
+  "tsReasonUserVisibleNote": "يظهر للمستخدم في إشعاره. لا تذكر المبلِّغ أو مستخدمين آخرين.",
+  "tsReasonTooShort": "يرجى إدخال سبب لا يقل عن {min} أحرف.",
+  "@tsReasonTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "tsInternalNoteHint": "سياق اختياري للمسؤولين الآخرين",
+  "tsInternalNoteNote": "للاستخدام الداخلي فقط. لا يظهر أبدًا للمستخدم.",
+  "tsMarkReportTaken": "تحديد هذا البلاغ بحالة تم اتخاذ إجراء",
+  "tsMarkReportTakenHint": "يتلقى المبلِّغ إشعارًا عامًا بالنتيجة فقط.",
+  "tsApplyAction": "تطبيق الإجراء",
+  "tsConfirmTitle": "تطبيق {action}؟",
+  "@tsConfirmTitle": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "tsConfirmBody": "سيتم تسجيل هذا في سجل الإشراف الخاص بـ {user} وسيتم إشعار المستخدم.",
+  "@tsConfirmBody": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "tsConfirmPermanentAck": "أدرك أن هذا التعليق ليس له تاريخ انتهاء ولا يمكن إلغاؤه إلا بواسطة مسؤول.",
+  "tsFieldUser": "المستخدم",
+  "tsFieldAction": "الإجراء",
+  "tsFieldDuration": "المدة",
+  "tsFieldReason": "السبب",
+  "tsActionApplied": "تم تطبيق الإجراء الإشرافي",
+  "tsActionAppliedReportFailed": "تم تطبيق الإجراء، ولكن تعذّر تحديث حالة البلاغ.",
+  "tsCannotActOnAdmin": "لا يمكن توجيه إجراءات الإشراف ضد حسابات المسؤولين.",
+  "tsFieldPerformedBy": "نفّذه",
+  "tsFieldCreated": "تاريخ الإنشاء",
+  "tsFieldExpires": "ينتهي",
+  "tsFieldReport": "البلاغ",
+  "tsFieldDecidedBy": "قرّره",
+  "tsFieldDecidedOn": "تاريخ القرار",
+  "tsReverseTitle": "إلغاء الإجراء الإشرافي",
+  "tsReverseMessage": "هل تريد إلغاء {action}؟ سيتم رفعه ويبقى السجل في التاريخ.",
+  "@tsReverseMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "tsReversalReasonLabel": "سبب الإلغاء",
+  "tsReversalReasonHint": "لماذا يتم رفع هذا الإجراء؟",
+  "tsReverseConfirm": "إلغاء الإجراء",
+  "tsReverseAuditNote": "سببك داخلي. يُسجَّل في سجل الإشراف ولا يظهر أبدًا للمستخدم.",
+  "tsReverseNotifyNote": "سيتم إشعار المستخدم بأنه تم رفع هذا الإجراء.",
+  "tsReverseLegacyNote": "جاء هذا الإجراء من مسار الحظر القديم. سيؤدي إلغاؤه أيضًا إلى إعادة تفعيل الحساب.",
+  "tsActionReversed": "تم إلغاء الإجراء الإشرافي",
+  "tsAppealsTitle": "الاستئنافات",
+  "tsPendingAppeals": "{count} استئنافات قيد الانتظار",
+  "@tsPendingAppeals": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSearchAppealsHint": "ابحث بالمستخدم أو البريد الإلكتروني أو نص الاستئناف",
+  "tsNoAppeals": "لا توجد استئنافات هنا",
+  "tsNoAppealsHint": "ستظهر هنا الاستئنافات المقدمة ضد إجراءات الإشراف.",
+  "tsSelectAppeal": "اختر استئنافًا",
+  "tsSelectAppealHint": "اختر استئنافًا من القائمة لمراجعته.",
+  "tsAppealNumber": "الاستئناف رقم {id}",
+  "@tsAppealNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tsSecAppealReason": "الاستئناف",
+  "tsSecAppealedAction": "الإجراء المستأنَف",
+  "tsSecDecision": "القرار",
+  "tsAppealApprove": "قبول",
+  "tsAppealReject": "رفض",
+  "tsApproveTitle": "قبول الاستئناف",
+  "tsApproveMessage": "قبول هذا الاستئناف سيرفع الإجراء الإشرافي.",
+  "tsApproveConfirm": "قبول الاستئناف",
+  "tsRejectTitle": "رفض الاستئناف",
+  "tsRejectMessage": "رفض الاستئناف يُبقي الإجراء الإشرافي قائمًا.",
+  "tsRejectConfirm": "رفض الاستئناف",
+  "tsDecisionNoteLabel": "ملاحظة القرار",
+  "tsDecisionNoteHint": "اشرح قرارك",
+  "tsDecisionNoteNote": "للاستخدام الداخلي فقط. لا يظهر أبدًا للمستخدم.",
+  "tsAppealApproveNote": "سيتم إلغاء الإجراء وإشعار المستخدم.",
+  "tsAppealApproveInactive": "لم يعد هذا الإجراء ساريًا، لذا فإن القبول يغلق الاستئناف فقط. سيتم إشعار المستخدم.",
+  "tsAppealRejectNote": "يبقى الإجراء قائمًا ويتم إشعار المستخدم بالنتيجة.",
+  "tsAppealApprovedSnack": "تم قبول الاستئناف",
+  "tsAppealRejectedSnack": "تم رفض الاستئناف",
+  "tsNoDecisionNote": "لم يتم تسجيل ملاحظة.",
   "tsEvidenceLinkOptional": "رابط الدليل (اختياري)",
   "tsInvalidHttpUrl": "أدخل رابط http أو https صالحًا.",
   "myTsMyReportsTitle": "بلاغاتي",
@@ -1972,5 +3497,196 @@
   "myTsAppealSubmitError": "تعذر إرسال استئنافك. حاول مرة أخرى.",
   "myTsAppealAlreadyPending": "لديك بالفعل استئناف قيد المراجعة لهذا الإجراء.",
   "myTsAppealNotEligible": "لم يعد بالإمكان الاستئناف على هذا الإجراء.",
-  "myTsAppealForLabel": "استئناف بخصوص {action}"
+  "myTsAppealForLabel": "استئناف بخصوص {action}",
+  "@myTsAppealForLabel": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "announcementDismiss": "إغلاق الإعلان",
+  "chatMessageHint": "رسالة",
+  "voiceRecordStartFailed": "تعذّر بدء التسجيل. يرجى التحقق من الميكروفون والمحاولة مرة أخرى.",
+  "voiceRecordSaveFailed": "تعذّر حفظ التسجيل. يرجى المحاولة مرة أخرى.",
+  "voicePlayFailed": "تعذّر تشغيل هذه الرسالة الصوتية.",
+  "reviewSortBy": "ترتيب حسب",
+  "reviewSortRelevant": "الأكثر صلة",
+  "reviewSortNewest": "الأحدث",
+  "reviewSortHighest": "الأعلى تقييمًا",
+  "reviewSortLowest": "الأقل تقييمًا",
+  "reviewSortHelpful": "الأكثر إفادة",
+  "reviewSortWithPhotos": "مع صور",
+  "reviewFilterAll": "كل المراجعات",
+  "promoSkip": "تخطي",
+  "reviewCountPlural": "{count, plural, =1{مراجعة واحدة} =2{مراجعتان} few{{count} مراجعات} many{{count} مراجعة} other{{count} مراجعة}}",
+  "@reviewCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "valEmailRequired": "البريد الإلكتروني مطلوب",
+  "valEmailInvalid": "أدخل بريدًا إلكترونيًا صالحًا",
+  "valEmailTooLong": "البريد الإلكتروني طويل جدًا",
+  "valPasswordRequired": "كلمة المرور مطلوبة",
+  "valPasswordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+  "valPasswordUpper": "أضف حرفًا كبيرًا واحدًا على الأقل",
+  "valPasswordLower": "أضف حرفًا صغيرًا واحدًا على الأقل",
+  "valPasswordNumber": "أضف رقمًا واحدًا على الأقل",
+  "valPasswordSpecial": "أضف رمزًا خاصًا واحدًا على الأقل",
+  "valConfirmPassword": "يرجى تأكيد كلمة المرور",
+  "valPasswordsMismatch": "كلمتا المرور غير متطابقتين",
+  "valNameRequired": "الاسم مطلوب",
+  "valNameMinLength": "يجب أن يتكون الاسم من حرفين على الأقل",
+  "valNameMaxLength": "يجب أن يكون الاسم أقل من 50 حرفًا",
+  "valNameNoNumbers": "لا يمكن أن يحتوي الاسم على أرقام",
+  "valNameInvalidChars": "يحتوي الاسم على أحرف غير صالحة",
+  "valPhoneRequired": "رقم الهاتف مطلوب",
+  "valPhoneInvalid": "أدخل رقم هاتف صالحًا",
+  "valFieldRequired": "هذا الحقل مطلوب",
+  "valFieldNamedRequired": "{field} مطلوب",
+  "@valFieldNamedRequired": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "pwReqMinLength": "8 أحرف على الأقل",
+  "pwReqUppercase": "حرف كبير",
+  "pwReqLowercase": "حرف صغير",
+  "pwReqNumber": "رقم",
+  "pwReqSpecial": "رمز خاص",
+  "pwStrengthVeryWeak": "ضعيفة جدًا",
+  "pwStrengthWeak": "ضعيفة",
+  "pwStrengthMedium": "متوسطة",
+  "pwStrengthStrong": "قوية",
+  "pwStrengthExcellent": "ممتازة",
+  "pickerTapToSelect": "اضغط للاختيار",
+  "pickerNoResults": "لا توجد نتائج",
+  "pickerSearchHint": "بحث...",
+  "pickerSelectAboveFirst": "اختر من الأعلى أولاً",
+  "bkStatusAll": "الكل",
+  "bkStatusPending": "قيد الانتظار",
+  "bkStatusAccepted": "مقبول",
+  "bkStatusCompleted": "مكتمل",
+  "bkStatusCancelled": "ملغى",
+  "bkStatusRejected": "مرفوض",
+  "bkStatusRescheduled": "أُعيد جدولته",
+  "bkStatusBooked": "تم الحجز",
+  "bkSwipeHint": "اسحب",
+  "bkCountPlural": "{count, plural, =1{حجز واحد} =2{حجزان} few{{count} حجوزات} many{{count} حجزًا} other{{count} حجز}}",
+  "@bkCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bkSectionDetails": "تفاصيل الحجز",
+  "bkSectionService": "الخدمة",
+  "bkSectionNotes": "ملاحظات العميل",
+  "bkSectionTimeline": "الجدول الزمني للحجز",
+  "bkFieldDate": "التاريخ",
+  "bkFieldTime": "الوقت",
+  "bkFieldLocation": "الموقع",
+  "bkFieldCategory": "الفئة",
+  "bkCancelledByProfessional": "ألغاه المحترف",
+  "bkCancelledByYou": "ألغيته أنت",
+  "bkWasRejected": "تم رفض الحجز",
+  "bkWasCancelled": "تم إلغاء الحجز",
+  "bkCancelledSuccess": "تم إلغاء الحجز",
+  "bkCancelFailed": "تعذّر الإلغاء، يرجى المحاولة مرة أخرى",
+  "detailTabOverview": "نظرة عامة",
+  "detailTabPortfolio": "الأعمال ({count})",
+  "@detailTabPortfolio": {"placeholders": {"count": {"type": "int"}}},
+  "detailTabReviews": "التقييمات ({count})",
+  "@detailTabReviews": {"placeholders": {"count": {"type": "int"}}},
+  "detailTabServices": "الخدمات",
+  "detailTabAvailability": "التوفر",
+  "detailNotAvailable": "غير متاح",
+  "detailCertificateDefault": "شهادة",
+  "detailPortfolioItemDefault": "عنصر من الأعمال",
+  "categoryItTech": "تكنولوجيا المعلومات والتقنية",
+  "categoryEngineers": "المهندسون",
+  "categoryLawyersLegal": "المحامون والقانون",
+  "categoryDoctorsHealthcare": "الأطباء والرعاية الصحية",
+  "categoryArchitects": "المعماريون",
+  "categoryElectricians": "الكهربائيون",
+  "categoryPlumbers": "السباكون",
+  "categoryTutorsEducation": "المدرسون والتعليم",
+  "ctaGrowYourBusiness": "نمِّ عملك",
+  "ctaJoinProfessionalsSubtitle": "انضم إلى أكثر من 500 محترف على ProFinder",
+  "ctaJoinNow": "انضم الآن",
+  "promoGetPremium": "احصل على بريميوم",
+  "categoryCarpenters": "النجارون",
+  "errSomethingWentWrong": "حدث خطأ ما.",
+  "errSomethingWentWrongTryAgain": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  "errNetworkCheckConnection": "خطأ في الشبكة. يرجى التحقق من اتصالك.",
+  "errNetworkProblemTryAgain": "مشكلة في الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "errRequestFailedHttp": "فشل الطلب (HTTP {code}).",
+  "@errRequestFailedHttp": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "errNotLoggedIn": "لم يتم تسجيل الدخول",
+  "bkStepTitleService": "ملخص الخدمة",
+  "bkStepTitleDate": "اختر التاريخ",
+  "bkStepTitleTime": "اختر الوقت",
+  "bkStepTitleNotes": "ملاحظات إضافية",
+  "bkStepTitleSummary": "ملخص الحجز",
+  "bkStepDesc1": "راجع تفاصيل المحترف قبل المتابعة.",
+  "bkStepDesc2": "اختر التاريخ الأنسب لموعدك.",
+  "bkStepDesc3": "اختر وقتاً متاحاً لزيارتك.",
+  "bkStepDesc4": "أخبر المحترف أين يجب تقديم الخدمة.",
+  "bkStepDesc5": "أضف أي تفاصيل تساعد المحترف على الاستعداد.",
+  "bkStepDesc6": "راجع كل شيء بعناية قبل تأكيد حجزك.",
+  "bkWeekdayMon": "اثن",
+  "bkWeekdayTue": "ثلا",
+  "bkWeekdayWed": "أرب",
+  "bkWeekdayThu": "خمي",
+  "bkWeekdayFri": "جمع",
+  "bkWeekdaySat": "سبت",
+  "bkWeekdaySun": "أحد",
+  "bkGoodToKnow1": "إرسال الطلب مجاني ولا يستغرق سوى دقيقة.",
+  "bkGoodToKnow2": "ستصلك إشعارات فور رد المحترف.",
+  "bkGoodToKnow3": "يمكنك الإلغاء دون أي تكلفة ما دام طلبك قيد الانتظار.",
+  "bkTimeSlots1": "تُعرض فقط الفترات ضمن ساعات عمل المحترف.",
+  "bkTimeSlots2": "يتم تعطيل الفترات التي انقضت اليوم تلقائياً.",
+  "bkTimeSlots3": "يمكنك تغيير الوقت الذي اخترته في أي وقت قبل التأكيد.",
+  "chatCouldNotLoadConversations": "تعذر تحميل المحادثات",
+  "chatVoiceMessagePreview": "🎤 رسالة صوتية",
+  "chatPhotoPreview": "📷 صورة",
+  "reviewRatingPoor": "ضعيف",
+  "reviewRatingFair": "مقبول",
+  "reviewRatingGood": "جيد",
+  "reviewRatingVeryGood": "جيد جداً",
+  "reviewRatingExcellent": "ممتاز",
+  "reviewReportReasonSpam": "محتوى مزعج",
+  "reviewReportReasonFake": "مراجعة مزيفة",
+  "reviewReportReasonAbusive": "لغة مسيئة",
+  "reviewReportReasonHarassment": "مضايقة",
+  "reviewReportReasonOffTopic": "خارج الموضوع",
+  "reviewReportReasonConflict": "تضارب مصالح",
+  "reviewReportReasonOther": "أخرى",
+  "availabilityStatusBusy": "مشغول",
+  "availabilityStatusOnLeave": "في إجازة",
+  "availabilityStatusDescAvailable": "يمكن للعملاء حجزك الآن",
+  "availabilityStatusDescBusy": "أنت تعمل — الطلبات الجديدة متوقفة مؤقتاً",
+  "availabilityStatusDescOffline": "لن تظهر في طلبات الحجز الجديدة",
+  "availabilityStatusDescOnLeave": "سيتم تحديد حالتك «في إجازة» حتى عودتك",
+  "professionalInvalidId": "معرّف المحترف غير صالح",
+  "uploadFailedTryAgain": "فشل الرفع. يرجى المحاولة مرة أخرى.",
+  "editorListItemPlaceholder": "عنصر القائمة",
+  "pushChannelGeneralName": "الإشعارات العامة",
+  "pushChannelGeneralDesc": "الحجوزات والإعلانات والبلاغات وتنبيهات أخرى",
+  "pushChannelChatName": "رسائل الدردشة",
+  "pushChannelChatDesc": "رسائل دردشة جديدة",
+  "errBookingLimitReached": "تم بلوغ حد الحجوزات.",
+  "categoryCarpenter": "نجار"
 }

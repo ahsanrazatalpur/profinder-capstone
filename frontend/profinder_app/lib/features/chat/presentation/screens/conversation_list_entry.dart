@@ -12,6 +12,8 @@ import '../../../../core/theme/theme_context_ext.dart';
 import '../../../../services/api_service.dart';
 import 'conversation_list_screen.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 class ConversationListEntry extends StatefulWidget {
   final bool isVisible;
@@ -61,8 +63,8 @@ class _ConversationListEntryState extends State<ConversationListEntry> {
                   height: 80,
                   decoration: BoxDecoration(
                     color: isDark
-                        ? Colors.white.withOpacity(0.05)
-                        : const Color(0xFFF3F4F6),
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : AppColors.neutral100,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -73,10 +75,10 @@ class _ConversationListEntryState extends State<ConversationListEntry> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  AppLocalizations.of(context)!.messagesLoadError,
+                  AppLocalizations.of(context).messagesLoadError,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: AppFontSizes.body,
                     color: context.colors.textSecondary,
                     letterSpacing: 0.2,
                   ),
@@ -86,7 +88,7 @@ class _ConversationListEntryState extends State<ConversationListEntry> {
                   onPressed: _load,
                   icon: const Icon(Icons.refresh_rounded, size: 18),
                   label: Text(
-                    AppLocalizations.of(context)!.retryCta,
+                    AppLocalizations.of(context).retryCta,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.3,
@@ -97,7 +99,7 @@ class _ConversationListEntryState extends State<ConversationListEntry> {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                     elevation: 0,
                   ),
@@ -125,9 +127,9 @@ class _ConversationListEntryState extends State<ConversationListEntry> {
               ),
               const SizedBox(height: 16),
               Text(
-                AppLocalizations.of(context)!.messagesLoadingText,
+                AppLocalizations.of(context).messagesLoadingText,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.body,
                   color: context.colors.textSecondary,
                   fontWeight: FontWeight.w400,
                   letterSpacing: 0.2,

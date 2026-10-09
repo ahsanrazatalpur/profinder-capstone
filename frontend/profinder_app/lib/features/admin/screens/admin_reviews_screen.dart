@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminReviewsScreen extends StatefulWidget {
   const AdminReviewsScreen({super.key});
@@ -78,7 +80,7 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
         _all.fold<double>(0, (a, r) => a + ((r['rating'] as num?)?.toDouble() ?? 0)) / _all.length;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Reviews',
         subtitle: 'Avg rating: ${avgRating.toStringAsFixed(1)} ★ · ${_all.length} total',
@@ -99,11 +101,11 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
                     onChanged: (_) => _applySearch(),
                     decoration: InputDecoration(
                       hintText: 'Search by professional or reviewer…',
-                      hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
+                      hintStyle: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
                       prefixIcon: const Icon(Icons.search_rounded, size: 20),
-                      filled: true, fillColor: const Color(0xFFF5F7FA),
+                      filled: true, fillColor: AppColors.lightScaffold,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -154,14 +156,14 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFF59E0B).withOpacity(0.12) : const Color(0xFFF5F7FA),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isActive ? const Color(0xFFF59E0B) : Colors.transparent),
+          color: isActive ? AppColors.warningAmber.withValues(alpha: 0.12) : AppColors.lightScaffold,
+          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+          border: Border.all(color: isActive ? AppColors.warningAmber : Colors.transparent),
         ),
         alignment: Alignment.center,
-        child: Text(label, style: TextStyle(fontSize: 12,
+        child: Text(label, style: TextStyle(fontSize: AppFontSizes.small,
             fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-            color: isActive ? const Color(0xFFF59E0B) : const Color(0xFF6B7280))),
+            color: isActive ? AppColors.warningAmber : AppColors.grayDeep)),
       ),
     );
   }
@@ -171,8 +173,8 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE5E7EB))),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: AppColors.neutral200)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -180,30 +182,30 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
             children: [
               Expanded(
                 child: Text(r['professional_name']?.toString() ?? '',
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                    style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700)),
               ),
               Row(
                 children: List.generate(5, (i) => Icon(
                     i < rating ? Icons.star_rounded : Icons.star_border_rounded,
-                    size: 14, color: const Color(0xFFF59E0B))),
+                    size: 14, color: AppColors.warningAmber)),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text('by ${r['reviewer_name'] ?? 'Unknown'}', style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+          Text('by ${r['reviewer_name'] ?? 'Unknown'}', style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
           if ((r['comment'] ?? '').toString().isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(r['comment'].toString(), style: const TextStyle(fontSize: 12.5, color: Color(0xFF374151))),
+            Text(r['comment'].toString(), style: const TextStyle(fontSize: 12.5, color: AppColors.gray700)),
           ],
           const SizedBox(height: 8),
           Row(
             children: [
-              Text(r['created_at']?.toString() ?? '', style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF))),
+              Text(r['created_at']?.toString() ?? '', style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400)),
               const Spacer(),
               TextButton.icon(
                 onPressed: () => _deleteDialog(r),
                 icon: const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.error),
-                label: const Text('Delete', style: TextStyle(fontSize: 12, color: AppColors.error)),
+                label: const Text('Delete', style: TextStyle(fontSize: AppFontSizes.small, color: AppColors.error)),
                 style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
               ),
             ],
@@ -245,7 +247,7 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
                 '/admin-panel/reviews/${review['id']}/',
                 {'reason': reason},
               );
-              if (!mounted) return;
+              if (!mounted || !dialogContext.mounted) return;
               Navigator.pop(dialogContext);
               _load();
             } catch (e) {
@@ -311,7 +313,7 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
           child: Column(children: [
             Icon(Icons.star_border_rounded, size: 48, color: Colors.grey.shade300),
             const SizedBox(height: 10),
-            const Text('No reviews found', style: TextStyle(fontSize: 13, color: Color(0xFF9CA3AF))),
+            const Text('No reviews found', style: TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400)),
           ]),
         ),
       );
@@ -322,7 +324,7 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
           children: [
             const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
             const SizedBox(height: 10),
-            const Text('Failed to load reviews', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            const Text('Failed to load reviews', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: _load, icon: const Icon(Icons.refresh_rounded), label: const Text('Retry'),

@@ -5,6 +5,7 @@
 
 import 'api_service.dart';
 import '../core/constants/app_constants.dart';
+import '../core/constants/app_strings.dart';
 
 class BookingService {
   final ApiService _api = ApiService();
@@ -70,7 +71,7 @@ class BookingService {
             return {
               'success':          false,
               'error_type':       'booking_limit_reached',
-              'message':          data['message'] ?? 'Booking limit reached.',
+              'message':          data['message'] ?? AppStrings.errBookingLimitReached,
               'limit':            data['limit']            ?? 5,
               'used_this_month':  data['used_this_month']  ?? 0,
               'subscription_end': data['subscription_end'],
@@ -81,19 +82,19 @@ class BookingService {
           // ── Other errors ──────────────────────────────────
           final msg = data['error'] is Map
               ? (data['error'] as Map).values.first.toString()
-              : data['error'] ?? data['detail'] ?? 'Something went wrong';
+              : data['error'] ?? data['detail'] ?? AppStrings.errSomethingWentWrong;
           return {'success': false, 'message': msg, 'error_type': 'general'};
         }
       }
       return {
         'success': false,
-        'message': 'Network error. Check connection.',
+        'message': AppStrings.errNetworkCheckConnection,
         'error_type': 'network',
       };
     }
     return {
       'success': false,
-      'message': 'Something went wrong.',
+      'message': AppStrings.errSomethingWentWrong,
       'error_type': 'general',
     };
   }

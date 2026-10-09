@@ -51,7 +51,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       // endpoint can never be used to confirm whether an email exists.
       AppHelpers.showError(
         context,
-        auth.errorMessage ?? AppLocalizations.of(context)!.serverError,
+        auth.errorMessage ?? AppLocalizations.of(context).serverError,
       );
     }
   }
@@ -66,7 +66,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.resetPassTitle,
+        title: AppLocalizations.of(context).resetPassTitle,
         icon: Icons.lock_reset_rounded,
       ),
       body: SafeArea(
@@ -106,14 +106,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               height: 80,
               decoration: BoxDecoration(
                 color: isDark
-                    ? AppColors.professionalColor.withOpacity(0.15)
+                    ? context.colors.primary.withValues(alpha: 0.15)
                     : context.colors.primaryLight,
                 borderRadius: BorderRadius.circular(AppSizes.radiusXl),
               ),
               child: Icon(
                 Icons.lock_reset_outlined,
                 size:  40,
-                color: AppColors.professionalColor,
+                color: context.colors.primary,
               ),
             ),
           ),
@@ -121,14 +121,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const SizedBox(height: AppSizes.lg),
 
           Text(
-            AppLocalizations.of(context)!.resetPassTitle,
+            AppLocalizations.of(context).resetPassTitle,
             style: context.textStyles.h2.copyWith(
               color: context.colors.textPrimary,
             ),
           ),
           const SizedBox(height: AppSizes.xs),
           Text(
-            AppLocalizations.of(context)!.resetPassSubtitle,
+            AppLocalizations.of(context).resetPassSubtitle,
             style: context.textStyles.bodyMedium.copyWith(
               color: context.colors.textSecondary,
             ),
@@ -145,15 +145,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
             decoration: InputDecoration(
               labelText:  AppStrings.email,
-              hintText:   AppLocalizations.of(context)!.emailHint,
+              hintText:   AppLocalizations.of(context).emailHint,
               prefixIcon: Icon(
                 Icons.email_outlined,
                 color: isDark
-                    ? context.colors.textSecondary.withOpacity(0.6)
+                    ? context.colors.textSecondary.withValues(alpha: 0.6)
                     : null,
               ),
             ),
-            validator: AppValidators.email,
+            validator: (v) => AppValidators.email(v, AppLocalizations.of(context)),
           ),
 
           const SizedBox(height: AppSizes.xl),
@@ -165,7 +165,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
               ),
               child: auth.isLoading
@@ -178,9 +178,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                     )
                   : Text(
-                      AppLocalizations.of(context)!.sendResetLinkCta,
+                      AppLocalizations.of(context).sendResetLinkCta,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: AppFontSizes.title,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -203,7 +203,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           height: 100,
           decoration: BoxDecoration(
             color: isDark
-                ? const Color(0xFF10B981).withOpacity(0.15)
+                ? AppColors.emerald.withValues(alpha: 0.15)
                 : context.colors.accentLight,
             borderRadius: BorderRadius.circular(AppSizes.radiusFull),
           ),
@@ -217,7 +217,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const SizedBox(height: AppSizes.lg),
 
         Text(
-          AppLocalizations.of(context)!.checkEmailTitle,
+          AppLocalizations.of(context).checkEmailTitle,
           style: context.textStyles.h2.copyWith(
             color: context.colors.textPrimary,
           ),
@@ -225,7 +225,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const SizedBox(height: AppSizes.sm),
 
         Text(
-          AppLocalizations.of(context)!.checkEmailMessage,
+          AppLocalizations.of(context).checkEmailMessage,
           style: context.textStyles.bodyMedium.copyWith(
             color: context.colors.textSecondary,
           ),
@@ -235,9 +235,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const SizedBox(height: AppSizes.xs),
 
         Text(
-          AppLocalizations.of(context)!.checkEmailHint,
+          AppLocalizations.of(context).checkEmailHint,
           style: AppTextStyles.bodySmall.copyWith(
-            color: context.colors.textSecondary.withOpacity(0.6),
+            color: context.colors.textSecondary.withValues(alpha: 0.6),
           ),
           textAlign: TextAlign.center,
         ),
@@ -251,13 +251,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
             ),
             child: Text(
-              AppLocalizations.of(context)!.backToLoginCta,
+              AppLocalizations.of(context).backToLoginCta,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -272,11 +272,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           ),
           child: Text(
-            AppLocalizations.of(context)!.resendEmailCta,
+            AppLocalizations.of(context).resendEmailCta,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: AppFontSizes.body,
               fontWeight: FontWeight.w600,
-              color: AppColors.professionalColor,
+              color: context.colors.primary,
             ),
           ),
         ),

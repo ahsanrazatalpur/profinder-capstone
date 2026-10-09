@@ -38,7 +38,7 @@ class _SocialAuthButtonState extends State<SocialAuthButton> {
   @override
   Widget build(BuildContext context) {
     final hoverTint = Color.alphaBlend(
-      Colors.black.withOpacity(0.04),
+      Colors.black.withValues(alpha: 0.04),
       widget.background,
     );
 
@@ -62,7 +62,7 @@ class _SocialAuthButtonState extends State<SocialAuthButton> {
             boxShadow: _hovering
                 ? [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),

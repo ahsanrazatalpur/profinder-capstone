@@ -1,10 +1,10 @@
 // lib/features/chat/presentation/widgets/report_user_dialog.dart
 
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../data/repositories/chat_repository_impl.dart';
 import '../../../../core/theme/theme_context_ext.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 // 🐛 FIX: these must exactly match apps.admin_panel.models.UserReport
 // .REASON_CHOICES — the endpoint we now submit to (see AppConstants
@@ -36,7 +36,7 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
   }
 
   Future<void> _submit() async {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     setState(() => _isSubmitting = true);
     try {
       await _repo.reportUser(widget.userId, _reason, _detailsController.text.trim(), messageId: widget.messageId);
@@ -63,7 +63,7 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return AlertDialog(
       title: Text(t.chatReport(widget.userName)),
       content: SingleChildScrollView(
@@ -71,15 +71,22 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ..._reasonKeys.map((key) => RadioListTile<String>(
-                  value: key,
-                  groupValue: _reason,
-                  onChanged: (v) => setState(() => _reason = v!),
-                  title: Text(_reasonLabel(t, key), style: const TextStyle(fontSize: 13.5)),
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                  activeColor: context.colors.primary,
-                )),
+            RadioGroup<String>(
+              groupValue: _reason,
+              onChanged: (v) => setState(() => _reason = v ?? _reason),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: _reasonKeys
+                    .map((key) => RadioListTile<String>(
+                          value: key,
+                          title: Text(_reasonLabel(t, key), style: const TextStyle(fontSize: AppFontSizes.body)),
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          activeColor: context.colors.primary,
+                        ))
+                    .toList(),
+              ),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: _detailsController,

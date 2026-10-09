@@ -6,6 +6,8 @@
 // model (title, issuing_organization, issue_date, certificate_image, status)
 // with a CRUD viewset mirroring the existing Portfolio app.
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -53,7 +55,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
       if (!mounted) return;
       setState(() => _isLoading = false);
       if (mounted) {
-        AppHelpers.showError(context, AppLocalizations.of(context)!.loadCertificatesError);
+        AppHelpers.showError(context, AppLocalizations.of(context).loadCertificatesError);
       }
     }
   }
@@ -62,11 +64,11 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
     try {
       await _api.delete('${AppConstants.certificates}$id/');
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.deleteSuccess);
+      AppHelpers.showSuccess(context, AppLocalizations.of(context).deleteSuccess);
       _load();
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context)!.deleteError);
+      AppHelpers.showError(context, AppLocalizations.of(context).deleteError);
     }
   }
 
@@ -74,24 +76,24 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: Text(
-          AppLocalizations.of(context)!.deleteDialogTitle,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+          AppLocalizations.of(context).deleteDialogTitle,
+          style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
         ),
         content: Text(
-          AppLocalizations.of(context)!.deleteDialogContent(item['title']?.toString() ?? ''),
-          style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+          AppLocalizations.of(context).deleteDialogContent(item['title']?.toString() ?? ''),
+          style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancelCta),
+            child: Text(AppLocalizations.of(context).cancelCta),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () { Navigator.pop(context); _delete(item['id']); },
-            child: Text(AppLocalizations.of(context)!.deleteCta),
+            child: Text(AppLocalizations.of(context).deleteCta),
           ),
         ],
       ),
@@ -110,7 +112,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheetState) => Padding(
           padding: EdgeInsets.only(left: 20, right: 20, top: 16, bottom: MediaQuery.of(ctx).viewInsets.bottom + 24),
@@ -126,8 +128,8 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
               ),
               const SizedBox(height: 16),
               Text(
-                AppLocalizations.of(context)!.addCertificateTitle,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                AppLocalizations.of(context).addCertificateTitle,
+                style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
               ),
               const SizedBox(height: 16),
 
@@ -149,7 +151,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                   height: 140,
                   decoration: BoxDecoration(
                     color: context.colors.background,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     border: Border.all(
                       color: pickedXFile != null ? AppColors.professionalColor : context.colors.divider,
                       width: pickedXFile != null ? 2 : 1,
@@ -157,7 +159,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                   ),
                   child: pickedXFile != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           child: kIsWeb && webBytes != null
                               ? Image.memory(webBytes!, fit: BoxFit.cover, width: double.infinity)
                               : Image.file(pickedFile!, fit: BoxFit.cover, width: double.infinity),
@@ -168,8 +170,8 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                             Icon(Icons.card_membership_outlined, size: 32, color: AppColors.professionalColor),
                             const SizedBox(height: 6),
                             Text(
-                              AppLocalizations.of(context)!.addCertificateImageLabel,
-                              style: TextStyle(fontSize: 13, color: AppColors.professionalColor, fontWeight: FontWeight.w500),
+                              AppLocalizations.of(context).addCertificateImageLabel,
+                              style: TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.professionalColor, fontWeight: FontWeight.w500),
                             ),
                           ],
                         ),
@@ -179,30 +181,30 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
 
               TextField(
                 controller: titleCtrl,
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: AppFontSizes.body),
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.certificateTitleLabelRequired,
-                  hintText: AppLocalizations.of(context)!.certificateTitleHint,
+                  labelText: AppLocalizations.of(context).certificateTitleLabelRequired,
+                  hintText: AppLocalizations.of(context).certificateTitleHint,
                   filled: true,
                   fillColor: context.colors.background,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5)),
                 ),
               ),
               const SizedBox(height: 10),
 
               TextField(
                 controller: orgCtrl,
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: AppFontSizes.body),
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.issuingOrganizationLabel,
-                  hintText: AppLocalizations.of(context)!.issuingOrganizationHint,
+                  labelText: AppLocalizations.of(context).issuingOrganizationLabel,
+                  hintText: AppLocalizations.of(context).issuingOrganizationHint,
                   filled: true,
                   fillColor: context.colors.background,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5)),
                 ),
               ),
               const SizedBox(height: 10),
@@ -221,7 +223,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                   decoration: BoxDecoration(
                     color: context.colors.background,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     border: Border.all(color: context.colors.divider),
                   ),
                   child: Row(
@@ -230,10 +232,10 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                       const SizedBox(width: 8),
                       Text(
                         issueDate == null
-                            ? AppLocalizations.of(context)!.issueDateLabelOptional
+                            ? AppLocalizations.of(context).issueDateLabelOptional
                             : '${issueDate!.year}-${issueDate!.month.toString().padLeft(2, '0')}-${issueDate!.day.toString().padLeft(2, '0')}',
                         style: TextStyle(
-                          fontSize: 13.5,
+                          fontSize: AppFontSizes.body,
                           color: issueDate == null ? context.colors.textSecondary : context.colors.textPrimary,
                         ),
                       ),
@@ -248,7 +250,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                 child: ElevatedButton(
                   onPressed: isSaving ? null : () async {
                     if (titleCtrl.text.trim().isEmpty) {
-                      AppHelpers.showError(ctx, AppLocalizations.of(context)!.titleValidationError);
+                      AppHelpers.showError(ctx, AppLocalizations.of(context).titleValidationError);
                       return;
                     }
                     setSheetState(() => isSaving = true);
@@ -263,26 +265,27 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                         'title': titleCtrl.text.trim(),
                         'issuing_organization': orgCtrl.text.trim(),
                         if (issueDate != null) 'issue_date': issueDate!.toIso8601String().split('T').first,
-                        if (imgPart != null) 'image': imgPart,
+                        'image': ?imgPart,
                       }));
-                      if (!mounted) return;
+                      if (!mounted || !ctx.mounted) return;
                       Navigator.pop(ctx);
-                      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.certificateAddSuccess);
+                      AppHelpers.showSuccess(context, AppLocalizations.of(context).certificateAddSuccess);
                       _load();
                     } catch (e) {
+                      if (!mounted || !ctx.mounted) return;
                       setSheetState(() => isSaving = false);
-                      AppHelpers.showError(ctx, AppLocalizations.of(context)!.certificateAddError);
+                      AppHelpers.showError(ctx, AppLocalizations.of(context).certificateAddError);
                     }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.professionalColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                   ),
                   child: isSaving
                       ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : Text(AppLocalizations.of(context)!.saveCertificateCta, style: const TextStyle(fontWeight: FontWeight.w700)),
+                      : Text(AppLocalizations.of(context).saveCertificateCta, style: const TextStyle(fontWeight: FontWeight.w700)),
                 ),
               ),
             ],
@@ -301,12 +304,12 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.certificatesTitle,
+        title: AppLocalizations.of(context).certificatesTitle,
         icon: Icons.workspace_premium_rounded,
         actions: [
           AppBarIconButton(
             icon: Icons.add_rounded,
-            tooltip: AppLocalizations.of(context)!.addCertificateTooltip,
+            tooltip: AppLocalizations.of(context).addCertificateTooltip,
             onGradient: true,
             onPressed: _showAddSheet,
           ),
@@ -339,7 +342,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                                 width: 88,
                                 height: 88,
                                 decoration: BoxDecoration(
-                                  color: AppColors.professionalColor.withOpacity(0.1),
+                                  color: AppColors.professionalColor.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -350,27 +353,27 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                               ),
                               const SizedBox(height: 18),
                               Text(
-                                AppLocalizations.of(context)!.emptyCertificatesTitle,
+                                AppLocalizations.of(context).emptyCertificatesTitle,
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: AppFontSizes.title,
                                   fontWeight: FontWeight.w700,
                                   color: context.colors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                AppLocalizations.of(context)!.emptyCertificatesSubtitle,
-                                style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                                AppLocalizations.of(context).emptyCertificatesSubtitle,
+                                style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
                               ),
                               const SizedBox(height: 22),
                               ElevatedButton.icon(
                                 onPressed: _showAddSheet,
                                 icon: const Icon(Icons.add_rounded, size: 18),
-                                label: Text(AppLocalizations.of(context)!.addFirstCertificateCta),
+                                label: Text(AppLocalizations.of(context).addFirstCertificateCta),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.professionalColor,
                                   foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                 ),
                               ),
@@ -408,13 +411,13 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
       padding: EdgeInsets.all(isTablet ? 16 : 12),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.08) : Colors.grey.withOpacity(0.1),
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.12) : Colors.grey.withOpacity(0.04),
+            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -423,14 +426,14 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
       child: Row(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             child: imageUrl != null && imageUrl.isNotEmpty
                 ? Image.network(
                     imageUrl,
                     width: isTablet ? 64 : 56,
                     height: isTablet ? 64 : 56,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (_, _, _) => Container(
                       width: isTablet ? 64 : 56,
                       height: isTablet ? 64 : 56,
                       color: context.colors.divider,
@@ -481,7 +484,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
                     date,
                     style: TextStyle(
                       fontSize: isTablet ? 11 : 10.5,
-                      color: context.colors.textSecondary.withOpacity(0.7),
+                      color: context.colors.textSecondary.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -491,7 +494,7 @@ class _ProfessionalCertificatesScreenState extends State<ProfessionalCertificate
           Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               onTap: () => _confirmDelete(item),
               child: Container(
                 padding: const EdgeInsets.all(8),

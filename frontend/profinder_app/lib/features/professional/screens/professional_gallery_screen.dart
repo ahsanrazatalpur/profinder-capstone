@@ -5,8 +5,8 @@
 // description, or admin approval flow. Add a lightweight Gallery model
 // (image field only) with a CRUD viewset.
 
-import 'dart:io';
-import 'dart:typed_data';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -53,7 +53,7 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
       if (!mounted) return;
       setState(() => _isLoading = false);
       if (mounted) {
-        AppHelpers.showError(context, AppLocalizations.of(context)!.loadGalleryError);
+        AppHelpers.showError(context, AppLocalizations.of(context).loadGalleryError);
       }
     }
   }
@@ -73,11 +73,11 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
       }
       await _api.postForm(AppConstants.gallery, FormData.fromMap({'image': imgPart}));
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.galleryUploadSuccess);
+      AppHelpers.showSuccess(context, AppLocalizations.of(context).galleryUploadSuccess);
       _load();
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context)!.galleryUploadError);
+      AppHelpers.showError(context, AppLocalizations.of(context).galleryUploadError);
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }
@@ -87,11 +87,11 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
     try {
       await _api.delete('${AppConstants.gallery}$id/');
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.deleteSuccess);
+      AppHelpers.showSuccess(context, AppLocalizations.of(context).deleteSuccess);
       _load();
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context)!.deleteError);
+      AppHelpers.showError(context, AppLocalizations.of(context).deleteError);
     }
   }
 
@@ -99,24 +99,24 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: Text(
-          AppLocalizations.of(context)!.deleteGalleryDialogTitle,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+          AppLocalizations.of(context).deleteGalleryDialogTitle,
+          style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
         ),
         content: Text(
-          AppLocalizations.of(context)!.deleteGalleryDialogContent,
-          style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+          AppLocalizations.of(context).deleteGalleryDialogContent,
+          style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancelCta),
+            child: Text(AppLocalizations.of(context).cancelCta),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () { Navigator.pop(context); _delete(item['id']); },
-            child: Text(AppLocalizations.of(context)!.deleteCta),
+            child: Text(AppLocalizations.of(context).deleteCta),
           ),
         ],
       ),
@@ -137,13 +137,13 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
           alignment: Alignment.topRight,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               child: Image.network(
                 imageUrl,
                 fit: BoxFit.contain,
                 width: double.infinity,
                 height: double.infinity,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   height: 300,
                   color: context.colors.surface,
                   child: Icon(Icons.broken_image, size: 48, color: context.colors.textDisabled),
@@ -155,7 +155,7 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
               right: 8,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withValues(alpha: 0.6),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
@@ -182,7 +182,7 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.galleryTitle,
+        title: AppLocalizations.of(context).galleryTitle,
         icon: Icons.photo_library_rounded,
         actions: [
           _isUploading
@@ -201,7 +201,7 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                 )
               : AppBarIconButton(
                   icon: Icons.add_photo_alternate_outlined,
-                  tooltip: AppLocalizations.of(context)!.addPhotoTooltip,
+                  tooltip: AppLocalizations.of(context).addPhotoTooltip,
                   onGradient: true,
                   onPressed: _pickAndUpload,
                 ),
@@ -234,7 +234,7 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                                 width: 88,
                                 height: 88,
                                 decoration: BoxDecoration(
-                                  color: AppColors.professionalColor.withOpacity(0.1),
+                                  color: AppColors.professionalColor.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -245,27 +245,27 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                               ),
                               const SizedBox(height: 18),
                               Text(
-                                AppLocalizations.of(context)!.emptyGalleryTitle,
+                                AppLocalizations.of(context).emptyGalleryTitle,
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: AppFontSizes.title,
                                   fontWeight: FontWeight.w700,
                                   color: context.colors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                AppLocalizations.of(context)!.emptyGallerySubtitle,
-                                style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                                AppLocalizations.of(context).emptyGallerySubtitle,
+                                style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
                               ),
                               const SizedBox(height: 22),
                               ElevatedButton.icon(
                                 onPressed: _pickAndUpload,
                                 icon: const Icon(Icons.add_rounded, size: 18),
-                                label: Text(AppLocalizations.of(context)!.addPhotoCta),
+                                label: Text(AppLocalizations.of(context).addPhotoCta),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.professionalColor,
                                   foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                 ),
                               ),
@@ -289,10 +289,10 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                           duration: const Duration(milliseconds: 350),
                           curve: Curves.easeOut,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             boxShadow: [
                               BoxShadow(
-                                color: isDark ? Colors.black.withOpacity(0.2) : Colors.grey.withOpacity(0.08),
+                                color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.08),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
                               ),
@@ -302,12 +302,12 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                             onTap: () => _showImagePreview(item),
                             onLongPress: () => _confirmDelete(item),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                               child: imageUrl != null && imageUrl.isNotEmpty
                                   ? Image.network(
                                       imageUrl,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
+                                      errorBuilder: (_, _, _) => Container(
                                         color: context.colors.divider,
                                         child: Icon(
                                           Icons.broken_image_outlined,

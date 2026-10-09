@@ -111,7 +111,7 @@ class ChatSocketDataSource {
       'action': 'send_message',
       'text': text,
       'temp_id': tempId,
-      if (replyToId != null) 'reply_to_id': replyToId,
+      'reply_to_id': ?replyToId,
     });
   }
 

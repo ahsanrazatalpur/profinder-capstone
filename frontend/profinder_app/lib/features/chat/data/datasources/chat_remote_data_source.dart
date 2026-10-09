@@ -10,6 +10,7 @@ import 'package:cross_file/cross_file.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../services/api_service.dart';
+import '../audio_format.dart';
 import '../models/conversation_model.dart';
 import '../models/message_model.dart';
 import '../../domain/repositories/chat_repository.dart' show MediaAttachmentEntity, BlockedUserEntity;
@@ -86,7 +87,7 @@ class ChatRemoteDataSource {
       final bytes = await XFile(image.path).readAsBytes();
       final formData = FormData.fromMap({
         if (text != null && text.isNotEmpty) 'text': text,
-        if (replyToId != null) 'reply_to_id': replyToId,
+        'reply_to_id': ?replyToId,
         'image': MultipartFile.fromBytes(bytes, filename: 'chat_image.jpg'),
       });
       final res = await _api.postForm(endpoint, formData);
@@ -95,7 +96,7 @@ class ChatRemoteDataSource {
 
     final res = await _api.post(endpoint, {
       'text': text ?? '',
-      if (replyToId != null) 'reply_to_id': replyToId,
+      'reply_to_id': ?replyToId,
     });
     return MessageModel.fromJson(res.data as Map<String, dynamic>);
   }
@@ -107,11 +108,21 @@ class ChatRemoteDataSource {
     required int durationSeconds,
     String? replyToId,
   }) async {
+    // 🐛 FIX: the file was always uploaded as "chat_audio.m4a" with no MIME
+    // type, even when the recorder produced WebM/Opus (browsers) or WAV
+    // (some desktop backends). The server then stored a mislabelled file
+    // that other devices couldn't play. Detect the real format from the
+    // bytes and label the upload accordingly.
     final bytes = await XFile(audio.path).readAsBytes();
+    final fmt = sniffAudioFormat(bytes);
     final formData = FormData.fromMap({
-      if (replyToId != null) 'reply_to_id': replyToId,
+      'reply_to_id': ?replyToId,
       'duration_seconds': durationSeconds,
-      'audio': MultipartFile.fromBytes(bytes, filename: 'chat_audio.m4a'),
+      'audio': MultipartFile.fromBytes(
+        bytes,
+        filename: 'chat_audio.${fmt.extension}',
+        contentType: DioMediaType(fmt.type, fmt.subtype),
+      ),
     });
     final res = await _api.postForm(AppConstants.conversationMessages(conversationId), formData);
     return MessageModel.fromJson(res.data as Map<String, dynamic>);

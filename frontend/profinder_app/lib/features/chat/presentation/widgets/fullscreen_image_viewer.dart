@@ -20,7 +20,7 @@ class FullscreenImageViewer extends StatefulWidget {
     return PageRouteBuilder(
       opaque: false,
       barrierColor: Colors.black,
-      pageBuilder: (_, __, ___) => FullscreenImageViewer(heroTag: heroTag, imageUrl: imageUrl, localPath: localPath),
+      pageBuilder: (_, _, _) => FullscreenImageViewer(heroTag: heroTag, imageUrl: imageUrl, localPath: localPath),
     );
   }
 
@@ -52,7 +52,7 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.black.withOpacity(_backgroundOpacity),
+        backgroundColor: Colors.black.withValues(alpha: _backgroundOpacity),
         body: Stack(
           children: [
             Center(
@@ -68,10 +68,10 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
                         : CachedNetworkImage(
                             imageUrl: widget.imageUrl!,
                             fit: BoxFit.contain,
-                            placeholder: (_, __) => const Center(
+                            placeholder: (_, _) => const Center(
                               child: CircularProgressIndicator(color: Colors.white70),
                             ),
-                            errorWidget: (_, __, ___) =>
+                            errorWidget: (_, _, _) =>
                                 const Icon(Icons.broken_image, color: Colors.white54, size: 48),
                           ),
                   ),

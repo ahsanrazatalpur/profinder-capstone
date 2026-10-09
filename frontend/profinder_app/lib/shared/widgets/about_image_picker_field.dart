@@ -14,6 +14,9 @@ import 'package:dio/dio.dart' as dio;
 
 import '../../core/theme/theme_context_ext.dart';
 import '../../services/about_page_service.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/theme/app_text_styles.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class AboutImagePickerField extends StatefulWidget {
   final String label;
@@ -58,11 +61,11 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
       if (result['success'] == true) {
         widget.onChanged(result['url'] as String);
       } else {
-        setState(() => _error = result['error']?.toString() ?? 'Upload failed.');
+        setState(() => _error = result['error']?.toString() ?? AppLocalizations.of(context).uploadError);
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() { _uploading = false; _error = 'Upload failed. Try again.'; });
+      setState(() { _uploading = false; _error = AppLocalizations.of(context).uploadFailedTryAgain; });
     }
   }
 
@@ -71,14 +74,14 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.label, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: context.colors.textSecondary)),
+        Text(widget.label, style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.textSecondary)),
         const SizedBox(height: 8),
         Container(
           height: widget.height,
           width: double.infinity,
           decoration: BoxDecoration(
             color: context.colors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             border: Border.all(color: context.colors.divider),
           ),
           clipBehavior: Clip.antiAlias,
@@ -90,16 +93,16 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
                   color: context.colors.background,
                   child: CachedNetworkImage(
                     imageUrl: widget.imageUrl, fit: BoxFit.contain,
-                    errorWidget: (_, __, ___) => Icon(Icons.broken_image_outlined, color: context.colors.textSecondary),
+                    errorWidget: (_, _, _) => Icon(Icons.broken_image_outlined, color: context.colors.textSecondary),
                   ),
                 )
               else
                 Center(
-                  child: Icon(Icons.image_outlined, size: 32, color: context.colors.textSecondary.withOpacity(0.5)),
+                  child: Icon(Icons.image_outlined, size: 32, color: context.colors.textSecondary.withValues(alpha: 0.5)),
                 ),
               if (_uploading)
                 Container(
-                  color: Colors.black.withOpacity(0.35),
+                  color: Colors.black.withValues(alpha: 0.35),
                   child: const Center(child: CircularProgressIndicator(color: Colors.white)),
                 ),
               Positioned(
@@ -119,7 +122,7 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
         ),
         if (_error != null) ...[
           const SizedBox(height: 4),
-          Text(_error!, style: const TextStyle(fontSize: 11.5, color: Colors.red)),
+          Text(_error!, style: const TextStyle(fontSize: AppFontSizes.small, color: Colors.red)),
         ],
       ],
     );
@@ -130,7 +133,7 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
       message: tooltip,
       child: InkWell(
         onTap: _uploading ? null : onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),

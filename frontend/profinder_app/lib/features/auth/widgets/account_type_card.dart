@@ -112,12 +112,12 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
                 ),
                 borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                 border: Border.all(
-                  color: selected ? Colors.white.withOpacity(0.55) : Colors.white.withOpacity(0.14),
+                  color: selected ? Colors.white.withValues(alpha: 0.55) : Colors.white.withValues(alpha: 0.14),
                   width: selected ? 1.6 : 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: color.withOpacity(selected ? 0.35 : 0.20),
+                    color: color.withValues(alpha: selected ? 0.35 : 0.20),
                     blurRadius: selected ? 20 : 10,
                     offset: const Offset(0, 6),
                   ),
@@ -140,9 +140,9 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                Colors.white.withOpacity(0),
-                                Colors.white.withOpacity(selected ? 0.35 : 0.16),
-                                Colors.white.withOpacity(0),
+                                Colors.white.withValues(alpha: 0),
+                                Colors.white.withValues(alpha: selected ? 0.35 : 0.16),
+                                Colors.white.withValues(alpha: 0),
                               ],
                             ),
                           ),
@@ -172,7 +172,7 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
                               style: AppTextStyles.bodyMedium.copyWith(
                                 color: AppColors.white,
                                 fontWeight: FontWeight.w800,
-                                fontSize: 18,
+                                fontSize: AppFontSizes.title2,
                                 height: 1.15,
                               ),
                             ),
@@ -191,7 +191,7 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppTextStyles.bodySmall.copyWith(
-                                  color: Colors.white.withOpacity(0.92),
+                                  color: Colors.white.withValues(alpha: 0.92),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -209,7 +209,7 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
                       right: 12,
                       child: Icon(
                         widget.icon,
-                        color: Colors.white.withOpacity(selected ? 0.55 : 0.40),
+                        color: Colors.white.withValues(alpha: selected ? 0.55 : 0.40),
                         size: 34,
                       ),
                     ),

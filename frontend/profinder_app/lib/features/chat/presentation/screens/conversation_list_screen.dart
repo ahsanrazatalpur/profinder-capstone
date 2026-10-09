@@ -11,6 +11,8 @@ import '../providers/conversation_list_provider.dart';
 import '../widgets/conversation_tile.dart';
 import 'chat_screen.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 class ConversationListScreen extends StatefulWidget {
   final int currentUserId;
@@ -93,7 +95,7 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.messagesTitle,
+        title: AppLocalizations.of(context).messagesTitle,
         icon: Icons.chat_bubble_rounded,
       ),
       body: Consumer<ConversationListProvider>(
@@ -113,9 +115,9 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    AppLocalizations.of(context)!.messagesLoadingText,
+                    AppLocalizations.of(context).messagesLoadingText,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: AppFontSizes.body,
                       color: context.colors.textSecondary,
                       fontWeight: FontWeight.w400,
                       letterSpacing: 0.2,
@@ -137,11 +139,11 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
             child: ListView.separated(
               padding: EdgeInsets.symmetric(vertical: isTablet ? 8 : 4),
               itemCount: provider.conversations.length,
-              separatorBuilder: (_, __) => Divider(
+              separatorBuilder: (_, _) => Divider(
                 height: 1,
                 indent: 80,
                 color: isDark
-                    ? Colors.white.withOpacity(0.06)
+                    ? Colors.white.withValues(alpha: 0.06)
                     : context.colors.divider,
               ),
               itemBuilder: (context, index) {
@@ -181,21 +183,21 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
               height: isTablet ? 100 : 88,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
-                    : const Color(0xFFF3F4F6),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : AppColors.neutral100,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.chat_bubble_outline_rounded,
                 size: isTablet ? 44 : 40,
                 color: isDark
-                    ? Colors.white.withOpacity(0.3)
-                    : const Color(0xFFD1D5DB),
+                    ? Colors.white.withValues(alpha: 0.3)
+                    : AppColors.neutral300,
               ),
             ),
             const SizedBox(height: 18),
             Text(
-              AppLocalizations.of(context)!.messagesEmptyTitle,
+              AppLocalizations.of(context).messagesEmptyTitle,
               style: TextStyle(
                 fontSize: isTablet ? 18 : 16,
                 fontWeight: FontWeight.w700,
@@ -205,7 +207,7 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              AppLocalizations.of(context)!.messagesEmptySubtitle,
+              AppLocalizations.of(context).messagesEmptySubtitle,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: isTablet ? 14 : 13,
@@ -231,8 +233,8 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
               height: 80,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
-                    : const Color(0xFFF3F4F6),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : AppColors.neutral100,
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -246,7 +248,7 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
               provider.error!,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 color: context.colors.textSecondary,
                 letterSpacing: 0.2,
               ),
@@ -256,7 +258,7 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
               onPressed: provider.load,
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: Text(
-                AppLocalizations.of(context)!.retryCta,
+                AppLocalizations.of(context).retryCta,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.3,
@@ -267,7 +269,7 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 elevation: 0,
               ),

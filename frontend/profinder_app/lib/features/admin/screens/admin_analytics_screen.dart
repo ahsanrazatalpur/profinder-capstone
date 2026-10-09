@@ -18,6 +18,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminAnalyticsScreen extends StatefulWidget {
   const AdminAnalyticsScreen({super.key});
@@ -228,7 +230,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                                         title: 'Top Cities',
                                         icon:
                                             Icons.location_city_rounded,
-                                        color: const Color(0xFF7C3AED),
+                                        color: AppColors.accentPurple,
                                         items: (_data['top_cities']
                                                     as List? ??
                                                 [])
@@ -312,7 +314,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
         border: Border.all(color: context.colors.divider),
       ),
       child: Row(
@@ -344,7 +346,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                           ? [
                               BoxShadow(
                                 color: AppColors.adminColor
-                                    .withOpacity(0.3),
+                                    .withValues(alpha: 0.3),
                                 blurRadius: 10,
                                 offset: const Offset(0, 3),
                               ),
@@ -354,7 +356,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                     child: Text(
                       '${d}D',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: AppFontSizes.body,
                         fontWeight: FontWeight.w700,
                         color: isActive
                             ? Colors.white
@@ -388,7 +390,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
             Text(
               title,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: AppFontSizes.title2,
                 fontWeight: FontWeight.w800,
                 color: context.colors.textPrimary,
                 letterSpacing: -0.2,
@@ -408,11 +410,11 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
           padding: padding ?? const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: context.colors.surface,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(color: context.colors.divider),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 14,
                 offset: const Offset(0, 4),
               ),
@@ -448,7 +450,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         formatter: (v) => 'Rs ${_revenueFmt.format(v)}',
         fullFormatter: (v) => 'Rs ${NumberFormat('#,##0').format(v)}',
         icon: Icons.payments_rounded,
-        color: const Color(0xFF16A34A),
+        color: AppColors.greenDeep,
         trendPercent: _trendPercent(revenueSeries),
         sparkline: revenueSeries,
       ),
@@ -458,7 +460,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         formatter: (v) => _plainFmt.format(v),
         fullFormatter: (v) => NumberFormat('#,##0').format(v),
         icon: Icons.event_note_rounded,
-        color: const Color(0xFF2563EB),
+        color: AppColors.customerColor,
         trendPercent: _trendPercent(bookingSeries),
         sparkline: bookingSeries,
       ),
@@ -468,7 +470,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         formatter: (v) => _plainFmt.format(v),
         fullFormatter: (v) => NumberFormat('#,##0').format(v),
         icon: Icons.check_circle_rounded,
-        color: const Color(0xFF16A34A),
+        color: AppColors.greenDeep,
       ),
       _kpiCard(
         label: 'Cancelled',
@@ -476,7 +478,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         formatter: (v) => _plainFmt.format(v),
         fullFormatter: (v) => NumberFormat('#,##0').format(v),
         icon: Icons.cancel_rounded,
-        color: const Color(0xFFDC2626),
+        color: AppColors.red600,
       ),
       _kpiCard(
         label: 'AI Searches',
@@ -484,7 +486,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         formatter: (v) => _plainFmt.format(v),
         fullFormatter: (v) => NumberFormat('#,##0').format(v),
         icon: Icons.travel_explore_rounded,
-        color: const Color(0xFFF59E0B),
+        color: AppColors.warningAmber,
         trendPercent: _trendPercent(searchSeries),
         sparkline: searchSeries,
       ),
@@ -494,7 +496,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         formatter: (v) => _plainFmt.format(v),
         fullFormatter: (v) => NumberFormat('#,##0').format(v),
         icon: Icons.workspace_premium_rounded,
-        color: const Color(0xFF7C3AED),
+        color: AppColors.accentPurple,
       ),
     ];
 
@@ -537,11 +539,11 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: context.colors.surface,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppSizes.radius18),
             border: Border.all(color: context.colors.divider),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -579,8 +581,8 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                         width: 34,
                         height: 34,
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.13),
-                          borderRadius: BorderRadius.circular(10),
+                          color: color.withValues(alpha: 0.13),
+                          borderRadius: BorderRadius.circular(AppSizes.radius10),
                         ),
                         child: Icon(icon, size: 16, color: color),
                       ),
@@ -626,12 +628,12 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
 
   /// Small green/red pill showing percent change.
   Widget _trendPill(double pct, bool up) {
-    final color = up ? const Color(0xFF16A34A) : const Color(0xFFDC2626);
+    final color = up ? AppColors.greenDeep : AppColors.red600;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.13),
-        borderRadius: BorderRadius.circular(20),
+        color: color.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -673,7 +675,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                     style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF16A34A),
+                      color: AppColors.greenDeep,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -681,7 +683,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                   Text(
                     'last $_rangeDays days',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: AppFontSizes.small,
                       color: context.colors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
@@ -692,11 +694,11 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF16A34A).withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.greenDeep.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 child: const Icon(Icons.payments_rounded,
-                    color: Color(0xFF16A34A), size: 20),
+                    color: AppColors.greenDeep, size: 20),
               ),
             ],
           ),
@@ -709,7 +711,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                 : CustomPaint(
                     painter: _LineChartPainter(
                       series: [values],
-                      colors: const [Color(0xFF16A34A)],
+                      colors: const [AppColors.greenDeep],
                       filled: true,
                       showGrid: true,
                       showLastLabel: true,
@@ -736,9 +738,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
   }
 
   TextStyle _axisLabelStyle() => TextStyle(
-        fontSize: 11,
+        fontSize: AppFontSizes.caption,
         fontWeight: FontWeight.w600,
-        color: context.colors.textSecondary.withOpacity(0.7),
+        color: context.colors.textSecondary.withValues(alpha: 0.7),
       );
 
   /// Formats period strings from the API into short axis labels.
@@ -780,7 +782,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
             runSpacing: 6,
             children: [
               _legendDot('Customers', context.colors.primary),
-              _legendDot('Professionals', const Color(0xFF7C3AED)),
+              _legendDot('Professionals', AppColors.accentPurple),
             ],
           ),
           const SizedBox(height: 4),
@@ -803,7 +805,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                       series: [customers, professionals],
                       colors: [
                         context.colors.primary,
-                        const Color(0xFF7C3AED),
+                        AppColors.accentPurple,
                       ],
                       showGrid: true,
                     ),
@@ -879,7 +881,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
           Text(
             '$todayCount',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: AppFontSizes.h3,
               fontWeight: FontWeight.w800,
               color: context.colors.accent,
               letterSpacing: -0.3,
@@ -925,9 +927,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
           Text(
             '$total',
             style: const TextStyle(
-              fontSize: 20,
+              fontSize: AppFontSizes.h3,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF0EA5E9),
+              color: AppColors.sky,
               letterSpacing: -0.3,
             ),
           ),
@@ -948,7 +950,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                 ? _noData(height: 64)
                 : CustomPaint(
                     painter: _BarChartPainter(
-                        values: values, color: const Color(0xFF0EA5E9)),
+                        values: values, color: AppColors.sky),
                   ),
           ),
         ],
@@ -987,9 +989,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                     painter: _DonutPainter(
                       values: [completed * t, cancelled * t, other * t],
                       colors: const [
-                        Color(0xFF16A34A),
-                        Color(0xFFDC2626),
-                        Color(0xFFE5E7EB),
+                        AppColors.greenDeep,
+                        AppColors.red600,
+                        AppColors.neutral200,
                       ],
                       trackColor: context.colors.divider,
                     ),
@@ -1001,7 +1003,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                     Text(
                       '${completedPct.toStringAsFixed(0)}%',
                       style: TextStyle(
-                        fontSize: 17,
+                        fontSize: AppFontSizes.titleMd,
                         fontWeight: FontWeight.w800,
                         color: context.colors.textPrimary,
                       ),
@@ -1009,7 +1011,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                     Text(
                       'Done',
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: AppFontSizes.micro,
                         color: context.colors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
@@ -1025,13 +1027,13 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _legendRow(
-                    'Completed', completed.toInt(), const Color(0xFF16A34A)),
+                    'Completed', completed.toInt(), AppColors.greenDeep),
                 const SizedBox(height: 8),
                 _legendRow(
-                    'Cancelled', cancelled.toInt(), const Color(0xFFDC2626)),
+                    'Cancelled', cancelled.toInt(), AppColors.red600),
                 const SizedBox(height: 8),
                 _legendRow('In progress', other.toInt(),
-                    const Color(0xFF9CA3AF)),
+                    AppColors.neutral400),
               ],
             ),
           ),
@@ -1062,7 +1064,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
           Text(
             '$value',
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w800, color: color),
+                fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w800, color: color),
           ),
         ],
       );
@@ -1084,9 +1086,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
             .clamp(1, 1 << 30);
 
     const medalColors = [
-      Color(0xFFF59E0B),
-      Color(0xFF9CA3AF),
-      Color(0xFFB45309)
+      AppColors.warningAmber,
+      AppColors.neutral400,
+      AppColors.amberDarkest
     ];
 
     return _cardShell(
@@ -1153,7 +1155,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                                 child: Text(
                                   item.label,
                                   style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: AppFontSizes.secondary,
                                     fontWeight: FontWeight.w700,
                                     color: context.colors.textPrimary,
                                   ),
@@ -1166,7 +1168,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                                     ? '${item.count} · ${item.suffix}'
                                     : '${item.count}',
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: AppFontSizes.small,
                                   fontWeight: FontWeight.w800,
                                   color: color,
                                 ),
@@ -1206,8 +1208,8 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         width: 26,
         height: 26,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.13),
-          borderRadius: BorderRadius.circular(8),
+          color: color.withValues(alpha: 0.13),
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
         ),
         child: Icon(icon, size: 13, color: color),
       );
@@ -1274,10 +1276,10 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         height: 26,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: AppColors.info.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          color: AppColors.info.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
         ),
-        child: Text(flag, style: const TextStyle(fontSize: 13)),
+        child: Text(flag, style: const TextStyle(fontSize: AppFontSizes.secondary)),
       );
     }
     final initials = country.isEmpty
@@ -1293,8 +1295,8 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
       height: 26,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.info.withOpacity(0.13),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.info.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
       ),
       child: Text(
         initials,
@@ -1358,7 +1360,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
             Text(
               'Top Searches',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: AppFontSizes.small,
                 fontWeight: FontWeight.w800,
                 color: context.colors.textSecondary,
               ),
@@ -1374,13 +1376,13 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 7),
                   decoration: BoxDecoration(
-                    color: AppColors.info.withOpacity(0.09),
-                    borderRadius: BorderRadius.circular(20),
+                    color: AppColors.info.withValues(alpha: 0.09),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                   ),
                   child: Text(
                     '$query · $count',
                     style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: AppFontSizes.small,
                         fontWeight: FontWeight.w700,
                         color: AppColors.info),
                   ),
@@ -1421,7 +1423,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         Text(
           value,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: AppFontSizes.h3,
             fontWeight: FontWeight.w800,
             color: color,
             letterSpacing: -0.3,
@@ -1440,55 +1442,55 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         'Total Bookings',
         stats['total_bookings_all_time'],
         Icons.event_note_rounded,
-        const Color(0xFF2563EB)
+        AppColors.customerColor
       ),
       (
         'Completed',
         stats['completed_bookings'],
         Icons.check_circle_rounded,
-        const Color(0xFF16A34A)
+        AppColors.greenDeep
       ),
       (
         'Cancelled',
         stats['cancelled_bookings'],
         Icons.cancel_rounded,
-        const Color(0xFFDC2626)
+        AppColors.red600
       ),
       (
         'Total Searches',
         stats['total_searches_all_time'],
         Icons.travel_explore_rounded,
-        const Color(0xFFF59E0B)
+        AppColors.warningAmber
       ),
       (
         'Active Subs',
         stats['active_subscriptions'],
         Icons.workspace_premium_rounded,
-        const Color(0xFF7C3AED)
+        AppColors.accentPurple
       ),
       (
         'Active Ads',
         stats['active_popup_ads'],
         Icons.campaign_rounded,
-        const Color(0xFFDB2777)
+        AppColors.badgePopular
       ),
       (
         'Categories',
         stats['total_categories'],
         Icons.category_rounded,
-        const Color(0xFF0EA5E9)
+        AppColors.sky
       ),
       (
         'Portfolio Items',
         stats['total_portfolio_items'],
         Icons.photo_library_rounded,
-        const Color(0xFF14B8A6)
+        AppColors.teal
       ),
       (
         'Total Reviews',
         stats['total_reviews'],
         Icons.star_rounded,
-        const Color(0xFFF59E0B)
+        AppColors.warningAmber
       ),
     ];
 
@@ -1514,7 +1516,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: context.colors.surface,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               border: Border.all(color: context.colors.divider),
             ),
             child: Row(
@@ -1523,8 +1525,8 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.13),
-                    borderRadius: BorderRadius.circular(10),
+                    color: color.withValues(alpha: 0.13),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                   ),
                   child: Icon(icon, size: 17, color: color),
                 ),
@@ -1543,7 +1545,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                         builder: (context, val, _) => Text(
                           _plainFmt.format(val),
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: AppFontSizes.input,
                             fontWeight: FontWeight.w800,
                             color: context.colors.textPrimary,
                           ),
@@ -1580,14 +1582,14 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
               Icon(
                 Icons.bar_chart_rounded,
                 size: 18,
-                color: context.colors.textSecondary.withOpacity(0.4),
+                color: context.colors.textSecondary.withValues(alpha: 0.4),
               ),
               const SizedBox(height: 4),
               Text(
                 'No data yet',
                 style: TextStyle(
-                  fontSize: 12,
-                  color: context.colors.textSecondary.withOpacity(0.7),
+                  fontSize: AppFontSizes.small,
+                  color: context.colors.textSecondary.withValues(alpha: 0.7),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1643,7 +1645,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.08),
+                color: AppColors.error.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.error_outline_rounded,
@@ -1653,7 +1655,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
             Text(
               'Failed to load analytics',
               style: TextStyle(
-                fontSize: 15,
+                fontSize: AppFontSizes.input,
                 fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
               ),
@@ -1681,7 +1683,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                       horizontal: 20, vertical: 12),
                   minimumSize: const Size(0, 44),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   ),
                 ),
               ),
@@ -1820,7 +1822,7 @@ class _ShimmerBoxState extends State<_ShimmerBox>
   @override
   Widget build(BuildContext context) {
     final base = context.colors.surface;
-    final highlight = context.colors.divider.withOpacity(0.6);
+    final highlight = context.colors.divider.withValues(alpha: 0.6);
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
@@ -1829,7 +1831,7 @@ class _ShimmerBoxState extends State<_ShimmerBox>
           height: widget.height,
           width: widget.width ?? double.infinity,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppSizes.radius18),
             gradient: LinearGradient(
               begin: Alignment(-1 + t * 3, 0),
               end: Alignment(0 + t * 3, 0),
@@ -1871,7 +1873,7 @@ class _LineChartPainter extends CustomPainter {
 
     if (showGrid) {
       final gridPaint = Paint()
-        ..color = const Color(0xFF9CA3AF).withOpacity(0.14)
+        ..color = AppColors.neutral400.withValues(alpha: 0.14)
         ..strokeWidth = 1;
       for (var i = 0; i <= 3; i++) {
         final y = chartHeight * i / 3;
@@ -1905,7 +1907,7 @@ class _LineChartPainter extends CustomPainter {
           ..shader = LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [color.withOpacity(0.24), color.withOpacity(0.0)],
+            colors: [color.withValues(alpha: 0.24), color.withValues(alpha: 0.0)],
           ).createShader(Rect.fromLTWH(0, 0, size.width, chartHeight));
         canvas.drawPath(fillPath, fillPaint);
       }
@@ -1988,14 +1990,14 @@ class _BarChartPainter extends CustomPainter {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: isLast
-              ? [color, color.withOpacity(0.75)]
-              : [color.withOpacity(0.32), color.withOpacity(0.32)],
+              ? [color, color.withValues(alpha: 0.75)]
+              : [color.withValues(alpha: 0.32), color.withValues(alpha: 0.32)],
         ).createShader(rect);
       canvas.drawRRect(
         RRect.fromRectAndCorners(
           rect,
-          topLeft: const Radius.circular(4),
-          topRight: const Radius.circular(4),
+          topLeft: const Radius.circular(AppSizes.radiusXs),
+          topRight: const Radius.circular(AppSizes.radiusXs),
         ),
         paint,
       );
@@ -2018,8 +2020,7 @@ class _DonutPainter extends CustomPainter {
     required this.values,
     required this.colors,
     required this.trackColor,
-    this.strokeWidth = 12,
-  });
+  }) : strokeWidth = 12;
 
   @override
   void paint(Canvas canvas, Size size) {

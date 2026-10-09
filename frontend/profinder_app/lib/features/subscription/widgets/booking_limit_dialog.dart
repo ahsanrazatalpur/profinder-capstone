@@ -8,6 +8,8 @@ import '../../../core/theme/app_colors.dart';
 import '../screens/subscription_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class BookingLimitDialog extends StatelessWidget {
   final int    limit;           // max bookings (e.g. 5)
@@ -45,9 +47,9 @@ class BookingLimitDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -59,7 +61,7 @@ class BookingLimitDialog extends StatelessWidget {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.12),
+                color: AppColors.warning.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -74,7 +76,7 @@ class BookingLimitDialog extends StatelessWidget {
             Text(
               t.subscriptionBookingLimitReached,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: AppFontSizes.h3,
                 fontWeight: FontWeight.bold,
                 color: context.colors.textPrimary,
               ),
@@ -86,7 +88,7 @@ class BookingLimitDialog extends StatelessWidget {
             Text(
               t.subscriptionVeUsedBookingsMonthFreePlan('$usedThisMonth', '$limit'),
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 color: context.colors.textSecondary,
                 height: 1.5,
               ),
@@ -104,7 +106,7 @@ class BookingLimitDialog extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: context.colors.background,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
                 border: Border.all(color: context.colors.divider),
               ),
               child: Row(
@@ -117,7 +119,7 @@ class BookingLimitDialog extends StatelessWidget {
                           ? t.subscriptionLimitResetsOn(subscriptionEnd!)
                           : t.subscriptionLimitResetsNextMonth,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: AppFontSizes.secondary,
                         color: context.colors.textSecondary,
                       ),
                     ),
@@ -150,7 +152,7 @@ class BookingLimitDialog extends StatelessWidget {
                   backgroundColor: context.colors.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   ),
                   elevation: 0,
                 ),
@@ -161,7 +163,7 @@ class BookingLimitDialog extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(t.subscriptionUpgradePremium,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15)),
+                            fontWeight: FontWeight.bold, fontSize: AppFontSizes.input)),
                   ],
                 ),
               ),
@@ -181,7 +183,7 @@ class BookingLimitDialog extends StatelessWidget {
   }
 
   Widget _buildProgressBar(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final progress = limit > 0 ? usedThisMonth / limit : 1.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,17 +192,17 @@ class BookingLimitDialog extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(t.subscriptionMonthlyBookings,
-                style: TextStyle(fontSize: 12, color: context.colors.textSecondary)),
+                style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary)),
             Text('$usedThisMonth / $limit',
                 style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: AppFontSizes.small,
                     fontWeight: FontWeight.bold,
                     color: AppColors.error)),
           ],
         ),
         const SizedBox(height: 6),
         ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
           child: LinearProgressIndicator(
             value: progress.clamp(0.0, 1.0),
             minHeight: 8,
@@ -214,7 +216,7 @@ class BookingLimitDialog extends StatelessWidget {
   }
 
   Widget _buildPremiumFeatures(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final features = [
       t.subscriptionFeatureUnlimitedBookingsMonth,
       t.subscriptionFeatureFeaturedProfileSearch,
@@ -227,13 +229,13 @@ class BookingLimitDialog extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            context.colors.primary.withOpacity(0.06),
-            context.colors.primaryLight.withOpacity(0.4),
+            context.colors.primary.withValues(alpha: 0.06),
+            context.colors.primaryLight.withValues(alpha: 0.4),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(color: context.colors.primaryLight),
       ),
       child: Column(
@@ -247,7 +249,7 @@ class BookingLimitDialog extends StatelessWidget {
               Text(t.subscriptionPremiumIncludes,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 13,
+                      fontSize: AppFontSizes.secondary,
                       color: context.colors.primary)),
             ],
           ),
@@ -261,7 +263,7 @@ class BookingLimitDialog extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(f,
                         style: TextStyle(
-                            fontSize: 13, color: context.colors.textPrimary)),
+                            fontSize: AppFontSizes.secondary, color: context.colors.textPrimary)),
                   ],
                 ),
               )),

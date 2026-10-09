@@ -1,7 +1,10 @@
 // lib/features/chat/presentation/widgets/date_separator.dart
 
 import 'package:flutter/material.dart';
+import '../../../../core/theme/theme_context_ext.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 class DateSeparator extends StatelessWidget {
   final DateTime date;
@@ -27,18 +30,19 @@ class DateSeparator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Center(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
-            color: const Color(0xFFE9EDF2),
-            borderRadius: BorderRadius.circular(14),
+            color: isDark ? context.colors.divider : const Color(0xFFE9EDF2),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           ),
           child: Text(
             label(date),
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
+            style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: context.colors.textSecondary),
           ),
         ),
       ),

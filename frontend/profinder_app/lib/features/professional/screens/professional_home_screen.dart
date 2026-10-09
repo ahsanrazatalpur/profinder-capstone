@@ -1,7 +1,10 @@
 // lib/features/professional/screens/professional_home_screen.dart
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_helpers.dart';
@@ -98,9 +101,13 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     if ((userProfile['city'] ?? '').toString().trim().isNotEmpty) filled++;
     if ((userProfile['phone'] ?? '').toString().trim().isNotEmpty) filled++;
     if ((proProfile['hourly_rate'] ?? 0).toString() != '0' &&
-        (proProfile['hourly_rate'] ?? '').toString().isNotEmpty) filled++;
+        (proProfile['hourly_rate'] ?? '').toString().isNotEmpty) {
+      filled++;
+    }
     if ((proProfile['experience_years'] ?? 0).toString() != '0' &&
-        (proProfile['experience_years'] ?? '').toString().isNotEmpty) filled++;
+        (proProfile['experience_years'] ?? '').toString().isNotEmpty) {
+      filled++;
+    }
     if ((proProfile['skills'] ?? '').toString().trim().isNotEmpty) filled++;
     if (portfolio.isNotEmpty) filled++;
 
@@ -157,7 +164,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _error = AppLocalizations.of(context)!.dashboardLoadError;
+        _error = AppLocalizations.of(context).dashboardLoadError;
       });
     }
   }
@@ -223,9 +230,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    AppLocalizations.of(context)!.loadingDashboard,
+                    AppLocalizations.of(context).loadingDashboard,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: AppFontSizes.body,
                       color: context.colors.textSecondary,
                       fontWeight: FontWeight.w400,
                     ),
@@ -270,7 +277,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   // ── AppBar (logo + notifications + profile avatar only) ──────────────
   Widget _buildAppBar() {
     final header = _dashboard?['header'] as Map<String, dynamic>? ?? {};
-    final fullName = (header['name'] ?? AppLocalizations.of(context)!.professionalDefaultName).toString();
+    final fullName = (header['name'] ?? AppLocalizations.of(context).professionalDefaultName).toString();
     final photo = header['photo_url'];
     final unread = (_dashboard?['unread_notifications'] ?? 0) as int;
     return ProfessionalAppBar(
@@ -287,7 +294,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
 
   // ── Greeting + KPI strip (page content, not AppBar) ──────────────────
   Widget _buildGreetingAndKpis(bool isDark) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final c = context.colors;
     final header = _dashboard?['header'] as Map<String, dynamic>? ?? {};
     final fullName = (header['name'] ?? t.professionalDefaultName).toString();
@@ -323,9 +330,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               ? Container(
                   padding: const EdgeInsets.fromLTRB(10, 6, 12, 6),
                   decoration: BoxDecoration(
-                    color: accent.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: accent.withOpacity(0.3)),
+                    color: accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                    border: Border.all(color: accent.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -334,10 +341,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
-                          category.isNotEmpty ? category : t.verifiedProfessionalLabel,
+                          category.isNotEmpty ? AppHelpers.localizedCategoryName(context, category) : t.verifiedProfessionalLabel,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: AppFontSizes.secondary,
                             fontWeight: FontWeight.w600,
                             color: accent,
                             letterSpacing: 0.2,
@@ -355,11 +362,11 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             padding: const EdgeInsets.symmetric(vertical: 14),
             decoration: BoxDecoration(
               color: c.surface,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               border: Border.all(color: c.divider),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                   blurRadius: 10,
                   offset: const Offset(0, 3),
                 ),
@@ -398,7 +405,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: AppColors.professionalColor.withOpacity(0.12),
+            color: AppColors.professionalColor.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: AppColors.professionalColor, size: 16),
@@ -409,7 +416,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: AppFontSizes.body,
             fontWeight: FontWeight.w700,
             color: c.textPrimary,
             letterSpacing: 0.1,
@@ -421,7 +428,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontSize: 10,
+            fontSize: AppFontSizes.caption,
             color: c.textSecondary,
             fontWeight: FontWeight.w500,
           ),
@@ -454,58 +461,53 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
 
-  String _greeting(String name) {
-    final hour = DateTime.now().hour;
-    String time;
-    if (hour < 12) {
-      time = AppLocalizations.of(context)!.goodMorning;
-    } else if (hour < 17) {
-      time = AppLocalizations.of(context)!.goodAfternoon;
-    } else {
-      time = AppLocalizations.of(context)!.goodEvening;
-    }
-    return '$time, $name';
-  }
-
-  String _greetingOnly() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return AppLocalizations.of(context)!.goodMorningComma;
-    if (hour < 17) return AppLocalizations.of(context)!.goodAfternoonComma;
-    return AppLocalizations.of(context)!.goodEveningComma;
-  }
-
   IconData _categoryIcon(String profession) {
     final p = profession.toLowerCase();
-    if (p.contains('tutor') || p.contains('educat') || p.contains('teach')) 
+    if (p.contains('tutor') || p.contains('educat') || p.contains('teach')) {
       return Icons.menu_book_rounded;
-    if (p.contains('doctor') || p.contains('medic') || p.contains('health')) 
+    }
+    if (p.contains('doctor') || p.contains('medic') || p.contains('health')) {
       return Icons.medical_services_outlined;
-    if (p.contains('lawyer') || p.contains('legal')) 
+    }
+    if (p.contains('lawyer') || p.contains('legal')) {
       return Icons.gavel_outlined;
-    if (p.contains('engineer')) 
+    }
+    if (p.contains('engineer')) {
       return Icons.engineering_outlined;
-    if (p.contains('plumb')) 
+    }
+    if (p.contains('plumb')) {
       return Icons.plumbing_outlined;
-    if (p.contains('electric')) 
+    }
+    if (p.contains('electric')) {
       return Icons.electrical_services;
-    if (p.contains('clean')) 
+    }
+    if (p.contains('clean')) {
       return Icons.cleaning_services;
-    if (p.contains('carpent')) 
+    }
+    if (p.contains('carpent')) {
       return Icons.carpenter;
-    if (p.contains('paint')) 
+    }
+    if (p.contains('paint')) {
       return Icons.format_paint_outlined;
-    if (p.contains('architect')) 
+    }
+    if (p.contains('architect')) {
       return Icons.architecture;
-    if (p.contains('account') || p.contains('financ')) 
+    }
+    if (p.contains('account') || p.contains('financ')) {
       return Icons.account_balance_outlined;
-    if (p.contains('comput') || p.contains('it ') || p.contains('developer') || p.contains('software')) 
+    }
+    if (p.contains('comput') || p.contains('it ') || p.contains('developer') || p.contains('software')) {
       return Icons.computer_outlined;
-    if (p.contains('beauty') || p.contains('salon') || p.contains('makeup')) 
+    }
+    if (p.contains('beauty') || p.contains('salon') || p.contains('makeup')) {
       return Icons.face_retouching_natural_outlined;
-    if (p.contains('fitness') || p.contains('trainer') || p.contains('gym')) 
+    }
+    if (p.contains('fitness') || p.contains('trainer') || p.contains('gym')) {
       return Icons.fitness_center_outlined;
-    if (p.contains('photo')) 
+    }
+    if (p.contains('photo')) {
       return Icons.camera_alt_outlined;
+    }
     return Icons.work_outline_rounded;
   }
 
@@ -520,20 +522,20 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           border: Border.all(
             color: isFocused
                 ? AppColors.professionalColor
                 : isDark
-                    ? Colors.white.withOpacity(0.08)
-                    : Colors.grey.withOpacity(0.15),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.grey.withValues(alpha: 0.15),
             width: isFocused ? 1.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
               color: isDark
-                  ? Colors.black.withOpacity(0.1)
-                  : Colors.grey.withOpacity(0.05),
+                  ? Colors.black.withValues(alpha: 0.1)
+                  : Colors.grey.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -545,7 +547,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               Icons.search_rounded,
               color: isFocused
                   ? AppColors.professionalColor
-                  : context.colors.textSecondary.withOpacity(0.5),
+                  : context.colors.textSecondary.withValues(alpha: 0.5),
               size: 18,
             ),
             const SizedBox(width: 10),
@@ -555,15 +557,15 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 focusNode: _searchFocusNode,
                 onChanged: _onSearchChanged,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.body,
                   color: context.colors.textPrimary,
                   fontWeight: FontWeight.w400,
                 ),
                 decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.searchBookingsHint,
+                  hintText: AppLocalizations.of(context).searchBookingsHint,
                   hintStyle: TextStyle(
-                    fontSize: 14,
-                    color: context.colors.textSecondary.withOpacity(0.5),
+                    fontSize: AppFontSizes.body,
+                    color: context.colors.textSecondary.withValues(alpha: 0.5),
                     fontWeight: FontWeight.w400,
                   ),
                   border: InputBorder.none,
@@ -595,7 +597,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 child: Container(
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
-                    color: context.colors.divider.withOpacity(0.3),
+                    color: context.colors.divider.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -620,10 +622,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         children: [
           Text(
             _isSearching
-                ? AppLocalizations.of(context)!.searchingLabel
-                : AppLocalizations.of(context)!.searchResultsLabel(_searchResults.length, _searchController.text),
+                ? AppLocalizations.of(context).searchingLabel
+                : AppLocalizations.of(context).searchResultsLabel(_searchResults.length, _searchController.text),
             style: TextStyle(
-              fontSize: 13,
+              fontSize: AppFontSizes.secondary,
               fontWeight: FontWeight.w500,
               color: context.colors.textSecondary,
               letterSpacing: 0.2,
@@ -637,35 +639,35 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: context.colors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                 border: Border.all(
                   color: isDark
-                      ? Colors.white.withOpacity(0.06)
-                      : Colors.grey.withOpacity(0.1),
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.grey.withValues(alpha: 0.1),
                 ),
               ),
               child: Column(
                 children: [
                   Icon(
                     Icons.search_off_rounded,
-                    color: context.colors.textSecondary.withOpacity(0.3),
+                    color: context.colors.textSecondary.withValues(alpha: 0.3),
                     size: 40,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    AppLocalizations.of(context)!.noClientsFound,
+                    AppLocalizations.of(context).noClientsFound,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: AppFontSizes.body,
                       fontWeight: FontWeight.w500,
                       color: context.colors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    AppLocalizations.of(context)!.adjustSearchTerms,
+                    AppLocalizations.of(context).adjustSearchTerms,
                     style: TextStyle(
-                      fontSize: 12,
-                      color: context.colors.textSecondary.withOpacity(0.6),
+                      fontSize: AppFontSizes.small,
+                      color: context.colors.textSecondary.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -690,11 +692,11 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
 
     return CtaBanner(
       isDark: isDark,
-      title: AppLocalizations.of(context)!.planUpgradeTitle(planName),
-      subtitle: AppLocalizations.of(context)!.planUpgradeSubtitle,
-      ctaLabel: AppLocalizations.of(context)!.upgradeCta,
+      title: AppLocalizations.of(context).planUpgradeTitle(planName),
+      subtitle: AppLocalizations.of(context).planUpgradeSubtitle,
+      ctaLabel: AppLocalizations.of(context).upgradeCta,
       icon: Icons.workspace_premium_rounded,
-      accentStart: const Color(0xFF9F7AEA),
+      accentStart: AppColors.violet400,
       accentEnd: AppColors.professionalColor,
       onTap: () => Navigator.push(
         context,
@@ -718,17 +720,17 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(
             color: isDark
-                ? Colors.white.withOpacity(0.06)
-                : Colors.grey.withOpacity(0.1),
+                ? Colors.white.withValues(alpha: 0.06)
+                : Colors.grey.withValues(alpha: 0.1),
           ),
           boxShadow: [
             BoxShadow(
               color: isDark
-                  ? Colors.black.withOpacity(0.1)
-                  : Colors.grey.withOpacity(0.04),
+                  ? Colors.black.withValues(alpha: 0.1)
+                  : Colors.grey.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -741,9 +743,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.profileCompletionLabel,
+                  AppLocalizations.of(context).profileCompletionLabel,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w600,
                     color: context.colors.textPrimary,
                     letterSpacing: 0.2,
@@ -752,7 +754,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 Text(
                   '$_profileCompletion%',
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w700,
                     color: color,
                   ),
@@ -761,22 +763,22 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             ),
             const SizedBox(height: 8),
             ClipRRect(
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(AppSizes.radiusXs),
               child: LinearProgressIndicator(
                 value: _profileCompletion / 100,
                 minHeight: 6,
                 backgroundColor: isDark
-                    ? Colors.white.withOpacity(0.06)
+                    ? Colors.white.withValues(alpha: 0.06)
                     : context.colors.divider,
                 valueColor: AlwaysStoppedAnimation<Color>(color),
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              AppLocalizations.of(context)!.profileCompletionHint,
+              AppLocalizations.of(context).profileCompletionHint,
               style: TextStyle(
-                fontSize: 11,
-                color: context.colors.textSecondary.withOpacity(0.7),
+                fontSize: AppFontSizes.caption,
+                color: context.colors.textSecondary.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -793,13 +795,13 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF450A0A).withOpacity(0.8)
-            : const Color(0xFFFEF2F2),
-        borderRadius: BorderRadius.circular(12),
+            ? AppColors.red950.withValues(alpha: 0.8)
+            : AppColors.red50,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? const Color(0xFF7F1D1D).withOpacity(0.5)
-              : const Color(0xFFFECACA),
+              ? AppColors.red800.withValues(alpha: 0.5)
+              : AppColors.red200,
         ),
       ),
       child: Row(
@@ -814,8 +816,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             child: Text(
               _error!,
               style: TextStyle(
-                fontSize: 12,
-                color: isDark ? const Color(0xFFFCA5A5) : AppColors.error,
+                fontSize: AppFontSizes.small,
+                color: isDark ? AppColors.red300 : AppColors.error,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -837,31 +839,31 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF451A03).withOpacity(0.8)
-            : const Color(0xFFFFFBEB),
-        borderRadius: BorderRadius.circular(12),
+            ? AppColors.amber950.withValues(alpha: 0.8)
+            : AppColors.tintAmber,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? const Color(0xFF78350F).withOpacity(0.5)
-              : const Color(0xFFFDE68A),
+              ? AppColors.amber900.withValues(alpha: 0.5)
+              : AppColors.amber200,
         ),
       ),
       child: Row(
         children: [
           Icon(
             Icons.warning_amber_rounded,
-            color: const Color(0xFFF59E0B),
+            color: AppColors.warningAmber,
             size: 18,
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               portCount == 0
-                  ? AppLocalizations.of(context)!.verificationAddPortfolio
-                  : AppLocalizations.of(context)!.verificationPending,
+                  ? AppLocalizations.of(context).verificationAddPortfolio
+                  : AppLocalizations.of(context).verificationPending,
               style: TextStyle(
-                fontSize: 12,
-                color: isDark ? const Color(0xFFFCD34D) : const Color(0xFF92400E),
+                fontSize: AppFontSizes.small,
+                color: isDark ? AppColors.starGold : AppColors.amber800,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -878,10 +880,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: Text(
-                AppLocalizations.of(context)!.addCta,
+                AppLocalizations.of(context).addCta,
                 style: TextStyle(
-                  fontSize: 12,
-                  color: const Color(0xFFF59E0B),
+                  fontSize: AppFontSizes.small,
+                  color: AppColors.warningAmber,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -899,9 +901,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppLocalizations.of(context)!.quickActionsLabel,
+            AppLocalizations.of(context).quickActionsLabel,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: AppFontSizes.title,
               fontWeight: FontWeight.w600,
               color: context.colors.textPrimary,
               letterSpacing: 0.1,
@@ -912,15 +914,15 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             children: [
               _actionCard(
                 icon: Icons.calendar_today_outlined,
-                label: AppLocalizations.of(context)!.bookingsLabel,
-                color: const Color(0xFF3B82F6),
+                label: AppLocalizations.of(context).bookingsLabel,
+                color: AppColors.primary,
                 onTap: () => ProfessionalMainScreen.switchTab(1),
                 isDark: isDark,
               ),
               const SizedBox(width: 10),
               _actionCard(
                 icon: Icons.photo_library_outlined,
-                label: AppLocalizations.of(context)!.portfolioLabel,
+                label: AppLocalizations.of(context).portfolioLabel,
                 color: AppColors.professionalColor,
                 onTap: () => Navigator.push(
                   context,
@@ -931,16 +933,16 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               const SizedBox(width: 10),
               _actionCard(
                 icon: Icons.person_outline_rounded,
-                label: AppLocalizations.of(context)!.profileLabel,
-                color: const Color(0xFF059669),
+                label: AppLocalizations.of(context).profileLabel,
+                color: AppColors.successDeep,
                 onTap: () => ProfessionalMainScreen.switchTab(5),
                 isDark: isDark,
               ),
               const SizedBox(width: 10),
               _actionCard(
                 icon: Icons.account_balance_wallet_outlined,
-                label: AppLocalizations.of(context)!.walletLabel,
-                color: const Color(0xFFF59E0B),
+                label: AppLocalizations.of(context).walletLabel,
+                color: AppColors.warningAmber,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ProfessionalWalletScreen()),
@@ -973,14 +975,14 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             color: context.colors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             border: Border.all(
-              color: isDark ? Colors.white.withOpacity(0.06) : color.withOpacity(0.15),
+              color: isDark ? Colors.white.withValues(alpha: 0.06) : color.withValues(alpha: 0.15),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: isDark ? Colors.black.withOpacity(0.15) : color.withOpacity(0.08),
+                color: isDark ? Colors.black.withValues(alpha: 0.15) : color.withValues(alpha: 0.08),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -997,10 +999,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     end: Alignment.bottomRight,
                     colors: badgeGradient,
                   ),
-                  borderRadius: BorderRadius.circular(13),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withOpacity(0.35),
+                      color: color.withValues(alpha: 0.35),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -1012,7 +1014,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 10.5,
+                  fontSize: AppFontSizes.caption,
                   fontWeight: FontWeight.w600,
                   color: context.colors.textPrimary,
                   letterSpacing: 0.1,
@@ -1041,9 +1043,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context)!.earningsLabel,
+                AppLocalizations.of(context).earningsLabel,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: AppFontSizes.title,
                   fontWeight: FontWeight.w600,
                   color: context.colors.textPrimary,
                   letterSpacing: 0.1,
@@ -1055,9 +1057,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   MaterialPageRoute(builder: (_) => const ProfessionalWalletScreen()),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)!.viewWalletLabel,
+                  AppLocalizations.of(context).viewWalletLabel,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     color: AppColors.professionalColor,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.2,
@@ -1071,16 +1073,16 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             children: [
               Expanded(
                 flex: 3,
-                child: _earningsHeroCard(AppLocalizations.of(context)!.todaysEarningsLabel, today, isDark),
+                child: _earningsHeroCard(AppLocalizations.of(context).todaysEarningsLabel, today, isDark),
               ),
             ],
           ),
           const SizedBox(height: 10),
           Row(
             children: [
-              Expanded(child: _earningsMiniCard(AppLocalizations.of(context)!.thisMonthLabel, month, Icons.calendar_view_month_rounded, isDark)),
+              Expanded(child: _earningsMiniCard(AppLocalizations.of(context).thisMonthLabel, month, Icons.calendar_view_month_rounded, isDark)),
               const SizedBox(width: 10),
-              Expanded(child: _earningsMiniCard(AppLocalizations.of(context)!.totalEarnedLabel, total, Icons.savings_outlined, isDark)),
+              Expanded(child: _earningsMiniCard(AppLocalizations.of(context).totalEarnedLabel, total, Icons.savings_outlined, isDark)),
             ],
           ),
         ],
@@ -1095,20 +1097,20 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         padding: const EdgeInsets.all(18),
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF059669), Color(0xFF10B981)]),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.successDeep, AppColors.emerald]),
         ),
         child: Stack(clipBehavior: Clip.none, children: [
-        Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)))),
-        Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.08)))),
+        Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.10)))),
+        Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.08)))),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             const Icon(Icons.trending_up_rounded, color: Colors.white, size: 22),
             const SizedBox(width: 8),
-            Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12.5, fontWeight: FontWeight.w600)),
+            Text(label, style: const TextStyle(color: Colors.white70, fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600)),
           ]),
           const SizedBox(height: 10),
-          Text('\$${amount.toStringAsFixed(0)}', style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+          Text('\$${amount.toStringAsFixed(0)}', style: const TextStyle(color: Colors.white, fontSize: AppFontSizes.display, fontWeight: FontWeight.bold)),
         ]),
       ]),
       ),
@@ -1120,17 +1122,17 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.06)
-              : Colors.grey.withOpacity(0.1),
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.04),
+                ? Colors.black.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -1148,7 +1150,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           Text(
             '\$${amount.toStringAsFixed(0)}',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: AppFontSizes.title2,
               fontWeight: FontWeight.w700,
               color: context.colors.textPrimary,
               letterSpacing: 0.1,
@@ -1158,7 +1160,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           Text(
             label,
             style: TextStyle(
-              fontSize: 10,
+              fontSize: AppFontSizes.caption,
               color: context.colors.textSecondary,
               fontWeight: FontWeight.w400,
             ),
@@ -1185,9 +1187,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppLocalizations.of(context)!.performanceLabel,
+            AppLocalizations.of(context).performanceLabel,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: AppFontSizes.title,
               fontWeight: FontWeight.w600,
               color: context.colors.textPrimary,
               letterSpacing: 0.1,
@@ -1202,10 +1204,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             crossAxisSpacing: 10,
             childAspectRatio: 2.4,
             children: [
-              _dashboardCard(AppLocalizations.of(context)!.pendingLabel, '$pending', Icons.access_time_rounded, AppColors.warning, isDark),
-              _dashboardCard(AppLocalizations.of(context)!.acceptedLabel, '$accepted', Icons.check_circle_outline_rounded, context.colors.primary, isDark),
-              _dashboardCard(AppLocalizations.of(context)!.completedLabel, '$completed', Icons.task_alt_rounded, context.colors.accent, isDark),
-              _dashboardCard(AppLocalizations.of(context)!.ratingLabel, '${avgRating.toStringAsFixed(1)} ($totalRev)', Icons.star_rounded, const Color(0xFFF59E0B), isDark),
+              _dashboardCard(AppLocalizations.of(context).pendingLabel, '$pending', Icons.access_time_rounded, AppColors.warning, isDark),
+              _dashboardCard(AppLocalizations.of(context).acceptedLabel, '$accepted', Icons.check_circle_outline_rounded, context.colors.primary, isDark),
+              _dashboardCard(AppLocalizations.of(context).completedLabel, '$completed', Icons.task_alt_rounded, context.colors.accent, isDark),
+              _dashboardCard(AppLocalizations.of(context).ratingLabel, '${avgRating.toStringAsFixed(1)} ($totalRev)', Icons.star_rounded, AppColors.warningAmber, isDark),
             ],
           ),
         ],
@@ -1218,17 +1220,17 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.06)
-              : Colors.grey.withOpacity(0.1),
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.04),
+                ? Colors.black.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -1239,8 +1241,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: isDark ? color.withOpacity(0.12) : color.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(8),
+              color: isDark ? color.withValues(alpha: 0.12) : color.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
             child: Icon(
               icon,
@@ -1257,7 +1259,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 Text(
                   value,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: AppFontSizes.body,
                     fontWeight: FontWeight.w700,
                     color: context.colors.textPrimary,
                     letterSpacing: 0.1,
@@ -1267,7 +1269,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 10,
+                    fontSize: AppFontSizes.caption,
                     color: context.colors.textSecondary,
                     fontWeight: FontWeight.w400,
                   ),
@@ -1292,17 +1294,17 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.06)
-              : Colors.grey.withOpacity(0.1),
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.04),
+                ? Colors.black.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -1315,9 +1317,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context)!.skillsPricingLabel,
+                AppLocalizations.of(context).skillsPricingLabel,
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: AppFontSizes.body,
                   fontWeight: FontWeight.w600,
                   color: context.colors.textPrimary,
                   letterSpacing: 0.1,
@@ -1326,9 +1328,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               GestureDetector(
                 onTap: () => ProfessionalMainScreen.switchTab(5),
                 child: Text(
-                  AppLocalizations.of(context)!.editLabel,
+                  AppLocalizations.of(context).editLabel,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     color: AppColors.professionalColor,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.2,
@@ -1352,7 +1354,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     Text(
                       '\$$rate/hr',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: AppFontSizes.secondary,
                         fontWeight: FontWeight.w600,
                         color: context.colors.textPrimary,
                         letterSpacing: 0.1,
@@ -1364,9 +1366,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               Row(
                 children: [
                   Text(
-                    isAvailable ? AppLocalizations.of(context)!.availableLabel : AppLocalizations.of(context)!.unavailableLabel,
+                    isAvailable ? AppLocalizations.of(context).availableLabel : AppLocalizations.of(context).unavailableLabel,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: AppFontSizes.small,
                       fontWeight: FontWeight.w600,
                       color: isAvailable
                           ? context.colors.accent
@@ -1394,11 +1396,11 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                           scale: 0.75,
                           child: Switch(
                             value: isAvailable,
-                            activeColor: context.colors.accent,
-                            activeTrackColor: context.colors.accent.withOpacity(0.3),
+                            activeThumbColor: context.colors.accent,
+                            activeTrackColor: context.colors.accent.withValues(alpha: 0.3),
                             inactiveTrackColor: isDark
-                                ? Colors.white.withOpacity(0.1)
-                                : Colors.grey.withOpacity(0.3),
+                                ? Colors.white.withValues(alpha: 0.1)
+                                : Colors.grey.withValues(alpha: 0.3),
                             onChanged: _toggleAvailability,
                           ),
                         ),
@@ -1409,10 +1411,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           const SizedBox(height: 12),
           if (skills.isEmpty)
             Text(
-              AppLocalizations.of(context)!.noSkillsAdded,
+              AppLocalizations.of(context).noSkillsAdded,
               style: TextStyle(
-                fontSize: 12,
-                color: context.colors.textSecondary.withOpacity(0.6),
+                fontSize: AppFontSizes.small,
+                color: context.colors.textSecondary.withValues(alpha: 0.6),
                 fontWeight: FontWeight.w400,
               ),
             )
@@ -1424,17 +1426,17 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? AppColors.professionalColor.withOpacity(0.12)
-                          : AppColors.professionalColor.withOpacity(0.06),
-                      borderRadius: BorderRadius.circular(16),
+                          ? AppColors.professionalColor.withValues(alpha: 0.12)
+                          : AppColors.professionalColor.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                       border: Border.all(
-                        color: AppColors.professionalColor.withOpacity(isDark ? 0.15 : 0.1),
+                        color: AppColors.professionalColor.withValues(alpha: isDark ? 0.15 : 0.1),
                       ),
                     ),
                     child: Text(
                       s,
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: AppFontSizes.caption,
                         fontWeight: FontWeight.w500,
                         color: AppColors.professionalColor,
                         letterSpacing: 0.1,
@@ -1461,12 +1463,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       if (!mounted) return;
       AppHelpers.showSuccess(
         context,
-        value ? AppLocalizations.of(context)!.availabilityOnSuccess : AppLocalizations.of(context)!.availabilityOffSuccess,
+        value ? AppLocalizations.of(context).availabilityOnSuccess : AppLocalizations.of(context).availabilityOffSuccess,
       );
     } catch (e) {
       if (!mounted) return;
       setState(() => _proProfile = {..._proProfile, 'is_available': previous});
-      AppHelpers.showError(context, AppLocalizations.of(context)!.availabilityUpdateError);
+      AppHelpers.showError(context, AppLocalizations.of(context).availabilityUpdateError);
     } finally {
       if (mounted) setState(() => _isTogglingAvailability = false);
     }
@@ -1497,9 +1499,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppLocalizations.of(context)!.todaysScheduleLabel,
+            AppLocalizations.of(context).todaysScheduleLabel,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: AppFontSizes.title,
               fontWeight: FontWeight.w600,
               color: context.colors.textPrimary,
               letterSpacing: 0.1,
@@ -1512,18 +1514,18 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: context.colors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 border: Border.all(
                   color: isDark
-                      ? Colors.white.withOpacity(0.06)
-                      : Colors.grey.withOpacity(0.1),
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.grey.withValues(alpha: 0.1),
                 ),
               ),
               child: Text(
-                AppLocalizations.of(context)!.noBookingsToday,
+                AppLocalizations.of(context).noBookingsToday,
                 style: TextStyle(
-                  fontSize: 13,
-                  color: context.colors.textSecondary.withOpacity(0.6),
+                  fontSize: AppFontSizes.secondary,
+                  color: context.colors.textSecondary.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -1536,29 +1538,29 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildScheduleTile(dynamic booking, bool isDark) {
-    final customerName = booking['customer_name']?.toString() ?? AppLocalizations.of(context)!.customerDefault;
+    final customerName = booking['customer_name']?.toString() ?? AppLocalizations.of(context).customerDefault;
     final time = booking['time']?.toString() ?? '';
     final status = booking['status']?.toString() ?? 'pending';
     final statusColor = status == 'accepted'
-        ? const Color(0xFF10B981)
-        : (status == 'completed' ? const Color(0xFF3B82F6) : const Color(0xFFF59E0B));
+        ? AppColors.emerald
+        : (status == 'completed' ? AppColors.primary : AppColors.warningAmber);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.06)
-              : Colors.grey.withOpacity(0.1),
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.05)
-                : Colors.grey.withOpacity(0.03),
+                ? Colors.black.withValues(alpha: 0.05)
+                : Colors.grey.withValues(alpha: 0.03),
             blurRadius: 4,
           ),
         ],
@@ -1581,7 +1583,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 Text(
                   customerName,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w600,
                     color: context.colors.textPrimary,
                     letterSpacing: 0.2,
@@ -1591,7 +1593,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 Text(
                   time,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: AppFontSizes.caption,
                     color: context.colors.textSecondary,
                     fontWeight: FontWeight.w400,
                   ),
@@ -1602,13 +1604,13 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(6),
+              color: statusColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
             ),
             child: Text(
               status.isEmpty ? status : AppHelpers.capitalize(status),
               style: TextStyle(
-                fontSize: 10,
+                fontSize: AppFontSizes.caption,
                 fontWeight: FontWeight.w600,
                 color: statusColor,
                 letterSpacing: 0.2,
@@ -1634,17 +1636,17 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.06)
-              : Colors.grey.withOpacity(0.1),
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.04),
+                ? Colors.black.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -1661,9 +1663,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 color: context.colors.textSecondary,
               ),
               Text(
-                '${_monthName(month)} $year',
+                DateFormat.yMMMM(Localizations.localeOf(context).toString()).format(DateTime(year, month, 1)),
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.body,
                   fontWeight: FontWeight.w600,
                   color: context.colors.textPrimary,
                   letterSpacing: 0.3,
@@ -1678,14 +1680,14 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           ),
           const SizedBox(height: 8),
           Row(
-            children: AppLocalizations.of(context)!.calendarWeekDays.split('').map((d) => Expanded(
+            children: AppLocalizations.of(context).calendarWeekDays.split('').map((d) => Expanded(
                       child: Center(
                         child: Text(
                           d,
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: AppFontSizes.caption,
                             fontWeight: FontWeight.w600,
-                            color: context.colors.textSecondary.withOpacity(0.6),
+                            color: context.colors.textSecondary.withValues(alpha: 0.6),
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -1712,7 +1714,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       color: isToday
                           ? AppColors.professionalColor
                           : Colors.transparent,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1720,7 +1722,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                         Text(
                           '$dayNum',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: AppFontSizes.small,
                             fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
                             color: isToday
                                 ? Colors.white
@@ -1736,7 +1738,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                               shape: BoxShape.circle,
                               color: isToday
                                   ? Colors.white
-                                  : AppColors.professionalColor.withOpacity(0.6),
+                                  : AppColors.professionalColor.withValues(alpha: 0.6),
                             ),
                           ),
                       ],
@@ -1751,24 +1753,6 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     );
   }
 
-  String _monthName(int month) {
-    const names = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-    return names[month - 1];
-  }
-
   // ── Portfolio Section ──────────────────────────────────
   Widget _buildPortfolioSection(bool isDark) {
     return Padding(
@@ -1780,9 +1764,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context)!.myPortfolioLabel,
+                AppLocalizations.of(context).myPortfolioLabel,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: AppFontSizes.title,
                   fontWeight: FontWeight.w600,
                   color: context.colors.textPrimary,
                   letterSpacing: 0.1,
@@ -1794,9 +1778,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   MaterialPageRoute(builder: (_) => const ProfessionalPortfolioScreen()),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)!.manageLabel,
+                  AppLocalizations.of(context).manageLabel,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     color: AppColors.professionalColor,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.2,
@@ -1817,11 +1801,11 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? AppColors.professionalColor.withOpacity(0.06)
-                      : AppColors.professionalColor.withOpacity(0.04),
-                  borderRadius: BorderRadius.circular(12),
+                      ? AppColors.professionalColor.withValues(alpha: 0.06)
+                      : AppColors.professionalColor.withValues(alpha: 0.04),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   border: Border.all(
-                    color: AppColors.professionalColor.withOpacity(isDark ? 0.12 : 0.08),
+                    color: AppColors.professionalColor.withValues(alpha: isDark ? 0.12 : 0.08),
                     width: 1.5,
                     style: BorderStyle.solid,
                   ),
@@ -1832,7 +1816,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: AppColors.professionalColor.withOpacity(isDark ? 0.12 : 0.06),
+                        color: AppColors.professionalColor.withValues(alpha: isDark ? 0.12 : 0.06),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -1847,9 +1831,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            AppLocalizations.of(context)!.addWorkSamplesLabel,
+                            AppLocalizations.of(context).addWorkSamplesLabel,
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: AppFontSizes.secondary,
                               fontWeight: FontWeight.w600,
                               color: AppColors.professionalColor,
                               letterSpacing: 0.2,
@@ -1857,10 +1841,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            AppLocalizations.of(context)!.addPortfolioHint,
+                            AppLocalizations.of(context).addPortfolioHint,
                             style: TextStyle(
-                              fontSize: 11,
-                              color: context.colors.textSecondary.withOpacity(0.6),
+                              fontSize: AppFontSizes.caption,
+                              color: context.colors.textSecondary.withValues(alpha: 0.6),
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -1882,7 +1866,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: _portfolio.length + 1,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
                 itemBuilder: (_, i) {
                   if (i == _portfolio.length) {
                     return GestureDetector(
@@ -1894,13 +1878,13 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                         width: 90,
                         decoration: BoxDecoration(
                           color: isDark
-                              ? Colors.white.withOpacity(0.03)
-                              : const Color(0xFFF5F3FF),
-                          borderRadius: BorderRadius.circular(12),
+                              ? Colors.white.withValues(alpha: 0.03)
+                              : AppColors.violet50,
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           border: Border.all(
                             color: isDark
-                                ? Colors.white.withOpacity(0.06)
-                                : const Color(0xFFDDD6FE),
+                                ? Colors.white.withValues(alpha: 0.06)
+                                : AppColors.violet200,
                             style: BorderStyle.solid,
                           ),
                         ),
@@ -1914,9 +1898,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              AppLocalizations.of(context)!.addCta,
+                              AppLocalizations.of(context).addCta,
                               style: TextStyle(
-                                fontSize: 10,
+                                fontSize: AppFontSizes.caption,
                                 color: AppColors.professionalColor,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.2,
@@ -1949,7 +1933,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       Container(
                         width: 90,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           color: context.colors.divider,
                           image: imageUrl != null && imageUrl.isNotEmpty
                               ? DecorationImage(
@@ -1962,7 +1946,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                             ? Center(
                                 child: Icon(
                                   Icons.image_outlined,
-                                  color: context.colors.textSecondary.withOpacity(0.3),
+                                  color: context.colors.textSecondary.withValues(alpha: 0.3),
                                   size: 28,
                                 ),
                               )
@@ -2005,9 +1989,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context)!.recentMessagesLabel,
+                AppLocalizations.of(context).recentMessagesLabel,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: AppFontSizes.title,
                   fontWeight: FontWeight.w600,
                   color: context.colors.textPrimary,
                   letterSpacing: 0.1,
@@ -2016,9 +2000,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               GestureDetector(
                 onTap: () => ProfessionalMainScreen.switchTab(2),
                 child: Text(
-                  AppLocalizations.of(context)!.seeAllLabel,
+                  AppLocalizations.of(context).seeAllLabel,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     color: AppColors.professionalColor,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.2,
@@ -2034,18 +2018,18 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: context.colors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 border: Border.all(
                   color: isDark
-                      ? Colors.white.withOpacity(0.06)
-                      : Colors.grey.withOpacity(0.1),
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.grey.withValues(alpha: 0.1),
                 ),
               ),
               child: Text(
-                AppLocalizations.of(context)!.noMessagesYet,
+                AppLocalizations.of(context).noMessagesYet,
                 style: TextStyle(
-                  fontSize: 13,
-                  color: context.colors.textSecondary.withOpacity(0.6),
+                  fontSize: AppFontSizes.secondary,
+                  color: context.colors.textSecondary.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -2058,7 +2042,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildMessagePreviewTile(dynamic conv, bool isDark) {
-    final name = conv['other_user_name']?.toString() ?? AppLocalizations.of(context)!.customerDefault;
+    final name = conv['other_user_name']?.toString() ?? AppLocalizations.of(context).customerDefault;
     final lastMessage = conv['last_message']?.toString() ?? '';
     final unread = (conv['unread_count'] ?? 0) as int;
     final photo = conv['other_user_photo']?.toString();
@@ -2067,9 +2051,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       margin: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           onTap: _myUserId == null
               ? null
               : () => Navigator.push(
@@ -2091,17 +2075,17 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withOpacity(0.06)
-                    : Colors.grey.withOpacity(0.1),
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.grey.withValues(alpha: 0.1),
               ),
               boxShadow: [
                 BoxShadow(
                   color: isDark
-                      ? Colors.black.withOpacity(0.05)
-                      : Colors.grey.withOpacity(0.03),
+                      ? Colors.black.withValues(alpha: 0.05)
+                      : Colors.grey.withValues(alpha: 0.03),
                   blurRadius: 4,
                 ),
               ],
@@ -2118,7 +2102,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       ? Text(
                           AppHelpers.getInitials(name),
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: AppFontSizes.caption,
                             fontWeight: FontWeight.w600,
                             color: context.colors.primary,
                           ),
@@ -2133,7 +2117,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       Text(
                         name,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: AppFontSizes.secondary,
                           fontWeight: FontWeight.w600,
                           color: context.colors.textPrimary,
                           letterSpacing: 0.2,
@@ -2141,11 +2125,11 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        lastMessage.isEmpty ? AppLocalizations.of(context)!.noMessagesPlaceholder : lastMessage,
+                        lastMessage.isEmpty ? AppLocalizations.of(context).noMessagesPlaceholder : lastMessage,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: AppFontSizes.small,
                           fontWeight: unread > 0
                               ? FontWeight.w600
                               : FontWeight.w400,
@@ -2162,12 +2146,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                     decoration: BoxDecoration(
                       color: AppColors.professionalColor,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                     child: Text(
                       '$unread',
                       style: const TextStyle(
-                        fontSize: 10,
+                        fontSize: AppFontSizes.caption,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
@@ -2192,9 +2176,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context)!.recentReviewsLabel,
+                AppLocalizations.of(context).recentReviewsLabel,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: AppFontSizes.title,
                   fontWeight: FontWeight.w600,
                   color: context.colors.textPrimary,
                   letterSpacing: 0.1,
@@ -2206,9 +2190,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   MaterialPageRoute(builder: (_) => const ProfessionalReviewsScreen()),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)!.seeAllLabel,
+                  AppLocalizations.of(context).seeAllLabel,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     color: AppColors.professionalColor,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.2,
@@ -2224,18 +2208,18 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: context.colors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 border: Border.all(
                   color: isDark
-                      ? Colors.white.withOpacity(0.06)
-                      : Colors.grey.withOpacity(0.1),
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.grey.withValues(alpha: 0.1),
                 ),
               ),
               child: Text(
-                AppLocalizations.of(context)!.noReviewsYet,
+                AppLocalizations.of(context).noReviewsYet,
                 style: TextStyle(
-                  fontSize: 13,
-                  color: context.colors.textSecondary.withOpacity(0.6),
+                  fontSize: AppFontSizes.secondary,
+                  color: context.colors.textSecondary.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -2248,7 +2232,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildReviewTile(dynamic r, bool isDark) {
-    final customerName = r['reviewer_name'] ?? r['customer_name'] ?? AppLocalizations.of(context)!.customerDefault;
+    final customerName = r['reviewer_name'] ?? r['customer_name'] ?? AppLocalizations.of(context).customerDefault;
     final rating = (r['rating'] ?? 0).toDouble();
     final comment = r['comment']?.toString() ?? r['review']?.toString() ?? '';
 
@@ -2257,17 +2241,17 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.06)
-              : Colors.grey.withOpacity(0.1),
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.05)
-                : Colors.grey.withOpacity(0.03),
+                ? Colors.black.withValues(alpha: 0.05)
+                : Colors.grey.withValues(alpha: 0.03),
             blurRadius: 4,
           ),
         ],
@@ -2283,7 +2267,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 child: Text(
                   AppHelpers.getInitials(customerName.toString()),
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: AppFontSizes.caption,
                     fontWeight: FontWeight.w600,
                     color: context.colors.primary,
                   ),
@@ -2294,7 +2278,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 child: Text(
                   customerName.toString(),
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w600,
                     color: context.colors.textPrimary,
                     letterSpacing: 0.2,
@@ -2307,7 +2291,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                           ? Icons.star_rounded
                           : Icons.star_border_rounded,
                       size: 14,
-                      color: const Color(0xFFF59E0B),
+                      color: AppColors.warningAmber,
                     )),
               ),
             ],
@@ -2319,7 +2303,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: AppFontSizes.small,
                 color: context.colors.textSecondary,
                 fontWeight: FontWeight.w400,
                 height: 1.4,
@@ -2344,9 +2328,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context)!.recentBookingsLabel,
+                AppLocalizations.of(context).recentBookingsLabel,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: AppFontSizes.title,
                   fontWeight: FontWeight.w600,
                   color: context.colors.textPrimary,
                   letterSpacing: 0.1,
@@ -2355,9 +2339,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               GestureDetector(
                 onTap: () => ProfessionalMainScreen.switchTab(1),
                 child: Text(
-                  AppLocalizations.of(context)!.seeAllLabel,
+                  AppLocalizations.of(context).seeAllLabel,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.secondary,
                     color: AppColors.professionalColor,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.2,
@@ -2373,18 +2357,18 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: context.colors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 border: Border.all(
                   color: isDark
-                      ? Colors.white.withOpacity(0.06)
-                      : Colors.grey.withOpacity(0.1),
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.grey.withValues(alpha: 0.1),
                 ),
               ),
               child: Text(
-                AppLocalizations.of(context)!.noBookingsYet,
+                AppLocalizations.of(context).noBookingsYet,
                 style: TextStyle(
-                  fontSize: 13,
-                  color: context.colors.textSecondary.withOpacity(0.6),
+                  fontSize: AppFontSizes.secondary,
+                  color: context.colors.textSecondary.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -2397,7 +2381,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildBookingTile(dynamic b, bool isDark) {
-    final customerName = b['customer_name'] ?? AppLocalizations.of(context)!.customerDefault;
+    final customerName = b['customer_name'] ?? AppLocalizations.of(context).customerDefault;
     final status = b['status']?.toString() ?? 'pending';
     final date = b['date']?.toString() ?? '';
     final time = b['time']?.toString() ?? '';
@@ -2425,17 +2409,17 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           border: Border.all(
             color: isDark
-                ? Colors.white.withOpacity(0.06)
-                : Colors.grey.withOpacity(0.1),
+                ? Colors.white.withValues(alpha: 0.06)
+                : Colors.grey.withValues(alpha: 0.1),
           ),
           boxShadow: [
             BoxShadow(
               color: isDark
-                  ? Colors.black.withOpacity(0.05)
-                  : Colors.grey.withOpacity(0.03),
+                  ? Colors.black.withValues(alpha: 0.05)
+                  : Colors.grey.withValues(alpha: 0.03),
               blurRadius: 4,
             ),
           ],
@@ -2448,7 +2432,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               child: Text(
                 AppHelpers.getInitials(customerName.toString()),
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppFontSizes.small,
                   fontWeight: FontWeight.w600,
                   color: context.colors.primary,
                 ),
@@ -2462,7 +2446,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   Text(
                     customerName.toString(),
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: AppFontSizes.secondary,
                       fontWeight: FontWeight.w600,
                       color: context.colors.textPrimary,
                       letterSpacing: 0.2,
@@ -2472,7 +2456,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     Text(
                       '$date${time.isNotEmpty ? ' • $time' : ''}',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: AppFontSizes.caption,
                         color: context.colors.textSecondary,
                         fontWeight: FontWeight.w400,
                       ),
@@ -2484,13 +2468,13 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(6),
+                color: statusColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
               ),
               child: Text(
                 AppHelpers.capitalize(status),
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: AppFontSizes.caption,
                   fontWeight: FontWeight.w600,
                   color: statusColor,
                   letterSpacing: 0.2,
@@ -2499,7 +2483,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             ),
             Icon(
               Icons.chevron_right_rounded,
-              color: context.colors.textSecondary.withOpacity(0.3),
+              color: context.colors.textSecondary.withValues(alpha: 0.3),
               size: 18,
             ),
           ],
@@ -2514,8 +2498,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     final isPending = status.toLowerCase() == 'pending';
     final isAccepted = status.toLowerCase() == 'accepted';
     final isCancellable = isPending || isAccepted;
-    final customerName = b['customer_name'] ?? AppLocalizations.of(context)!.customerDefault;
-    final date = b['date']?.toString() ?? AppLocalizations.of(context)!.dateNotSet;
+    final customerName = b['customer_name'] ?? AppLocalizations.of(context).customerDefault;
+    final date = b['date']?.toString() ?? AppLocalizations.of(context).dateNotSet;
     final time = b['time']?.toString() ?? '';
     final note = b['note']?.toString() ?? '';
     final bookingId = b['id'];
@@ -2524,7 +2508,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
       ),
       backgroundColor: context.colors.surface,
       builder: (sheetContext) => Padding(
@@ -2550,19 +2534,19 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              AppLocalizations.of(context)!.bookingDetailsTitle,
+              AppLocalizations.of(context).bookingDetailsTitle,
               style: TextStyle(
-                fontSize: 17,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
                 letterSpacing: 0.1,
               ),
             ),
             const SizedBox(height: 16),
-            _detailRow(Icons.person_outline_rounded, AppLocalizations.of(context)!.customerLabel, customerName.toString(), isDark),
-            _detailRow(Icons.calendar_today_outlined, AppLocalizations.of(context)!.dateLabel, date, isDark),
-            if (time.isNotEmpty) _detailRow(Icons.access_time_rounded, AppLocalizations.of(context)!.timeLabel, time, isDark),
-            if (note.isNotEmpty) _detailRow(Icons.notes_rounded, AppLocalizations.of(context)!.notesLabel, note, isDark),
+            _detailRow(Icons.person_outline_rounded, AppLocalizations.of(context).customerLabel, customerName.toString(), isDark),
+            _detailRow(Icons.calendar_today_outlined, AppLocalizations.of(context).dateLabel, date, isDark),
+            if (time.isNotEmpty) _detailRow(Icons.access_time_rounded, AppLocalizations.of(context).timeLabel, time, isDark),
+            if (note.isNotEmpty) _detailRow(Icons.notes_rounded, AppLocalizations.of(context).notesLabel, note, isDark),
             const SizedBox(height: 16),
             if (isPending) ...[
               Row(
@@ -2574,12 +2558,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                         _updateBookingStatus(bookingId, 'rejected');
                       },
                       icon: const Icon(Icons.close_rounded, size: 16),
-                      label: Text(AppLocalizations.of(context)!.rejectCta),
+                      label: Text(AppLocalizations.of(context).rejectCta),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
-                        side: BorderSide(color: AppColors.error.withOpacity(0.3)),
+                        side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         ),
                       ),
                     ),
@@ -2592,12 +2576,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                         _updateBookingStatus(bookingId, 'accepted');
                       },
                       icon: const Icon(Icons.check_rounded, size: 16),
-                      label: Text(AppLocalizations.of(context)!.acceptCta),
+                      label: Text(AppLocalizations.of(context).acceptCta),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.colors.accent,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         ),
                         elevation: 0,
                       ),
@@ -2614,12 +2598,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     _updateBookingStatus(bookingId, 'completed');
                   },
                   icon: const Icon(Icons.done_all_rounded, size: 16),
-                  label: Text(AppLocalizations.of(context)!.markCompletedCta),
+                  label: Text(AppLocalizations.of(context).markCompletedCta),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.colors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                     elevation: 0,
                   ),
@@ -2636,12 +2620,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     _updateBookingStatus(bookingId, 'cancelled');
                   },
                   icon: const Icon(Icons.cancel_outlined, size: 16),
-                  label: Text(AppLocalizations.of(context)!.cancelBookingCta),
+                  label: Text(AppLocalizations.of(context).cancelBookingCta),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.error,
-                    side: BorderSide(color: AppColors.error.withOpacity(0.3)),
+                    side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                   ),
                 ),
@@ -2652,12 +2636,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(sheetContext),
-                  child: Text(AppLocalizations.of(context)!.closeCta),
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                   ),
+                  child: Text(AppLocalizations.of(context).closeCta),
                 ),
               ),
             ],
@@ -2675,14 +2659,14 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           Icon(
             icon,
             size: 16,
-            color: context.colors.textSecondary.withOpacity(0.5),
+            color: context.colors.textSecondary.withValues(alpha: 0.5),
           ),
           const SizedBox(width: 8),
           Text(
             '$label: ',
             style: TextStyle(
-              fontSize: 13,
-              color: context.colors.textSecondary.withOpacity(0.7),
+              fontSize: AppFontSizes.secondary,
+              color: context.colors.textSecondary.withValues(alpha: 0.7),
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -2690,7 +2674,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: AppFontSizes.secondary,
                 fontWeight: FontWeight.w600,
                 color: context.colors.textPrimary,
                 letterSpacing: 0.2,
@@ -2706,12 +2690,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     try {
       await _api.patch('${AppConstants.professionalBookings}$bookingId/', {'status': newStatus});
       if (!mounted) return;
-      AppHelpers.showInfo(context, AppLocalizations.of(context)!.bookingUpdatedToast(newStatus));
+      AppHelpers.showInfo(context, AppLocalizations.of(context).bookingUpdatedToast(newStatus));
       await _loadData();
       if (_searchQuery.isNotEmpty) _onSearchChanged(_searchQuery);
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showInfo(context, AppLocalizations.of(context)!.bookingUpdateError);
+      AppHelpers.showInfo(context, AppLocalizations.of(context).bookingUpdateError);
     }
   }
 }

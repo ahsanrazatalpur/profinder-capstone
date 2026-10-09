@@ -13,6 +13,9 @@ import '../../core/constants/category_style.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_context_ext.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/theme/app_text_styles.dart';
+import '../../core/utils/app_helpers.dart';
 
 class PremiumCategoryCard extends StatelessWidget {
   final Map category;
@@ -49,23 +52,23 @@ class PremiumCategoryCard extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: isDark
-                ? const [Color(0xFF1E293B), Color(0xFF0F172A)]
-                : const [Colors.white, Color(0xFFF8FAFC)],
+                ? const [AppColors.surface, AppColors.background]
+                : const [Colors.white, AppColors.slate50],
           ),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
           border: Border.all(
             color: selected
                 ? color
                 : (isDark
-                    ? Colors.white.withOpacity(0.06)
-                    : color.withOpacity(0.15)),
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : color.withValues(alpha: 0.15)),
             width: selected ? 2 : 1.5,
           ),
           boxShadow: [
             BoxShadow(
               color: isDark
-                  ? Colors.black.withOpacity(0.3)
-                  : color.withOpacity(0.08),
+                  ? Colors.black.withValues(alpha: 0.3)
+                  : color.withValues(alpha: 0.08),
               blurRadius: selected ? 20 : 16,
               offset: Offset(0, selected ? 8 : 6),
             ),
@@ -88,10 +91,10 @@ class PremiumCategoryCard extends StatelessWidget {
                     end: Alignment.bottomRight,
                     colors: gradient,
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withOpacity(selected ? 0.4 : 0.3),
+                      color: color.withValues(alpha: selected ? 0.4 : 0.3),
                       blurRadius: selected ? 16 : 12,
                       offset: Offset(0, selected ? 6 : 4),
                     ),
@@ -103,13 +106,13 @@ class PremiumCategoryCard extends StatelessWidget {
               Container(
                 constraints: const BoxConstraints(maxWidth: 80),
                 child: Text(
-                  name,
+                  AppHelpers.localizedCategoryName(context, name),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   softWrap: true,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: AppFontSizes.caption,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                     height: 1.15,
                     color: selected
@@ -127,7 +130,7 @@ class PremiumCategoryCard extends StatelessWidget {
                 height: 3,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: gradient),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusTiny),
                 ),
               ),
             ],
@@ -201,19 +204,19 @@ void showAllCategoriesSheet(
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radius28)),
     ),
     builder: (_) => Container(
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF0F172A)
+            ? AppColors.background
             : context.colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radius28)),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.3)
-                : Colors.black.withOpacity(0.08),
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -234,9 +237,9 @@ void showAllCategoriesSheet(
                 height: 4,
                 decoration: BoxDecoration(
                   color: isDark
-                      ? Colors.white.withOpacity(0.15)
-                      : const Color(0xFFE5E7EB),
-                  borderRadius: BorderRadius.circular(2),
+                      ? Colors.white.withValues(alpha: 0.15)
+                      : AppColors.neutral200,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusTiny),
                 ),
               ),
             ),
@@ -247,7 +250,7 @@ void showAllCategoriesSheet(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    AppLocalizations.of(context)!.allCategoriesTitle,
+                    AppLocalizations.of(context).allCategoriesTitle,
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
@@ -259,8 +262,8 @@ void showAllCategoriesSheet(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? Colors.white.withOpacity(0.05)
-                          : context.colors.divider.withOpacity(0.3),
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : context.colors.divider.withValues(alpha: 0.3),
                       shape: BoxShape.circle,
                     ),
                     child: GestureDetector(

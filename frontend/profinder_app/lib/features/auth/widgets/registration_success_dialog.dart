@@ -13,9 +13,8 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_sizes.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class RegistrationSuccessDialog extends StatefulWidget {
   final VoidCallback onContinue;
@@ -85,13 +84,13 @@ class _RegistrationSuccessDialogState extends State<RegistrationSuccessDialog>
             ),
             const SizedBox(height: AppSizes.lg),
             Text(
-              'Welcome to ProFinder!',
+              AppLocalizations.of(context).authWelcomeProfinder,
               style: context.textStyles.h2,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSizes.sm),
             Text(
-              'Please verify your email to activate your account.',
+              AppLocalizations.of(context).authPleaseVerifyEmailActivateAccount,
               style: context.textStyles.bodyMedium,
               textAlign: TextAlign.center,
             ),
@@ -100,7 +99,7 @@ class _RegistrationSuccessDialogState extends State<RegistrationSuccessDialog>
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: widget.onContinue,
-                child: const Text('Continue to Login'),
+                child: Text(AppLocalizations.of(context).authContinueLogin),
               ),
             ),
           ],

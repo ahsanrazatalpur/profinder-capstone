@@ -3,6 +3,7 @@
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../models/subscription_model.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SubscriptionService {
   final ApiService _api = ApiService();
@@ -62,8 +63,8 @@ class SubscriptionService {
   String _extractError(dynamic e) {
     try {
       final data = (e as dynamic).response?.data;
-      if (data is Map) return data['error'] ?? data['detail'] ?? 'Something went wrong';
+      if (data is Map) return data['error'] ?? data['detail'] ?? AppStrings.errSomethingWentWrong;
     } catch (_) {}
-    return 'Something went wrong';
+    return AppStrings.errSomethingWentWrong;
   }
 }

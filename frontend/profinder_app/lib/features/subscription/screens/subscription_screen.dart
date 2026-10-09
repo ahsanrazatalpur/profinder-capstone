@@ -7,6 +7,8 @@ import '../services/subscription_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   /// role: 'customer' ya 'professional'
@@ -46,7 +48,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         _loading     = false;
       });
     } catch (e) {
-      setState(() { _error = AppLocalizations.of(context)!.subscriptionFailedToLoadPlans; _loading = false; });
+      setState(() { _error = AppLocalizations.of(context).subscriptionFailedToLoadPlans; _loading = false; });
     }
   }
 
@@ -63,19 +65,19 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     if (!mounted) return;
 
     if (result['success'] == true) {
-      _showSuccess(AppLocalizations.of(context)!.subscriptionSubscribedTo(plan.name));
+      _showSuccess(AppLocalizations.of(context).subscriptionSubscribedTo(plan.name));
       await _loadData(); // Refresh plan status
     } else {
-      _showError(result['error'] ?? AppLocalizations.of(context)!.subscriptionSubscriptionFailed);
+      _showError(result['error'] ?? AppLocalizations.of(context).subscriptionSubscriptionFailed);
     }
   }
 
   Future<bool> _showConfirmDialog(SubscriptionPlan plan) async {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: Text(t.subscriptionConfirmSubscription,
             style: const TextStyle(fontWeight: FontWeight.bold)),
         content: Text(
@@ -107,7 +109,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         content: Text(msg),
         backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
       ),
     );
   }
@@ -118,14 +120,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         content: Text(msg),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
@@ -141,7 +143,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _buildError() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -157,7 +159,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _buildBody() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     // Free plan ko alag, paid plans alag
     final freePlan  = _plans.where((p) => p.isFree).firstOrNull;
     final paidPlans = _plans.where((p) => p.isPremium).toList();
@@ -177,7 +179,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             // ── Header ───────────────────────────────────────
             Text(t.subscriptionAvailablePlans,
                 style: TextStyle(
-                    fontSize: 20,
+                    fontSize: AppFontSizes.h3,
                     fontWeight: FontWeight.bold,
                     color: context.colors.textPrimary)),
             const SizedBox(height: 4),
@@ -186,7 +188,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ? t.subscriptionUpgradeUnlimitedAiSearches
                   : t.subscriptionUpgradeUnlimitedBookings,
               style: TextStyle(
-                  fontSize: 14, color: context.colors.textSecondary),
+                  fontSize: AppFontSizes.body, color: context.colors.textSecondary),
             ),
             const SizedBox(height: 20),
 
@@ -215,19 +217,19 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   Widget _buildCurrentPlanBanner() {
     final plan = _currentPlan!;
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: plan.isPremium
-              ? [const Color(0xFF7C3AED), const Color(0xFF2563EB)]
+              ? [AppColors.accentPurple, AppColors.customerColor]
               : [context.colors.textSecondary, context.colors.textDisabled],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       ),
       child: Row(
         children: [
@@ -245,14 +247,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16)),
+                        fontSize: AppFontSizes.title)),
                 if (plan.endDate != null)
                   Text(t.subscriptionValidUntil('${plan.endDate}'),
                       style: const TextStyle(
-                          color: Colors.white70, fontSize: 12)),
+                          color: Colors.white70, fontSize: AppFontSizes.small)),
                 if (!plan.isPremium)
                   Text(t.subscriptionUpgradeUnlockPremiumFeatures,
-                      style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                      style: const TextStyle(color: Colors.white70, fontSize: AppFontSizes.small)),
               ],
             ),
           ),
@@ -264,7 +266,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _buildPlanCard(SubscriptionPlan plan, {required bool isRecommended}) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final isCurrentPlan = _currentPlan?.planName == plan.name &&
         _currentPlan?.billing == plan.billing;
     final isPremium = plan.isPremium;
@@ -275,7 +277,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         Container(
           decoration: BoxDecoration(
             color: context.colors.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             border: Border.all(
               color: isCurrentPlan
                   ? AppColors.success
@@ -286,7 +288,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -305,7 +307,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       color: isPremium
                           ? context.colors.primaryLight
                           : context.colors.background,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10),
                     ),
                     child: Icon(
                       isPremium
@@ -325,7 +327,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         Text(plan.name,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                                fontSize: AppFontSizes.title2,
                                 color: context.colors.textPrimary)),
                         Text(
                           plan.isFree
@@ -334,7 +336,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                   ? t.subscriptionBilledMonthly
                                   : t.subscriptionBilledYearly,
                           style: TextStyle(
-                              fontSize: 12, color: context.colors.textSecondary),
+                              fontSize: AppFontSizes.small, color: context.colors.textSecondary),
                         ),
                       ],
                     ),
@@ -359,7 +361,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         Text(
                           plan.billing == 'monthly' ? t.subscriptionPerMonth : t.subscriptionPerYear,
                           style: TextStyle(
-                              fontSize: 12, color: context.colors.textSecondary),
+                              fontSize: AppFontSizes.small, color: context.colors.textSecondary),
                         ),
                     ],
                   ),
@@ -388,14 +390,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF7C3AED), Color(0xFF2563EB)],
+                  colors: [AppColors.accentPurple, AppColors.customerColor],
                 ),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppSizes.radiusChip),
               ),
               child: Text(t.subscriptionRecommended,
                   style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 10,
+                      fontSize: AppFontSizes.micro,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1)),
             ),
@@ -410,12 +412,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.success,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppSizes.radiusChip),
               ),
               child: Text(t.subscriptionCurrentPlan2,
                   style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 10,
+                      fontSize: AppFontSizes.micro,
                       fontWeight: FontWeight.bold)),
             ),
           ),
@@ -424,7 +426,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   List<Widget> _buildFeaturesList(SubscriptionPlan plan) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final features = <Map<String, dynamic>>[];
 
     if (widget.userRole == 'customer') {
@@ -472,7 +474,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               child: Text(
                 f['label'] as String,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.body,
                   color: enabled ? context.colors.textPrimary : context.colors.textDisabled,
                 ),
               ),
@@ -482,11 +484,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: context.colors.primaryLight,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
                 child: Text(value,
                     style: TextStyle(
-                        fontSize: 12,
+                        fontSize: AppFontSizes.small,
                         fontWeight: FontWeight.bold,
                         color: context.colors.primary)),
               ),
@@ -497,14 +499,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _buildPlanButton(SubscriptionPlan plan, bool isCurrentPlan) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     if (isCurrentPlan) {
       return Container(
         width: double.infinity,
         height: 48,
         decoration: BoxDecoration(
           color: context.colors.accentLight,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
         child: Center(
           child: Row(
@@ -527,7 +529,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         height: 48,
         decoration: BoxDecoration(
           color: context.colors.background,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           border: Border.all(color: context.colors.divider),
         ),
         child: Center(
@@ -546,7 +548,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           backgroundColor: context.colors.primary,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
           elevation: 0,
         ),
@@ -560,20 +562,20 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             : Text(
                 t.subscriptionGet(plan.name),
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 15),
+                    fontWeight: FontWeight.bold, fontSize: AppFontSizes.input),
               ),
       ),
     );
   }
 
   Widget _buildCancelNote() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(bottom: 20),
         child: Text(
           t.subscriptionCancelAnytimeSecurePayment,
-          style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+          style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
         ),
       ),
     );

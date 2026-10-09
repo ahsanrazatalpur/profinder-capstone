@@ -51,7 +51,7 @@ class AppLogo extends StatelessWidget {
                 AppStrings.appTagline,
                 style: AppTextStyles.bodySmall.copyWith(
                   color: inverted
-                      ? AppColors.white.withOpacity(0.8)
+                      ? AppColors.white.withValues(alpha: 0.8)
                       : context.colors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
@@ -82,8 +82,8 @@ class AppLogoMark extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         color: inverted
-            ? AppColors.white.withOpacity(0.15)
-            : context.colors.primary.withOpacity(0.1),
+            ? AppColors.white.withValues(alpha: 0.15)
+            : context.colors.primary.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Center(

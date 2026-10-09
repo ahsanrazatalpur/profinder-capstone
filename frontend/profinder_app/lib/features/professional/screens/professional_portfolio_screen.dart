@@ -1,5 +1,7 @@
 // lib/features/professional/screens/professional_portfolio_screen.dart
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -47,7 +49,7 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
       if (!mounted) return;
       setState(() => _isLoading = false);
       if (mounted) {
-        AppHelpers.showError(context, AppLocalizations.of(context)!.loadPortfolioError);
+        AppHelpers.showError(context, AppLocalizations.of(context).loadPortfolioError);
       }
     }
   }
@@ -56,11 +58,11 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
     try {
       await _api.delete('${AppConstants.portfolio}$id/');
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.deleteSuccess);
+      AppHelpers.showSuccess(context, AppLocalizations.of(context).deleteSuccess);
       _load();
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context)!.deleteError);
+      AppHelpers.showError(context, AppLocalizations.of(context).deleteError);
     }
   }
 
@@ -68,21 +70,21 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(AppLocalizations.of(context)!.deleteDialogTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        title: Text(AppLocalizations.of(context).deleteDialogTitle, style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700)),
         content: Text(
-          AppLocalizations.of(context)!.deleteDialogContent(item['title']?.toString() ?? ''),
-          style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+          AppLocalizations.of(context).deleteDialogContent(item['title']?.toString() ?? ''),
+          style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancelCta),
+            child: Text(AppLocalizations.of(context).cancelCta),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () { Navigator.pop(context); _delete(item['id']); },
-            child: Text(AppLocalizations.of(context)!.deleteCta),
+            child: Text(AppLocalizations.of(context).deleteCta),
           ),
         ],
       ),
@@ -101,7 +103,7 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheetState) => Padding(
@@ -122,8 +124,8 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
               ),
               const SizedBox(height: 16),
               Text(
-                AppLocalizations.of(context)!.addPortfolioTitle,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                AppLocalizations.of(context).addPortfolioTitle,
+                style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
               ),
               const SizedBox(height: 16),
 
@@ -146,7 +148,7 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                   height: 140,
                   decoration: BoxDecoration(
                     color: context.colors.background,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     border: Border.all(
                       color: pickedXFile != null ? AppColors.professionalColor : context.colors.divider,
                       width: pickedXFile != null ? 2 : 1,
@@ -154,7 +156,7 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                   ),
                   child: pickedXFile != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           child: kIsWeb && webBytes != null
                               ? Image.memory(webBytes!, fit: BoxFit.cover, width: double.infinity)
                               : Image.file(pickedFile!, fit: BoxFit.cover, width: double.infinity),
@@ -165,8 +167,8 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                             Icon(Icons.add_photo_alternate_outlined, size: 32, color: AppColors.professionalColor),
                             const SizedBox(height: 6),
                             Text(
-                              AppLocalizations.of(context)!.addImageLabel,
-                              style: TextStyle(fontSize: 13, color: AppColors.professionalColor, fontWeight: FontWeight.w500),
+                              AppLocalizations.of(context).addImageLabel,
+                              style: TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.professionalColor, fontWeight: FontWeight.w500),
                             ),
                           ],
                         ),
@@ -177,15 +179,15 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
               // Title
               TextField(
                 controller: titleCtrl,
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: AppFontSizes.body),
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.titleLabelRequired,
-                  hintText: AppLocalizations.of(context)!.titleHint,
+                  labelText: AppLocalizations.of(context).titleLabelRequired,
+                  hintText: AppLocalizations.of(context).titleHint,
                   filled: true,
                   fillColor: context.colors.background,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5)),
                 ),
               ),
               const SizedBox(height: 10),
@@ -194,16 +196,16 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
               TextField(
                 controller: descCtrl,
                 maxLines:   3,
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: AppFontSizes.body),
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.descriptionLabelOptional,
-                  hintText: AppLocalizations.of(context)!.descriptionHint,
+                  labelText: AppLocalizations.of(context).descriptionLabelOptional,
+                  hintText: AppLocalizations.of(context).descriptionHint,
                   filled: true,
                   fillColor: context.colors.background,
                   contentPadding: const EdgeInsets.all(12),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -212,18 +214,18 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFFBEB),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFFDE68A)),
+                  color: AppColors.tintAmber,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  border: Border.all(color: AppColors.amber200),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline_rounded, size: 16, color: Color(0xFFF59E0B)),
+                    const Icon(Icons.info_outline_rounded, size: 16, color: AppColors.warningAmber),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        AppLocalizations.of(context)!.portfolioInfoNote,
-                        style: const TextStyle(fontSize: 11, color: Color(0xFF92400E)),
+                        AppLocalizations.of(context).portfolioInfoNote,
+                        style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.amber800),
                       ),
                     ),
                   ],
@@ -239,11 +241,11 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                     backgroundColor: AppColors.professionalColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                   ),
                   onPressed: isSaving ? null : () async {
                     if (titleCtrl.text.trim().isEmpty) {
-                      AppHelpers.showError(ctx, AppLocalizations.of(context)!.titleValidationError);
+                      AppHelpers.showError(ctx, AppLocalizations.of(context).titleValidationError);
                       return;
                     }
                     setSheetState(() => isSaving = true);
@@ -261,23 +263,24 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                       final formData = FormData.fromMap({
                         'title':       titleCtrl.text.trim(),
                         'description': descCtrl.text.trim(),
-                        if (imageMultipart != null) 'image': imageMultipart,
+                        'image': ?imageMultipart,
                       });
 
                       await _api.postForm(AppConstants.portfolio, formData);
 
-                      if (!ctx.mounted) return;
+                      if (!mounted || !ctx.mounted) return;
                       Navigator.pop(ctx);
-                      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.uploadSuccess);
+                      AppHelpers.showSuccess(context, AppLocalizations.of(context).uploadSuccess);
                       _load();
                     } catch (e) {
+                      if (!mounted || !ctx.mounted) return;
                       setSheetState(() => isSaving = false);
-                      AppHelpers.showError(ctx, AppLocalizations.of(context)!.uploadError);
+                      AppHelpers.showError(ctx, AppLocalizations.of(context).uploadError);
                     }
                   },
                   child: isSaving
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : Text(AppLocalizations.of(context)!.submitReviewCta, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      : Text(AppLocalizations.of(context).submitReviewCta, style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600)),
                 ),
               ),
             ],
@@ -296,12 +299,12 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.myPortfolioTitle,
+        title: AppLocalizations.of(context).myPortfolioTitle,
         icon: Icons.collections_rounded,
         actions: [
           AppBarIconButton(
             icon: Icons.add_rounded,
-            tooltip: AppLocalizations.of(context)!.addPortfolioTooltip,
+            tooltip: AppLocalizations.of(context).addPortfolioTooltip,
             onGradient: true,
             onPressed: _showAddSheet,
           ),
@@ -336,7 +339,7 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                                   Container(
                                     width: 88, height: 88,
                                     decoration: BoxDecoration(
-                                      color: AppColors.professionalColor.withOpacity(0.1),
+                                      color: AppColors.professionalColor.withValues(alpha: 0.1),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(Icons.photo_library_outlined,
@@ -344,30 +347,30 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                                   ),
                                   const SizedBox(height: 18),
                                   Text(
-                                    AppLocalizations.of(context)!.emptyPortfolioTitle,
+                                    AppLocalizations.of(context).emptyPortfolioTitle,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: AppFontSizes.title,
                                       fontWeight: FontWeight.w700,
                                       color: context.colors.textPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    AppLocalizations.of(context)!.emptyPortfolioSubtitle,
+                                    AppLocalizations.of(context).emptyPortfolioSubtitle,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                                    style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
                                   ),
                                   const SizedBox(height: 22),
                                   ElevatedButton.icon(
                                     onPressed: _showAddSheet,
                                     icon: const Icon(Icons.add_rounded, size: 18),
-                                    label: Text(AppLocalizations.of(context)!.addFirstItemCta),
+                                    label: Text(AppLocalizations.of(context).addFirstItemCta),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppColors.professionalColor,
                                       foregroundColor: Colors.white,
                                       elevation: 0,
                                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                                     ),
                                   ),
                                 ],
@@ -410,17 +413,17 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
       case 'approved':
         statusColor = context.colors.accent;
         statusIcon = Icons.verified_rounded;
-        statusLabel = AppLocalizations.of(context)!.statusApproved;
+        statusLabel = AppLocalizations.of(context).statusApproved;
         break;
       case 'rejected':
         statusColor = AppColors.error;
         statusIcon = Icons.cancel_rounded;
-        statusLabel = AppLocalizations.of(context)!.statusRejected;
+        statusLabel = AppLocalizations.of(context).statusRejected;
         break;
       default:
         statusColor = AppColors.warning;
         statusIcon = Icons.access_time_rounded;
-        statusLabel = AppLocalizations.of(context)!.statusPending;
+        statusLabel = AppLocalizations.of(context).statusPending;
     }
 
     return AnimatedContainer(
@@ -428,14 +431,14 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
       curve: Curves.easeOut,
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.08) : Colors.grey.withOpacity(0.1),
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.withValues(alpha: 0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.15) : Colors.grey.withOpacity(0.06),
+            color: isDark ? Colors.black.withValues(alpha: 0.15) : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -448,14 +451,14 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
           Stack(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusLg)),
                 child: imageUrl != null && imageUrl.isNotEmpty
                     ? Image.network(
                         imageUrl,
                         height: 120,
                         width: double.infinity,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                        errorBuilder: (_, _, _) => _imagePlaceholder(),
                       )
                     : _imagePlaceholder(),
               ),
@@ -466,11 +469,11 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.92),
-                    borderRadius: BorderRadius.circular(10),
+                    color: statusColor.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
+                        color: Colors.black.withValues(alpha: 0.15),
                         blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
@@ -483,7 +486,7 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                       const SizedBox(width: 4),
                       Text(
                         statusLabel,
-                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
+                        style: const TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: Colors.white),
                       ),
                     ],
                   ),
@@ -504,7 +507,7 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: AppFontSizes.secondary,
                       fontWeight: FontWeight.w700,
                       color: context.colors.textPrimary,
                     ),
@@ -516,7 +519,7 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: AppFontSizes.caption,
                         color: context.colors.textSecondary,
                       ),
                     ),
@@ -525,10 +528,10 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                   if (itemStatus == 'rejected' && item['admin_note']?.toString().isNotEmpty == true) ...[
                     const SizedBox(height: 4),
                     Text(
-                      '${AppLocalizations.of(context)!.adminNoteLabel} ${item['admin_note']}',
+                      '${AppLocalizations.of(context).adminNoteLabel} ${item['admin_note']}',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 9, color: AppColors.error),
+                      style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.error),
                     ),
                   ],
                   const Spacer(),
@@ -536,7 +539,7 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                       onTap: () => _confirmDelete(item),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
@@ -546,8 +549,8 @@ class _ProfessionalPortfolioScreenState extends State<ProfessionalPortfolioScree
                             Icon(Icons.delete_outline_rounded, size: 14, color: AppColors.error),
                             const SizedBox(width: 4),
                             Text(
-                              AppLocalizations.of(context)!.deleteCta,
-                              style: const TextStyle(fontSize: 11, color: AppColors.error, fontWeight: FontWeight.w600),
+                              AppLocalizations.of(context).deleteCta,
+                              style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.error, fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),

@@ -8,6 +8,8 @@ import '../../../core/theme/app_colors.dart';
 import '../screens/subscription_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AiLimitDialog extends StatelessWidget {
   final int       used;
@@ -43,7 +45,7 @@ class AiLimitDialog extends StatelessWidget {
   }
 
   String _formattedReset(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     if (resetAt == null) return t.subscriptionAiResetsTomorrowMidnight;
     final local = resetAt!.toLocal();
     final h = local.hour % 12 == 0 ? 12 : local.hour % 12;
@@ -59,9 +61,9 @@ class AiLimitDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -75,8 +77,8 @@ class AiLimitDialog extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    context.colors.primary.withOpacity(0.15),
-                    const Color(0xFF7C3AED).withOpacity(0.15),
+                    context.colors.primary.withValues(alpha: 0.15),
+                    AppColors.accentPurple.withValues(alpha: 0.15),
                   ],
                 ),
                 shape: BoxShape.circle,
@@ -92,7 +94,7 @@ class AiLimitDialog extends StatelessWidget {
             Text(
               t.subscriptionAiSearchLimitReached,
               style: TextStyle(
-                fontSize:   20,
+                fontSize: AppFontSizes.h3,
                 fontWeight: FontWeight.bold,
                 color:      context.colors.textPrimary,
               ),
@@ -103,7 +105,7 @@ class AiLimitDialog extends StatelessWidget {
             Text(
               t.subscriptionVeUsedAiSearchesTodayAi('$used', '$limit'),
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 color:    context.colors.textSecondary,
                 height:   1.5,
               ),
@@ -120,17 +122,17 @@ class AiLimitDialog extends StatelessWidget {
                   children: [
                     Text(t.subscriptionAiSearchesToday,
                         style: TextStyle(
-                            fontSize: 12, color: context.colors.textSecondary)),
+                            fontSize: AppFontSizes.small, color: context.colors.textSecondary)),
                     Text('$used / $limit',
                         style: const TextStyle(
-                            fontSize:   12,
+                            fontSize: AppFontSizes.small,
                             fontWeight: FontWeight.bold,
                             color:      AppColors.error)),
                   ],
                 ),
                 const SizedBox(height: 6),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
                   child: LinearProgressIndicator(
                     value:      1.0,
                     minHeight:  8,
@@ -148,7 +150,7 @@ class AiLimitDialog extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color:        context.colors.background,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
                 border:       Border.all(color: context.colors.divider),
               ),
               child: Row(
@@ -159,7 +161,7 @@ class AiLimitDialog extends StatelessWidget {
                     child: Text(
                       _formattedReset(context),
                       style: TextStyle(
-                          fontSize: 12, color: context.colors.textSecondary),
+                          fontSize: AppFontSizes.small, color: context.colors.textSecondary),
                     ),
                   ),
                 ],
@@ -191,7 +193,7 @@ class AiLimitDialog extends StatelessWidget {
                   foregroundColor: Colors.white,
                   elevation:       0,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -200,7 +202,7 @@ class AiLimitDialog extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(t.subscriptionGetPremium20AiDay,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15)),
+                            fontWeight: FontWeight.bold, fontSize: AppFontSizes.input)),
                   ],
                 ),
               ),
@@ -218,18 +220,18 @@ class AiLimitDialog extends StatelessWidget {
   }
 
   Widget _buildPremiumBenefits(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Container(
       width:   double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            context.colors.primary.withOpacity(0.06),
-            const Color(0xFF7C3AED).withOpacity(0.06),
+            context.colors.primary.withValues(alpha: 0.06),
+            AppColors.accentPurple.withValues(alpha: 0.06),
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border:       Border.all(color: context.colors.primaryLight),
       ),
       child: Column(
@@ -242,7 +244,7 @@ class AiLimitDialog extends StatelessWidget {
               Text(t.subscriptionPremiumAiFeatures,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize:   13,
+                      fontSize: AppFontSizes.secondary,
                       color:      context.colors.primary)),
             ],
           ),
@@ -261,7 +263,7 @@ class AiLimitDialog extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(f,
                         style: TextStyle(
-                            fontSize: 13,
+                            fontSize: AppFontSizes.secondary,
                             color:    context.colors.textPrimary)),
                   ],
                 ),

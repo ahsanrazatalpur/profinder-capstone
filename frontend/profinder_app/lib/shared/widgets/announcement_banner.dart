@@ -11,7 +11,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../services/announcement_service.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/theme/app_text_styles.dart';
 
 class AnnouncementBanner extends StatefulWidget {
   /// 'guest' | 'customer' | 'professional'
@@ -42,6 +46,7 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
   Map<String, dynamic>? _announcement;
   bool _loading = true;
   bool _isExpanded = false;
+  String? _loadedLang; // language the current announcement was fetched in
 
   late AnimationController _animationController;
   late Animation<double> _slideAnimation;
@@ -80,6 +85,16 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
         _animationController.forward();
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // App language changed while this banner is on screen -> refetch so the
+    // title/message come back in the new language.
+    final lang = Localizations.localeOf(context).languageCode;
+    if (_loadedLang != null && _loadedLang != lang) _load();
+    _loadedLang = lang;
   }
 
   Future<void> _load() async {
@@ -153,15 +168,15 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
   List<Color> _paletteFor(String type) {
     switch (type) {
       case 'warning':
-        return const [Color(0xFFFBBF24), Color(0xFFF59E0B)];
+        return const [AppColors.warning, AppColors.warningAmber];
       case 'urgent':
-        return const [Color(0xFFF87171), Color(0xFFEF4444)];
+        return const [AppColors.error, AppColors.favoriteRed];
       case 'success':
-        return const [Color(0xFF34D399), Color(0xFF10B981)];
+        return const [AppColors.accent, AppColors.emerald];
       case 'event':
-        return const [Color(0xFF38BDF8), Color(0xFF0EA5E9)];
+        return const [Color(0xFF38BDF8), AppColors.sky];
       default:
-        return const [Color(0xFF818CF8), Color(0xFF6366F1)];
+        return const [AppColors.indigo400, AppColors.indigo];
     }
   }
 
@@ -183,7 +198,7 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
   Widget _buildCloseButton() {
     return Semantics(
       button: true,
-      label: 'Dismiss announcement',
+      label: AppLocalizations.of(context).announcementDismiss,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
@@ -238,7 +253,7 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
             ),
             borderRadius: BorderRadius.circular(radius),
             border: Border.all(
-              color: Colors.white.withOpacity(0.55),
+              color: Colors.white.withValues(alpha: 0.55),
               width: 1.5,
             ),
           ),
@@ -258,7 +273,7 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
                         maxLines: _isExpanded ? null : 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: AppFontSizes.input,
                           fontWeight: FontWeight.w800,
                           height: 1.25,
                           color: Colors.white,
@@ -275,7 +290,7 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
                           maxLines: _isExpanded ? null : 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 12.5,
+                            fontSize: AppFontSizes.secondary,
                             height: 1.35,
                             color: Colors.white,
                           ),
@@ -302,8 +317,8 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
 
 /// Default card gradient (matches the announcement card).
 const List<Color> kUniversalCardColors = [
-  Color(0xFF6366F1), // indigo
-  Color(0xFF8B5CF6), // violet
+  AppColors.indigo, // indigo
+  AppColors.violet, // violet
 ];
 
 class UniversalCard extends StatelessWidget {
@@ -406,7 +421,7 @@ class UniversalCard extends StatelessWidget {
                       Text(
                         meta!,
                         style: const TextStyle(
-                          fontSize: 11.5,
+                          fontSize: AppFontSizes.small,
                           color: Colors.white70,
                           fontWeight: FontWeight.w500,
                         ),
@@ -437,9 +452,9 @@ class UniversalCard extends StatelessWidget {
                   maxLines: subtitleMaxLines,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 12.5,
+                    fontSize: AppFontSizes.secondary,
                     height: 1.35,
-                    color: Colors.white.withOpacity(0.88),
+                    color: Colors.white.withValues(alpha: 0.88),
                   ),
                 ),
               ],
@@ -474,7 +489,7 @@ class UniversalCard extends StatelessWidget {
         borderRadius: borderRadius,
         boxShadow: [
           BoxShadow(
-            color: palette.last.withOpacity(0.28),
+            color: palette.last.withValues(alpha: 0.28),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -500,8 +515,8 @@ class UniversalCard extends StatelessWidget {
                   ? content
                   : InkWell(
                       onTap: onTap,
-                      splashColor: Colors.white.withOpacity(0.12),
-                      highlightColor: Colors.white.withOpacity(0.06),
+                      splashColor: Colors.white.withValues(alpha: 0.12),
+                      highlightColor: Colors.white.withValues(alpha: 0.06),
                       child: content,
                     ),
             ),
@@ -523,7 +538,7 @@ class _GlassCircle extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withOpacity(opacity),
+          color: Colors.white.withValues(alpha: opacity),
         ),
       );
 }
@@ -538,8 +553,8 @@ class _Pill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.20),
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withValues(alpha: 0.20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -562,7 +577,7 @@ class _Pill extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 10.5,
+                fontSize: AppFontSizes.caption,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.8,
                 color: Colors.white,
@@ -589,12 +604,12 @@ class UniversalCardTile extends StatelessWidget {
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.18),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.28)),
+        color: Colors.white.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
       ),
       child: emoji != null
-          ? Text(emoji!, style: const TextStyle(fontSize: 20, height: 1))
+          ? Text(emoji!, style: const TextStyle(fontSize: AppFontSizes.h3, height: 1))
           : Icon(icon, size: 22, color: Colors.white),
     );
   }
@@ -603,22 +618,23 @@ class UniversalCardTile extends StatelessWidget {
 /// Frosted circular close button.
 class UniversalCardCloseButton extends StatelessWidget {
   final VoidCallback onPressed;
-  final String tooltip;
+  final String? tooltip;
   const UniversalCardCloseButton({
     super.key,
     required this.onPressed,
-    this.tooltip = 'Dismiss',
+    this.tooltip,
   });
 
   @override
   Widget build(BuildContext context) {
+    final tip = tooltip ?? AppLocalizations.of(context).tsDismiss;
     return Tooltip(
-      message: tooltip,
+      message: tip,
       child: Semantics(
         button: true,
-        label: tooltip,
+        label: tip,
         child: Material(
-          color: Colors.white.withOpacity(0.20),
+          color: Colors.white.withValues(alpha: 0.20),
           shape: const CircleBorder(),
           child: InkWell(
             onTap: onPressed,
@@ -653,10 +669,10 @@ class UniversalCardButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(
@@ -669,15 +685,15 @@ class UniversalCardButton extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Color(0xFF6366F1),
-                    fontSize: 13,
+                    color: AppColors.indigo,
+                    fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.2,
                   ),
                 ),
               ),
               const SizedBox(width: 6),
-              Icon(icon, size: 16, color: const Color(0xFF6366F1)),
+              Icon(icon, size: 16, color: AppColors.indigo),
             ],
           ),
         ),

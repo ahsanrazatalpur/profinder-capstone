@@ -1,7 +1,11 @@
 // lib/features/professional/widgets/review_summary_card.dart
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class ReviewSummaryCard extends StatelessWidget {
   final double averageRating;
@@ -22,10 +26,10 @@ class ReviewSummaryCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(color: context.colors.divider),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 14, offset: const Offset(0, 4)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 14, offset: const Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -47,13 +51,13 @@ class ReviewSummaryCard extends StatelessWidget {
                       children: List.generate(5, (i) => Icon(
                             i < averageRating.round() ? Icons.star_rounded : Icons.star_border_rounded,
                             size: 18,
-                            color: const Color(0xFFF59E0B),
+                            color: AppColors.warningAmber,
                           )),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '$totalReviews review${totalReviews == 1 ? '' : 's'}',
-                      style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary),
+                      AppLocalizations.of(context).reviewCountPlural(totalReviews),
+                      style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
                     ),
                   ],
                 ),
@@ -84,12 +88,12 @@ class _DistributionRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 28,
-            child: Text('$star★', style: TextStyle(fontSize: 11.5, color: context.colors.textSecondary)),
+            child: Text('$star★', style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary)),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
               child: SizedBox(
                 height: 7,
                 child: Stack(
@@ -101,7 +105,7 @@ class _DistributionRow extends StatelessWidget {
                       tween: Tween(begin: 0, end: percent / 100),
                       builder: (context, value, _) => FractionallySizedBox(
                         widthFactor: value.clamp(0, 1),
-                        child: Container(color: const Color(0xFFF59E0B)),
+                        child: Container(color: AppColors.warningAmber),
                       ),
                     ),
                   ],
@@ -114,7 +118,7 @@ class _DistributionRow extends StatelessWidget {
             width: 34,
             child: Text('$percent%',
                 textAlign: TextAlign.right,
-                style: TextStyle(fontSize: 11, color: context.colors.textSecondary)),
+                style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
           ),
         ],
       ),

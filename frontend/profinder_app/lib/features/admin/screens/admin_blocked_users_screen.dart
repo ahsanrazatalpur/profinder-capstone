@@ -13,6 +13,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 // Responsive breakpoints for the card list: a single column on phones,
 // a two-column grid from tablet width up.
@@ -92,7 +94,7 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Blocked Users',
         subtitle: '${_all.length} currently blocked',
@@ -204,14 +206,14 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
         style: const TextStyle(fontSize: 13.5),
         decoration: InputDecoration(
           hintText: 'Search by name, email, or reason…',
-          hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
-          prefixIcon: const Icon(Icons.search_rounded, size: 20, color: Color(0xFF9CA3AF)),
+          hintStyle: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
+          prefixIcon: const Icon(Icons.search_rounded, size: 20, color: AppColors.neutral400),
           // Clear button only shows once there is something to clear, and
           // re-applies the (now empty) search so filtering stays in sync.
           suffixIcon: _searchCtrl.text.isEmpty
               ? null
               : IconButton(
-                  icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFF9CA3AF)),
+                  icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.neutral400),
                   tooltip: 'Clear search',
                   onPressed: () {
                     _searchCtrl.clear();
@@ -219,13 +221,13 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
                   },
                 ),
           filled: true,
-          fillColor: const Color(0xFFF5F7FA),
+          fillColor: AppColors.lightScaffold,
           contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide.none),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.adminColor.withOpacity(0.4), width: 1.5),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            borderSide: BorderSide(color: AppColors.adminColor.withValues(alpha: 0.4), width: 1.5),
           ),
         ),
       ),
@@ -252,10 +254,10 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFF1F5F9), width: 1),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: AppColors.slate100, width: 1),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
           ],
         ),
         child: Padding(
@@ -267,7 +269,7 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundColor: roleColor.withOpacity(0.12),
+                    backgroundColor: roleColor.withValues(alpha: 0.12),
                     child: Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
                       style: TextStyle(fontWeight: FontWeight.w800, color: roleColor),
@@ -279,10 +281,10 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(name,
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                            style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
                             maxLines: 1, overflow: TextOverflow.ellipsis),
                         Text(email,
-                            style: const TextStyle(fontSize: 11.5, color: Color(0xFF9CA3AF)),
+                            style: const TextStyle(fontSize: 11.5, color: AppColors.neutral400),
                             maxLines: 1, overflow: TextOverflow.ellipsis),
                       ],
                     ),
@@ -291,12 +293,12 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: roleColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
+                        color: roleColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                       ),
                       child: Text(role,
                           style: TextStyle(
-                              fontSize: 9, fontWeight: FontWeight.w800, color: roleColor)),
+                              fontSize: AppFontSizes.nano, fontWeight: FontWeight.w800, color: roleColor)),
                     ),
                 ],
               ),
@@ -305,9 +307,9 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
                 width: double.infinity,
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF9FAFB),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.error.withOpacity(0.08)),
+                  color: AppColors.tintGray,
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
+                  border: Border.all(color: AppColors.error.withValues(alpha: 0.08)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,7 +326,7 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
                           child: Text(
                             reason.isNotEmpty ? reason : 'No reason recorded',
                             style: const TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w600,
+                                fontSize: AppFontSizes.small, fontWeight: FontWeight.w600,
                                 color: AppColors.error, height: 1.3),
                             maxLines: 2, overflow: TextOverflow.ellipsis,
                           ),
@@ -338,7 +340,7 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
                           if (blockedBy.isNotEmpty) 'Blocked by $blockedBy',
                           if (blockedAt.isNotEmpty) blockedAt,
                         ].join(' · '),
-                        style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF)),
+                        style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400),
                       ),
                     ],
                   ],
@@ -354,7 +356,7 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: context.colors.accent),
                     padding: const EdgeInsets.symmetric(vertical: 11),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                   ),
                 ),
               ),
@@ -370,30 +372,30 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
         icon: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: context.colors.accent.withOpacity(0.1),
+            color: context.colors.accent.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(Icons.lock_open_rounded, color: context.colors.accent, size: 26),
         ),
         title: const Text('Unblock user?',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700),
             textAlign: TextAlign.center),
         content: Text(
           'This will restore access for ${u['name'] ?? 'this user'}. They will be able to log in again.',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280), height: 1.4),
+          style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep, height: 1.4),
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
           TextButton(
             style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF6B7280),
+              foregroundColor: AppColors.grayDeep,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             ),
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -404,7 +406,7 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10))),
             onPressed: () {
               Navigator.pop(context);
               _unblock(u);
@@ -448,7 +450,7 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
         ),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
         elevation: 2,
         duration: const Duration(seconds: 2),
         margin: const EdgeInsets.all(16),
@@ -466,7 +468,7 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: context.colors.accent.withOpacity(0.08),
+                color: context.colors.accent.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.verified_user_rounded, size: 40, color: context.colors.accent),
@@ -474,10 +476,10 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
             const SizedBox(height: 14),
             const Text('No blocked users — all clear!',
                 style: TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF374151))),
+                    fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray700)),
             const SizedBox(height: 4),
             Text('New blocks will show up here',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade400)),
+                style: TextStyle(fontSize: AppFontSizes.small, color: Colors.grey.shade400)),
           ],
         ),
       ),
@@ -493,14 +495,14 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: AppColors.error.withOpacity(0.08),
+              color: AppColors.error.withValues(alpha: 0.08),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.error_outline_rounded, size: 40, color: AppColors.error),
           ),
           const SizedBox(height: 14),
           const Text('Failed to load blocked users',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF374151))),
+              style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray700)),
           const SizedBox(height: 14),
           ElevatedButton.icon(
             onPressed: _load,
@@ -511,7 +513,7 @@ class _AdminBlockedUsersScreenState extends State<AdminBlockedUsersScreen>
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
             ),
           ),
         ],
@@ -559,14 +561,14 @@ class _HoverLiftState extends State<_HoverLift> {
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
         transform: _hovering
-            ? (Matrix4.identity()..translate(0.0, -2.0))
+            ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0))
             : Matrix4.identity(),
         decoration: _hovering
             ? BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppSizes.radius14),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   ),

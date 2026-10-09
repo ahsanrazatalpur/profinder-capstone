@@ -25,8 +25,8 @@ class AppSplashLoader extends StatelessWidget {
           height: 8,
           decoration: BoxDecoration(
             color: inverted
-                ? AppColors.white.withOpacity(index == 1 ? 1.0 : 0.4)
-                : context.colors.primary.withOpacity(index == 1 ? 1.0 : 0.4),
+                ? AppColors.white.withValues(alpha: index == 1 ? 1.0 : 0.4)
+                : context.colors.primary.withValues(alpha: index == 1 ? 1.0 : 0.4),
             borderRadius: BorderRadius.circular(AppSizes.radiusFull),
           ),
         );

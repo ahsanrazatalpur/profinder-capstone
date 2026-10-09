@@ -14,6 +14,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminComplaintsScreen extends StatefulWidget {
   const AdminComplaintsScreen({super.key});
@@ -30,10 +32,10 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
   String _statusFilter = 'open';
 
   static const _statuses = [
-    ('open', 'Open', Color(0xFFF59E0B)),
-    ('in_progress', 'In Progress', Color(0xFF3B82F6)),
-    ('resolved', 'Resolved', Color(0xFF16A34A)),
-    ('rejected', 'Rejected', Color(0xFF64748B)),
+    ('open', 'Open', AppColors.warningAmber),
+    ('in_progress', 'In Progress', AppColors.primary),
+    ('resolved', 'Resolved', AppColors.greenDeep),
+    ('rejected', 'Rejected', AppColors.slate500),
   ];
 
   @override
@@ -84,7 +86,7 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
               backgroundColor: isResolve ? context.colors.accent : AppColors.error,
               foregroundColor: Colors.white,
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
             onPressed: () async {
@@ -114,8 +116,8 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
           Expanded(child: Text(message)),
         ]),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFF1F2937),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: AppColors.gray800,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
         margin: const EdgeInsets.all(14),
       ),
     );
@@ -124,7 +126,7 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Complaints',
         icon: Icons.report_problem_rounded,
@@ -234,7 +236,7 @@ class _FilterBar extends StatelessWidget {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: statuses.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 8),
+          separatorBuilder: (_, _) => const SizedBox(width: 8),
           itemBuilder: (_, i) {
             final (key, label, color) = statuses[i];
             final isActive = activeKey == key;
@@ -274,18 +276,18 @@ class _FilterChipState extends State<_FilterChip> {
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             color: widget.isActive
-                ? widget.color.withOpacity(0.12)
-                : (_hovered ? const Color(0xFFEEF0F3) : const Color(0xFFF5F7FA)),
-            borderRadius: BorderRadius.circular(20),
+                ? widget.color.withValues(alpha: 0.12)
+                : (_hovered ? const Color(0xFFEEF0F3) : AppColors.lightScaffold),
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(color: widget.isActive ? widget.color : Colors.transparent),
           ),
           alignment: Alignment.center,
           child: Text(
             widget.label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: AppFontSizes.small,
               fontWeight: widget.isActive ? FontWeight.w700 : FontWeight.w500,
-              color: widget.isActive ? widget.color : const Color(0xFF6B7280),
+              color: widget.isActive ? widget.color : AppColors.grayDeep,
             ),
           ),
         ),
@@ -332,14 +334,14 @@ class _ComplaintCardState extends State<_ComplaintCard> {
         duration: const Duration(milliseconds: 160),
         curve: Curves.easeOut,
         padding: const EdgeInsets.all(14),
-        transform: _hovered ? (Matrix4.identity()..translate(0.0, -2.0)) : Matrix4.identity(),
+        transform: _hovered ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0)) : Matrix4.identity(),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _hovered ? color.withOpacity(0.45) : const Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          border: Border.all(color: _hovered ? color.withValues(alpha: 0.45) : AppColors.neutral200),
           boxShadow: [
             BoxShadow(
-              color: _hovered ? Colors.black.withOpacity(0.08) : Colors.black.withOpacity(0.03),
+              color: _hovered ? Colors.black.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
               blurRadius: _hovered ? 16 : 6,
               offset: Offset(0, _hovered ? 6 : 2),
             ),
@@ -363,7 +365,7 @@ class _ComplaintCardState extends State<_ComplaintCard> {
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                  decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(20)),
+                  decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
                   child: Text(
                     c['status_display']?.toString() ?? '',
                     style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: color, letterSpacing: 0.2),
@@ -374,19 +376,19 @@ class _ComplaintCardState extends State<_ComplaintCard> {
             const SizedBox(height: 8),
             Text(
               c['description']?.toString() ?? '',
-              style: const TextStyle(fontSize: 12.5, color: Color(0xFF374151), height: 1.4),
+              style: const TextStyle(fontSize: 12.5, color: AppColors.gray700, height: 1.4),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(Icons.compare_arrows_rounded, size: 13, color: Color(0xFF9CA3AF)),
+                const Icon(Icons.compare_arrows_rounded, size: 13, color: AppColors.neutral400),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     '${c['complainant_name']} vs ${c['against_name']}',
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
+                    style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -398,12 +400,12 @@ class _ComplaintCardState extends State<_ComplaintCard> {
                 padding: const EdgeInsets.only(top: 5),
                 child: Row(
                   children: [
-                    const Icon(Icons.person_outline_rounded, size: 13, color: Color(0xFF3B82F6)),
+                    const Icon(Icons.person_outline_rounded, size: 13, color: AppColors.primary),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         'Assigned to: ${c['assigned_to_name']}',
-                        style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: Color(0xFF3B82F6)),
+                        style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.primary),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -481,13 +483,13 @@ class _HoverOutlinedButtonState extends State<_HoverOutlinedButton> {
           onPressed: widget.onPressed,
           style: OutlinedButton.styleFrom(
             foregroundColor: widget.color,
-            backgroundColor: _hovered ? widget.color.withOpacity(0.06) : Colors.transparent,
-            side: BorderSide(color: widget.color.withOpacity(_hovered ? 0.6 : 0.35)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            backgroundColor: _hovered ? widget.color.withValues(alpha: 0.06) : Colors.transparent,
+            side: BorderSide(color: widget.color.withValues(alpha: _hovered ? 0.6 : 0.35)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             padding: const EdgeInsets.symmetric(horizontal: 8),
           ),
           icon: Icon(widget.icon, size: 14),
-          label: Text(widget.label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+          label: Text(widget.label, style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
         ),
       ),
     );
@@ -508,15 +510,15 @@ class _StyledTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         filled: true,
-        fillColor: const Color(0xFFF9FAFB),
+        fillColor: AppColors.tintGray,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+          borderSide: const BorderSide(color: AppColors.neutral200),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: const BorderSide(color: AppColors.adminColor, width: 1.4),
         ),
       ),
@@ -543,7 +545,7 @@ class _StyledDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420),
         child: Padding(
@@ -554,11 +556,11 @@ class _StyledDialog extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: iconColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: iconColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                 child: Icon(icon, color: iconColor, size: 22),
               ),
               const SizedBox(height: 14),
-              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF111827))),
+              Text(title, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900)),
               const SizedBox(height: 14),
               content,
               const SizedBox(height: 20),
@@ -587,7 +589,7 @@ class _EmptyState extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isOpen ? context.colors.accent.withOpacity(0.1) : const Color(0xFFF3F4F6),
+                  color: isOpen ? context.colors.accent.withValues(alpha: 0.1) : AppColors.neutral100,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -599,7 +601,7 @@ class _EmptyState extends StatelessWidget {
               const SizedBox(height: 14),
               Text(
                 isOpen ? 'No open complaints — all clear!' : 'No complaints in this category',
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF374151)),
+                style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600, color: AppColors.gray700),
               ),
             ]),
           ),
@@ -621,11 +623,11 @@ class _ErrorState extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(color: AppColors.error.withOpacity(0.08), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.08), shape: BoxShape.circle),
             child: const Icon(Icons.error_outline_rounded, size: 40, color: AppColors.error),
           ),
           const SizedBox(height: 14),
-          const Text('Failed to load complaints', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF111827))),
+          const Text('Failed to load complaints', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray900)),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: onRetry,
@@ -636,7 +638,7 @@ class _ErrorState extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             ),
           ),
         ],

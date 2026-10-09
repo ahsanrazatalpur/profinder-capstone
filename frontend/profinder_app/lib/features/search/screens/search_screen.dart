@@ -1,10 +1,12 @@
 // lib/features/search/screens/search_screen.dart
 
+import '../../../services/content_localizer.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/app_helpers.dart';
@@ -44,10 +46,10 @@ class SearchScreen extends StatefulWidget {
     this.isLoggedIn          = false,
     this.userRole            = 'guest',
     this.isPremium           = false,
-    this.initialCategoryId   = null,
-    this.initialCategoryName = null,
-    this.initialQuery        = null,
-    this.onBackWhenEmbedded  = null,
+    this.initialCategoryId,
+    this.initialCategoryName,
+    this.initialQuery,
+    this.onBackWhenEmbedded,
   });
 
   @override
@@ -66,7 +68,6 @@ class _SearchScreenState extends State<SearchScreen>
   bool   _isLoggedIn   = false;
   String _userRole     = 'guest';
   bool   _isPremium    = false;
-  bool   _statusLoaded = false;
 
   List<dynamic> _results      = [];
   List<dynamic> _categories   = [];
@@ -198,7 +199,6 @@ class _SearchScreenState extends State<SearchScreen>
       _isLoggedIn   = loggedIn;
       _userRole     = role;
       _isPremium    = premium;
-      _statusLoaded = true;
     });
   }
 
@@ -380,7 +380,7 @@ class _SearchScreenState extends State<SearchScreen>
         _isLoading = false;
         _results   = [];
       });
-      AppHelpers.showError(context, AppLocalizations.of(context)!.searchFailedCheckConnection);
+      AppHelpers.showError(context, AppLocalizations.of(context).searchFailedCheckConnection);
     }
   }
 
@@ -432,16 +432,16 @@ class _SearchScreenState extends State<SearchScreen>
         return;
       }
       if (statusCode == 401) { _showLoginPrompt(); return; }
-      AppHelpers.showError(context, AppLocalizations.of(context)!.searchAiSearchFailedTryNormal);
+      AppHelpers.showError(context, AppLocalizations.of(context).searchAiSearchFailedTryNormal);
     }
   }
 
   void _showLoginPrompt() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: Text(t.searchLoginRequired),
         content: Text(t.searchPleaseLoginUseAiSearch),
         actions: [
@@ -508,7 +508,7 @@ class _SearchScreenState extends State<SearchScreen>
         _isLoading = false;
         _results   = [];
       });
-      AppHelpers.showError(context, AppLocalizations.of(context)!.searchFailedCheckConnection);
+      AppHelpers.showError(context, AppLocalizations.of(context).searchFailedCheckConnection);
     }
   }
 
@@ -536,7 +536,7 @@ class _SearchScreenState extends State<SearchScreen>
     if (!_isLoggedIn) { _showLoginPrompt(); return; }
     setState(() { _aiMode = !_aiMode; _aiResult = null; _aiMatchedPros = []; _aiAvailabilityMessage = null; _aiRecommendations = {}; });
     if (_aiMode) {
-      final t = AppLocalizations.of(context)!;
+      final t = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: [
           const Icon(Icons.auto_awesome, color: Colors.white, size: 16),
@@ -545,7 +545,7 @@ class _SearchScreenState extends State<SearchScreen>
         ]),
         backgroundColor: context.colors.primary,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
         duration: const Duration(seconds: 2),
       ));
       showBannerForScreen('ai_search', delaySeconds: 1);
@@ -553,10 +553,10 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   void _showAllHistory() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context, backgroundColor: context.colors.surface, isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusChip))),
       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.75),
       builder: (_) => SafeArea(
         top: false,
@@ -566,10 +566,10 @@ class _SearchScreenState extends State<SearchScreen>
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(t.searchSearchHistory, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+            Text(t.searchSearchHistory, style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
             GestureDetector(
               onTap: () { setState(() => _searchHistory.clear()); _saveSearchHistory(); Navigator.pop(context); },
-              child: Text(t.searchClearAll, style: const TextStyle(fontSize: 13, color: Color(0xFFEF4444), fontWeight: FontWeight.w600)),
+              child: Text(t.searchClearAll, style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.danger, fontWeight: FontWeight.w600)),
             ),
           ]),
         ),
@@ -581,18 +581,18 @@ class _SearchScreenState extends State<SearchScreen>
         Flexible(child: _searchHistory.isEmpty
           ? Padding(
               padding: EdgeInsets.symmetric(vertical: 32),
-              child: Center(child: Text(t.searchNoSearchHistoryYet, style: TextStyle(fontSize: 14, color: context.colors.textSecondary))),
+              child: Center(child: Text(t.searchNoSearchHistoryYet, style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary))),
             )
           : ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: _searchHistory.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
+              separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (ctx, i) {
                 final query = _searchHistory[i];
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(Icons.history_rounded, color: context.colors.textSecondary, size: 18),
-                  title: Text(query, style: TextStyle(fontSize: 14, color: context.colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  title: Text(query, style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
                   trailing: GestureDetector(
                     onTap: () => setState(() { _searchHistory.remove(query); _saveSearchHistory(); }),
                     child: Icon(Icons.close, size: 16, color: context.colors.textSecondary),
@@ -607,10 +607,10 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   void _showFilterSheet() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context, isScrollControlled: true, backgroundColor: context.colors.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusChip))),
       // Caps the sheet at 90% of screen height so it never tries to grow
       // past the viewport — combined with the SingleChildScrollView below,
       // this is what actually prevents the bottom overflow: this filter
@@ -651,7 +651,7 @@ class _SearchScreenState extends State<SearchScreen>
                 SwitchListTile(
                   title: Text(t.searchVerifiedOnly, style: TextStyle(fontSize: ResponsiveUtils.sp(14, scale, min: 13, max: 17))),
                   value: _verifiedOnly,
-                  activeColor: context.colors.primary, contentPadding: EdgeInsets.zero,
+                  activeThumbColor: context.colors.primary, contentPadding: EdgeInsets.zero,
                   onChanged: (v) => setSheet(() => _verifiedOnly = v),
                 ),
                 const SizedBox(height: 8),
@@ -660,17 +660,17 @@ class _SearchScreenState extends State<SearchScreen>
                 Wrap(spacing: 8, runSpacing: 8, children: [
                   ChoiceChip(
                     label: Text(t.searchAny), selected: _genderFilter.isEmpty,
-                    selectedColor: context.colors.primary.withOpacity(0.15),
+                    selectedColor: context.colors.primary.withValues(alpha: 0.15),
                     onSelected: (_) => setSheet(() => _genderFilter = ''),
                   ),
                   ChoiceChip(
                     label: Text(t.searchFemale), selected: _genderFilter == 'female',
-                    selectedColor: context.colors.primary.withOpacity(0.15),
+                    selectedColor: context.colors.primary.withValues(alpha: 0.15),
                     onSelected: (_) => setSheet(() => _genderFilter = 'female'),
                   ),
                   ChoiceChip(
                     label: Text(t.searchMale), selected: _genderFilter == 'male',
-                    selectedColor: context.colors.primary.withOpacity(0.15),
+                    selectedColor: context.colors.primary.withValues(alpha: 0.15),
                     onSelected: (_) => setSheet(() => _genderFilter = 'male'),
                   ),
                 ]),
@@ -690,7 +690,7 @@ class _SearchScreenState extends State<SearchScreen>
                 SwitchListTile(
                   title: Text(t.searchNeedSomeoneNowUrgent, style: TextStyle(fontSize: ResponsiveUtils.sp(14, scale, min: 13, max: 17))),
                   value: _availableOnly,
-                  activeColor: context.colors.primary, contentPadding: EdgeInsets.zero,
+                  activeThumbColor: context.colors.primary, contentPadding: EdgeInsets.zero,
                   onChanged: (v) => setSheet(() => _availableOnly = v),
                 ),
                 const SizedBox(height: 8),
@@ -712,22 +712,22 @@ class _SearchScreenState extends State<SearchScreen>
                 Wrap(spacing: 8, runSpacing: 8, children: [
                   ChoiceChip(
                     label: Text(t.searchAny), selected: _serviceModeFilter.isEmpty,
-                    selectedColor: context.colors.primary.withOpacity(0.15),
+                    selectedColor: context.colors.primary.withValues(alpha: 0.15),
                     onSelected: (_) => setSheet(() => _serviceModeFilter = ''),
                   ),
                   ChoiceChip(
                     label: Text(t.searchOnline), selected: _serviceModeFilter == 'online',
-                    selectedColor: context.colors.primary.withOpacity(0.15),
+                    selectedColor: context.colors.primary.withValues(alpha: 0.15),
                     onSelected: (_) => setSheet(() => _serviceModeFilter = 'online'),
                   ),
                   ChoiceChip(
                     label: Text(t.searchHomeVisit), selected: _serviceModeFilter == 'home_visit',
-                    selectedColor: context.colors.primary.withOpacity(0.15),
+                    selectedColor: context.colors.primary.withValues(alpha: 0.15),
                     onSelected: (_) => setSheet(() => _serviceModeFilter = 'home_visit'),
                   ),
                   ChoiceChip(
                     label: Text(t.searchInOffice), selected: _serviceModeFilter == 'in_office',
-                    selectedColor: context.colors.primary.withOpacity(0.15),
+                    selectedColor: context.colors.primary.withValues(alpha: 0.15),
                     onSelected: (_) => setSheet(() => _serviceModeFilter = 'in_office'),
                   ),
                 ]),
@@ -769,9 +769,9 @@ class _SearchScreenState extends State<SearchScreen>
             vertical: ResponsiveUtils.sp(7, scale, min: 6, max: 10)),
         decoration: BoxDecoration(
           color: isActive ? context.colors.primary : context.colors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
           border: Border.all(color: isActive ? context.colors.primary : context.colors.divider, width: 1.5),
-          boxShadow: isActive ? [BoxShadow(color: context.colors.primary.withOpacity(0.3), blurRadius: 6, offset: const Offset(0, 2))] : [],
+          boxShadow: isActive ? [BoxShadow(color: context.colors.primary.withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))] : [],
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(icon, size: ResponsiveUtils.sp(13, scale, min: 12, max: 16), color: isActive ? Colors.white : context.colors.textSecondary),
@@ -792,7 +792,7 @@ class _SearchScreenState extends State<SearchScreen>
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.navSearch,
+        title: AppLocalizations.of(context).navSearch,
         icon: Icons.search_rounded,
         onBack: widget.onBackWhenEmbedded,
       ),
@@ -808,7 +808,7 @@ class _SearchScreenState extends State<SearchScreen>
                   child: Container(
                     height: barHeight,
                     constraints: BoxConstraints(maxWidth: width > 700 ? 620 : double.infinity),
-                    decoration: BoxDecoration(color: context.colors.divider, borderRadius: BorderRadius.circular(12)),
+                    decoration: BoxDecoration(color: context.colors.divider, borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                     child: TextField(
                       controller: _controller, focusNode: _focus,
                       style: context.textStyles.inputText.copyWith(fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18)),
@@ -816,7 +816,7 @@ class _SearchScreenState extends State<SearchScreen>
                       onSubmitted: (v) { _hideSuggestions(); _search(v); },
                       onChanged:   _onTyping,
                       decoration: InputDecoration(
-                        hintText: _aiMode ? AppLocalizations.of(context)!.searchAiHintPlaceholder : AppLocalizations.of(context)!.searchNameCityProfessionHint,
+                        hintText: _aiMode ? AppLocalizations.of(context).searchAiHintPlaceholder : AppLocalizations.of(context).searchNameCityProfessionHint,
                         hintStyle: TextStyle(fontSize: ResponsiveUtils.sp(14, scale, min: 13, max: 17), color: context.colors.textSecondary),
                         prefixIcon: Icon(_aiMode ? Icons.auto_awesome : Icons.search,
                             color: _aiMode ? context.colors.primary : context.colors.textSecondary, size: ResponsiveUtils.sp(20, scale, min: 18, max: 24)),
@@ -836,7 +836,7 @@ class _SearchScreenState extends State<SearchScreen>
                   onTap: _showFilterSheet,
                   child: Container(
                     height: barHeight, width: barHeight,
-                    decoration: BoxDecoration(color: context.colors.primary, borderRadius: BorderRadius.circular(12)),
+                    decoration: BoxDecoration(color: context.colors.primary, borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                     child: Icon(Icons.tune_rounded, color: Colors.white, size: ResponsiveUtils.sp(20, scale, min: 18, max: 24)),
                   ),
                 ),
@@ -852,16 +852,16 @@ class _SearchScreenState extends State<SearchScreen>
                       horizontal: ResponsiveUtils.sp(14, scale, min: 12, max: 18),
                       vertical: ResponsiveUtils.sp(8, scale, min: 7, max: 11)),
                   decoration: BoxDecoration(
-                    gradient: _aiMode ? const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFF2563EB)]) : null,
+                    gradient: _aiMode ? const LinearGradient(colors: [AppColors.accentPurple, AppColors.customerColor]) : null,
                     color: _aiMode ? null : context.colors.divider,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     border: Border.all(color: _aiMode ? Colors.transparent : context.colors.divider),
                   ),
                   child: Row(children: [
                     Icon(Icons.auto_awesome, size: ResponsiveUtils.sp(16, scale, min: 15, max: 20), color: _aiMode ? Colors.white : context.colors.primary),
                     SizedBox(width: ResponsiveUtils.sp(8, scale, min: 6, max: 12)),
                     Expanded(child: Text(
-                      _aiMode ? AppLocalizations.of(context)!.searchAiSearchOnTapDisable : AppLocalizations.of(context)!.searchTryAiSearchSmarterResults,
+                      _aiMode ? AppLocalizations.of(context).searchAiSearchOnTapDisable : AppLocalizations.of(context).searchTryAiSearchSmarterResults,
                       maxLines: 1, overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: ResponsiveUtils.sp(13, scale, min: 12, max: 16), fontWeight: FontWeight.w600,
                           color: _aiMode ? Colors.white : context.colors.primary),
@@ -869,15 +869,15 @@ class _SearchScreenState extends State<SearchScreen>
                     if (!_aiMode && _isLoggedIn)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(8)),
-                        child: Text(_isPremium ? '20/day' : AppLocalizations.of(context)!.searchAiSearchesLeft('${_aiLimit - _aiUsed}'),
+                        decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
+                        child: Text(_isPremium ? '20/day' : AppLocalizations.of(context).searchAiSearchesLeft('${_aiLimit - _aiUsed}'),
                             style: TextStyle(fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 14), fontWeight: FontWeight.bold, color: context.colors.primary)),
                       ),
                     if (!_isLoggedIn)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(8)),
-                        child: Text(AppLocalizations.of(context)!.login, style: TextStyle(fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 14), fontWeight: FontWeight.bold, color: context.colors.primary)),
+                        decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
+                        child: Text(AppLocalizations.of(context).login, style: TextStyle(fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 14), fontWeight: FontWeight.bold, color: context.colors.primary)),
                       ),
                     if (_aiMode) Icon(Icons.close, color: Colors.white, size: ResponsiveUtils.sp(16, scale, min: 15, max: 20)),
                   ]),
@@ -895,13 +895,13 @@ class _SearchScreenState extends State<SearchScreen>
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(children: [
-                  _sortBtn(AppLocalizations.of(context)!.homeNearbyLabel, 'none', Icons.near_me_rounded),
+                  _sortBtn(AppLocalizations.of(context).homeNearbyLabel, 'none', Icons.near_me_rounded),
                   const SizedBox(width: 6),
-                  _sortBtn(AppLocalizations.of(context)!.searchSortPriceLowHigh, 'price_asc', Icons.arrow_upward_rounded),
+                  _sortBtn(AppLocalizations.of(context).searchSortPriceLowHigh, 'price_asc', Icons.arrow_upward_rounded),
                   const SizedBox(width: 6),
-                  _sortBtn(AppLocalizations.of(context)!.searchSortPriceHighLow, 'price_desc', Icons.arrow_downward_rounded),
+                  _sortBtn(AppLocalizations.of(context).searchSortPriceHighLow, 'price_desc', Icons.arrow_downward_rounded),
                   const SizedBox(width: 6),
-                  _sortBtn(AppLocalizations.of(context)!.homeTopRatedLabel, 'rating_desc', Icons.star_rounded),
+                  _sortBtn(AppLocalizations.of(context).homeTopRatedLabel, 'rating_desc', Icons.star_rounded),
                 ]),
               ),
             ),
@@ -923,7 +923,7 @@ class _SearchScreenState extends State<SearchScreen>
   // ── Rich Empty State ──────────────────────────────────────────────────────
   // Jab koi result na mile — blank page ki jagah 4 helpful sections dikhata hai
   Widget _buildEmptyState() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -934,7 +934,7 @@ class _SearchScreenState extends State<SearchScreen>
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: context.colors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             border: Border.all(color: context.colors.divider),
           ),
           child: Column(children: [
@@ -942,12 +942,12 @@ class _SearchScreenState extends State<SearchScreen>
             const SizedBox(height: 10),
             Text(t.searchNoResults(_lastQuery),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15,
+                style: TextStyle(fontSize: AppFontSizes.body,
                     fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
             const SizedBox(height: 4),
             Text(t.searchHereSomeAlternativesMightLike,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: context.colors.textSecondary)),
+                style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary)),
           ]),
         ),
         const SizedBox(height: 20),
@@ -964,14 +964,14 @@ class _SearchScreenState extends State<SearchScreen>
         // ── 2. Nearby Professionals ───────────────────────────────────
         if (_emptyNearby.isNotEmpty) ...[
           _emptySection(t.searchProfessionalsNearYou,
-              Icons.near_me_rounded, const Color(0xFF059669)),
+              Icons.near_me_rounded, context.colors.successText),
           const SizedBox(height: 8),
           SizedBox(
             height: 168,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: _emptyNearby.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              separatorBuilder: (_, _) => const SizedBox(width: 10),
               itemBuilder: (ctx, i) => _buildNearbyCard(_emptyNearby[i]),
             ),
           ),
@@ -981,7 +981,7 @@ class _SearchScreenState extends State<SearchScreen>
         // ── 3. Popular Professionals ──────────────────────────────────
         if (_emptyPopular.isNotEmpty) ...[
           _emptySection(t.homeTopRatedProfessionals,
-              Icons.star_rounded, const Color(0xFFF59E0B)),
+              Icons.star_rounded, AppColors.warningAmber),
           const SizedBox(height: 8),
           ..._emptyPopular.take(3).map((p) => _buildResultCard(p)),
           const SizedBox(height: 16),
@@ -990,7 +990,7 @@ class _SearchScreenState extends State<SearchScreen>
         // ── 4. Trending Categories ────────────────────────────────────
         if (_emptyTrending.isNotEmpty) ...[
           _emptySection(t.searchTrendingCategories,
-              Icons.trending_up_rounded, const Color(0xFF8B5CF6)),
+              Icons.trending_up_rounded, AppColors.violet),
           const SizedBox(height: 8),
           Wrap(spacing: 8, runSpacing: 8,
             children: _emptyTrending.map((cat) {
@@ -1002,22 +1002,22 @@ class _SearchScreenState extends State<SearchScreen>
                       horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     color: context.colors.divider,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                     border: Border.all(color: context.colors.divider),
                   ),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
                     Icon(getCategoryIcon(cat['name'] as String? ?? ''),
                         size: 13, color: context.colors.textSecondary),
                     const SizedBox(width: 5),
-                    Text(cat['name'] as String? ?? '',
-                        style: TextStyle(fontSize: 12,
+                    Text(AppHelpers.localizedCategoryName(context, cat['name'] as String? ?? ''),
+                        style: TextStyle(fontSize: AppFontSizes.small,
                             fontWeight: FontWeight.w600,
                             color: context.colors.textPrimary)),
                     if ((cat['pro_count'] ?? 0) > 0) ...[
                       const SizedBox(width: 5),
                       Text('(${cat['pro_count']})',
                           style: TextStyle(
-                              fontSize: 10, color: context.colors.textSecondary)),
+                              fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
                     ],
                   ]),
                 ),
@@ -1051,7 +1051,7 @@ class _SearchScreenState extends State<SearchScreen>
     return Row(children: [
       Icon(icon, size: 16, color: color),
       const SizedBox(width: 6),
-      Text(title, style: TextStyle(fontSize: 14,
+      Text(title, style: TextStyle(fontSize: AppFontSizes.body,
           fontWeight: FontWeight.w700, color: color)),
     ]);
   }
@@ -1074,9 +1074,9 @@ class _SearchScreenState extends State<SearchScreen>
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(color: context.colors.divider),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 6, offset: const Offset(0, 2))],
         ),
         child: Column(mainAxisSize: MainAxisSize.min,
@@ -1086,7 +1086,7 @@ class _SearchScreenState extends State<SearchScreen>
               radius: 26, backgroundColor: context.colors.primaryLight,
               backgroundImage: photo != null ? NetworkImage(photo) : null,
               child: photo == null ? Text(AppHelpers.getInitials(name),
-                  style: TextStyle(fontSize: 11, color: context.colors.primary,
+                  style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.primary,
                       fontWeight: FontWeight.bold)) : null,
             ),
             if (verified) Positioned(right: 0, bottom: 0,
@@ -1096,24 +1096,24 @@ class _SearchScreenState extends State<SearchScreen>
                     child: const Icon(Icons.check, color: Colors.white, size: 8))),
           ]),
           const SizedBox(height: 6),
-          Text(name, textAlign: TextAlign.center, maxLines: 1,
+          LocalizedText(name, kind: LocKind.name, textAlign: TextAlign.center, maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+              style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700,
                   color: context.colors.textPrimary)),
           if (category.isNotEmpty)
-            Text(category, textAlign: TextAlign.center, maxLines: 1,
+            Text(AppHelpers.localizedCategoryName(context, category.toString()), textAlign: TextAlign.center, maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 10, color: context.colors.primary)),
+                style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.primary)),
           const SizedBox(height: 4),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Icon(Icons.star_rounded, color: Color(0xFFF59E0B), size: 10),
+            const Icon(Icons.star_rounded, color: AppColors.warningAmber, size: 10),
             Text(' ${rating.toStringAsFixed(1)}',
-                style: const TextStyle(fontSize: 10,
-                    fontWeight: FontWeight.w600, color: Color(0xFF92400E))),
+                style: TextStyle(fontSize: AppFontSizes.caption,
+                    fontWeight: FontWeight.w600, color: context.colors.warningText)),
           ]),
           if (distKm != null)
-            Text(AppLocalizations.of(context)!.searchKm((distKm as num).toStringAsFixed(1)),
-                style: TextStyle(fontSize: 9, color: context.colors.textSecondary)),
+            Text(AppLocalizations.of(context).searchKm((distKm as num).toStringAsFixed(1)),
+                style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
         ]),
       ),
     );
@@ -1121,7 +1121,7 @@ class _SearchScreenState extends State<SearchScreen>
 
   // ── Suggestion Panel ──────────────────────────────────────────────────────
   Widget _buildSuggestionPanel() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       children: [
@@ -1147,7 +1147,7 @@ class _SearchScreenState extends State<SearchScreen>
           Wrap(spacing: 8, runSpacing: 6,
             children: _suggestPopular.map((q) =>
               _suggestionChip(q, Icons.trending_up_rounded,
-                  const Color(0xFFFEF3C7), const Color(0xFFD97706),
+                  context.colors.warningSoft, context.colors.warningIcon,
                   onTap: () => _selectSuggestion(q)),
             ).toList(),
           ),
@@ -1181,20 +1181,20 @@ class _SearchScreenState extends State<SearchScreen>
               margin: const EdgeInsets.only(bottom: 6),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
               decoration: BoxDecoration(
-                color: context.colors.surface, borderRadius: BorderRadius.circular(10),
+                color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 border: Border.all(color: context.colors.divider),
               ),
               child: Row(children: [
                 Container(
                   width: 32, height: 32,
                   decoration: BoxDecoration(color: context.colors.primaryLight,
-                      borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
                   child: Icon(getCategoryIcon(cat['name'] as String? ?? ''),
                       size: 16, color: context.colors.primary),
                 ),
                 const SizedBox(width: 10),
-                Expanded(child: Text(cat['name'] as String? ?? '',
-                    style: TextStyle(fontSize: 13,
+                Expanded(child: Text(AppHelpers.localizedCategoryName(context, cat['name'] as String? ?? ''),
+                    style: TextStyle(fontSize: AppFontSizes.secondary,
                         fontWeight: FontWeight.w600, color: context.colors.textPrimary))),
                 Icon(Icons.arrow_forward_ios_rounded,
                     size: 12, color: context.colors.textSecondary),
@@ -1220,7 +1220,7 @@ class _SearchScreenState extends State<SearchScreen>
               margin: const EdgeInsets.only(bottom: 6),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
               decoration: BoxDecoration(
-                color: context.colors.surface, borderRadius: BorderRadius.circular(10),
+                color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 border: Border.all(color: context.colors.divider),
               ),
               child: Row(children: [
@@ -1231,19 +1231,28 @@ class _SearchScreenState extends State<SearchScreen>
                       ? NetworkImage(pro['photo_url'] as String) : null,
                   child: pro['photo_url'] == null
                       ? Text(AppHelpers.getInitials(pro['name'] as String? ?? ''),
-                          style: TextStyle(fontSize: 11,
+                          style: TextStyle(fontSize: AppFontSizes.caption,
                               color: context.colors.primary, fontWeight: FontWeight.bold))
                       : null,
                 ),
                 const SizedBox(width: 10),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(pro['name'] as String? ?? '',
-                        style: TextStyle(fontSize: 13,
+                    LocalizedText(pro['name'] as String? ?? '', kind: LocKind.name,
+                        style: TextStyle(fontSize: AppFontSizes.secondary,
                             fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
                     if ((pro['category'] as String? ?? '').isNotEmpty)
-                      Text('${pro['category']} · ${pro['city'] ?? ''}',
-                          style: TextStyle(fontSize: 11, color: context.colors.textSecondary)),
+                      Row(mainAxisSize: MainAxisSize.min, children: [
+                        Flexible(child: Text(AppHelpers.localizedCategoryName(context, pro['category'].toString()),
+                            maxLines: 1, overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary))),
+                        if ((pro['city'] ?? '').toString().isNotEmpty) ...[
+                          Text(' · ', style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
+                          Flexible(child: LocalizedText(pro['city'].toString(), kind: LocKind.city, isolate: true,
+                              maxLines: 1, overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary))),
+                        ],
+                      ]),
                   ],
                 )),
                 Icon(Icons.arrow_forward_ios_rounded,
@@ -1263,7 +1272,7 @@ class _SearchScreenState extends State<SearchScreen>
       Icon(icon, size: 13, color: context.colors.textSecondary),
       const SizedBox(width: 5),
       Text(title.toUpperCase(), style: TextStyle(
-          fontSize: 10, fontWeight: FontWeight.w700,
+          fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700,
           color: context.colors.textSecondary, letterSpacing: 0.8)),
     ]);
   }
@@ -1275,13 +1284,13 @@ class _SearchScreenState extends State<SearchScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
         decoration: BoxDecoration(
-          color: bg, borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: fg.withOpacity(0.25)),
+          color: bg, borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+          border: Border.all(color: fg.withValues(alpha: 0.25)),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(icon, size: 11, color: fg),
           const SizedBox(width: 4),
-          Text(label, style: TextStyle(fontSize: 12,
+          Text(label, style: TextStyle(fontSize: AppFontSizes.small,
               fontWeight: FontWeight.w600, color: fg)),
         ]),
       ),
@@ -1289,15 +1298,15 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Widget _buildAiResult() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFF2563EB)]),
-            borderRadius: BorderRadius.circular(14),
+            gradient: const LinearGradient(colors: [AppColors.accentPurple, AppColors.customerColor]),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           ),
           child: Row(children: [
             const _AiAgentAvatar(size: 38, showLiveDot: true),
@@ -1306,15 +1315,15 @@ class _SearchScreenState extends State<SearchScreen>
             const SizedBox(width: 6),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(_isPremium ? t.searchAiPremiumResults : t.searchAiSearchResultsTitle,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-              Text(t.searchFor(_lastQuery), style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: AppFontSizes.body)),
+              Text(t.searchFor(_lastQuery), style: const TextStyle(color: Colors.white70, fontSize: AppFontSizes.small)),
             ])),
             if (!_isPremium)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
                 child: Text(t.searchToday('$_aiUsed', '$_aiLimit'),
-                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(color: Colors.white, fontSize: AppFontSizes.caption, fontWeight: FontWeight.bold)),
               ),
           ]),
         ),
@@ -1327,14 +1336,14 @@ class _SearchScreenState extends State<SearchScreen>
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFFBEB), borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFFCD34D)),
+              color: context.colors.warningBg, borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+              border: Border.all(color: context.colors.warningBorder),
             ),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Icon(Icons.event_busy_rounded, size: 16, color: Color(0xFFD97706)),
+              Icon(Icons.event_busy_rounded, size: 16, color: context.colors.warningIcon),
               const SizedBox(width: 8),
               Expanded(child: Text(_aiAvailabilityMessage!,
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF92400E), fontWeight: FontWeight.w500, height: 1.4))),
+                  style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.warningText, fontWeight: FontWeight.w500, height: 1.4))),
             ]),
           ),
 
@@ -1357,7 +1366,7 @@ class _SearchScreenState extends State<SearchScreen>
 
   // ── AI "no exact match" recommendations — 4 explained sections ──────────
   Widget _buildAiRecommendations() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final similar  = List<dynamic>.from(_aiRecommendations['similar_professionals']        ?? []);
     final related  = List<dynamic>.from(_aiRecommendations['related_professions']           ?? []);
     final trending = List<dynamic>.from(_aiRecommendations['trending_professionals']        ?? []);
@@ -1367,10 +1376,10 @@ class _SearchScreenState extends State<SearchScreen>
       // Absolute last resort — nothing to recommend at all.
       return Container(
         width: double.infinity, padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14),
+        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             border: Border.all(color: context.colors.divider)),
         child: Text(_aiResult ?? t.searchNoMatchingProfessionalsFound,
-            style: TextStyle(fontSize: 14, color: context.colors.textPrimary, height: 1.6)),
+            style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textPrimary, height: 1.6)),
       );
     }
 
@@ -1382,7 +1391,7 @@ class _SearchScreenState extends State<SearchScreen>
           Row(children: [
             Icon(icon, size: 16, color: color),
             const SizedBox(width: 6),
-            Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: color)),
+            Text(title, style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: color)),
           ]),
           const SizedBox(height: 8),
           ...items.map((pro) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -1391,12 +1400,12 @@ class _SearchScreenState extends State<SearchScreen>
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(color: color.withOpacity(0.06), borderRadius: BorderRadius.circular(8)),
+                  decoration: BoxDecoration(color: color.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
                   child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Icon(Icons.info_outline_rounded, size: 13, color: color),
                     const SizedBox(width: 6),
                     Expanded(child: Text(pro['recommendation_reason'] as String,
-                        style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600))),
+                        style: TextStyle(fontSize: AppFontSizes.small, color: color, fontWeight: FontWeight.w600))),
                   ]),
                 ),
               ),
@@ -1411,45 +1420,45 @@ class _SearchScreenState extends State<SearchScreen>
         width: double.infinity,
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14),
+        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             border: Border.all(color: context.colors.divider)),
         child: Column(children: [
           Icon(Icons.search_off_rounded, size: 40, color: context.colors.textDisabled),
           const SizedBox(height: 8),
           Text(t.searchNoExactMatch(_lastQuery), textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+              style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
           const SizedBox(height: 4),
           Text(t.searchHereSomeRelevantAlternatives, textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: context.colors.textSecondary)),
+              style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary)),
         ]),
       ),
       section(t.searchSimilarProfessionals, Icons.people_outline_rounded, context.colors.primary, similar),
-      section(t.searchRelatedProfessions, Icons.category_outlined, const Color(0xFF8B5CF6), related),
-      section(t.searchTrendingProfessionals, Icons.trending_up_rounded, const Color(0xFFF59E0B), trending),
-      section(t.searchPopularNearby, Icons.near_me_rounded, const Color(0xFF059669), nearby),
+      section(t.searchRelatedProfessions, Icons.category_outlined, AppColors.violet, related),
+      section(t.searchTrendingProfessionals, Icons.trending_up_rounded, AppColors.warningAmber, trending),
+      section(t.searchPopularNearby, Icons.near_me_rounded, context.colors.successText, nearby),
     ]);
   }
 
   Widget _buildAiTypingIndicator() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           const _AiAgentAvatar(size: 76, showLiveDot: true),
           const SizedBox(height: 18),
-          Text(t.searchAiAgentLive, style: TextStyle(fontWeight: FontWeight.bold, color: context.colors.textPrimary, fontSize: 15)),
+          Text(t.searchAiAgentLive, style: TextStyle(fontWeight: FontWeight.bold, color: context.colors.textPrimary, fontSize: AppFontSizes.body)),
           const SizedBox(height: 4),
           Text(t.searchFindingBestMatch(_lastQuery),
               textAlign: TextAlign.center,
-              style: TextStyle(color: context.colors.textSecondary, fontSize: 12)),
+              style: TextStyle(color: context.colors.textSecondary, fontSize: AppFontSizes.small)),
           const SizedBox(height: 18),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             decoration: BoxDecoration(
-              color: context.colors.surface, borderRadius: BorderRadius.circular(20),
+              color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusChip),
               border: Border.all(color: context.colors.divider),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))],
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 4))],
             ),
             child: const _TypingDots(),
           ),
@@ -1461,9 +1470,9 @@ class _SearchScreenState extends State<SearchScreen>
   Widget _buildShimmer() {
     return ListView.builder(
       padding: const EdgeInsets.all(16), itemCount: 5,
-      itemBuilder: (_, __) => Container(
+      itemBuilder: (_, _) => Container(
         margin: const EdgeInsets.only(bottom: 10), height: 86,
-        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(14)),
+        decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         child: Row(children: [
           const SizedBox(width: 14),
           Container(width: 52, height: 52, decoration: BoxDecoration(color: context.colors.divider, shape: BoxShape.circle)),
@@ -1481,23 +1490,23 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Widget _buildDiscover() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final visibleHistory = _searchHistory.take(_historyLimit).toList();
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         if (_searchHistory.isNotEmpty) ...[
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(t.searchRecentSearches, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+            Text(t.searchRecentSearches, style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
             Row(children: [
               if (_searchHistory.length > _historyLimit) ...[
                 GestureDetector(onTap: _showAllHistory,
                     child: Text(t.searchSeeAll('${_searchHistory.length}'),
-                        style: TextStyle(fontSize: 12, color: context.colors.primary, fontWeight: FontWeight.w600))),
+                        style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.primary, fontWeight: FontWeight.w600))),
                 const SizedBox(width: 12),
               ],
               GestureDetector(onTap: () => setState(() { _searchHistory.clear(); _saveSearchHistory(); }),
-                  child: Text(t.searchClear, style: const TextStyle(fontSize: 12, color: Color(0xFFEF4444), fontWeight: FontWeight.w600))),
+                  child: Text(t.searchClear, style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.danger, fontWeight: FontWeight.w600))),
             ]),
           ]),
           const SizedBox(height: 10),
@@ -1506,11 +1515,11 @@ class _SearchScreenState extends State<SearchScreen>
             child: Container(
               margin: const EdgeInsets.only(bottom: 6),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: context.colors.divider)),
+              decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusMd), border: Border.all(color: context.colors.divider)),
               child: Row(children: [
                 Icon(Icons.history_rounded, size: 16, color: context.colors.textSecondary),
                 const SizedBox(width: 10),
-                Expanded(child: Text(query, style: TextStyle(fontSize: 13, color: context.colors.textPrimary))),
+                Expanded(child: Text(query, style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textPrimary))),
                 GestureDetector(onTap: () => setState(() { _searchHistory.remove(query); _saveSearchHistory(); }),
                     child: Icon(Icons.close, size: 14, color: context.colors.textSecondary)),
               ]),
@@ -1519,7 +1528,7 @@ class _SearchScreenState extends State<SearchScreen>
           const SizedBox(height: 20),
         ],
 
-        Text(t.searchPopularSearches, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+        Text(t.searchPopularSearches, style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
         const SizedBox(height: 10),
         Wrap(
           spacing: 8, runSpacing: 8,
@@ -1527,37 +1536,35 @@ class _SearchScreenState extends State<SearchScreen>
             onTap: () { _controller.text = p['label']; _search(p['label']); },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(20)),
+              decoration: BoxDecoration(color: context.colors.primaryLight, borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 Icon(p['icon'] as IconData, size: 14, color: context.colors.primary),
                 const SizedBox(width: 5),
-                Text(p['label'], style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.colors.primary)),
+                Text(p['label'], style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: context.colors.primary)),
               ]),
             ),
           )).toList(),
         ),
         const SizedBox(height: 20),
-        Text(t.searchBrowseByCategory, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+        Text(t.searchBrowseByCategory, style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
         const SizedBox(height: 10),
         ..._categories.asMap().entries.map((e) {
-          final colors = [context.colors.primary, const Color(0xFFEF4444), const Color(0xFF8B5CF6),
-            const Color(0xFF10B981), const Color(0xFFF59E0B), const Color(0xFF06B6D4),
-            const Color(0xFFEC4899), const Color(0xFF6366F1)];
+          final colors = [context.colors.primary, ...AppColors.avatarPalette];
           final color = colors[e.key % colors.length];
           final cat   = e.value;
           return GestureDetector(
             onTap: () => _searchByCategory(cat['name'], cat['id']),
             child: Container(
               margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(12),
+              decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   border: Border.all(color: context.colors.divider)),
               child: Row(children: [
                 Container(width: 40, height: 40,
-                    decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                    decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                     child: Icon(getCategoryIcon(cat['name']?.toString() ?? ''), color: color, size: 20)),
                 const SizedBox(width: 12),
-                Expanded(child: Text(cat['name']?.toString() ?? '',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: context.colors.textPrimary))),
+                Expanded(child: Text(AppHelpers.localizedCategoryName(context, cat['name']?.toString() ?? ''),
+                    style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600, color: context.colors.textPrimary))),
                 Icon(Icons.arrow_forward_ios_rounded, size: 13, color: context.colors.textSecondary),
               ]),
             ),
@@ -1568,7 +1575,7 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Widget _buildResults() {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     if (_results.isEmpty) {
       return _buildEmptyState();
     }
@@ -1581,34 +1588,34 @@ class _SearchScreenState extends State<SearchScreen>
         child: Row(children: [
           Expanded(child: Text(
             t.searchResultFor('${_results.length}', _results.length != 1 ? 's' : '', _lastQuery),
-            style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+            style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
           )),
           _locationLoading
               ? Row(mainAxisSize: MainAxisSize.min, children: [
                   SizedBox(width: 10, height: 10,
                       child: CircularProgressIndicator(strokeWidth: 1.5, color: context.colors.primary)),
                   const SizedBox(width: 5),
-                  Text(t.searchGettingLocation, style: TextStyle(fontSize: 10, color: context.colors.textSecondary)),
+                  Text(t.searchGettingLocation, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
                 ])
               : _userLat != null
                   ? Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(color: const Color(0xFFECFDF5), borderRadius: BorderRadius.circular(20)),
+                      decoration: BoxDecoration(color: context.colors.accentLight, borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
                       child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        const Icon(Icons.near_me_rounded, size: 10, color: Color(0xFF059669)),
+                        Icon(Icons.near_me_rounded, size: 10, color: context.colors.successText),
                         const SizedBox(width: 3),
-                        Text(t.searchSortedByDistance, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF059669))),
+                        Text(t.searchSortedByDistance, style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: context.colors.successText)),
                       ]),
                     )
                   : GestureDetector(
                       onTap: _loadUserLocation,
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(20)),
+                        decoration: BoxDecoration(color: context.colors.warningSoft, borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
                         child: Row(mainAxisSize: MainAxisSize.min, children: [
-                          const Icon(Icons.location_off_outlined, size: 10, color: Color(0xFFD97706)),
+                          Icon(Icons.location_off_outlined, size: 10, color: context.colors.warningIcon),
                           const SizedBox(width: 3),
-                          Text(t.searchEnableLocation, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFFD97706))),
+                          Text(t.searchEnableLocation, style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: context.colors.warningIcon)),
                         ]),
                       ),
                     ),
@@ -1622,19 +1629,19 @@ class _SearchScreenState extends State<SearchScreen>
           margin: const EdgeInsets.fromLTRB(16, 6, 16, 0),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFFEFF6FF),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFFBFDBFE)),
+            color: context.colors.infoBg,
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: Border.all(color: context.colors.infoBorder),
           ),
           child: Row(children: [
-            const Icon(Icons.spellcheck_rounded, size: 14, color: Color(0xFF2563EB)),
+            Icon(Icons.spellcheck_rounded, size: 14, color: context.colors.primary),
             const SizedBox(width: 8),
             Expanded(
               child: RichText(
                 text: TextSpan(
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF1E40AF)),
+                  style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.infoText),
                   children: [
-                    TextSpan(text: AppLocalizations.of(context)!.searchShowingResultsFor),
+                    TextSpan(text: AppLocalizations.of(context).searchShowingResultsFor),
                     TextSpan(
                       text: _correctedQuery,
                       style: const TextStyle(fontWeight: FontWeight.w700),
@@ -1653,14 +1660,14 @@ class _SearchScreenState extends State<SearchScreen>
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 4),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFFBEB), borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFFFCD34D)),
+            color: context.colors.warningBg, borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: Border.all(color: context.colors.warningBorder),
           ),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Icon(Icons.info_outline_rounded, size: 16, color: Color(0xFFD97706)),
+            Icon(Icons.info_outline_rounded, size: 16, color: context.colors.warningIcon),
             const SizedBox(width: 8),
             Expanded(child: Text(_fallbackMessage,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF92400E), fontWeight: FontWeight.w500, height: 1.4))),
+                style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.warningText, fontWeight: FontWeight.w500, height: 1.4))),
           ]),
         ),
 
@@ -1671,14 +1678,14 @@ class _SearchScreenState extends State<SearchScreen>
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 4),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: const Color(0xFFFEF2F2), borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFFFCA5A5)),
+            color: context.colors.dangerBg, borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: Border.all(color: context.colors.dangerBorder),
           ),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Icon(Icons.location_off_outlined, size: 16, color: Color(0xFFDC2626)),
+            Icon(Icons.location_off_outlined, size: 16, color: context.colors.danger),
             const SizedBox(width: 8),
             Expanded(child: Text(_cityUnavailableMessage!,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF991B1B), fontWeight: FontWeight.w600, height: 1.4))),
+                style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.dangerText, fontWeight: FontWeight.w600, height: 1.4))),
           ]),
         ),
 
@@ -1687,10 +1694,10 @@ class _SearchScreenState extends State<SearchScreen>
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           child: Row(children: [
-            const Icon(Icons.travel_explore_rounded, size: 15, color: Color(0xFF2563EB)),
+            Icon(Icons.travel_explore_rounded, size: 15, color: context.colors.primary),
             const SizedBox(width: 6),
-            Text(_citySectionLabel!, style: const TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
+            Text(_citySectionLabel!, style: TextStyle(
+                fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700, color: context.colors.primary)),
           ]),
         ),
 
@@ -1710,13 +1717,13 @@ class _SearchScreenState extends State<SearchScreen>
         Container(
           margin: const EdgeInsets.only(bottom: 6),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(color: context.colors.primary.withOpacity(0.06), borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(color: context.colors.primary.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Icon(Icons.auto_awesome, size: 14, color: context.colors.primary),
             const SizedBox(width: 6),
             Expanded(child: Text(
               confidence > 0 ? '$reason ($confidence/10 match)' : reason,
-              style: TextStyle(fontSize: 12, color: context.colors.primary, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.primary, fontWeight: FontWeight.w600),
             )),
           ]),
         ),
@@ -1726,35 +1733,36 @@ class _SearchScreenState extends State<SearchScreen>
 
   Widget _buildDistanceBadge(double? distanceKm) {
     if (distanceKm == null) return const SizedBox.shrink();
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final String label; final Color bgColor; final Color textColor; final IconData icon;
     if (distanceKm < 1.0) {
       final meters = (distanceKm * 1000).round();
-      label = t.searchMetersAway('$meters'); bgColor = const Color(0xFFECFDF5); textColor = const Color(0xFF059669); icon = Icons.near_me_rounded;
+      label = t.searchMetersAway('$meters'); bgColor = AppColors.tintGreen; textColor = AppColors.successDeep; icon = Icons.near_me_rounded;
     } else if (distanceKm <= 5) {
-      label = t.searchKmNearYou(distanceKm.toStringAsFixed(1)); bgColor = const Color(0xFFECFDF5); textColor = const Color(0xFF059669); icon = Icons.near_me_rounded;
+      label = t.searchKmNearYou(distanceKm.toStringAsFixed(1)); bgColor = AppColors.tintGreen; textColor = AppColors.successDeep; icon = Icons.near_me_rounded;
     } else if (distanceKm <= 15) {
-      label = t.searchKmAway(distanceKm.toStringAsFixed(1)); bgColor = const Color(0xFFEFF6FF); textColor = const Color(0xFF2563EB); icon = Icons.directions_outlined;
+      label = t.searchKmAway(distanceKm.toStringAsFixed(1)); bgColor = AppColors.tintBlue; textColor = AppColors.customerColor; icon = Icons.directions_outlined;
     } else if (distanceKm <= 30) {
-      label = t.searchApproxKm('${distanceKm.round()}'); bgColor = const Color(0xFFFFFBEB); textColor = const Color(0xFFD97706); icon = Icons.route_outlined;
+      label = t.searchApproxKm('${distanceKm.round()}'); bgColor = AppColors.tintAmber; textColor = AppColors.amberDeep; icon = Icons.route_outlined;
     } else if (distanceKm <= 60) {
-      label = t.searchApproxKmNearbyCity('${distanceKm.round()}'); bgColor = const Color(0xFFFFF7ED); textColor = const Color(0xFFEA580C); icon = Icons.location_city_outlined;
+      label = t.searchApproxKmNearbyCity('${distanceKm.round()}'); bgColor = AppColors.tintOrange; textColor = AppColors.orangeDeep; icon = Icons.location_city_outlined;
     } else {
-      label = t.searchDifferentArea; bgColor = const Color(0xFFF9FAFB); textColor = const Color(0xFF6B7280); icon = Icons.public_outlined;
+      label = t.searchDifferentArea; bgColor = AppColors.tintGray; textColor = AppColors.grayDeep; icon = Icons.public_outlined;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(6)),
+      decoration: BoxDecoration(color: isDark ? textColor.withValues(alpha: 0.18) : bgColor, borderRadius: BorderRadius.circular(AppSizes.radiusBadge)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 9, color: textColor),
+        Icon(icon, size: 9, color: isDark ? Color.lerp(textColor, Colors.white, 0.35) : textColor),
         const SizedBox(width: 3),
-        Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: textColor)),
+        Text(label, style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: isDark ? Color.lerp(textColor, Colors.white, 0.35) : textColor)),
       ]),
     );
   }
 
   Widget _buildResultCard(dynamic pro) {
-    final t          = AppLocalizations.of(context)!;
+    final t          = AppLocalizations.of(context);
     final name       = pro['name']            ?? '';
     final city       = pro['city']            ?? '';
     final category   = pro['category_name']   ?? '';
@@ -1774,9 +1782,9 @@ class _SearchScreenState extends State<SearchScreen>
         margin: const EdgeInsets.only(bottom: 10),
         padding: EdgeInsets.all(ResponsiveUtils.sp(14, scale, min: 12, max: 18)),
         decoration: BoxDecoration(
-          color: context.colors.surface, borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: isPremium ? context.colors.primary.withOpacity(0.3) : context.colors.divider, width: isPremium ? 1.5 : 1),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 6, offset: const Offset(0, 2))],
+          color: context.colors.surface, borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          border: Border.all(color: isPremium ? context.colors.primary.withValues(alpha: 0.3) : context.colors.divider, width: isPremium ? 1.5 : 1),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 2))],
         ),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Stack(children: [
@@ -1795,15 +1803,15 @@ class _SearchScreenState extends State<SearchScreen>
           SizedBox(width: ResponsiveUtils.sp(12, scale, min: 10, max: 16)),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Expanded(child: Text(name,
+              Expanded(child: LocalizedText(name, kind: LocKind.name,
                   style: TextStyle(fontSize: ResponsiveUtils.sp(14, scale, min: 13, max: 17), fontWeight: FontWeight.w700, color: context.colors.textPrimary),
                   maxLines: 1, overflow: TextOverflow.ellipsis)),
               if (isPremium) ...[
                 const SizedBox(width: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFF2563EB)]),
-                      borderRadius: BorderRadius.circular(6)),
+                  decoration: BoxDecoration(gradient: const LinearGradient(colors: [AppColors.accentPurple, AppColors.customerColor]),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusBadge)),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
                     Icon(Icons.workspace_premium, color: Colors.amber, size: ResponsiveUtils.sp(10, scale, min: 9, max: 13)),
                     const SizedBox(width: 2),
@@ -1814,14 +1822,14 @@ class _SearchScreenState extends State<SearchScreen>
             ]),
             if (category.isNotEmpty)
               Padding(padding: const EdgeInsets.only(top: 2),
-                  child: Text(category, maxLines: 1, overflow: TextOverflow.ellipsis,
+                  child: Text(AppHelpers.localizedCategoryName(context, category.toString()), maxLines: 1, overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 15), color: context.colors.primary, fontWeight: FontWeight.w500))),
             const SizedBox(height: 5),
             Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
               if (city.isNotEmpty) ...[
                 Icon(Icons.location_on_outlined, size: ResponsiveUtils.sp(11, scale, min: 10, max: 14), color: context.colors.textSecondary),
                 const SizedBox(width: 2),
-                Flexible(child: Text(city, maxLines: 1, overflow: TextOverflow.ellipsis,
+                Flexible(child: LocalizedText(city.toString(), kind: LocKind.city, isolate: true, maxLines: 1, overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 14), color: context.colors.textSecondary))),
                 if (distanceKm != null) const SizedBox(width: 6),
               ],
@@ -1831,11 +1839,11 @@ class _SearchScreenState extends State<SearchScreen>
             Row(children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(4)),
+                decoration: BoxDecoration(color: context.colors.warningSoft, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
                 child: Row(children: [
-                  Icon(Icons.star_rounded, color: const Color(0xFFF59E0B), size: ResponsiveUtils.sp(11, scale, min: 10, max: 14)),
+                  Icon(Icons.star_rounded, color: AppColors.warningAmber, size: ResponsiveUtils.sp(11, scale, min: 10, max: 14)),
                   const SizedBox(width: 2),
-                  Text(rating.toStringAsFixed(1), style: TextStyle(fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 14), fontWeight: FontWeight.w600, color: const Color(0xFF92400E))),
+                  Text(rating.toStringAsFixed(1), style: TextStyle(fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 14), fontWeight: FontWeight.w600, color: context.colors.warningText)),
                 ]),
               ),
               SizedBox(width: ResponsiveUtils.sp(8, scale, min: 6, max: 12)),
@@ -1865,16 +1873,16 @@ class _AiAgentAvatar extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
-              colors: [Color(0xFF7C3AED), Color(0xFF2563EB)]),
-          boxShadow: [BoxShadow(color: const Color(0xFF7C3AED).withOpacity(0.25), blurRadius: 14, offset: const Offset(0, 6))],
+              colors: [AppColors.accentPurple, AppColors.customerColor]),
+          boxShadow: [BoxShadow(color: AppColors.accentPurple.withValues(alpha: 0.25), blurRadius: 14, offset: const Offset(0, 6))],
         ),
         padding: EdgeInsets.all(size * 0.06),
         child: CircleAvatar(backgroundColor: Colors.white,
-            child: Icon(Icons.support_agent_rounded, size: size * 0.55, color: const Color(0xFF2563EB))),
+            child: Icon(Icons.support_agent_rounded, size: size * 0.55, color: context.colors.primary)),
       ),
       if (showLiveDot) Positioned(right: -1, bottom: -1,
           child: Container(width: size * 0.26, height: size * 0.26,
-              decoration: BoxDecoration(color: const Color(0xFF22C55E), shape: BoxShape.circle,
+              decoration: BoxDecoration(color: AppColors.onlineGreen, shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2)))),
     ]);
   }
@@ -1903,14 +1911,14 @@ class _TypingDotsState extends State<_TypingDots> with SingleTickerProviderState
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
-      builder: (_, __) => Row(mainAxisSize: MainAxisSize.min, children: List.generate(3, (i) {
+      builder: (_, _) => Row(mainAxisSize: MainAxisSize.min, children: List.generate(3, (i) {
         final t = (_controller.value - (i * 0.2)) % 1.0;
         final bounce = (t < 0.5) ? t * 2 : (1 - t) * 2;
         return Padding(padding: const EdgeInsets.symmetric(horizontal: 3),
             child: Transform.translate(offset: Offset(0, -bounce * 6),
                 child: Container(width: 8, height: 8,
                     decoration: const BoxDecoration(shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFF2563EB)])))));
+                        gradient: LinearGradient(colors: [AppColors.accentPurple, AppColors.customerColor])))));
       })),
     );
   }

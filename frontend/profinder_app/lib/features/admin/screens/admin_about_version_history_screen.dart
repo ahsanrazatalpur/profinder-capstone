@@ -7,6 +7,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/about_page_service.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminAboutVersionHistoryScreen extends StatefulWidget {
   const AdminAboutVersionHistoryScreen({super.key});
@@ -40,10 +42,10 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         icon: Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: AppColors.adminColor.withOpacity(0.1), shape: BoxShape.circle),
+          decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.1), shape: BoxShape.circle),
           child: const Icon(Icons.history_rounded, color: AppColors.adminColor, size: 26),
         ),
         title: Text('Restore Version ${version['version_number']}?', textAlign: TextAlign.center),
@@ -58,7 +60,7 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.adminColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Restore'),
@@ -73,7 +75,7 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
         backgroundColor: success ? Colors.green.shade600 : null,
         content: Row(
           children: [
@@ -123,14 +125,14 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: AppColors.adminColor.withOpacity(0.08), shape: BoxShape.circle),
-              child: Icon(Icons.history_toggle_off_rounded, size: 36, color: AppColors.adminColor.withOpacity(0.7)),
+              decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.08), shape: BoxShape.circle),
+              child: Icon(Icons.history_toggle_off_rounded, size: 36, color: AppColors.adminColor.withValues(alpha: 0.7)),
             ),
             const SizedBox(height: 16),
             Text(
               'No versions yet — publish the About page to create the first one.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: context.colors.textSecondary, fontSize: 13, height: 1.4),
+              style: TextStyle(color: context.colors.textSecondary, fontSize: AppFontSizes.secondary, height: 1.4),
             ),
           ],
         ),
@@ -154,7 +156,7 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
               child: ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: _versions.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
                 itemBuilder: (_, i) => _versionCard(context, _versions[i], i),
               ),
             ),
@@ -182,20 +184,20 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
           border: Border.all(color: context.colors.divider),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 6, offset: const Offset(0, 2)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 6, offset: const Offset(0, 2)),
           ],
         ),
         child: Row(
           children: [
             Container(
               width: 40, height: 40,
-              decoration: BoxDecoration(color: AppColors.adminColor.withOpacity(0.1), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.1), shape: BoxShape.circle),
               alignment: Alignment.center,
               child: Text('v${v['version_number']}',
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
+                  style: const TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -219,7 +221,7 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
                           ].join(' — '),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 11, color: context.colors.textSecondary),
+                          style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary),
                         ),
                       ),
                     ],
@@ -256,8 +258,8 @@ class _RestoreButtonState extends State<_RestoreButton> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 120),
         decoration: BoxDecoration(
-          color: _hovering ? AppColors.adminColor.withOpacity(0.08) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          color: _hovering ? AppColors.adminColor.withValues(alpha: 0.08) : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
         ),
         child: TextButton.icon(
           onPressed: widget.onPressed,

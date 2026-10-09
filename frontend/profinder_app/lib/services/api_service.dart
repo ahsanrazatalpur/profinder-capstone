@@ -3,7 +3,9 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 import '../core/constants/app_constants.dart';
+import '../core/localization/locale_provider.dart';
 
 class ApiService {
   // Singleton pattern — only one instance in the whole app
@@ -14,6 +16,12 @@ class ApiService {
   }
 
   late final Dio _dio;
+
+  /// Bumped when a response arrived with some strings still untranslated and a
+  /// silent background re-fetch has since finished (server has them cached now).
+  /// Any screen MAY listen to refresh itself; screens that don't simply show the
+  /// translated text on their next load. Never blocks or throws.
+  static final ValueNotifier<int> contentRevision = ValueNotifier<int>(0);
 
   // ✅ FIX: SharedPreferences cache — pehle har request pe
   // SharedPreferences.getInstance() fresh call hoti thi jo slow thi.
@@ -82,6 +90,10 @@ class ApiService {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
+          // 🌐 Tell the backend which language the user selected. The server
+          // localizes ALL dynamic content (names, cities, categories, titles,
+          // descriptions...) centrally — no per-screen/per-field code needed.
+          options.headers['X-App-Language'] = LocaleProvider.currentCode;
           // ✅ FIX: Cached _getPrefs use kiya — getInstance() baar baar nahi chalega
           final prefs = await _getPrefs;
           final token = prefs.getString(AppConstants.accessTokenKey);
@@ -92,6 +104,24 @@ class ApiService {
             options.extra['sentToken'] = token;
           }
           handler.next(options);
+        },
+        onResponse: (response, handler) {
+          // Server says: "some NEW strings are still being translated".
+          // Show what we have now; quietly re-ask once so the cache is warm and
+          // the translated version appears on the next refresh/visit.
+          final ro = response.requestOptions;
+          if (response.headers.value('x-translation-pending') != null &&
+              ro.method == 'GET' &&
+              ro.extra['i18nRetried'] != true) {
+            ro.extra['i18nRetried'] = true;
+            Future.delayed(const Duration(seconds: 5), () async {
+              try {
+                await _dio.fetch(ro);
+                contentRevision.value++;
+              } catch (_) {/* best effort only */}
+            });
+          }
+          handler.next(response);
         },
         onError: (error, handler) async {
           final isUnauthorized = error.response?.statusCode == 401;

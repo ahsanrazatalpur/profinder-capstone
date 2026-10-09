@@ -21,7 +21,8 @@
 
 import 'package:flutter/material.dart';
 import '../../core/utils/responsive_utils.dart';
-import '../../core/theme/theme_context_ext.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/constants/app_sizes.dart';
 
 /// Ek action button ka simple spec — [ProfileHeaderCard] isse render
 /// karta hai. `primary: true` = filled white button (jaise "Register"),
@@ -129,8 +130,8 @@ class ProfileHeaderCard extends StatelessWidget {
     this.avatarBadge,
     this.decorativeIconPrimary = Icons.person_rounded,
     this.decorativeIconSecondary = Icons.work_rounded,
-    this.accentColor = const Color(0xFF6366F1),
-    this.accentColorSecondary = const Color(0xFF8B5CF6),
+    this.accentColor = AppColors.indigo,
+    this.accentColorSecondary = AppColors.violet,
     this.heroGradientLight,
     this.heroGradientDark,
   });
@@ -163,8 +164,8 @@ class ProfileHeaderCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.3)
-                : accentColor.withOpacity(0.25),
+                ? Colors.black.withValues(alpha: 0.3)
+                : accentColor.withValues(alpha: 0.25),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -208,10 +209,10 @@ class ProfileHeaderCard extends StatelessWidget {
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.85), width: 2),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 2),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.white.withOpacity(0.25),
+                            color: Colors.white.withValues(alpha: 0.25),
                             blurRadius: 16,
                             spreadRadius: 1,
                           ),
@@ -219,9 +220,9 @@ class ProfileHeaderCard extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         radius: avatarRadius,
-                        backgroundColor: Colors.white.withOpacity(0.2),
+                        backgroundColor: Colors.white.withValues(alpha: 0.2),
                         backgroundImage: _resolveAvatarImage(),
-                        onBackgroundImageError: _resolveAvatarImage() != null ? (_, __) {} : null,
+                        onBackgroundImageError: _resolveAvatarImage() != null ? (_, _) {} : null,
                         child: _resolveAvatarImage() == null ? _avatarFallback(scale) : null,
                       ),
                     ),
@@ -258,7 +259,7 @@ class ProfileHeaderCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: ResponsiveUtils.sp(12.5, scale, min: 12, max: 13),
                           fontWeight: FontWeight.w500,
-                          color: Colors.white.withOpacity(0.75),
+                          color: Colors.white.withValues(alpha: 0.75),
                           letterSpacing: 0.2,
                         ),
                       ),
@@ -268,9 +269,9 @@ class ProfileHeaderCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.fromLTRB(10, 6, 12, 6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white.withOpacity(0.15)),
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -305,9 +306,9 @@ class ProfileHeaderCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                color: Colors.white.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(AppSizes.radius18),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
               child: Row(
                 children: [
@@ -348,7 +349,7 @@ class ProfileHeaderCard extends StatelessWidget {
         Container(
           width: 34,
           height: 34,
-          decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), shape: BoxShape.circle),
+          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), shape: BoxShape.circle),
           child: Icon(stat.icon, color: Colors.white, size: 16),
         ),
         const SizedBox(height: 6),
@@ -370,7 +371,7 @@ class ProfileHeaderCard extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(10, scale, min: 10, max: 11),
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -381,7 +382,7 @@ class ProfileHeaderCard extends StatelessWidget {
   Widget _statDivider() => Container(
         width: 1,
         height: 34,
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha: 0.15),
       );
 
   Widget _actionButton({
@@ -395,7 +396,7 @@ class ProfileHeaderCard extends StatelessWidget {
           foregroundColor: accentColor,
           elevation: 0,
           minimumSize: const Size(0, 48),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius28)),
         ),
         onPressed: action.onPressed,
         icon: Icon(action.icon, size: ResponsiveUtils.sp(18, scale, min: 16, max: 22)),
@@ -413,9 +414,9 @@ class ProfileHeaderCard extends StatelessWidget {
     return OutlinedButton.icon(
       style: OutlinedButton.styleFrom(
         foregroundColor: Colors.white,
-        side: BorderSide(color: Colors.white.withOpacity(0.6), width: 1.5),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.6), width: 1.5),
         minimumSize: const Size(0, 48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius28)),
       ),
       onPressed: action.onPressed,
       icon: Icon(action.icon, size: ResponsiveUtils.sp(18, scale, min: 16, max: 22)),
@@ -473,7 +474,7 @@ class _GlassCircle extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withOpacity(opacity),
+          color: Colors.white.withValues(alpha: opacity),
         ),
       );
 }

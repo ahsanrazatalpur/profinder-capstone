@@ -5,6 +5,8 @@
 // supports swiping between multiple photos with a page indicator, since a
 // single review can carry several images.
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +30,7 @@ class ReviewPhotoViewer extends StatefulWidget {
     return PageRouteBuilder(
       opaque: false,
       barrierColor: Colors.black,
-      pageBuilder: (_, __, ___) => ReviewPhotoViewer(
+      pageBuilder: (_, _, _) => ReviewPhotoViewer(
         imageUrls: imageUrls,
         heroTagPrefix: heroTagPrefix,
         initialIndex: initialIndex,
@@ -74,7 +76,7 @@ class _ReviewPhotoViewerState extends State<ReviewPhotoViewer> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.black.withOpacity(_backgroundOpacity),
+        backgroundColor: Colors.black.withValues(alpha: _backgroundOpacity),
         body: Stack(
           children: [
             Transform.translate(
@@ -94,10 +96,10 @@ class _ReviewPhotoViewerState extends State<ReviewPhotoViewer> {
                         child: CachedNetworkImage(
                           imageUrl: url,
                           fit: BoxFit.contain,
-                          placeholder: (_, __) => const Center(
+                          placeholder: (_, _) => const Center(
                             child: CircularProgressIndicator(color: Colors.white70),
                           ),
-                          errorWidget: (_, __, ___) => const Icon(
+                          errorWidget: (_, _, _) => const Icon(
                               Icons.broken_image, color: Colors.white54, size: 48),
                         ),
                       ),
@@ -129,13 +131,13 @@ class _ReviewPhotoViewerState extends State<ReviewPhotoViewer> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.45),
-                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.black.withValues(alpha: 0.45),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                     ),
                     child: Text(
                       '${_currentIndex + 1} / ${widget.imageUrls.length}',
                       style: const TextStyle(
-                          color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                          color: Colors.white, fontSize: AppFontSizes.small, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),

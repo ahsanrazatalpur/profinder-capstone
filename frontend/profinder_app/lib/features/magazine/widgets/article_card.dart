@@ -1,10 +1,13 @@
 // lib/features/magazine/widgets/article_card.dart
 
+import '../../../services/content_localizer.dart';
 import 'package:flutter/material.dart';
 import '../models/article_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class ArticleCard extends StatelessWidget {
   final Article      article;
@@ -57,18 +60,18 @@ class ArticleCard extends StatelessWidget {
           curve: Curves.easeOut,
           decoration: BoxDecoration(
             color: context.colors.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             boxShadow: [
               BoxShadow(
                 color: isDark
-                    ? Colors.black.withOpacity(0.2)
-                    : Colors.black.withOpacity(0.06),
+                    ? Colors.black.withValues(alpha: 0.2)
+                    : Colors.black.withValues(alpha: 0.06),
                 blurRadius: 14,
                 offset: const Offset(0, 4),
               ),
               BoxShadow(
                 color: isDark
-                    ? Colors.black.withOpacity(0.08)
+                    ? Colors.black.withValues(alpha: 0.08)
                     : Colors.transparent,
                 blurRadius: 6,
                 offset: const Offset(0, 2),
@@ -83,22 +86,21 @@ class ArticleCard extends StatelessWidget {
               // rendered width (via LayoutBuilder) instead of a fixed 180px,
               // so it scales correctly whether the grid gives this card the
               // full phone width or a narrower tablet column. ────────────
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final imgHeight = _imageHeightFor(constraints.maxWidth);
-                  return ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                    child: article.coverImage.isNotEmpty
-                        ? Image.network(
-                            article.coverImage,
-                            height: imgHeight,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _placeholderCover(catColor, imgHeight, isDark),
-                          )
-                        : _placeholderCover(catColor, imgHeight, isDark),
-                  );
-                },
+              // Width-proportional cover via AspectRatio (intrinsic-friendly,
+              // so the parent row can size the card to its content).
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusLg)),
+                child: AspectRatio(
+                  aspectRatio: 1 / 0.42,
+                  child: article.coverImage.isNotEmpty
+                      ? Image.network(
+                          article.coverImage,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => _placeholderCover(catColor, double.infinity, isDark),
+                        )
+                      : _placeholderCover(catColor, double.infinity, isDark),
+                ),
               ),
 
               // ── Body ──────────────────────────────────────
@@ -117,18 +119,20 @@ class ArticleCard extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? catColor.withOpacity(0.15)
-                              : catColor.withOpacity(0.10),
-                          borderRadius: BorderRadius.circular(20),
+                              ? catColor.withValues(alpha: 0.15)
+                              : catColor.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                           border: Border.all(
-                            color: catColor.withOpacity(isDark ? 0.2 : 0.15),
+                            color: catColor.withValues(alpha: isDark ? 0.2 : 0.15),
                             width: 1,
                           ),
                         ),
-                        child: Text(
-                          article.categoryName.toUpperCase(),
+                        child: LocalizedText(
+                          article.categoryName,
+                          kind: LocKind.category,
+                          uppercase: true,
                           style: TextStyle(
-                            fontSize: 9,
+                            fontSize: AppFontSizes.micro,
                             fontWeight: FontWeight.w800,
                             color: catColor,
                             letterSpacing: 0.8,
@@ -139,10 +143,11 @@ class ArticleCard extends StatelessWidget {
                     const SizedBox(height: 8),
 
                     // Title
-                    Text(
+                    LocalizedText(
                       article.title,
+                      kind: LocKind.text,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: AppFontSizes.title,
                         fontWeight: FontWeight.w800,
                         color: context.colors.textPrimary,
                         height: 1.3,
@@ -155,10 +160,11 @@ class ArticleCard extends StatelessWidget {
                     // Summary
                     if (article.summary.isNotEmpty) ...[
                       const SizedBox(height: 6),
-                      Text(
+                      LocalizedText(
                         article.summary,
+                        kind: LocKind.text,
                         style: TextStyle(
-                          fontSize: 13.5,
+                          fontSize: AppFontSizes.body,
                           letterSpacing: 0.15,
                           color: context.colors.textSecondary,
                           height: 1.5,
@@ -172,7 +178,7 @@ class ArticleCard extends StatelessWidget {
                     Divider(
                       height: 1,
                       color: isDark
-                          ? Colors.white.withOpacity(0.08)
+                          ? Colors.white.withValues(alpha: 0.08)
                           : context.colors.divider,
                     ),
                     const SizedBox(height: 10),
@@ -189,8 +195,8 @@ class ArticleCard extends StatelessWidget {
                                 height: 22,
                                 decoration: BoxDecoration(
                                   color: isDark
-                                      ? catColor.withOpacity(0.15)
-                                      : catColor.withOpacity(0.12),
+                                      ? catColor.withValues(alpha: 0.15)
+                                      : catColor.withValues(alpha: 0.12),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -201,10 +207,11 @@ class ArticleCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 6),
                               Expanded(
-                                child: Text(
+                                child: LocalizedText(
                                   article.editorialLabel,
+                                  kind: LocKind.text,
                                   style: TextStyle(
-                                    fontSize: 11.5,
+                                    fontSize: AppFontSizes.small,
                                     fontWeight: FontWeight.w600,
                                     letterSpacing: 0.1,
                                     color: context.colors.textPrimary,
@@ -232,9 +239,9 @@ class ArticleCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 3),
                               Text(
-                                AppLocalizations.of(context)!.articleReadTimeLabel(article.readTime),
+                                AppLocalizations.of(context).articleReadTimeLabel(article.readTime),
                                 style: TextStyle(
-                                  fontSize: 11.5,
+                                  fontSize: AppFontSizes.small,
                                   letterSpacing: 0.1,
                                   color: context.colors.textSecondary,
                                 ),
@@ -260,7 +267,7 @@ class ArticleCard extends StatelessWidget {
                               Text(
                                 _formatCount(article.viewsCount),
                                 style: TextStyle(
-                                  fontSize: 11.5,
+                                  fontSize: AppFontSizes.small,
                                   letterSpacing: 0.1,
                                   color: context.colors.textSecondary,
                                 ),
@@ -284,14 +291,14 @@ class ArticleCard extends StatelessWidget {
     return Container(
       height: height,
       color: isDark
-          ? catColor.withOpacity(0.08)
-          : catColor.withOpacity(0.10),
+          ? catColor.withValues(alpha: 0.08)
+          : catColor.withValues(alpha: 0.10),
       child: Center(
         child: Icon(
           Icons.menu_book_rounded,
           color: isDark
-              ? catColor.withOpacity(0.25)
-              : catColor.withOpacity(0.4),
+              ? catColor.withValues(alpha: 0.25)
+              : catColor.withValues(alpha: 0.4),
           size: 48,
         ),
       ),

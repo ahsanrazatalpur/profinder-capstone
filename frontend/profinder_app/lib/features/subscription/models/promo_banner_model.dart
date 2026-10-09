@@ -35,7 +35,7 @@ class PromoBanner {
       title:            json['title']             ?? '',
       description:      json['description']       ?? '',
       imageUrl:         json['image_url']         ?? '',
-      buttonText:       json['button_text']       ?? 'Get Premium',
+      buttonText:       json['button_text']       ?? '',
       buttonLinkType:   json['button_link_type']  ?? 'subscription',
       buttonLinkValue:  json['button_link_value'] ?? '',
       targetAudience:   json['target_audience']   ?? 'everyone',

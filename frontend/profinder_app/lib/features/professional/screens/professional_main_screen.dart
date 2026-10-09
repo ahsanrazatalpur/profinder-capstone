@@ -85,16 +85,16 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
             border: Border(
               top: BorderSide(
                 color: isDark
-                    ? Colors.white.withOpacity(0.08)
-                    : Colors.grey.withOpacity(0.15),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.grey.withValues(alpha: 0.15),
                 width: 1,
               ),
             ),
             boxShadow: [
               BoxShadow(
                 color: isDark
-                    ? Colors.black.withOpacity(0.2)
-                    : Colors.black.withOpacity(0.04),
+                    ? Colors.black.withValues(alpha: 0.2)
+                    : Colors.black.withValues(alpha: 0.04),
                 blurRadius: 12,
                 offset: const Offset(0, -4),
               ),
@@ -131,7 +131,7 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
                     Icons.dashboard_rounded,
                     size: isTablet ? 26.0 : 24.0,
                   ),
-                  label: AppLocalizations.of(context)!.navDashboard,
+                  label: AppLocalizations.of(context).navDashboard,
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
@@ -142,7 +142,7 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
                     Icons.calendar_today_rounded,
                     size: isTablet ? 26.0 : 24.0,
                   ),
-                  label: AppLocalizations.of(context)!.navBookings,
+                  label: AppLocalizations.of(context).navBookings,
                 ),
                 BottomNavigationBarItem(
                   icon: UnreadNavBadge(
@@ -157,7 +157,7 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
                       size: isTablet ? 26.0 : 24.0,
                     ),
                   ),
-                  label: AppLocalizations.of(context)!.navMessages,
+                  label: AppLocalizations.of(context).navMessages,
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
@@ -168,7 +168,7 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
                     Icons.menu_book_rounded,
                     size: isTablet ? 26.0 : 24.0,
                   ),
-                  label: AppLocalizations.of(context)!.navMagazine,
+                  label: AppLocalizations.of(context).navMagazine,
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
@@ -179,7 +179,7 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
                     Icons.bar_chart_rounded,
                     size: isTablet ? 26.0 : 24.0,
                   ),
-                  label: AppLocalizations.of(context)!.navAnalytics,
+                  label: AppLocalizations.of(context).navAnalytics,
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
@@ -190,7 +190,7 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
                     Icons.person_rounded,
                     size: isTablet ? 26.0 : 24.0,
                   ),
-                  label: AppLocalizations.of(context)!.navProfile,
+                  label: AppLocalizations.of(context).navProfile,
                 ),
               ],
             ),

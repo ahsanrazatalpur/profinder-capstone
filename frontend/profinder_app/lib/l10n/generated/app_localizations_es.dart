@@ -3176,3144 +3176,3209 @@ class AppLocalizationsEs extends AppLocalizations {
   String get chatReasonOther => 'Otro';
 
   @override
-  String get aboutActionLabel => 'About';
+  String get aboutActionLabel => 'Acerca de';
 
   @override
-  String get aboutActionSubtitle => 'About this app';
+  String get aboutActionSubtitle => 'Acerca de esta aplicación';
 
   @override
   String get aboutAppStoreLabel => 'App Store';
 
   @override
-  String get aboutDisabledBadgeLabel => 'Unavailable';
+  String get aboutDisabledBadgeLabel => 'No disponible';
 
   @override
   String get aboutEmptyStateMessage =>
-      'We couldn\'t find any information to show right now.';
+      'No pudimos encontrar información para mostrar en este momento.';
 
   @override
-  String get aboutEmptyStateTitle => 'Nothing to Show';
+  String get aboutEmptyStateTitle => 'Nada que mostrar';
 
   @override
   String get aboutGooglePlayLabel => 'Google Play';
 
   @override
-  String get aboutLabel => 'About';
+  String get aboutLabel => 'Acerca de';
 
   @override
   String aboutLinkCouldNotOpen(Object value1) {
-    return 'Could not open this link $value1';
+    return 'No se pudo abrir este enlace $value1';
   }
 
   @override
   String aboutLinkError(Object value1) {
-    return 'Something went wrong while opening the link $value1';
+    return 'Algo salió mal al abrir el enlace $value1';
   }
 
   @override
   String aboutLinkNoAppFound(Object value1) {
-    return 'No app found to open this link $value1';
+    return 'No se encontró ninguna aplicación para abrir este enlace $value1';
   }
 
   @override
-  String get aboutLoadError => 'Failed to load this page';
+  String get aboutLoadError => 'Error al cargar esta página';
 
   @override
-  String get aboutLoadingText => 'Loading...';
+  String get aboutLoadingText => 'Cargando...';
 
   @override
-  String get aboutTitle => 'About';
+  String get aboutTitle => 'Acerca de';
 
   @override
-  String get acceptCta => 'Accept';
+  String get acceptCta => 'Aceptar';
 
   @override
-  String get acceptDescription => 'Accept this booking';
+  String get acceptDescription => 'Aceptar esta reserva';
 
   @override
-  String get acceptLabel => 'Accept';
+  String get acceptLabel => 'Aceptar';
 
   @override
-  String get acceptanceRateLabel => 'Acceptance Rate';
+  String get acceptanceRateLabel => 'Tasa de aceptación';
 
   @override
-  String get acceptanceRateSubtext => 'Of bookings you accept';
+  String get acceptanceRateSubtext => 'De las reservas que aceptas';
 
   @override
-  String get acceptedLabel => 'Accepted';
+  String get acceptedLabel => 'Aceptada';
 
   @override
-  String get acceptingBookingsLabel => 'Accepting Bookings';
+  String get acceptingBookingsLabel => 'Aceptando reservas';
 
   @override
-  String get accountGroupLabel => 'Account';
+  String get accountGroupLabel => 'Cuenta';
 
   @override
-  String get accountHolderLabel => 'Account Holder Name';
+  String get accountHolderLabel => 'Nombre del titular de la cuenta';
 
   @override
-  String get accountNumberLabel => 'Account Number';
+  String get accountNumberLabel => 'Número de cuenta';
 
   @override
-  String get accountSectionLabel => 'Account';
+  String get accountSectionLabel => 'Cuenta';
 
   @override
-  String get accountTypeLabel => 'Account Type';
+  String get accountTypeLabel => 'Tipo de cuenta';
 
   @override
   String get addBankBannerSubtitle =>
-      'Add your bank details to receive withdrawals';
+      'Agrega tus datos bancarios para recibir retiros';
 
   @override
-  String get addBankBannerTitle => 'Add Bank Details';
+  String get addBankBannerTitle => 'Agregar datos bancarios';
 
   @override
-  String get addBankCta => 'Add Bank Account';
+  String get addBankCta => 'Agregar cuenta bancaria';
 
   @override
-  String get addCertificateImageLabel => 'Certificate Image';
+  String get addCertificateImageLabel => 'Imagen del certificado';
 
   @override
-  String get addCertificateTitle => 'Add Certificate';
+  String get addCertificateTitle => 'Agregar certificado';
 
   @override
-  String get addCertificateTooltip => 'Add a certificate';
+  String get addCertificateTooltip => 'Agregar un certificado';
 
   @override
-  String get addCta => 'Add';
+  String get addCta => 'Agregar';
 
   @override
-  String get addFirstCertificateCta => 'Add Your First Certificate';
+  String get addFirstCertificateCta => 'Agrega tu primer certificado';
 
   @override
-  String get addFirstItemCta => 'Add Your First Item';
+  String get addFirstItemCta => 'Agrega tu primer elemento';
 
   @override
-  String get addImageLabel => 'Add Image';
+  String get addImageLabel => 'Agregar imagen';
 
   @override
-  String get addLanguageHint => 'Type a language and press enter';
+  String get addLanguageHint => 'Escribe un idioma y pulsa Intro';
 
   @override
-  String get addPhotoCta => 'Add Photo';
+  String get addPhotoCta => 'Agregar foto';
 
   @override
-  String get addPhotoTooltip => 'Add a photo';
+  String get addPhotoTooltip => 'Agregar una foto';
 
   @override
   String get addPortfolioHint =>
-      'Showcase your best work to attract more customers';
+      'Muestra tus mejores trabajos para atraer más clientes';
 
   @override
-  String get addPortfolioTitle => 'Add Portfolio Item';
+  String get addPortfolioTitle => 'Agregar elemento al portafolio';
 
   @override
-  String get addPortfolioTooltip => 'Add portfolio item';
+  String get addPortfolioTooltip => 'Agregar elemento al portafolio';
 
   @override
-  String get addSkillHint => 'Type a skill and press enter';
+  String get addSkillHint => 'Escribe una habilidad y pulsa Intro';
 
   @override
-  String get addWorkSamplesLabel => 'Add work samples';
+  String get addWorkSamplesLabel => 'Agregar muestras de trabajo';
 
   @override
-  String get adjustSearchTerms => 'Try adjusting your search terms';
+  String get adjustSearchTerms => 'Intenta ajustar tus términos de búsqueda';
 
   @override
-  String get adminNoteLabel => 'Admin Note';
+  String get adminNoteLabel => 'Nota del administrador';
 
   @override
-  String get allCategoriesTitle => 'All Categories';
+  String get allCategoriesTitle => 'Todas las categorías';
 
   @override
-  String get analyticsErrorTitle => 'Couldn\'t load analytics';
+  String get analyticsErrorTitle => 'No se pudieron cargar las estadísticas';
 
   @override
-  String get analyticsLoadError => 'Failed to load analytics';
+  String get analyticsLoadError => 'Error al cargar las estadísticas';
 
   @override
-  String get analyticsTitle => 'Analytics';
+  String get analyticsTitle => 'Estadísticas';
 
   @override
-  String get applyCta => 'Apply';
+  String get applyCta => 'Aplicar';
 
   @override
-  String get approvalSubtitle => 'Pending admin approval';
+  String get approvalSubtitle => 'Pendiente de aprobación del administrador';
 
   @override
-  String get approvalTitle => 'Approval Status';
+  String get approvalTitle => 'Estado de aprobación';
 
   @override
-  String get articleFooterMagazineLabel => 'More from Magazine';
+  String get articleFooterMagazineLabel => 'Más de la revista';
 
   @override
-  String get articleLoadingText => 'Loading article...';
+  String get articleLoadingText => 'Cargando artículo...';
 
   @override
-  String get articleNotFoundError => 'Article not found';
+  String get articleNotFoundError => 'Artículo no encontrado';
 
   @override
   String get articleNotFoundMessage =>
-      'This article may have been removed or doesn\'t exist';
+      'Es posible que este artículo se haya eliminado o no exista';
 
   @override
   String articleReadTime(Object value1) {
-    return '$value1 min read';
+    return '$value1 min de lectura';
   }
 
   @override
   String articleReadTimeLabel(Object value1) {
-    return '$value1 min read';
+    return '$value1 min de lectura';
   }
 
   @override
   String get automaticDescription =>
-      'Automatically accept bookings that meet your criteria';
+      'Aceptar automáticamente las reservas que cumplan tus criterios';
 
   @override
-  String get automaticLabel => 'Automatic';
+  String get automaticLabel => 'Automático';
 
   @override
-  String get availabilityClosedLabel => 'Closed';
+  String get availabilityClosedLabel => 'Cerrado';
 
   @override
-  String get availabilityLabel => 'Availability';
+  String get availabilityLabel => 'Disponibilidad';
 
   @override
-  String get availabilityLoadError => 'Failed to load availability';
+  String get availabilityLoadError => 'Error al cargar la disponibilidad';
 
   @override
-  String get availabilityOffSuccess => 'You\'re now marked as unavailable';
+  String get availabilityOffSuccess => 'Ahora estás marcado como no disponible';
 
   @override
-  String get availabilityOnSuccess => 'You\'re now marked as available';
+  String get availabilityOnSuccess => 'Ahora estás marcado como disponible';
 
   @override
-  String get availabilityScheduleSaveError => 'Failed to save schedule';
+  String get availabilityScheduleSaveError => 'Error al guardar el horario';
 
   @override
-  String get availabilityScheduleSaved => 'Schedule saved successfully';
+  String get availabilityScheduleSaved => 'Horario guardado correctamente';
 
   @override
   String get availabilityStatusUpdateError =>
-      'Failed to update availability status';
+      'Error al actualizar el estado de disponibilidad';
 
   @override
   String availabilityStatusUpdated(Object value1) {
-    return 'Availability set to $value1';
+    return 'Disponibilidad establecida en $value1';
   }
 
   @override
   String get availabilitySummarySubtitle =>
-      'Your weekly working hours at a glance';
+      'Tu horario laboral semanal de un vistazo';
 
   @override
-  String get availabilitySummaryTitle => 'Availability Summary';
+  String get availabilitySummaryTitle => 'Resumen de disponibilidad';
 
   @override
-  String get availabilityTitle => 'Availability';
+  String get availabilityTitle => 'Disponibilidad';
 
   @override
-  String get availabilityUpdateError => 'Failed to update availability';
+  String get availabilityUpdateError => 'Error al actualizar la disponibilidad';
 
   @override
   String get availabilityWeeklySubtitle =>
-      'Set your working hours for each day';
+      'Establece tu horario laboral para cada día';
 
   @override
-  String get availabilityWeeklyTitle => 'Weekly Schedule';
+  String get availabilityWeeklyTitle => 'Horario semanal';
 
   @override
   String availableBalanceLabel(Object value1) {
-    return 'Available balance: Rs $value1';
+    return 'Saldo disponible: Rs $value1';
   }
 
   @override
-  String get availableBalanceTitle => 'Available Balance';
+  String get availableBalanceTitle => 'Saldo disponible';
 
   @override
-  String get availableForBookingsLabel => 'Available for Bookings';
+  String get availableForBookingsLabel => 'Disponible para reservas';
 
   @override
-  String get availableLabel => 'Available';
+  String get availableLabel => 'Disponible';
 
   @override
-  String get availableNowLabel => 'Available Now';
+  String get availableNowLabel => 'Disponible ahora';
 
   @override
-  String get availableSubtitle => 'Ready to accept new bookings';
+  String get availableSubtitle => 'Listo para aceptar nuevas reservas';
 
   @override
-  String get averageRatingLabel => 'Average Rating';
+  String get averageRatingLabel => 'Calificación promedio';
 
   @override
-  String get averageRatingSubtext => 'Based on customer reviews';
+  String get averageRatingSubtext => 'Basada en las reseñas de los clientes';
 
   @override
-  String get backCta => 'Back';
+  String get backCta => 'Atrás';
 
   @override
-  String get backToBookingsCta => 'Back to Bookings';
+  String get backToBookingsCta => 'Volver a reservas';
 
   @override
-  String get backToHomeCta => 'Back to Home';
+  String get backToHomeCta => 'Volver al inicio';
 
   @override
-  String get backToLoginCta => 'Back to Login';
+  String get backToLoginCta => 'Volver a iniciar sesión';
 
   @override
-  String get bankDetailsEmpty => 'No bank details added yet';
+  String get bankDetailsEmpty => 'Aún no se han agregado datos bancarios';
 
   @override
-  String get bankDetailsLabel => 'Bank Details';
+  String get bankDetailsLabel => 'Datos bancarios';
 
   @override
   String get bankDetailsRequiredMessage =>
-      'Please add your bank details before requesting a withdrawal';
+      'Agrega tus datos bancarios antes de solicitar un retiro';
 
   @override
-  String get bankDetailsRequiredTitle => 'Bank Details Required';
+  String get bankDetailsRequiredTitle => 'Se requieren datos bancarios';
 
   @override
-  String get bankDetailsSubtitle => 'Used for withdrawals to your account';
+  String get bankDetailsSubtitle => 'Se usan para los retiros a tu cuenta';
 
   @override
-  String get bankNameLabel => 'Bank Name';
+  String get bankNameLabel => 'Nombre del banco';
 
   @override
-  String get bioLabel => 'Bio';
+  String get bioLabel => 'Biografía';
 
   @override
-  String get bookAppointmentTitle => 'Book Appointment';
+  String get bookAppointmentTitle => 'Reservar cita';
 
   @override
-  String get bookCta => 'Book';
+  String get bookCta => 'Reservar';
 
   @override
-  String get bookNowCta => 'Book Now';
+  String get bookNowCta => 'Reservar ahora';
 
   @override
-  String get bookingConfigurationTitle => 'Booking Configuration';
+  String get bookingConfigurationTitle => 'Configuración de reservas';
 
   @override
-  String get bookingDateRequired => 'Please select a date';
+  String get bookingDateRequired => 'Selecciona una fecha';
 
   @override
-  String get bookingDetailsTitle => 'Booking Details';
+  String get bookingDetailsTitle => 'Detalles de la reserva';
 
   @override
-  String get bookingFailed => 'Booking failed. Please try again.';
+  String get bookingFailed => 'La reserva falló. Inténtalo de nuevo.';
 
   @override
-  String get bookingManagementTitle => 'Manage Bookings';
+  String get bookingManagementTitle => 'Gestionar reservas';
 
   @override
-  String get bookingSoFarLabel => 'Bookings so far';
+  String get bookingSoFarLabel => 'Reservas hasta ahora';
 
   @override
   String bookingStatusUpdated(Object value1) {
-    return 'Booking marked as $value1';
+    return 'Reserva marcada como $value1';
   }
 
   @override
   String bookingSuccessMessage(Object value1) {
-    return 'Your booking request with $value1 has been sent';
+    return 'Tu solicitud de reserva con $value1 ha sido enviada';
   }
 
   @override
-  String get bookingSuccessTitle => 'Booking Requested';
+  String get bookingSuccessTitle => 'Reserva solicitada';
 
   @override
-  String get bookingTimeRequired => 'Please select a time';
+  String get bookingTimeRequired => 'Selecciona una hora';
 
   @override
   String get bookingTipText =>
-      'You can cancel for free up to 24 hours before the appointment';
+      'Puedes cancelar gratis hasta 24 horas antes de la cita';
 
   @override
-  String get bookingUpdateError => 'Failed to update booking';
+  String get bookingUpdateError => 'Error al actualizar la reserva';
 
   @override
   String bookingUpdatedToast(Object value1) {
-    return 'Booking updated to $value1';
+    return 'Reserva actualizada a $value1';
   }
 
   @override
-  String get bookingsActionLabel => 'Bookings';
+  String get bookingsActionLabel => 'Reservas';
 
   @override
-  String get bookingsActionSubtitle => 'View your booking history';
+  String get bookingsActionSubtitle => 'Consulta tu historial de reservas';
 
   @override
-  String get bookingsLabel => 'Bookings';
+  String get bookingsLabel => 'Reservas';
 
   @override
-  String get bookingsStatLabel => 'Bookings';
+  String get bookingsStatLabel => 'Reservas';
 
   @override
   String bufferMinLabel(Object value1) {
-    return '$value1 min buffer';
+    return '$value1 min de margen';
   }
 
   @override
-  String get bufferNoneLabel => 'No buffer';
+  String get bufferNoneLabel => 'Sin margen';
 
   @override
-  String get bufferTimeSubtitle => 'Time between consecutive bookings';
+  String get bufferTimeSubtitle => 'Tiempo entre reservas consecutivas';
 
   @override
-  String get bufferTimeTitle => 'Buffer Time';
+  String get bufferTimeTitle => 'Tiempo de margen';
 
   @override
-  String get calendarWeekDays => 'S,M,T,W,T,F,S';
+  String get calendarWeekDays => 'D,L,M,X,J,V,S';
 
   @override
-  String get cameraOptionLabel => 'Camera';
+  String get cameraOptionLabel => 'Cámara';
 
   @override
-  String get cancelBookingCta => 'Cancel Booking';
+  String get cancelBookingCta => 'Cancelar reserva';
 
   @override
-  String get cancelBookingTitle => 'Cancel Booking';
+  String get cancelBookingTitle => 'Cancelar reserva';
 
   @override
   String get cancelConfirmationMessage =>
-      'Are you sure you want to cancel this booking?';
+      '¿Seguro que quieres cancelar esta reserva?';
 
   @override
-  String get cancelCta => 'Cancel';
+  String get cancelCta => 'Cancelar';
 
   @override
-  String get cancelReasonHint => 'Let us know why you are cancelling';
+  String get cancelReasonHint => 'Cuéntanos por qué estás cancelando';
 
   @override
-  String get cancelReasonLabel => 'Reason for cancellation';
+  String get cancelReasonLabel => 'Motivo de la cancelación';
 
   @override
-  String get cancellationPolicyLabel => 'Cancellation Policy';
+  String get cancellationPolicyLabel => 'Política de cancelación';
 
   @override
-  String get cancelledByCustomerLabel => 'Cancelled by customer';
+  String get bookingQuickNoteFirstTime => 'Cliente nuevo';
 
   @override
-  String get cancelledByYouLabel => 'Cancelled by you';
+  String get bookingQuickNoteUrgent => 'Solicitud urgente';
 
   @override
-  String get categoryLabel => 'Category';
+  String get bookingQuickNoteFollowUp => 'Visita de seguimiento';
 
   @override
-  String get certificateAddError => 'Failed to add certificate';
+  String get bookingQuickNoteCallBefore => 'Por favor, llame antes de llegar';
 
   @override
-  String get certificateAddSuccess => 'Certificate added successfully';
+  String get cancellationPolicyPointFree =>
+      'Cancelación gratuita en cualquier momento mientras tu solicitud esté pendiente.';
 
   @override
-  String get certificateTitleHint => 'e.g. Certified Plumbing Technician';
+  String get cancellationPolicyPointChat =>
+      'Una vez aceptada, puedes coordinar cambios directamente con el profesional por chat.';
 
   @override
-  String get certificateTitleLabelRequired => 'Certificate Title';
+  String walletJobCompletedWithName(String name) {
+    return 'Trabajo completado — $name';
+  }
 
   @override
-  String get certificatesLabel => 'Certificates';
+  String get walletJobCompleted => 'Trabajo completado';
 
   @override
-  String get certificatesTitle => 'Certificates';
+  String get walletWithdrawalRequestLabel => 'Solicitud de retiro';
 
   @override
-  String get certificationsLabel => 'Certifications';
+  String get cancelledByCustomerLabel => 'Cancelada por el cliente';
 
   @override
-  String get changePasswordLabel => 'Change Password';
+  String get cancelledByYouLabel => 'Cancelada por ti';
 
   @override
-  String get changePasswordSubtitle => 'Update your account password';
+  String get categoryLabel => 'Categoría';
 
   @override
-  String get changePasswordTitle => 'Change Password';
+  String get certificateAddError => 'Error al agregar el certificado';
 
   @override
-  String get changeProfilePhotoTitle => 'Change Profile Photo';
+  String get certificateAddSuccess => 'Certificado agregado correctamente';
+
+  @override
+  String get certificateTitleHint => 'p. ej. Técnico fontanero certificado';
+
+  @override
+  String get certificateTitleLabelRequired => 'Título del certificado';
+
+  @override
+  String get certificatesLabel => 'Certificados';
+
+  @override
+  String get certificatesTitle => 'Certificados';
+
+  @override
+  String get certificationsLabel => 'Certificaciones';
+
+  @override
+  String get changePasswordLabel => 'Cambiar contraseña';
+
+  @override
+  String get changePasswordSubtitle => 'Actualiza la contraseña de tu cuenta';
+
+  @override
+  String get changePasswordTitle => 'Cambiar contraseña';
+
+  @override
+  String get changeProfilePhotoTitle => 'Cambiar foto de perfil';
 
   @override
   String get chatMicPermissionRequired =>
-      'Microphone permission is required to record voice messages';
+      'Se requiere permiso del micrófono para grabar mensajes de voz';
 
   @override
-  String get chatNoMessagesFound => 'No messages found';
+  String get chatNoMessagesFound => 'No se encontraron mensajes';
 
   @override
-  String get chatSearchMessagesHint => 'Search messages';
+  String get chatSearchMessagesHint => 'Buscar mensajes';
 
   @override
-  String get chatTypeToSearchConversation => 'Type to search this conversation';
+  String get chatTypeToSearchConversation =>
+      'Escribe para buscar en esta conversación';
 
   @override
-  String get checkEmailHint => 'Didn\'t receive it? Check your spam folder.';
+  String get checkEmailHint => '¿No lo recibiste? Revisa tu carpeta de spam.';
 
   @override
   String get checkEmailMessage =>
-      'We\'ve sent a password reset link to your email';
+      'Hemos enviado un enlace para restablecer la contraseña a tu correo electrónico';
 
   @override
-  String get checkEmailTitle => 'Check Your Email';
+  String get checkEmailTitle => 'Revisa tu correo';
 
   @override
-  String get cityDisabledHint => 'Select a country first';
+  String get cityDisabledHint => 'Selecciona primero un país';
 
   @override
-  String get cityEmptyMessage => 'No cities found';
+  String get cityEmptyMessage => 'No se encontraron ciudades';
 
   @override
-  String get cityHint => 'Select city';
+  String get cityHint => 'Seleccionar ciudad';
 
   @override
-  String get cityLabel => 'City';
+  String get cityLabel => 'Ciudad';
 
   @override
-  String get cityRequiredError => 'Please select a city';
+  String get cityRequiredError => 'Selecciona una ciudad';
 
   @override
-  String get citySearchHint => 'Search city';
+  String get citySearchHint => 'Buscar ciudad';
 
   @override
-  String get clearCta => 'Clear';
+  String get clearCta => 'Borrar';
 
   @override
-  String get clientsLabel => 'Clients';
+  String get clientsLabel => 'Clientes';
 
   @override
-  String get closeCta => 'Close';
+  String get closeCta => 'Cerrar';
 
   @override
   String comingSoonMessage(Object value1) {
-    return '$value1 is coming soon';
+    return '$value1 llegará pronto';
   }
 
   @override
   String commentHint(Object value1) {
-    return 'Share your experience with $value1';
+    return 'Comparte tu experiencia con $value1';
   }
 
   @override
-  String get commentOptionalLabel => 'Comment Optional';
+  String get commentOptionalLabel => 'Comentario opcional';
 
   @override
-  String get completedLabel => 'Completed';
+  String get completedLabel => 'Completada';
 
   @override
-  String get confirmBookingCta => 'Confirm Booking';
+  String get confirmBookingCta => 'Confirmar reserva';
 
   @override
-  String get confirmPasswordLabel => 'Confirm Password';
+  String get confirmPasswordLabel => 'Confirmar contraseña';
 
   @override
-  String get contactChatLabel => 'Chat with us';
+  String get contactChatLabel => 'Chatea con nosotros';
 
   @override
-  String get contactChatSubtitle => 'Get a quick response in chat';
+  String get contactChatSubtitle => 'Obtén una respuesta rápida por chat';
 
   @override
-  String get contactChatTitle => 'Chat Support';
+  String get contactChatTitle => 'Soporte por chat';
 
   @override
-  String get contactCta => 'Contact';
+  String get contactCta => 'Contactar';
 
   @override
-  String get contactEmailLabel => 'Email us';
+  String get contactEmailLabel => 'Escríbenos';
 
   @override
-  String get contactEmailSubtitle => 'We\'ll get back to you within 24 hours';
+  String get contactEmailSubtitle => 'Te responderemos en un plazo de 24 horas';
 
   @override
-  String get contactEmailTitle => 'Email Support';
+  String get contactEmailTitle => 'Soporte por correo';
 
   @override
-  String get contactSupportTitle => 'Contact Support';
+  String get contactSupportTitle => 'Contactar con soporte';
 
   @override
-  String get continueAsGuestCta => 'Continue as Guest';
+  String get continueAsGuestCta => 'Continuar como invitado';
 
   @override
-  String get countryEmptyMessage => 'No countries found';
+  String get countryEmptyMessage => 'No se encontraron países';
 
   @override
-  String get countryHint => 'Select country';
+  String get countryHint => 'Seleccionar país';
 
   @override
-  String get countryRequiredError => 'Please select a country';
+  String get countryRequiredError => 'Selecciona un país';
 
   @override
-  String get countrySearchHint => 'Search country';
+  String get countrySearchHint => 'Buscar país';
 
   @override
-  String get currencyFeatureName => 'Currency';
+  String get currencyFeatureName => 'Moneda';
 
   @override
-  String get currentPasswordLabel => 'Current Password';
+  String get currentPasswordLabel => 'Contraseña actual';
 
   @override
   String currentPlanLabel(Object value1) {
-    return 'Current plan: $value1';
+    return 'Plan actual: $value1';
   }
 
   @override
-  String get currentlyBusyLabel => 'Currently Busy';
+  String get currentlyBusyLabel => 'Ocupado actualmente';
 
   @override
-  String get customLocationHint => 'Enter a custom location';
+  String get customLocationHint => 'Introduce una ubicación personalizada';
 
   @override
-  String get customLocationOption => 'Custom Location';
+  String get customLocationOption => 'Ubicación personalizada';
 
   @override
-  String get customLocationSubtitle => 'Enter an address manually';
+  String get customLocationSubtitle => 'Introduce una dirección manualmente';
 
   @override
-  String get customSlotDefaultLabel => 'Custom';
+  String get customSlotDefaultLabel => 'Personalizado';
 
   @override
-  String get customSlotHint => 'Enter duration in minutes';
+  String get customSlotHint => 'Introduce la duración en minutos';
 
   @override
   String customSlotLabel(Object value1) {
-    return 'Custom ($value1)';
+    return 'Personalizado ($value1)';
   }
 
   @override
-  String get customSlotTitle => 'Custom Slot Duration';
+  String get customSlotTitle => 'Duración de franja personalizada';
 
   @override
-  String get customSlotValidation => 'Please enter a valid duration';
+  String get customSlotValidation => 'Introduce una duración válida';
 
   @override
   String get customerAccountDescription =>
-      'Book trusted professionals near you';
+      'Reserva profesionales de confianza cerca de ti';
 
   @override
-  String get customerDefault => 'Customer';
+  String get customerDefault => 'Cliente';
 
   @override
-  String get customerLabel => 'Customer';
+  String get customerLabel => 'Cliente';
 
   @override
-  String get dailyHoursLabel => 'Daily Hours';
+  String get dailyHoursLabel => 'Horas diarias';
 
   @override
-  String get darkModeOffLabel => 'Light Mode';
+  String get darkModeOffLabel => 'Modo claro';
 
   @override
-  String get darkModeOnLabel => 'Dark Mode';
+  String get darkModeOnLabel => 'Modo oscuro';
 
   @override
-  String get dashboardLoadError => 'Failed to load dashboard';
+  String get dashboardLoadError => 'Error al cargar el panel';
 
   @override
-  String get dateLabel => 'Date';
+  String get dateLabel => 'Fecha';
 
   @override
-  String get dateNotSet => 'Date not set';
+  String get dateNotSet => 'Fecha no establecida';
 
   @override
-  String get dateNotSetShort => 'No date';
+  String get dateNotSetShort => 'Sin fecha';
 
   @override
-  String get dateRequiredMessage => 'Please select a date';
+  String get dateRequiredMessage => 'Selecciona una fecha';
 
   @override
-  String get dateTipText => 'Choose a date that works best for you';
+  String get dateTipText => 'Elige la fecha que mejor te convenga';
 
   @override
   String daysLabel(Object value1) {
-    return '${value1}d';
+    return '$value1 d';
   }
 
   @override
-  String get declineCta => 'Decline';
+  String get declineCta => 'Rechazar';
 
   @override
-  String get declineDescription => 'Decline this booking';
+  String get declineDescription => 'Rechazar esta reserva';
 
   @override
-  String get declineLabel => 'Decline';
+  String get declineLabel => 'Rechazar';
 
   @override
   String get deleteAccountDialogContent =>
-      'This will permanently delete your account and all associated data. This action cannot be undone.';
+      'Esto eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.';
 
   @override
-  String get deleteAccountDialogTitle => 'Delete Account';
+  String get deleteAccountDialogTitle => 'Eliminar cuenta';
 
   @override
-  String get deleteAccountLabel => 'Delete Account';
+  String get deleteAccountLabel => 'Eliminar cuenta';
 
   @override
-  String get deleteConfirmationTitle => 'Delete this item?';
+  String get deleteConfirmationTitle => '¿Eliminar este elemento?';
 
   @override
-  String get deleteCta => 'Delete';
+  String get deleteCta => 'Eliminar';
 
   @override
   String deleteDialogContent(Object value1) {
-    return 'Are you sure you want to delete \"$value1\"?';
+    return '¿Seguro que quieres eliminar «$value1»?';
   }
 
   @override
-  String get deleteDialogTitle => 'Delete Item';
+  String get deleteDialogTitle => 'Eliminar elemento';
 
   @override
-  String get deleteError => 'Failed to delete';
+  String get deleteError => 'Error al eliminar';
 
   @override
   String get deleteGalleryDialogContent =>
-      'Are you sure you want to delete this photo?';
+      '¿Seguro que quieres eliminar esta foto?';
 
   @override
-  String get deleteGalleryDialogTitle => 'Delete Photo';
+  String get deleteGalleryDialogTitle => 'Eliminar foto';
 
   @override
   String get deleteReviewConfirmationMessage =>
-      'Are you sure you want to delete this review?';
+      '¿Seguro que quieres eliminar esta reseña?';
 
   @override
-  String get deleteSuccess => 'Deleted successfully';
+  String get deleteSuccess => 'Eliminado correctamente';
 
   @override
-  String get descriptionHint => 'Add a description';
+  String get descriptionHint => 'Agrega una descripción';
 
   @override
-  String get descriptionLabelOptional => 'Description (optional)';
+  String get descriptionLabelOptional => 'Descripción (opcional)';
 
   @override
-  String get detailsLabel => 'Details';
+  String get detailsLabel => 'Detalles';
 
   @override
-  String get directChatLabel => 'Message';
+  String get directChatLabel => 'Mensaje';
 
   @override
-  String get discardCta => 'Discard';
+  String get discardCta => 'Descartar';
 
   @override
-  String get doneCta => 'Done';
+  String get doneCta => 'Listo';
 
   @override
-  String get earningsLabel => 'Earnings';
+  String get earningsLabel => 'Ganancias';
 
   @override
-  String get editCta => 'Edit';
+  String get editCta => 'Editar';
 
   @override
-  String get editLabel => 'Edit';
+  String get editLabel => 'Editar';
 
   @override
-  String get editProfileActionLabel => 'Edit Profile';
+  String get editProfileActionLabel => 'Editar perfil';
 
   @override
-  String get editProfileActionSubtitle => 'Update your personal information';
+  String get editProfileActionSubtitle => 'Actualiza tu información personal';
 
   @override
-  String get editReviewHint => 'Update your comment';
+  String get editReviewHint => 'Actualiza tu comentario';
 
   @override
-  String get editReviewSubtitle => 'Update your rating and comment';
+  String get editReviewSubtitle => 'Actualiza tu calificación y comentario';
 
   @override
-  String get editReviewTitle => 'Edit Review';
+  String get editReviewTitle => 'Editar reseña';
 
   @override
-  String get editorHeadingPlaceholder => 'Heading';
+  String get editorHeadingPlaceholder => 'Encabezado';
 
   @override
-  String get editorHintText => 'Start writing...';
+  String get editorHintText => 'Empieza a escribir...';
 
   @override
-  String get editorInsertCta => 'Insert';
+  String get editorInsertCta => 'Insertar';
 
   @override
-  String get editorInsertLinkTitle => 'Insert Link';
+  String get editorInsertLinkTitle => 'Insertar enlace';
 
   @override
   String get editorLinkHint => 'https://example.com';
 
   @override
-  String get editorLinkPlaceholder => 'Link text';
+  String get editorLinkPlaceholder => 'Texto del enlace';
 
   @override
-  String get educationLabel => 'Education';
+  String get educationLabel => 'Formación';
 
   @override
-  String get emailAvailableLabel => 'Email is available';
+  String get emailAvailableLabel => 'El correo electrónico está disponible';
 
   @override
-  String get emailNotificationsLabel => 'Email Notifications';
+  String get emailNotificationsLabel => 'Notificaciones por correo';
 
   @override
-  String get emailTakenLabel => 'This email is already registered';
+  String get emailTakenLabel => 'Este correo electrónico ya está registrado';
 
   @override
   String get emptyCertificatesSubtitle =>
-      'Add your certifications to build trust with customers';
+      'Agrega tus certificaciones para generar confianza con los clientes';
 
   @override
-  String get emptyCertificatesTitle => 'No Certificates Yet';
+  String get emptyCertificatesTitle => 'Aún no hay certificados';
 
   @override
-  String get emptyGallerySubtitle => 'Add photos to showcase your work';
+  String get emptyGallerySubtitle => 'Agrega fotos para mostrar tu trabajo';
 
   @override
-  String get emptyGalleryTitle => 'No Photos Yet';
+  String get emptyGalleryTitle => 'Aún no hay fotos';
 
   @override
   String get emptyPortfolioSubtitle =>
-      'Add your best work to attract more customers';
+      'Agrega tus mejores trabajos para atraer más clientes';
 
   @override
-  String get emptyPortfolioTitle => 'No Portfolio Items Yet';
+  String get emptyPortfolioTitle => 'Aún no hay elementos en el portafolio';
 
   @override
-  String get endTimeLabel => 'End Time';
+  String get endTimeLabel => 'Hora de finalización';
 
   @override
-  String get enterAmountHint => 'Enter amount';
+  String get enterAmountHint => 'Introduce el monto';
 
   @override
-  String get exceedsBalanceError => 'Amount exceeds your available balance';
+  String get exceedsBalanceError => 'El monto supera tu saldo disponible';
 
   @override
-  String get exceptionsAddRange => 'Add Date Range';
+  String get exceptionsAddRange => 'Agregar rango de fechas';
 
   @override
-  String get exceptionsCalendarSubtitle => 'Tap a date to set an exception';
+  String get exceptionsCalendarSubtitle =>
+      'Toca una fecha para establecer una excepción';
 
   @override
-  String get exceptionsCalendarTitle => 'Calendar';
+  String get exceptionsCalendarTitle => 'Calendario';
 
   @override
-  String get exceptionsCustomChip => 'Custom';
+  String get exceptionsCustomChip => 'Personalizado';
 
   @override
-  String get exceptionsEndDate => 'End Date';
+  String get exceptionsEndDate => 'Fecha de fin';
 
   @override
   String get exceptionsIntroText =>
-      'Mark dates when your availability differs from your usual schedule';
+      'Marca las fechas en las que tu disponibilidad difiere de tu horario habitual';
 
   @override
-  String get exceptionsLegendClosed => 'Closed';
+  String get exceptionsLegendClosed => 'Cerrado';
 
   @override
-  String get exceptionsLegendCustom => 'Custom Hours';
+  String get exceptionsLegendCustom => 'Horario personalizado';
 
   @override
-  String get exceptionsLegendUnavailable => 'Unavailable';
+  String get exceptionsLegendUnavailable => 'No disponible';
 
   @override
-  String get exceptionsLegendVacation => 'Vacation';
+  String get exceptionsLegendVacation => 'Vacaciones';
 
   @override
-  String get exceptionsLegendWorking => 'Working';
+  String get exceptionsLegendWorking => 'Trabajando';
 
   @override
-  String get exceptionsLoadError => 'Failed to load exceptions';
+  String get exceptionsLoadError => 'Error al cargar las excepciones';
 
   @override
-  String get exceptionsNoOverrides => 'No exceptions set';
+  String get exceptionsNoOverrides => 'No hay excepciones establecidas';
 
   @override
-  String get exceptionsOverridesSubtitle => 'Dates with custom availability';
+  String get exceptionsOverridesSubtitle =>
+      'Fechas con disponibilidad personalizada';
 
   @override
-  String get exceptionsOverridesTitle => 'Overrides';
+  String get exceptionsOverridesTitle => 'Excepciones';
 
   @override
-  String get exceptionsReasonLabel => 'Reason (optional)';
+  String get exceptionsReasonLabel => 'Motivo (opcional)';
 
   @override
-  String get exceptionsSelectDate => 'Select a date';
+  String get exceptionsSelectDate => 'Selecciona una fecha';
 
   @override
-  String get exceptionsSetVacation => 'Set Vacation';
+  String get exceptionsSetVacation => 'Establecer vacaciones';
 
   @override
-  String get exceptionsStartDate => 'Start Date';
+  String get exceptionsStartDate => 'Fecha de inicio';
 
   @override
-  String get exceptionsTimeError => 'End time must be after start time';
+  String get exceptionsTimeError =>
+      'La hora de fin debe ser posterior a la hora de inicio';
 
   @override
-  String get exceptionsTitle => 'Availability Exceptions';
+  String get exceptionsTitle => 'Excepciones de disponibilidad';
 
   @override
-  String get exceptionsUnavailableChip => 'Unavailable';
+  String get exceptionsUnavailableChip => 'No disponible';
 
   @override
-  String get exceptionsUnavailableLabel => 'Mark as unavailable';
+  String get exceptionsUnavailableLabel => 'Marcar como no disponible';
 
   @override
-  String get exceptionsUpdateVacation => 'Update Vacation';
+  String get exceptionsUpdateVacation => 'Actualizar vacaciones';
 
   @override
-  String get exceptionsVacationActive => 'Vacation is currently active';
+  String get exceptionsVacationActive =>
+      'Las vacaciones están activas actualmente';
 
   @override
   String exceptionsVacationScheduled(Object value1) {
-    return 'Vacation scheduled from $value1';
+    return 'Vacaciones programadas desde el $value1';
   }
 
   @override
-  String get exceptionsVacationSubtitle => 'Set a date range when you are away';
+  String get exceptionsVacationSubtitle =>
+      'Establece un rango de fechas en el que estarás ausente';
 
   @override
-  String get exceptionsVacationTitle => 'Vacation Mode';
+  String get exceptionsVacationTitle => 'Modo vacaciones';
 
   @override
-  String get experienceLabel => 'Experience';
+  String get experienceLabel => 'Experiencia';
 
   @override
   String experienceYearsLabel(Object value1) {
-    return '$value1 years experience';
+    return '$value1 años de experiencia';
   }
 
   @override
-  String get exploreExpertsLabel => 'Explore Experts';
+  String get exploreExpertsLabel => 'Explorar expertos';
 
   @override
-  String get facebookSignInLabel => 'Continue with Facebook';
+  String get facebookSignInLabel => 'Continuar con Facebook';
 
   @override
   String get faqBookingPendingA =>
-      'It may take a little time for the professional to respond. You will be notified once they accept or decline.';
+      'El profesional puede tardar un poco en responder. Se te notificará cuando acepte o rechace.';
 
   @override
-  String get faqBookingPendingQ => 'Why is my booking still pending?';
+  String get faqBookingPendingQ => '¿Por qué mi reserva sigue pendiente?';
 
   @override
   String get faqChangeAvailabilityA =>
-      'Go to your Availability settings from your profile to update your working hours.';
+      'Ve a los ajustes de Disponibilidad desde tu perfil para actualizar tu horario laboral.';
 
   @override
-  String get faqChangeAvailabilityQ => 'How do I change my availability?';
+  String get faqChangeAvailabilityQ => '¿Cómo cambio mi disponibilidad?';
 
   @override
   String get faqGetVerifiedA =>
-      'Complete your profile and submit the required documents from your profile settings to request verification.';
+      'Completa tu perfil y envía los documentos requeridos desde los ajustes de tu perfil para solicitar la verificación.';
 
   @override
-  String get faqGetVerifiedQ => 'How do I get verified?';
+  String get faqGetVerifiedQ => '¿Cómo me verifico?';
 
   @override
   String get faqHowToBookA =>
-      'Search for a professional, view their profile, and tap Book Now to select a date and time.';
+      'Busca un profesional, consulta su perfil y toca Reservar ahora para elegir una fecha y una hora.';
 
   @override
-  String get faqHowToBookQ => 'How do I book a professional?';
+  String get faqHowToBookQ => '¿Cómo reservo a un profesional?';
 
   @override
   String get faqHowToCancelA =>
-      'Open the booking from My Bookings and tap Cancel. Cancellations made in time are free.';
+      'Abre la reserva desde Mis reservas y toca Cancelar. Las cancelaciones hechas a tiempo son gratuitas.';
 
   @override
-  String get faqHowToCancelQ => 'How do I cancel a booking?';
+  String get faqHowToCancelQ => '¿Cómo cancelo una reserva?';
 
   @override
   String get faqImproveProfileA =>
-      'Add a profile photo, portfolio samples, and certificates to build trust with customers.';
+      'Agrega una foto de perfil, muestras de portafolio y certificados para generar confianza con los clientes.';
 
   @override
-  String get faqImproveProfileQ => 'How can I improve my profile?';
+  String get faqImproveProfileQ => '¿Cómo puedo mejorar mi perfil?';
 
   @override
   String get faqPaymentSecureA =>
-      'Yes, all payments are processed securely and your details are never shared.';
+      'Sí, todos los pagos se procesan de forma segura y tus datos nunca se comparten.';
 
   @override
-  String get faqPaymentSecureQ => 'Is my payment information secure?';
+  String get faqPaymentSecureQ => '¿Es segura mi información de pago?';
 
   @override
   String get faqRefundsA =>
-      'Refunds are processed automatically for eligible cancellations within a few business days.';
+      'Los reembolsos se procesan automáticamente para las cancelaciones elegibles en unos pocos días hábiles.';
 
   @override
-  String get faqRefundsQ => 'How do refunds work?';
+  String get faqRefundsQ => '¿Cómo funcionan los reembolsos?';
 
   @override
-  String get faqSectionLabel => 'FAQ';
+  String get faqSectionLabel => 'Preguntas frecuentes';
 
   @override
-  String get faqSectionTitle => 'Frequently Asked Questions';
+  String get faqSectionTitle => 'Preguntas frecuentes';
 
   @override
   String get faqWithdrawEarningsA =>
-      'Go to your Wallet and tap Withdraw to transfer your earnings to your bank account.';
+      'Ve a tu Billetera y toca Retirar para transferir tus ganancias a tu cuenta bancaria.';
 
   @override
-  String get faqWithdrawEarningsQ => 'How do I withdraw my earnings?';
+  String get faqWithdrawEarningsQ => '¿Cómo retiro mis ganancias?';
 
   @override
-  String get fastResponseLabel => 'Fast Response';
+  String get fastResponseLabel => 'Respuesta rápida';
 
   @override
-  String get flexibleTimingLabel => 'Flexible Timing';
+  String get flexibleTimingLabel => 'Horario flexible';
 
   @override
-  String get freeToCancelLabel => 'Free to Cancel';
+  String get freeToCancelLabel => 'Cancelación gratuita';
 
   @override
-  String get fullNameLabel => 'Full Name';
+  String get fullNameLabel => 'Nombre completo';
 
   @override
-  String get galleryLabel => 'Gallery';
+  String get galleryLabel => 'Galería';
 
   @override
-  String get galleryOptionLabel => 'Gallery';
+  String get galleryOptionLabel => 'Galería';
 
   @override
-  String get galleryTitle => 'Gallery';
+  String get galleryTitle => 'Galería';
 
   @override
-  String get galleryUploadError => 'Failed to upload photo';
+  String get galleryUploadError => 'Error al subir la foto';
 
   @override
-  String get galleryUploadSuccess => 'Photo uploaded successfully';
+  String get galleryUploadSuccess => 'Foto subida correctamente';
 
   @override
-  String get goBackCta => 'Go Back';
+  String get goBackCta => 'Volver';
 
   @override
-  String get goodAfternoon => 'Good afternoon';
+  String get goodAfternoon => 'Buenas tardes';
 
   @override
-  String get goodAfternoonComma => 'Good afternoon,';
+  String get goodAfternoonComma => 'Buenas tardes,';
 
   @override
-  String get goodEvening => 'Good evening';
+  String get goodEvening => 'Buenas noches';
 
   @override
-  String get goodEveningComma => 'Good evening,';
+  String get goodEveningComma => 'Buenas noches,';
 
   @override
-  String get goodMorning => 'Good morning';
+  String get goodMorning => 'Buenos días';
 
   @override
-  String get goodMorningComma => 'Good morning,';
+  String get goodMorningComma => 'Buenos días,';
 
   @override
-  String get goodToKnowLabel => 'Good to Know';
+  String get goodToKnowLabel => 'Conviene saber';
 
   @override
-  String get googleSignInLabel => 'Continue with Google';
+  String get googleSignInLabel => 'Continuar con Google';
 
   @override
-  String get helpActionLabel => 'Help & Support';
+  String get helpActionLabel => 'Ayuda y soporte';
 
   @override
-  String get helpActionSubtitle => 'Get help or contact us';
+  String get helpActionSubtitle => 'Obtén ayuda o contáctanos';
 
   @override
-  String get helpSupportLabel => 'Help & Support';
+  String get helpSupportLabel => 'Ayuda y soporte';
 
   @override
-  String get helpSupportTitle => 'Help & Support';
+  String get helpSupportTitle => 'Ayuda y soporte';
 
   @override
-  String get helpTitle => 'Help';
+  String get helpTitle => 'Ayuda';
 
   @override
-  String get homeDefaultPlanFree => 'Free';
+  String get homeDefaultPlanFree => 'Gratis';
 
   @override
-  String get homeDefaultProfessionalName => 'Professional';
+  String get homeDefaultProfessionalName => 'Profesional';
 
   @override
-  String get homeFilterAll => 'All';
+  String get homeFilterAll => 'Todos';
 
   @override
-  String get homeFilterAvailableNow => 'Available Now';
+  String get homeFilterAvailableNow => 'Disponible ahora';
 
   @override
-  String get homeFilterFastResponse => 'Fast Response';
+  String get homeFilterFastResponse => 'Respuesta rápida';
 
   @override
-  String get homeFilterHighestPrice => 'Highest Price';
+  String get homeFilterHighestPrice => 'Precio más alto';
 
   @override
-  String get homeFilterLowestPrice => 'Lowest Price';
+  String get homeFilterLowestPrice => 'Precio más bajo';
 
   @override
-  String get homeFilterMostBooked => 'Most Booked';
+  String get homeFilterMostBooked => 'Más reservados';
 
   @override
-  String get homeFilterMostExperienced => 'Most Experienced';
+  String get homeFilterMostExperienced => 'Más experimentados';
 
   @override
-  String get homeFilterMostReviews => 'Most Reviews';
+  String get homeFilterMostReviews => 'Más reseñas';
 
   @override
-  String get homeFilterRating1Plus => '1+ Stars';
+  String get homeFilterRating1Plus => '1+ estrellas';
 
   @override
-  String get homeFilterRating2Plus => '2+ Stars';
+  String get homeFilterRating2Plus => '2+ estrellas';
 
   @override
-  String get homeFilterRating3Plus => '3+ Stars';
+  String get homeFilterRating3Plus => '3+ estrellas';
 
   @override
-  String get homeFilterRating4Plus => '4+ Stars';
+  String get homeFilterRating4Plus => '4+ estrellas';
 
   @override
-  String get homeFilterRating5Plus => '5 Stars';
+  String get homeFilterRating5Plus => '5 estrellas';
 
   @override
-  String get homeFilterThisMonth => 'This Month';
+  String get homeFilterThisMonth => 'Este mes';
 
   @override
-  String get homeFilterThisWeek => 'This Week';
+  String get homeFilterThisWeek => 'Esta semana';
 
   @override
-  String get homeFilterToday => 'Today';
+  String get homeFilterToday => 'Hoy';
 
   @override
-  String get homeFilterTopRated => 'Top Rated';
+  String get homeFilterTopRated => 'Mejor valorados';
 
   @override
-  String get homeFilterVerified => 'Verified';
+  String get homeFilterVerified => 'Verificados';
 
   @override
-  String get homeFilterWithin10Km => 'Within 10 km';
+  String get homeFilterWithin10Km => 'A menos de 10 km';
 
   @override
-  String get homeFilterWithin2Km => 'Within 2 km';
+  String get homeFilterWithin2Km => 'A menos de 2 km';
 
   @override
-  String get homeFilterWithin5Km => 'Within 5 km';
+  String get homeFilterWithin5Km => 'A menos de 5 km';
 
   @override
-  String get homeGoBack => 'Go Back';
+  String get homeGoBack => 'Volver';
 
   @override
-  String get homeNoProfessionalsFound => 'No professionals found';
+  String get homeNoProfessionalsFound => 'No se encontraron profesionales';
 
   @override
   String get homeNoProfessionalsFoundHint =>
-      'Try adjusting your filters or search a different area';
+      'Intenta ajustar tus filtros o buscar en otra zona';
 
   @override
-  String get hour => 'hour';
+  String get hour => 'hora';
 
   @override
-  String get hourlyRateLabel => 'Hourly Rate';
+  String get hourlyRateLabel => 'Tarifa por hora';
 
   @override
   String hoursDecimalLabel(Object value1) {
-    return '${value1}h';
+    return '$value1 h';
   }
 
   @override
   String hoursLabel(Object value1) {
-    return '${value1}h';
+    return '$value1 h';
   }
 
   @override
   String hoursMinutesShort(Object value1, Object value2) {
-    return '${value1}h ${value2}m';
+    return '$value1 h $value2 min';
   }
 
   @override
   String hoursShort(Object value1) {
-    return '${value1}h';
+    return '$value1 h';
   }
 
   @override
-  String get idVerifiedLabel => 'ID Verified';
+  String get idVerifiedLabel => 'Identidad verificada';
 
   @override
-  String get imagePickError => 'Failed to select image';
+  String get imagePickError => 'Error al seleccionar la imagen';
 
   @override
-  String get instantLabel => 'Instant';
+  String get instantLabel => 'Instantánea';
 
   @override
-  String get issueDateLabelOptional => 'Issue Date (optional)';
+  String get issueDateLabelOptional => 'Fecha de emisión (opcional)';
 
   @override
-  String get issuingOrganizationHint => 'e.g. National Skills Board';
+  String get issuingOrganizationHint =>
+      'p. ej. Consejo Nacional de Competencias';
 
   @override
-  String get issuingOrganizationLabel => 'Issuing Organization';
+  String get issuingOrganizationLabel => 'Organización emisora';
 
   @override
-  String get jobsDoneLabel => 'Jobs Done';
+  String get jobsDoneLabel => 'Trabajos realizados';
 
   @override
-  String get languagesLabel => 'Languages';
+  String get languagesLabel => 'Idiomas';
 
   @override
   String lastUpdatedLabel(Object value1) {
-    return 'Last updated: $value1';
+    return 'Última actualización: $value1';
   }
 
   @override
-  String get laterCta => 'Later';
+  String get laterCta => 'Más tarde';
 
   @override
-  String get loadBookingsError => 'Failed to load bookings';
+  String get loadBookingsError => 'Error al cargar las reservas';
 
   @override
-  String get loadCertificatesError => 'Failed to load certificates';
+  String get loadCertificatesError => 'Error al cargar los certificados';
 
   @override
-  String get loadGalleryError => 'Failed to load gallery';
+  String get loadGalleryError => 'Error al cargar la galería';
 
   @override
-  String get loadPortfolioError => 'Failed to load portfolio';
+  String get loadPortfolioError => 'Error al cargar el portafolio';
 
   @override
-  String get loadSettingsError => 'Failed to load settings';
+  String get loadSettingsError => 'Error al cargar los ajustes';
 
   @override
-  String get loadWalletError => 'Failed to load wallet';
+  String get loadWalletError => 'Error al cargar la billetera';
 
   @override
-  String get loadingAnalyticsText => 'Loading analytics...';
+  String get loadingAnalyticsText => 'Cargando estadísticas...';
 
   @override
-  String get loadingDashboard => 'Loading dashboard...';
+  String get loadingDashboard => 'Cargando panel...';
 
   @override
-  String get locationLabel => 'Location';
+  String get locationLabel => 'Ubicación';
 
   @override
-  String get locationNotSpecified => 'Location not specified';
+  String get locationNotSpecified => 'Ubicación no especificada';
 
   @override
-  String get locationTipText => 'Enable location for more accurate results';
+  String get locationTipText =>
+      'Activa la ubicación para obtener resultados más precisos';
 
   @override
-  String get loginCta => 'Login';
+  String get loginCta => 'Iniciar sesión';
 
   @override
-  String get loginSubtitle => 'Welcome back! Please sign in to continue';
+  String get loginSubtitle =>
+      '¡Bienvenido de nuevo! Inicia sesión para continuar';
 
   @override
-  String get loginTitle => 'Login';
+  String get loginTitle => 'Iniciar sesión';
 
   @override
-  String get loginToBookCta => 'Login to Book';
+  String get loginToBookCta => 'Inicia sesión para reservar';
 
   @override
-  String get logoutActionLabel => 'Logout';
+  String get logoutActionLabel => 'Cerrar sesión';
 
   @override
-  String get logoutActionSubtitle => 'Sign out of your account';
+  String get logoutActionSubtitle => 'Cierra sesión en tu cuenta';
 
   @override
-  String get logoutCta => 'Logout';
+  String get logoutCta => 'Cerrar sesión';
 
   @override
-  String get logoutDialogContent => 'Are you sure you want to log out?';
+  String get logoutDialogContent => '¿Seguro que quieres cerrar sesión?';
 
   @override
-  String get logoutDialogTitle => 'Logout';
+  String get logoutDialogTitle => 'Cerrar sesión';
 
   @override
-  String get magazineAllCategoriesLabel => 'All';
+  String get magazineAllCategoriesLabel => 'Todos';
 
   @override
   String magazineArticleCountPlural(Object value1) {
-    return '$value1 articles';
+    return '$value1 artículos';
   }
 
   @override
-  String get magazineArticleCountSingle => '1 article';
+  String get magazineArticleCountSingle => '1 artículo';
 
   @override
-  String get magazineClearSearchCta => 'Clear Search';
+  String get magazineClearSearchCta => 'Borrar búsqueda';
 
   @override
-  String get magazineEmptyMessage => 'No articles available right now';
+  String get magazineEmptyMessage =>
+      'No hay artículos disponibles en este momento';
 
   @override
-  String get magazineEmptySearchMessage => 'Try a different search term';
+  String get magazineEmptySearchMessage =>
+      'Prueba con otro término de búsqueda';
 
   @override
-  String get magazineEmptySearchTitle => 'No Results Found';
+  String get magazineEmptySearchTitle => 'No se encontraron resultados';
 
   @override
-  String get magazineEmptyTitle => 'No Articles Yet';
+  String get magazineEmptyTitle => 'Aún no hay artículos';
 
   @override
-  String get magazineErrorMessage =>
-      'Something went wrong while loading the magazine';
+  String get magazineErrorMessage => 'Algo salió mal al cargar la revista';
 
   @override
-  String get magazineErrorTitle => 'Failed to Load';
+  String get magazineErrorTitle => 'Error al cargar';
 
   @override
-  String get magazineLoadError => 'Failed to load magazine';
+  String get magazineLoadError => 'Error al cargar la revista';
 
   @override
-  String get magazineLoadingText => 'Loading articles...';
+  String get magazineLoadingText => 'Cargando artículos...';
 
   @override
-  String get magazineSearchHint => 'Search articles';
+  String get magazineSearchHint => 'Buscar artículos';
 
   @override
-  String get magazineSearchResultsLabel => 'Search Results';
+  String get magazineSearchResultsLabel => 'Resultados de búsqueda';
 
   @override
-  String get magazineSubtitle => 'Tips and stories for professionals';
+  String get magazineSubtitle => 'Consejos e historias para profesionales';
 
   @override
-  String get magazineTitle => 'Magazine';
+  String get magazineTitle => 'Revista';
 
   @override
-  String get manageCta => 'Manage';
+  String get manageCta => 'Gestionar';
 
   @override
-  String get manageLabel => 'Manage';
+  String get manageLabel => 'Gestionar';
 
   @override
-  String get manualDescription => 'Review and accept bookings yourself';
+  String get manualDescription => 'Revisa y acepta las reservas tú mismo';
 
   @override
-  String get manualInfoFooter => 'You can change this anytime in settings';
+  String get manualInfoFooter =>
+      'Puedes cambiarlo en cualquier momento en los ajustes';
 
   @override
-  String get manualInfoTitle => 'Manual Approval';
+  String get manualInfoTitle => 'Aprobación manual';
 
   @override
   String get manualLabel => 'Manual';
 
   @override
-  String get markCompletedCta => 'Mark as Completed';
+  String get markCompletedCta => 'Marcar como completada';
 
   @override
-  String get markCompletedCtaShort => 'Complete';
+  String get markCompletedCtaShort => 'Completar';
 
   @override
-  String get maxAdvanceSubtitle => 'How far in advance customers can book';
+  String get maxAdvanceSubtitle =>
+      'Con cuánta antelación pueden reservar los clientes';
 
   @override
-  String get maxAdvanceTitle => 'Max Advance Booking';
+  String get maxAdvanceTitle => 'Reserva anticipada máxima';
 
   @override
-  String get memberSinceLabel => 'Member Since';
+  String get memberSinceLabel => 'Miembro desde';
 
   @override
   String get messagesEmptySubtitle =>
-      'Start a conversation with a professional or customer';
+      'Inicia una conversación con un profesional o un cliente';
 
   @override
-  String get messagesEmptyTitle => 'No Messages Yet';
+  String get messagesEmptyTitle => 'Aún no hay mensajes';
 
   @override
-  String get messagesLoadError => 'Failed to load messages';
+  String get messagesLoadError => 'Error al cargar los mensajes';
 
   @override
-  String get messagesLoadingText => 'Loading messages...';
+  String get messagesLoadingText => 'Cargando mensajes...';
 
   @override
-  String get messagesTitle => 'Messages';
+  String get messagesTitle => 'Mensajes';
 
   @override
   String minAmountError(Object value1) {
-    return 'Minimum withdrawal amount is Rs $value1';
+    return 'El monto mínimo de retiro es Rs $value1';
   }
 
   @override
-  String get minNoticeSubtitle => 'Minimum time before a booking can start';
+  String get minNoticeSubtitle =>
+      'Tiempo mínimo antes de que pueda comenzar una reserva';
 
   @override
-  String get minNoticeTitle => 'Minimum Notice';
+  String get minNoticeTitle => 'Aviso mínimo';
 
   @override
   String minWithdrawalLabel(Object value1) {
-    return 'Minimum withdrawal: Rs $value1';
+    return 'Retiro mínimo: Rs $value1';
   }
 
   @override
-  String get minute => 'minute';
+  String get minute => 'minuto';
 
   @override
   String minutesLabel(Object value1) {
-    return '${value1}m';
+    return '$value1 min';
   }
 
   @override
   String minutesShort(Object value1) {
-    return '${value1}m';
+    return '$value1 min';
   }
 
   @override
-  String get minutesZero => '0 minutes';
+  String get minutesZero => '0 minutos';
 
   @override
-  String get myPortfolioLabel => 'My Portfolio';
+  String get myPortfolioLabel => 'Mi portafolio';
 
   @override
-  String get myPortfolioTitle => 'My Portfolio';
+  String get myPortfolioTitle => 'Mi portafolio';
 
   @override
-  String get myReviewsEmptySubtitle => 'Reviews you write will appear here';
+  String get myReviewsEmptySubtitle =>
+      'Las reseñas que escribas aparecerán aquí';
 
   @override
-  String get myReviewsEmptyTitle => 'No Reviews Yet';
+  String get myReviewsEmptyTitle => 'Aún no hay reseñas';
 
   @override
-  String get myReviewsTitle => 'My Reviews';
+  String get myReviewsTitle => 'Mis reseñas';
 
   @override
-  String get navAnalytics => 'Analytics';
+  String get navAnalytics => 'Estadísticas';
 
   @override
-  String get navBookings => 'Bookings';
+  String get navBookings => 'Reservas';
 
   @override
-  String get navDashboard => 'Dashboard';
+  String get navDashboard => 'Panel';
 
   @override
-  String get navMagazine => 'Magazine';
+  String get navMagazine => 'Revista';
 
   @override
-  String get navMessages => 'Messages';
+  String get navMessages => 'Mensajes';
 
   @override
-  String get navProfile => 'Profile';
+  String get navProfile => 'Perfil';
 
   @override
-  String get nearbyLabel => 'Nearby';
+  String get nearbyLabel => 'Cerca de ti';
 
   @override
-  String get needMoreHelpLabel => 'Need more help?';
+  String get needMoreHelpLabel => '¿Necesitas más ayuda?';
 
   @override
-  String get newPasswordLabel => 'New Password';
+  String get newPasswordLabel => 'Nueva contraseña';
 
   @override
-  String get newPhotoSelectedHint => 'New photo selected';
+  String get newPhotoSelectedHint => 'Nueva foto seleccionada';
 
   @override
-  String get nextCta => 'Next';
+  String get nextCta => 'Siguiente';
 
   @override
-  String get noBookingsAccepted => 'No accepted bookings';
+  String get noBookingsAccepted => 'No hay reservas aceptadas';
 
   @override
-  String get noBookingsAll => 'No bookings yet';
+  String get noBookingsAll => 'Aún no hay reservas';
 
   @override
-  String get noBookingsCancelled => 'No cancelled bookings';
+  String get noBookingsCancelled => 'No hay reservas canceladas';
 
   @override
-  String get noBookingsCompleted => 'No completed bookings';
+  String get noBookingsCompleted => 'No hay reservas completadas';
 
   @override
-  String get noBookingsDefault => 'No bookings found';
+  String get noBookingsDefault => 'No se encontraron reservas';
 
   @override
-  String get noBookingsPending => 'No pending bookings';
+  String get noBookingsPending => 'No hay reservas pendientes';
 
   @override
-  String get noBookingsRescheduled => 'No rescheduled bookings';
+  String get noBookingsRescheduled => 'No hay reservas reprogramadas';
 
   @override
-  String get noBookingsToday => 'No bookings today';
+  String get noBookingsToday => 'No hay reservas hoy';
 
   @override
-  String get noBookingsYet => 'No bookings yet';
+  String get noBookingsYet => 'Aún no hay reservas';
 
   @override
-  String get noClientsFound => 'No clients found';
+  String get noClientsFound => 'No se encontraron clientes';
 
   @override
-  String get noLanguagesAdded => 'No languages added yet';
+  String get noLanguagesAdded => 'Aún no se han agregado idiomas';
 
   @override
-  String get noMessagesPlaceholder => 'No messages yet';
+  String get noMessagesPlaceholder => 'Aún no hay mensajes';
 
   @override
-  String get noMessagesYet => 'No messages yet';
+  String get noMessagesYet => 'Aún no hay mensajes';
 
   @override
-  String get noPaymentsSubtitle => 'Your payment history will appear here';
+  String get noPaymentsSubtitle => 'Tu historial de pagos aparecerá aquí';
 
   @override
-  String get noPaymentsTitle => 'No Payments Yet';
+  String get noPaymentsTitle => 'Aún no hay pagos';
 
   @override
-  String get noPortfolioSubtitle => 'Portfolio items will appear here';
+  String get noPortfolioSubtitle =>
+      'Los elementos del portafolio aparecerán aquí';
 
   @override
-  String get noPortfolioTitle => 'No Portfolio Items';
+  String get noPortfolioTitle => 'No hay elementos en el portafolio';
 
   @override
   String get noReviewsSubtitle =>
-      'Reviews will appear here once customers rate you';
+      'Las reseñas aparecerán aquí cuando los clientes te califiquen';
 
   @override
-  String get noReviewsTitle => 'No Reviews Yet';
+  String get noReviewsTitle => 'Aún no hay reseñas';
 
   @override
-  String get noReviewsYet => 'No reviews yet';
+  String get noReviewsYet => 'Aún no hay reseñas';
 
   @override
   String get noServicesSubtitle =>
-      'Add services you offer to attract customers';
+      'Agrega los servicios que ofreces para atraer clientes';
 
   @override
-  String get noServicesTitle => 'No Services Added';
+  String get noServicesTitle => 'No se han agregado servicios';
 
   @override
-  String get noSkillsAdded => 'No skills added yet';
+  String get noSkillsAdded => 'Aún no se han agregado habilidades';
 
   @override
-  String get noTransactionsLabel => 'No transactions yet';
+  String get noTransactionsLabel => 'Aún no hay transacciones';
 
   @override
-  String get noWorkingHoursMessage => 'No working hours set for this day';
+  String get noWorkingHoursMessage =>
+      'No se ha establecido horario laboral para este día';
 
   @override
-  String get notAcceptingBookingsLabel => 'Not Accepting Bookings';
+  String get notAcceptingBookingsLabel => 'No acepta reservas';
 
   @override
-  String get notAvailableLabel => 'Not Available';
+  String get notAvailableLabel => 'No disponible';
 
   @override
-  String get notAvailableSubtitle => 'Not accepting bookings right now';
+  String get notAvailableSubtitle => 'No acepta reservas en este momento';
 
   @override
-  String get notSetPlaceholder => 'Not set';
+  String get notSetPlaceholder => 'No establecido';
 
   @override
-  String get notSpecifiedLabel => 'Not specified';
+  String get notSpecifiedLabel => 'No especificado';
 
   @override
-  String get notVerifiedLabel => 'Not Verified';
+  String get notVerifiedLabel => 'No verificado';
 
   @override
-  String get notesHintText => 'Add any notes here';
+  String get notesHintText => 'Agrega tus notas aquí';
 
   @override
-  String get notesInfoText => 'Notes are only visible to you';
+  String get notesInfoText => 'Las notas solo son visibles para ti';
 
   @override
-  String get notesLabel => 'Notes';
+  String get notesLabel => 'Notas';
 
   @override
-  String get notesTipText => 'Add any special requests or details';
+  String get notesTipText => 'Agrega solicitudes especiales o detalles';
 
   @override
-  String get notificationsActionLabel => 'Notifications';
+  String get notificationsActionLabel => 'Notificaciones';
 
   @override
-  String get notificationsActionSubtitle => 'Manage notification preferences';
+  String get notificationsActionSubtitle =>
+      'Gestiona tus preferencias de notificación';
 
   @override
   String notificationsDaysAgo(Object value1) {
-    return '${value1}d ago';
+    return 'hace $value1 d';
   }
 
   @override
-  String get notificationsEmptyMessage => 'You\'re all caught up!';
+  String get notificationsEmptyMessage => '¡Estás al día!';
 
   @override
-  String get notificationsEmptyTitle => 'No Notifications';
+  String get notificationsEmptyTitle => 'Sin notificaciones';
 
   @override
-  String get notificationsErrorTitle => 'Couldn\'t load notifications';
+  String get notificationsErrorTitle =>
+      'No se pudieron cargar las notificaciones';
 
   @override
   String notificationsHoursAgo(Object value1) {
-    return '${value1}h ago';
+    return 'hace $value1 h';
   }
 
   @override
-  String get notificationsJustNow => 'Just now';
+  String get notificationsJustNow => 'Ahora mismo';
 
   @override
-  String get notificationsLoadError => 'Failed to load notifications';
+  String get notificationsLoadError => 'Error al cargar las notificaciones';
 
   @override
-  String get notificationsLoadingText => 'Loading notifications...';
+  String get notificationsLoadingText => 'Cargando notificaciones...';
 
   @override
-  String get notificationsMarkAllReadCta => 'Mark all as read';
+  String get notificationsMarkAllReadCta => 'Marcar todo como leído';
 
   @override
   String get notificationsMarkAllReadSuccess =>
-      'All notifications marked as read';
+      'Todas las notificaciones marcadas como leídas';
 
   @override
   String notificationsMinutesAgo(Object value1) {
-    return '${value1}m ago';
+    return 'hace $value1 min';
   }
 
   @override
-  String get notificationsSectionLabel => 'Notifications';
+  String get notificationsSectionLabel => 'Notificaciones';
 
   @override
-  String get notificationsSectionThisMonth => 'This Month';
+  String get notificationsSectionThisMonth => 'Este mes';
 
   @override
-  String get notificationsSectionThisWeek => 'This Week';
+  String get notificationsSectionThisWeek => 'Esta semana';
 
   @override
-  String get notificationsSectionToday => 'Today';
+  String get notificationsSectionToday => 'Hoy';
 
   @override
-  String get notificationsSectionYesterday => 'Yesterday';
+  String get notificationsSectionYesterday => 'Ayer';
 
   @override
-  String get notificationsTitle => 'Notifications';
+  String get notificationsTitle => 'Notificaciones';
 
   @override
   String notifyCustomerMessage(Object value1, Object value2) {
-    return 'Notify the customer about the new time: $value1 at $value2?';
+    return '¿Notificar al cliente la nueva hora: $value1 a las $value2?';
   }
 
   @override
-  String get notifyCustomerTitle => 'Notify Customer';
+  String get notifyCustomerTitle => 'Notificar al cliente';
 
   @override
-  String get offlineLabel => 'Offline';
+  String get offlineLabel => 'Sin conexión';
 
   @override
-  String get okCta => 'OK';
+  String get okCta => 'Aceptar';
 
   @override
-  String get onlineLabel => 'Online';
+  String get onlineLabel => 'En línea';
 
   @override
-  String get openChatCta => 'Open Chat';
+  String get openChatCta => 'Abrir chat';
 
   @override
   String get openChatCtaShort => 'Chat';
 
   @override
-  String get openChatError => 'Failed to open chat';
+  String get openChatError => 'Error al abrir el chat';
 
   @override
-  String get orContinueWithLabel => 'Or continue with';
+  String get orContinueWithLabel => 'O continúa con';
 
   @override
-  String get overrideRemoved => 'Exception removed';
+  String get overrideRemoved => 'Excepción eliminada';
 
   @override
   String overrideSaved(Object value1) {
-    return 'Exception saved for $value1';
+    return 'Excepción guardada para $value1';
   }
 
   @override
-  String get passwordChangeError => 'Failed to change password';
+  String get passwordChangeError => 'Error al cambiar la contraseña';
 
   @override
-  String get passwordChangeSuccess => 'Password changed successfully';
+  String get passwordChangeSuccess => 'Contraseña cambiada correctamente';
 
   @override
-  String get passwordHelperText => 'Must be at least 8 characters';
+  String get passwordHelperText => 'Debe tener al menos 8 caracteres';
 
   @override
-  String get passwordMinLengthError => 'Password must be at least 8 characters';
+  String get passwordMinLengthError =>
+      'La contraseña debe tener al menos 8 caracteres';
 
   @override
-  String get passwordMismatchError => 'Passwords do not match';
+  String get passwordMismatchError => 'Las contraseñas no coinciden';
 
   @override
-  String get passwordRequiredError => 'Password is required';
+  String get passwordRequiredError => 'La contraseña es obligatoria';
 
   @override
-  String get paymentHistoryLabel => 'Payment History';
+  String get paymentHistoryLabel => 'Historial de pagos';
 
   @override
-  String get paymentHistorySubtitle => 'View all your past payments';
+  String get paymentHistorySubtitle => 'Consulta todos tus pagos anteriores';
 
   @override
-  String get paymentStatusCompleted => 'Completed';
+  String get paymentStatusCompleted => 'Completado';
 
   @override
-  String get paymentStatusFailed => 'Failed';
+  String get paymentStatusFailed => 'Fallido';
 
   @override
-  String get paymentStatusPending => 'Pending';
+  String get paymentStatusPending => 'Pendiente';
 
   @override
-  String get paymentStatusRefunded => 'Refunded';
+  String get paymentStatusRefunded => 'Reembolsado';
 
   @override
-  String get paymentsActionLabel => 'Payments';
+  String get paymentsActionLabel => 'Pagos';
 
   @override
-  String get paymentsActionSubtitle => 'View your payment history';
+  String get paymentsActionSubtitle => 'Consulta tu historial de pagos';
 
   @override
-  String get paymentsTitle => 'Payments';
+  String get paymentsTitle => 'Pagos';
 
   @override
-  String get pendingLabel => 'Pending';
+  String get pendingLabel => 'Pendiente';
 
   @override
-  String get perHourLabel => '/hr';
+  String get perHourLabel => '/h';
 
   @override
-  String get performanceLabel => 'Performance';
+  String get performanceLabel => 'Rendimiento';
 
   @override
   String get performanceScoreInfo =>
-      'Based on your ratings, response time, and completed bookings';
+      'Basado en tus calificaciones, tiempo de respuesta y reservas completadas';
 
   @override
-  String get performanceScoreLabel => 'Performance Score';
+  String get performanceScoreLabel => 'Puntuación de rendimiento';
 
   @override
   String performanceScoreOutOf(Object value1) {
-    return '$value1 out of 100';
+    return '$value1 de 100';
   }
 
   @override
-  String get personalInfoLabel => 'Personal Information';
+  String get personalInfoLabel => 'Información personal';
 
   @override
-  String get phoneLabel => 'Phone';
+  String get phoneLabel => 'Teléfono';
 
   @override
   String photoLimitReached(Object value1) {
-    return 'You can add up to $value1 photos';
+    return 'Puedes agregar hasta $value1 fotos';
   }
 
   @override
-  String get photoPickError => 'Failed to select photo';
+  String get photoPickError => 'Error al seleccionar la foto';
 
   @override
-  String get photosOptionalLabel => 'Photos (optional)';
+  String get photosOptionalLabel => 'Fotos (opcional)';
 
   @override
   String get planStatLabel => 'Plan';
 
   @override
   String get planUpgradeSubtitle =>
-      'Unlock more features and grow your business';
+      'Desbloquea más funciones y haz crecer tu negocio';
 
   @override
   String planUpgradeTitle(Object value1) {
-    return 'Upgrade from $value1';
+    return 'Mejorar desde $value1';
   }
 
   @override
   String get portfolioInfoNote =>
-      'Showcase your best work to attract more customers';
+      'Muestra tus mejores trabajos para atraer más clientes';
 
   @override
-  String get portfolioLabel => 'Portfolio';
+  String get portfolioLabel => 'Portafolio';
 
   @override
-  String get postReplyCta => 'Post Reply';
+  String get postReplyCta => 'Publicar respuesta';
 
   @override
-  String get preferencesGroupLabel => 'Preferences';
+  String get preferencesGroupLabel => 'Preferencias';
 
   @override
-  String get preferencesSectionLabel => 'Preferences';
+  String get preferencesSectionLabel => 'Preferencias';
 
   @override
-  String get premiumActiveSubtitle => 'You have access to all premium features';
+  String get premiumActiveSubtitle =>
+      'Tienes acceso a todas las funciones premium';
 
   @override
-  String get premiumMemberLabel => 'Premium Member';
+  String get premiumMemberLabel => 'Miembro Premium';
 
   @override
-  String get premiumUpgradeSubtitle => 'Get unlimited AI searches and more';
+  String get premiumUpgradeSubtitle =>
+      'Obtén búsquedas con IA ilimitadas y más';
 
   @override
   String get proBadgeLabel => 'PRO';
 
   @override
-  String get professionEmptyMessage => 'No professions found';
+  String get professionEmptyMessage => 'No se encontraron profesiones';
 
   @override
-  String get professionHint => 'Select profession';
+  String get professionHint => 'Seleccionar profesión';
 
   @override
-  String get professionLabel => 'Profession';
+  String get professionLabel => 'Profesión';
 
   @override
-  String get professionRequiredError => 'Please select a profession';
+  String get professionRequiredError => 'Selecciona una profesión';
 
   @override
-  String get professionSearchHint => 'Search profession';
+  String get professionSearchHint => 'Buscar profesión';
 
   @override
   String get professionalAccountDescription =>
-      'Offer your services to customers';
+      'Ofrece tus servicios a los clientes';
 
   @override
-  String get professionalDefaultName => 'Professional';
+  String get professionalDefaultName => 'Profesional';
 
   @override
   String get professionalDetailLoadError =>
-      'Failed to load professional details';
+      'Error al cargar los datos del profesional';
 
   @override
-  String get professionalDetailsLabel => 'Professional Details';
+  String get professionalDetailsLabel => 'Datos del profesional';
 
   @override
-  String get professionalLabel => 'Professional';
+  String get professionalLabel => 'Profesional';
 
   @override
-  String get professionalLocationLabel => 'Professional\'s Location';
+  String get professionalLocationLabel => 'Ubicación del profesional';
 
   @override
-  String get professionalLocationOption => 'Professional\'s Location';
+  String get professionalLocationOption => 'Ubicación del profesional';
 
   @override
-  String get professionalReviewsLabel => 'Reviews';
+  String get professionalReviewsLabel => 'Reseñas';
 
   @override
-  String get professionalReviewsSubtitle => 'What customers are saying';
+  String get professionalReviewsSubtitle => 'Lo que dicen los clientes';
 
   @override
   String get profileCompletionHint =>
-      'Complete your profile to attract more customers';
+      'Completa tu perfil para atraer más clientes';
 
   @override
-  String get profileCompletionLabel => 'Profile Completion';
+  String get profileCompletionLabel => 'Perfil completado';
 
   @override
-  String get profileEditProfile => 'Edit Profile';
+  String get profileEditProfile => 'Editar perfil';
 
   @override
-  String get profileLabel => 'Profile';
+  String get profileLabel => 'Perfil';
 
   @override
-  String get profileLoadError => 'Failed to load profile';
+  String get profileLoadError => 'Error al cargar el perfil';
 
   @override
-  String get profileLoadingText => 'Loading profile...';
+  String get profileLoadingText => 'Cargando perfil...';
 
   @override
-  String get profileNotAvailable => 'Profile not available';
+  String get profileNotAvailable => 'Perfil no disponible';
 
   @override
-  String get profileOff => 'Off';
+  String get profileOff => 'Desactivado';
 
   @override
-  String get profileOn => 'On';
+  String get profileOn => 'Activado';
 
   @override
-  String get profileReviewsLabel => 'Reviews';
+  String get profileReviewsLabel => 'Reseñas';
 
   @override
-  String get profileSavedLabel => 'Saved';
+  String get profileSavedLabel => 'Guardados';
 
   @override
-  String get profileTitle => 'Profile';
+  String get profileTitle => 'Perfil';
 
   @override
-  String get profileUpdateError => 'Failed to update profile';
+  String get profileUpdateError => 'Error al actualizar el perfil';
 
   @override
-  String get profileUpdateSuccess => 'Profile updated successfully';
+  String get profileUpdateSuccess => 'Perfil actualizado correctamente';
 
   @override
-  String get profileViewsLabel => 'Profile Views';
+  String get profileViewsLabel => 'Visitas al perfil';
 
   @override
-  String get profileViewsSubtext => 'People who viewed your profile';
+  String get profileViewsSubtext => 'Personas que vieron tu perfil';
 
   @override
-  String get profileWalletLabel => 'Wallet';
+  String get profileWalletLabel => 'Billetera';
 
   @override
-  String get pushNotificationsLabel => 'Push Notifications';
+  String get pushNotificationsLabel => 'Notificaciones push';
 
   @override
-  String get quickActionsLabel => 'Quick Actions';
+  String get quickActionsLabel => 'Acciones rápidas';
 
   @override
-  String get quickAddLabel => 'Quick Add';
+  String get quickAddLabel => 'Agregar rápido';
 
   @override
-  String get rateLabel => 'Rate';
+  String get rateLabel => 'Tarifa';
 
   @override
-  String get ratingLabel => 'Rating';
+  String get ratingLabel => 'Calificación';
 
   @override
-  String get ratingRequiredError => 'Please select a rating';
+  String get ratingRequiredError => 'Selecciona una calificación';
 
   @override
-  String get recentBookingsLabel => 'Recent Bookings';
+  String get recentBookingsLabel => 'Reservas recientes';
 
   @override
-  String get recentMessagesLabel => 'Recent Messages';
+  String get recentMessagesLabel => 'Mensajes recientes';
 
   @override
-  String get recentReviewsLabel => 'Recent Reviews';
+  String get recentReviewsLabel => 'Reseñas recientes';
 
   @override
-  String get refreshTooltip => 'Refresh';
+  String get refreshTooltip => 'Actualizar';
 
   @override
-  String get registerCategoryRequired => 'Please select a category';
+  String get registerCategoryRequired => 'Selecciona una categoría';
 
   @override
-  String get registerCta => 'Register';
+  String get registerCta => 'Registrarse';
 
   @override
-  String get registerServerError => 'Registration failed. Please try again.';
+  String get registerServerError => 'El registro falló. Inténtalo de nuevo.';
 
   @override
-  String get registerSubtitle => 'Sign up to get started';
+  String get registerSubtitle => 'Regístrate para empezar';
 
   @override
-  String get registerTitle => 'Create Account';
+  String get registerTitle => 'Crear cuenta';
 
   @override
-  String get rejectCta => 'Reject';
+  String get rejectCta => 'Rechazar';
 
   @override
-  String get relatedProfessionalsLabel => 'You May Also Like';
+  String get relatedProfessionalsLabel => 'También te puede gustar';
 
   @override
-  String get removeCta => 'Remove';
+  String get removeCta => 'Quitar';
 
   @override
-  String get replyHint => 'Write a reply';
+  String get replyHint => 'Escribe una respuesta';
 
   @override
-  String get replySubtitle => 'Your reply is public and visible to everyone';
+  String get replySubtitle => 'Tu respuesta es pública y visible para todos';
 
   @override
-  String get replyTitle => 'Reply to Review';
+  String get replyTitle => 'Responder a la reseña';
 
   @override
-  String get reportNoteHint => 'Add any additional details';
+  String get reportNoteHint => 'Agrega más detalles';
 
   @override
-  String get reportSubtitle => 'Help us understand what went wrong';
+  String get reportSubtitle => 'Ayúdanos a entender qué salió mal';
 
   @override
-  String get reportTitle => 'Report an Issue';
+  String get reportTitle => 'Informar de un problema';
 
   @override
-  String get requestSentLabel => 'Request Sent';
+  String get requestSentLabel => 'Solicitud enviada';
 
   @override
   String requestSentSubtitle(Object value1) {
-    return 'Your request has been sent to $value1';
+    return 'Tu solicitud ha sido enviada a $value1';
   }
 
   @override
-  String get requestWithdrawCta => 'Request Withdrawal';
+  String get requestWithdrawCta => 'Solicitar retiro';
 
   @override
-  String get rescheduledLabel => 'Rescheduled';
+  String get rescheduledLabel => 'Reprogramada';
 
   @override
-  String get resendEmailCta => 'Resend Email';
+  String get resendEmailCta => 'Reenviar correo';
 
   @override
-  String get resetLinkError => 'Failed to send reset link';
+  String get resetLinkError => 'Error al enviar el enlace de restablecimiento';
 
   @override
   String resetLinkSent(Object value1) {
-    return 'Password reset link sent to $value1';
+    return 'Enlace de restablecimiento de contraseña enviado a $value1';
   }
 
   @override
   String get resetPassSubtitle =>
-      'Enter your email and we\'ll send you a reset link';
+      'Introduce tu correo electrónico y te enviaremos un enlace de restablecimiento';
 
   @override
-  String get resetPassTitle => 'Reset Password';
+  String get resetPassTitle => 'Restablecer contraseña';
 
   @override
   String resetPasswordDescription(Object value1) {
-    return 'We\'ll send a password reset link to $value1';
+    return 'Enviaremos un enlace de restablecimiento de contraseña a $value1';
   }
 
   @override
-  String get resetPasswordLabel => 'Reset Password';
+  String get resetPasswordLabel => 'Restablecer contraseña';
 
   @override
-  String get responseLabel => 'Response';
+  String get responseLabel => 'Respuesta';
 
   @override
-  String get responseRateLabel => 'Response Rate';
+  String get responseRateLabel => 'Tasa de respuesta';
 
   @override
-  String get responseRateSubtext => 'How often you respond to messages';
+  String get responseRateSubtext =>
+      'Con qué frecuencia respondes a los mensajes';
 
   @override
-  String get responseTimeLabel => 'Response Time';
+  String get responseTimeLabel => 'Tiempo de respuesta';
 
   @override
-  String get retryCta => 'Retry';
+  String get retryCta => 'Reintentar';
 
   @override
-  String get reviewBookingLabel => 'Review Booking';
+  String get reviewBookingLabel => 'Valorar reserva';
 
   @override
-  String get reviewSubmitErrorDefault => 'Failed to submit review';
+  String get reviewSubmitErrorDefault => 'Error al enviar la reseña';
 
   @override
   String reviewSubmittedSuccessMessage(Object value1) {
-    return 'Your review for $value1 has been submitted';
+    return 'Tu reseña de $value1 ha sido enviada';
   }
 
   @override
-  String get reviewSubmittedSuccessTitle => 'Review Submitted';
+  String get reviewSubmittedSuccessTitle => 'Reseña enviada';
 
   @override
-  String get reviewUpdateErrorDefault => 'Failed to update review';
+  String get reviewUpdateErrorDefault => 'Error al actualizar la reseña';
 
   @override
   String reviewUpdatedSuccessMessage(Object value1) {
-    return 'Your review for $value1 has been updated';
+    return 'Tu reseña de $value1 ha sido actualizada';
   }
 
   @override
-  String get reviewUpdatedSuccessTitle => 'Review Updated';
+  String get reviewUpdatedSuccessTitle => 'Reseña actualizada';
 
   @override
-  String get reviewsActionLabel => 'Reviews';
+  String get reviewsActionLabel => 'Reseñas';
 
   @override
-  String get reviewsActionSubtitle => 'Reviews you have written';
+  String get reviewsActionSubtitle => 'Las reseñas que has escrito';
 
   @override
   String reviewsCountLabel(Object value1) {
-    return '$value1 reviews';
+    return '$value1 reseñas';
   }
 
   @override
-  String get reviewsLabel => 'Reviews';
+  String get reviewsLabel => 'Reseñas';
 
   @override
-  String get saveCertificateCta => 'Save Certificate';
+  String get saveCertificateCta => 'Guardar certificado';
 
   @override
-  String get saveChangesCta => 'Save Changes';
+  String get saveChangesCta => 'Guardar cambios';
 
   @override
-  String get saveCta => 'Save';
+  String get saveCta => 'Guardar';
 
   @override
-  String get saveScheduleCta => 'Save Schedule';
+  String get saveScheduleCta => 'Guardar horario';
 
   @override
-  String get saveSettingsError => 'Failed to save settings';
+  String get saveSettingsError => 'Error al guardar los ajustes';
 
   @override
-  String get saveSettingsSuccess => 'Settings saved successfully';
+  String get saveSettingsSuccess => 'Ajustes guardados correctamente';
 
   @override
-  String get savedProfessionalsActionLabel => 'Saved Professionals';
+  String get savedProfessionalsActionLabel => 'Profesionales guardados';
 
   @override
-  String get savedProfessionalsActionSubtitle => 'Professionals you have saved';
+  String get savedProfessionalsActionSubtitle =>
+      'Los profesionales que has guardado';
 
   @override
   String get savedProfessionalsEmptySubtitle =>
-      'Professionals you save will appear here';
+      'Los profesionales que guardes aparecerán aquí';
 
   @override
-  String get savedProfessionalsEmptyTitle => 'No Saved Professionals';
+  String get savedProfessionalsEmptyTitle => 'No hay profesionales guardados';
 
   @override
-  String get savedProfessionalsTitle => 'Saved Professionals';
+  String get savedProfessionalsTitle => 'Profesionales guardados';
 
   @override
-  String get savedStatLabel => 'Saved';
+  String get savedStatLabel => 'Guardados';
 
   @override
-  String get searchAiPremiumActive => 'AI Search Premium Active';
+  String get searchAiPremiumActive => 'Búsqueda con IA Premium activa';
 
   @override
   String searchAiRemainingToday(Object value1) {
-    return '$value1 AI searches remaining today';
+    return '$value1 búsquedas con IA restantes hoy';
   }
 
   @override
-  String get searchBookingsHint => 'Search bookings';
+  String get searchBookingsHint => 'Buscar reservas';
 
   @override
-  String get searchCategories => 'Categories';
+  String get searchCategories => 'Categorías';
 
   @override
-  String get searchPopular => 'Popular';
+  String get searchPopular => 'Populares';
 
   @override
-  String get searchPopularCleaners => 'Cleaners';
+  String get searchPopularCleaners => 'Limpieza';
 
   @override
-  String get searchPopularDoctors => 'Doctors';
+  String get searchPopularDoctors => 'Médicos';
 
   @override
-  String get searchPopularElectricians => 'Electricians';
+  String get searchPopularElectricians => 'Electricistas';
 
   @override
-  String get searchPopularEngineers => 'Engineers';
+  String get searchPopularEngineers => 'Ingenieros';
 
   @override
-  String get searchPopularLawyers => 'Lawyers';
+  String get searchPopularLawyers => 'Abogados';
 
   @override
-  String get searchPopularPlumbers => 'Plumbers';
+  String get searchPopularPlumbers => 'Fontaneros';
 
   @override
-  String get searchProfessionals => 'Professionals';
+  String get searchProfessionals => 'Profesionales';
 
   @override
-  String get searchProfessions => 'Professions';
+  String get searchProfessions => 'Profesiones';
 
   @override
-  String get searchRecent => 'Recent';
+  String get searchRecent => 'Recientes';
 
   @override
   String searchResultsLabel(Object value1, Object value2) {
-    return '$value1 results for \"$value2\"';
+    return '$value1 resultados para «$value2»';
   }
 
   @override
-  String get searchingLabel => 'Searching...';
+  String get searchingLabel => 'Buscando...';
 
   @override
-  String get security => 'Security';
+  String get security => 'Seguridad';
 
   @override
-  String get securityActionLabel => 'Security';
+  String get securityActionLabel => 'Seguridad';
 
   @override
-  String get securityActionSubtitle => 'Password and account security';
+  String get securityActionSubtitle => 'Contraseña y seguridad de la cuenta';
 
   @override
-  String get securityBannerSubtitle => 'Keep your account safe and secure';
+  String get securityBannerSubtitle => 'Mantén tu cuenta segura y protegida';
 
   @override
-  String get securityBannerTitle => 'Account Security';
+  String get securityBannerTitle => 'Seguridad de la cuenta';
 
   @override
   String get securityFooterText =>
-      'If you didn\'t request this change, please contact support immediately';
+      'Si no solicitaste este cambio, contacta con soporte de inmediato';
 
   @override
-  String get securityTitle => 'Security';
+  String get securityTitle => 'Seguridad';
 
   @override
-  String get seeAllLabel => 'See All';
+  String get seeAllLabel => 'Ver todo';
 
   @override
-  String get selectedLabel => 'Selected';
+  String get selectedLabel => 'Seleccionado';
 
   @override
-  String get sendResetLinkCta => 'Send Reset Link';
+  String get sendResetLinkCta => 'Enviar enlace de restablecimiento';
 
   @override
-  String get serviceLabel => 'Service';
+  String get serviceLabel => 'Servicio';
 
   @override
-  String get serviceProfessionalLabel => 'Service Professional';
+  String get serviceProfessionalLabel => 'Profesional de servicios';
 
   @override
-  String get settingsActionLabel => 'Settings';
+  String get settingsActionLabel => 'Ajustes';
 
   @override
-  String get settingsActionSubtitle => 'App preferences';
+  String get settingsActionSubtitle => 'Preferencias de la aplicación';
 
   @override
-  String get shareExperienceLabel => 'Share your experience';
+  String get shareExperienceLabel => 'Comparte tu experiencia';
 
   @override
-  String get signInInsteadLabel => 'Sign in instead';
+  String get signInInsteadLabel => 'Iniciar sesión en su lugar';
 
   @override
-  String get skillsLabel => 'Skills';
+  String get skillsLabel => 'Habilidades';
 
   @override
-  String get skillsPricingLabel => 'Skills & Pricing';
+  String get skillsPricingLabel => 'Habilidades y precios';
 
   @override
-  String get slotDurationSubtitle => 'Default length of each booking slot';
+  String get slotDurationSubtitle =>
+      'Duración predeterminada de cada franja de reserva';
 
   @override
-  String get slotDurationTitle => 'Slot Duration';
+  String get slotDurationTitle => 'Duración de la franja';
 
   @override
-  String get startConversationError => 'Failed to start conversation';
+  String get startConversationError => 'Error al iniciar la conversación';
 
   @override
-  String get startTimeLabel => 'Start Time';
+  String get startTimeLabel => 'Hora de inicio';
 
   @override
-  String get startingFromLabel => 'Starting from';
+  String get startingFromLabel => 'Desde';
 
   @override
-  String get statusApproved => 'Approved';
+  String get statusApproved => 'Aprobado';
 
   @override
-  String get statusCompleted => 'Completed';
+  String get statusCompleted => 'Completado';
 
   @override
-  String get statusPending => 'Pending';
+  String get statusPending => 'Pendiente';
 
   @override
-  String get statusRejected => 'Rejected';
+  String get statusRejected => 'Rechazado';
 
   @override
-  String get submitReportCta => 'Submit Report';
+  String get submitReportCta => 'Enviar informe';
 
   @override
-  String get submitReviewCta => 'Submit Review';
+  String get submitReviewCta => 'Enviar reseña';
 
   @override
-  String get subscriptionActionLabel => 'Subscription';
+  String get subscriptionActionLabel => 'Suscripción';
 
   @override
   String subscriptionActiveStatus(Object value1) {
-    return '$value1 plan active';
+    return 'Plan $value1 activo';
   }
 
   @override
-  String get subscriptionUpgradeLabel => 'Upgrade Plan';
+  String get subscriptionUpgradeLabel => 'Mejorar plan';
 
   @override
-  String get subscriptionUpgradeStatus => 'Upgrade to premium';
+  String get subscriptionUpgradeStatus => 'Pasar a premium';
 
   @override
-  String get suggestTimeCta => 'Suggest a Different Time';
+  String get suggestTimeCta => 'Sugerir otra hora';
 
   @override
-  String get suggestTimeCtaShort => 'Suggest Time';
+  String get suggestTimeCtaShort => 'Sugerir hora';
 
   @override
   String get suggestTimeDescription =>
-      'Propose a new date and time for this booking';
+      'Propón una nueva fecha y hora para esta reserva';
 
   @override
-  String get suggestTimeLabel => 'Suggest a Time';
+  String get suggestTimeLabel => 'Sugerir una hora';
 
   @override
-  String get suggestTimeSuccess => 'New time suggested to customer';
+  String get suggestTimeSuccess => 'Nueva hora sugerida al cliente';
 
   @override
-  String get suggestedTimeLabel => 'Suggested Time';
+  String get suggestedTimeLabel => 'Hora sugerida';
 
   @override
-  String get supportBannerSubtitle => 'We\'re here to help, 24/7';
+  String get supportBannerSubtitle =>
+      'Estamos aquí para ayudarte, las 24 horas';
 
   @override
-  String get supportBannerTitle => 'Need Help?';
+  String get supportBannerTitle => '¿Necesitas ayuda?';
 
   @override
-  String get supportTeamReplyLabel => 'Support Team';
+  String get supportTeamReplyLabel => 'Equipo de soporte';
 
   @override
-  String get tapStarToRateLabel => 'Tap a star to rate';
+  String get tapStarToRateLabel => 'Toca una estrella para calificar';
 
   @override
-  String get thisMonthLabel => 'This Month';
+  String get thisMonthLabel => 'Este mes';
 
   @override
-  String get timeLabel => 'Time';
+  String get timeLabel => 'Hora';
 
   @override
-  String get timeSlotsLabel => 'Time Slots';
+  String get timeSlotsLabel => 'Franjas horarias';
 
   @override
-  String get timeTipText => 'Choose a time that works best for you';
+  String get timeTipText => 'Elige la hora que mejor te convenga';
 
   @override
-  String get titleHint => 'Enter a title';
+  String get titleHint => 'Introduce un título';
 
   @override
-  String get titleLabelRequired => 'Title';
+  String get titleLabelRequired => 'Título';
 
   @override
-  String get titleValidationError => 'Please enter a title';
+  String get titleValidationError => 'Introduce un título';
 
   @override
-  String get todayLabel => 'Today';
+  String get todayLabel => 'Hoy';
 
   @override
-  String get todaysEarningsLabel => 'Today\'s Earnings';
+  String get todaysEarningsLabel => 'Ganancias de hoy';
 
   @override
-  String get todaysScheduleLabel => 'Today\'s Schedule';
+  String get todaysScheduleLabel => 'Agenda de hoy';
 
   @override
-  String get topRatedLabel => 'Top Rated';
+  String get topRatedLabel => 'Mejor valorados';
 
   @override
-  String get totalBookingsLabel => 'Total Bookings';
+  String get totalBookingsLabel => 'Total de reservas';
 
   @override
-  String get totalEarnedLabel => 'Total Earned';
+  String get totalEarnedLabel => 'Total ganado';
 
   @override
-  String get totalSpentLabel => 'Total Spent';
+  String get totalSpentLabel => 'Total gastado';
 
   @override
   String transactionCountLabel(Object value1) {
-    return '$value1 transactions';
+    return '$value1 transacciones';
   }
 
   @override
-  String get transactionHistoryTitle => 'Transaction History';
+  String get transactionHistoryTitle => 'Historial de transacciones';
 
   @override
-  String get tryAgainCta => 'Try Again';
+  String get tryAgainCta => 'Intentar de nuevo';
 
   @override
-  String get twitterSignInLabel => 'Continue with Twitter';
+  String get twitterSignInLabel => 'Continuar con Twitter';
 
   @override
-  String get typicallyRepliesLabel => 'Typically replies';
+  String get typicallyRepliesLabel => 'Suele responder';
 
   @override
-  String get unavailableLabel => 'Unavailable';
+  String get unavailableLabel => 'No disponible';
 
   @override
-  String get unknownRoleError => 'Unknown account type';
+  String get unknownRoleError => 'Tipo de cuenta desconocido';
 
   @override
-  String get updateBookingError => 'Failed to update booking';
+  String get updateBookingError => 'Error al actualizar la reserva';
 
   @override
-  String get updateCta => 'Update';
+  String get updateCta => 'Actualizar';
 
   @override
-  String get updateReviewCta => 'Update Review';
+  String get updateReviewCta => 'Actualizar reseña';
 
   @override
-  String get upgradeCta => 'Upgrade';
+  String get upgradeCta => 'Mejorar';
 
   @override
-  String get uploadError => 'Upload failed';
+  String get uploadError => 'Error al subir';
 
   @override
-  String get uploadSuccess => 'Uploaded successfully';
+  String get uploadSuccess => 'Subido correctamente';
 
   @override
-  String get userLabel => 'User';
+  String get userLabel => 'Usuario';
 
   @override
-  String get vacationCleared => 'Vacation cleared';
+  String get vacationCleared => 'Vacaciones eliminadas';
 
   @override
-  String get vacationDateRequired => 'Please select a vacation date range';
+  String get vacationDateRequired =>
+      'Selecciona un rango de fechas de vacaciones';
 
   @override
-  String get vacationSet => 'Vacation set successfully';
+  String get vacationSet => 'Vacaciones establecidas correctamente';
 
   @override
-  String get validAmountError => 'Please enter a valid amount';
+  String get validAmountError => 'Introduce un monto válido';
 
   @override
   String get verificationAddPortfolio =>
-      'Add portfolio items to help get verified';
+      'Agrega elementos al portafolio para ayudar a que te verifiquen';
 
   @override
-  String get verificationLabel => 'Verification';
+  String get verificationLabel => 'Verificación';
 
   @override
-  String get verificationPending => 'Verification pending';
+  String get verificationPending => 'Verificación pendiente';
 
   @override
-  String get verifiedLabel => 'Verified';
+  String get verifiedLabel => 'Verificado';
 
   @override
-  String get verifiedProfessionalLabel => 'Professional';
+  String get verifiedProfessionalLabel => 'Profesional';
 
   @override
   String verifiedStatusLabel(Object value1) {
-    return 'Verified $value1';
+    return 'Verificado $value1';
   }
 
   @override
-  String get viewMyBookingsCta => 'View My Bookings';
+  String get viewMyBookingsCta => 'Ver mis reservas';
 
   @override
-  String get viewProfileCta => 'View Profile';
+  String get viewProfileCta => 'Ver perfil';
 
   @override
-  String get viewWalletLabel => 'View Wallet';
+  String get viewWalletLabel => 'Ver billetera';
 
   @override
-  String get visitorsLabel => 'Visitors';
+  String get visitorsLabel => 'Visitantes';
 
   @override
-  String get visitorsSubtext => 'People who viewed your profile';
+  String get visitorsSubtext => 'Personas que vieron tu perfil';
 
   @override
-  String get walletActionLabel => 'Wallet';
+  String get walletActionLabel => 'Billetera';
 
   @override
-  String get walletActionSubtitle => 'View balance and transactions';
+  String get walletActionSubtitle => 'Consulta tu saldo y transacciones';
 
   @override
-  String get walletEarningsLabel => 'Earnings';
+  String get walletEarningsLabel => 'Ganancias';
 
   @override
-  String get walletLabel => 'Wallet';
+  String get walletLabel => 'Billetera';
 
   @override
-  String get walletTitle => 'Wallet';
+  String get walletTitle => 'Billetera';
 
   @override
-  String get whatHappensNextLabel => 'What happens next?';
+  String get whatHappensNextLabel => '¿Qué pasa después?';
 
   @override
-  String get whyBookHereLabel => 'Why book with us?';
+  String get whyBookHereLabel => '¿Por qué reservar con nosotros?';
 
   @override
-  String get withdrawCta => 'Withdraw';
+  String get withdrawCta => 'Retirar';
 
   @override
-  String get withdrawErrorDefault => 'Withdrawal failed. Please try again.';
+  String get withdrawErrorDefault => 'El retiro falló. Inténtalo de nuevo.';
 
   @override
-  String get withdrawSuccess => 'Withdrawal requested successfully';
+  String get withdrawSuccess => 'Retiro solicitado correctamente';
 
   @override
-  String get withdrawTitle => 'Withdraw Funds';
+  String get withdrawTitle => 'Retirar fondos';
 
   @override
-  String get withdrawnLabel => 'Withdrawn';
+  String get withdrawnLabel => 'Retirado';
 
   @override
-  String get workingHoursLabel => 'Working Hours';
+  String get workingHoursLabel => 'Horario laboral';
 
   @override
-  String get writeReviewTitle => 'Write a Review';
+  String get writeReviewTitle => 'Escribir una reseña';
 
   @override
   String yearsLabel(Object value1) {
-    return '$value1 years';
+    return '$value1 años';
   }
 
   @override
-  String get yesCancelCta => 'Yes, Cancel';
+  String get yesCancelCta => 'Sí, cancelar';
 
   @override
-  String get youAreNotifiedLabel => 'You\'ll be notified';
+  String get youAreNotifiedLabel => 'Se te notificará';
 
   @override
   String get youAreNotifiedSubtitle =>
-      'We\'ll notify you as soon as there\'s a response';
+      'Te avisaremos en cuanto haya una respuesta';
 
   @override
-  String get yourAccountEmailPlaceholder => 'your account email';
+  String get yourAccountEmailPlaceholder => 'el correo de tu cuenta';
 
   @override
-  String get tsErrForbidden =>
-      'You do not have permission to perform this action.';
+  String get tsErrForbidden => 'No tienes permiso para realizar esta acción.';
 
   @override
   String get tsErrNetwork =>
-      'Network problem. Check your connection and try again.';
+      'Problema de red. Comprueba tu conexión e inténtalo de nuevo.';
 
   @override
-  String get tsErrGeneric => 'Something went wrong. Please try again.';
+  String get tsErrGeneric => 'Algo salió mal. Inténtalo de nuevo.';
 
   @override
-  String get tsRetry => 'Retry';
+  String get tsRetry => 'Reintentar';
 
   @override
-  String get tsCopy => 'Copy';
+  String get tsCopy => 'Copiar';
 
   @override
-  String get tsCopied => 'Copied to clipboard';
+  String get tsCopied => 'Copiado al portapapeles';
 
   @override
-  String get tsOpenLink => 'Open link';
+  String get tsOpenLink => 'Abrir enlace';
 
   @override
-  String get tsLinkOpenFailed => 'This link could not be opened.';
+  String get tsLinkOpenFailed => 'No se pudo abrir este enlace.';
 
   @override
-  String get tsCancel => 'Cancel';
+  String get tsCancel => 'Cancelar';
 
   @override
-  String get tsClose => 'Close';
+  String get tsClose => 'Cerrar';
 
   @override
-  String get tsRefresh => 'Refresh';
+  String get tsRefresh => 'Actualizar';
 
   @override
-  String get tsAll => 'All';
+  String get tsAll => 'Todos';
 
   @override
   String get tsCatSpam => 'Spam';
 
   @override
-  String get tsCatHarassment => 'Harassment';
+  String get tsCatHarassment => 'Acoso';
 
   @override
-  String get tsCatFraud => 'Fraud or scam';
+  String get tsCatFraud => 'Fraude o estafa';
 
   @override
-  String get tsCatFakeProfile => 'Fake profile';
+  String get tsCatFakeProfile => 'Perfil falso';
 
   @override
-  String get tsCatInappropriate => 'Inappropriate content';
+  String get tsCatInappropriate => 'Contenido inapropiado';
 
   @override
-  String get tsCatPaymentFraud => 'Payment fraud';
+  String get tsCatPaymentFraud => 'Fraude de pago';
 
   @override
-  String get tsCatOffPlatform => 'Off-platform payment';
+  String get tsCatOffPlatform => 'Pago fuera de la plataforma';
 
   @override
-  String get tsCatThreats => 'Threats or safety concern';
+  String get tsCatThreats => 'Amenazas o problema de seguridad';
 
   @override
-  String get tsCatDiscrimination => 'Discrimination';
+  String get tsCatDiscrimination => 'Discriminación';
 
   @override
-  String get tsCatMisconduct => 'Service misconduct';
+  String get tsCatMisconduct => 'Mala conducta en el servicio';
 
   @override
-  String get tsCatOther => 'Other';
+  String get tsCatOther => 'Otro';
 
   @override
-  String get tsStatusPending => 'Pending';
+  String get tsStatusPending => 'Pendiente';
 
   @override
-  String get tsStatusReviewed => 'Reviewed';
+  String get tsStatusReviewed => 'Revisado';
 
   @override
-  String get tsStatusActionTaken => 'Action taken';
+  String get tsStatusActionTaken => 'Acción tomada';
 
   @override
-  String get tsStatusDismissed => 'Dismissed';
+  String get tsStatusDismissed => 'Descartado';
 
   @override
-  String get tsSevLow => 'Low';
+  String get tsSevLow => 'Baja';
 
   @override
-  String get tsSevMedium => 'Medium';
+  String get tsSevMedium => 'Media';
 
   @override
-  String get tsSevHigh => 'High';
+  String get tsSevHigh => 'Alta';
 
   @override
-  String get tsSevCritical => 'Critical';
+  String get tsSevCritical => 'Crítica';
 
   @override
-  String get tsRoleCustomer => 'Customer';
+  String get tsRoleCustomer => 'Cliente';
 
   @override
-  String get tsRoleProfessional => 'Professional';
+  String get tsRoleProfessional => 'Profesional';
 
   @override
-  String get tsRoleAdmin => 'Admin';
+  String get tsRoleAdmin => 'Administrador';
 
   @override
-  String get tsActWarning => 'Warning';
+  String get tsActWarning => 'Advertencia';
 
   @override
-  String get tsActRestrictMessaging => 'Messaging restriction';
+  String get tsActRestrictMessaging => 'Restricción de mensajería';
 
   @override
-  String get tsActRestrictBooking => 'Booking restriction';
+  String get tsActRestrictBooking => 'Restricción de reservas';
 
   @override
-  String get tsActSuspendTemporary => 'Temporary suspension';
+  String get tsActSuspendTemporary => 'Suspensión temporal';
 
   @override
-  String get tsActSuspendPermanent => 'Permanent suspension';
+  String get tsActSuspendPermanent => 'Suspensión permanente';
 
   @override
   String get tsActWarningDesc =>
-      'Records a formal warning. Does not limit the account.';
+      'Registra una advertencia formal. No limita la cuenta.';
 
   @override
   String get tsActRestrictMessagingDesc =>
-      'Marks the account as restricted from messaging.';
+      'Marca la cuenta como restringida para enviar mensajes.';
 
   @override
   String get tsActRestrictBookingDesc =>
-      'Marks the account as restricted from creating bookings.';
+      'Marca la cuenta como restringida para crear reservas.';
 
   @override
   String get tsActSuspendTemporaryDesc =>
-      'Marks the account as suspended until the date you choose.';
+      'Marca la cuenta como suspendida hasta la fecha que elijas.';
 
   @override
   String get tsActSuspendPermanentDesc =>
-      'Marks the account as permanently suspended. No expiry; only an admin can reverse it.';
+      'Marca la cuenta como suspendida de forma permanente. Sin vencimiento; solo un administrador puede revertirla.';
 
   @override
-  String get tsStateActive => 'Active';
+  String get tsStateActive => 'Activa';
 
   @override
-  String get tsStateScheduled => 'Scheduled';
+  String get tsStateScheduled => 'Programada';
 
   @override
-  String get tsStateExpired => 'Expired';
+  String get tsStateExpired => 'Vencida';
 
   @override
-  String get tsStateReversed => 'Reversed';
+  String get tsStateReversed => 'Revertida';
 
   @override
-  String get tsAppealPending => 'Pending';
+  String get tsAppealPending => 'Pendiente';
 
   @override
-  String get tsAppealApproved => 'Approved';
+  String get tsAppealApproved => 'Aprobada';
 
   @override
-  String get tsAppealRejected => 'Rejected';
+  String get tsAppealRejected => 'Rechazada';
 
   @override
-  String get tsReportsTitle => 'Reported Users';
+  String get tsReportsTitle => 'Usuarios denunciados';
 
   @override
   String tsPendingReview(String count) {
-    return '$count pending review';
+    return '$count pendientes de revisión';
   }
 
   @override
-  String get tsSearchReportsHint => 'Search by user, reporter, category or ID';
+  String get tsSearchReportsHint =>
+      'Buscar por usuario, denunciante, categoría o ID';
 
   @override
-  String get tsFilterSeverity => 'Severity';
+  String get tsFilterSeverity => 'Gravedad';
 
   @override
-  String get tsFilterCategory => 'Category';
+  String get tsFilterCategory => 'Categoría';
 
   @override
-  String get tsFilterDate => 'Date';
+  String get tsFilterDate => 'Fecha';
 
   @override
-  String get tsDateAny => 'Any time';
+  String get tsDateAny => 'Cualquier momento';
 
   @override
-  String get tsDateToday => 'Today';
+  String get tsDateToday => 'Hoy';
 
   @override
-  String get tsDate7 => 'Last 7 days';
+  String get tsDate7 => 'Últimos 7 días';
 
   @override
-  String get tsDate30 => 'Last 30 days';
+  String get tsDate30 => 'Últimos 30 días';
 
   @override
-  String get tsDateCustom => 'Custom range';
+  String get tsDateCustom => 'Rango personalizado';
 
   @override
-  String get tsSortNewest => 'Newest first';
+  String get tsSortNewest => 'Más recientes primero';
 
   @override
-  String get tsSortSeverity => 'Highest severity first';
+  String get tsSortSeverity => 'Mayor gravedad primero';
 
   @override
-  String get tsClearFilters => 'Clear filters';
+  String get tsClearFilters => 'Borrar filtros';
 
   @override
-  String get tsNoReports => 'No reports yet';
+  String get tsNoReports => 'Aún no hay denuncias';
 
   @override
-  String get tsNoReportsHint => 'Reports submitted by users will appear here.';
+  String get tsNoReportsHint =>
+      'Las denuncias enviadas por los usuarios aparecerán aquí.';
 
   @override
-  String get tsNoMatches => 'No reports match your filters';
+  String get tsNoMatches => 'Ninguna denuncia coincide con tus filtros';
 
   @override
-  String get tsNoMatchesHint => 'Try changing or clearing the filters.';
+  String get tsNoMatchesHint => 'Prueba a cambiar o borrar los filtros.';
 
   @override
-  String get tsSelectReport => 'Select a report';
+  String get tsSelectReport => 'Selecciona una denuncia';
 
   @override
   String get tsSelectReportHint =>
-      'Choose a report from the list to review it and take action.';
+      'Elige una denuncia de la lista para revisarla y actuar.';
 
   @override
-  String get tsIndBooking => 'Booking';
+  String get tsIndBooking => 'Reserva';
 
   @override
-  String get tsIndMessage => 'Message';
+  String get tsIndMessage => 'Mensaje';
 
   @override
-  String get tsIndEvidence => 'Evidence';
+  String get tsIndEvidence => 'Prueba';
 
   @override
   String tsReportedBy(String name) {
-    return 'Reported by $name';
+    return 'Denunciado por $name';
   }
 
   @override
-  String get tsAccountBlocked => 'Account blocked';
+  String get tsAccountBlocked => 'Cuenta bloqueada';
 
   @override
   String tsReportNumber(String id) {
-    return 'Report #$id';
+    return 'Denuncia n.º $id';
   }
 
   @override
   String tsSubmittedOn(String date) {
-    return 'Submitted $date';
+    return 'Enviada el $date';
   }
 
   @override
-  String get tsTakeAction => 'Take action';
+  String get tsTakeAction => 'Tomar medidas';
 
   @override
-  String get tsMarkReviewed => 'Mark reviewed';
+  String get tsMarkReviewed => 'Marcar como revisada';
 
   @override
-  String get tsDismiss => 'Dismiss';
+  String get tsDismiss => 'Descartar';
 
   @override
-  String get tsSecDescription => 'Report description';
+  String get tsSecDescription => 'Descripción de la denuncia';
 
   @override
-  String get tsNoDescription => 'No description was provided.';
+  String get tsNoDescription => 'No se proporcionó ninguna descripción.';
 
   @override
-  String get tsSecEvidence => 'Evidence and context';
+  String get tsSecEvidence => 'Pruebas y contexto';
 
   @override
-  String get tsEvidenceLabel => 'EVIDENCE / REFERENCE';
+  String get tsEvidenceLabel => 'PRUEBA / REFERENCIA';
 
   @override
-  String get tsNoEvidence => 'No evidence link provided.';
+  String get tsNoEvidence => 'No se proporcionó enlace de prueba.';
 
   @override
-  String get tsBookingLabel => 'RELATED BOOKING';
+  String get tsBookingLabel => 'RESERVA RELACIONADA';
 
   @override
   String tsBookingNumber(String id) {
-    return 'Booking #$id';
+    return 'Reserva n.º $id';
   }
 
   @override
-  String get tsMessageLabel => 'RELATED MESSAGE';
+  String get tsMessageLabel => 'MENSAJE RELACIONADO';
 
   @override
   String tsMessageNumber(String id) {
-    return 'Message #$id';
+    return 'Mensaje n.º $id';
   }
 
   @override
   String get tsMessageDeleted =>
-      'This message was deleted. Its content is not available.';
+      'Este mensaje fue eliminado. Su contenido no está disponible.';
 
   @override
   String tsMessageAttachments(String count) {
-    return 'Attachments: $count';
+    return 'Archivos adjuntos: $count';
   }
 
   @override
-  String get tsNoRelated => 'None linked to this report.';
+  String get tsNoRelated => 'Nada vinculado a esta denuncia.';
 
   @override
-  String get tsFieldWhen => 'When';
+  String get tsFieldWhen => 'Cuándo';
 
   @override
-  String get tsFieldParties => 'Parties';
+  String get tsFieldParties => 'Partes';
 
   @override
-  String get tsFieldSender => 'Sender';
+  String get tsFieldSender => 'Remitente';
 
   @override
   String tsBookingWith(String customer, String professional) {
-    return '$customer with $professional';
+    return '$customer con $professional';
   }
 
   @override
-  String get tsSecPeople => 'People';
+  String get tsSecPeople => 'Personas';
 
   @override
-  String get tsReportedUser => 'REPORTED USER';
+  String get tsReportedUser => 'USUARIO DENUNCIADO';
 
   @override
-  String get tsReporterLabel => 'REPORTER';
+  String get tsReporterLabel => 'DENUNCIANTE';
 
   @override
   String get tsReporterAdminOnly =>
-      'Visible to admins only. Never shown to the reported user.';
+      'Visible solo para administradores. Nunca se muestra al usuario denunciado.';
 
   @override
   String get tsAccountBlockedNote =>
-      'This account is currently blocked (see the Blocked tab). Blocking is separate from moderation actions.';
+      'Esta cuenta está bloqueada actualmente (consulta la pestaña Bloqueados). El bloqueo es independiente de las acciones de moderación.';
 
   @override
-  String get tsSecActive => 'Active restrictions and suspension';
+  String get tsSecActive => 'Restricciones y suspensión activas';
 
   @override
-  String get tsNoActive => 'No active restrictions or suspension.';
+  String get tsNoActive => 'No hay restricciones ni suspensión activas.';
 
   @override
-  String get tsSecTimeline => 'Report history';
+  String get tsSecTimeline => 'Historial de la denuncia';
 
   @override
-  String get tsSecHistory => 'Moderation history';
+  String get tsSecHistory => 'Historial de moderación';
 
   @override
-  String get tsSecOtherReports => 'Other reports about this user';
+  String get tsSecOtherReports => 'Otras denuncias sobre este usuario';
 
   @override
-  String get tsHistoryLoadError => 'Could not load moderation history.';
+  String get tsHistoryLoadError =>
+      'No se pudo cargar el historial de moderación.';
 
   @override
-  String get tsHistoryEmpty => 'No moderation actions on record for this user.';
+  String get tsHistoryEmpty =>
+      'No hay acciones de moderación registradas para este usuario.';
 
   @override
-  String get tsTlSubmitted => 'Report submitted';
+  String get tsTlSubmitted => 'Denuncia enviada';
 
   @override
   String tsTlReviewed(String status, String admin) {
-    return 'Marked $status by $admin';
+    return 'Marcada como $status por $admin';
   }
 
   @override
   String tsTlInternalNote(String note) {
-    return 'Internal note: $note';
+    return 'Nota interna: $note';
   }
 
   @override
   String tsTlActionApplied(String action, String admin) {
-    return '$action applied by $admin';
+    return '$action aplicada por $admin';
   }
 
   @override
   String tsTlActionReversed(String action, String admin) {
-    return '$action reversed by $admin';
+    return '$action revertida por $admin';
   }
 
   @override
-  String get tsThisReport => 'This report';
+  String get tsThisReport => 'Esta denuncia';
 
   @override
   String tsHistPerformedBy(String admin, String date) {
-    return 'By $admin on $date';
+    return 'Por $admin el $date';
   }
 
   @override
   String tsStartsOn(String date) {
-    return 'Starts $date';
+    return 'Comienza el $date';
   }
 
   @override
   String tsExpiresOn(String date) {
-    return 'Expires $date';
+    return 'Vence el $date';
   }
 
   @override
-  String get tsNoExpiryPermanent => 'Permanent, no expiry';
+  String get tsNoExpiryPermanent => 'Permanente, sin vencimiento';
 
   @override
-  String get tsNoExpiryOpen => 'No end date, active until lifted';
+  String get tsNoExpiryOpen => 'Sin fecha de fin, activa hasta que se levante';
 
   @override
-  String get tsReasonShownToUser => 'REASON (SHOWN TO THE USER)';
+  String get tsReasonShownToUser => 'MOTIVO (SE MUESTRA AL USUARIO)';
 
   @override
-  String get tsInternalNoteLabel => 'Internal note (admin only)';
+  String get tsInternalNoteLabel => 'Nota interna (solo administradores)';
 
   @override
   String tsHistReversedBy(String admin, String date) {
-    return 'Reversed by $admin on $date';
+    return 'Revertida por $admin el $date';
   }
 
   @override
-  String get tsReverse => 'Reverse';
+  String get tsReverse => 'Revertir';
 
   @override
-  String get tsAdminUnknown => 'Unknown admin';
+  String get tsAdminUnknown => 'Administrador desconocido';
 
   @override
-  String get tsReviewTitle => 'Mark report as reviewed';
+  String get tsReviewTitle => 'Marcar la denuncia como revisada';
 
   @override
   String get tsReviewMessage =>
-      'Confirm that you have reviewed this report. You can add an internal note.';
+      'Confirma que has revisado esta denuncia. Puedes agregar una nota interna.';
 
   @override
-  String get tsReviewConfirm => 'Mark reviewed';
+  String get tsReviewConfirm => 'Marcar como revisada';
 
   @override
-  String get tsDismissTitle => 'Dismiss report';
+  String get tsDismissTitle => 'Descartar denuncia';
 
   @override
   String get tsDismissMessage =>
-      'Dismiss this report if it does not break the rules. No action is taken against the reported user.';
+      'Descarta esta denuncia si no infringe las normas. No se toma ninguna medida contra el usuario denunciado.';
 
   @override
-  String get tsDismissConfirm => 'Dismiss report';
+  String get tsDismissConfirm => 'Descartar denuncia';
 
   @override
   String get tsResolveReporterNote =>
-      'The reporter receives a generic outcome notification. The reported user is not notified.';
+      'El denunciante recibe una notificación genérica del resultado. El usuario denunciado no es notificado.';
 
   @override
-  String get tsReportUpdated => 'Report updated';
+  String get tsReportUpdated => 'Denuncia actualizada';
 
   @override
-  String get tsTakeActionTitle => 'Take moderation action';
+  String get tsTakeActionTitle => 'Tomar medida de moderación';
 
   @override
   String tsRegardingReport(String id) {
-    return 'Regarding report #$id';
+    return 'Sobre la denuncia n.º $id';
   }
 
   @override
-  String get tsChooseAction => 'Choose an action';
+  String get tsChooseAction => 'Elige una acción';
 
   @override
-  String get tsChooseActionError => 'Select an action to continue.';
+  String get tsChooseActionError => 'Selecciona una acción para continuar.';
 
   @override
-  String get tsAlreadyActive => 'Already active for this user.';
+  String get tsAlreadyActive => 'Ya está activa para este usuario.';
 
   @override
   String get tsAlreadyPermanentlySuspended =>
-      'This user is already permanently suspended.';
+      'Este usuario ya está suspendido de forma permanente.';
 
   @override
-  String get tsDurationTitle => 'Duration';
+  String get tsDurationTitle => 'Duración';
 
   @override
-  String get tsDurationUntilLifted => 'Until lifted';
+  String get tsDurationUntilLifted => 'Hasta que se levante';
 
   @override
-  String get tsDurationPermanent => 'Permanent';
+  String get tsDurationPermanent => 'Permanente';
 
   @override
   String tsDurationDays(String n) {
-    return '$n days';
+    return '$n días';
   }
 
   @override
-  String get tsDurationCustom => 'Custom date';
+  String get tsDurationCustom => 'Fecha personalizada';
 
   @override
   String tsEndsAt(String when) {
-    return 'Ends $when';
+    return 'Termina $when';
   }
 
   @override
   String tsUntilDate(String date) {
-    return 'Until $date';
+    return 'Hasta el $date';
   }
 
   @override
-  String get tsExpiryRequired => 'Choose when this ends.';
+  String get tsExpiryRequired => 'Elige cuándo termina.';
 
   @override
-  String get tsExpiryMustBeFuture => 'The end time must be in the future.';
+  String get tsExpiryMustBeFuture =>
+      'La hora de finalización debe estar en el futuro.';
 
   @override
-  String get tsReasonLabel => 'Reason';
+  String get tsReasonLabel => 'Motivo';
 
   @override
-  String get tsReasonHint => 'Explain why this action is being taken';
+  String get tsReasonHint => 'Explica por qué se toma esta acción';
 
   @override
   String get tsReasonUserVisibleNote =>
-      'Shown to the user in their notification. Do not mention the reporter or other users.';
+      'Se muestra al usuario en su notificación. No menciones al denunciante ni a otros usuarios.';
 
   @override
   String tsReasonTooShort(String min) {
-    return 'Please enter a reason of at least $min characters.';
+    return 'Introduce un motivo de al menos $min caracteres.';
   }
 
   @override
-  String get tsInternalNoteHint => 'Optional context for other admins';
+  String get tsInternalNoteHint =>
+      'Contexto opcional para otros administradores';
 
   @override
-  String get tsInternalNoteNote => 'Internal only. Never shown to the user.';
+  String get tsInternalNoteNote =>
+      'Solo uso interno. Nunca se muestra al usuario.';
 
   @override
-  String get tsMarkReportTaken => 'Mark this report as Action taken';
+  String get tsMarkReportTaken => 'Marcar esta denuncia como «Acción tomada»';
 
   @override
   String get tsMarkReportTakenHint =>
-      'The reporter receives a generic outcome notification only.';
+      'El denunciante recibe únicamente una notificación genérica del resultado.';
 
   @override
-  String get tsApplyAction => 'Apply action';
+  String get tsApplyAction => 'Aplicar acción';
 
   @override
   String tsConfirmTitle(String action) {
-    return 'Apply $action?';
+    return '¿Aplicar $action?';
   }
 
   @override
   String tsConfirmBody(String user) {
-    return 'This is recorded in the moderation history of $user and the user is notified.';
+    return 'Esto queda registrado en el historial de moderación de $user y se notifica al usuario.';
   }
 
   @override
   String get tsConfirmPermanentAck =>
-      'I understand this suspension has no expiry and can only be reversed by an admin.';
+      'Entiendo que esta suspensión no tiene vencimiento y solo puede ser revertida por un administrador.';
 
   @override
-  String get tsFieldUser => 'User';
+  String get tsFieldUser => 'Usuario';
 
   @override
-  String get tsFieldAction => 'Action';
+  String get tsFieldAction => 'Acción';
 
   @override
-  String get tsFieldDuration => 'Duration';
+  String get tsFieldDuration => 'Duración';
 
   @override
-  String get tsFieldReason => 'Reason';
+  String get tsFieldReason => 'Motivo';
 
   @override
-  String get tsActionApplied => 'Moderation action applied';
+  String get tsActionApplied => 'Acción de moderación aplicada';
 
   @override
   String get tsActionAppliedReportFailed =>
-      'The action was applied, but the report status could not be updated.';
+      'La acción se aplicó, pero no se pudo actualizar el estado de la denuncia.';
 
   @override
   String get tsCannotActOnAdmin =>
-      'Moderation actions cannot target admin accounts.';
+      'Las acciones de moderación no pueden dirigirse a cuentas de administrador.';
 
   @override
-  String get tsFieldPerformedBy => 'Performed by';
+  String get tsFieldPerformedBy => 'Realizada por';
 
   @override
-  String get tsFieldCreated => 'Created';
+  String get tsFieldCreated => 'Creada';
 
   @override
-  String get tsFieldExpires => 'Expires';
+  String get tsFieldExpires => 'Vence';
 
   @override
-  String get tsFieldReport => 'Report';
+  String get tsFieldReport => 'Denuncia';
 
   @override
-  String get tsFieldDecidedBy => 'Decided by';
+  String get tsFieldDecidedBy => 'Decidida por';
 
   @override
-  String get tsFieldDecidedOn => 'Decided on';
+  String get tsFieldDecidedOn => 'Decidida el';
 
   @override
-  String get tsReverseTitle => 'Reverse moderation action';
+  String get tsReverseTitle => 'Revertir acción de moderación';
 
   @override
   String tsReverseMessage(String action) {
-    return 'Reverse the $action? It is lifted and the record stays in the history.';
+    return '¿Revertir $action? Se levanta y el registro permanece en el historial.';
   }
 
   @override
-  String get tsReversalReasonLabel => 'Reason for reversal';
+  String get tsReversalReasonLabel => 'Motivo de la reversión';
 
   @override
-  String get tsReversalReasonHint => 'Why is this action being lifted?';
+  String get tsReversalReasonHint => '¿Por qué se levanta esta acción?';
 
   @override
-  String get tsReverseConfirm => 'Reverse action';
+  String get tsReverseConfirm => 'Revertir acción';
 
   @override
   String get tsReverseAuditNote =>
-      'Your reason is internal. It is recorded in the moderation history and never shown to the user.';
+      'Tu motivo es interno. Se registra en el historial de moderación y nunca se muestra al usuario.';
 
   @override
   String get tsReverseNotifyNote =>
-      'The user is notified that this action was lifted.';
+      'Se notifica al usuario que esta acción fue levantada.';
 
   @override
   String get tsReverseLegacyNote =>
-      'This action came from the legacy ban flow. Reversing it also re-enables the account.';
+      'Esta acción proviene del antiguo flujo de bloqueo. Revertirla también reactiva la cuenta.';
 
   @override
-  String get tsActionReversed => 'Moderation action reversed';
+  String get tsActionReversed => 'Acción de moderación revertida';
 
   @override
-  String get tsAppealsTitle => 'Appeals';
+  String get tsAppealsTitle => 'Apelaciones';
 
   @override
   String tsPendingAppeals(String count) {
-    return '$count pending appeals';
+    return '$count apelaciones pendientes';
   }
 
   @override
-  String get tsSearchAppealsHint => 'Search by user, email or appeal text';
+  String get tsSearchAppealsHint =>
+      'Buscar por usuario, correo o texto de la apelación';
 
   @override
-  String get tsNoAppeals => 'No appeals here';
+  String get tsNoAppeals => 'No hay apelaciones aquí';
 
   @override
   String get tsNoAppealsHint =>
-      'Appeals against moderation actions will appear here.';
+      'Las apelaciones contra acciones de moderación aparecerán aquí.';
 
   @override
-  String get tsSelectAppeal => 'Select an appeal';
+  String get tsSelectAppeal => 'Selecciona una apelación';
 
   @override
   String get tsSelectAppealHint =>
-      'Choose an appeal from the list to review it.';
+      'Elige una apelación de la lista para revisarla.';
 
   @override
   String tsAppealNumber(String id) {
-    return 'Appeal #$id';
+    return 'Apelación n.º $id';
   }
 
   @override
-  String get tsSecAppealReason => 'Appeal';
+  String get tsSecAppealReason => 'Apelación';
 
   @override
-  String get tsSecAppealedAction => 'Appealed action';
+  String get tsSecAppealedAction => 'Acción apelada';
 
   @override
-  String get tsSecDecision => 'Decision';
+  String get tsSecDecision => 'Decisión';
 
   @override
-  String get tsAppealApprove => 'Approve';
+  String get tsAppealApprove => 'Aprobar';
 
   @override
-  String get tsAppealReject => 'Reject';
+  String get tsAppealReject => 'Rechazar';
 
   @override
-  String get tsApproveTitle => 'Approve appeal';
+  String get tsApproveTitle => 'Aprobar apelación';
 
   @override
   String get tsApproveMessage =>
-      'Approving this appeal lifts the moderation action.';
+      'Aprobar esta apelación levanta la acción de moderación.';
 
   @override
-  String get tsApproveConfirm => 'Approve appeal';
+  String get tsApproveConfirm => 'Aprobar apelación';
 
   @override
-  String get tsRejectTitle => 'Reject appeal';
+  String get tsRejectTitle => 'Rechazar apelación';
 
   @override
   String get tsRejectMessage =>
-      'Rejecting keeps the moderation action in place.';
+      'Rechazarla mantiene la acción de moderación vigente.';
 
   @override
-  String get tsRejectConfirm => 'Reject appeal';
+  String get tsRejectConfirm => 'Rechazar apelación';
 
   @override
-  String get tsDecisionNoteLabel => 'Decision note';
+  String get tsDecisionNoteLabel => 'Nota de la decisión';
 
   @override
-  String get tsDecisionNoteHint => 'Explain your decision';
+  String get tsDecisionNoteHint => 'Explica tu decisión';
 
   @override
-  String get tsDecisionNoteNote => 'Internal only. Never shown to the user.';
+  String get tsDecisionNoteNote =>
+      'Solo uso interno. Nunca se muestra al usuario.';
 
   @override
   String get tsAppealApproveNote =>
-      'The action is reversed and the user is notified.';
+      'La acción se revierte y se notifica al usuario.';
 
   @override
   String get tsAppealApproveInactive =>
-      'This action is no longer in effect, so approving only closes the appeal. The user is notified.';
+      'Esta acción ya no está en vigor, por lo que aprobar solo cierra la apelación. Se notifica al usuario.';
 
   @override
   String get tsAppealRejectNote =>
-      'The action stays in place and the user is notified of the outcome.';
+      'La acción se mantiene y se notifica al usuario del resultado.';
 
   @override
-  String get tsAppealApprovedSnack => 'Appeal approved';
+  String get tsAppealApprovedSnack => 'Apelación aprobada';
 
   @override
-  String get tsAppealRejectedSnack => 'Appeal rejected';
+  String get tsAppealRejectedSnack => 'Apelación rechazada';
 
   @override
-  String get tsNoDecisionNote => 'No note was recorded.';
+  String get tsNoDecisionNote => 'No se registró ninguna nota.';
 
   @override
   String get tsEvidenceLinkOptional => 'Enlace de evidencia (opcional)';
@@ -6462,4 +6527,512 @@ class AppLocalizationsEs extends AppLocalizations {
   String myTsAppealForLabel(String action) {
     return 'Apelación de $action';
   }
+
+  @override
+  String get announcementDismiss => 'Cerrar anuncio';
+
+  @override
+  String get chatMessageHint => 'Mensaje';
+
+  @override
+  String get voiceRecordStartFailed =>
+      'No se pudo iniciar la grabación. Comprueba el micrófono e inténtalo de nuevo.';
+
+  @override
+  String get voiceRecordSaveFailed =>
+      'No se pudo guardar la grabación. Inténtalo de nuevo.';
+
+  @override
+  String get voicePlayFailed => 'No se pudo reproducir este mensaje de voz.';
+
+  @override
+  String get reviewSortBy => 'Ordenar por';
+
+  @override
+  String get reviewSortRelevant => 'Más relevantes';
+
+  @override
+  String get reviewSortNewest => 'Más recientes';
+
+  @override
+  String get reviewSortHighest => 'Mayor valoración';
+
+  @override
+  String get reviewSortLowest => 'Menor valoración';
+
+  @override
+  String get reviewSortHelpful => 'Más útiles';
+
+  @override
+  String get reviewSortWithPhotos => 'Con fotos';
+
+  @override
+  String get reviewFilterAll => 'Todas las reseñas';
+
+  @override
+  String get promoSkip => 'Omitir';
+
+  @override
+  String reviewCountPlural(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reseñas',
+      one: '1 reseña',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get valEmailRequired => 'El correo electrónico es obligatorio';
+
+  @override
+  String get valEmailInvalid => 'Introduce un correo electrónico válido';
+
+  @override
+  String get valEmailTooLong => 'El correo electrónico es demasiado largo';
+
+  @override
+  String get valPasswordRequired => 'La contraseña es obligatoria';
+
+  @override
+  String get valPasswordMinLength =>
+      'La contraseña debe tener al menos 8 caracteres';
+
+  @override
+  String get valPasswordUpper => 'Añade al menos una letra mayúscula';
+
+  @override
+  String get valPasswordLower => 'Añade al menos una letra minúscula';
+
+  @override
+  String get valPasswordNumber => 'Añade al menos un número';
+
+  @override
+  String get valPasswordSpecial => 'Añade al menos un carácter especial';
+
+  @override
+  String get valConfirmPassword => 'Confirma tu contraseña';
+
+  @override
+  String get valPasswordsMismatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get valNameRequired => 'El nombre es obligatorio';
+
+  @override
+  String get valNameMinLength => 'El nombre debe tener al menos 2 caracteres';
+
+  @override
+  String get valNameMaxLength => 'El nombre debe tener menos de 50 caracteres';
+
+  @override
+  String get valNameNoNumbers => 'El nombre no puede contener números';
+
+  @override
+  String get valNameInvalidChars => 'El nombre contiene caracteres no válidos';
+
+  @override
+  String get valPhoneRequired => 'El número de teléfono es obligatorio';
+
+  @override
+  String get valPhoneInvalid => 'Introduce un número de teléfono válido';
+
+  @override
+  String get valFieldRequired => 'Este campo es obligatorio';
+
+  @override
+  String valFieldNamedRequired(String field) {
+    return '$field es obligatorio';
+  }
+
+  @override
+  String get pwReqMinLength => 'Mínimo 8 caracteres';
+
+  @override
+  String get pwReqUppercase => 'Letra mayúscula';
+
+  @override
+  String get pwReqLowercase => 'Letra minúscula';
+
+  @override
+  String get pwReqNumber => 'Número';
+
+  @override
+  String get pwReqSpecial => 'Carácter especial';
+
+  @override
+  String get pwStrengthVeryWeak => 'Muy débil';
+
+  @override
+  String get pwStrengthWeak => 'Débil';
+
+  @override
+  String get pwStrengthMedium => 'Media';
+
+  @override
+  String get pwStrengthStrong => 'Fuerte';
+
+  @override
+  String get pwStrengthExcellent => 'Excelente';
+
+  @override
+  String get pickerTapToSelect => 'Toca para seleccionar';
+
+  @override
+  String get pickerNoResults => 'No se encontraron resultados';
+
+  @override
+  String get pickerSearchHint => 'Buscar...';
+
+  @override
+  String get pickerSelectAboveFirst => 'Selecciona primero el campo anterior';
+
+  @override
+  String get bkStatusAll => 'Todas';
+
+  @override
+  String get bkStatusPending => 'Pendiente';
+
+  @override
+  String get bkStatusAccepted => 'Aceptada';
+
+  @override
+  String get bkStatusCompleted => 'Completada';
+
+  @override
+  String get bkStatusCancelled => 'Cancelada';
+
+  @override
+  String get bkStatusRejected => 'Rechazada';
+
+  @override
+  String get bkStatusRescheduled => 'Reprogramada';
+
+  @override
+  String get bkStatusBooked => 'Reservada';
+
+  @override
+  String get bkSwipeHint => 'desliza';
+
+  @override
+  String bkCountPlural(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reservas',
+      one: '1 reserva',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bkSectionDetails => 'Detalles de la reserva';
+
+  @override
+  String get bkSectionService => 'Servicio';
+
+  @override
+  String get bkSectionNotes => 'Notas del cliente';
+
+  @override
+  String get bkSectionTimeline => 'Cronología de la reserva';
+
+  @override
+  String get bkFieldDate => 'Fecha';
+
+  @override
+  String get bkFieldTime => 'Hora';
+
+  @override
+  String get bkFieldLocation => 'Ubicación';
+
+  @override
+  String get bkFieldCategory => 'Categoría';
+
+  @override
+  String get bkCancelledByProfessional => 'Cancelada por el profesional';
+
+  @override
+  String get bkCancelledByYou => 'Cancelada por ti';
+
+  @override
+  String get bkWasRejected => 'La reserva fue rechazada';
+
+  @override
+  String get bkWasCancelled => 'La reserva fue cancelada';
+
+  @override
+  String get bkCancelledSuccess => 'Reserva cancelada';
+
+  @override
+  String get bkCancelFailed => 'No se pudo cancelar, inténtalo de nuevo';
+
+  @override
+  String get detailTabOverview => 'Resumen';
+
+  @override
+  String detailTabPortfolio(int count) {
+    return 'Portafolio ($count)';
+  }
+
+  @override
+  String detailTabReviews(int count) {
+    return 'Reseñas ($count)';
+  }
+
+  @override
+  String get detailTabServices => 'Servicios';
+
+  @override
+  String get detailTabAvailability => 'Disponibilidad';
+
+  @override
+  String get detailNotAvailable => 'No disponible';
+
+  @override
+  String get detailCertificateDefault => 'Certificado';
+
+  @override
+  String get detailPortfolioItemDefault => 'Elemento del portafolio';
+
+  @override
+  String get categoryItTech => 'TI y Tecnología';
+
+  @override
+  String get categoryEngineers => 'Ingenieros';
+
+  @override
+  String get categoryLawyersLegal => 'Abogados y Legal';
+
+  @override
+  String get categoryDoctorsHealthcare => 'Médicos y Salud';
+
+  @override
+  String get categoryArchitects => 'Arquitectos';
+
+  @override
+  String get categoryElectricians => 'Electricistas';
+
+  @override
+  String get categoryPlumbers => 'Plomeros';
+
+  @override
+  String get categoryTutorsEducation => 'Tutores y Educación';
+
+  @override
+  String get ctaGrowYourBusiness => 'Haz crecer tu negocio';
+
+  @override
+  String get ctaJoinProfessionalsSubtitle =>
+      'Únete a más de 500 profesionales en ProFinder';
+
+  @override
+  String get ctaJoinNow => 'Únete ahora';
+
+  @override
+  String get promoGetPremium => 'Obtén Premium';
+
+  @override
+  String get categoryCarpenters => 'Carpinteros';
+
+  @override
+  String get errSomethingWentWrong => 'Algo salió mal.';
+
+  @override
+  String get errSomethingWentWrongTryAgain =>
+      'Algo salió mal. Inténtalo de nuevo.';
+
+  @override
+  String get errNetworkCheckConnection => 'Error de red. Revisa tu conexión.';
+
+  @override
+  String get errNetworkProblemTryAgain =>
+      'Problema de red. Revisa tu conexión e inténtalo de nuevo.';
+
+  @override
+  String errRequestFailedHttp(int code) {
+    return 'La solicitud falló (HTTP $code).';
+  }
+
+  @override
+  String get errNotLoggedIn => 'No has iniciado sesión';
+
+  @override
+  String get bkStepTitleService => 'Resumen del servicio';
+
+  @override
+  String get bkStepTitleDate => 'Selecciona la fecha';
+
+  @override
+  String get bkStepTitleTime => 'Selecciona la hora';
+
+  @override
+  String get bkStepTitleNotes => 'Notas adicionales';
+
+  @override
+  String get bkStepTitleSummary => 'Resumen de la reserva';
+
+  @override
+  String get bkStepDesc1 =>
+      'Revisa los datos del profesional antes de continuar.';
+
+  @override
+  String get bkStepDesc2 => 'Elige la fecha que mejor se adapte a tu cita.';
+
+  @override
+  String get bkStepDesc3 => 'Elige un horario disponible para tu visita.';
+
+  @override
+  String get bkStepDesc4 =>
+      'Indica al profesional dónde debe prestar el servicio.';
+
+  @override
+  String get bkStepDesc5 =>
+      'Añade cualquier detalle que ayude al profesional a prepararse.';
+
+  @override
+  String get bkStepDesc6 =>
+      'Revisa todo con atención antes de confirmar tu reserva.';
+
+  @override
+  String get bkWeekdayMon => 'Lun';
+
+  @override
+  String get bkWeekdayTue => 'Mar';
+
+  @override
+  String get bkWeekdayWed => 'Mié';
+
+  @override
+  String get bkWeekdayThu => 'Jue';
+
+  @override
+  String get bkWeekdayFri => 'Vie';
+
+  @override
+  String get bkWeekdaySat => 'Sáb';
+
+  @override
+  String get bkWeekdaySun => 'Dom';
+
+  @override
+  String get bkGoodToKnow1 =>
+      'Enviar una solicitud es gratis y solo toma un minuto.';
+
+  @override
+  String get bkGoodToKnow2 =>
+      'Recibirás una notificación en cuanto el profesional responda.';
+
+  @override
+  String get bkGoodToKnow3 =>
+      'Puedes cancelar sin coste mientras tu solicitud siga pendiente.';
+
+  @override
+  String get bkTimeSlots1 =>
+      'Solo se muestran los horarios dentro de la jornada del profesional.';
+
+  @override
+  String get bkTimeSlots2 =>
+      'Los horarios de hoy que ya pasaron se desactivan automáticamente.';
+
+  @override
+  String get bkTimeSlots3 =>
+      'Puedes cambiar la hora elegida en cualquier momento antes de confirmar.';
+
+  @override
+  String get chatCouldNotLoadConversations =>
+      'No se pudieron cargar las conversaciones';
+
+  @override
+  String get chatVoiceMessagePreview => '🎤 Mensaje de voz';
+
+  @override
+  String get chatPhotoPreview => '📷 Foto';
+
+  @override
+  String get reviewRatingPoor => 'Malo';
+
+  @override
+  String get reviewRatingFair => 'Regular';
+
+  @override
+  String get reviewRatingGood => 'Bueno';
+
+  @override
+  String get reviewRatingVeryGood => 'Muy bueno';
+
+  @override
+  String get reviewRatingExcellent => 'Excelente';
+
+  @override
+  String get reviewReportReasonSpam => 'Spam';
+
+  @override
+  String get reviewReportReasonFake => 'Reseña falsa';
+
+  @override
+  String get reviewReportReasonAbusive => 'Lenguaje abusivo';
+
+  @override
+  String get reviewReportReasonHarassment => 'Acoso';
+
+  @override
+  String get reviewReportReasonOffTopic => 'Fuera de tema';
+
+  @override
+  String get reviewReportReasonConflict => 'Conflicto de intereses';
+
+  @override
+  String get reviewReportReasonOther => 'Otro';
+
+  @override
+  String get availabilityStatusBusy => 'Ocupado';
+
+  @override
+  String get availabilityStatusOnLeave => 'De permiso';
+
+  @override
+  String get availabilityStatusDescAvailable =>
+      'Los clientes pueden reservarte ahora mismo';
+
+  @override
+  String get availabilityStatusDescBusy =>
+      'Estás trabajando — las nuevas solicitudes están en pausa';
+
+  @override
+  String get availabilityStatusDescOffline =>
+      'No aparecerás en las nuevas solicitudes de reserva';
+
+  @override
+  String get availabilityStatusDescOnLeave =>
+      'Marcado como de permiso hasta que regreses';
+
+  @override
+  String get professionalInvalidId => 'ID de profesional no válido';
+
+  @override
+  String get uploadFailedTryAgain => 'Error al subir. Inténtalo de nuevo.';
+
+  @override
+  String get editorListItemPlaceholder => 'Elemento de lista';
+
+  @override
+  String get pushChannelGeneralName => 'Notificaciones generales';
+
+  @override
+  String get pushChannelGeneralDesc =>
+      'Reservas, anuncios, reportes y otras alertas';
+
+  @override
+  String get pushChannelChatName => 'Mensajes de chat';
+
+  @override
+  String get pushChannelChatDesc => 'Nuevos mensajes de chat';
+
+  @override
+  String get errBookingLimitReached => 'Se alcanzó el límite de reservas.';
+
+  @override
+  String get categoryCarpenter => 'Carpintero';
 }

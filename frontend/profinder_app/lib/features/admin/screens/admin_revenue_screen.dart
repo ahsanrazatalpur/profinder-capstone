@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminRevenueScreen extends StatefulWidget {
   const AdminRevenueScreen({super.key});
@@ -52,7 +54,7 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Revenue',
         icon: Icons.trending_up_rounded,
@@ -78,7 +80,7 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
                           _summaryCard(),
                           const SizedBox(height: 16),
                           const Text('Revenue by Category',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                              style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700)),
                           const SizedBox(height: 10),
                           _categoryBreakdown(),
                         ],
@@ -94,8 +96,8 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
         child: Container(
           padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(
-            color: AppColors.adminColor.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(10),
+            color: AppColors.adminColor.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -107,9 +109,9 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                   decoration: BoxDecoration(
                     color: isActive ? AppColors.adminColor : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                   ),
-                  child: Text('${d}D', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
+                  child: Text('${d}D', style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700,
                       color: isActive ? Colors.white : AppColors.adminColor)),
                 ),
               );
@@ -127,21 +129,21 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE5E7EB))),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: AppColors.neutral200)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Rs ${total.toStringAsFixed(0)}',
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
+              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.greenDeep)),
           const SizedBox(height: 4),
           Row(
             children: [
               Icon(isUp ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
-                  size: 14, color: isUp ? const Color(0xFF16A34A) : AppColors.error),
+                  size: 14, color: isUp ? AppColors.greenDeep : AppColors.error),
               Text('${change.abs()}% vs previous $_rangeDays days',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
-                      color: isUp ? const Color(0xFF16A34A) : AppColors.error)),
+                  style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600,
+                      color: isUp ? AppColors.greenDeep : AppColors.error)),
             ],
           ),
           const Divider(height: 24),
@@ -160,8 +162,8 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
   Widget _stat(String label, String value) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-          Text(label, style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF))),
+          Text(value, style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700)),
+          Text(label, style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400)),
         ],
       );
 
@@ -170,9 +172,9 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
     if (rows.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFFE5E7EB))),
-        child: const Center(child: Text('No category data yet', style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 12))),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radius14),
+            border: Border.all(color: AppColors.neutral200)),
+        child: const Center(child: Text('No category data yet', style: TextStyle(color: AppColors.neutral400, fontSize: AppFontSizes.small))),
       );
     }
     final maxTotal = rows
@@ -181,8 +183,8 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
 
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE5E7EB))),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: AppColors.neutral200)),
       child: Column(
         children: rows.map((r) {
           final total = double.tryParse(r['total']?.toString() ?? '0') ?? 0;
@@ -195,17 +197,17 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
                 Row(
                   children: [
                     Expanded(child: Text(r['category']?.toString() ?? '',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600))),
+                        style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600))),
                     Text('Rs $total (${r['count']})',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF16A34A))),
+                        style: const TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: AppColors.greenDeep)),
                   ],
                 ),
                 const SizedBox(height: 4),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusXs),
                   child: LinearProgressIndicator(value: ratio, minHeight: 6,
-                      backgroundColor: const Color(0xFFF1F5F9),
-                      valueColor: const AlwaysStoppedAnimation(Color(0xFF16A34A))),
+                      backgroundColor: AppColors.slate100,
+                      valueColor: const AlwaysStoppedAnimation(AppColors.greenDeep)),
                 ),
               ],
             ),
@@ -221,7 +223,7 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
           children: [
             const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
             const SizedBox(height: 10),
-            const Text('Failed to load revenue data', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            const Text('Failed to load revenue data', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: _load, icon: const Icon(Icons.refresh_rounded), label: const Text('Retry'),

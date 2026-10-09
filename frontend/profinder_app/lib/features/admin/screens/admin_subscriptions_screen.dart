@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 /// Responsive breakpoints used by the list container and grid.
 class _Breakpoints {
@@ -36,9 +38,9 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
 
   /// Status filter definitions — keys match the backend contract.
   static const _statuses = [
-    ('active', 'Active', Color(0xFF16A34A)),
-    ('cancelled', 'Cancelled', Color(0xFF64748B)),
-    ('expired', 'Expired', Color(0xFFEF4444)),
+    ('active', 'Active', AppColors.greenDeep),
+    ('cancelled', 'Cancelled', AppColors.slate500),
+    ('expired', 'Expired', AppColors.favoriteRed),
   ];
 
   /// Drives a staggered entrance animation for cards whenever the list
@@ -90,7 +92,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
       context: context,
       builder: (c) => AlertDialog(
         shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
         contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
         title: Row(
@@ -99,7 +101,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.12),
+                color: AppColors.error.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(9),
               ),
               child: const Icon(Icons.cancel_rounded,
@@ -110,7 +112,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
               child: Text(
                 'Cancel Subscription?',
                 style: TextStyle(
-                    fontSize: 15, fontWeight: FontWeight.w700),
+                    fontSize: AppFontSizes.input, fontWeight: FontWeight.w700),
               ),
             ),
           ],
@@ -118,7 +120,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
         content: Text(
           'Cancel ${sub['user_name']}\'s ${sub['plan_name']} subscription?',
           style: const TextStyle(
-              fontSize: 13, color: Color(0xFF6B7280), height: 1.5),
+              fontSize: AppFontSizes.secondary, color: AppColors.grayDeep, height: 1.5),
         ),
         actions: [
           TextButton(
@@ -126,7 +128,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
             style: TextButton.styleFrom(
               minimumSize: const Size(0, 44),
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              foregroundColor: const Color(0xFF6B7280),
+              foregroundColor: AppColors.grayDeep,
             ),
             child: const Text('No',
                 style: TextStyle(fontWeight: FontWeight.w600)),
@@ -137,7 +139,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
               minimumSize: const Size(0, 44),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
             ),
             onPressed: () => Navigator.pop(c, true),
             child: const Text(
@@ -191,10 +193,10 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
     final maxWidth = isDesktop ? 1200.0 : (isTablet ? 900.0 : 720.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Subscriptions',
-        subtitle: '${_subs.length} ${_statusFilter} subscription${_subs.length == 1 ? '' : 's'}',
+        subtitle: '${_subs.length} $_statusFilter subscription${_subs.length == 1 ? '' : 's'}',
         icon: Icons.workspace_premium_rounded,
         showBack: false,
       ),
@@ -305,7 +307,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: _statuses.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 8),
+          separatorBuilder: (_, _) => const SizedBox(width: 8),
           itemBuilder: (_, i) => _buildStatusChip(_statuses[i]),
         ),
       ),
@@ -322,7 +324,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(AppSizes.radius22),
           onTap: () {
             setState(() => _statusFilter = key);
             _load();
@@ -334,9 +336,9 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
             padding: const EdgeInsets.symmetric(horizontal: 14),
             decoration: BoxDecoration(
               color: isActive
-                  ? color.withOpacity(0.12)
-                  : const Color(0xFFF5F7FA),
-              borderRadius: BorderRadius.circular(22),
+                  ? color.withValues(alpha: 0.12)
+                  : AppColors.lightScaffold,
+              borderRadius: BorderRadius.circular(AppSizes.radius22),
               border: Border.all(
                 color: isActive ? color : Colors.transparent,
                 width: 1.4,
@@ -358,10 +360,10 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: AppFontSizes.small,
                     fontWeight:
                         isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isActive ? color : const Color(0xFF6B7280),
+                    color: isActive ? color : AppColors.grayDeep,
                   ),
                 ),
               ],
@@ -390,17 +392,17 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
     final endDate = s['end_date']?.toString() ?? '—';
 
     return _HoverLift(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(AppSizes.radius14),
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: AppColors.neutral200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.035),
+              color: Colors.black.withValues(alpha: 0.035),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -417,8 +419,8 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: AppColors.adminColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.adminColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                   ),
                   child: Center(
                     child: Text(
@@ -426,7 +428,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                           ? userName[0].toUpperCase()
                           : '?',
                       style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: AppFontSizes.input,
                           fontWeight: FontWeight.w800,
                           color: AppColors.adminColor),
                     ),
@@ -442,7 +444,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                         style: const TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF111827)),
+                            color: AppColors.gray900),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -450,7 +452,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                       Text(
                         userEmail,
                         style: const TextStyle(
-                            fontSize: 11, color: Color(0xFF9CA3AF)),
+                            fontSize: AppFontSizes.caption, color: AppColors.neutral400),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -462,10 +464,10 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 9, vertical: 4),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
+                    color: statusColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                     border:
-                        Border.all(color: statusColor.withOpacity(0.25)),
+                        Border.all(color: statusColor.withValues(alpha: 0.25)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -497,9 +499,9 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFF9FAFB),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFF3F4F6)),
+                color: AppColors.tintGray,
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+                border: Border.all(color: AppColors.neutral100),
               ),
               child: Row(
                 children: [
@@ -507,8 +509,8 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                     width: 28,
                     height: 28,
                     decoration: BoxDecoration(
-                      color: AppColors.adminColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.adminColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                     ),
                     child: const Icon(Icons.workspace_premium_rounded,
                         size: 14, color: AppColors.adminColor),
@@ -523,7 +525,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                           style: const TextStyle(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF111827)),
+                              color: AppColors.gray900),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -531,8 +533,8 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                         Text(
                           'Rs $price / $billing',
                           style: const TextStyle(
-                              fontSize: 11,
-                              color: Color(0xFF6B7280),
+                              fontSize: AppFontSizes.caption,
+                              color: AppColors.grayDeep,
                               fontWeight: FontWeight.w500),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -556,13 +558,13 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                   size: 13,
                   color: isActive
                       ? AppColors.success
-                      : const Color(0xFF9CA3AF),
+                      : AppColors.neutral400,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   isActive ? 'Renews: $endDate' : 'Ended: $endDate',
                   style: const TextStyle(
-                      fontSize: 11, color: Color(0xFF9CA3AF)),
+                      fontSize: AppFontSizes.caption, color: AppColors.neutral400),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -576,7 +578,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                 children: [
                   Expanded(
                     child: _HoverLift(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10),
                       hoverScale: 1.02,
                       child: OutlinedButton.icon(
                         onPressed: () => _extend(s),
@@ -584,7 +586,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                         label: const Text(
                           'Extend 30d',
                           style: TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w600),
+                              fontSize: AppFontSizes.small, fontWeight: FontWeight.w600),
                         ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.adminColor,
@@ -594,7 +596,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                               const EdgeInsets.symmetric(vertical: 12),
                           minimumSize: const Size(0, 44),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(AppSizes.radius10),
                           ),
                         ),
                       ),
@@ -603,7 +605,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                   const SizedBox(width: 10),
                   Expanded(
                     child: _HoverLift(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10),
                       hoverScale: 1.02,
                       child: OutlinedButton.icon(
                         onPressed: () => _cancel(s),
@@ -611,7 +613,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                         label: const Text(
                           'Cancel',
                           style: TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w600),
+                              fontSize: AppFontSizes.small, fontWeight: FontWeight.w600),
                         ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.error,
@@ -621,7 +623,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                               const EdgeInsets.symmetric(vertical: 12),
                           minimumSize: const Size(0, 44),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(AppSizes.radius10),
                           ),
                         ),
                       ),
@@ -646,7 +648,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                 width: 88,
                 height: 88,
                 decoration: BoxDecoration(
-                  color: AppColors.adminColor.withOpacity(0.08),
+                  color: AppColors.adminColor.withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.workspace_premium_outlined,
@@ -658,13 +660,13 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                 style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF6B7280)),
+                    color: AppColors.grayDeep),
               ),
               const SizedBox(height: 4),
               Text(
                 'Nothing in $_statusFilter.',
                 style: const TextStyle(
-                    fontSize: 12, color: Color(0xFF9CA3AF)),
+                    fontSize: AppFontSizes.small, color: AppColors.neutral400),
               ),
             ],
           ),
@@ -682,7 +684,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.error.withOpacity(0.08),
+                  color: AppColors.error.withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.error_outline_rounded,
@@ -692,9 +694,9 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
               const Text(
                 'Failed to load subscriptions',
                 style: TextStyle(
-                    fontSize: 15,
+                    fontSize: AppFontSizes.input,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF374151)),
+                    color: AppColors.gray700),
               ),
               const SizedBox(height: 18),
               ElevatedButton.icon(
@@ -706,7 +708,7 @@ class _AdminSubscriptionsScreenState extends State<AdminSubscriptionsScreen>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10)),
                 ),
               ),
             ],

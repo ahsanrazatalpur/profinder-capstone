@@ -20,6 +20,8 @@ import '../../magazine/models/article_model.dart';
 import '../../magazine/services/magazine_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminMagazineAnalyticsScreen extends StatefulWidget {
   const AdminMagazineAnalyticsScreen({super.key});
@@ -242,28 +244,28 @@ class _AdminMagazineAnalyticsScreenState
               'Total Views',
               '${d.totalViews}',
               Icons.visibility_rounded,
-              const Color(0xFF2563EB),
+              AppColors.customerColor,
               'All time views across all articles',
             ),
             _statCard(
               'Today',
               '${d.viewsToday}',
               Icons.today_rounded,
-              const Color(0xFF10B981),
+              AppColors.emerald,
               'Views in the last 24 hours',
             ),
             _statCard(
               'This Week',
               '${d.viewsThisWeek}',
               Icons.date_range_rounded,
-              const Color(0xFF8B5CF6),
+              AppColors.violet,
               'Views in the last 7 days',
             ),
             _statCard(
               'Unique Readers',
               '${d.uniqueReaders}',
               Icons.people_alt_rounded,
-              const Color(0xFFF59E0B),
+              AppColors.warningAmber,
               'Distinct readers across all articles',
             ),
           ],
@@ -300,8 +302,8 @@ class _AdminMagazineAnalyticsScreenState
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: AppColors.adminColor.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(8),
+            color: AppColors.adminColor.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(AppSizes.radiusSm),
           ),
           child: Icon(icon, size: 18, color: AppColors.adminColor),
         ),
@@ -309,9 +311,9 @@ class _AdminMagazineAnalyticsScreenState
         Text(
           title,
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: AppFontSizes.input,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF111827),
+            color: AppColors.gray900,
             letterSpacing: 0.3,
           ),
         ),
@@ -326,17 +328,17 @@ class _AdminMagazineAnalyticsScreenState
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.08),
+              color: color.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
               spreadRadius: 0,
             ),
           ],
           border: Border.all(
-            color: color.withOpacity(0.08),
+            color: color.withValues(alpha: 0.08),
             width: 1.5,
           ),
         ),
@@ -346,8 +348,8 @@ class _AdminMagazineAnalyticsScreenState
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.10),
-                borderRadius: BorderRadius.circular(12),
+                color: color.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
               child: Icon(icon, color: color, size: 24),
             ),
@@ -369,8 +371,8 @@ class _AdminMagazineAnalyticsScreenState
                   Text(
                     label,
                     style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF6B7280),
+                      fontSize: AppFontSizes.small,
+                      color: AppColors.grayDeep,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -379,8 +381,8 @@ class _AdminMagazineAnalyticsScreenState
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        fontSize: 9,
-                        color: Color(0xFF9CA3AF),
+                        fontSize: AppFontSizes.nano,
+                        color: AppColors.neutral400,
                         fontWeight: FontWeight.w400,
                       ),
                       maxLines: 1,
@@ -416,10 +418,10 @@ class _AdminMagazineAnalyticsScreenState
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppSizes.radius14),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -445,9 +447,9 @@ class _AdminMagazineAnalyticsScreenState
                         Text(
                           cat.categoryName,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: AppFontSizes.secondary,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF111827),
+                            color: AppColors.gray900,
                           ),
                         ),
                       ],
@@ -458,13 +460,13 @@ class _AdminMagazineAnalyticsScreenState
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.10),
-                        borderRadius: BorderRadius.circular(20),
+                        color: color.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                       ),
                       child: Text(
                         '${cat.totalViews} views',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: AppFontSizes.caption,
                           fontWeight: FontWeight.w700,
                           color: color,
                         ),
@@ -474,10 +476,10 @@ class _AdminMagazineAnalyticsScreenState
                 ),
                 const SizedBox(height: 10),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
                   child: LinearProgressIndicator(
                     value: value,
-                    backgroundColor: color.withOpacity(0.10),
+                    backgroundColor: color.withValues(alpha: 0.10),
                     valueColor: AlwaysStoppedAnimation<Color>(color),
                     minHeight: 8,
                   ),
@@ -489,16 +491,16 @@ class _AdminMagazineAnalyticsScreenState
                     Text(
                       '${(value * 100).toStringAsFixed(1)}% of total',
                       style: const TextStyle(
-                        fontSize: 10,
-                        color: Color(0xFF9CA3AF),
+                        fontSize: AppFontSizes.micro,
+                        color: AppColors.neutral400,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     Text(
                       '${pct > 0 ? (cat.totalViews ~/ pct).toString() : '0'} avg/read',
                       style: const TextStyle(
-                        fontSize: 10,
-                        color: Color(0xFF9CA3AF),
+                        fontSize: AppFontSizes.micro,
+                        color: AppColors.neutral400,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -534,10 +536,10 @@ class _AdminMagazineAnalyticsScreenState
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -557,8 +559,8 @@ class _AdminMagazineAnalyticsScreenState
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: catColor.withOpacity(0.10),
-                        borderRadius: BorderRadius.circular(12),
+                        color: catColor.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       ),
                       child: Icon(
                         Icons.article_outlined,
@@ -569,9 +571,9 @@ class _AdminMagazineAnalyticsScreenState
                     title: Text(
                       a.title,
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: AppFontSizes.secondary,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF111827),
+                        color: AppColors.gray900,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -585,18 +587,18 @@ class _AdminMagazineAnalyticsScreenState
                           _miniStat(
                             Icons.visibility_rounded,
                             '${a.viewsCount} views',
-                            const Color(0xFF2563EB),
+                            AppColors.customerColor,
                           ),
                           _miniStat(
                             Icons.people_alt_rounded,
                             '${a.uniqueViewers} unique',
-                            const Color(0xFF10B981),
+                            AppColors.emerald,
                           ),
                           if (a.recentViews.isNotEmpty)
                             _miniStat(
                               Icons.access_time_rounded,
                               '${a.recentViews.length} recent',
-                              const Color(0xFF8B5CF6),
+                              AppColors.violet,
                             ),
                         ],
                       ),
@@ -607,13 +609,13 @@ class _AdminMagazineAnalyticsScreenState
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: catColor.withOpacity(0.10),
-                        borderRadius: BorderRadius.circular(20),
+                        color: catColor.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                       ),
                       child: Text(
                         a.recentViews.isNotEmpty ? 'Details ▾' : 'No views',
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: AppFontSizes.micro,
                           fontWeight: FontWeight.w600,
                           color: catColor,
                         ),
@@ -626,8 +628,8 @@ class _AdminMagazineAnalyticsScreenState
                           child: Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF8FAFC),
-                              borderRadius: BorderRadius.circular(10),
+                              color: AppColors.slate50,
+                              borderRadius: BorderRadius.circular(AppSizes.radius10),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -635,14 +637,14 @@ class _AdminMagazineAnalyticsScreenState
                                 Icon(
                                   Icons.info_outline_rounded,
                                   size: 16,
-                                  color: const Color(0xFF9CA3AF),
+                                  color: AppColors.neutral400,
                                 ),
                                 const SizedBox(width: 8),
                                 const Text(
                                   'No views recorded yet',
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xFF9CA3AF),
+                                    fontSize: AppFontSizes.small,
+                                    color: AppColors.neutral400,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -651,22 +653,22 @@ class _AdminMagazineAnalyticsScreenState
                           ),
                         )
                       else ...[
-                        const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                        const Divider(height: 1, color: AppColors.slate100),
                         const SizedBox(height: 12),
                         Row(
                           children: [
                             Icon(
                               Icons.history_rounded,
                               size: 14,
-                              color: const Color(0xFF374151),
+                              color: AppColors.gray700,
                             ),
                             const SizedBox(width: 6),
                             const Text(
                               'Recent Viewers',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: AppFontSizes.small,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF374151),
+                                color: AppColors.gray700,
                               ),
                             ),
                             const Spacer(),
@@ -676,15 +678,15 @@ class _AdminMagazineAnalyticsScreenState
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF1F5F9),
-                                borderRadius: BorderRadius.circular(12),
+                                color: AppColors.slate100,
+                                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                               ),
                               child: Text(
                                 '${a.recentViews.length}',
                                 style: const TextStyle(
-                                  fontSize: 10,
+                                  fontSize: AppFontSizes.micro,
                                   fontWeight: FontWeight.w700,
-                                  color: Color(0xFF6B7280),
+                                  color: AppColors.grayDeep,
                                 ),
                               ),
                             ),
@@ -713,7 +715,7 @@ class _AdminMagazineAnalyticsScreenState
         Text(
           label,
           style: TextStyle(
-            fontSize: 11,
+            fontSize: AppFontSizes.caption,
             fontWeight: FontWeight.w600,
             color: color,
           ),
@@ -733,20 +735,20 @@ class _AdminMagazineAnalyticsScreenState
             height: 32,
             decoration: BoxDecoration(
               color: isGuest
-                  ? const Color(0xFFF1F5F9)
-                  : context.colors.primary.withOpacity(0.10),
+                  ? AppColors.slate100
+                  : context.colors.primary.withValues(alpha: 0.10),
               shape: BoxShape.circle,
               border: Border.all(
                 color: isGuest
-                    ? const Color(0xFFE5E7EB)
-                    : context.colors.primary.withOpacity(0.20),
+                    ? AppColors.neutral200
+                    : context.colors.primary.withValues(alpha: 0.20),
                 width: 1.5,
               ),
             ),
             child: Icon(
               isGuest ? Icons.person_outline_rounded : Icons.person_rounded,
               size: 16,
-              color: isGuest ? const Color(0xFF9CA3AF) : context.colors.primary,
+              color: isGuest ? AppColors.neutral400 : context.colors.primary,
             ),
           ),
           const SizedBox(width: 10),
@@ -757,9 +759,9 @@ class _AdminMagazineAnalyticsScreenState
                 Text(
                   isGuest ? 'Guest User' : v.userName,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: AppFontSizes.small,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF111827),
+                    color: AppColors.gray900,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -768,8 +770,8 @@ class _AdminMagazineAnalyticsScreenState
                   Text(
                     v.userRole,
                     style: const TextStyle(
-                      fontSize: 10,
-                      color: Color(0xFF9CA3AF),
+                      fontSize: AppFontSizes.micro,
+                      color: AppColors.neutral400,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -783,18 +785,18 @@ class _AdminMagazineAnalyticsScreenState
               vertical: 3,
             ),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.slate50,
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               border: Border.all(
-                color: const Color(0xFFE5E7EB),
+                color: AppColors.neutral200,
                 width: 0.5,
               ),
             ),
             child: Text(
               _formatDate(v.viewedAt),
               style: const TextStyle(
-                fontSize: 9,
-                color: Color(0xFF9CA3AF),
+                fontSize: AppFontSizes.nano,
+                color: AppColors.neutral400,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -831,7 +833,7 @@ class _AdminMagazineAnalyticsScreenState
               height: 84,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.08),
+                color: AppColors.error.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -844,8 +846,8 @@ class _AdminMagazineAnalyticsScreenState
             Text(
               _error ?? 'Failed to load analytics.',
               style: const TextStyle(
-                fontSize: 15,
-                color: Color(0xFF374151),
+                fontSize: AppFontSizes.input,
+                color: AppColors.gray700,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.1,
               ),
@@ -856,7 +858,7 @@ class _AdminMagazineAnalyticsScreenState
               'Please check your connection and try again',
               style: TextStyle(
                 fontSize: 12.5,
-                color: Color(0xFF9CA3AF),
+                color: AppColors.neutral400,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
@@ -877,7 +879,7 @@ class _AdminMagazineAnalyticsScreenState
                 padding:
                     const EdgeInsets.symmetric(horizontal: 26, vertical: 12),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
               ),
             ),
@@ -946,7 +948,7 @@ class _HoverLiftState extends State<_HoverLift> {
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
         transform: _hovering
-            ? (Matrix4.identity()..translate(0.0, -2.0))
+            ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0))
             : Matrix4.identity(),
         child: widget.child,
       ),

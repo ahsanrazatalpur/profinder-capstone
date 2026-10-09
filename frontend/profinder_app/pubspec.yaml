@@ -1,4 +1,4 @@
-name: profinder_app
+﻿name: profinder_app
 description: "A new Flutter project."
 publish_to: 'none'
 
@@ -11,64 +11,67 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # ─── Localization ────────────────────────────
+  # --- Localization ---
   flutter_localizations:
     sdk: flutter
 
-  # ─── HTTP / API ─────────────────────────────
+  # --- HTTP / API ---
   dio: ^5.4.0
 
-  # ─── Social Auth ────────────────────────────
+  # --- Social Auth ---
   google_sign_in: ^6.2.1
-  
-  # ─── Local Storage ──────────────────────────
+
+  # --- Local Storage ---
   shared_preferences: ^2.2.2
-  
-  # ─── State Management ───────────────────────
+
+  # --- State Management ---
   provider: ^6.1.2
-  
-  # ─── Navigation ─────────────────────────────
-  go_router: ^13.2.0
-  
-  # ─── UI Helpers ─────────────────────────────
+
+  # --- Navigation ---
+
+  # --- UI Helpers ---
   cached_network_image: ^3.3.1
   flutter_svg: ^2.0.9
-  shimmer: ^3.0.0
-  
-  # ─── Utils ──────────────────────────────────
+
+  # --- Utils ---
   intl: any
   cupertino_icons: ^1.0.8
   image_picker: ^1.2.2
   firebase_core: ^4.11.0
+  web: ^1.1.0
   firebase_messaging: ^16.4.1
   flutter_local_notifications: ^19.4.2   # foreground heads-up banner + high-importance channels
 
-  # ─── URL Launcher (Banner external links) ───
+  # --- URL Launcher (Banner external links) ---
   url_launcher: ^6.2.5
 
-  # ─── Realtime Chat (WebSocket) ──────────────
+  # --- Realtime Chat (WebSocket) ---
   web_socket_channel: ^2.4.0
 
-  # ─── Chat: Emoji Picker / Voice Notes ───────
+  # --- Chat: Emoji Picker / Voice Notes ---
   emoji_picker_flutter: ^3.1.0
   audioplayers: ^6.1.0
-  # 🐛 FIX: newer 'record' releases pulled in a record_linux implementation
+  # FIX: newer 'record' releases pulled in a record_linux implementation
   # that didn't fully satisfy record_platform_interface's contract (missing
   # startStream, mismatched hasPermission signature), which broke Android
   # release builds during Flutter's dependency/kernel compilation step even
   # though Linux isn't a build target. Pinning to a known-good version
   # avoids pulling in the broken record_linux release.
   record: ^7.1.1
-  http: ^1.6.0
+  # Temp folder for voice-note recordings (mobile/desktop; not used on web).
+  path_provider: ^2.1.5
 
-  # ─── GPS / Location ─────────────────────────
+  # --- GPS / Location ---
+
+  # --- Misc ---
+  cross_file: any
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
 
-  # ─── App Icon Generator ──────────────────────
+  # --- App Icon Generator ---
   flutter_launcher_icons: ^0.13.1
 
 flutter:

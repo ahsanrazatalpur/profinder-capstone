@@ -8,6 +8,7 @@ import '../../../services/about_page_service.dart';
 import '../../about/models/about_page_model.dart';
 import '../../about/widgets/about_page_content.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
 
 class AdminAboutPreviewScreen extends StatefulWidget {
   const AdminAboutPreviewScreen({super.key});
@@ -65,7 +66,7 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
                   child: Switch(
                     value: _includeDisabled,
                     activeThumbColor: Colors.white,
-                    activeTrackColor: Colors.white.withOpacity(0.35),
+                    activeTrackColor: Colors.white.withValues(alpha: 0.35),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     onChanged: (v) { setState(() => _includeDisabled = v); _load(); },
                   ),
@@ -100,7 +101,7 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline_rounded, size: 44, color: context.colors.textSecondary.withOpacity(0.5)),
+              Icon(Icons.error_outline_rounded, size: 44, color: context.colors.textSecondary.withValues(alpha: 0.5)),
               const SizedBox(height: 12),
               Text(_error!, textAlign: TextAlign.center, style: TextStyle(color: context.colors.textSecondary)),
               const SizedBox(height: 14),
@@ -109,7 +110,7 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
                 icon: const Icon(Icons.refresh_rounded, size: 18),
                 label: const Text('Try Again'),
                 style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 ),
               ),
@@ -130,10 +131,10 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: AppColors.adminColor.withOpacity(0.06),
+                  color: AppColors.adminColor.withValues(alpha: 0.06),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.visibility_off_outlined, size: 40, color: context.colors.textSecondary.withOpacity(0.6)),
+                child: Icon(Icons.visibility_off_outlined, size: 40, color: context.colors.textSecondary.withValues(alpha: 0.6)),
               ),
               const SizedBox(height: 16),
               Text(
@@ -148,8 +149,8 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bannerBg = isDark ? const Color(0xFF78350F) : const Color(0xFFFEF3C7);
-    final bannerFg = isDark ? const Color(0xFFFCD34D) : const Color(0xFF92400E);
+    final bannerBg = isDark ? AppColors.amber900 : const Color(0xFFFEF3C7);
+    final bannerFg = isDark ? AppColors.starGold : AppColors.amber800;
 
     return Column(
       key: const ValueKey('content'),

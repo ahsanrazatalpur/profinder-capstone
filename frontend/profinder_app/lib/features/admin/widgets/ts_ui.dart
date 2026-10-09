@@ -16,38 +16,40 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../models/ts_models.dart';
 import '../services/trust_safety_service.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 // ── Tokens ───────────────────────────────────────────────────────────────────
 
 class TsColors {
   TsColors._();
-  static const Color bg = Color(0xFFF5F7FA);
+  static const Color bg = AppColors.lightScaffold;
   static const Color surface = Colors.white;
-  static const Color border = Color(0xFFE5E7EB);
-  static const Color textPrimary = Color(0xFF111827);
-  static const Color textBody = Color(0xFF374151);
-  static const Color textMuted = Color(0xFF6B7280);
-  static const Color textFaint = Color(0xFF9CA3AF);
+  static const Color border = AppColors.neutral200;
+  static const Color textPrimary = AppColors.gray900;
+  static const Color textBody = AppColors.gray700;
+  static const Color textMuted = AppColors.grayDeep;
+  static const Color textFaint = AppColors.neutral400;
   static const Color accent = AppColors.adminColor;
 
   // Report status (same palette the original Reported Users screen used)
-  static const Color pending = Color(0xFFF59E0B);
-  static const Color reviewed = Color(0xFF3B82F6);
-  static const Color actionTaken = Color(0xFFEF4444);
-  static const Color dismissed = Color(0xFF9CA3AF);
+  static const Color pending = AppColors.warningAmber;
+  static const Color reviewed = AppColors.primary;
+  static const Color actionTaken = AppColors.favoriteRed;
+  static const Color dismissed = AppColors.neutral400;
 
   // Severity
-  static const Color sevLow = Color(0xFF64748B);
-  static const Color sevMedium = Color(0xFFD97706);
-  static const Color sevHigh = Color(0xFFEA580C);
-  static const Color sevCritical = Color(0xFFDC2626);
+  static const Color sevLow = AppColors.slate500;
+  static const Color sevMedium = AppColors.amberDeep;
+  static const Color sevHigh = AppColors.orangeDeep;
+  static const Color sevCritical = AppColors.red600;
 
   // Moderation
-  static const Color warning = Color(0xFFD97706);
-  static const Color restriction = Color(0xFF7C3AED);
-  static const Color suspension = Color(0xFFDC2626);
-  static const Color success = Color(0xFF16A34A);
-  static const Color info = Color(0xFF2563EB);
+  static const Color warning = AppColors.amberDeep;
+  static const Color restriction = AppColors.accentPurple;
+  static const Color suspension = AppColors.red600;
+  static const Color success = AppColors.greenDeep;
+  static const Color info = AppColors.customerColor;
 }
 
 Color tsStatusColor(String status) {
@@ -301,7 +303,7 @@ void tsSnack(BuildContext context, String message, {bool error = false}) {
       ),
       backgroundColor: error ? AppColors.error : TsColors.success,
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
       duration: const Duration(seconds: 3),
     ),
   );
@@ -354,7 +356,7 @@ class TsBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: filled ? color : color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(color: filled ? color : color.withValues(alpha: 0.28)),
       ),
       child: Row(
@@ -472,7 +474,7 @@ class TsCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: TsColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
         border: Border.all(color: borderColor, width: selected ? 1.6 : 1),
         boxShadow: [
           BoxShadow(
@@ -484,9 +486,9 @@ class TsCard extends StatelessWidget {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
         child: InkWell(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
           onTap: onTap,
           child: Padding(padding: padding, child: child),
         ),
@@ -527,13 +529,13 @@ class TsSection extends StatelessWidget {
                 child: Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: AppFontSizes.body,
                     fontWeight: FontWeight.w800,
                     color: TsColors.textPrimary,
                   ),
                 ),
               ),
-              if (trailing != null) trailing!,
+              ?trailing,
             ],
           ),
           const SizedBox(height: 12),
@@ -573,7 +575,7 @@ class TsInfoRow extends StatelessWidget {
             width: 104,
             child: Text(
               label,
-              style: const TextStyle(fontSize: 12, color: TsColors.textMuted),
+              style: const TextStyle(fontSize: AppFontSizes.small, color: TsColors.textMuted),
             ),
           ),
           Expanded(
@@ -632,7 +634,7 @@ class TsInlineError extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: AppColors.error.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
         border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
@@ -742,7 +744,7 @@ class TsErrorState extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: AppFontSizes.body,
                 fontWeight: FontWeight.w600,
                 color: TsColors.textBody,
               ),
@@ -757,7 +759,7 @@ class TsErrorState extends StatelessWidget {
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
             ),
           ],
@@ -790,7 +792,7 @@ class TsLinkTile extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
       decoration: BoxDecoration(
         color: TsColors.bg,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
         border: Border.all(color: TsColors.border),
       ),
       child: Row(
@@ -802,7 +804,7 @@ class TsLinkTile extends StatelessWidget {
               url,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, color: TsColors.info),
+              style: const TextStyle(fontSize: AppFontSizes.small, color: TsColors.info),
             ),
           ),
           IconButton(
@@ -868,7 +870,7 @@ class TsScreenHeader extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.18),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
             ),
             child: Icon(icon, color: Colors.white, size: 22),
@@ -881,7 +883,7 @@ class TsScreenHeader extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: AppFontSizes.title,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                   ),

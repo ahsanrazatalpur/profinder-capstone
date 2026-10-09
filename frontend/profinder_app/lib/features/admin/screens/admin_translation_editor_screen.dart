@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminTranslationEditorScreen extends StatefulWidget {
   final dynamic language;
@@ -132,9 +134,9 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: const Text('Add Translation Key',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -152,12 +154,12 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel', style: TextStyle(color: Color(0xFF9CA3AF))),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.neutral400)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.adminColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
             onPressed: () async {
               final key = keyCtrl.text.trim();
               if (key.isEmpty) return;
@@ -185,15 +187,15 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
     final result = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: const Text('Discard changes?',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
         content: Text('You have ${_dirtyKeyIds.length} unsaved translation(s).',
-            style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+            style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep Editing', style: TextStyle(color: Color(0xFF9CA3AF))),
+            child: const Text('Keep Editing', style: TextStyle(color: AppColors.neutral400)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
@@ -213,18 +215,18 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
         if (await _confirmDiscard() && mounted) {
-          Navigator.pop(context);
+          Navigator.pop(this.context);
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F7FA),
+        backgroundColor: AppColors.lightScaffold,
         appBar: UniversalAppBar(
           title: 'Translate — ${widget.language['name']?.toString() ?? ''}',
           subtitle: '${_rows.length} keys · ${_dirtyKeyIds.length} unsaved',
           icon: Icons.translate_rounded,
           // Keep the existing "discard unsaved changes?" confirmation.
           onBackPressed: () async {
-            if (await _confirmDiscard() && mounted) Navigator.pop(context);
+            if (await _confirmDiscard() && mounted) Navigator.pop(this.context);
           },
           actions: [
             if (_dirtyKeyIds.isNotEmpty)
@@ -286,13 +288,13 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
         onChanged: (_) => _applySearch(),
         decoration: InputDecoration(
           hintText: 'Search keys…',
-          hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
+          hintStyle: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
           prefixIcon: const Icon(Icons.search_rounded, size: 20),
           filled: true,
-          fillColor: const Color(0xFFF5F7FA),
+          fillColor: AppColors.lightScaffold,
           contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+              borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
         ),
       ),
     );
@@ -309,9 +311,9 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
-            color: isDirty ? AppColors.adminColor.withOpacity(0.4) : const Color(0xFFE5E7EB)),
+            color: isDirty ? AppColors.adminColor.withValues(alpha: 0.4) : AppColors.neutral200),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,33 +328,33 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: AppColors.error.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(6),
+                    color: AppColors.error.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
                   ),
                   child: const Text('Missing',
-                      style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.error)),
+                      style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w800, color: AppColors.error)),
                 ),
             ],
           ),
           if ((row['description'] ?? '').toString().isNotEmpty) ...[
             const SizedBox(height: 2),
             Text(row['description'].toString(),
-                style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+                style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
           ],
           const SizedBox(height: 8),
           TextField(
             controller: controller,
             maxLines: null,
             onChanged: (_) => setState(() => _dirtyKeyIds.add(keyId)),
-            style: const TextStyle(fontSize: 13),
+            style: const TextStyle(fontSize: AppFontSizes.secondary),
             decoration: InputDecoration(
               hintText: 'Translated text…',
               isDense: true,
               filled: true,
-              fillColor: const Color(0xFFF9FAFB),
+              fillColor: AppColors.tintGray,
               contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm), borderSide: BorderSide.none),
             ),
           ),
         ],
@@ -372,10 +374,10 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
                 Icon(Icons.translate_rounded, size: 48, color: Colors.grey.shade300),
                 const SizedBox(height: 10),
                 const Text('No translation keys yet',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF9CA3AF))),
+                    style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: AppColors.neutral400)),
                 const SizedBox(height: 4),
                 const Text('Tap "Add Key" to create the first one.',
-                    style: TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+                    style: TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
               ],
             ),
           ),
@@ -392,7 +394,7 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
           const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
           const SizedBox(height: 10),
           const Text('Failed to load translations',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           ElevatedButton.icon(
             onPressed: _load,

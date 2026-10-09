@@ -29,6 +29,8 @@ import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/booking_service.dart';
@@ -38,17 +40,20 @@ import '../../../l10n/generated/app_localizations.dart';
 
 enum _LocationChoice { professional, custom }
 
-const List<String> _kStepTitles = [
-  'Service Summary',
-  'Select Date',
-  'Select Time',
-  'Location',
-  'Additional Notes',
-  'Booking Summary',
+int get _kStepCount => 6;
+
+List<String> _stepTitles(AppLocalizations t) => [
+  t.bkStepTitleService,
+  t.bkStepTitleDate,
+  t.bkStepTitleTime,
+  t.locationLabel,
+  t.bkStepTitleNotes,
+  t.bkStepTitleSummary,
 ];
 
 // Short labels shown under each stepper circle.
-const List<String> _kStepShortLabels = ['Service', 'Date', 'Time', 'Location', 'Details', 'Summary'];
+List<String> _stepShortLabels(AppLocalizations t) =>
+    [t.serviceLabel, t.dateLabel, t.timeLabel, t.locationLabel, t.detailsLabel, t.bookingsSummary];
 
 const List<IconData> _kStepIcons = [
   Icons.person_outline_rounded,
@@ -59,16 +64,17 @@ const List<IconData> _kStepIcons = [
   Icons.fact_check_rounded,
 ];
 
-const List<String> _kStepDescriptions = [
-  "Review the professional's details before you continue.",
-  'Choose a date that works best for your appointment.',
-  'Pick an available time slot for your visit.',
-  'Let the professional know where to provide the service.',
-  'Add any details that help the professional prepare.',
-  'Review everything carefully before confirming your booking.',
+List<String> _stepDescriptions(AppLocalizations t) => [
+  t.bkStepDesc1,
+  t.bkStepDesc2,
+  t.bkStepDesc3,
+  t.bkStepDesc4,
+  t.bkStepDesc5,
+  t.bkStepDesc6,
 ];
 
-const List<String> _kWeekdayShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+List<String> _weekdayShort(AppLocalizations t) =>
+    [t.bkWeekdayMon, t.bkWeekdayTue, t.bkWeekdayWed, t.bkWeekdayThu, t.bkWeekdayFri, t.bkWeekdaySat, t.bkWeekdaySun];
 
 class BookingScreen extends StatefulWidget {
   final Map<String, dynamic> professional;
@@ -152,16 +158,16 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     if (area.isNotEmpty && city.isNotEmpty) return '$area, $city';
     if (city.isNotEmpty) return city;
     if (area.isNotEmpty) return area;
-    return AppLocalizations.of(context)!.professionalLocationLabel;
+    return AppLocalizations.of(context).professionalLocationLabel;
   }
 
   Future<void> _submitBooking() async {
     if (_selectedDate == null) {
-      AppHelpers.showError(context, AppLocalizations.of(context)!.bookingDateRequired);
+      AppHelpers.showError(context, AppLocalizations.of(context).bookingDateRequired);
       return;
     }
     if (_selectedSlot == null) {
-      AppHelpers.showError(context, AppLocalizations.of(context)!.bookingTimeRequired);
+      AppHelpers.showError(context, AppLocalizations.of(context).bookingTimeRequired);
       return;
     }
 
@@ -198,17 +204,17 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     }
 
     // ── General error ────────────────────────────────────────────────
-    AppHelpers.showError(context, result['message'] ?? AppLocalizations.of(context)!.bookingFailed);
+    AppHelpers.showError(context, result['message'] ?? AppLocalizations.of(context).bookingFailed);
   }
 
   void _showSuccessDialog() {
-    final proName = widget.professional['name']?.toString() ?? AppLocalizations.of(context)!.professionalDefaultName;
+    final proName = widget.professional['name']?.toString() ?? AppLocalizations.of(context).professionalDefaultName;
 
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
         backgroundColor: context.colors.surface,
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -226,17 +232,17 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
               ),
               const SizedBox(height: 16),
               Text(
-                AppLocalizations.of(context)!.bookingSuccessTitle,
+                AppLocalizations.of(context).bookingSuccessTitle,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: AppFontSizes.title2,
                   fontWeight: FontWeight.w700,
                   color: context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                AppLocalizations.of(context)!.bookingSuccessMessage(proName),
-                style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+                AppLocalizations.of(context).bookingSuccessMessage(proName),
+                style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
@@ -249,10 +255,10 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                   minimumSize: const Size(double.infinity, 46),
                   backgroundColor: AppColors.customerColor,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)!.viewMyBookingsCta,
+                  AppLocalizations.of(context).viewMyBookingsCta,
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
               ),
@@ -260,7 +266,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
               TextButton(
                 onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
                 child: Text(
-                  AppLocalizations.of(context)!.backToHomeCta,
+                  AppLocalizations.of(context).backToHomeCta,
                   style: TextStyle(color: context.colors.textSecondary),
                 ),
               ),
@@ -350,7 +356,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.bookAppointmentTitle,
+        title: AppLocalizations.of(context).bookAppointmentTitle,
         icon: Icons.event_available_rounded,
         onBackPressed: _onBackPressed,
       ),
@@ -400,7 +406,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
 
   Widget _buildStepper(bool isTablet) {
     final circleSize = isTablet ? 40.0 : 34.0;
-    final count = _kStepShortLabels.length;
+    final count = _kStepCount;
 
     return SizedBox(
       height: isTablet ? 70 : 62,
@@ -474,7 +480,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
               shape: BoxShape.circle,
               border: (!completed && !current) ? Border.all(color: context.colors.divider, width: 1.6) : null,
               boxShadow: current
-                  ? [BoxShadow(color: AppColors.customerColor.withOpacity(0.35), blurRadius: 10, offset: const Offset(0, 3))]
+                  ? [BoxShadow(color: AppColors.customerColor.withValues(alpha: 0.35), blurRadius: 10, offset: const Offset(0, 3))]
                   : null,
             ),
             alignment: Alignment.center,
@@ -482,7 +488,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
           ),
           const SizedBox(height: 7),
           Text(
-            _kStepShortLabels[index],
+            _stepShortLabels(AppLocalizations.of(context))[index],
             style: TextStyle(
               fontSize: isTablet ? 12 : 11,
               fontWeight: current ? FontWeight.w700 : FontWeight.w500,
@@ -502,14 +508,14 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
           width: isTablet ? 68 : 58,
           height: isTablet ? 68 : 58,
           decoration: BoxDecoration(
-            color: AppColors.customerColor.withOpacity(isDark ? 0.18 : 0.1),
-            borderRadius: BorderRadius.circular(20),
+            color: AppColors.customerColor.withValues(alpha: isDark ? 0.18 : 0.1),
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
           ),
           child: Icon(_kStepIcons[_currentStep], size: isTablet ? 32 : 27, color: AppColors.customerColor),
         ),
         SizedBox(height: isTablet ? 16 : 14),
         Text(
-          _kStepTitles[_currentStep],
+          _stepTitles(AppLocalizations.of(context))[_currentStep],
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: isTablet ? 27 : 23,
@@ -523,7 +529,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: isTablet ? 56 : 24),
           child: Text(
-            _kStepDescriptions[_currentStep],
+            _stepDescriptions(AppLocalizations.of(context))[_currentStep],
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: isTablet ? 15 : 13.5,
@@ -546,8 +552,8 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
       width: double.infinity,
       padding: EdgeInsets.all(isTablet ? 20 : 17),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.03) : Colors.grey.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(18),
+        color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -559,7 +565,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.securityBannerTitle,
+                  AppLocalizations.of(context).securityBannerTitle,
                   style: TextStyle(
                     fontSize: isTablet ? 14 : 13,
                     fontWeight: FontWeight.w700,
@@ -569,7 +575,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  AppLocalizations.of(context)!.securityBannerSubtitle,
+                  AppLocalizations.of(context).securityBannerSubtitle,
                   style: TextStyle(fontSize: isTablet ? 13 : 12, color: context.colors.textSecondary, height: 1.45),
                 ),
               ],
@@ -618,13 +624,13 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
       padding: EdgeInsets.all(isTablet ? 24 : 20),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.withOpacity(0.1),
+          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.12) : Colors.grey.withOpacity(0.06),
+            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
@@ -655,9 +661,9 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
       width: double.infinity,
       padding: EdgeInsets.all(isTablet ? 20 : 17),
       decoration: BoxDecoration(
-        color: AppColors.customerColor.withOpacity(isDark ? 0.14 : 0.07),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.customerColor.withOpacity(0.2)),
+        color: AppColors.customerColor.withValues(alpha: isDark ? 0.14 : 0.07),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(color: AppColors.customerColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -741,7 +747,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
   // state already used elsewhere on this screen).
   Widget _miniProgressCard(bool isDark, bool isTablet) {
     final pro = widget.professional;
-    final name = (pro['name'] ?? AppLocalizations.of(context)!.professionalDefaultName).toString();
+    final name = (pro['name'] ?? AppLocalizations.of(context).professionalDefaultName).toString();
     final chips = <Widget>[];
 
     chips.add(_miniChip(Icons.person_outline_rounded, name, isTablet));
@@ -756,14 +762,14 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
       width: double.infinity,
       padding: EdgeInsets.all(isTablet ? 20 : 17),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.03) : Colors.grey.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(18),
+        color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppLocalizations.of(context)!.bookingSoFarLabel,
+            AppLocalizations.of(context).bookingSoFarLabel,
             style: TextStyle(
               fontSize: isTablet ? 13 : 12,
               fontWeight: FontWeight.w700,
@@ -783,7 +789,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
       padding: EdgeInsets.symmetric(horizontal: isTablet ? 15 : 13, vertical: isTablet ? 10 : 9),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(color: context.colors.divider),
       ),
       child: Row(
@@ -808,7 +814,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
   // ── Step 0: Service Summary ─────────────────────────────────────────
   Widget _buildServiceSummaryStep(bool isDark, bool isTablet) {
     final pro = widget.professional;
-    final name = (pro['name'] ?? AppLocalizations.of(context)!.professionalDefaultName).toString();
+    final name = (pro['name'] ?? AppLocalizations.of(context).professionalDefaultName).toString();
     final rate = pro['hourly_rate'] ?? 0;
     final category = (pro['category_name'] ?? '').toString();
     final isVerified = pro['is_verified'] == true;
@@ -891,7 +897,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                                 Text(
                                   rating.toStringAsFixed(1),
                                   style: TextStyle(
-                                    fontSize: 13.5,
+                                    fontSize: AppFontSizes.body,
                                     fontWeight: FontWeight.w700,
                                     color: context.colors.textPrimary,
                                   ),
@@ -905,39 +911,39 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                 ],
               ),
               SizedBox(height: isTablet ? 18 : 14),
-              Divider(color: context.colors.divider.withOpacity(0.6), height: 1),
+              Divider(color: context.colors.divider.withValues(alpha: 0.6), height: 1),
               SizedBox(height: isTablet ? 16 : 12),
-              _summaryInfoRow(Icons.payments_rounded, AppLocalizations.of(context)!.hourlyRateLabel, '\$$rate/hr', isTablet),
+              _summaryInfoRow(Icons.payments_rounded, AppLocalizations.of(context).hourlyRateLabel, '\$$rate/hr', isTablet),
               const SizedBox(height: 10),
-              _summaryInfoRow(Icons.schedule_rounded, AppLocalizations.of(context)!.workingHoursLabel, '$startStr – $endStr', isTablet),
+              _summaryInfoRow(Icons.schedule_rounded, AppLocalizations.of(context).workingHoursLabel, '$startStr – $endStr', isTablet),
             ],
           ),
         ),
         SizedBox(height: isTablet ? 20 : 16),
-        _sectionLabel(AppLocalizations.of(context)!.whyBookHereLabel, isTablet),
+        _sectionLabel(AppLocalizations.of(context).whyBookHereLabel, isTablet),
         Row(
           children: [
-            Expanded(child: _trustBadge(Icons.chat_bubble_outline_rounded, AppLocalizations.of(context)!.directChatLabel, isDark, isTablet)),
+            Expanded(child: _trustBadge(Icons.chat_bubble_outline_rounded, AppLocalizations.of(context).directChatLabel, isDark, isTablet)),
             const SizedBox(width: 10),
-            Expanded(child: _trustBadge(Icons.event_available_rounded, AppLocalizations.of(context)!.flexibleTimingLabel, isDark, isTablet)),
+            Expanded(child: _trustBadge(Icons.event_available_rounded, AppLocalizations.of(context).flexibleTimingLabel, isDark, isTablet)),
             const SizedBox(width: 10),
-            Expanded(child: _trustBadge(Icons.cancel_schedule_send_rounded, AppLocalizations.of(context)!.freeToCancelLabel, isDark, isTablet)),
+            Expanded(child: _trustBadge(Icons.cancel_schedule_send_rounded, AppLocalizations.of(context).freeToCancelLabel, isDark, isTablet)),
           ],
         ),
         SizedBox(height: isTablet ? 20 : 16),
         _tipCard(
           icon: Icons.lightbulb_outline_rounded,
-          text: AppLocalizations.of(context)!.bookingTipText,
+          text: AppLocalizations.of(context).bookingTipText,
           isDark: isDark,
           isTablet: isTablet,
         ),
         SizedBox(height: isTablet ? 20 : 16),
         _policyCard(
-          title: AppLocalizations.of(context)!.goodToKnowLabel,
-          points: const [
-            'Sending a request is free and only takes a minute.',
-            "You'll be notified as soon as the professional responds.",
-            'You can cancel at no cost while your request is still pending.',
+          title: AppLocalizations.of(context).goodToKnowLabel,
+          points: [
+            AppLocalizations.of(context).bkGoodToKnow1,
+            AppLocalizations.of(context).bkGoodToKnow2,
+            AppLocalizations.of(context).bkGoodToKnow3,
           ],
           isDark: isDark,
           isTablet: isTablet,
@@ -951,8 +957,8 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
       padding: EdgeInsets.symmetric(vertical: isTablet ? 14 : 12, horizontal: 6),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.withOpacity(0.1)),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -979,8 +985,8 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: AppColors.customerColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.customerColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
           child: Icon(icon, size: isTablet ? 19 : 17, color: AppColors.customerColor),
         ),
@@ -1050,13 +1056,13 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
               ),
               SizedBox(height: isTablet ? 14 : 10),
               Row(
-                children: _kWeekdayShort
+                children: _weekdayShort(AppLocalizations.of(context))
                     .map((d) => Expanded(
                           child: Center(
                             child: Text(
                               d,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: AppFontSizes.small,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: 0.2,
                                 color: context.colors.textSecondary,
@@ -1076,17 +1082,17 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                 );
               }),
               SizedBox(height: isTablet ? 14 : 10),
-              Divider(color: context.colors.divider.withOpacity(0.6), height: 1),
+              Divider(color: context.colors.divider.withValues(alpha: 0.6), height: 1),
               SizedBox(height: isTablet ? 12 : 10),
               Wrap(
                 spacing: 16,
                 runSpacing: 8,
                 children: [
-                  _calendarLegendItem(AppColors.customerColor, AppLocalizations.of(context)!.selectedLabel, isTablet),
-                  _calendarLegendItem(Colors.transparent, AppLocalizations.of(context)!.todayLabel, isTablet, outline: AppColors.customerColor),
+                  _calendarLegendItem(AppColors.customerColor, AppLocalizations.of(context).selectedLabel, isTablet),
+                  _calendarLegendItem(Colors.transparent, AppLocalizations.of(context).todayLabel, isTablet, outline: AppColors.customerColor),
                   _calendarLegendItem(
-                    context.colors.textSecondary.withOpacity(0.25),
-                    AppLocalizations.of(context)!.unavailableLabel,
+                    context.colors.textSecondary.withValues(alpha: 0.25),
+                    AppLocalizations.of(context).unavailableLabel,
                     isTablet,
                   ),
                 ],
@@ -1099,7 +1105,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
         SizedBox(height: isTablet ? 20 : 16),
         _tipCard(
           icon: Icons.event_available_rounded,
-          text: AppLocalizations.of(context)!.dateTipText,
+          text: AppLocalizations.of(context).dateTipText,
           isDark: isDark,
           isTablet: isTablet,
         ),
@@ -1141,7 +1147,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
           child: Icon(
             icon,
             size: 24,
-            color: enabled ? context.colors.textSecondary : context.colors.textSecondary.withOpacity(0.25),
+            color: enabled ? context.colors.textSecondary : context.colors.textSecondary.withValues(alpha: 0.25),
           ),
         ),
       ),
@@ -1164,7 +1170,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     Border? border;
 
     if (disabled) {
-      fg = context.colors.textSecondary.withOpacity(0.28);
+      fg = context.colors.textSecondary.withValues(alpha: 0.28);
     }
     if (isSelected) {
       bg = AppColors.customerColor;
@@ -1180,7 +1186,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(13),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             onTap: disabled
                 ? null
                 : () {
@@ -1193,7 +1199,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                     });
                   },
             child: Container(
-              decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(13), border: border),
+              decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(AppSizes.radiusMd), border: border),
               alignment: Alignment.center,
               child: Text(
                 '${day.day}',
@@ -1213,7 +1219,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
   // ── Step 2: Select Time ─────────────────────────────────────────────
   Widget _buildTimeStep(bool isDark, bool isTablet) {
     if (_selectedDate == null) {
-      return _emptyStateCard(isDark, isTablet, AppLocalizations.of(context)!.dateRequiredMessage, Icons.event_busy_rounded);
+      return _emptyStateCard(isDark, isTablet, AppLocalizations.of(context).dateRequiredMessage, Icons.event_busy_rounded);
     }
 
     final slots = _generateSlots();
@@ -1221,7 +1227,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
       return _emptyStateCard(
         isDark,
         isTablet,
-        AppLocalizations.of(context)!.noWorkingHoursMessage,
+        AppLocalizations.of(context).noWorkingHoursMessage,
         Icons.schedule_rounded,
       );
     }
@@ -1261,17 +1267,17 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
         SizedBox(height: isTablet ? 20 : 16),
         _tipCard(
           icon: Icons.timer_outlined,
-          text: AppLocalizations.of(context)!.timeTipText,
+          text: AppLocalizations.of(context).timeTipText,
           isDark: isDark,
           isTablet: isTablet,
         ),
         SizedBox(height: isTablet ? 20 : 16),
         _policyCard(
-          title: AppLocalizations.of(context)!.timeSlotsLabel,
-          points: const [
-            'Only slots within the professional\'s working hours are shown.',
-            'Slots already passed for today are automatically disabled.',
-            'You can change your selected time at any point before confirming.',
+          title: AppLocalizations.of(context).timeSlotsLabel,
+          points: [
+            AppLocalizations.of(context).bkTimeSlots1,
+            AppLocalizations.of(context).bkTimeSlots2,
+            AppLocalizations.of(context).bkTimeSlots3,
           ],
           isDark: isDark,
           isTablet: isTablet,
@@ -1288,7 +1294,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         onTap: disabled
             ? null
             : () {
@@ -1302,15 +1308,15 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
           padding: EdgeInsets.symmetric(horizontal: isTablet ? 19 : 17, vertical: isTablet ? 14 : 13),
           decoration: BoxDecoration(
             color: disabled
-                ? (isDark ? Colors.white.withOpacity(0.03) : Colors.grey.withOpacity(0.06))
+                ? (isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.06))
                 : selected
                     ? AppColors.customerColor
-                    : (isDark ? Colors.white.withOpacity(0.04) : context.colors.background),
-            borderRadius: BorderRadius.circular(13),
+                    : (isDark ? Colors.white.withValues(alpha: 0.04) : context.colors.background),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             border: Border.all(
               color: selected
                   ? AppColors.customerColor
-                  : (isDark ? Colors.white.withOpacity(0.08) : context.colors.divider),
+                  : (isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
               width: selected ? 1.6 : 1,
             ),
           ),
@@ -1321,7 +1327,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                 Icons.access_time_rounded,
                 size: 16,
                 color: disabled
-                    ? context.colors.textSecondary.withOpacity(0.4)
+                    ? context.colors.textSecondary.withValues(alpha: 0.4)
                     : selected
                         ? Colors.white
                         : context.colors.textSecondary,
@@ -1333,12 +1339,12 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                   fontSize: isTablet ? 14 : 13,
                   fontWeight: FontWeight.w600,
                   color: disabled
-                      ? context.colors.textSecondary.withOpacity(0.4)
+                      ? context.colors.textSecondary.withValues(alpha: 0.4)
                       : selected
                           ? Colors.white
                           : context.colors.textPrimary,
                   decoration: disabled ? TextDecoration.lineThrough : null,
-                  decorationColor: context.colors.textSecondary.withOpacity(0.4),
+                  decorationColor: context.colors.textSecondary.withValues(alpha: 0.4),
                 ),
               ),
             ],
@@ -1354,12 +1360,12 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
       isTablet: isTablet,
       child: Column(
         children: [
-          Icon(icon, size: 38, color: context.colors.textSecondary.withOpacity(0.5)),
+          Icon(icon, size: 38, color: context.colors.textSecondary.withValues(alpha: 0.5)),
           const SizedBox(height: 12),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: context.colors.textSecondary, fontWeight: FontWeight.w500, height: 1.4),
+            style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary, fontWeight: FontWeight.w500, height: 1.4),
           ),
         ],
       ),
@@ -1376,7 +1382,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
           isTablet: isTablet,
           selected: _locationChoice == _LocationChoice.professional,
           icon: Icons.storefront_rounded,
-          title: AppLocalizations.of(context)!.professionalLocationOption,
+          title: AppLocalizations.of(context).professionalLocationOption,
           subtitle: _professionalLocationLabel(),
           onTap: () => setState(() => _locationChoice = _LocationChoice.professional),
         ),
@@ -1386,8 +1392,8 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
           isTablet: isTablet,
           selected: _locationChoice == _LocationChoice.custom,
           icon: Icons.edit_location_alt_rounded,
-          title: AppLocalizations.of(context)!.customLocationOption,
-          subtitle: AppLocalizations.of(context)!.customLocationSubtitle,
+          title: AppLocalizations.of(context).customLocationOption,
+          subtitle: AppLocalizations.of(context).customLocationSubtitle,
           onTap: () => setState(() => _locationChoice = _LocationChoice.custom),
         ),
         if (_locationChoice == _LocationChoice.custom) ...[
@@ -1397,21 +1403,21 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
             maxLines: 2,
             style: TextStyle(fontSize: isTablet ? 15 : 14, color: context.colors.textPrimary),
             decoration: InputDecoration(
-              hintText: AppLocalizations.of(context)!.customLocationHint,
-              hintStyle: TextStyle(fontSize: 14, color: context.colors.textSecondary),
+              hintText: AppLocalizations.of(context).customLocationHint,
+              hintStyle: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary),
               prefixIcon: Icon(Icons.location_on_rounded, color: context.colors.textSecondary, size: 22),
               filled: true,
               fillColor: context.colors.surface,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: isDark ? Colors.white.withOpacity(0.08) : context.colors.divider),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: isDark ? Colors.white.withOpacity(0.08) : context.colors.divider),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                 borderSide: BorderSide(color: AppColors.customerColor, width: 1.5),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -1423,7 +1429,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
         SizedBox(height: isTablet ? 20 : 16),
         _tipCard(
           icon: Icons.privacy_tip_outlined,
-          text: AppLocalizations.of(context)!.locationTipText,
+          text: AppLocalizations.of(context).locationTipText,
           isDark: isDark,
           isTablet: isTablet,
         ),
@@ -1443,7 +1449,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
@@ -1451,13 +1457,13 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
           padding: EdgeInsets.all(isTablet ? 20 : 16),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.customerColor.withOpacity(isDark ? 0.16 : 0.08)
+                ? AppColors.customerColor.withValues(alpha: isDark ? 0.16 : 0.08)
                 : context.colors.surface,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             border: Border.all(
               color: selected
-                  ? AppColors.customerColor.withOpacity(0.55)
-                  : (isDark ? Colors.white.withOpacity(0.06) : Colors.grey.withOpacity(0.1)),
+                  ? AppColors.customerColor.withValues(alpha: 0.55)
+                  : (isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1)),
               width: selected ? 1.4 : 1,
             ),
           ),
@@ -1467,8 +1473,8 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: (selected ? AppColors.customerColor : context.colors.textSecondary).withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(13),
+                  color: (selected ? AppColors.customerColor : context.colors.textSecondary).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 child: Icon(icon, size: 22, color: selected ? AppColors.customerColor : context.colors.textSecondary),
               ),
@@ -1497,7 +1503,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
               Icon(
                 selected ? Icons.radio_button_checked_rounded : Icons.radio_button_unchecked_rounded,
                 size: 22,
-                color: selected ? AppColors.customerColor : context.colors.textSecondary.withOpacity(0.5),
+                color: selected ? AppColors.customerColor : context.colors.textSecondary.withValues(alpha: 0.5),
               ),
             ],
           ),
@@ -1507,12 +1513,15 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
   }
 
   // ── Step 4: Additional Notes ────────────────────────────────────────
-  static const List<String> _kQuickNoteTags = [
-    'First-time customer',
-    'Urgent request',
-    'Follow-up visit',
-    'Please call before arriving',
-  ];
+  List<String> _quickNoteTags(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return [
+      t.bookingQuickNoteFirstTime,
+      t.bookingQuickNoteUrgent,
+      t.bookingQuickNoteFollowUp,
+      t.bookingQuickNoteCallBefore,
+    ];
+  }
 
   // Purely a typing convenience — appends onto the same TextEditingController
   // already wired to _noteController / _buildCombinedNote(). No new state,
@@ -1537,20 +1546,20 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
           maxLines: 5,
           style: TextStyle(fontSize: isTablet ? 15 : 14, color: context.colors.textPrimary, height: 1.4),
           decoration: InputDecoration(
-            hintText: AppLocalizations.of(context)!.notesHintText,
-            hintStyle: TextStyle(fontSize: 14, color: context.colors.textSecondary),
+            hintText: AppLocalizations.of(context).notesHintText,
+            hintStyle: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary),
             filled: true,
             fillColor: context.colors.surface,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: isDark ? Colors.white.withOpacity(0.08) : context.colors.divider),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+              borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: isDark ? Colors.white.withOpacity(0.08) : context.colors.divider),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+              borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               borderSide: BorderSide(color: AppColors.customerColor, width: 1.5),
             ),
             contentPadding: const EdgeInsets.all(16),
@@ -1564,29 +1573,29 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                AppLocalizations.of(context)!.notesInfoText,
-                style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary, height: 1.4),
+                AppLocalizations.of(context).notesInfoText,
+                style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary, height: 1.4),
               ),
             ),
           ],
         ),
         SizedBox(height: isTablet ? 20 : 16),
-        _sectionLabel(AppLocalizations.of(context)!.quickAddLabel, isTablet),
+        _sectionLabel(AppLocalizations.of(context).quickAddLabel, isTablet),
         Wrap(
           spacing: 10,
           runSpacing: 10,
-          children: _kQuickNoteTags
+          children: _quickNoteTags(context)
               .map((tag) => Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       onTap: () => _appendQuickTag(tag),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white.withOpacity(0.04) : context.colors.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: isDark ? Colors.white.withOpacity(0.08) : context.colors.divider),
+                          color: isDark ? Colors.white.withValues(alpha: 0.04) : context.colors.surface,
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -1613,7 +1622,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
         SizedBox(height: isTablet ? 20 : 16),
         _tipCard(
           icon: Icons.checklist_rounded,
-          text: AppLocalizations.of(context)!.notesTipText,
+          text: AppLocalizations.of(context).notesTipText,
           isDark: isDark,
           isTablet: isTablet,
         ),
@@ -1624,10 +1633,10 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
   // ── Step 5: Booking Summary + Confirm ───────────────────────────────
   Widget _buildSummaryStep(bool isDark, bool isTablet) {
     final pro = widget.professional;
-    final name = (pro['name'] ?? AppLocalizations.of(context)!.professionalDefaultName).toString();
+    final name = (pro['name'] ?? AppLocalizations.of(context).professionalDefaultName).toString();
     final location = _locationChoice == _LocationChoice.custom
         ? (_customLocationController.text.trim().isEmpty
-            ? AppLocalizations.of(context)!.notSpecifiedLabel
+            ? AppLocalizations.of(context).notSpecifiedLabel
             : _customLocationController.text.trim())
         : _professionalLocationLabel();
     final note = _noteController.text.trim();
@@ -1635,48 +1644,48 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionLabel(AppLocalizations.of(context)!.reviewBookingLabel, isTablet),
+        _sectionLabel(AppLocalizations.of(context).reviewBookingLabel, isTablet),
         _cardShell(
           isDark: isDark,
           isTablet: isTablet,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _summaryRow(Icons.person_outline_rounded, AppLocalizations.of(context)!.professionalLabel, name, isTablet),
+              _summaryRow(Icons.person_outline_rounded, AppLocalizations.of(context).professionalLabel, name, isTablet),
               _summaryRow(
                 Icons.calendar_today_rounded,
-                AppLocalizations.of(context)!.dateLabel,
+                AppLocalizations.of(context).dateLabel,
                 _selectedDate != null ? DateFormat('EEE, MMM d, yyyy').format(_selectedDate!) : '—',
                 isTablet,
               ),
-              _summaryRow(Icons.access_time_rounded, AppLocalizations.of(context)!.timeLabel, _selectedSlot ?? '—', isTablet),
-              _summaryRow(Icons.location_on_outlined, AppLocalizations.of(context)!.locationLabel, location, isTablet),
-              if (note.isNotEmpty) _summaryRow(Icons.notes_rounded, AppLocalizations.of(context)!.notesLabel, note, isTablet, isLast: true),
+              _summaryRow(Icons.access_time_rounded, AppLocalizations.of(context).timeLabel, _selectedSlot ?? '—', isTablet),
+              _summaryRow(Icons.location_on_outlined, AppLocalizations.of(context).locationLabel, location, isTablet),
+              if (note.isNotEmpty) _summaryRow(Icons.notes_rounded, AppLocalizations.of(context).notesLabel, note, isTablet, isLast: true),
             ],
           ),
         ),
         SizedBox(height: isTablet ? 20 : 16),
-        _sectionLabel(AppLocalizations.of(context)!.whatHappensNextLabel, isTablet),
+        _sectionLabel(AppLocalizations.of(context).whatHappensNextLabel, isTablet),
         _cardShell(
           isDark: isDark,
           isTablet: isTablet,
           child: Column(
             children: [
-              _nextStepRow(1, Icons.send_rounded, AppLocalizations.of(context)!.requestSentLabel,
-                  AppLocalizations.of(context)!.requestSentSubtitle(name), isTablet, isLast: false),
-              _nextStepRow(2, Icons.hourglass_top_rounded, AppLocalizations.of(context)!.professionalReviewsLabel,
-                  AppLocalizations.of(context)!.professionalReviewsSubtitle, isTablet, isLast: false),
-              _nextStepRow(3, Icons.notifications_active_outlined, AppLocalizations.of(context)!.youAreNotifiedLabel,
-                  AppLocalizations.of(context)!.youAreNotifiedSubtitle, isTablet, isLast: true),
+              _nextStepRow(1, Icons.send_rounded, AppLocalizations.of(context).requestSentLabel,
+                  AppLocalizations.of(context).requestSentSubtitle(name), isTablet, isLast: false),
+              _nextStepRow(2, Icons.hourglass_top_rounded, AppLocalizations.of(context).professionalReviewsLabel,
+                  AppLocalizations.of(context).professionalReviewsSubtitle, isTablet, isLast: false),
+              _nextStepRow(3, Icons.notifications_active_outlined, AppLocalizations.of(context).youAreNotifiedLabel,
+                  AppLocalizations.of(context).youAreNotifiedSubtitle, isTablet, isLast: true),
             ],
           ),
         ),
         SizedBox(height: isTablet ? 20 : 16),
         _policyCard(
-          title: AppLocalizations.of(context)!.cancellationPolicyLabel,
-          points: const [
-            'Free cancellation any time while your request is pending.',
-            "Once accepted, you can coordinate changes directly with the professional via chat.",
+          title: AppLocalizations.of(context).cancellationPolicyLabel,
+          points: [
+            AppLocalizations.of(context).cancellationPolicyPointFree,
+            AppLocalizations.of(context).cancellationPolicyPointChat,
           ],
           isDark: isDark,
           isTablet: isTablet,
@@ -1695,7 +1704,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: AppColors.customerColor.withOpacity(0.12),
+              color: AppColors.customerColor.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
             child: Stack(
@@ -1716,7 +1725,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                     child: Center(
                       child: Text(
                         '$number',
-                        style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Colors.white),
+                        style: const TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w800, color: Colors.white),
                       ),
                     ),
                   ),
@@ -1792,7 +1801,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
         decoration: BoxDecoration(
           color: context.colors.surface,
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 12, offset: const Offset(0, -3)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, -3)),
           ],
         ),
         child: Column(
@@ -1807,12 +1816,12 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: BorderSide(color: context.colors.divider, width: 1.4),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
                       ),
                       child: Text(
-                        AppLocalizations.of(context)!.backCta,
+                        AppLocalizations.of(context).backCta,
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: AppFontSizes.body,
                           fontWeight: FontWeight.w700,
                           color: context.colors.textSecondary,
                         ),
@@ -1834,10 +1843,10 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.customerColor,
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: AppColors.customerColor.withOpacity(0.4),
+                      disabledBackgroundColor: AppColors.customerColor.withValues(alpha: 0.4),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
                     ),
                     child: _isLoading
                         ? const SizedBox(
@@ -1846,8 +1855,8 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                             child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white),
                           )
                         : Text(
-                            isLastStep ? AppLocalizations.of(context)!.confirmBookingCta : AppLocalizations.of(context)!.nextCta,
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                            isLastStep ? AppLocalizations.of(context).confirmBookingCta : AppLocalizations.of(context).nextCta,
+                            style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
                           ),
                   ),
                 ),
@@ -1862,10 +1871,10 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                   const SizedBox(width: 5),
                   Flexible(
                     child: Text(
-                      AppLocalizations.of(context)!.securityFooterText,
+                      AppLocalizations.of(context).securityFooterText,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 10.5, color: context.colors.textSecondary),
+                      style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary),
                     ),
                   ),
                 ],

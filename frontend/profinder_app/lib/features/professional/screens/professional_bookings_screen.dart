@@ -33,6 +33,8 @@
 //     {'other_user_id': ...}, then push the existing ChatScreen. No new
 //     endpoint, no ChatProvider/ChatScreen changes.
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -122,7 +124,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, AppLocalizations.of(context)!.loadBookingsError);
+      AppHelpers.showError(context, AppLocalizations.of(context).loadBookingsError);
     }
   }
 
@@ -163,9 +165,9 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   }
 
   Future<void> _saveSuggestedTime(String bookingId, DateTime date, TimeOfDay time) async {
-    final prefs = await SharedPreferences.getInstance();
     final dateStr = DateFormat('yyyy-MM-dd').format(date);
     final timeStr = time.format(context);
+    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('${_suggestedTimesPrefsKey}_$bookingId', '$dateStr|$timeStr');
     if (!mounted) return;
     setState(() => _suggestedTimes[bookingId] = {'date': dateStr, 'time': timeStr});
@@ -223,11 +225,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       await _api.patch('${AppConstants.professionalBookings}$id/', body);
       if (!mounted) return;
       await _clearSuggestedTime(id.toString());
-      AppHelpers.showSuccess(context, AppLocalizations.of(context)!.bookingStatusUpdated(newStatus));
+      if (!mounted) return;
+      AppHelpers.showSuccess(context, AppLocalizations.of(context).bookingStatusUpdated(newStatus));
       _loadBookings();
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context)!.updateBookingError);
+      AppHelpers.showError(context, AppLocalizations.of(context).updateBookingError);
     }
   }
 
@@ -238,12 +241,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: Row(
           children: [
             const Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
             const SizedBox(width: 8),
-            Text(AppLocalizations.of(context)!.cancelBookingTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(AppLocalizations.of(context).cancelBookingTitle, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
           ],
         ),
         content: Column(
@@ -251,30 +254,30 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context)!.cancelConfirmationMessage,
-              style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+              AppLocalizations.of(context).cancelConfirmationMessage,
+              style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
             ),
             const SizedBox(height: 14),
             Text(
-              AppLocalizations.of(context)!.cancelReasonLabel,
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.colors.textPrimary),
+              AppLocalizations.of(context).cancelReasonLabel,
+              style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: context.colors.textPrimary),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: reasonCtrl,
               maxLines: 3,
-              style: const TextStyle(fontSize: 13),
+              style: const TextStyle(fontSize: AppFontSizes.secondary),
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.cancelReasonHint,
-                hintStyle: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+                hintText: AppLocalizations.of(context).cancelReasonHint,
+                hintStyle: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
                 filled: true,
                 fillColor: context.colors.background,
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
                 enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.colors.divider)),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
                 focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
               ),
             ),
@@ -283,13 +286,13 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.of(context)!.goBackCta, style: TextStyle(color: context.colors.textSecondary)),
+            child: Text(AppLocalizations.of(context).goBackCta, style: TextStyle(color: context.colors.textSecondary)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                backgroundColor: AppColors.error, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
             onPressed: () => Navigator.pop(context, true),
-            child: Text(AppLocalizations.of(context)!.yesCancelCta, style: const TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.of(context).yesCancelCta, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -313,26 +316,26 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
 
     await _saveSuggestedTime(booking['id'].toString(), date, time);
     if (!mounted) return;
-    AppHelpers.showSuccess(context, AppLocalizations.of(context)!.suggestTimeSuccess);
+    AppHelpers.showSuccess(context, AppLocalizations.of(context).suggestTimeSuccess);
 
     final openChat = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(AppLocalizations.of(context)!.notifyCustomerTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        title: Text(AppLocalizations.of(context).notifyCustomerTitle, style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700)),
         content: Text(
-          AppLocalizations.of(context)!.notifyCustomerMessage(
+          AppLocalizations.of(context).notifyCustomerMessage(
             DateFormat('EEE, MMM d').format(date),
             time.format(context),
           ),
-          style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
+          style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context)!.laterCta)),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context).laterCta)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.professionalColor, foregroundColor: Colors.white),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(AppLocalizations.of(context)!.openChatCta),
+            child: Text(AppLocalizations.of(context).openChatCta),
           ),
         ],
       ),
@@ -346,7 +349,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     setState(() => _isStartingChat = true);
     try {
       final customerId = booking['customer'];
-      final customerName = (booking['customer_name'] ?? booking['customer'] ?? AppLocalizations.of(context)!.customerDefault).toString();
+      final customerName = (booking['customer_name'] ?? booking['customer'] ?? AppLocalizations.of(context).customerDefault).toString();
       final results = await Future.wait([
         _api.post(AppConstants.conversations, {'other_user_id': customerId}),
         _api.get(AppConstants.me),
@@ -369,7 +372,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       );
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context)!.openChatError);
+      AppHelpers.showError(context, AppLocalizations.of(context).openChatError);
     } finally {
       if (mounted) setState(() => _isStartingChat = false);
     }
@@ -408,7 +411,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   }
 
   String _statusLabel(dynamic b) {
-    if (_isSuggested(b)) return AppLocalizations.of(context)!.rescheduledLabel;
+    if (_isSuggested(b)) return AppLocalizations.of(context).rescheduledLabel;
     return AppHelpers.capitalize(_statusOf(b));
   }
 
@@ -418,8 +421,8 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     final isPending = status == 'pending';
     final isAccepted = status == 'accepted';
     final isCancellable = isPending || isAccepted;
-    final customerName = (b['customer_name'] ?? b['customer'] ?? AppLocalizations.of(context)!.customerDefault).toString();
-    final date = b['date']?.toString() ?? AppLocalizations.of(context)!.dateNotSet;
+    final customerName = (b['customer_name'] ?? b['customer'] ?? AppLocalizations.of(context).customerDefault).toString();
+    final date = b['date']?.toString() ?? AppLocalizations.of(context).dateNotSet;
     final time = b['time']?.toString() ?? '';
     final split = _splitNote(b['note']?.toString() ?? '');
     final location = split['location'] ?? '';
@@ -435,7 +438,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       builder: (_) => Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusXl)),
         ),
         padding: EdgeInsets.only(
           left: 20,
@@ -454,33 +457,33 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                   width: 40,
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(color: context.colors.divider, borderRadius: BorderRadius.circular(4)),
+                  decoration: BoxDecoration(color: context.colors.divider, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
                 ),
               ),
               Row(
                 children: [
                   Expanded(
                     child: Text(
-                      AppLocalizations.of(context)!.bookingDetailsTitle,
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: context.colors.textPrimary),
+                      AppLocalizations.of(context).bookingDetailsTitle,
+                      style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: context.colors.textPrimary),
                     ),
                   ),
                   _statusChip(b, large: true),
                 ],
               ),
               const SizedBox(height: 18),
-              _detailRow(Icons.person_outline_rounded, AppLocalizations.of(context)!.customerLabel, customerName),
-              if (_myServiceCategory.isNotEmpty) _detailRow(Icons.design_services_rounded, AppLocalizations.of(context)!.serviceLabel, _myServiceCategory),
-              _detailRow(Icons.calendar_today_outlined, AppLocalizations.of(context)!.dateLabel, date),
-              if (time.isNotEmpty) _detailRow(Icons.access_time_rounded, AppLocalizations.of(context)!.timeLabel, time),
-              _detailRow(Icons.location_on_outlined, AppLocalizations.of(context)!.locationLabel, location.isNotEmpty ? location : AppLocalizations.of(context)!.locationNotSpecified),
-              if (notes.isNotEmpty) _detailRow(Icons.notes_rounded, AppLocalizations.of(context)!.notesLabel, notes),
+              _detailRow(Icons.person_outline_rounded, AppLocalizations.of(context).customerLabel, customerName),
+              if (_myServiceCategory.isNotEmpty) _detailRow(Icons.design_services_rounded, AppLocalizations.of(context).serviceLabel, _myServiceCategory),
+              _detailRow(Icons.calendar_today_outlined, AppLocalizations.of(context).dateLabel, date),
+              if (time.isNotEmpty) _detailRow(Icons.access_time_rounded, AppLocalizations.of(context).timeLabel, time),
+              _detailRow(Icons.location_on_outlined, AppLocalizations.of(context).locationLabel, location.isNotEmpty ? location : AppLocalizations.of(context).locationNotSpecified),
+              if (notes.isNotEmpty) _detailRow(Icons.notes_rounded, AppLocalizations.of(context).notesLabel, notes),
               if (suggested != null)
-                _detailRow(Icons.update_rounded, AppLocalizations.of(context)!.suggestedTimeLabel, '${suggested['date']} · ${suggested['time']}'),
+                _detailRow(Icons.update_rounded, AppLocalizations.of(context).suggestedTimeLabel, '${suggested['date']} · ${suggested['time']}'),
               if (status == 'cancelled' && cancelReason.isNotEmpty)
                 _detailRow(
                   Icons.info_outline_rounded,
-                  cancelledBy == 'customer' ? AppLocalizations.of(context)!.cancelledByCustomerLabel : AppLocalizations.of(context)!.cancelledByYouLabel,
+                  cancelledBy == 'customer' ? AppLocalizations.of(context).cancelledByCustomerLabel : AppLocalizations.of(context).cancelledByYouLabel,
                   cancelReason,
                 ),
               const SizedBox(height: 18),
@@ -494,12 +497,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                           _updateStatus(b, 'rejected');
                         },
                         icon: const Icon(Icons.close_rounded, size: 16),
-                        label: Text(AppLocalizations.of(context)!.declineCta),
+                        label: Text(AppLocalizations.of(context).declineCta),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.error,
-                          side: BorderSide(color: AppColors.error.withOpacity(0.4)),
+                          side: BorderSide(color: AppColors.error.withValues(alpha: 0.4)),
                           padding: const EdgeInsets.symmetric(vertical: 13),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                         ),
                       ),
                     ),
@@ -511,13 +514,13 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                           _updateStatus(b, 'accepted');
                         },
                         icon: const Icon(Icons.check_rounded, size: 16),
-                        label: Text(AppLocalizations.of(context)!.acceptCta),
+                        label: Text(AppLocalizations.of(context).acceptCta),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.accent,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 13),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                         ),
                       ),
                     ),
@@ -532,12 +535,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       _suggestNewTime(b);
                     },
                     icon: const Icon(Icons.update_rounded, size: 16),
-                    label: Text(AppLocalizations.of(context)!.suggestTimeCta),
+                    label: Text(AppLocalizations.of(context).suggestTimeCta),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.info,
-                      side: BorderSide(color: AppColors.info.withOpacity(0.4)),
+                      side: BorderSide(color: AppColors.info.withValues(alpha: 0.4)),
                       padding: const EdgeInsets.symmetric(vertical: 13),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                     ),
                   ),
                 ),
@@ -550,12 +553,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       _updateStatus(b, 'completed');
                     },
                     icon: const Icon(Icons.done_all_rounded, size: 16),
-                    label: Text(AppLocalizations.of(context)!.markCompletedCta),
+                    label: Text(AppLocalizations.of(context).markCompletedCta),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.colors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 13),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                     ),
                   ),
                 ),
@@ -569,12 +572,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     _openChat(b);
                   },
                   icon: const Icon(Icons.chat_bubble_outline_rounded, size: 16),
-                  label: Text(AppLocalizations.of(context)!.openChatCta),
+                  label: Text(AppLocalizations.of(context).openChatCta),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.professionalColor,
-                    side: BorderSide(color: AppColors.professionalColor.withOpacity(0.4)),
+                    side: BorderSide(color: AppColors.professionalColor.withValues(alpha: 0.4)),
                     padding: const EdgeInsets.symmetric(vertical: 13),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                   ),
                 ),
               ),
@@ -588,12 +591,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       _confirmCancel(b);
                     },
                     icon: const Icon(Icons.cancel_outlined, size: 16),
-                    label: Text(AppLocalizations.of(context)!.cancelBookingCta),
+                    label: Text(AppLocalizations.of(context).cancelBookingCta),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: context.colors.textSecondary,
                       side: BorderSide(color: context.colors.divider),
                       padding: const EdgeInsets.symmetric(vertical: 13),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                     ),
                   ),
                 ),
@@ -615,12 +618,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
           const SizedBox(width: 10),
           SizedBox(
             width: 92,
-            child: Text(label, style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary)),
+            child: Text(label, style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary)),
           ),
           Expanded(
             child: Text(
               value,
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: context.colors.textPrimary),
+              style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.textPrimary),
             ),
           ),
         ],
@@ -632,7 +635,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     final color = _statusColor(b);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: large ? 12 : 9, vertical: large ? 7 : 4),
-      decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(large ? 10 : 8)),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(large ? 10 : 8)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -656,14 +659,14 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.bookingManagementTitle,
+        title: AppLocalizations.of(context).bookingManagementTitle,
         icon: Icons.calendar_month_rounded,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(44),
           child: TabBar(
             controller: _tabController,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.white.withOpacity(0.7),
+            unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
             indicatorColor: Colors.white,
             dividerColor: Colors.transparent,
             indicatorWeight: 2.4,
@@ -671,9 +674,9 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
             tabAlignment: TabAlignment.start,
             labelPadding: const EdgeInsets.symmetric(horizontal: 14),
             labelStyle:
-                const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+                const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
             unselectedLabelStyle:
-                const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500),
+                const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w500),
             tabs: _tabs.map((t) {
               final count = _filtered(t).length;
               return Tab(height: 44, text: count > 0 ? '$t ($count)' : t);
@@ -727,25 +730,25 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     String emptyText;
     switch (tab) {
       case 'All':
-        emptyText = AppLocalizations.of(context)!.noBookingsAll;
+        emptyText = AppLocalizations.of(context).noBookingsAll;
         break;
       case 'Pending':
-        emptyText = AppLocalizations.of(context)!.noBookingsPending;
+        emptyText = AppLocalizations.of(context).noBookingsPending;
         break;
       case 'Rescheduled':
-        emptyText = AppLocalizations.of(context)!.noBookingsRescheduled;
+        emptyText = AppLocalizations.of(context).noBookingsRescheduled;
         break;
       case 'Accepted':
-        emptyText = AppLocalizations.of(context)!.noBookingsAccepted;
+        emptyText = AppLocalizations.of(context).noBookingsAccepted;
         break;
       case 'Completed':
-        emptyText = AppLocalizations.of(context)!.noBookingsCompleted;
+        emptyText = AppLocalizations.of(context).noBookingsCompleted;
         break;
       case 'Cancelled':
-        emptyText = AppLocalizations.of(context)!.noBookingsCancelled;
+        emptyText = AppLocalizations.of(context).noBookingsCancelled;
         break;
       default:
-        emptyText = AppLocalizations.of(context)!.noBookingsDefault;
+        emptyText = AppLocalizations.of(context).noBookingsDefault;
     }
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -756,7 +759,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
         Center(
           child: Text(
             emptyText,
-            style: TextStyle(fontSize: 14, color: context.colors.textSecondary, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary, fontWeight: FontWeight.w500),
           ),
         ),
       ],
@@ -766,7 +769,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   // ── Booking card ─────────────────────────────────────────
   Widget _buildBookingCard(dynamic b, bool isTablet) {
     final status = _statusOf(b);
-    final customerName = (b['customer_name'] ?? b['customer'] ?? AppLocalizations.of(context)!.customerDefault).toString();
+    final customerName = (b['customer_name'] ?? b['customer'] ?? AppLocalizations.of(context).customerDefault).toString();
     final date = b['date']?.toString() ?? '';
     final time = b['time']?.toString() ?? '';
     final split = _splitNote(b['note']?.toString() ?? '');
@@ -779,7 +782,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         onTap: () => _showBookingDetail(b),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
@@ -788,13 +791,13 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
           padding: EdgeInsets.all(isTablet ? 18 : 15),
           decoration: BoxDecoration(
             color: isCompleted ? context.colors.background : context.colors.surface,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(
-              color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.withOpacity(0.1),
+              color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
             ),
             boxShadow: [
               BoxShadow(
-                color: isDark ? Colors.black.withOpacity(0.12) : Colors.grey.withOpacity(0.06),
+                color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -812,7 +815,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     child: Text(
                       AppHelpers.getInitials(customerName),
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: AppFontSizes.secondary,
                         fontWeight: FontWeight.w700,
                         color: isCompleted ? context.colors.textSecondary : context.colors.primary,
                       ),
@@ -835,7 +838,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                         if (_myServiceCategory.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
-                            _myServiceCategory,
+                            AppHelpers.localizedCategoryName(context, _myServiceCategory),
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(fontSize: isTablet ? 12 : 11, color: context.colors.textSecondary),
                           ),
@@ -850,8 +853,8 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
               Container(
                 padding: EdgeInsets.symmetric(horizontal: isTablet ? 14 : 12, vertical: isTablet ? 12 : 10),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.white.withOpacity(0.03) : Colors.grey.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(14),
+                  color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -861,7 +864,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                         Expanded(
                           child: _infoChip(
                             Icons.calendar_today_outlined,
-                            date.isNotEmpty ? date : AppLocalizations.of(context)!.dateNotSetShort,
+                            date.isNotEmpty ? date : AppLocalizations.of(context).dateNotSetShort,
                             isTablet,
                           ),
                         ),
@@ -886,12 +889,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       child: OutlinedButton.icon(
                         onPressed: () => _updateStatus(b, 'rejected'),
                         icon: const Icon(Icons.close_rounded, size: 15),
-                        label: Text(AppLocalizations.of(context)!.declineCta, style: const TextStyle(fontSize: 12.5)),
+                        label: Text(AppLocalizations.of(context).declineCta, style: const TextStyle(fontSize: AppFontSizes.secondary)),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.error,
-                          side: BorderSide(color: AppColors.error.withOpacity(0.35)),
+                          side: BorderSide(color: AppColors.error.withValues(alpha: 0.35)),
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                         ),
                       ),
                     ),
@@ -900,13 +903,13 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       child: ElevatedButton.icon(
                         onPressed: () => _updateStatus(b, 'accepted'),
                         icon: const Icon(Icons.check_rounded, size: 15),
-                        label: Text(AppLocalizations.of(context)!.acceptCta, style: const TextStyle(fontSize: 12.5)),
+                        label: Text(AppLocalizations.of(context).acceptCta, style: const TextStyle(fontSize: AppFontSizes.secondary)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.accent,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                         ),
                       ),
                     ),
@@ -918,7 +921,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     Expanded(
                       child: _secondaryActionButton(
                         icon: Icons.update_rounded,
-                        label: AppLocalizations.of(context)!.suggestTimeCtaShort,
+                        label: AppLocalizations.of(context).suggestTimeCtaShort,
                         color: AppColors.info,
                         onTap: () => _suggestNewTime(b),
                       ),
@@ -927,7 +930,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     Expanded(
                       child: _secondaryActionButton(
                         icon: Icons.chat_bubble_outline_rounded,
-                        label: AppLocalizations.of(context)!.openChatCtaShort,
+                        label: AppLocalizations.of(context).openChatCtaShort,
                         color: AppColors.professionalColor,
                         onTap: () => _openChat(b),
                       ),
@@ -941,7 +944,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     Expanded(
                       child: _secondaryActionButton(
                         icon: Icons.chat_bubble_outline_rounded,
-                        label: AppLocalizations.of(context)!.openChatCtaShort,
+                        label: AppLocalizations.of(context).openChatCtaShort,
                         color: AppColors.professionalColor,
                         onTap: () => _openChat(b),
                       ),
@@ -952,13 +955,13 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       child: ElevatedButton.icon(
                         onPressed: () => _updateStatus(b, 'completed'),
                         icon: const Icon(Icons.done_all_rounded, size: 15),
-                        label: Text(AppLocalizations.of(context)!.markCompletedCtaShort, style: const TextStyle(fontSize: 12.5)),
+                        label: Text(AppLocalizations.of(context).markCompletedCtaShort, style: const TextStyle(fontSize: AppFontSizes.secondary)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                         ),
                       ),
                     ),
@@ -1003,14 +1006,14 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: color.withOpacity(isDark ? 0.12 : 0.08),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: color.withOpacity(0.3)),
+            color: color.withValues(alpha: isDark ? 0.12 : 0.08),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1022,7 +1025,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                 child: Text(
                   label,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: color),
+                  style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, color: color),
                 ),
               ),
             ],

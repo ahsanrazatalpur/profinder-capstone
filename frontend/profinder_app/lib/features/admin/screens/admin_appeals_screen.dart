@@ -21,6 +21,8 @@ import '../services/trust_safety_service.dart';
 import '../widgets/ts_reason_dialog.dart';
 import '../widgets/ts_ui.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminAppealsScreen extends StatefulWidget {
   const AdminAppealsScreen({super.key});
@@ -202,11 +204,11 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
                 child: TextField(
                   controller: _searchCtrl,
                   onChanged: (v) => setState(() => _search = v),
-                  style: const TextStyle(fontSize: 13, color: TsColors.textPrimary),
+                  style: const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textPrimary),
                   decoration: InputDecoration(
                     hintText: l.tsSearchAppealsHint,
                     hintStyle:
-                        const TextStyle(fontSize: 13, color: TsColors.textFaint),
+                        const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textFaint),
                     prefixIcon: const Icon(Icons.search_rounded,
                         size: 20, color: TsColors.textFaint),
                     suffixIcon: _search.isEmpty
@@ -224,7 +226,7 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -259,7 +261,7 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
           onTap: () => setState(() => _status = value),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
@@ -267,7 +269,7 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: selected ? color : color.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppSizes.radiusChip),
               border: Border.all(
                 color: selected ? color : color.withValues(alpha: 0.25),
               ),
@@ -278,7 +280,7 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: AppFontSizes.small,
                     fontWeight: FontWeight.w700,
                     color: selected ? Colors.white : color,
                   ),
@@ -287,7 +289,7 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
                 Text(
                   count.toString(),
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: AppFontSizes.caption,
                     fontWeight: FontWeight.w800,
                     color: selected ? Colors.white : color,
                   ),
@@ -330,7 +332,7 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 24),
         itemCount: rows.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
         itemBuilder: (_, i) {
           final a = rows[i];
           return _AppealCard(
@@ -382,7 +384,7 @@ class _AppealCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: AppFontSizes.body,
                         fontWeight: FontWeight.w800,
                         color: TsColors.textPrimary,
                       ),
@@ -399,7 +401,7 @@ class _AppealCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 tsFmtDate(a.createdAt),
-                style: const TextStyle(fontSize: 11, color: TsColors.textMuted),
+                style: const TextStyle(fontSize: AppFontSizes.caption, color: TsColors.textMuted),
               ),
             ],
           ),
@@ -448,7 +450,7 @@ class _AppealCard extends StatelessWidget {
                 Text(
                   l.tsIndEvidence,
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontSize: AppFontSizes.caption,
                     fontWeight: FontWeight.w600,
                     color: TsColors.info,
                   ),
@@ -619,7 +621,7 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
                   child: Text(
                     l.tsAppealNumber(a.id.toString()),
                     style: const TextStyle(
-                      fontSize: 17,
+                      fontSize: AppFontSizes.titleMd,
                       fontWeight: FontWeight.w800,
                       color: TsColors.textPrimary,
                     ),
@@ -655,7 +657,7 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
                       ),
                       SelectableText(
                         a.userEmail,
-                        style: const TextStyle(fontSize: 12, color: TsColors.textMuted),
+                        style: const TextStyle(fontSize: AppFontSizes.small, color: TsColors.textMuted),
                       ),
                     ],
                   ),
@@ -679,7 +681,7 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
                       padding:
                           const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppSizes.radius10),
                       ),
                     ),
                   ),
@@ -693,7 +695,7 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
                       padding:
                           const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppSizes.radius10),
                       ),
                     ),
                   ),
@@ -873,8 +875,8 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: const Color(0xFFFEF9C3).withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFFDE68A)),
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+        border: Border.all(color: AppColors.amber200),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -882,7 +884,7 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
           Row(
             children: [
               const Icon(Icons.lock_outline_rounded,
-                  size: 12, color: Color(0xFF92400E)),
+                  size: 12, color: AppColors.amber800),
               const SizedBox(width: 5),
               Expanded(
                 child: Text(
@@ -890,7 +892,7 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
                   style: const TextStyle(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF92400E),
+                    color: AppColors.amber800,
                   ),
                 ),
               ),

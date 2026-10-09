@@ -12,9 +12,9 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_sizes.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class SearchablePickerField<T> extends FormField<T> {
   SearchablePickerField({
@@ -24,19 +24,19 @@ class SearchablePickerField<T> extends FormField<T> {
     required String Function(T) itemLabel,
     Widget Function(T)? itemLeading,
     required String label,
-    String hint = 'Tap to select',
+    String? hint,
     IconData prefixIcon = Icons.list_alt_outlined,
     bool enabled = true,
     bool loading = false,
-    String emptyMessage = 'No results found',
-    String searchHint = 'Search...',
-    String disabledHint = 'Select above first',
+    String? emptyMessage,
+    String? searchHint,
+    String? disabledHint,
     required ValueChanged<T?> onChanged,
-    FormFieldValidator<T>? validator,
+    super.validator,
   }) : super(
           initialValue: value,
-          validator: validator,
           builder: (state) {
+            final t = AppLocalizations.of(state.context);
             Future<void> openPicker() async {
               if (!enabled || loading) return;
               final selected = await _showPicker<T>(
@@ -45,8 +45,8 @@ class SearchablePickerField<T> extends FormField<T> {
                 itemLabel:   itemLabel,
                 itemLeading: itemLeading,
                 title:       label,
-                searchHint:  searchHint,
-                emptyMessage: emptyMessage,
+                searchHint:  searchHint ?? t.pickerSearchHint,
+                emptyMessage: emptyMessage ?? t.pickerNoResults,
               );
               if (selected != null) {
                 state.didChange(selected);
@@ -68,7 +68,9 @@ class SearchablePickerField<T> extends FormField<T> {
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   child: InputDecorator(
                     decoration: InputDecoration(
-                      hintText:   !enabled ? disabledHint : hint,
+                      hintText:   !enabled
+                          ? (disabledHint ?? t.pickerSelectAboveFirst)
+                          : (hint ?? t.pickerTapToSelect),
                       prefixIcon: Icon(prefixIcon),
                       errorText:  state.errorText,
                       suffixIcon: loading

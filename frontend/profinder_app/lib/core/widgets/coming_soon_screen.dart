@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import '../../shared/widgets/universal_app_bar.dart';
 import '../theme/app_colors.dart';
 import '../theme/theme_context_ext.dart';
+import '../../core/theme/app_text_styles.dart';
 
 class ComingSoonScreen extends StatelessWidget {
   final String title;
@@ -24,7 +25,7 @@ class ComingSoonScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: title,
         icon: icon,
@@ -41,11 +42,11 @@ class ComingSoonScreen extends StatelessWidget {
                 child: Icon(icon, color: context.colors.primary, size: 40),
               ),
               const SizedBox(height: 20),
-              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF111827))),
+              Text(title, style: const TextStyle(fontSize: AppFontSizes.title2, fontWeight: FontWeight.bold, color: AppColors.gray900)),
               const SizedBox(height: 8),
               Text(message,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13.5, color: context.colors.textSecondary, height: 1.4)),
+                  style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary, height: 1.4)),
             ],
           ),
         ),

@@ -18,6 +18,9 @@ class AppSizes {
   static const double radiusLg  = 16;
   static const double radiusXl  = 24;
   static const double radiusFull = 100; // Circular buttons ke liye
+  static const double radiusBadge = 6;   // small tag / badge corners
+  static const double radiusSheet = 20;  // bottom-sheet top corners
+  static const double radiusChip = 20;   // chips, search bars, soft panels
 
   // ─── Icon Sizes ─────────────────────────────────────────
   static const double iconSm   = 16;
@@ -57,4 +60,12 @@ class AppSizes {
 
   // ─── Screen Horizontal Padding ──────────────────────────
   static const double screenPadding    = 20;
+
+  // ─── Extra radius steps found in legacy screens (added) ─
+  static const double radiusTiny = 2;
+  static const double radius10   = 10;
+  static const double radius14   = 14;
+  static const double radius18   = 18;
+  static const double radius22   = 22;
+  static const double radius28   = 28;
 }

@@ -1,7 +1,6 @@
 // lib/features/home/screens/guest_main_screen.dart
 
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/responsive_utils.dart';
 import 'guest_home_screen.dart';
 import '../../search/screens/search_screen.dart';
@@ -55,7 +54,7 @@ class GuestMainScreenState extends State<GuestMainScreen> {
     final labelSize = ResponsiveUtils.sp(11, scale, min: 10, max: 13);
     final navHeight  = ResponsiveUtils.sp(60, scale, min: 56, max: 74);
 
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
 
     // ✅ FIX: this screen sits alone at the bottom of the Navigator stack
     // (tabs switch via IndexedStack, not real routes) — pressing back here
@@ -92,7 +91,7 @@ class GuestMainScreenState extends State<GuestMainScreen> {
           color: context.colors.surface,
           border: Border(top: BorderSide(color: context.colors.divider, width: 1)),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 12, offset: const Offset(0, -4)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 12, offset: const Offset(0, -4)),
           ],
         ),
         child: SafeArea(

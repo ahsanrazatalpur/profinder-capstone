@@ -26,6 +26,8 @@ import '../../core/theme/theme_context_ext.dart';
 import '../../core/utils/app_helpers.dart';
 import '../../core/widgets/app_logo.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/theme/app_text_styles.dart';
 
 const double kRoleAppBarHeight = 60;
 const double kRoleAppBarGlassHeight = 70;
@@ -41,7 +43,7 @@ class _GlassCircle extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withOpacity(opacity),
+          color: Colors.white.withValues(alpha: opacity),
         ),
       );
 }
@@ -56,7 +58,7 @@ double roleAppBarHPad(double width) {
 
 /// "Good morning" / "Good afternoon" / "Good evening" (existing l10n keys).
 String roleTimeGreeting(BuildContext context) {
-  final t = AppLocalizations.of(context)!;
+  final t = AppLocalizations.of(context);
   final hour = DateTime.now().hour;
   if (hour < 12) return t.homeGoodMorning;
   if (hour < 17) return t.homeGoodAfternoon;
@@ -88,9 +90,9 @@ class BrandLockup extends StatelessWidget {
             width: wide ? 50 : 46,
             height: wide ? 50 : 46,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
+              color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.white.withOpacity(0.32)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.32)),
             ),
             child: Center(child: AppLogoMark(size: wide ? 42 : 38, inverted: true)),
           )
@@ -119,13 +121,13 @@ class BrandLockup extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              color: tag.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: tag.withOpacity(0.35)),
+              color: tag.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+              border: Border.all(color: tag.withValues(alpha: 0.35)),
             ),
             child: Text(
               badgeLabel!,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: tag),
+              style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: tag),
             ),
           ),
         ],
@@ -158,8 +160,8 @@ class RoleAppBarSliver extends StatelessWidget {
 
     if (backgroundColor != null) {
       const radius = BorderRadius.only(
-        bottomLeft: Radius.circular(24),
-        bottomRight: Radius.circular(24),
+        bottomLeft: Radius.circular(AppSizes.radiusXl),
+        bottomRight: Radius.circular(AppSizes.radiusXl),
       );
       return SliverAppBar(
         pinned: true,
@@ -171,7 +173,7 @@ class RoleAppBarSliver extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 4,
-        shadowColor: backgroundColor!.withOpacity(0.45),
+        shadowColor: backgroundColor!.withValues(alpha: 0.45),
         shape: const RoundedRectangleBorder(borderRadius: radius),
         systemOverlayStyle: SystemUiOverlayStyle.light,
         flexibleSpace: ClipRRect(
@@ -209,7 +211,7 @@ class RoleAppBarSliver extends StatelessWidget {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 2,
-      shadowColor: Colors.black.withOpacity(0.12),
+      shadowColor: Colors.black.withValues(alpha: 0.12),
       shape: Border(bottom: BorderSide(color: context.colors.divider)),
       titleSpacing: pad,
       title: leading,
@@ -251,11 +253,11 @@ class AppBarIconButton extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Material(
-              color: onGradient ? Colors.white.withOpacity(0.18) : c.primary.withOpacity(0.08),
+              color: onGradient ? Colors.white.withValues(alpha: 0.18) : c.primary.withValues(alpha: 0.08),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(13),
                 side: onGradient
-                    ? BorderSide(color: Colors.white.withOpacity(0.28))
+                    ? BorderSide(color: Colors.white.withValues(alpha: 0.28))
                     : BorderSide.none,
               ),
               child: InkWell(
@@ -285,7 +287,7 @@ class AppBarIconButton extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 9.5,
+                      fontSize: AppFontSizes.micro,
                       fontWeight: FontWeight.w800,
                       height: 1.2,
                     ),
@@ -337,7 +339,7 @@ class AppBarAvatar extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: onGradient ? Colors.white.withOpacity(0.55) : ringColor,
+                color: onGradient ? Colors.white.withValues(alpha: 0.55) : ringColor,
                 width: 2,
               ),
             ),
@@ -346,7 +348,7 @@ class AppBarAvatar extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: onGradient ? 18 : 16,
-                  backgroundColor: onGradient ? Colors.white.withOpacity(0.22) : ringColor.withOpacity(0.12),
+                  backgroundColor: onGradient ? Colors.white.withValues(alpha: 0.22) : ringColor.withValues(alpha: 0.12),
                   backgroundImage: hasPhoto ? NetworkImage(photoUrl!) : null,
                   child: hasPhoto
                       ? null
@@ -355,7 +357,7 @@ class AppBarAvatar extends StatelessWidget {
                           : Text(
                               AppHelpers.getInitials(name),
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: AppFontSizes.secondary,
                                 fontWeight: FontWeight.w700,
                                 color: onGradient ? Colors.white : ringColor,
                               ),
@@ -402,7 +404,7 @@ class GuestAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final c = context.colors;
     final width = MediaQuery.sizeOf(context).width;
     // Very narrow phones: drop the search icon (the bottom nav has a Search tab)
@@ -428,7 +430,7 @@ class GuestAppBar extends StatelessWidget {
             foregroundColor: Colors.white,
             minimumSize: const Size(0, 40),
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            textStyle: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
           ),
           child: Text(t.login),
         ),
@@ -440,8 +442,8 @@ class GuestAppBar extends StatelessWidget {
             foregroundColor: c.primary,
             minimumSize: const Size(0, 40),
             padding: const EdgeInsets.symmetric(horizontal: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+            textStyle: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
           ),
           child: Text(t.register),
         ),
@@ -476,7 +478,7 @@ class _AuthedUserAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final glass = backgroundColor != null;
     return RoleAppBarSliver(
       backgroundColor: backgroundColor,
@@ -586,7 +588,7 @@ class AdminAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final width = MediaQuery.sizeOf(context).width;
     final showSearch = onSearch != null && width >= 400;
 
@@ -671,7 +673,7 @@ class RoleGreeting extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: TextStyle(fontSize: 14.5, height: 1.35, color: c.textSecondary),
+            style: TextStyle(fontSize: AppFontSizes.input, height: 1.35, color: c.textSecondary),
           ),
           if (footer != null) ...[const SizedBox(height: 8), footer!],
         ],

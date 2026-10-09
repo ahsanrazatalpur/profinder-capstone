@@ -1,5 +1,7 @@
 // lib/features/professional/screens/professional_reviews_screen.dart
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_helpers.dart';
@@ -53,7 +55,7 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
       appBar: AppBar(
         backgroundColor: context.colors.surface,
         elevation: 0,
-        title: Text(AppLocalizations.of(context)!.reviews, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+        title: Text(AppLocalizations.of(context).reviews, style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
         leading: IconButton(icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: context.colors.textPrimary), onPressed: () => Navigator.pop(context)),
       ),
       body: _isLoading
@@ -73,7 +75,7 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
                         children: [
                           Icon(Icons.rate_review_outlined, size: 56, color: context.colors.textDisabled),
                           const SizedBox(height: 12),
-                          Text(AppLocalizations.of(context)!.searchNoReviewsYet, style: TextStyle(fontSize: 14, color: context.colors.textSecondary)),
+                          Text(AppLocalizations.of(context).searchNoReviewsYet, style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary)),
                         ],
                       ),
                     )
@@ -89,9 +91,9 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFFF59E0B), Color(0xFFD97706)],
+        gradient: const LinearGradient(colors: [AppColors.warningAmber, AppColors.amberDeep],
             begin: Alignment.topLeft, end: Alignment.bottomRight),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       ),
       child: Row(
         children: [
@@ -106,8 +108,8 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
                     size: 16, color: Colors.white,
                   ))),
               const SizedBox(height: 4),
-              Text(AppLocalizations.of(context)!.professionalReview('${_reviews.length}', _reviews.length == 1 ? '' : 's'),
-                  style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.9))),
+              Text(AppLocalizations.of(context).professionalReview('${_reviews.length}', _reviews.length == 1 ? '' : 's'),
+                  style: TextStyle(fontSize: AppFontSizes.small, color: Colors.white.withValues(alpha: 0.9))),
             ],
           ),
         ],
@@ -126,7 +128,7 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(color: context.colors.divider),
       ),
       child: Column(
@@ -138,27 +140,27 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
                 radius: 18,
                 backgroundColor: context.colors.primaryLight,
                 child: Text(AppHelpers.getInitials(customerName.toString()),
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.colors.primary)),
+                    style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.bold, color: context.colors.primary)),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(customerName.toString(), style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
-                    if (date.isNotEmpty) Text(date, style: TextStyle(fontSize: 10.5, color: context.colors.textSecondary)),
+                    Text(customerName.toString(), style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+                    if (date.isNotEmpty) Text(date, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
                   ],
                 ),
               ),
               Row(children: List.generate(5, (i) => Icon(
                     i < rating.round() ? Icons.star_rounded : Icons.star_border_rounded,
-                    size: 14, color: const Color(0xFFF59E0B),
+                    size: 14, color: AppColors.warningAmber,
                   ))),
             ],
           ),
           if (comment.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(comment, style: TextStyle(fontSize: 13, color: context.colors.textPrimary, height: 1.5)),
+            Text(comment, style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textPrimary, height: 1.5)),
           ],
         ],
       ),

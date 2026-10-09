@@ -19,6 +19,8 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 enum _RoleFilter { all, customer, professional }
 enum _StatusFilter { all, active, blocked }
@@ -136,6 +138,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
 
     try {
       await _api.patch('/admin-panel/users/${user['id']}/ban/', {'action': action});
+      if (!mounted) return;
       setState(() {
         final idx = _all.indexWhere((u) => u['id'] == user['id']);
         if (idx != -1) _all[idx]['is_active'] = isBanned; // flip
@@ -174,7 +177,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       if (block && isBanned) continue;
       if (!block && !isBanned) continue;
       try {
-        await _api.patch('/admin-panel/users/${id}/ban/',
+        await _api.patch('/admin-panel/users/$id/ban/',
             {'action': block ? 'ban' : 'unban'});
         setState(() => _all[idx]['is_active'] = !block);
         success++;
@@ -183,6 +186,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       }
     }
 
+    if (!mounted) return;
     _applyFilters();
     setState(() {
       _selectionMode = false;
@@ -220,21 +224,21 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         title: Text('Export (${rows.length} users)',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
         content: SizedBox(
           width: double.maxFinite,
           height: 260,
           child: SingleChildScrollView(
             child: SelectableText(buffer.toString(),
-                style: const TextStyle(fontSize: 11, fontFamily: 'monospace')),
+                style: const TextStyle(fontSize: AppFontSizes.caption, fontFamily: 'monospace')),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close', style: TextStyle(color: Color(0xFF9CA3AF))),
+            child: const Text('Close', style: TextStyle(color: AppColors.neutral400)),
           ),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
@@ -272,7 +276,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: _buildAppBar(),
       body: _loading
           ? _buildLoader()
@@ -335,14 +339,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       child: TextField(
         controller: _searchCtrl,
         onChanged: (_) => _applyFilters(),
-        style: const TextStyle(fontSize: 13),
+        style: const TextStyle(fontSize: AppFontSizes.secondary),
         decoration: InputDecoration(
           hintText:   'Search by name or email…',
-          hintStyle:  const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
-          prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF9CA3AF)),
+          hintStyle:  const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
+          prefixIcon: const Icon(Icons.search, size: 18, color: AppColors.neutral400),
           suffixIcon: _searchCtrl.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear, size: 16, color: Color(0xFF9CA3AF)),
+                  icon: const Icon(Icons.clear, size: 16, color: AppColors.neutral400),
                   onPressed: () {
                     _searchCtrl.clear();
                     _applyFilters();
@@ -350,10 +354,10 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 )
               : null,
           filled:         true,
-          fillColor:      const Color(0xFFF3F4F6),
+          fillColor:      AppColors.neutral100,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+              borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
         ),
       ),
     );
@@ -362,9 +366,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   // ── Role Filter Chips ────────────────────────────────────────
   Widget _buildRoleChips() {
     final filters = [
-      (_RoleFilter.all,          'All Roles',      const Color(0xFF374151)),
+      (_RoleFilter.all,          'All Roles',      AppColors.gray700),
       (_RoleFilter.customer,     'Customers',       context.colors.primary),
-      (_RoleFilter.professional, 'Professionals',   const Color(0xFF7C3AED)),
+      (_RoleFilter.professional, 'Professionals',   AppColors.accentPurple),
     ];
     return Container(
       color: Colors.white,
@@ -383,14 +387,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 duration: const Duration(milliseconds: 150),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                 decoration: BoxDecoration(
-                  color: isActive ? f.$3 : const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(20),
+                  color: isActive ? f.$3 : AppColors.neutral100,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                 ),
                 child: Text(f.$2,
                     style: TextStyle(
-                        fontSize: 12,
+                        fontSize: AppFontSizes.small,
                         fontWeight: FontWeight.w600,
-                        color: isActive ? Colors.white : const Color(0xFF6B7280))),
+                        color: isActive ? Colors.white : AppColors.grayDeep)),
               ),
             ),
           );
@@ -402,7 +406,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   // ── Status Filter Chips ──────────────────────────────────────
   Widget _buildStatusChips() {
     final filters = [
-      (_StatusFilter.all,     'All',     const Color(0xFF374151)),
+      (_StatusFilter.all,     'All',     AppColors.gray700),
       (_StatusFilter.active,  'Active',  context.colors.accent),
       (_StatusFilter.blocked, 'Blocked', AppColors.error),
     ];
@@ -423,16 +427,16 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 duration: const Duration(milliseconds: 150),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isActive ? f.$3.withOpacity(0.15) : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
+                  color: isActive ? f.$3.withValues(alpha: 0.15) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                   border: Border.all(
-                      color: isActive ? f.$3 : const Color(0xFFE5E7EB)),
+                      color: isActive ? f.$3 : AppColors.neutral200),
                 ),
                 child: Text(f.$2,
                     style: TextStyle(
-                        fontSize: 11,
+                        fontSize: AppFontSizes.caption,
                         fontWeight: FontWeight.w600,
-                        color: isActive ? f.$3 : const Color(0xFF9CA3AF))),
+                        color: isActive ? f.$3 : AppColors.neutral400)),
               ),
             ),
           );
@@ -451,14 +455,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Row(
         children: [
-          _countPill('$total Total',   const Color(0xFF374151)),
+          _countPill('$total Total',   AppColors.gray700),
           const SizedBox(width: 8),
           _countPill('$active Active', context.colors.accent),
           const SizedBox(width: 8),
           _countPill('$blocked Blocked', AppColors.error),
           const Spacer(),
           Text('${_filtered.length} shown',
-              style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+              style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
         ],
       ),
     );
@@ -467,35 +471,35 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Widget _countPill(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
-      child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+      child: Text(label, style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: color)),
     );
   }
 
   // ── Bulk Action Bar ──────────────────────────────────────────
   Widget _buildBulkActionBar() {
     return Container(
-      color: AppColors.adminColor.withOpacity(0.06),
+      color: AppColors.adminColor.withValues(alpha: 0.06),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
           Text('${_selectedIds.length} selected',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
+              style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
           const Spacer(),
           TextButton.icon(
             onPressed: _selectedIds.isEmpty ? null : () => _bulkSetStatus(block: true),
             icon: const Icon(Icons.block_rounded, size: 16, color: AppColors.error),
-            label: const Text('Block', style: TextStyle(color: AppColors.error, fontSize: 12)),
+            label: const Text('Block', style: TextStyle(color: AppColors.error, fontSize: AppFontSizes.small)),
           ),
           TextButton.icon(
             onPressed: _selectedIds.isEmpty ? null : () => _bulkSetStatus(block: false),
             icon: Icon(Icons.lock_open_rounded, size: 16, color: context.colors.accent),
-            label: Text('Unblock', style: TextStyle(color: context.colors.accent, fontSize: 12)),
+            label: Text('Unblock', style: TextStyle(color: context.colors.accent, fontSize: AppFontSizes.small)),
           ),
           TextButton.icon(
             onPressed: _selectedIds.isEmpty ? null : _exportCsv,
-            icon: const Icon(Icons.download_rounded, size: 16, color: Color(0xFF6B7280)),
-            label: const Text('Export', style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
+            icon: const Icon(Icons.download_rounded, size: 16, color: AppColors.grayDeep),
+            label: const Text('Export', style: TextStyle(color: AppColors.grayDeep, fontSize: AppFontSizes.small)),
           ),
         ],
       ),
@@ -509,11 +513,11 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.people_outline, size: 60, color: Color(0xFFD1D5DB)),
+            const Icon(Icons.people_outline, size: 60, color: AppColors.neutral300),
             const SizedBox(height: 12),
             Text(
               _searchCtrl.text.isNotEmpty ? 'No results for "${_searchCtrl.text}"' : 'No users found',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF9CA3AF)),
+              style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w500, color: AppColors.neutral400),
             ),
           ],
         ),
@@ -543,7 +547,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     final isBanned = user['is_active'] == false;
     final isSelected = _selectedIds.contains(id);
 
-    final roleColor = role == 'professional' ? const Color(0xFF7C3AED) : context.colors.primary;
+    final roleColor = role == 'professional' ? AppColors.accentPurple : context.colors.primary;
 
     return GestureDetector(
       onTap: _selectionMode ? () => _toggleSelect(id) : () => _showUserDetails(user),
@@ -556,17 +560,17 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.adminColor.withOpacity(0.06) : Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          color: isSelected ? AppColors.adminColor.withValues(alpha: 0.06) : Colors.white,
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
           border: Border.all(
             color: isSelected
                 ? AppColors.adminColor
                 : isBanned
-                    ? AppColors.error.withOpacity(0.3)
-                    : const Color(0xFFE5E7EB),
+                    ? AppColors.error.withValues(alpha: 0.3)
+                    : AppColors.neutral200,
           ),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 6, offset: const Offset(0, 1)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 1)),
           ],
         ),
         child: Row(
@@ -590,7 +594,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   child: photoUrl.isEmpty
                       ? Text(AppHelpers.getInitials(name),
                           style: TextStyle(
-                              color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: 13))
+                              color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: AppFontSizes.secondary))
                       : null,
                 ),
                 if (isBanned)
@@ -619,7 +623,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       Expanded(
                         child: Text(name,
                             style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+                                fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray900),
                             maxLines: 1, overflow: TextOverflow.ellipsis),
                       ),
                       _statusBadge(role.toUpperCase(), roleColor),
@@ -631,21 +635,21 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(email,
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                      style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.grayDeep),
                       maxLines: 1, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 4),
                   Row(
                     children: [
                       if (city.isNotEmpty) ...[
-                        const Icon(Icons.location_on_outlined, size: 11, color: Color(0xFF9CA3AF)),
+                        const Icon(Icons.location_on_outlined, size: 11, color: AppColors.neutral400),
                         const SizedBox(width: 2),
-                        Text(city, style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+                        Text(city, style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
                         const SizedBox(width: 10),
                       ],
                       if (joined.isNotEmpty) ...[
-                        const Icon(Icons.calendar_today_outlined, size: 11, color: Color(0xFF9CA3AF)),
+                        const Icon(Icons.calendar_today_outlined, size: 11, color: AppColors.neutral400),
                         const SizedBox(width: 2),
-                        Text('Joined $joined', style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+                        Text('Joined $joined', style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
                       ],
                     ],
                   ),
@@ -661,10 +665,10 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: isBanned ? context.colors.accent.withOpacity(0.1) : AppColors.error.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    color: isBanned ? context.colors.accent.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
                     border: Border.all(
-                      color: isBanned ? context.colors.accent.withOpacity(0.3) : AppColors.error.withOpacity(0.3),
+                      color: isBanned ? context.colors.accent.withValues(alpha: 0.3) : AppColors.error.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Column(
@@ -675,7 +679,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       const SizedBox(height: 2),
                       Text(isBanned ? 'Unban' : 'Block',
                           style: TextStyle(
-                              fontSize: 9,
+                              fontSize: AppFontSizes.nano,
                               fontWeight: FontWeight.w700,
                               color: isBanned ? context.colors.accent : AppColors.error)),
                     ],
@@ -705,7 +709,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet))),
       builder: (_) => DraggableScrollableSheet(
         initialChildSize: 0.55,
         minChildSize: 0.3,
@@ -721,7 +725,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 child: Container(
                   width: 40, height: 4,
                   decoration: BoxDecoration(
-                      color: const Color(0xFFE5E7EB), borderRadius: BorderRadius.circular(2)),
+                      color: AppColors.neutral200, borderRadius: BorderRadius.circular(AppSizes.radiusTiny)),
                 ),
               ),
               const SizedBox(height: 20),
@@ -734,7 +738,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     child: photoUrl.isEmpty
                         ? Text(AppHelpers.getInitials(name),
                             style: TextStyle(
-                                color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: 18))
+                                color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: AppFontSizes.title2))
                         : null,
                   ),
                   const SizedBox(width: 14),
@@ -743,14 +747,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(name,
-                            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                            style: const TextStyle(fontSize: AppFontSizes.titleMd, fontWeight: FontWeight.w800)),
                         const SizedBox(height: 2),
-                        Text(email, style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+                        Text(email, style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
                         const SizedBox(height: 6),
                         Row(
                           children: [
                             _statusBadge(role.toUpperCase(),
-                                isPro ? const Color(0xFF7C3AED) : context.colors.primary),
+                                isPro ? AppColors.accentPurple : context.colors.primary),
                             const SizedBox(width: 6),
                             isBanned
                                 ? _statusBadge('BLOCKED', AppColors.error)
@@ -808,12 +812,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF9CA3AF)),
+          Icon(icon, size: 16, color: AppColors.neutral400),
           const SizedBox(width: 10),
-          Text(label, style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+          Text(label, style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
           const Spacer(),
           Text(value,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF111827))),
+              style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: AppColors.gray900)),
         ],
       ),
     );
@@ -823,8 +827,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Widget _statusBadge(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
-      child: Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: color)),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
+      child: Text(label, style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w700, color: color)),
     );
   }
 
@@ -842,7 +846,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           const Icon(Icons.error_outline_rounded, size: 56, color: AppColors.error),
           const SizedBox(height: 12),
           const Text('Failed to load users',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF374151))),
+              style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w600, color: AppColors.gray700)),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: _load,
@@ -864,18 +868,18 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     return await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-            content: Text(message, style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+            title: Text(title, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
+            content: Text(message, style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel', style: TextStyle(color: Color(0xFF9CA3AF))),
+                child: const Text('Cancel', style: TextStyle(color: AppColors.neutral400)),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: confirmColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(confirmLabel, style: const TextStyle(color: Colors.white)),
               ),
@@ -891,7 +895,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
         duration: const Duration(seconds: 2),
       ),
     );

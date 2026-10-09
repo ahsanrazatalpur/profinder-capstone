@@ -1,7 +1,6 @@
 // PATH: lib/core/constants/app_constants.dart
 // lib/core/constants/app_constants.dart
 
-import 'package:flutter/foundation.dart';
 
 class AppConstants {
   AppConstants._();
@@ -54,7 +53,7 @@ class AppConstants {
   // compatible: omitting both query params returns the same "latest page"
   // behavior as before, just capped at `limit` instead of the full thread.
   static String conversationMessagesPage(int conversationId, {String? beforeId, int limit = 30}) {
-    final query = <String, String>{'limit': '$limit', if (beforeId != null) 'before_id': beforeId};
+    final query = <String, String>{'limit': '$limit', 'before_id': ?beforeId};
     final qs = query.entries.map((e) => '${e.key}=${e.value}').join('&');
     return '/messaging/conversations/$conversationId/messages/?$qs';
   }
@@ -107,6 +106,7 @@ class AppConstants {
   static const String aiSearch       = '/ai/search/';
   static const String aiSearchStatus = '/ai/search-status/';
   static const String aiRecommendations = '/ai/recommendations/';   // ✅ confirmed: apps/ai_engine/urls.py
+  static const String aiLocalize        = '/ai/localize/';          // dynamic name/city/reason localization
   static const String aiSearchHistory   = '/ai/search-history/';    // ✅ confirmed: apps/ai_engine/urls.py
 
   // ✅ FIX: backend HAS a dedicated endpoint — AutoSuggestView at

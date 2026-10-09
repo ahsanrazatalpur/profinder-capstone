@@ -8,6 +8,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/conversation_list_provider.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 class UnreadNavBadge extends StatelessWidget {
   final Widget icon;
@@ -31,14 +34,14 @@ class UnreadNavBadge extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1.5),
                 constraints: const BoxConstraints(minWidth: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEF4444),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.favoriteRed,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                   border: Border.all(color: Colors.white, width: 1.5),
                 ),
                 child: Text(
                   count > 9 ? '9+' : '$count',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white, height: 1.2),
+                  style: const TextStyle(fontSize: AppFontSizes.micro, fontWeight: FontWeight.w700, color: Colors.white, height: 1.2),
                 ),
               ),
             ),

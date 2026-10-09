@@ -8,6 +8,8 @@ import '../../../core/utils/responsive_utils.dart';
 import '../models/article_model.dart';
 import '../services/magazine_service.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
   final String slug;
@@ -34,7 +36,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     final article = await _service.getArticle(widget.slug);
     if (!mounted) return;
     if (article == null) {
-      setState(() { _loading = false; _error = AppLocalizations.of(context)!.articleNotFoundError; });
+      setState(() { _loading = false; _error = AppLocalizations.of(context).articleNotFoundError; });
     } else {
       setState(() { _loading = false; _article = article; });
     }
@@ -59,9 +61,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    AppLocalizations.of(context)!.articleLoadingText,
+                    AppLocalizations.of(context).articleLoadingText,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: AppFontSizes.body,
                       color: context.colors.textSecondary,
                       fontWeight: FontWeight.w400,
                       letterSpacing: 0.2,
@@ -110,7 +112,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       Image.network(
                         a.coverImage,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
+                        errorBuilder: (_, _, _) =>
                             Container(color: context.colors.primary),
                       ),
                       // gradient overlay so text is readable
@@ -120,8 +122,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                             colors: [
                               Colors.transparent,
                               isDark
-                                  ? const Color(0xFF0F172A).withOpacity(0.6)
-                                  : Colors.black.withOpacity(0.4),
+                                  ? AppColors.background.withValues(alpha: 0.6)
+                                  : Colors.black.withValues(alpha: 0.4),
                             ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
@@ -135,7 +137,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       gradient: LinearGradient(
                         colors: [
                           AppColors.customerColor,
-                          AppColors.customerColor.withOpacity(0.8),
+                          AppColors.customerColor.withValues(alpha: 0.8),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -144,7 +146,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     child: Center(
                       child: Icon(
                         Icons.menu_book_rounded,
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         size: 72,
                       ),
                     ),
@@ -177,17 +179,17 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: catColor.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(20),
+                          color: catColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                           border: Border.all(
-                            color: catColor.withOpacity(0.2),
+                            color: catColor.withValues(alpha: 0.2),
                             width: 1,
                           ),
                         ),
                         child: Text(
                           a.categoryName.toUpperCase(),
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: AppFontSizes.micro,
                             fontWeight: FontWeight.w800,
                             color: catColor,
                             letterSpacing: 0.8,
@@ -224,12 +226,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                             ),
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? Colors.white.withOpacity(0.05)
+                                  ? Colors.white.withValues(alpha: 0.05)
                                   : context.colors.surface,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                               border: Border.all(
                                 color: isDark
-                                    ? Colors.white.withOpacity(0.08)
+                                    ? Colors.white.withValues(alpha: 0.08)
                                     : context.colors.divider,
                               ),
                             ),
@@ -248,7 +250,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: AppFontSizes.small,
                                       fontWeight: FontWeight.w700,
                                       color: context.colors.textPrimary,
                                     ),
@@ -269,9 +271,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         ),
                         const SizedBox(width: 3),
                         Text(
-                          AppLocalizations.of(context)!.articleReadTime(a.readTime),
+                          AppLocalizations.of(context).articleReadTime(a.readTime),
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: AppFontSizes.small,
                             color: context.colors.textSecondary,
                           ),
                         ),
@@ -288,7 +290,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         Text(
                           _formatCount(a.viewsCount),
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: AppFontSizes.small,
                             color: context.colors.textSecondary,
                           ),
                         ),
@@ -301,7 +303,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       Text(
                         _formatDate(a.publishedAt),
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: AppFontSizes.caption,
                           color: context.colors.textSecondary,
                           letterSpacing: 0.2,
                         ),
@@ -311,7 +313,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     const SizedBox(height: 20),
                     Divider(
                       color: isDark
-                          ? Colors.white.withOpacity(0.08)
+                          ? Colors.white.withValues(alpha: 0.08)
                           : context.colors.divider,
                       height: 1,
                     ),
@@ -323,12 +325,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? AppColors.customerColor.withOpacity(0.08)
+                              ? AppColors.customerColor.withValues(alpha: 0.08)
                               : context.colors.primaryLight,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           border: Border.all(
-                            color: AppColors.customerColor.withOpacity(
-                              isDark ? 0.15 : 0.15,
+                            color: AppColors.customerColor.withValues(
+                              alpha: isDark ? 0.15 : 0.15,
                             ),
                           ),
                         ),
@@ -358,12 +360,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? Colors.white.withOpacity(0.03)
+                            ? Colors.white.withValues(alpha: 0.03)
                             : context.colors.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                         border: Border.all(
                           color: isDark
-                              ? Colors.white.withOpacity(0.08)
+                              ? Colors.white.withValues(alpha: 0.08)
                               : context.colors.divider,
                         ),
                       ),
@@ -373,7 +375,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: AppColors.customerColor.withOpacity(0.12),
+                              color: AppColors.customerColor.withValues(alpha: 0.12),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -392,16 +394,16 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: AppFontSizes.small,
                                     fontWeight: FontWeight.w700,
                                     color: context.colors.textPrimary,
                                     letterSpacing: -0.1,
                                   ),
                                 ),
                                 Text(
-                                  AppLocalizations.of(context)!.articleFooterMagazineLabel,
+                                  AppLocalizations.of(context).articleFooterMagazineLabel,
                                   style: TextStyle(
-                                    fontSize: 11,
+                                    fontSize: AppFontSizes.caption,
                                     color: context.colors.textSecondary,
                                     letterSpacing: 0.2,
                                   ),
@@ -487,8 +489,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.customerColor.withOpacity(0.1),
-                      AppColors.customerColor.withOpacity(0.05),
+                      AppColors.customerColor.withValues(alpha: 0.1),
+                      AppColors.customerColor.withValues(alpha: 0.05),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -505,7 +507,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               Text(
                 _error!,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: AppFontSizes.title,
                   fontWeight: FontWeight.w700,
                   color: context.colors.textPrimary,
                   letterSpacing: -0.2,
@@ -513,10 +515,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                AppLocalizations.of(context)!.articleNotFoundMessage,
+                AppLocalizations.of(context).articleNotFoundMessage,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.body,
                   color: context.colors.textSecondary,
                   letterSpacing: 0.2,
                 ),
@@ -525,13 +527,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               ElevatedButton.icon(
                 onPressed: () => Navigator.pop(context),
                 icon: const Icon(Icons.arrow_back_rounded, size: 18),
-                label: Text(AppLocalizations.of(context)!.goBackCta),
+                label: Text(AppLocalizations.of(context).goBackCta),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.customerColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   ),
                   elevation: 0,
                 ),

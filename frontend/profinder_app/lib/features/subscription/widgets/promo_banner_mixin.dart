@@ -246,7 +246,9 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
           k.startsWith('banner_${userKey}_') ||
           k.startsWith('banner_dismiss_${userKey}_'))
         .toList();
-    for (final k in keys) await prefs.remove(k);
+    for (final k in keys) {
+      await prefs.remove(k);
+    }
     debugPrint('[Banner] Cache cleared for $userKey (${keys.length} keys removed)');
   }
 }

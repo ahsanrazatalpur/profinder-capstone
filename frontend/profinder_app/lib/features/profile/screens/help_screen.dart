@@ -1,5 +1,6 @@
 // lib/features/profile/screens/help_screen.dart
 
+import '../../../core/constants/app_sizes.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
@@ -35,7 +36,7 @@ class HelpScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.helpTitle,
+        title: AppLocalizations.of(context).helpTitle,
         icon: Icons.help_outline_rounded,
       ),
       body: ListView(
@@ -48,15 +49,15 @@ class HelpScreen extends StatelessWidget {
             curve: Curves.easeOut,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+                colors: [AppColors.customerColor, AppColors.blueDeep],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF2563EB).withOpacity(0.3),
+                  color: AppColors.customerColor.withValues(alpha: 0.3),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -68,7 +69,7 @@ class HelpScreen extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -83,7 +84,7 @@ class HelpScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.supportBannerTitle,
+                        AppLocalizations.of(context).supportBannerTitle,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: isTablet ? 16 : 15,
@@ -93,9 +94,9 @@ class HelpScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        AppLocalizations.of(context)!.supportBannerSubtitle,
+                        AppLocalizations.of(context).supportBannerSubtitle,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           fontSize: isTablet ? 13 : 12,
                           fontWeight: FontWeight.w400,
                         ),
@@ -116,8 +117,8 @@ class HelpScreen extends StatelessWidget {
                 child: _contactTile(
                   context,
                   Icons.email_outlined,
-                  AppLocalizations.of(context)!.contactEmailTitle,
-                  AppLocalizations.of(context)!.contactEmailSubtitle,
+                  AppLocalizations.of(context).contactEmailTitle,
+                  AppLocalizations.of(context).contactEmailSubtitle,
                   isDark,
                   isTablet,
                 ),
@@ -127,8 +128,8 @@ class HelpScreen extends StatelessWidget {
                 child: _contactTile(
                   context,
                   Icons.chat_bubble_outline_rounded,
-                  AppLocalizations.of(context)!.contactChatTitle,
-                  AppLocalizations.of(context)!.contactChatSubtitle,
+                  AppLocalizations.of(context).contactChatTitle,
+                  AppLocalizations.of(context).contactChatSubtitle,
                   isDark,
                   isTablet,
                 ),
@@ -140,7 +141,7 @@ class HelpScreen extends StatelessWidget {
 
           // ── FAQ Section ────────────────────────────────
           Text(
-            AppLocalizations.of(context)!.faqSectionTitle,
+            AppLocalizations.of(context).faqSectionTitle,
             style: TextStyle(
               fontSize: isTablet ? 15 : 14,
               fontWeight: FontWeight.bold,
@@ -166,15 +167,15 @@ class HelpScreen extends StatelessWidget {
   String _getFaqQuestion(String key, BuildContext context) {
     switch (key) {
       case 'faq_how_to_book':
-        return AppLocalizations.of(context)!.faqHowToBookQ;
+        return AppLocalizations.of(context).faqHowToBookQ;
       case 'faq_how_to_cancel':
-        return AppLocalizations.of(context)!.faqHowToCancelQ;
+        return AppLocalizations.of(context).faqHowToCancelQ;
       case 'faq_how_refunds_work':
-        return AppLocalizations.of(context)!.faqRefundsQ;
+        return AppLocalizations.of(context).faqRefundsQ;
       case 'faq_how_to_get_verified':
-        return AppLocalizations.of(context)!.faqGetVerifiedQ;
+        return AppLocalizations.of(context).faqGetVerifiedQ;
       case 'faq_is_payment_secure':
-        return AppLocalizations.of(context)!.faqPaymentSecureQ;
+        return AppLocalizations.of(context).faqPaymentSecureQ;
       default:
         return '';
     }
@@ -183,15 +184,15 @@ class HelpScreen extends StatelessWidget {
   String _getFaqAnswer(String key, BuildContext context) {
     switch (key) {
       case 'faq_how_to_book':
-        return AppLocalizations.of(context)!.faqHowToBookA;
+        return AppLocalizations.of(context).faqHowToBookA;
       case 'faq_how_to_cancel':
-        return AppLocalizations.of(context)!.faqHowToCancelA;
+        return AppLocalizations.of(context).faqHowToCancelA;
       case 'faq_how_refunds_work':
-        return AppLocalizations.of(context)!.faqRefundsA;
+        return AppLocalizations.of(context).faqRefundsA;
       case 'faq_how_to_get_verified':
-        return AppLocalizations.of(context)!.faqGetVerifiedA;
+        return AppLocalizations.of(context).faqGetVerifiedA;
       case 'faq_is_payment_secure':
-        return AppLocalizations.of(context)!.faqPaymentSecureA;
+        return AppLocalizations.of(context).faqPaymentSecureA;
       default:
         return '';
     }
@@ -211,17 +212,17 @@ class HelpScreen extends StatelessWidget {
       padding: EdgeInsets.all(isTablet ? 16 : 14),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.08)
-              : const Color(0xFFE5E7EB),
+              ? Colors.white.withValues(alpha: 0.08)
+              : AppColors.neutral200,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.08)
-                : Colors.grey.withOpacity(0.04),
+                ? Colors.black.withValues(alpha: 0.08)
+                : Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -233,8 +234,8 @@ class HelpScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.customerColor.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.customerColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
             child: Icon(
               icon,
@@ -273,17 +274,17 @@ class HelpScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.08)
-              : const Color(0xFFE5E7EB),
+              ? Colors.white.withValues(alpha: 0.08)
+              : AppColors.neutral200,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.06)
-                : Colors.grey.withOpacity(0.03),
+                ? Colors.black.withValues(alpha: 0.06)
+                : Colors.grey.withValues(alpha: 0.03),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

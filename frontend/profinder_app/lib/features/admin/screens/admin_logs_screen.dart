@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminLogsScreen extends StatefulWidget {
   const AdminLogsScreen({super.key});
@@ -31,13 +33,13 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
   String        _activeFilter = 'all';
 
   static const _filters = [
-    ('all',            'All',            Color(0xFF374151)),
-    ('verify',         'Verify',         Color(0xFF10B981)),
-    ('ban',            'Ban',            Color(0xFFEF4444)),
-    ('unban',          'Unban',          Color(0xFF3B82F6)),
-    ('approve',        'Approve',        Color(0xFF8B5CF6)),
-    ('reject',         'Reject',         Color(0xFFF59E0B)),
-    ('cancel_booking', 'Cancel',         Color(0xFF9CA3AF)),
+    ('all',            'All',            AppColors.gray700),
+    ('verify',         'Verify',         AppColors.emerald),
+    ('ban',            'Ban',            AppColors.favoriteRed),
+    ('unban',          'Unban',          AppColors.primary),
+    ('approve',        'Approve',        AppColors.violet),
+    ('reject',         'Reject',         AppColors.warningAmber),
+    ('cancel_booking', 'Cancel',         AppColors.neutral400),
   ];
 
   @override
@@ -131,7 +133,7 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: _buildAppBar(),
       body: Column(
         children: [
@@ -185,23 +187,23 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
       child: TextField(
         controller: _searchCtrl,
         onChanged:  (_) => _applyFilter(),
-        style: const TextStyle(fontSize: 13),
+        style: const TextStyle(fontSize: AppFontSizes.secondary),
         decoration: InputDecoration(
           hintText:   'Search by admin or target user…',
-          hintStyle:  const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
-          prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF9CA3AF)),
+          hintStyle:  const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
+          prefixIcon: const Icon(Icons.search, size: 18, color: AppColors.neutral400),
           suffixIcon: _searchCtrl.text.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.clear, size: 16,
-                      color: Color(0xFF9CA3AF)),
+                      color: AppColors.neutral400),
                   onPressed: () { _searchCtrl.clear(); _applyFilter(); },
                 )
               : null,
           filled:         true,
-          fillColor:      const Color(0xFFF3F4F6),
+          fillColor:      AppColors.neutral100,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
               borderSide:   BorderSide.none),
         ),
       ),
@@ -234,32 +236,32 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
-                  color: isActive ? f.$3 : const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(20),
+                  color: isActive ? f.$3 : AppColors.neutral100,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(f.$2,
                         style: TextStyle(
-                            fontSize:   12,
+                            fontSize: AppFontSizes.small,
                             fontWeight: FontWeight.w600,
                             color:      isActive
                                 ? Colors.white
-                                : const Color(0xFF6B7280))),
+                                : AppColors.grayDeep)),
                     const SizedBox(width: 5),
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 1),
                       decoration: BoxDecoration(
                         color: isActive
-                            ? Colors.white.withOpacity(0.25)
-                            : f.$3.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(10),
+                            ? Colors.white.withValues(alpha: 0.25)
+                            : f.$3.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(AppSizes.radius10),
                       ),
                       child: Text('$count',
                           style: TextStyle(
-                              fontSize:   10,
+                              fontSize: AppFontSizes.micro,
                               fontWeight: FontWeight.w700,
                               color:      isActive ? Colors.white : f.$3)),
                     ),
@@ -281,13 +283,13 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
         children: [
           Text('${_filtered.length} logs',
               style: const TextStyle(
-                  fontSize:   13,
+                  fontSize: AppFontSizes.secondary,
                   fontWeight: FontWeight.w600,
-                  color:      Color(0xFF374151))),
+                  color:      AppColors.gray700)),
           const Spacer(),
           Text('Total: ${_all.length}',
               style: const TextStyle(
-                  fontSize: 12, color: Color(0xFF9CA3AF))),
+                  fontSize: AppFontSizes.small, color: AppColors.neutral400)),
         ],
       ),
     );
@@ -314,8 +316,8 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
         alignment: Alignment.centerRight,
         padding:   const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
-          color:        AppColors.error.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(14),
+          color:        AppColors.error.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
         ),
         child: const Icon(Icons.delete_outline_rounded,
             color: AppColors.error, size: 22),
@@ -330,18 +332,18 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
         setState(() => _all.removeWhere((l) => l['id'] == log['id']));
         _applyFilter();
         _showSnack('Log deleted', AppColors.error);
-        _api.delete('/admin-panel/logs/${log['id']}/').catchError((_) {});
+        _api.delete('/admin-panel/logs/${log['id']}/').then<void>((_) {}, onError: (_) {});
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color:        Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border:       Border.all(color: color.withOpacity(0.2)),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border:       Border.all(color: color.withValues(alpha: 0.2)),
           boxShadow: [
             BoxShadow(
-                color:      Colors.black.withOpacity(0.03),
+                color:      Colors.black.withValues(alpha: 0.03),
                 blurRadius: 6,
                 offset:     const Offset(0, 1)),
           ],
@@ -354,7 +356,7 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
             Container(
               width: 40, height: 40,
               decoration: BoxDecoration(
-                color:        color.withOpacity(0.12),
+                color:        color.withValues(alpha: 0.12),
                 shape:        BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 18),
@@ -374,19 +376,19 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color:        color.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(6),
+                          color:        color.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
                         ),
                         child: Text(label,
                             style: TextStyle(
-                                fontSize:   10,
+                                fontSize: AppFontSizes.micro,
                                 fontWeight: FontWeight.w800,
                                 color:      color)),
                       ),
                       const Spacer(),
                       Text(_formatDate(createdAt),
                           style: const TextStyle(
-                              fontSize: 10, color: Color(0xFFCBD5E1))),
+                              fontSize: AppFontSizes.micro, color: AppColors.slate300)),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -395,13 +397,13 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
                   RichText(
                     text: TextSpan(
                       style: const TextStyle(
-                          fontSize: 13, color: Color(0xFF374151)),
+                          fontSize: AppFontSizes.secondary, color: AppColors.gray700),
                       children: [
                         TextSpan(
                           text: adminName,
                           style: const TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF111827)),
+                              color: AppColors.gray900),
                         ),
                         const TextSpan(text: '  →  '),
                         TextSpan(
@@ -420,7 +422,7 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
                       Expanded(
                         child: Text(targetEmail,
                             style: const TextStyle(
-                                fontSize: 11, color: Color(0xFF9CA3AF)),
+                                fontSize: AppFontSizes.caption, color: AppColors.neutral400),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis),
                       ),
@@ -430,14 +432,14 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF3F4F6),
-                            borderRadius: BorderRadius.circular(4),
+                            color: AppColors.neutral100,
+                            borderRadius: BorderRadius.circular(AppSizes.radiusXs),
                           ),
                           child: Text(targetRole.toUpperCase(),
                               style: const TextStyle(
                                   fontSize:   8,
                                   fontWeight: FontWeight.w700,
-                                  color:      Color(0xFF9CA3AF))),
+                                  color:      AppColors.neutral400)),
                         ),
                     ],
                   ),
@@ -449,22 +451,22 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 5),
                       decoration: BoxDecoration(
-                        color:        const Color(0xFFF8FAFC),
-                        borderRadius: BorderRadius.circular(6),
+                        color:        AppColors.slate50,
+                        borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
                         border: Border.all(
-                            color: const Color(0xFFE5E7EB)),
+                            color: AppColors.neutral200),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Icon(Icons.notes_rounded,
-                              size: 12, color: Color(0xFF9CA3AF)),
+                              size: 12, color: AppColors.neutral400),
                           const SizedBox(width: 5),
                           Expanded(
                             child: Text(note,
                                 style: const TextStyle(
-                                    fontSize: 11,
-                                    color:    Color(0xFF6B7280),
+                                    fontSize: AppFontSizes.caption,
+                                    color:    AppColors.grayDeep,
                                     height:   1.4)),
                           ),
                         ],
@@ -481,7 +483,7 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
               child: const Padding(
                 padding: EdgeInsets.only(left: 8, top: 2),
                 child: Icon(Icons.close_rounded,
-                    size: 16, color: Color(0xFFD1D5DB)),
+                    size: 16, color: AppColors.neutral300),
               ),
             ),
           ],
@@ -493,14 +495,14 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
   // ── Helpers ───────────────────────────────────────────────
   Color _actionColor(String action) {
     return switch (action) {
-      'verify'         => const Color(0xFF10B981),
-      'ban'            => const Color(0xFFEF4444),
-      'unban'          => const Color(0xFF3B82F6),
-      'approve'        => const Color(0xFF8B5CF6),
-      'reject'         => const Color(0xFFF59E0B),
-      'cancel_booking' => const Color(0xFF9CA3AF),
-      'delete'         => const Color(0xFFEF4444),
-      _                => const Color(0xFF9CA3AF),
+      'verify'         => AppColors.emerald,
+      'ban'            => AppColors.favoriteRed,
+      'unban'          => AppColors.primary,
+      'approve'        => AppColors.violet,
+      'reject'         => AppColors.warningAmber,
+      'cancel_booking' => AppColors.neutral400,
+      'delete'         => AppColors.favoriteRed,
+      _                => AppColors.neutral400,
     };
   }
 
@@ -553,20 +555,20 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.history_toggle_off_rounded,
-              size: 64, color: Color(0xFFD1D5DB)),
+              size: 64, color: AppColors.neutral300),
           const SizedBox(height: 14),
           Text(
             _activeFilter == 'all'
                 ? 'No activity yet'
                 : 'No "$_activeFilter" logs',
             style: const TextStyle(
-                fontSize:   15,
+                fontSize: AppFontSizes.input,
                 fontWeight: FontWeight.w600,
-                color:      Color(0xFF9CA3AF)),
+                color:      AppColors.neutral400),
           ),
           const SizedBox(height: 6),
           const Text('Admin actions will appear here',
-              style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF))),
+              style: TextStyle(fontSize: AppFontSizes.small, color: AppColors.neutral400)),
         ],
       ),
     );
@@ -587,9 +589,9 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
           const SizedBox(height: 12),
           const Text('Failed to load logs',
               style: TextStyle(
-                  fontSize:   15,
+                  fontSize: AppFontSizes.input,
                   fontWeight: FontWeight.w600,
-                  color:      Color(0xFF374151))),
+                  color:      AppColors.gray700)),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: _load,
@@ -613,24 +615,24 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
           context: context,
           builder: (_) => AlertDialog(
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
             title: Text(title,
                 style: const TextStyle(
-                    fontSize: 15, fontWeight: FontWeight.w700)),
+                    fontSize: AppFontSizes.input, fontWeight: FontWeight.w700)),
             content: Text(message,
                 style: const TextStyle(
-                    fontSize: 13, color: Color(0xFF6B7280))),
+                    fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
                 child: const Text('Cancel',
-                    style: TextStyle(color: Color(0xFF9CA3AF))),
+                    style: TextStyle(color: AppColors.neutral400)),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: confirmColor,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8))),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(confirmLabel,
                     style: const TextStyle(color: Colors.white)),
@@ -648,7 +650,7 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
               color: Colors.white, fontWeight: FontWeight.w600)),
       backgroundColor:  color,
       behavior:         SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
       duration: const Duration(seconds: 2),
     ));
   }

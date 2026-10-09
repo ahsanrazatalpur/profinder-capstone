@@ -18,6 +18,8 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../models/user_ts_models.dart';
 import '../services/user_trust_safety_service.dart';
 import '../widgets/ts_labels.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class MyReportsScreen extends StatefulWidget {
   const MyReportsScreen({super.key});
@@ -70,18 +72,16 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
     switch (status) {
       case MyReportStatus.actionTaken: return AppColors.success;
       case MyReportStatus.dismissed: return context.colors.textSecondary;
-      case MyReportStatus.reviewed: return const Color(0xFF3B82F6);
-      default: return const Color(0xFFF59E0B); // pending
+      case MyReportStatus.reviewed: return AppColors.primary;
+      default: return AppColors.warningAmber; // pending
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final t = AppLocalizations.of(context);
     final auth = context.watch<AuthProvider>();
     final accent = AppHelpers.getRoleColor(auth.role ?? 'customer');
-    final width = MediaQuery.sizeOf(context).width;
-    final isTablet = width > 600;
 
     return Scaffold(
       backgroundColor: context.colors.background,
@@ -126,7 +126,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
             Text(
               t.myTsReportsLoadError,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13.5, color: context.colors.textSecondary),
+              style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary),
             ),
             const SizedBox(height: 16),
             OutlinedButton(onPressed: _load, child: Text(t.tsRetry)),
@@ -151,17 +151,17 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.shield_outlined, size: 44, color: context.colors.textSecondary.withOpacity(0.5)),
+                    Icon(Icons.shield_outlined, size: 44, color: context.colors.textSecondary.withValues(alpha: 0.5)),
                     const SizedBox(height: 14),
                     Text(
                       t.myTsReportsEmptyTitle,
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                      style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       t.myTsReportsEmptyMessage,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary),
+                      style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
                     ),
                   ],
                 ),
@@ -182,11 +182,11 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? Colors.white.withOpacity(0.08) : context.colors.divider),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.1) : Colors.grey.withOpacity(0.05),
+            color: isDark ? Colors.black.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -200,15 +200,15 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
               Expanded(
                 child: Text(
                   _categoryLabel(t, report.category),
-                  style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                  style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(color: statusColor.withOpacity(0.14), borderRadius: BorderRadius.circular(20)),
+                decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
                 child: Text(
                   _statusLabel(t, report.status),
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: statusColor),
+                  style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: statusColor),
                 ),
               ),
             ],
@@ -217,21 +217,21 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
             const SizedBox(height: 6),
             Text(
               '${t.myTsSubmittedLabel}: ${AppHelpers.formatDate(report.createdAt!)}',
-              style: TextStyle(fontSize: 11.5, color: context.colors.textSecondary),
+              style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
             ),
           ],
           if (report.description.trim().isNotEmpty) ...[
             const SizedBox(height: 10),
             Text(
               t.myTsYourDescriptionLabel,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: context.colors.textSecondary, letterSpacing: 0.3),
+              style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: context.colors.textSecondary, letterSpacing: 0.3),
             ),
             const SizedBox(height: 3),
             Text(
               report.description,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 13, color: context.colors.textPrimary, height: 1.35),
+              style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textPrimary, height: 1.35),
             ),
           ],
           const SizedBox(height: 10),
@@ -240,7 +240,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: context.colors.background,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,7 +250,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 Expanded(
                   child: Text(
                     _outcomeLabel(t, report.outcome),
-                    style: TextStyle(fontSize: 12, color: context.colors.textSecondary, height: 1.3),
+                    style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary, height: 1.3),
                   ),
                 ),
               ],

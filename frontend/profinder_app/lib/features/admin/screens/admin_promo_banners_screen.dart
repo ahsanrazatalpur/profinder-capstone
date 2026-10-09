@@ -12,7 +12,6 @@
 // app — no Django admin trip required.
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -23,6 +22,9 @@ import '../../../services/api_service.dart';
 import '../../subscription/models/promo_banner_model.dart';
 import '../../subscription/widgets/promo_banner_popup.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../widgets/content_translations_editor.dart';
 
 /// Responsive breakpoints used by the banner grid and dialogs.
 class _Breakpoints {
@@ -157,7 +159,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
         titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
         contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
         title: Row(
@@ -166,7 +168,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.12),
+                color: AppColors.error.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(9),
               ),
               child: const Icon(Icons.delete_outline_rounded,
@@ -176,7 +178,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
             const Expanded(
               child: Text(
                 'Delete this banner?',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700),
               ),
             ),
           ],
@@ -184,7 +186,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
         content: Text(
           '"${banner['title']}" will be permanently deleted.',
           style: const TextStyle(
-              fontSize: 13, color: Color(0xFF6B7280), height: 1.5),
+              fontSize: AppFontSizes.secondary, color: AppColors.grayDeep, height: 1.5),
         ),
         actions: [
           TextButton(
@@ -194,7 +196,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               padding: const EdgeInsets.symmetric(horizontal: 12),
             ),
             child: const Text('Cancel',
-                style: TextStyle(color: Color(0xFF9CA3AF))),
+                style: TextStyle(color: AppColors.neutral400)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -202,7 +204,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               minimumSize: const Size(0, 44),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
             ),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete',
@@ -248,7 +250,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
     showDialog(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.65),
+      barrierColor: Colors.black.withValues(alpha: 0.65),
       builder: (ctx) => Dialog(
         backgroundColor: Colors.transparent,
         insetPadding:
@@ -267,10 +269,10 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                   decoration: BoxDecoration(
                     color: AppColors.adminColor,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
+                        color: Colors.black.withValues(alpha: 0.25),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
@@ -287,7 +289,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                         'PREVIEW MODE',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 11,
+                          fontSize: AppFontSizes.caption,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.6,
                         ),
@@ -306,6 +308,30 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
   // ── Add / Edit Form ──────────────────────────────────────────
   /// Opens the create/edit dialog. All field controllers, validators, image
   /// upload flow, and save logic remain behaviorally identical.
+  // Fields translated per language (backend registry: 'promobanner').
+  static const _tFields = [
+    TranslatableField('title', 'Title'),
+    TranslatableField('description', 'Description', multiline: true),
+    TranslatableField('button_text', 'Button text'),
+  ];
+
+  Future<void> _openTranslations(dynamic banner) async {
+    final saved = await showContentTranslationsSheet(
+      context,
+      label: 'promobanner',
+      objectId: (banner['id'] as num).toInt(),
+      title: banner['title']?.toString() ?? '',
+      fields: _tFields,
+      existing: banner['translations'] is List ? banner['translations'] as List : null,
+      baseValues: {
+        'title': banner['title']?.toString() ?? '',
+        'description': banner['description']?.toString() ?? '',
+        'button_text': banner['button_text']?.toString() ?? '',
+      },
+    );
+    if (saved) _load();
+  }
+
   Future<void> _openForm({dynamic existing}) async {
     final isEdit = existing != null;
 
@@ -432,14 +458,21 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                 final idx = _banners
                     .indexWhere((b) => b['id'] == existing['id']);
                 if (idx != -1 && mounted) {
-                  setState(() => _banners[idx] = res.data);
+                  final updated = res.data is Map
+                      ? Map<String, dynamic>.from(res.data as Map)
+                      : res.data;
+                  if (updated is Map<String, dynamic> && updated['translations'] == null) {
+                    updated['translations'] = existing['translations'];
+                  }
+                  setState(() => _banners[idx] = updated);
                 }
               } else {
                 final res =
                     await _api.post('/admin-panel/promo-banners/', body);
                 if (mounted) setState(() => _banners.insert(0, res.data));
               }
-              if (mounted) Navigator.pop(ctx);
+              if (ctx.mounted) Navigator.pop(ctx);
+              if (!mounted) return;
               _showSnack(
                   isEdit ? 'Banner updated' : 'Banner created',
                   AppColors.success);
@@ -480,7 +513,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
 
           return Dialog(
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
             insetPadding: EdgeInsets.symmetric(
               horizontal: 16,
               vertical: (keyboardHeight > 0 ? 12 : 24),
@@ -502,7 +535,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                         end: Alignment.bottomRight,
                       ),
                       borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(18)),
+                          BorderRadius.vertical(top: Radius.circular(AppSizes.radius18)),
                     ),
                     child: Row(
                       children: [
@@ -510,8 +543,8 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                           width: 34,
                           height: 34,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.18),
-                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white.withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(AppSizes.radius10),
                           ),
                           child: Icon(
                             isEdit
@@ -527,7 +560,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                             isEdit ? 'Edit Banner' : 'Create New Banner',
                             style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 16,
+                                fontSize: AppFontSizes.title,
                                 fontWeight: FontWeight.w700),
                           ),
                         ),
@@ -550,11 +583,11 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                               width: double.infinity,
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: AppColors.error.withOpacity(0.08),
-                                borderRadius: BorderRadius.circular(10),
+                                color: AppColors.error.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(AppSizes.radius10),
                                 border: Border.all(
                                     color:
-                                        AppColors.error.withOpacity(0.35)),
+                                        AppColors.error.withValues(alpha: 0.35)),
                               ),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -628,8 +661,8 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                           Text(
                             _triggerHelp[trigger] ?? '',
                             style: const TextStyle(
-                                fontSize: 11,
-                                color: Color(0xFF9CA3AF),
+                                fontSize: AppFontSizes.caption,
+                                color: AppColors.neutral400,
                                 height: 1.4),
                           ),
                           const SizedBox(height: 12),
@@ -668,16 +701,16 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                             value: isActive,
                             onChanged: (v) =>
                                 setDialogState(() => isActive = v),
-                            activeColor: AppColors.adminColor,
+                            activeThumbColor: AppColors.adminColor,
                             title: const Text('Active',
                                 style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: AppFontSizes.secondary,
                                     fontWeight: FontWeight.w600)),
                             subtitle: const Text(
                                 'Turning this off hides the banner from everyone',
                                 style: TextStyle(
-                                    fontSize: 11,
-                                    color: Color(0xFF9CA3AF))),
+                                    fontSize: AppFontSizes.caption,
+                                    color: AppColors.neutral400)),
                           ),
                         ],
                       ),
@@ -688,9 +721,9 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                   Container(
                     padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
                     decoration: const BoxDecoration(
-                      color: Color(0xFFF9FAFB),
+                      color: AppColors.tintGray,
                       border: Border(
-                          top: BorderSide(color: Color(0xFFE5E7EB))),
+                          top: BorderSide(color: AppColors.neutral200)),
                     ),
                     child: Row(
                       children: [
@@ -701,7 +734,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                             style: OutlinedButton.styleFrom(
                               minimumSize: const Size(0, 46),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
+                                  borderRadius: BorderRadius.circular(AppSizes.radius10)),
                             ),
                             child: const Text('Cancel'),
                           ),
@@ -714,7 +747,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                               backgroundColor: AppColors.adminColor,
                               minimumSize: const Size(0, 46),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
+                                  borderRadius: BorderRadius.circular(AppSizes.radius10)),
                             ),
                             onPressed: saving ? null : save,
                             child: saving
@@ -760,9 +793,9 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
         Text(
           text,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: AppFontSizes.small,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF374151),
+            color: AppColors.gray700,
             letterSpacing: 0.2,
           ),
         ),
@@ -786,24 +819,24 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
           width: 84,
           height: 84,
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F4F6),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
+            color: AppColors.neutral100,
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: Border.all(color: AppColors.neutral200),
           ),
           clipBehavior: Clip.hardEdge,
           child: hasImage
               ? Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const Icon(
+                  errorBuilder: (_, _, _) => const Icon(
                     Icons.broken_image_outlined,
-                    color: Color(0xFFD1D5DB),
+                    color: AppColors.neutral300,
                     size: 28,
                   ),
                 )
               : const Icon(
                   Icons.image_outlined,
-                  color: Color(0xFFD1D5DB),
+                  color: AppColors.neutral300,
                   size: 28,
                 ),
         ),
@@ -815,15 +848,15 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               const Text(
                 'Banner Image',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppFontSizes.small,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF374151),
+                  color: AppColors.gray700,
                 ),
               ),
               const SizedBox(height: 4),
               const Text(
                 'Recommended: 1200×600, JPG or PNG',
-                style: TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
+                style: TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400),
               ),
               const SizedBox(height: 8),
               OutlinedButton.icon(
@@ -838,7 +871,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                 label: Text(
                   uploading ? 'Uploading…' : 'Pick from Gallery',
                   style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w600),
+                      fontSize: AppFontSizes.small, fontWeight: FontWeight.w600),
                 ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.adminColor,
@@ -847,7 +880,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10)),
                 ),
               ),
             ],
@@ -864,16 +897,16 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
       controller: ctrl,
       maxLines: maxLines,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      style: const TextStyle(fontSize: 13),
+      style: const TextStyle(fontSize: AppFontSizes.secondary),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(fontSize: 12),
+        labelStyle: const TextStyle(fontSize: AppFontSizes.small),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+          borderSide: const BorderSide(color: AppColors.neutral200),
         ),
       ),
     );
@@ -883,23 +916,23 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
   Widget _dropdown(String label, String value, List<(String, String)> choices,
       ValueChanged<String> onChanged) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(fontSize: 12),
+        labelStyle: const TextStyle(fontSize: AppFontSizes.small),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+          borderSide: const BorderSide(color: AppColors.neutral200),
         ),
       ),
-      style: const TextStyle(fontSize: 13, color: Color(0xFF111827)),
+      style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.gray900),
       items: choices
           .map((c) => DropdownMenuItem(
               value: c.$1,
-              child: Text(c.$2, style: const TextStyle(fontSize: 13))))
+              child: Text(c.$2, style: const TextStyle(fontSize: AppFontSizes.secondary))))
           .toList(),
       onChanged: (v) {
         if (v != null) onChanged(v);
@@ -911,17 +944,17 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
   Widget _dateTile(String label, DateTime? date, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppSizes.radius10),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
         decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFE5E7EB)),
-          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.neutral200),
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
         ),
         child: Row(
           children: [
             const Icon(Icons.calendar_today_outlined,
-                size: 14, color: Color(0xFF9CA3AF)),
+                size: 14, color: AppColors.neutral400),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -931,10 +964,10 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppFontSizes.small,
                   color: date == null
-                      ? const Color(0xFF9CA3AF)
-                      : const Color(0xFF111827),
+                      ? AppColors.neutral400
+                      : AppColors.gray900,
                 ),
               ),
             ),
@@ -947,7 +980,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Promo Banners',
         subtitle: '${_banners.length} ${_banners.length == 1 ? 'banner' : 'banners'}',
@@ -1065,15 +1098,15 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
         : null;
 
     return _HoverLift(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(AppSizes.radius14),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: AppColors.neutral200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -1093,21 +1126,21 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                       ? Image.network(
                           imageUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: const Color(0xFFF3F4F6),
+                          errorBuilder: (_, _, _) => Container(
+                            color: AppColors.neutral100,
                             child: const Center(
                               child: Icon(Icons.broken_image_outlined,
-                                  color: Color(0xFFD1D5DB), size: 32),
+                                  color: AppColors.neutral300, size: 32),
                             ),
                           ),
                         )
                       : Container(
-                          color: AppColors.adminColor.withOpacity(0.06),
+                          color: AppColors.adminColor.withValues(alpha: 0.06),
                           child: Center(
                             child: Icon(
                               Icons.campaign_outlined,
                               color:
-                                  AppColors.adminColor.withOpacity(0.35),
+                                  AppColors.adminColor.withValues(alpha: 0.35),
                               size: 36,
                             ),
                           ),
@@ -1123,7 +1156,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.18),
+                            Colors.black.withValues(alpha: 0.18),
                           ],
                           stops: const [0.6, 1.0],
                         ),
@@ -1157,9 +1190,9 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: AppFontSizes.body,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF111827),
+                        color: AppColors.gray900,
                         letterSpacing: -0.1,
                       ),
                     ),
@@ -1169,8 +1202,8 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF6B7280),
+                        fontSize: AppFontSizes.small,
+                        color: AppColors.grayDeep,
                         height: 1.4,
                       ),
                     ),
@@ -1180,11 +1213,11 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                       runSpacing: 6,
                       children: [
                         _chip(Icons.group_outlined, target,
-                            const Color(0xFF7C3AED)),
+                            AppColors.accentPurple),
                         _chip(Icons.bolt_outlined, trigger,
-                            const Color(0xFF0EA5E9)),
+                            AppColors.sky),
                         _chip(Icons.low_priority_rounded,
-                            'priority $priority', const Color(0xFFF59E0B)),
+                            'priority $priority', AppColors.warningAmber),
                       ],
                     ),
                     const Spacer(),
@@ -1194,7 +1227,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                       padding: const EdgeInsets.symmetric(vertical: 6),
                       decoration: const BoxDecoration(
                         border: Border(
-                          top: BorderSide(color: Color(0xFFF3F4F6)),
+                          top: BorderSide(color: AppColors.neutral100),
                         ),
                       ),
                       child: Row(
@@ -1203,18 +1236,18 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                             label: 'Toggle banner active',
                             child: Switch(
                               value: isActive,
-                              activeColor: AppColors.adminColor,
+                              activeThumbColor: AppColors.adminColor,
                               onChanged: (_) => _toggleActive(banner),
                             ),
                           ),
                           Text(
                             isActive ? 'Active' : 'Paused',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: AppFontSizes.small,
                               fontWeight: FontWeight.w600,
                               color: isActive
                                   ? AppColors.success
-                                  : const Color(0xFF9CA3AF),
+                                  : AppColors.neutral400,
                             ),
                           ),
                           const Spacer(),
@@ -1226,9 +1259,17 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                           ),
                           _actionIcon(
                             icon: Icons.edit_outlined,
-                            color: const Color(0xFF374151),
+                            color: AppColors.gray700,
                             tooltip: 'Edit',
                             onTap: () => _openForm(existing: banner),
+                          ),
+                          _actionIcon(
+                            icon: Icons.translate_rounded,
+                            color: AppColors.primary,
+                            tooltip: countTranslations(banner, _tFields) > 0
+                                ? 'Translations (${countTranslations(banner, _tFields)})'
+                                : 'Translations',
+                            onTap: () => _openTranslations(banner),
                           ),
                           _actionIcon(
                             icon: Icons.delete_outline_rounded,
@@ -1260,7 +1301,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
       message: tooltip,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
         child: Container(
           width: 36,
           height: 36,
@@ -1278,8 +1319,8 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.09),
-        borderRadius: BorderRadius.circular(6),
+        color: color.withValues(alpha: 0.09),
+        borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1289,7 +1330,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
           Text(
             label.replaceAll('_', ' '),
             style: TextStyle(
-                fontSize: 10, color: color, fontWeight: FontWeight.w600),
+                fontSize: AppFontSizes.micro, color: color, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -1309,7 +1350,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               width: 88,
               height: 88,
               decoration: BoxDecoration(
-                color: AppColors.adminColor.withOpacity(0.08),
+                color: AppColors.adminColor.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.campaign_outlined,
@@ -1319,14 +1360,14 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
             const Text(
               'No banners yet',
               style: TextStyle(
-                  fontSize: 15,
+                  fontSize: AppFontSizes.input,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF6B7280)),
+                  color: AppColors.grayDeep),
             ),
             const SizedBox(height: 6),
             const Text(
               'Tap "New Banner" to create your first one',
-              style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+              style: TextStyle(fontSize: AppFontSizes.small, color: AppColors.neutral400),
             ),
           ],
         ),
@@ -1346,7 +1387,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.08),
+                color: AppColors.error.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.error_outline_rounded,
@@ -1356,9 +1397,9 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
             const Text(
               'Failed to load banners',
               style: TextStyle(
-                  fontSize: 15,
+                  fontSize: AppFontSizes.input,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF374151)),
+                  color: AppColors.gray700),
             ),
             const SizedBox(height: 18),
             ElevatedButton.icon(
@@ -1370,7 +1411,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10)),
               ),
             ),
           ],
@@ -1388,7 +1429,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
       backgroundColor: color,
       behavior: SnackBarBehavior.floating,
       shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
       duration: const Duration(seconds: 2),
     ));
   }
@@ -1406,8 +1447,7 @@ class _HoverLift extends StatefulWidget {
   const _HoverLift({
     required this.child,
     required this.borderRadius,
-    this.hoverScale = 1.012,
-  });
+  }) : hoverScale = 1.012;
 
   @override
   State<_HoverLift> createState() => _HoverLiftState();
@@ -1502,7 +1542,7 @@ class _BannerStatusBadgeState extends State<_BannerStatusBadge> {
 
     if (!widget.isActive) {
       label = 'OFF';
-      color = const Color(0xFF9CA3AF);
+      color = AppColors.neutral400;
       icon = Icons.pause_circle_outline_rounded;
     } else if (widget.isLive) {
       if (widget.endDate != null) {
@@ -1516,15 +1556,15 @@ class _BannerStatusBadgeState extends State<_BannerStatusBadge> {
     } else if (widget.startDate != null && widget.startDate!.isAfter(now)) {
       label =
           'Starts ${DateFormat('d MMM, h:mm a').format(widget.startDate!)}';
-      color = const Color(0xFFF59E0B);
+      color = AppColors.warningAmber;
       icon = Icons.schedule_rounded;
     } else if (widget.endDate != null && widget.endDate!.isBefore(now)) {
       label = 'Ended';
-      color = const Color(0xFF9CA3AF);
+      color = AppColors.neutral400;
       icon = Icons.history_rounded;
     } else {
       label = 'Inactive';
-      color = const Color(0xFF9CA3AF);
+      color = AppColors.neutral400;
       icon = Icons.info_outline_rounded;
     }
 
@@ -1533,10 +1573,10 @@ class _BannerStatusBadgeState extends State<_BannerStatusBadge> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -1550,7 +1590,7 @@ class _BannerStatusBadgeState extends State<_BannerStatusBadge> {
           Text(
             label,
             style: const TextStyle(
-              fontSize: 10,
+              fontSize: AppFontSizes.micro,
               fontWeight: FontWeight.w700,
               color: Colors.white,
               letterSpacing: 0.2,

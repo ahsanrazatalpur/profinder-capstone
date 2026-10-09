@@ -11,6 +11,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class AdminReportsHubScreen extends StatefulWidget {
   const AdminReportsHubScreen({super.key});
@@ -25,10 +27,10 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
   String? _generatingType;
 
   List<(String, String, IconData, Color)> get _reportTypes => [
-    ('revenue', 'Revenue Report', Icons.payments_rounded, const Color(0xFF16A34A)),
+    ('revenue', 'Revenue Report', Icons.payments_rounded, AppColors.greenDeep),
     ('users', 'User Growth Report', Icons.groups_rounded, context.colors.primary),
     ('bookings', 'Booking Summary', Icons.event_note_rounded, context.colors.accent),
-    ('subscriptions', 'Subscription Report', Icons.workspace_premium_rounded, const Color(0xFF7C3AED)),
+    ('subscriptions', 'Subscription Report', Icons.workspace_premium_rounded, AppColors.accentPurple),
   ];
 
   final List<Map<String, String>> _history = [];
@@ -63,7 +65,7 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
           ),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -74,7 +76,7 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         child: ConstrainedBox(
           constraints: BoxConstraints(
@@ -91,8 +93,8 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColors.adminColor.withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.adminColor.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(AppSizes.radius10),
                       ),
                       child: const Icon(Icons.insert_drive_file_rounded,
                           color: AppColors.adminColor, size: 18),
@@ -102,9 +104,9 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                       child: Text(
                         label,
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: AppFontSizes.input,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF111827),
+                          color: AppColors.gray900,
                         ),
                       ),
                     ),
@@ -113,10 +115,10 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: const BoxDecoration(
-                          color: Color(0xFFF1F5F9),
+                          color: AppColors.slate100,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.close_rounded, size: 18, color: Color(0xFF9CA3AF)),
+                        child: const Icon(Icons.close_rounded, size: 18, color: AppColors.neutral400),
                       ),
                     ),
                   ],
@@ -124,7 +126,7 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                 const SizedBox(height: 4),
                 Text(
                   rows.isEmpty ? 'No data in this range' : '${rows.length} rows · Last 30 days',
-                  style: const TextStyle(fontSize: 11.5, color: Color(0xFF9CA3AF), fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: 11.5, color: AppColors.neutral400, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 14),
                 const Divider(height: 1),
@@ -136,24 +138,24 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.inbox_rounded, size: 40, color: const Color(0xFF9CA3AF).withOpacity(0.4)),
+                              Icon(Icons.inbox_rounded, size: 40, color: AppColors.neutral400.withValues(alpha: 0.4)),
                               const SizedBox(height: 10),
                               const Text('No data in this range.',
-                                  style: TextStyle(fontSize: 12.5, color: Color(0xFF9CA3AF), fontWeight: FontWeight.w600)),
+                                  style: TextStyle(fontSize: 12.5, color: AppColors.neutral400, fontWeight: FontWeight.w600)),
                             ],
                           ),
                         )
                       : ListView.separated(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           itemCount: rows.length,
-                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          separatorBuilder: (_, _) => const Divider(height: 1),
                           itemBuilder: (_, i) {
                             final row = Map<String, dynamic>.from(rows[i]);
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Text(
                                 row.entries.map((e) => '${e.key}: ${e.value}').join('   ·   '),
-                                style: const TextStyle(fontSize: 12, color: Color(0xFF374151), height: 1.4),
+                                style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.gray700, height: 1.4),
                               ),
                             );
                           },
@@ -172,7 +174,7 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                       child: TextButton(
                         onPressed: () => Navigator.pop(dialogContext),
                         style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFF6B7280),
+                          foregroundColor: AppColors.grayDeep,
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         ),
                         child: const Text('Close', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -186,7 +188,7 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
                         ),
                         onPressed: () {
                           Navigator.pop(dialogContext);
@@ -194,7 +196,7 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                             SnackBar(
                               content: const Text('Copied to clipboard-style export (CSV) — ready to share.'),
                               behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                               margin: const EdgeInsets.all(16),
                               backgroundColor: context.colors.accent,
                             ),
@@ -217,7 +219,7 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Reports',
         subtitle: 'Generate and export platform data',
@@ -274,8 +276,8 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                             Text(
                               '${_history.length} this session',
                               style: const TextStyle(
-                                fontSize: 11,
-                                color: Color(0xFF9CA3AF),
+                                fontSize: AppFontSizes.caption,
+                                color: AppColors.neutral400,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -288,25 +290,25 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: const Color(0xFFE5E7EB)),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                            border: Border.all(color: AppColors.neutral200),
                           ),
                           child: Column(
                             children: [
                               Container(
                                 padding: const EdgeInsets.all(14),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF1F5F9),
+                                  color: AppColors.slate100,
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(Icons.history_rounded,
-                                    size: 26, color: const Color(0xFF9CA3AF).withOpacity(0.7)),
+                                    size: 26, color: AppColors.neutral400.withValues(alpha: 0.7)),
                               ),
                               const SizedBox(height: 12),
                               const Text(
                                 'No reports generated yet this session.',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 12.5, color: Color(0xFF9CA3AF), fontWeight: FontWeight.w600),
+                                style: TextStyle(fontSize: 12.5, color: AppColors.neutral400, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
@@ -359,7 +361,7 @@ class _SectionLabel extends StatelessWidget {
       style: const TextStyle(
         fontSize: 13.5,
         fontWeight: FontWeight.w800,
-        color: Color(0xFF111827),
+        color: AppColors.gray900,
         letterSpacing: -0.1,
       ),
     );
@@ -408,24 +410,24 @@ class _ReportTileState extends State<_ReportTile> {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               onTap: widget.onTap,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   border: Border.all(
                     color: _hovering && widget.onTap != null
-                        ? widget.color.withOpacity(0.35)
-                        : const Color(0xFFE5E7EB),
+                        ? widget.color.withValues(alpha: 0.35)
+                        : AppColors.neutral200,
                     width: 1.2,
                   ),
                   boxShadow: _hovering && widget.onTap != null
                       ? [
                           BoxShadow(
-                            color: widget.color.withOpacity(0.12),
+                            color: widget.color.withValues(alpha: 0.12),
                             blurRadius: 14,
                             offset: const Offset(0, 4),
                           ),
@@ -441,7 +443,7 @@ class _ReportTileState extends State<_ReportTile> {
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: widget.color.withOpacity(0.1),
+                            color: widget.color.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(11),
                           ),
                           child: Icon(widget.icon, size: 18, color: widget.color),
@@ -462,9 +464,9 @@ class _ReportTileState extends State<_ReportTile> {
                     Text(
                       widget.label,
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: AppFontSizes.secondary,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF111827),
+                        color: AppColors.gray900,
                         height: 1.25,
                       ),
                       maxLines: 2,
@@ -473,7 +475,7 @@ class _ReportTileState extends State<_ReportTile> {
                     const SizedBox(height: 3),
                     const Text(
                       'Last 30 days',
-                      style: TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF), fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 10.5, color: AppColors.neutral400, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -488,7 +490,7 @@ class _ReportTileState extends State<_ReportTile> {
 
 class _HistoryTile extends StatefulWidget {
   final Map<String, String> entry;
-  const _HistoryTile({required this.entry, super.key});
+  const _HistoryTile({required this.entry});
 
   @override
   State<_HistoryTile> createState() => _HistoryTileState();
@@ -509,14 +511,14 @@ class _HistoryTileState extends State<_HistoryTile> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
           border: Border.all(
-            color: _hovering ? const Color(0xFFD1D5DB) : const Color(0xFFE5E7EB),
+            color: _hovering ? AppColors.neutral300 : AppColors.neutral200,
           ),
           boxShadow: _hovering
               ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.black.withValues(alpha: 0.03),
                     blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
@@ -529,10 +531,10 @@ class _HistoryTileState extends State<_HistoryTile> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: AppColors.slate100,
                 borderRadius: BorderRadius.circular(9),
               ),
-              child: const Icon(Icons.description_outlined, size: 16, color: Color(0xFF64748B)),
+              child: const Icon(Icons.description_outlined, size: 16, color: AppColors.slate500),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -541,19 +543,19 @@ class _HistoryTileState extends State<_HistoryTile> {
                 children: [
                   Text(
                     h['label']!,
-                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.gray900),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${h['rows']} rows · ${h['date']}',
-                    style: const TextStyle(fontSize: 10.5, color: Color(0xFF9CA3AF), fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFFD1D5DB)),
+            const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.neutral300),
           ],
         ),
       ),

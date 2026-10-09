@@ -8,6 +8,8 @@ import '../../data/repositories/chat_repository_impl.dart';
 import '../../domain/entities/message_entity.dart';
 import '../../../../core/theme/theme_context_ext.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 class MessageSearchSheet extends StatefulWidget {
   final int conversationId;
@@ -55,14 +57,14 @@ class _MessageSearchSheetState extends State<MessageSearchSheet> {
       minChildSize: 0.4,
       maxChildSize: 0.95,
       builder: (context, scrollController) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: context.colors.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
         ),
         child: Column(
           children: [
             const SizedBox(height: 10),
-            Container(width: 36, height: 4, decoration: BoxDecoration(color: const Color(0xFFE2E8F0), borderRadius: BorderRadius.circular(2))),
+            Container(width: 36, height: 4, decoration: BoxDecoration(color: context.colors.divider, borderRadius: BorderRadius.circular(AppSizes.radiusTiny))),
             Padding(
               padding: const EdgeInsets.all(14),
               child: TextField(
@@ -70,11 +72,11 @@ class _MessageSearchSheetState extends State<MessageSearchSheet> {
                 autofocus: true,
                 onChanged: _onChanged,
                 decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.chatSearchMessagesHint,
+                  hintText: AppLocalizations.of(context).chatSearchMessagesHint,
                   prefixIcon: const Icon(Icons.search_rounded),
                   filled: true,
-                  fillColor: const Color(0xFFF1F5F9),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  fillColor: Theme.of(context).brightness == Brightness.dark ? context.colors.background : AppColors.slate100,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide.none),
                 ),
               ),
             ),
@@ -84,9 +86,9 @@ class _MessageSearchSheetState extends State<MessageSearchSheet> {
                   ? Center(
                       child: Text(
                         _controller.text.isEmpty
-                            ? AppLocalizations.of(context)!.chatTypeToSearchConversation
-                            : AppLocalizations.of(context)!.chatNoMessagesFound,
-                        style: TextStyle(fontSize: 13, color: Colors.grey[400]),
+                            ? AppLocalizations.of(context).chatTypeToSearchConversation
+                            : AppLocalizations.of(context).chatNoMessagesFound,
+                        style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
                       ),
                     )
                   : ListView.builder(
@@ -95,9 +97,9 @@ class _MessageSearchSheetState extends State<MessageSearchSheet> {
                       itemBuilder: (_, i) {
                         final m = _results[i];
                         return ListTile(
-                          title: Text(m.senderName, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: context.colors.primary)),
-                          subtitle: Text(m.text, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5)),
-                          trailing: Text(AppHelpers.formatTime(m.createdAt), style: const TextStyle(fontSize: 10.5, color: Color(0xFF94A3B8))),
+                          title: Text(m.senderName, style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700, color: context.colors.primary)),
+                          subtitle: Text(m.text, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: AppFontSizes.body)),
+                          trailing: Text(AppHelpers.formatTime(m.createdAt), style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
                         );
                       },
                     ),

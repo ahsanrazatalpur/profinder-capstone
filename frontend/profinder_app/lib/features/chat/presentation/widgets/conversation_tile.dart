@@ -3,11 +3,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_helpers.dart';
 import '../../domain/entities/conversation_entity.dart';
 import 'online_status_dot.dart';
 import '../../../../core/theme/theme_context_ext.dart';
+import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class ConversationTile extends StatelessWidget {
   final ConversationEntity conversation;
@@ -35,7 +37,7 @@ class ConversationTile extends StatelessWidget {
                     conversation.otherUserPhoto != null ? CachedNetworkImageProvider(conversation.otherUserPhoto!) : null,
                 child: conversation.otherUserPhoto == null
                     ? Text(_initials(conversation.otherUserName),
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: context.colors.primary))
+                        style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.bold, color: context.colors.primary))
                     : null,
               ),
             ),
@@ -73,7 +75,7 @@ class ConversationTile extends StatelessWidget {
                       if (conversation.lastMessageAt != null)
                         Text(_timeLabel(conversation.lastMessageAt!),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: AppFontSizes.small,
                               color: hasUnread ? context.colors.primary : context.colors.textSecondary,
                               fontWeight: hasUnread ? FontWeight.w700 : FontWeight.normal,
                             )),
@@ -85,11 +87,11 @@ class ConversationTile extends StatelessWidget {
                       if (conversation.lastMessageStatus != null) _buildTickIcon(context, conversation.lastMessageStatus!),
                       Expanded(
                         child: Text(
-                          conversation.lastMessage.isEmpty ? 'Say hello 👋' : conversation.lastMessage,
+                          conversation.lastMessage.isEmpty ? AppLocalizations.of(context).chatSayHello : conversation.lastMessage,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 13.5,
+                            fontSize: AppFontSizes.body,
                             color: hasUnread ? context.colors.textPrimary : context.colors.textSecondary,
                             fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal,
                           ),
@@ -103,11 +105,11 @@ class ConversationTile extends StatelessWidget {
                             // Muted + unread still shows a count, just not
                             // in the "look at me" primary color.
                             color: conversation.isMuted ? context.colors.textSecondary : context.colors.primary,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(AppSizes.radius10),
                           ),
                           child: Text(
                             conversation.unreadCount > 99 ? '99+' : '${conversation.unreadCount}',
-                            style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w700),
+                            style: const TextStyle(fontSize: AppFontSizes.caption, color: Colors.white, fontWeight: FontWeight.w700),
                           ),
                         ),
                       ],

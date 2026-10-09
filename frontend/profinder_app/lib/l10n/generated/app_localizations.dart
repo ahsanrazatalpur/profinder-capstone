@@ -6398,6 +6398,60 @@ abstract class AppLocalizations {
   /// **'Cancellation Policy'**
   String get cancellationPolicyLabel;
 
+  /// No description provided for @bookingQuickNoteFirstTime.
+  ///
+  /// In en, this message translates to:
+  /// **'First-time customer'**
+  String get bookingQuickNoteFirstTime;
+
+  /// No description provided for @bookingQuickNoteUrgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent request'**
+  String get bookingQuickNoteUrgent;
+
+  /// No description provided for @bookingQuickNoteFollowUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow-up visit'**
+  String get bookingQuickNoteFollowUp;
+
+  /// No description provided for @bookingQuickNoteCallBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Please call before arriving'**
+  String get bookingQuickNoteCallBefore;
+
+  /// No description provided for @cancellationPolicyPointFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free cancellation any time while your request is pending.'**
+  String get cancellationPolicyPointFree;
+
+  /// No description provided for @cancellationPolicyPointChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Once accepted, you can coordinate changes directly with the professional via chat.'**
+  String get cancellationPolicyPointChat;
+
+  /// No description provided for @walletJobCompletedWithName.
+  ///
+  /// In en, this message translates to:
+  /// **'Job completed — {name}'**
+  String walletJobCompletedWithName(String name);
+
+  /// No description provided for @walletJobCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Job completed'**
+  String get walletJobCompleted;
+
+  /// No description provided for @walletWithdrawalRequestLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal request'**
+  String get walletWithdrawalRequestLabel;
+
   /// No description provided for @cancelledByCustomerLabel.
   ///
   /// In en, this message translates to:
@@ -11719,6 +11773,930 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Appeal for {action}'**
   String myTsAppealForLabel(String action);
+
+  /// No description provided for @announcementDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss announcement'**
+  String get announcementDismiss;
+
+  /// No description provided for @chatMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get chatMessageHint;
+
+  /// No description provided for @voiceRecordStartFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start recording. Please check the microphone and try again.'**
+  String get voiceRecordStartFailed;
+
+  /// No description provided for @voiceRecordSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the recording. Please try again.'**
+  String get voiceRecordSaveFailed;
+
+  /// No description provided for @voicePlayFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not play this voice message.'**
+  String get voicePlayFailed;
+
+  /// No description provided for @reviewSortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get reviewSortBy;
+
+  /// No description provided for @reviewSortRelevant.
+  ///
+  /// In en, this message translates to:
+  /// **'Most Relevant'**
+  String get reviewSortRelevant;
+
+  /// No description provided for @reviewSortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get reviewSortNewest;
+
+  /// No description provided for @reviewSortHighest.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest Rating'**
+  String get reviewSortHighest;
+
+  /// No description provided for @reviewSortLowest.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowest Rating'**
+  String get reviewSortLowest;
+
+  /// No description provided for @reviewSortHelpful.
+  ///
+  /// In en, this message translates to:
+  /// **'Most Helpful'**
+  String get reviewSortHelpful;
+
+  /// No description provided for @reviewSortWithPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'With Photos'**
+  String get reviewSortWithPhotos;
+
+  /// No description provided for @reviewFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All Reviews'**
+  String get reviewFilterAll;
+
+  /// No description provided for @promoSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get promoSkip;
+
+  /// No description provided for @reviewCountPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 review} other{{count} reviews}}'**
+  String reviewCountPlural(int count);
+
+  /// No description provided for @valEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get valEmailRequired;
+
+  /// No description provided for @valEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email'**
+  String get valEmailInvalid;
+
+  /// No description provided for @valEmailTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is too long'**
+  String get valEmailTooLong;
+
+  /// No description provided for @valPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get valPasswordRequired;
+
+  /// No description provided for @valPasswordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get valPasswordMinLength;
+
+  /// No description provided for @valPasswordUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one uppercase letter'**
+  String get valPasswordUpper;
+
+  /// No description provided for @valPasswordLower.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one lowercase letter'**
+  String get valPasswordLower;
+
+  /// No description provided for @valPasswordNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one number'**
+  String get valPasswordNumber;
+
+  /// No description provided for @valPasswordSpecial.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one special character'**
+  String get valPasswordSpecial;
+
+  /// No description provided for @valConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your password'**
+  String get valConfirmPassword;
+
+  /// No description provided for @valPasswordsMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get valPasswordsMismatch;
+
+  /// No description provided for @valNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get valNameRequired;
+
+  /// No description provided for @valNameMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters'**
+  String get valNameMinLength;
+
+  /// No description provided for @valNameMaxLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be under 50 characters'**
+  String get valNameMaxLength;
+
+  /// No description provided for @valNameNoNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Name cannot contain numbers'**
+  String get valNameNoNumbers;
+
+  /// No description provided for @valNameInvalidChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Name contains invalid characters'**
+  String get valNameInvalidChars;
+
+  /// No description provided for @valPhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required'**
+  String get valPhoneRequired;
+
+  /// No description provided for @valPhoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid phone number'**
+  String get valPhoneInvalid;
+
+  /// No description provided for @valFieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get valFieldRequired;
+
+  /// No description provided for @valFieldNamedRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} is required'**
+  String valFieldNamedRequired(String field);
+
+  /// No description provided for @pwReqMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum 8 characters'**
+  String get pwReqMinLength;
+
+  /// No description provided for @pwReqUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Uppercase letter'**
+  String get pwReqUppercase;
+
+  /// No description provided for @pwReqLowercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowercase letter'**
+  String get pwReqLowercase;
+
+  /// No description provided for @pwReqNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get pwReqNumber;
+
+  /// No description provided for @pwReqSpecial.
+  ///
+  /// In en, this message translates to:
+  /// **'Special character'**
+  String get pwReqSpecial;
+
+  /// No description provided for @pwStrengthVeryWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Very Weak'**
+  String get pwStrengthVeryWeak;
+
+  /// No description provided for @pwStrengthWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak'**
+  String get pwStrengthWeak;
+
+  /// No description provided for @pwStrengthMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get pwStrengthMedium;
+
+  /// No description provided for @pwStrengthStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get pwStrengthStrong;
+
+  /// No description provided for @pwStrengthExcellent.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get pwStrengthExcellent;
+
+  /// No description provided for @pickerTapToSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to select'**
+  String get pickerTapToSelect;
+
+  /// No description provided for @pickerNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get pickerNoResults;
+
+  /// No description provided for @pickerSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get pickerSearchHint;
+
+  /// No description provided for @pickerSelectAboveFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Select above first'**
+  String get pickerSelectAboveFirst;
+
+  /// No description provided for @bkStatusAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get bkStatusAll;
+
+  /// No description provided for @bkStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get bkStatusPending;
+
+  /// No description provided for @bkStatusAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get bkStatusAccepted;
+
+  /// No description provided for @bkStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get bkStatusCompleted;
+
+  /// No description provided for @bkStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get bkStatusCancelled;
+
+  /// No description provided for @bkStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get bkStatusRejected;
+
+  /// No description provided for @bkStatusRescheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescheduled'**
+  String get bkStatusRescheduled;
+
+  /// No description provided for @bkStatusBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get bkStatusBooked;
+
+  /// No description provided for @bkSwipeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'swipe'**
+  String get bkSwipeHint;
+
+  /// No description provided for @bkCountPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 booking} other{{count} bookings}}'**
+  String bkCountPlural(int count);
+
+  /// No description provided for @bkSectionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking details'**
+  String get bkSectionDetails;
+
+  /// No description provided for @bkSectionService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get bkSectionService;
+
+  /// No description provided for @bkSectionNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer notes'**
+  String get bkSectionNotes;
+
+  /// No description provided for @bkSectionTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking timeline'**
+  String get bkSectionTimeline;
+
+  /// No description provided for @bkFieldDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get bkFieldDate;
+
+  /// No description provided for @bkFieldTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get bkFieldTime;
+
+  /// No description provided for @bkFieldLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get bkFieldLocation;
+
+  /// No description provided for @bkFieldCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get bkFieldCategory;
+
+  /// No description provided for @bkCancelledByProfessional.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled by professional'**
+  String get bkCancelledByProfessional;
+
+  /// No description provided for @bkCancelledByYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled by you'**
+  String get bkCancelledByYou;
+
+  /// No description provided for @bkWasRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking was rejected'**
+  String get bkWasRejected;
+
+  /// No description provided for @bkWasCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking was cancelled'**
+  String get bkWasCancelled;
+
+  /// No description provided for @bkCancelledSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking cancelled'**
+  String get bkCancelledSuccess;
+
+  /// No description provided for @bkCancelFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel, please try again'**
+  String get bkCancelFailed;
+
+  /// No description provided for @detailTabOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get detailTabOverview;
+
+  /// No description provided for @detailTabPortfolio.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio ({count})'**
+  String detailTabPortfolio(int count);
+
+  /// No description provided for @detailTabReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews ({count})'**
+  String detailTabReviews(int count);
+
+  /// No description provided for @detailTabServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get detailTabServices;
+
+  /// No description provided for @detailTabAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get detailTabAvailability;
+
+  /// No description provided for @detailNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available'**
+  String get detailNotAvailable;
+
+  /// No description provided for @detailCertificateDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate'**
+  String get detailCertificateDefault;
+
+  /// No description provided for @detailPortfolioItemDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio item'**
+  String get detailPortfolioItemDefault;
+
+  /// No description provided for @categoryItTech.
+  ///
+  /// In en, this message translates to:
+  /// **'IT & Tech'**
+  String get categoryItTech;
+
+  /// No description provided for @categoryEngineers.
+  ///
+  /// In en, this message translates to:
+  /// **'Engineers'**
+  String get categoryEngineers;
+
+  /// No description provided for @categoryLawyersLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Lawyers & Legal'**
+  String get categoryLawyersLegal;
+
+  /// No description provided for @categoryDoctorsHealthcare.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctors & Healthcare'**
+  String get categoryDoctorsHealthcare;
+
+  /// No description provided for @categoryArchitects.
+  ///
+  /// In en, this message translates to:
+  /// **'Architects'**
+  String get categoryArchitects;
+
+  /// No description provided for @categoryElectricians.
+  ///
+  /// In en, this message translates to:
+  /// **'Electricians'**
+  String get categoryElectricians;
+
+  /// No description provided for @categoryPlumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Plumbers'**
+  String get categoryPlumbers;
+
+  /// No description provided for @categoryTutorsEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutors & Education'**
+  String get categoryTutorsEducation;
+
+  /// No description provided for @ctaGrowYourBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Grow Your Business'**
+  String get ctaGrowYourBusiness;
+
+  /// No description provided for @ctaJoinProfessionalsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join 500+ professionals on ProFinder'**
+  String get ctaJoinProfessionalsSubtitle;
+
+  /// No description provided for @ctaJoinNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Now'**
+  String get ctaJoinNow;
+
+  /// No description provided for @promoGetPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Premium'**
+  String get promoGetPremium;
+
+  /// No description provided for @categoryCarpenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenters'**
+  String get categoryCarpenters;
+
+  /// No description provided for @errSomethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong.'**
+  String get errSomethingWentWrong;
+
+  /// No description provided for @errSomethingWentWrongTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get errSomethingWentWrongTryAgain;
+
+  /// No description provided for @errNetworkCheckConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please check your connection.'**
+  String get errNetworkCheckConnection;
+
+  /// No description provided for @errNetworkProblemTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Network problem. Please check your connection and try again.'**
+  String get errNetworkProblemTryAgain;
+
+  /// No description provided for @errRequestFailedHttp.
+  ///
+  /// In en, this message translates to:
+  /// **'Request failed (HTTP {code}).'**
+  String errRequestFailedHttp(int code);
+
+  /// No description provided for @errNotLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not logged in'**
+  String get errNotLoggedIn;
+
+  /// No description provided for @bkStepTitleService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Summary'**
+  String get bkStepTitleService;
+
+  /// No description provided for @bkStepTitleDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get bkStepTitleDate;
+
+  /// No description provided for @bkStepTitleTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Time'**
+  String get bkStepTitleTime;
+
+  /// No description provided for @bkStepTitleNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Notes'**
+  String get bkStepTitleNotes;
+
+  /// No description provided for @bkStepTitleSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Summary'**
+  String get bkStepTitleSummary;
+
+  /// No description provided for @bkStepDesc1.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the professional\'s details before you continue.'**
+  String get bkStepDesc1;
+
+  /// No description provided for @bkStepDesc2.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a date that works best for your appointment.'**
+  String get bkStepDesc2;
+
+  /// No description provided for @bkStepDesc3.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an available time slot for your visit.'**
+  String get bkStepDesc3;
+
+  /// No description provided for @bkStepDesc4.
+  ///
+  /// In en, this message translates to:
+  /// **'Let the professional know where to provide the service.'**
+  String get bkStepDesc4;
+
+  /// No description provided for @bkStepDesc5.
+  ///
+  /// In en, this message translates to:
+  /// **'Add any details that help the professional prepare.'**
+  String get bkStepDesc5;
+
+  /// No description provided for @bkStepDesc6.
+  ///
+  /// In en, this message translates to:
+  /// **'Review everything carefully before confirming your booking.'**
+  String get bkStepDesc6;
+
+  /// No description provided for @bkWeekdayMon.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get bkWeekdayMon;
+
+  /// No description provided for @bkWeekdayTue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get bkWeekdayTue;
+
+  /// No description provided for @bkWeekdayWed.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get bkWeekdayWed;
+
+  /// No description provided for @bkWeekdayThu.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get bkWeekdayThu;
+
+  /// No description provided for @bkWeekdayFri.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get bkWeekdayFri;
+
+  /// No description provided for @bkWeekdaySat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get bkWeekdaySat;
+
+  /// No description provided for @bkWeekdaySun.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get bkWeekdaySun;
+
+  /// No description provided for @bkGoodToKnow1.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending a request is free and only takes a minute.'**
+  String get bkGoodToKnow1;
+
+  /// No description provided for @bkGoodToKnow2.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be notified as soon as the professional responds.'**
+  String get bkGoodToKnow2;
+
+  /// No description provided for @bkGoodToKnow3.
+  ///
+  /// In en, this message translates to:
+  /// **'You can cancel at no cost while your request is still pending.'**
+  String get bkGoodToKnow3;
+
+  /// No description provided for @bkTimeSlots1.
+  ///
+  /// In en, this message translates to:
+  /// **'Only slots within the professional\'s working hours are shown.'**
+  String get bkTimeSlots1;
+
+  /// No description provided for @bkTimeSlots2.
+  ///
+  /// In en, this message translates to:
+  /// **'Slots already passed for today are automatically disabled.'**
+  String get bkTimeSlots2;
+
+  /// No description provided for @bkTimeSlots3.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change your selected time at any point before confirming.'**
+  String get bkTimeSlots3;
+
+  /// No description provided for @chatCouldNotLoadConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load conversations'**
+  String get chatCouldNotLoadConversations;
+
+  /// No description provided for @chatVoiceMessagePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'🎤 Voice message'**
+  String get chatVoiceMessagePreview;
+
+  /// No description provided for @chatPhotoPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'📷 Photo'**
+  String get chatPhotoPreview;
+
+  /// No description provided for @reviewRatingPoor.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor'**
+  String get reviewRatingPoor;
+
+  /// No description provided for @reviewRatingFair.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get reviewRatingFair;
+
+  /// No description provided for @reviewRatingGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get reviewRatingGood;
+
+  /// No description provided for @reviewRatingVeryGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Very Good'**
+  String get reviewRatingVeryGood;
+
+  /// No description provided for @reviewRatingExcellent.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get reviewRatingExcellent;
+
+  /// No description provided for @reviewReportReasonSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam'**
+  String get reviewReportReasonSpam;
+
+  /// No description provided for @reviewReportReasonFake.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake Review'**
+  String get reviewReportReasonFake;
+
+  /// No description provided for @reviewReportReasonAbusive.
+  ///
+  /// In en, this message translates to:
+  /// **'Abusive Language'**
+  String get reviewReportReasonAbusive;
+
+  /// No description provided for @reviewReportReasonHarassment.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment'**
+  String get reviewReportReasonHarassment;
+
+  /// No description provided for @reviewReportReasonOffTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Off-topic'**
+  String get reviewReportReasonOffTopic;
+
+  /// No description provided for @reviewReportReasonConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Conflict of Interest'**
+  String get reviewReportReasonConflict;
+
+  /// No description provided for @reviewReportReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get reviewReportReasonOther;
+
+  /// No description provided for @availabilityStatusBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get availabilityStatusBusy;
+
+  /// No description provided for @availabilityStatusOnLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'On Leave'**
+  String get availabilityStatusOnLeave;
+
+  /// No description provided for @availabilityStatusDescAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers can book you right now'**
+  String get availabilityStatusDescAvailable;
+
+  /// No description provided for @availabilityStatusDescBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'You are working — new requests are paused'**
+  String get availabilityStatusDescBusy;
+
+  /// No description provided for @availabilityStatusDescOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'You won\'t appear in new booking requests'**
+  String get availabilityStatusDescOffline;
+
+  /// No description provided for @availabilityStatusDescOnLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as on leave until you return'**
+  String get availabilityStatusDescOnLeave;
+
+  /// No description provided for @professionalInvalidId.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid professional ID'**
+  String get professionalInvalidId;
+
+  /// No description provided for @uploadFailedTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload failed. Please try again.'**
+  String get uploadFailedTryAgain;
+
+  /// No description provided for @editorListItemPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'List item'**
+  String get editorListItemPlaceholder;
+
+  /// No description provided for @pushChannelGeneralName.
+  ///
+  /// In en, this message translates to:
+  /// **'General Notifications'**
+  String get pushChannelGeneralName;
+
+  /// No description provided for @pushChannelGeneralDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings, announcements, reports and other alerts'**
+  String get pushChannelGeneralDesc;
+
+  /// No description provided for @pushChannelChatName.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Messages'**
+  String get pushChannelChatName;
+
+  /// No description provided for @pushChannelChatDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'New chat messages'**
+  String get pushChannelChatDesc;
+
+  /// No description provided for @errBookingLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking limit reached.'**
+  String get errBookingLimitReached;
+
+  /// No description provided for @categoryCarpenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Carpenter'**
+  String get categoryCarpenter;
 }
 
 class _AppLocalizationsDelegate

@@ -1,17 +1,34 @@
 // lib/features/chat/presentation/widgets/voice_recorder_button.dart
 //
-// ✅ NEW — Voice message recording. Uses the `record` package (add to
-// pubspec.yaml: record: ^5.x). Tap once to start, tap again to stop &
-// send, or tap the X that appears alongside to discard.
+// Voice message recording (mobile + desktop + web). Uses the `record`
+// package. Tap once to start, tap again to stop & send, or tap the X that
+// appears alongside to discard.
+//
+// 🐛 FIXES (voice notes didn't work reliably across platforms):
+//  • Web: getTemporaryDirectory() (path_provider) is not supported in the
+//    browser and threw before recording even started. On web we now pass a
+//    dummy name — the `record` web implementation ignores it and hands back
+//    a `blob:` URL from stop().
+//  • Encoder: AAC (.m4a) isn't available in every browser / desktop
+//    backend, so we ask the recorder which encoder it supports instead of
+//    hard-coding aacLc.
+//  • Discard now uses recorder.cancel() (stops + deletes the file on every
+//    platform) instead of File.exists()/delete(), which throws on web.
+//  • Double-tap while the recorder is still starting no longer starts two
+//    recordings; duration comes from a Stopwatch (not a tick counter that
+//    drifts); recordings stop automatically at [_maxSeconds]; leaving the
+//    screen mid-recording discards it instead of leaking the microphone.
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show File;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_context_ext.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 class VoiceRecorderButton extends StatefulWidget {
   final void Function(File audioFile, int durationSeconds) onRecorded;
@@ -22,62 +39,146 @@ class VoiceRecorderButton extends StatefulWidget {
 }
 
 class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
+  /// Hard cap so a forgotten recording can't grow without bound
+  /// (the server also rejects very large uploads).
+  static const int _maxSeconds = 300;
+
   final _recorder = AudioRecorder();
+  final _stopwatch = Stopwatch();
   bool _isRecording = false;
+  bool _busy = false; // true while starting/stopping — ignores extra taps
   int _seconds = 0;
   Timer? _ticker;
-  String? _path;
 
   @override
   void dispose() {
     _ticker?.cancel();
-    _recorder.dispose();
+    // Fire-and-forget: discard any in-flight recording, then free the mic.
+    unawaited(
+      _recorder.cancel().catchError((_) {}).whenComplete(_recorder.dispose),
+    );
     super.dispose();
   }
 
-  Future<void> _start() async {
-    final hasPermission = await _recorder.hasPermission();
-    if (!hasPermission) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.chatMicPermissionRequired)),
-        );
+  void _toast(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// Picks the best encoder the current platform can actually record with.
+  Future<({AudioEncoder encoder, String ext})> _pickEncoder() async {
+    // Browsers usually record Opus/WebM (Safari: AAC/MP4); mobile and most
+    // desktop platforms prefer AAC in an .m4a container.
+    final candidates = kIsWeb
+        ? const [
+            (encoder: AudioEncoder.opus, ext: 'webm'),
+            (encoder: AudioEncoder.aacLc, ext: 'm4a'),
+            (encoder: AudioEncoder.wav, ext: 'wav'),
+          ]
+        : const [
+            (encoder: AudioEncoder.aacLc, ext: 'm4a'),
+            (encoder: AudioEncoder.opus, ext: 'opus'),
+            (encoder: AudioEncoder.wav, ext: 'wav'),
+          ];
+    for (final c in candidates) {
+      try {
+        if (await _recorder.isEncoderSupported(c.encoder)) return c;
+      } catch (_) {
+        // try the next one
       }
-      return;
     }
+    return candidates.last; // wav is supported practically everywhere
+  }
 
-    final dir = await getTemporaryDirectory();
-    _path = '${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+  Future<void> _start() async {
+    if (_busy || _isRecording) return;
+    _busy = true;
+    try {
+      final hasPermission = await _recorder.hasPermission();
+      if (!hasPermission) {
+        if (!mounted) return;
+        _toast(AppLocalizations.of(context).chatMicPermissionRequired);
+        return;
+      }
 
-    await _recorder.start(const RecordConfig(encoder: AudioEncoder.aacLc), path: _path!);
+      final picked = await _pickEncoder();
+      final fileName = 'voice_${DateTime.now().millisecondsSinceEpoch}.${picked.ext}';
 
-    setState(() {
-      _isRecording = true;
-      _seconds = 0;
-    });
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() => _seconds++);
-    });
+      // On web there is no file system: the path is ignored by the plugin
+      // and stop() returns a blob: URL.
+      final String path;
+      if (kIsWeb) {
+        path = fileName;
+      } else {
+        final dir = await getTemporaryDirectory();
+        path = '${dir.path}/$fileName';
+      }
+
+      await _recorder.start(RecordConfig(encoder: picked.encoder), path: path);
+
+      _stopwatch
+        ..reset()
+        ..start();
+      if (!mounted) {
+        await _recorder.cancel();
+        return;
+      }
+      setState(() {
+        _isRecording = true;
+        _seconds = 0;
+      });
+      _ticker?.cancel();
+      _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) {
+        if (!mounted) return;
+        final s = _stopwatch.elapsed.inSeconds;
+        if (s != _seconds) setState(() => _seconds = s);
+        if (s >= _maxSeconds) _stopAndSend();
+      });
+    } catch (e) {
+      debugPrint('Voice recording failed to start: $e');
+      if (mounted) _toast(AppLocalizations.of(context).voiceRecordStartFailed);
+    } finally {
+      _busy = false;
+    }
   }
 
   Future<void> _stopAndSend() async {
+    if (_busy || !_isRecording) return;
+    _busy = true;
     _ticker?.cancel();
-    final path = await _recorder.stop();
-    final duration = _seconds;
-    setState(() => _isRecording = false);
+    _stopwatch.stop();
+    final duration = _stopwatch.elapsed.inSeconds;
+    try {
+      // Too short to be worth sending (an accidental tap) — discard it.
+      if (duration < 1) {
+        await _recorder.cancel();
+        if (mounted) setState(() => _isRecording = false);
+        return;
+      }
 
-    if (path == null || duration < 1) return; // too short to be worth sending
-    widget.onRecorded(File(path), duration);
+      final path = await _recorder.stop();
+      if (mounted) setState(() => _isRecording = false);
+      if (path == null || path.isEmpty) return;
+      widget.onRecorded(File(path), duration);
+    } catch (e) {
+      debugPrint('Voice recording failed to stop: $e');
+      if (mounted) setState(() => _isRecording = false);
+      if (mounted) _toast(AppLocalizations.of(context).voiceRecordSaveFailed);
+    } finally {
+      _busy = false;
+    }
   }
 
   Future<void> _cancel() async {
+    if (_busy || !_isRecording) return;
+    _busy = true;
     _ticker?.cancel();
-    await _recorder.stop();
-    setState(() => _isRecording = false);
-    if (_path != null) {
-      final f = File(_path!);
-      if (await f.exists()) await f.delete();
-    }
+    _stopwatch.stop();
+    try {
+      await _recorder.cancel(); // stops AND deletes the temp file (all platforms)
+    } catch (_) {}
+    if (mounted) setState(() => _isRecording = false);
+    _busy = false;
   }
 
   String _fmt(int totalSeconds) {
@@ -106,8 +207,8 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
           onTap: _cancel,
           child: Container(
             padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(color: Color(0xFFF1F5F9), shape: BoxShape.circle),
-            child: const Icon(Icons.close_rounded, size: 16, color: Color(0xFF64748B)),
+            decoration: BoxDecoration(color: Theme.of(context).brightness == Brightness.dark ? context.colors.divider : AppColors.slate100, shape: BoxShape.circle),
+            child: Icon(Icons.close_rounded, size: 16, color: context.colors.textSecondary),
           ),
         ),
         const SizedBox(width: 8),
@@ -116,7 +217,7 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
           decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.redAccent),
         ),
         const SizedBox(width: 6),
-        Text(_fmt(_seconds), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
+        Text(_fmt(_seconds), style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
         const SizedBox(width: 8),
         GestureDetector(
           onTap: _stopAndSend,

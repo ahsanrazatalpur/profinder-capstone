@@ -10,6 +10,8 @@
 // stays fast. Adding a `/reviews/mine/` endpoint later would make this a
 // single call — the UI below won't need to change, only `_load()`.
 
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
@@ -60,13 +62,14 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
       for (final pid in proIds.take(15)) {
         try {
           final r = await _api.get('${AppConstants.reviewsForProfessionalBase}$pid/reviews/');
+          if (!mounted) return;
           final list = r.data is List ? List<dynamic>.from(r.data) : [];
           for (final rv in list) {
             if (rv['reviewer']?.toString() == myId) {
               final proBooking = completed.firstWhere((b) => b['professional']?.toString() == pid, orElse: () => {});
               reviews.add({
                 ...Map<String, dynamic>.from(rv),
-                'professional_name': proBooking['professional_name'] ?? AppLocalizations.of(context)!.professionalDefaultName,
+                'professional_name': proBooking['professional_name'] ?? AppLocalizations.of(context).professionalDefaultName,
               });
             }
           }
@@ -92,7 +95,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context)!.myReviewsTitle,
+        title: AppLocalizations.of(context).myReviewsTitle,
         icon: Icons.star_rounded,
       ),
       body: _loading
@@ -114,7 +117,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                   child: ListView.separated(
                     padding: EdgeInsets.all(isTablet ? 20 : 16),
                     itemCount: _myReviews.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
                     itemBuilder: (_, i) => _reviewCard(_myReviews[i], isDark, isTablet),
                   ),
                 ),
@@ -130,23 +133,23 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
               height: 88,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.05)
-                    : const Color(0xFFF3F4F6),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : AppColors.neutral100,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.rate_review_outlined,
                 size: 40,
                 color: isDark
-                    ? Colors.white.withOpacity(0.3)
-                    : const Color(0xFFD1D5DB),
+                    ? Colors.white.withValues(alpha: 0.3)
+                    : AppColors.neutral300,
               ),
             ),
             const SizedBox(height: 18),
             Text(
-              AppLocalizations.of(context)!.myReviewsEmptyTitle,
+              AppLocalizations.of(context).myReviewsEmptyTitle,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w700,
                 color: context.colors.textPrimary,
                 letterSpacing: -0.2,
@@ -154,9 +157,9 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              AppLocalizations.of(context)!.myReviewsEmptySubtitle,
+              AppLocalizations.of(context).myReviewsEmptySubtitle,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: AppFontSizes.secondary,
                 color: context.colors.textSecondary,
               ),
               textAlign: TextAlign.center,
@@ -168,7 +171,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
   Widget _reviewCard(Map<String, dynamic> rv, bool isDark, bool isTablet) {
     final rating  = int.tryParse('${rv['rating']}') ?? 0;
     final comment = rv['comment']?.toString() ?? '';
-    final name    = rv['professional_name']?.toString() ?? AppLocalizations.of(context)!.professionalDefaultName;
+    final name    = rv['professional_name']?.toString() ?? AppLocalizations.of(context).professionalDefaultName;
     final parsedDate = DateTime.tryParse(rv['created_at']?.toString() ?? '');
     final date    = parsedDate != null ? AppHelpers.formatDate(parsedDate) : '';
 
@@ -178,17 +181,17 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
       padding: EdgeInsets.all(isTablet ? 16 : 14),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(
           color: isDark
-              ? Colors.white.withOpacity(0.08)
-              : const Color(0xFFE5E7EB),
+              ? Colors.white.withValues(alpha: 0.08)
+              : AppColors.neutral200,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.08)
-                : Colors.grey.withOpacity(0.04),
+                ? Colors.black.withValues(alpha: 0.08)
+                : Colors.grey.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -226,7 +229,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                   ? Icons.star_rounded
                   : Icons.star_border_rounded,
               size: isTablet ? 18 : 16,
-              color: const Color(0xFFF59E0B),
+              color: AppColors.warningAmber,
             )),
           ),
           if (comment.isNotEmpty) ...[
