@@ -6,6 +6,7 @@
 // Certifications, Awards). One screen handles all eight — the extra
 // fields shown in the edit dialog just change based on section_type.
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -24,10 +25,12 @@ class AdminAboutSectionItemsScreen extends StatefulWidget {
   const AdminAboutSectionItemsScreen({super.key, required this.section});
 
   @override
-  State<AdminAboutSectionItemsScreen> createState() => _AdminAboutSectionItemsScreenState();
+  State<AdminAboutSectionItemsScreen> createState() =>
+      _AdminAboutSectionItemsScreenState();
 }
 
-class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScreen> {
+class _AdminAboutSectionItemsScreenState
+    extends State<AdminAboutSectionItemsScreen> {
   final _service = AboutPageService();
   bool _loading = true;
   List<AboutSectionItem> _items = [];
@@ -56,7 +59,9 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
       final item = _items.removeAt(oldIndex);
       _items.insert(newIndex, item);
     });
-    final order = [for (var i = 0; i < _items.length; i++) {'id': _items[i].id, 'order': i}];
+    final order = [
+      for (var i = 0; i < _items.length; i++) {'id': _items[i].id, 'order': i},
+    ];
     await _service.reorderItems(widget.section.id, order);
   }
 
@@ -76,12 +81,22 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
+          ),
           content: Row(
             children: [
-              const Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
+              const Icon(
+                Icons.error_outline_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
               const SizedBox(width: 10),
-              Expanded(child: Text(result['error']?.toString() ?? 'Could not update item.')),
+              Expanded(
+                child: Text(
+                  result['error']?.toString() ?? 'Could not update item.',
+                ),
+              ),
             ],
           ),
         ),
@@ -93,23 +108,42 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
         icon: Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), shape: BoxShape.circle),
-          child: const Icon(Icons.delete_outline_rounded, color: Colors.red, size: 26),
+          decoration: BoxDecoration(
+            color: Colors.red.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.delete_outline_rounded,
+            color: Colors.red,
+            size: 26,
+          ),
         ),
         title: const Text('Delete Item?', textAlign: TextAlign.center),
-        content: Text('"${item.title}" will be permanently deleted.', textAlign: TextAlign.center),
+        content: Text(
+          '"${item.title}" will be permanently deleted.',
+          textAlign: TextAlign.center,
+        ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.red.shade600,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
               ),
-              onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete'),
+          ),
         ],
       ),
     );
@@ -134,7 +168,9 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
 
   @override
   Widget build(BuildContext context) {
-    final label = widget.section.title.isNotEmpty ? widget.section.title : widget.section.sectionKey;
+    final label = widget.section.title.isNotEmpty
+        ? widget.section.title
+        : widget.section.sectionKey;
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
@@ -147,15 +183,21 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
         elevation: 2,
         onPressed: () => _openEditor(),
         icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: const Text('Add Item', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        label: const Text(
+          'Add Item',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 220),
         child: _loading
-            ? const Center(key: ValueKey('loading'), child: CircularProgressIndicator())
+            ? const Center(
+                key: ValueKey('loading'),
+                child: CircularProgressIndicator(),
+              )
             : _items.isEmpty
-                ? _emptyState(context)
-                : _itemsList(context),
+            ? _emptyState(context)
+            : _itemsList(context),
       ),
     );
   }
@@ -174,13 +216,21 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
                 color: AppColors.adminColor.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.inbox_outlined, size: 36, color: AppColors.adminColor.withValues(alpha: 0.7)),
+              child: Icon(
+                Icons.inbox_outlined,
+                size: 36,
+                color: AppColors.adminColor.withValues(alpha: 0.7),
+              ),
             ),
             const SizedBox(height: 16),
             Text(
               'No items yet. Tap "Add Item" to add your first one.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: context.colors.textSecondary, fontSize: AppFontSizes.secondary, height: 1.4),
+              style: TextStyle(
+                color: context.colors.textSecondary,
+                fontSize: AppFontSizes.secondary,
+                height: 1.4,
+              ),
             ),
           ],
         ),
@@ -214,7 +264,9 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
                         scale: 1.0 + (0.02 * t),
                         child: Material(
                           elevation: 6 * t,
-                          borderRadius: BorderRadius.circular(AppSizes.radius14),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radius14,
+                          ),
                           color: Colors.transparent,
                           child: child,
                         ),
@@ -241,7 +293,11 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
         borderRadius: BorderRadius.circular(AppSizes.radius14),
         border: Border.all(color: context.colors.divider),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 6, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
@@ -250,58 +306,90 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
             index: index,
             child: MouseRegion(
               cursor: SystemMouseCursors.grab,
-              child: Icon(Icons.drag_indicator_rounded, color: context.colors.textSecondary.withValues(alpha: 0.5)),
+              child: Icon(
+                Icons.drag_indicator_rounded,
+                color: context.colors.textSecondary.withValues(alpha: 0.5),
+              ),
             ),
           ),
           const SizedBox(width: 10),
           if (item.imageUrl.isNotEmpty)
             ClipRRect(
               borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-              child: Image.network(
-                item.imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: item.imageUrl,
                 width: 40,
                 height: 40,
                 fit: BoxFit.cover,
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return Container(
-                    width: 40,
-                    height: 40,
-                    color: context.colors.divider.withValues(alpha: 0.3),
-                    child: const Center(
-                      child: SizedBox(
-                        width: 16, height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
+                memCacheWidth: 120,
+                memCacheHeight: 120,
+                placeholder: (context, url) => Container(
+                  width: 40,
+                  height: 40,
+                  color: context.colors.divider.withValues(alpha: 0.3),
+                  child: const Center(
+                    child: SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 40, height: 40,
-                  decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
-                  child: Icon(resolveAboutIcon(item.icon), color: AppColors.adminColor, size: 18),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.adminColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  ),
+                  child: Icon(
+                    resolveAboutIcon(item.icon),
+                    color: AppColors.adminColor,
+                    size: 18,
+                  ),
                 ),
               ),
             )
           else
             Container(
-              width: 40, height: 40,
-              decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
-              child: Icon(resolveAboutIcon(item.icon), color: AppColors.adminColor, size: 18),
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.adminColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+              ),
+              child: Icon(
+                resolveAboutIcon(item.icon),
+                color: AppColors.adminColor,
+                size: 18,
+              ),
             ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.title.isEmpty ? '(untitled)' : item.title,
-                    maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+                Text(
+                  item.title.isEmpty ? '(untitled)' : item.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
                 if (item.subtitle.isNotEmpty || item.value.isNotEmpty) ...[
                   const SizedBox(height: 2),
-                  Text(item.value.isNotEmpty ? item.value : item.subtitle,
-                      maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 11.5, color: context.colors.textSecondary)),
+                  Text(
+                    item.value.isNotEmpty ? item.value : item.subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: context.colors.textSecondary,
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -313,7 +401,9 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
             activeThumbColor: AppColors.adminColor,
             inactiveThumbColor: context.colors.textSecondary,
             inactiveTrackColor: context.colors.divider,
-            trackOutlineColor: WidgetStateProperty.all(context.colors.textSecondary.withValues(alpha: 0.4)),
+            trackOutlineColor: WidgetStateProperty.all(
+              context.colors.textSecondary.withValues(alpha: 0.4),
+            ),
           ),
           _hoverIcon(
             icon: Icons.edit_outlined,
@@ -331,8 +421,18 @@ class _AdminAboutSectionItemsScreenState extends State<AdminAboutSectionItemsScr
     );
   }
 
-  Widget _hoverIcon({required IconData icon, required String tooltip, required VoidCallback onPressed, Color? color}) {
-    return _HoverIconAction(icon: icon, tooltip: tooltip, onPressed: onPressed, color: color);
+  Widget _hoverIcon({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onPressed,
+    Color? color,
+  }) {
+    return _HoverIconAction(
+      icon: icon,
+      tooltip: tooltip,
+      onPressed: onPressed,
+      color: color,
+    );
   }
 }
 
@@ -341,7 +441,12 @@ class _HoverIconAction extends StatefulWidget {
   final String tooltip;
   final VoidCallback onPressed;
   final Color? color;
-  const _HoverIconAction({required this.icon, required this.tooltip, required this.onPressed, this.color});
+  const _HoverIconAction({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+    this.color,
+  });
 
   @override
   State<_HoverIconAction> createState() => _HoverIconActionState();
@@ -359,7 +464,9 @@ class _HoverIconActionState extends State<_HoverIconAction> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 120),
         decoration: BoxDecoration(
-          color: _hovering ? (widget.color ?? AppColors.adminColor).withValues(alpha: 0.08) : Colors.transparent,
+          color: _hovering
+              ? (widget.color ?? AppColors.adminColor).withValues(alpha: 0.08)
+              : Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: IconButton(
@@ -376,7 +483,11 @@ class _ItemEditorSheet extends StatefulWidget {
   final String sectionType;
   final int sectionId;
   final AboutSectionItem? item;
-  const _ItemEditorSheet({required this.sectionType, required this.sectionId, this.item});
+  const _ItemEditorSheet({
+    required this.sectionType,
+    required this.sectionId,
+    this.item,
+  });
 
   @override
   State<_ItemEditorSheet> createState() => _ItemEditorSheetState();
@@ -394,6 +505,8 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
   late Map<String, dynamic> _extraData;
   bool _saving = false;
   String? _error;
+
+  final Map<String, TextEditingController> _extraControllers = {};
 
   bool get _isEdit => widget.item != null;
 
@@ -416,12 +529,28 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
     _extraData = Map<String, dynamic>.from(i?.extraData ?? {});
   }
 
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _subtitleCtrl.dispose();
+    _descriptionCtrl.dispose();
+    _valueCtrl.dispose();
+    _linkUrlCtrl.dispose();
+    for (final c in _extraControllers.values) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
   Future<void> _save() async {
     if (_titleCtrl.text.trim().isEmpty) {
       setState(() => _error = 'Title is required.');
       return;
     }
-    setState(() { _saving = true; _error = null; });
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
     final data = {
       'title': _titleCtrl.text.trim(),
       'subtitle': _subtitleCtrl.text.trim(),
@@ -439,21 +568,30 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
     if (result['success'] == true) {
       Navigator.pop(context, true);
     } else {
-      setState(() => _error = result['error']?.toString() ?? 'Could not save item.');
+      setState(
+        () => _error = result['error']?.toString() ?? 'Could not save item.',
+      );
     }
   }
 
   List<Widget> _extraFieldsForType() {
     switch (widget.sectionType) {
       case 'team_members':
-        return [_extraField('designation', 'Designation / Role'),
-                _extraField('linkedin', 'LinkedIn URL')];
+        return [
+          _extraField('designation', 'Designation / Role'),
+          _extraField('linkedin', 'LinkedIn URL'),
+        ];
       case 'awards':
-        return [_extraField('year', 'Year'), _extraField('issuer', 'Issued By')];
+        return [
+          _extraField('year', 'Year'),
+          _extraField('issuer', 'Issued By'),
+        ];
       case 'certifications':
-        return [_extraField('issued_date', 'Issued Date'),
-                _extraField('expiry_date', 'Expiry Date'),
-                _extraField('credential_id', 'Credential ID')];
+        return [
+          _extraField('issued_date', 'Issued Date'),
+          _extraField('expiry_date', 'Expiry Date'),
+          _extraField('credential_id', 'Credential ID'),
+        ];
       case 'statistics':
         return [_extraField('suffix', 'Suffix (e.g. "+", "K", "%")')];
       default:
@@ -462,7 +600,10 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
   }
 
   Widget _extraField(String key, String label) {
-    final controller = TextEditingController(text: _extraData[key]?.toString() ?? '');
+    final controller = _extraControllers.putIfAbsent(
+      key,
+      () => TextEditingController(text: _extraData[key]?.toString() ?? ''),
+    );
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
@@ -470,7 +611,9 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
         decoration: InputDecoration(
           labelText: label,
           isDense: true,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
+          ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSizes.radius10),
             borderSide: BorderSide(color: AppColors.adminColor, width: 1.6),
@@ -482,13 +625,20 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
   }
 
   bool get _showValueField => widget.sectionType == 'statistics';
-  bool get _showLinkField => ['investors_partners', 'certifications', 'awards', 'team_members'].contains(widget.sectionType);
+  bool get _showLinkField => [
+    'investors_partners',
+    'certifications',
+    'awards',
+    'team_members',
+  ].contains(widget.sectionType);
 
   InputDecoration _decoration(String label) {
     return InputDecoration(
       labelText: label,
       isDense: true,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
+      ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSizes.radius10),
         borderSide: BorderSide(color: AppColors.adminColor, width: 1.6),
@@ -501,13 +651,17 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
       ),
       child: SafeArea(
         top: false,
         child: Padding(
           padding: EdgeInsets.only(
-            left: 20, right: 20, top: 12,
+            left: 20,
+            right: 20,
+            top: 12,
             bottom: MediaQuery.of(context).viewInsets.bottom + 20,
           ),
           child: SingleChildScrollView(
@@ -530,11 +684,21 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                   ),
                   Row(
                     children: [
-                      Icon(_isEdit ? Icons.edit_outlined : Icons.add_circle_outline_rounded,
-                          size: 18, color: AppColors.adminColor),
+                      Icon(
+                        _isEdit
+                            ? Icons.edit_outlined
+                            : Icons.add_circle_outline_rounded,
+                        size: 18,
+                        color: AppColors.adminColor,
+                      ),
                       const SizedBox(width: 8),
-                      Text(_isEdit ? 'Edit Item' : 'Add Item',
-                          style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
+                      Text(
+                        _isEdit ? 'Edit Item' : 'Add Item',
+                        style: const TextStyle(
+                          fontSize: AppFontSizes.title,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -544,46 +708,82 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                         ? Container(
                             key: ValueKey(_error),
                             width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
                             margin: const EdgeInsets.only(bottom: 12),
                             decoration: BoxDecoration(
                               color: Colors.red.withValues(alpha: 0.08),
-                              borderRadius: BorderRadius.circular(AppSizes.radius10),
-                              border: Border.all(color: Colors.red.withValues(alpha: 0.25)),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radius10,
+                              ),
+                              border: Border.all(
+                                color: Colors.red.withValues(alpha: 0.25),
+                              ),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.error_outline_rounded, color: Colors.red, size: 16),
+                                const Icon(
+                                  Icons.error_outline_rounded,
+                                  color: Colors.red,
+                                  size: 16,
+                                ),
                                 const SizedBox(width: 8),
-                                Expanded(child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: AppFontSizes.small))),
+                                Expanded(
+                                  child: Text(
+                                    _error!,
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: AppFontSizes.small,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           )
                         : const SizedBox.shrink(key: ValueKey('no-error')),
                   ),
-                  TextField(controller: _titleCtrl, decoration: _decoration('Title')),
+                  TextField(
+                    controller: _titleCtrl,
+                    decoration: _decoration('Title'),
+                  ),
                   const SizedBox(height: 12),
                   if (_showValueField) ...[
-                    TextField(controller: _valueCtrl, decoration: _decoration('Number / Value')),
+                    TextField(
+                      controller: _valueCtrl,
+                      decoration: _decoration('Number / Value'),
+                    ),
                     const SizedBox(height: 12),
                   ] else ...[
-                    TextField(controller: _subtitleCtrl, decoration: _decoration('Subtitle')),
+                    TextField(
+                      controller: _subtitleCtrl,
+                      decoration: _decoration('Subtitle'),
+                    ),
                     const SizedBox(height: 12),
                   ],
-                  TextField(controller: _descriptionCtrl, maxLines: 3, decoration: _decoration('Description')),
+                  TextField(
+                    controller: _descriptionCtrl,
+                    maxLines: 3,
+                    decoration: _decoration('Description'),
+                  ),
                   const SizedBox(height: 12),
                   if (_showLinkField) ...[
-                    TextField(controller: _linkUrlCtrl, decoration: _decoration('Link URL')),
+                    TextField(
+                      controller: _linkUrlCtrl,
+                      decoration: _decoration('Link URL'),
+                    ),
                     const SizedBox(height: 12),
                   ],
                   ..._extraFieldsForType(),
-                  Row(
-                    children: [
-                      Expanded(child: _iconPicker()),
-                    ],
-                  ),
+                  Row(children: [Expanded(child: _iconPicker())]),
                   const SizedBox(height: 14),
-                  AboutImagePickerField(label: 'Image', imageUrl: _imageUrl, height: 110, onChanged: (url) => setState(() => _imageUrl = url)),
+                  AboutImagePickerField(
+                    label: 'Image',
+                    imageUrl: _imageUrl,
+                    height: 110,
+                    onChanged: (url) => setState(() => _imageUrl = url),
+                  ),
                   const SizedBox(height: 20),
                   Row(
                     children: [
@@ -592,7 +792,11 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                           onPressed: () => Navigator.pop(context),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
+                            ),
                           ),
                           child: const Text('Cancel'),
                         ),
@@ -604,14 +808,28 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.adminColor,
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
+                            ),
                           ),
                           icon: _saving
                               ? const SizedBox.shrink()
                               : const Icon(Icons.check_rounded, size: 18),
                           label: _saving
-                              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : const Text('Save', style: TextStyle(fontWeight: FontWeight.w700)),
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Save',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
                         ),
                       ),
                     ],
@@ -631,11 +849,16 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
         final selected = await showDialog<String>(
           context: context,
           builder: (ctx) => Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radius18),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(18),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 360, maxHeight: 400),
+                constraints: const BoxConstraints(
+                  maxWidth: 360,
+                  maxHeight: 400,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -643,7 +866,13 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                     Row(
                       children: [
                         const Expanded(
-                          child: Text('Choose Icon', style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
+                          child: Text(
+                            'Choose Icon',
+                            style: TextStyle(
+                              fontSize: AppFontSizes.title,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
                         IconButton(
                           visualDensity: VisualDensity.compact,
@@ -697,14 +926,25 @@ class _ItemEditorSheetState extends State<_ItemEditorSheet> {
                   color: AppColors.adminColor.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
-                child: Icon(resolveAboutIcon(_icon), size: 18, color: AppColors.adminColor),
+                child: Icon(
+                  resolveAboutIcon(_icon),
+                  size: 18,
+                  color: AppColors.adminColor,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(_icon.isEmpty ? 'Choose Icon…' : _icon,
-                    style: const TextStyle(fontSize: 12.5), overflow: TextOverflow.ellipsis),
+                child: Text(
+                  _icon.isEmpty ? 'Choose Icon…' : _icon,
+                  style: const TextStyle(fontSize: 12.5),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              Icon(Icons.chevron_right_rounded, size: 18, color: Theme.of(context).dividerColor),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 18,
+                color: Theme.of(context).dividerColor,
+              ),
             ],
           ),
         ),
@@ -717,7 +957,11 @@ class _HoverableIconChoice extends StatefulWidget {
   final IconData icon;
   final bool selected;
   final VoidCallback onTap;
-  const _HoverableIconChoice({required this.icon, required this.selected, required this.onTap});
+  const _HoverableIconChoice({
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   State<_HoverableIconChoice> createState() => _HoverableIconChoiceState();
@@ -741,9 +985,13 @@ class _HoverableIconChoiceState extends State<_HoverableIconChoice> {
           decoration: BoxDecoration(
             color: widget.selected
                 ? AppColors.adminColor.withValues(alpha: 0.15)
-                : (_hovering ? AppColors.adminColor.withValues(alpha: 0.06) : Colors.transparent),
+                : (_hovering
+                      ? AppColors.adminColor.withValues(alpha: 0.06)
+                      : Colors.transparent),
             borderRadius: BorderRadius.circular(AppSizes.radius10),
-            border: widget.selected ? Border.all(color: AppColors.adminColor) : null,
+            border: widget.selected
+                ? Border.all(color: AppColors.adminColor)
+                : null,
           ),
           child: Icon(widget.icon, size: 20),
         ),

@@ -45,9 +45,14 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      final r = await _api.get('/admin-panel/complaints/?status=$_statusFilter');
+      final r = await _api.get(
+        '/admin-panel/complaints/?status=$_statusFilter',
+      );
       if (!mounted) return;
       setState(() {
         _loading = false;
@@ -55,13 +60,18 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load complaints'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load complaints';
+      });
     }
   }
 
   Future<void> _assignToMe(dynamic c) async {
     try {
-      await _api.patch('/admin-panel/complaints/${c['id']}/', {'assign_to_me': true});
+      await _api.patch('/admin-panel/complaints/${c['id']}/', {
+        'assign_to_me': true,
+      });
       _load();
     } catch (e) {
       if (!mounted) return;
@@ -69,55 +79,86 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
     }
   }
 
-  void _resolveDialog(dynamic complaint, String status) {
+  void _resolveDialog(dynamic complaint, String status) async {
     final noteCtrl = TextEditingController();
     final isResolve = status == 'resolved';
-    showDialog(
-      context: context,
-      builder: (dialogContext) => _StyledDialog(
-        icon: isResolve ? Icons.check_circle_outline_rounded : Icons.cancel_outlined,
-        iconColor: isResolve ? context.colors.accent : AppColors.error,
-        title: isResolve ? 'Resolve Complaint' : 'Reject Complaint',
-        content: _StyledTextField(controller: noteCtrl, hintText: 'Resolution note', maxLines: 3),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isResolve ? context.colors.accent : AppColors.error,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            ),
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              try {
-                await _api.patch('/admin-panel/complaints/${complaint['id']}/',
-                    {'status': status, 'resolution_note': noteCtrl.text.trim()});
-                _load();
-              } catch (e) {
-                if (!mounted) return;
-                _showSnack('Failed to update.');
-              }
-            },
-            child: Text(isResolve ? 'Resolve' : 'Reject'),
+    try {
+      await showDialog(
+        context: context,
+        builder: (dialogContext) => _StyledDialog(
+          icon: isResolve
+              ? Icons.check_circle_outline_rounded
+              : Icons.cancel_outlined,
+          iconColor: isResolve ? context.colors.accent : AppColors.error,
+          title: isResolve ? 'Resolve Complaint' : 'Reject Complaint',
+          content: _StyledTextField(
+            controller: noteCtrl,
+            hintText: 'Resolution note',
+            maxLines: 3,
           ),
-        ],
-      ),
-    );
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isResolve
+                    ? context.colors.accent
+                    : AppColors.error,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+              ),
+              onPressed: () async {
+                final note = noteCtrl.text.trim();
+                Navigator.pop(dialogContext);
+                try {
+                  await _api.patch(
+                    '/admin-panel/complaints/${complaint['id']}/',
+                    {'status': status, 'resolution_note': note},
+                  );
+                  _load();
+                } catch (e) {
+                  if (!mounted) return;
+                  _showSnack('Failed to update.');
+                }
+              },
+              child: Text(isResolve ? 'Resolve' : 'Reject'),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      noteCtrl.dispose();
+    }
   }
 
   void _showSnack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(children: [
-          const Icon(Icons.error_outline_rounded, color: Colors.white, size: 18),
-          const SizedBox(width: 10),
-          Expanded(child: Text(message)),
-        ]),
+        content: Row(
+          children: [
+            const Icon(
+              Icons.error_outline_rounded,
+              color: Colors.white,
+              size: 18,
+            ),
+            const SizedBox(width: 10),
+            Expanded(child: Text(message)),
+          ],
+        ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.gray800,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
         margin: const EdgeInsets.all(14),
       ),
     );
@@ -154,58 +195,98 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 260),
                     child: _loading
-                        ? const Center(key: ValueKey('loading'), child: CircularProgressIndicator(color: AppColors.adminColor))
+                        ? const Center(
+                            key: ValueKey('loading'),
+                            child: CircularProgressIndicator(
+                              color: AppColors.adminColor,
+                            ),
+                          )
                         : _error != null
-                            ? _ErrorState(key: const ValueKey('error'), onRetry: _load)
-                            : _all.isEmpty
-                                ? _EmptyState(key: const ValueKey('empty'), statusFilter: _statusFilter)
-                                : RefreshIndicator(
-                                    key: const ValueKey('content'),
-                                    onRefresh: _load,
-                                    color: AppColors.adminColor,
-                                    child: Center(
-                                      child: ConstrainedBox(
-                                        // Keeps content readable on very wide desktop windows
-                                        // instead of stretching cards edge to edge.
-                                        constraints: const BoxConstraints(maxWidth: 1400),
-                                        child: crossAxisCount == 1
-                                            ? ListView.builder(
-                                                padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
-                                                itemCount: _all.length,
-                                                itemBuilder: (_, i) => _AnimatedListEntry(
-                                                  index: i,
-                                                  child: _ComplaintCard(
-                                                    complaint: _all[i],
-                                                    statuses: _statuses,
-                                                    onAssign: _assignToMe,
-                                                    onResolve: (c) => _resolveDialog(c, 'resolved'),
-                                                    onReject: (c) => _resolveDialog(c, 'rejected'),
-                                                  ),
-                                                ),
-                                              )
-                                            : GridView.builder(
-                                                padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
-                                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: crossAxisCount,
-                                                  crossAxisSpacing: 14,
-                                                  mainAxisSpacing: 14,
-                                                  mainAxisExtent: 208,
-                                                ),
-                                                itemCount: _all.length,
-                                                itemBuilder: (_, i) => _AnimatedListEntry(
-                                                  index: i,
-                                                  child: _ComplaintCard(
-                                                    complaint: _all[i],
-                                                    statuses: _statuses,
-                                                    onAssign: _assignToMe,
-                                                    onResolve: (c) => _resolveDialog(c, 'resolved'),
-                                                    onReject: (c) => _resolveDialog(c, 'rejected'),
-                                                  ),
+                        ? _ErrorState(
+                            key: const ValueKey('error'),
+                            onRetry: _load,
+                          )
+                        : _all.isEmpty
+                        ? _EmptyState(
+                            key: const ValueKey('empty'),
+                            statusFilter: _statusFilter,
+                          )
+                        : RefreshIndicator(
+                            key: const ValueKey('content'),
+                            onRefresh: _load,
+                            color: AppColors.adminColor,
+                            child: Center(
+                              child: ConstrainedBox(
+                                // Keeps content readable on very wide desktop windows
+                                // instead of stretching cards edge to edge.
+                                constraints: const BoxConstraints(
+                                  maxWidth: 1400,
+                                ),
+                                child: crossAxisCount == 1
+                                    ? ListView.builder(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          10,
+                                          16,
+                                          20,
+                                        ),
+                                        itemCount: _all.length,
+                                        itemBuilder: (_, i) =>
+                                            _AnimatedListEntry(
+                                              index: i,
+                                              child: _ComplaintCard(
+                                                complaint: _all[i],
+                                                statuses: _statuses,
+                                                onAssign: _assignToMe,
+                                                onResolve: (c) =>
+                                                    _resolveDialog(
+                                                      c,
+                                                      'resolved',
+                                                    ),
+                                                onReject: (c) => _resolveDialog(
+                                                  c,
+                                                  'rejected',
                                                 ),
                                               ),
+                                            ),
+                                      )
+                                    : GridView.builder(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          20,
+                                          14,
+                                          20,
+                                          24,
+                                        ),
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: crossAxisCount,
+                                              crossAxisSpacing: 14,
+                                              mainAxisSpacing: 14,
+                                              mainAxisExtent: 208,
+                                            ),
+                                        itemCount: _all.length,
+                                        itemBuilder: (_, i) =>
+                                            _AnimatedListEntry(
+                                              index: i,
+                                              child: _ComplaintCard(
+                                                complaint: _all[i],
+                                                statuses: _statuses,
+                                                onAssign: _assignToMe,
+                                                onResolve: (c) =>
+                                                    _resolveDialog(
+                                                      c,
+                                                      'resolved',
+                                                    ),
+                                                onReject: (c) => _resolveDialog(
+                                                  c,
+                                                  'rejected',
+                                                ),
+                                              ),
+                                            ),
                                       ),
-                                    ),
-                                  ),
+                              ),
+                            ),
+                          ),
                   ),
                 ),
               ],
@@ -224,7 +305,11 @@ class _FilterBar extends StatelessWidget {
   final List<(String, String, Color)> statuses;
   final String activeKey;
   final ValueChanged<String> onSelect;
-  const _FilterBar({required this.statuses, required this.activeKey, required this.onSelect});
+  const _FilterBar({
+    required this.statuses,
+    required this.activeKey,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +325,12 @@ class _FilterBar extends StatelessWidget {
           itemBuilder: (_, i) {
             final (key, label, color) = statuses[i];
             final isActive = activeKey == key;
-            return _FilterChip(label: label, color: color, isActive: isActive, onTap: () => onSelect(key));
+            return _FilterChip(
+              label: label,
+              color: color,
+              isActive: isActive,
+              onTap: () => onSelect(key),
+            );
           },
         ),
       ),
@@ -253,7 +343,12 @@ class _FilterChip extends StatefulWidget {
   final Color color;
   final bool isActive;
   final VoidCallback onTap;
-  const _FilterChip({required this.label, required this.color, required this.isActive, required this.onTap});
+  const _FilterChip({
+    required this.label,
+    required this.color,
+    required this.isActive,
+    required this.onTap,
+  });
 
   @override
   State<_FilterChip> createState() => _FilterChipState();
@@ -277,9 +372,13 @@ class _FilterChipState extends State<_FilterChip> {
           decoration: BoxDecoration(
             color: widget.isActive
                 ? widget.color.withValues(alpha: 0.12)
-                : (_hovered ? const Color(0xFFEEF0F3) : AppColors.lightScaffold),
+                : (_hovered
+                      ? const Color(0xFFEEF0F3)
+                      : AppColors.lightScaffold),
             borderRadius: BorderRadius.circular(AppSizes.radiusChip),
-            border: Border.all(color: widget.isActive ? widget.color : Colors.transparent),
+            border: Border.all(
+              color: widget.isActive ? widget.color : Colors.transparent,
+            ),
           ),
           alignment: Alignment.center,
           child: Text(
@@ -325,7 +424,9 @@ class _ComplaintCardState extends State<_ComplaintCard> {
   Widget build(BuildContext context) {
     final c = widget.complaint;
     final status = c['status']?.toString() ?? 'open';
-    final color = widget.statuses.firstWhere((e) => e.$1 == status, orElse: () => widget.statuses[0]).$3;
+    final color = widget.statuses
+        .firstWhere((e) => e.$1 == status, orElse: () => widget.statuses[0])
+        .$3;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
@@ -334,14 +435,22 @@ class _ComplaintCardState extends State<_ComplaintCard> {
         duration: const Duration(milliseconds: 160),
         curve: Curves.easeOut,
         padding: const EdgeInsets.all(14),
-        transform: _hovered ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0)) : Matrix4.identity(),
+        transform: _hovered
+            ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0))
+            : Matrix4.identity(),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-          border: Border.all(color: _hovered ? color.withValues(alpha: 0.45) : AppColors.neutral200),
+          border: Border.all(
+            color: _hovered
+                ? color.withValues(alpha: 0.45)
+                : AppColors.neutral200,
+          ),
           boxShadow: [
             BoxShadow(
-              color: _hovered ? Colors.black.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
+              color: _hovered
+                  ? Colors.black.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.03),
               blurRadius: _hovered ? 16 : 6,
               offset: Offset(0, _hovered ? 6 : 2),
             ),
@@ -357,18 +466,33 @@ class _ComplaintCardState extends State<_ComplaintCard> {
                 Expanded(
                   child: Text(
                     c['category_display']?.toString() ?? '',
-                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800, color: AppColors.error),
+                    style: const TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.error,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                  decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                  ),
                   child: Text(
                     c['status_display']?.toString() ?? '',
-                    style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: color, letterSpacing: 0.2),
+                    style: TextStyle(
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w800,
+                      color: color,
+                      letterSpacing: 0.2,
+                    ),
                   ),
                 ),
               ],
@@ -376,19 +500,30 @@ class _ComplaintCardState extends State<_ComplaintCard> {
             const SizedBox(height: 8),
             Text(
               c['description']?.toString() ?? '',
-              style: const TextStyle(fontSize: 12.5, color: AppColors.gray700, height: 1.4),
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: AppColors.gray700,
+                height: 1.4,
+              ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(Icons.compare_arrows_rounded, size: 13, color: AppColors.neutral400),
+                const Icon(
+                  Icons.compare_arrows_rounded,
+                  size: 13,
+                  color: AppColors.neutral400,
+                ),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     '${c['complainant_name']} vs ${c['against_name']}',
-                    style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400),
+                    style: const TextStyle(
+                      fontSize: AppFontSizes.caption,
+                      color: AppColors.neutral400,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -400,12 +535,20 @@ class _ComplaintCardState extends State<_ComplaintCard> {
                 padding: const EdgeInsets.only(top: 5),
                 child: Row(
                   children: [
-                    const Icon(Icons.person_outline_rounded, size: 13, color: AppColors.primary),
+                    const Icon(
+                      Icons.person_outline_rounded,
+                      size: 13,
+                      color: AppColors.primary,
+                    ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         'Assigned to: ${c['assigned_to_name']}',
-                        style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.primary),
+                        style: const TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -463,7 +606,12 @@ class _HoverOutlinedButton extends StatefulWidget {
   final String label;
   final Color color;
   final VoidCallback onPressed;
-  const _HoverOutlinedButton({required this.icon, required this.label, required this.color, required this.onPressed});
+  const _HoverOutlinedButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onPressed,
+  });
 
   @override
   State<_HoverOutlinedButton> createState() => _HoverOutlinedButtonState();
@@ -483,13 +631,26 @@ class _HoverOutlinedButtonState extends State<_HoverOutlinedButton> {
           onPressed: widget.onPressed,
           style: OutlinedButton.styleFrom(
             foregroundColor: widget.color,
-            backgroundColor: _hovered ? widget.color.withValues(alpha: 0.06) : Colors.transparent,
-            side: BorderSide(color: widget.color.withValues(alpha: _hovered ? 0.6 : 0.35)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+            backgroundColor: _hovered
+                ? widget.color.withValues(alpha: 0.06)
+                : Colors.transparent,
+            side: BorderSide(
+              color: widget.color.withValues(alpha: _hovered ? 0.6 : 0.35),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 8),
           ),
           icon: Icon(widget.icon, size: 14),
-          label: Text(widget.label, style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+          label: Text(
+            widget.label,
+            style: const TextStyle(
+              fontSize: AppFontSizes.small,
+              fontWeight: FontWeight.w600,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ),
     );
@@ -500,7 +661,11 @@ class _StyledTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final int maxLines;
-  const _StyledTextField({required this.controller, required this.hintText, this.maxLines = 1});
+  const _StyledTextField({
+    required this.controller,
+    required this.hintText,
+    this.maxLines = 1,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -511,8 +676,14 @@ class _StyledTextField extends StatelessWidget {
         hintText: hintText,
         filled: true,
         fillColor: AppColors.tintGray,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+          borderSide: BorderSide.none,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: const BorderSide(color: AppColors.neutral200),
@@ -545,7 +716,9 @@ class _StyledDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radius18),
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420),
         child: Padding(
@@ -556,11 +729,21 @@ class _StyledDialog extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: iconColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                ),
                 child: Icon(icon, color: iconColor, size: 22),
               ),
               const SizedBox(height: 14),
-              Text(title, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: AppFontSizes.title,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.gray900,
+                ),
+              ),
               const SizedBox(height: 14),
               content,
               const SizedBox(height: 20),
@@ -585,25 +768,39 @@ class _EmptyState extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 90),
           child: Center(
-            child: Column(children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: isOpen ? context.colors.accent.withValues(alpha: 0.1) : AppColors.neutral100,
-                  shape: BoxShape.circle,
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: isOpen
+                        ? context.colors.accent.withValues(alpha: 0.1)
+                        : AppColors.neutral100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isOpen
+                        ? Icons.celebration_rounded
+                        : Icons.check_circle_outline_rounded,
+                    size: 44,
+                    color: isOpen
+                        ? context.colors.accent
+                        : Colors.grey.shade400,
+                  ),
                 ),
-                child: Icon(
-                  isOpen ? Icons.celebration_rounded : Icons.check_circle_outline_rounded,
-                  size: 44,
-                  color: isOpen ? context.colors.accent : Colors.grey.shade400,
+                const SizedBox(height: 14),
+                Text(
+                  isOpen
+                      ? 'No open complaints — all clear!'
+                      : 'No complaints in this category',
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.body,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.gray700,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                isOpen ? 'No open complaints — all clear!' : 'No complaints in this category',
-                style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600, color: AppColors.gray700),
-              ),
-            ]),
+              ],
+            ),
           ),
         ),
       ],
@@ -623,11 +820,25 @@ class _ErrorState extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.08), shape: BoxShape.circle),
-            child: const Icon(Icons.error_outline_rounded, size: 40, color: AppColors.error),
+            decoration: BoxDecoration(
+              color: AppColors.error.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.error_outline_rounded,
+              size: 40,
+              color: AppColors.error,
+            ),
           ),
           const SizedBox(height: 14),
-          const Text('Failed to load complaints', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray900)),
+          const Text(
+            'Failed to load complaints',
+            style: TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w700,
+              color: AppColors.gray900,
+            ),
+          ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: onRetry,
@@ -638,7 +849,9 @@ class _ErrorState extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+              ),
             ),
           ),
         ],
@@ -665,7 +878,10 @@ class _AnimatedListEntry extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, value, child) => Opacity(
         opacity: value,
-        child: Transform.translate(offset: Offset(0, (1 - value) * 14), child: child),
+        child: Transform.translate(
+          offset: Offset(0, (1 - value) * 14),
+          child: child,
+        ),
       ),
       child: child,
     );

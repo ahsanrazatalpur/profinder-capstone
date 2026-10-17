@@ -15,6 +15,7 @@
 //   approve → portfolio item visible to customers
 //   reject  → portfolio item rejected with reason
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_helpers.dart';
@@ -75,7 +76,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
     });
     try {
       final r = await _api.get(
-          '/profiles/admin/portfolio/?status=$_activeStatus');
+        '/profiles/admin/portfolio/?status=$_activeStatus',
+      );
       if (!mounted) return;
       setState(() {
         _loading = false;
@@ -106,18 +108,23 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
     if (!confirmed) return;
 
     try {
-      await _api.patch(
-        '/profiles/admin/portfolio/${item['id']}/',
-        {'status': 'approved'},
-      );
+      await _api.patch('/profiles/admin/portfolio/${item['id']}/', {
+        'status': 'approved',
+      });
       if (!mounted) return;
       // Remove from list immediately so the queue reflects the change.
       setState(() => _items.removeWhere((i) => i['id'] == item['id']));
-      _showSnack('"$title" approved', context.colors.accent,
-          icon: Icons.check_circle_outline_rounded);
+      _showSnack(
+        '"$title" approved',
+        context.colors.accent,
+        icon: Icons.check_circle_outline_rounded,
+      );
     } catch (e) {
-      _showSnack('Action failed. Try again.', AppColors.error,
-          icon: Icons.error_outline_rounded);
+      _showSnack(
+        'Action failed. Try again.',
+        AppColors.error,
+        icon: Icons.error_outline_rounded,
+      );
     }
   }
 
@@ -131,19 +138,22 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
     final note = await _noteDialog('Rejection Reason (optional)');
 
     try {
-      await _api.patch(
-        '/profiles/admin/portfolio/${item['id']}/',
-        {
-          'status': 'rejected',
-          if (note != null && note.isNotEmpty) 'admin_note': note,
-        },
-      );
+      await _api.patch('/profiles/admin/portfolio/${item['id']}/', {
+        'status': 'rejected',
+        if (note != null && note.isNotEmpty) 'admin_note': note,
+      });
       setState(() => _items.removeWhere((i) => i['id'] == item['id']));
-      _showSnack('"$title" rejected', AppColors.error,
-          icon: Icons.cancel_outlined);
+      _showSnack(
+        '"$title" rejected',
+        AppColors.error,
+        icon: Icons.cancel_outlined,
+      );
     } catch (e) {
-      _showSnack('Action failed. Try again.', AppColors.error,
-          icon: Icons.error_outline_rounded);
+      _showSnack(
+        'Action failed. Try again.',
+        AppColors.error,
+        icon: Icons.error_outline_rounded,
+      );
     }
   }
 
@@ -167,10 +177,10 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                 child: _loading
                     ? _buildLoader()
                     : _error != null
-                        ? _buildError()
-                        : _items.isEmpty
-                            ? _buildEmpty()
-                            : _buildList(),
+                    ? _buildError()
+                    : _items.isEmpty
+                    ? _buildEmpty()
+                    : _buildList(),
               ),
             ),
           ],
@@ -211,8 +221,12 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
   Widget _buildStatusTabs() {
     final tabs = [
       ('pending', 'Pending', AppColors.warning, Icons.hourglass_top_rounded),
-      ('approved', 'Approved', context.colors.accent,
-          Icons.check_circle_outline_rounded),
+      (
+        'approved',
+        'Approved',
+        context.colors.accent,
+        Icons.check_circle_outline_rounded,
+      ),
       ('rejected', 'Rejected', AppColors.error, Icons.cancel_outlined),
     ];
 
@@ -245,16 +259,16 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                         curve: Curves.easeOutCubic,
                         constraints: const BoxConstraints(minHeight: 48),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 10),
+                          horizontal: 8,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
-                          color: isActive
-                              ? t.$3
-                              : AppColors.neutral100,
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          color: isActive ? t.$3 : AppColors.neutral100,
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
                           border: Border.all(
-                            color: isActive
-                                ? t.$3
-                                : AppColors.neutral200,
+                            color: isActive ? t.$3 : AppColors.neutral200,
                             width: 1,
                           ),
                           boxShadow: isActive
@@ -325,9 +339,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
 
         // Card height tuned per breakpoint so the image header, text block,
         // professional row, and action buttons all fit without overflow.
-        final cardExtent = isDesktop
-            ? 500.0
-            : (isTablet ? 500.0 : 460.0);
+        final cardExtent = isDesktop ? 500.0 : (isTablet ? 500.0 : 460.0);
 
         return RefreshIndicator(
           onRefresh: _load,
@@ -400,8 +412,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
     final statusColor = _activeStatus == 'approved'
         ? context.colors.accent
         : _activeStatus == 'rejected'
-            ? AppColors.error
-            : AppColors.warning;
+        ? AppColors.error
+        : AppColors.warning;
 
     return _HoverLift(
       borderRadius: BorderRadius.circular(AppSizes.radius18),
@@ -435,10 +447,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // ── Title + Description ────────────
-                    const Text(
-                      '',
-                      style: TextStyle(height: 0),
-                    ).runtimeType == Text
+                    const Text('', style: TextStyle(height: 0)).runtimeType ==
+                            Text
                         ? const SizedBox.shrink()
                         : const SizedBox.shrink(),
                     Text(
@@ -504,10 +514,26 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
         SizedBox(
           height: 170,
           width: double.infinity,
-          child: Image.network(
-            imageUrl,
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
             fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => Container(
+            memCacheWidth: 600,
+            memCacheHeight: 400,
+            placeholder: (_, _) => Container(
+              height: 170,
+              color: AppColors.neutral100,
+              child: const Center(
+                child: SizedBox(
+                  width: 26,
+                  height: 26,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.4,
+                    color: AppColors.adminColor,
+                  ),
+                ),
+              ),
+            ),
+            errorWidget: (_, _, _) => Container(
               height: 170,
               color: AppColors.neutral100,
               child: const Center(
@@ -518,27 +544,6 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                 ),
               ),
             ),
-            loadingBuilder: (_, child, prog) {
-              if (prog == null) return child;
-              return Container(
-                height: 170,
-                color: AppColors.neutral100,
-                child: Center(
-                  child: SizedBox(
-                    width: 26,
-                    height: 26,
-                    child: CircularProgressIndicator(
-                      value: prog.expectedTotalBytes != null
-                          ? prog.cumulativeBytesLoaded /
-                              prog.expectedTotalBytes!
-                          : null,
-                      strokeWidth: 2.4,
-                      color: AppColors.adminColor,
-                    ),
-                  ),
-                ),
-              );
-            },
           ),
         ),
         // Bottom gradient veil for badge legibility.
@@ -713,8 +718,11 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
         children: [
           const Padding(
             padding: EdgeInsets.only(top: 1),
-            child: Icon(Icons.info_outline_rounded,
-                size: 14, color: AppColors.error),
+            child: Icon(
+              Icons.info_outline_rounded,
+              size: 14,
+              color: AppColors.error,
+            ),
           ),
           const SizedBox(width: 6),
           Expanded(
@@ -850,7 +858,9 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               const Text(
                 'All portfolios reviewed!',
                 style: TextStyle(
-                    fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
+                  fontSize: AppFontSizes.secondary,
+                  color: AppColors.neutral400,
+                ),
               ),
             ],
           ],
@@ -910,14 +920,15 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: const Text(
                 'Retry',
-                style: TextStyle(
-                    fontSize: 13.5, fontWeight: FontWeight.w700),
+                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.adminColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 22, vertical: 12),
+                  horizontal: 22,
+                  vertical: 12,
+                ),
                 minimumSize: const Size(0, 46),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
@@ -945,7 +956,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
           context: context,
           builder: (_) => AlertDialog(
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radius18)),
+              borderRadius: BorderRadius.circular(AppSizes.radius18),
+            ),
             titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
             contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
             title: Row(
@@ -1029,7 +1041,8 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radius18)),
+          borderRadius: BorderRadius.circular(AppSizes.radius18),
+        ),
         titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
         contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
         title: Row(
@@ -1041,8 +1054,11 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
                 color: AppColors.error.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(AppSizes.radius10),
               ),
-              child: const Icon(Icons.cancel_outlined,
-                  color: AppColors.error, size: 18),
+              child: const Icon(
+                Icons.cancel_outlined,
+                color: AppColors.error,
+                size: 18,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -1074,8 +1090,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              borderSide: const BorderSide(
-                  color: AppColors.error, width: 1.4),
+              borderSide: const BorderSide(color: AppColors.error, width: 1.4),
             ),
           ),
         ),
@@ -1108,10 +1123,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen>
             onPressed: () => Navigator.pop(context, ctrl.text.trim()),
             child: const Text(
               'Reject',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.1,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.1),
             ),
           ),
         ],

@@ -81,13 +81,13 @@ class _ProfessionalBookingConfigurationScreenState
   }
 
   Map<String, dynamic> _currentSnapshot() => {
-        'slotMinutes': _slotMinutes,
-        'isCustomSlot': _isCustomSlot,
-        'bufferMinutes': _bufferMinutes,
-        'minNoticeMinutes': _minNoticeMinutes,
-        'maxAdvanceDays': _maxAdvanceDays,
-        'approvalMode': _approvalMode.name,
-      };
+    'slotMinutes': _slotMinutes,
+    'isCustomSlot': _isCustomSlot,
+    'bufferMinutes': _bufferMinutes,
+    'minNoticeMinutes': _minNoticeMinutes,
+    'maxAdvanceDays': _maxAdvanceDays,
+    'approvalMode': _approvalMode.name,
+  };
 
   bool get _isDirty {
     final now = _currentSnapshot();
@@ -107,7 +107,9 @@ class _ProfessionalBookingConfigurationScreenState
       _minNoticeMinutes = prefs.getInt('${_prefsKey}_notice') ?? 60;
       _maxAdvanceDays = prefs.getInt('${_prefsKey}_advance') ?? 30;
       final approvalRaw = prefs.getString('${_prefsKey}_approval');
-      _approvalMode = approvalRaw == 'manual' ? _ApprovalMode.manual : _ApprovalMode.automatic;
+      _approvalMode = approvalRaw == 'manual'
+          ? _ApprovalMode.manual
+          : _ApprovalMode.automatic;
 
       _savedSnapshot = _currentSnapshot();
       if (!mounted) return;
@@ -115,7 +117,10 @@ class _ProfessionalBookingConfigurationScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, AppLocalizations.of(context).loadSettingsError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).loadSettingsError,
+      );
     }
   }
 
@@ -135,11 +140,17 @@ class _ProfessionalBookingConfigurationScreenState
         _savedSnapshot = _currentSnapshot();
         _isSaving = false;
       });
-      AppHelpers.showSuccess(context, AppLocalizations.of(context).saveSettingsSuccess);
+      AppHelpers.showSuccess(
+        context,
+        AppLocalizations.of(context).saveSettingsSuccess,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      AppHelpers.showError(context, AppLocalizations.of(context).saveSettingsError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).saveSettingsError,
+      );
     }
   }
 
@@ -150,53 +161,74 @@ class _ProfessionalBookingConfigurationScreenState
       _bufferMinutes = _savedSnapshot['bufferMinutes'] as int;
       _minNoticeMinutes = _savedSnapshot['minNoticeMinutes'] as int;
       _maxAdvanceDays = _savedSnapshot['maxAdvanceDays'] as int;
-      _approvalMode =
-          _savedSnapshot['approvalMode'] == 'manual' ? _ApprovalMode.manual : _ApprovalMode.automatic;
+      _approvalMode = _savedSnapshot['approvalMode'] == 'manual'
+          ? _ApprovalMode.manual
+          : _ApprovalMode.automatic;
     });
   }
 
   Future<void> _pickCustomSlot() async {
-    final controller = TextEditingController(text: _isCustomSlot ? '$_slotMinutes' : '');
-    final result = await showDialog<int>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-        title: Text(AppLocalizations.of(context).customSlotTitle, style: const TextStyle(fontWeight: FontWeight.w700)),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          autofocus: true,
-          decoration: InputDecoration(
-            labelText: AppLocalizations.of(context).minute,
-            hintText: AppLocalizations.of(context).customSlotHint,
-            border: const OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context).cancelCta)),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.professionalColor,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {
-              final v = int.tryParse(controller.text.trim());
-              if (v == null || v < 5 || v > 240) {
-                ScaffoldMessenger.of(ctx).showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context).customSlotValidation)),
-                );
-                return;
-              }
-              Navigator.pop(ctx, v);
-            },
-            child: Text(AppLocalizations.of(context).applyCta),
-          ),
-        ],
-      ),
+    final controller = TextEditingController(
+      text: _isCustomSlot ? '$_slotMinutes' : '',
     );
-    if (result != null) {
+    final int? result;
+    try {
+      result = await showDialog<int>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
+          title: Text(
+            AppLocalizations.of(context).customSlotTitle,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).minute,
+              hintText: AppLocalizations.of(context).customSlotHint,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(AppLocalizations.of(context).cancelCta),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.professionalColor,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                final v = int.tryParse(controller.text.trim());
+                if (v == null || v < 5 || v > 240) {
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        AppLocalizations.of(context).customSlotValidation,
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                Navigator.pop(ctx, v);
+              },
+              child: Text(AppLocalizations.of(context).applyCta),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      controller.dispose();
+    }
+    final chosen = result;
+    if (chosen != null) {
       setState(() {
-        _slotMinutes = result;
+        _slotMinutes = chosen;
         _isCustomSlot = true;
       });
     }
@@ -207,7 +239,9 @@ class _ProfessionalBookingConfigurationScreenState
     if (minutes < 60) return AppLocalizations.of(context).minutesShort(minutes);
     final h = minutes ~/ 60;
     final m = minutes % 60;
-    return m == 0 ? AppLocalizations.of(context).hoursShort(h) : AppLocalizations.of(context).hoursMinutesShort(h, m);
+    return m == 0
+        ? AppLocalizations.of(context).hoursShort(h)
+        : AppLocalizations.of(context).hoursMinutesShort(h, m);
   }
 
   @override
@@ -234,7 +268,10 @@ class _ProfessionalBookingConfigurationScreenState
       ),
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(color: AppColors.professionalColor, strokeWidth: 3),
+              child: CircularProgressIndicator(
+                color: AppColors.professionalColor,
+                strokeWidth: 3,
+              ),
             )
           : RefreshIndicator(
               onRefresh: _load,
@@ -262,7 +299,9 @@ class _ProfessionalBookingConfigurationScreenState
                       values: _kBufferPresets,
                       selected: _bufferMinutes,
                       isTablet: isTablet,
-                      labelBuilder: (v) => v == 0 ? AppLocalizations.of(context).bufferNoneLabel : AppLocalizations.of(context).bufferMinLabel(v),
+                      labelBuilder: (v) => v == 0
+                          ? AppLocalizations.of(context).bufferNoneLabel
+                          : AppLocalizations.of(context).bufferMinLabel(v),
                       onSelect: (v) => setState(() => _bufferMinutes = v),
                     ),
                   ),
@@ -277,12 +316,15 @@ class _ProfessionalBookingConfigurationScreenState
                       spacing: 10,
                       runSpacing: 10,
                       children: _kMinNoticeOptions
-                          .map((o) => _optionChip(
-                                label: o.label,
-                                selected: _minNoticeMinutes == o.minutes,
-                                isTablet: isTablet,
-                                onTap: () => setState(() => _minNoticeMinutes = o.minutes),
-                              ))
+                          .map(
+                            (o) => _optionChip(
+                              label: o.label,
+                              selected: _minNoticeMinutes == o.minutes,
+                              isTablet: isTablet,
+                              onTap: () =>
+                                  setState(() => _minNoticeMinutes = o.minutes),
+                            ),
+                          )
                           .toList(),
                     ),
                   ),
@@ -297,7 +339,8 @@ class _ProfessionalBookingConfigurationScreenState
                       values: _kMaxAdvanceDays,
                       selected: _maxAdvanceDays,
                       isTablet: isTablet,
-                      labelBuilder: (v) => AppLocalizations.of(context).daysLabel(v),
+                      labelBuilder: (v) =>
+                          AppLocalizations.of(context).daysLabel(v),
                       onSelect: (v) => setState(() => _maxAdvanceDays = v),
                     ),
                   ),
@@ -317,7 +360,9 @@ class _ProfessionalBookingConfigurationScreenState
                 ],
               ),
             ),
-      bottomNavigationBar: (_isDirty && !_isLoading) ? _buildSaveBar(isTablet) : null,
+      bottomNavigationBar: (_isDirty && !_isLoading)
+          ? _buildSaveBar(isTablet)
+          : null,
     );
   }
 
@@ -339,11 +384,15 @@ class _ProfessionalBookingConfigurationScreenState
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.12)
+                : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -361,7 +410,11 @@ class _ProfessionalBookingConfigurationScreenState
                   color: AppColors.professionalColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
-                child: Icon(icon, size: isTablet ? 20 : 18, color: AppColors.professionalColor),
+                child: Icon(
+                  icon,
+                  size: isTablet ? 20 : 18,
+                  color: AppColors.professionalColor,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -405,17 +458,23 @@ class _ProfessionalBookingConfigurationScreenState
       spacing: 10,
       runSpacing: 10,
       children: [
-        ..._kSlotPresets.map((v) => _optionChip(
-              label: AppLocalizations.of(context).minutesShort(v),
-              selected: !_isCustomSlot && _slotMinutes == v,
-              isTablet: isTablet,
-              onTap: () => setState(() {
-                _slotMinutes = v;
-                _isCustomSlot = false;
-              }),
-            )),
+        ..._kSlotPresets.map(
+          (v) => _optionChip(
+            label: AppLocalizations.of(context).minutesShort(v),
+            selected: !_isCustomSlot && _slotMinutes == v,
+            isTablet: isTablet,
+            onTap: () => setState(() {
+              _slotMinutes = v;
+              _isCustomSlot = false;
+            }),
+          ),
+        ),
         _optionChip(
-          label: _isCustomSlot ? AppLocalizations.of(context).customSlotLabel(_minutesLabel(_slotMinutes)) : AppLocalizations.of(context).customSlotDefaultLabel,
+          label: _isCustomSlot
+              ? AppLocalizations.of(
+                  context,
+                ).customSlotLabel(_minutesLabel(_slotMinutes))
+              : AppLocalizations.of(context).customSlotDefaultLabel,
           selected: _isCustomSlot,
           isTablet: isTablet,
           icon: Icons.tune_rounded,
@@ -437,12 +496,14 @@ class _ProfessionalBookingConfigurationScreenState
       spacing: 10,
       runSpacing: 10,
       children: values
-          .map((v) => _optionChip(
-                label: labelBuilder(v),
-                selected: selected == v,
-                isTablet: isTablet,
-                onTap: () => onSelect(v),
-              ))
+          .map(
+            (v) => _optionChip(
+              label: labelBuilder(v),
+              selected: selected == v,
+              isTablet: isTablet,
+              onTap: () => onSelect(v),
+            ),
+          )
           .toList(),
     );
   }
@@ -465,14 +526,23 @@ class _ProfessionalBookingConfigurationScreenState
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
-          padding: EdgeInsets.symmetric(horizontal: isTablet ? 16 : 14, vertical: isTablet ? 11 : 10),
+          padding: EdgeInsets.symmetric(
+            horizontal: isTablet ? 16 : 14,
+            vertical: isTablet ? 11 : 10,
+          ),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.professionalColor.withValues(alpha: isDark ? 0.20 : 0.12)
-                : (isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.05)),
+                ? AppColors.professionalColor.withValues(
+                    alpha: isDark ? 0.20 : 0.12,
+                  )
+                : (isDark
+                      ? Colors.white.withValues(alpha: 0.03)
+                      : Colors.grey.withValues(alpha: 0.05)),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             border: Border.all(
-              color: selected ? AppColors.professionalColor.withValues(alpha: 0.55) : Colors.transparent,
+              color: selected
+                  ? AppColors.professionalColor.withValues(alpha: 0.55)
+                  : Colors.transparent,
               width: 1.2,
             ),
           ),
@@ -480,11 +550,21 @@ class _ProfessionalBookingConfigurationScreenState
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: isTablet ? 16 : 14, color: selected ? AppColors.professionalColor : context.colors.textSecondary),
+                Icon(
+                  icon,
+                  size: isTablet ? 16 : 14,
+                  color: selected
+                      ? AppColors.professionalColor
+                      : context.colors.textSecondary,
+                ),
                 const SizedBox(width: 6),
               ],
               if (selected && icon == null) ...[
-                Icon(Icons.check_rounded, size: isTablet ? 16 : 14, color: AppColors.professionalColor),
+                Icon(
+                  Icons.check_rounded,
+                  size: isTablet ? 16 : 14,
+                  color: AppColors.professionalColor,
+                ),
                 const SizedBox(width: 6),
               ],
               Text(
@@ -492,7 +572,9 @@ class _ProfessionalBookingConfigurationScreenState
                 style: TextStyle(
                   fontSize: isTablet ? 13.5 : 12.5,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  color: selected ? AppColors.professionalColor : context.colors.textSecondary,
+                  color: selected
+                      ? AppColors.professionalColor
+                      : context.colors.textSecondary,
                   letterSpacing: 0.1,
                 ),
               ),
@@ -551,27 +633,44 @@ class _ProfessionalBookingConfigurationScreenState
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
-          padding: EdgeInsets.symmetric(vertical: isTablet ? 16 : 14, horizontal: 10),
+          padding: EdgeInsets.symmetric(
+            vertical: isTablet ? 16 : 14,
+            horizontal: 10,
+          ),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.professionalColor.withValues(alpha: isDark ? 0.18 : 0.11)
-                : (isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.05)),
+                ? AppColors.professionalColor.withValues(
+                    alpha: isDark ? 0.18 : 0.11,
+                  )
+                : (isDark
+                      ? Colors.white.withValues(alpha: 0.03)
+                      : Colors.grey.withValues(alpha: 0.05)),
             borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             border: Border.all(
-              color: selected ? AppColors.professionalColor.withValues(alpha: 0.55) : Colors.transparent,
+              color: selected
+                  ? AppColors.professionalColor.withValues(alpha: 0.55)
+                  : Colors.transparent,
               width: 1.2,
             ),
           ),
           child: Column(
             children: [
-              Icon(icon, size: isTablet ? 22 : 20, color: selected ? AppColors.professionalColor : context.colors.textSecondary),
+              Icon(
+                icon,
+                size: isTablet ? 22 : 20,
+                color: selected
+                    ? AppColors.professionalColor
+                    : context.colors.textSecondary,
+              ),
               const SizedBox(height: 8),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: isTablet ? 14.5 : 13.5,
                   fontWeight: FontWeight.w700,
-                  color: selected ? AppColors.professionalColor : context.colors.textPrimary,
+                  color: selected
+                      ? AppColors.professionalColor
+                      : context.colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 2),
@@ -598,16 +697,24 @@ class _ProfessionalBookingConfigurationScreenState
       width: double.infinity,
       padding: EdgeInsets.all(isTablet ? 18 : 14),
       decoration: BoxDecoration(
-        color: AppColors.professionalColor.withValues(alpha: isDark ? 0.12 : 0.06),
+        color: AppColors.professionalColor.withValues(
+          alpha: isDark ? 0.12 : 0.06,
+        ),
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        border: Border.all(color: AppColors.professionalColor.withValues(alpha: 0.22)),
+        border: Border.all(
+          color: AppColors.professionalColor.withValues(alpha: 0.22),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.info_outline_rounded, size: isTablet ? 18 : 16, color: AppColors.professionalColor),
+              Icon(
+                Icons.info_outline_rounded,
+                size: isTablet ? 18 : 16,
+                color: AppColors.professionalColor,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -659,14 +766,23 @@ class _ProfessionalBookingConfigurationScreenState
     );
   }
 
-  Widget _manualActionRow(IconData icon, String title, String subtitle, Color color, bool isTablet) {
+  Widget _manualActionRow(
+    IconData icon,
+    String title,
+    String subtitle,
+    Color color,
+    bool isTablet,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           width: 30,
           height: 30,
-          decoration: BoxDecoration(color: color.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.14),
+            borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+          ),
           child: Icon(icon, size: 15, color: color),
         ),
         const SizedBox(width: 10),
@@ -702,11 +818,20 @@ class _ProfessionalBookingConfigurationScreenState
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
-        padding: EdgeInsets.fromLTRB(isTablet ? 24 : 16, 12, isTablet ? 24 : 16, 12),
+        padding: EdgeInsets.fromLTRB(
+          isTablet ? 24 : 16,
+          12,
+          isTablet ? 24 : 16,
+          12,
+        ),
         decoration: BoxDecoration(
           color: context.colors.surface,
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, -3)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, -3),
+            ),
           ],
         ),
         child: Row(
@@ -717,9 +842,17 @@ class _ProfessionalBookingConfigurationScreenState
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: BorderSide(color: context.colors.divider),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  ),
                 ),
-                child: Text(AppLocalizations.of(context).discardCta, style: TextStyle(fontWeight: FontWeight.w600, color: context.colors.textSecondary)),
+                child: Text(
+                  AppLocalizations.of(context).discardCta,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: context.colors.textSecondary,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -732,15 +865,23 @@ class _ProfessionalBookingConfigurationScreenState
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  ),
                 ),
                 child: _isSaving
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2.2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.2,
+                          color: Colors.white,
+                        ),
                       )
-                    : Text(AppLocalizations.of(context).saveChangesCta, style: const TextStyle(fontWeight: FontWeight.w700)),
+                    : Text(
+                        AppLocalizations.of(context).saveChangesCta,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
               ),
             ),
           ],

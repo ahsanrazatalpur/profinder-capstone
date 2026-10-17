@@ -41,7 +41,10 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final r = await _api.get('/admin-panel/countries/');
       if (!mounted) return;
@@ -51,14 +54,19 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load countries'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load countries';
+      });
     }
   }
 
   Future<void> _toggleStatus(dynamic c) async {
     final newStatus = c['status'] == 'active' ? 'coming_soon' : 'active';
     try {
-      await _api.patch('/admin-panel/countries/${c['id']}/', {'status': newStatus});
+      await _api.patch('/admin-panel/countries/${c['id']}/', {
+        'status': newStatus,
+      });
       _load();
     } catch (e) {
       if (!mounted) return;
@@ -97,16 +105,24 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
         title: 'Delete "${c['name']}"?',
         content: const Text(
           'This action cannot be undone.',
-          style: TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep),
+          style: TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.grayDeep,
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
               foregroundColor: Colors.white,
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+              ),
             ),
             onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Delete'),
@@ -117,17 +133,24 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
     if (confirmed == true) _delete(c);
   }
 
-  void _showSnack(String message, {IconData icon = Icons.error_outline_rounded}) {
+  void _showSnack(
+    String message, {
+    IconData icon = Icons.error_outline_rounded,
+  }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(children: [
-          Icon(icon, color: Colors.white, size: 18),
-          const SizedBox(width: 10),
-          Expanded(child: Text(message)),
-        ]),
+        content: Row(
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 10),
+            Expanded(child: Text(message)),
+          ],
+        ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.gray800,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
         margin: const EdgeInsets.all(14),
       ),
     );
@@ -138,39 +161,56 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
     await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
     final nameCtrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogContext) => _StyledDialog(
-        icon: Icons.add_road_rounded,
-        iconColor: AppColors.adminColor,
-        title: 'Add Country',
-        content: _StyledTextField(controller: nameCtrl, hintText: 'Country name', autofocus: true),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.adminColor,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            ),
-            onPressed: () async {
-              if (nameCtrl.text.trim().isEmpty) return;
-              Navigator.pop(dialogContext);
-              try {
-                await _api.post('/admin-panel/countries/', {'name': nameCtrl.text.trim()});
-                _load();
-              } catch (e) {
-                if (!mounted) return;
-                _showSnack('Failed to add — may already exist.');
-              }
-            },
-            child: const Text('Add'),
+    try {
+      await showDialog(
+        context: context,
+        builder: (dialogContext) => _StyledDialog(
+          icon: Icons.add_road_rounded,
+          iconColor: AppColors.adminColor,
+          title: 'Add Country',
+          content: _StyledTextField(
+            controller: nameCtrl,
+            hintText: 'Country name',
+            autofocus: true,
           ),
-        ],
-      ),
-    );
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.adminColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+              ),
+              onPressed: () async {
+                final name = nameCtrl.text.trim();
+                if (name.isEmpty) return;
+                Navigator.pop(dialogContext);
+                try {
+                  await _api.post('/admin-panel/countries/', {'name': name});
+                  _load();
+                } catch (e) {
+                  if (!mounted) return;
+                  _showSnack('Failed to add — may already exist.');
+                }
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      nameCtrl.dispose();
+    }
   }
 
   void _mergeDialog(dynamic country) async {
@@ -178,52 +218,82 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
     await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
     final variantsCtrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogContext) => _StyledDialog(
-        icon: Icons.merge_type_rounded,
-        iconColor: AppColors.adminColor,
-        title: 'Merge into "${country['name']}"',
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Enter typo/variant spellings found in user profiles, comma-separated (e.g. pakistan, Pakistn).',
-              style: TextStyle(fontSize: 12.5, color: AppColors.grayDeep, height: 1.4),
+    try {
+      await showDialog(
+        context: context,
+        builder: (dialogContext) => _StyledDialog(
+          icon: Icons.merge_type_rounded,
+          iconColor: AppColors.adminColor,
+          title: 'Merge into "${country['name']}"',
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Enter typo/variant spellings found in user profiles, comma-separated (e.g. pakistan, Pakistn).',
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: AppColors.grayDeep,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _StyledTextField(
+                controller: variantsCtrl,
+                hintText: 'variant1, variant2, ...',
+                autofocus: true,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
             ),
-            const SizedBox(height: 12),
-            _StyledTextField(controller: variantsCtrl, hintText: 'variant1, variant2, ...', autofocus: true),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.adminColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+              ),
+              onPressed: () async {
+                final variants = variantsCtrl.text
+                    .split(',')
+                    .map((s) => s.trim())
+                    .where((s) => s.isNotEmpty)
+                    .toList();
+                if (variants.isEmpty) return;
+                Navigator.pop(dialogContext);
+                try {
+                  final r = await _api.post(
+                    '/admin-panel/countries/${country['id']}/merge/',
+                    {'variants': variants},
+                  );
+                  if (!mounted) return;
+                  _showSnack(
+                    r.data['message']?.toString() ?? 'Merged.',
+                    icon: Icons.check_circle_outline_rounded,
+                  );
+                } catch (e) {
+                  if (!mounted) return;
+                  _showSnack('Merge failed.');
+                }
+              },
+              child: const Text('Merge'),
+            ),
           ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.adminColor,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            ),
-            onPressed: () async {
-              final variants = variantsCtrl.text.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
-              if (variants.isEmpty) return;
-              Navigator.pop(dialogContext);
-              try {
-                final r = await _api.post('/admin-panel/countries/${country['id']}/merge/', {'variants': variants});
-                if (!mounted) return;
-                _showSnack(r.data['message']?.toString() ?? 'Merged.', icon: Icons.check_circle_outline_rounded);
-              } catch (e) {
-                if (!mounted) return;
-                _showSnack('Merge failed.');
-              }
-            },
-            child: const Text('Merge'),
-          ),
-        ],
-      ),
-    );
+      );
+    } finally {
+      variantsCtrl.dispose();
+    }
   }
 
   @override
@@ -251,7 +321,10 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
           elevation: 3,
           onPressed: _addDialog,
           icon: const Icon(Icons.add_rounded, color: Colors.white),
-          label: const Text('Add Country', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+          label: const Text(
+            'Add Country',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
         ),
       ),
       body: SafeArea(
@@ -268,79 +341,104 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 260),
                     child: _loading
-                        ? const Center(key: ValueKey('loading'), child: CircularProgressIndicator(color: AppColors.adminColor))
+                        ? const Center(
+                            key: ValueKey('loading'),
+                            child: CircularProgressIndicator(
+                              color: AppColors.adminColor,
+                            ),
+                          )
                         : _error != null
-                            ? _ErrorState(key: const ValueKey('error'), onRetry: _load)
-                            : _countries.isEmpty
-                                ? const _EmptyState(key: ValueKey('empty'))
-                                : RefreshIndicator(
-                                    key: const ValueKey('content'),
-                                    onRefresh: _load,
-                                    color: AppColors.adminColor,
-                                    child: Center(
-                                      child: ConstrainedBox(
-                                        // Keeps content readable on very wide desktop windows
-                                        // instead of stretching cards edge to edge.
-                                        constraints: const BoxConstraints(maxWidth: 1400),
-                                        child: crossAxisCount == 1
-                                            ? ListView.builder(
-                                                padding: const EdgeInsets.fromLTRB(16, 10, 16, 96),
-                                                // Fixed extent (matches the grid's mainAxisExtent) so
-                                                // each _CountryCard's Column gets a bounded height —
-                                                // without this, the card's Spacer() throws on every
-                                                // frame because ListView gives unbounded height,
-                                                // which was breaking layout AND hit-testing (taps)
-                                                // for the whole screen, including the FAB.
-                                                itemExtent: 196,
-                                                itemCount: _countries.length,
-                                                itemBuilder: (_, i) {
-                                                  final c = _countries[i];
-                                                  return _AnimatedListEntry(
-                                                    // Keyed by the country's own id (not its list
-                                                    // position) so Flutter never hands an in-flight
-                                                    // hover/tooltip animation from one row to a
-                                                    // different country after a toggle/delete/merge
-                                                    // reshuffles the list — that mismatch is what was
-                                                    // throwing "multiple tickers were created".
-                                                    itemKey: c['id'],
-                                                    index: i,
-                                                    child: _CountryCard(
-                                                      key: ValueKey('country_${c['id']}'),
-                                                      country: c,
-                                                      onToggle: _toggleStatus,
-                                                      onMerge: _mergeDialog,
-                                                      onDelete: _confirmDelete,
-                                                    ),
-                                                  );
-                                                },
-                                              )
-                                            : GridView.builder(
-                                                padding: const EdgeInsets.fromLTRB(20, 14, 20, 100),
-                                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: crossAxisCount,
-                                                  crossAxisSpacing: 14,
-                                                  mainAxisSpacing: 14,
-                                                  mainAxisExtent: 196,
-                                                ),
-                                                itemCount: _countries.length,
-                                                itemBuilder: (_, i) {
-                                                  final c = _countries[i];
-                                                  return _AnimatedListEntry(
-                                                    itemKey: c['id'],
-                                                    index: i,
-                                                    child: _CountryCard(
-                                                      key: ValueKey('country_${c['id']}'),
-                                                      country: c,
-                                                      onToggle: _toggleStatus,
-                                                      onMerge: _mergeDialog,
-                                                      onDelete: _confirmDelete,
-                                                    ),
-                                                  );
-                                                },
+                        ? _ErrorState(
+                            key: const ValueKey('error'),
+                            onRetry: _load,
+                          )
+                        : _countries.isEmpty
+                        ? const _EmptyState(key: ValueKey('empty'))
+                        : RefreshIndicator(
+                            key: const ValueKey('content'),
+                            onRefresh: _load,
+                            color: AppColors.adminColor,
+                            child: Center(
+                              child: ConstrainedBox(
+                                // Keeps content readable on very wide desktop windows
+                                // instead of stretching cards edge to edge.
+                                constraints: const BoxConstraints(
+                                  maxWidth: 1400,
+                                ),
+                                child: crossAxisCount == 1
+                                    ? ListView.builder(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          10,
+                                          16,
+                                          96,
+                                        ),
+                                        // Fixed extent (matches the grid's mainAxisExtent) so
+                                        // each _CountryCard's Column gets a bounded height —
+                                        // without this, the card's Spacer() throws on every
+                                        // frame because ListView gives unbounded height,
+                                        // which was breaking layout AND hit-testing (taps)
+                                        // for the whole screen, including the FAB.
+                                        itemExtent: 196,
+                                        itemCount: _countries.length,
+                                        itemBuilder: (_, i) {
+                                          final c = _countries[i];
+                                          return _AnimatedListEntry(
+                                            // Keyed by the country's own id (not its list
+                                            // position) so Flutter never hands an in-flight
+                                            // hover/tooltip animation from one row to a
+                                            // different country after a toggle/delete/merge
+                                            // reshuffles the list — that mismatch is what was
+                                            // throwing "multiple tickers were created".
+                                            itemKey: c['id'],
+                                            index: i,
+                                            child: _CountryCard(
+                                              key: ValueKey(
+                                                'country_${c['id']}',
                                               ),
+                                              country: c,
+                                              onToggle: _toggleStatus,
+                                              onMerge: _mergeDialog,
+                                              onDelete: _confirmDelete,
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : GridView.builder(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          20,
+                                          14,
+                                          20,
+                                          100,
+                                        ),
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: crossAxisCount,
+                                              crossAxisSpacing: 14,
+                                              mainAxisSpacing: 14,
+                                              mainAxisExtent: 196,
+                                            ),
+                                        itemCount: _countries.length,
+                                        itemBuilder: (_, i) {
+                                          final c = _countries[i];
+                                          return _AnimatedListEntry(
+                                            itemKey: c['id'],
+                                            index: i,
+                                            child: _CountryCard(
+                                              key: ValueKey(
+                                                'country_${c['id']}',
+                                              ),
+                                              country: c,
+                                              onToggle: _toggleStatus,
+                                              onMerge: _mergeDialog,
+                                              onDelete: _confirmDelete,
+                                            ),
+                                          );
+                                        },
                                       ),
-                                    ),
-                                  ),
+                              ),
+                            ),
+                          ),
                   ),
                 ),
               ],
@@ -388,14 +486,22 @@ class _CountryCardState extends State<_CountryCard> {
         duration: const Duration(milliseconds: 160),
         curve: Curves.easeOut,
         padding: const EdgeInsets.all(14),
-        transform: _hovered ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0)) : Matrix4.identity(),
+        transform: _hovered
+            ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0))
+            : Matrix4.identity(),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-          border: Border.all(color: _hovered ? AppColors.adminColor.withValues(alpha: 0.35) : AppColors.neutral200),
+          border: Border.all(
+            color: _hovered
+                ? AppColors.adminColor.withValues(alpha: 0.35)
+                : AppColors.neutral200,
+          ),
           boxShadow: [
             BoxShadow(
-              color: _hovered ? Colors.black.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
+              color: _hovered
+                  ? Colors.black.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.03),
               blurRadius: _hovered ? 16 : 6,
               offset: Offset(0, _hovered ? 6 : 2),
             ),
@@ -415,13 +521,20 @@ class _CountryCardState extends State<_CountryCard> {
                 Expanded(
                   child: Text(
                     c['name']?.toString() ?? '',
-                    style: const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w800, color: AppColors.gray900),
+                    style: const TextStyle(
+                      fontSize: AppFontSizes.input,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.gray900,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: 6),
-                _StatusSwitch(isActive: isActive, onChanged: (_) => widget.onToggle(c)),
+                _StatusSwitch(
+                  isActive: isActive,
+                  onChanged: (_) => widget.onToggle(c),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -429,9 +542,18 @@ class _CountryCardState extends State<_CountryCard> {
               spacing: 10,
               runSpacing: 6,
               children: [
-                _StatChip(icon: Icons.people_outline_rounded, label: '${c['user_count']} users'),
-                _StatChip(icon: Icons.work_outline_rounded, label: '${c['professional_count']} pros'),
-                _StatChip(icon: Icons.location_city_rounded, label: '${c['city_count']} cities'),
+                _StatChip(
+                  icon: Icons.people_outline_rounded,
+                  label: '${c['user_count']} users',
+                ),
+                _StatChip(
+                  icon: Icons.work_outline_rounded,
+                  label: '${c['professional_count']} pros',
+                ),
+                _StatChip(
+                  icon: Icons.location_city_rounded,
+                  label: '${c['city_count']} cities',
+                ),
               ],
             ),
             const Spacer(),
@@ -444,7 +566,9 @@ class _CountryCardState extends State<_CountryCard> {
                     label: 'View Cities',
                     onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => AdminCitiesScreen(country: c)),
+                      MaterialPageRoute(
+                        builder: (_) => AdminCitiesScreen(country: c),
+                      ),
                     ),
                   ),
                 ),
@@ -569,9 +693,7 @@ class _CountryFlag extends StatelessWidget {
     const int base = 0x1F1E6;
     final upper = isoCode.toUpperCase();
     if (upper.length != 2) return '';
-    return String.fromCharCodes(
-      upper.codeUnits.map((c) => base + (c - 0x41)),
-    );
+    return String.fromCharCodes(upper.codeUnits.map((c) => base + (c - 0x41)));
   }
 
   @override
@@ -590,7 +712,11 @@ class _CountryFlag extends StatelessWidget {
           color: AppColors.neutral100,
           borderRadius: BorderRadius.circular(size * 0.3),
         ),
-        child: Icon(Icons.public_rounded, size: size * 0.65, color: AppColors.neutral400),
+        child: Icon(
+          Icons.public_rounded,
+          size: size * 0.65,
+          color: AppColors.neutral400,
+        ),
       );
     }
 
@@ -623,7 +749,11 @@ class _StatusSwitch extends StatelessWidget {
       children: [
         Transform.scale(
           scale: 0.85,
-          child: Switch(value: isActive, activeThumbColor: context.colors.accent, onChanged: onChanged),
+          child: Switch(
+            value: isActive,
+            activeThumbColor: context.colors.accent,
+            onChanged: onChanged,
+          ),
         ),
         Text(
           isActive ? 'Active' : 'Coming soon',
@@ -647,13 +777,23 @@ class _StatChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(color: AppColors.neutral100, borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
+      decoration: BoxDecoration(
+        color: AppColors.neutral100,
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 12, color: AppColors.grayDeep),
           const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.grayDeep)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              color: AppColors.grayDeep,
+            ),
+          ),
         ],
       ),
     );
@@ -666,7 +806,11 @@ class _HoverOutlinedButton extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onPressed;
-  const _HoverOutlinedButton({required this.icon, required this.label, required this.onPressed});
+  const _HoverOutlinedButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
 
   @override
   State<_HoverOutlinedButton> createState() => _HoverOutlinedButtonState();
@@ -686,13 +830,25 @@ class _HoverOutlinedButtonState extends State<_HoverOutlinedButton> {
           onPressed: widget.onPressed,
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.adminColor,
-            backgroundColor: _hovered ? AppColors.adminColor.withValues(alpha: 0.06) : Colors.transparent,
-            side: BorderSide(color: AppColors.adminColor.withValues(alpha: _hovered ? 0.6 : 0.35)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+            backgroundColor: _hovered
+                ? AppColors.adminColor.withValues(alpha: 0.06)
+                : Colors.transparent,
+            side: BorderSide(
+              color: AppColors.adminColor.withValues(
+                alpha: _hovered ? 0.6 : 0.35,
+              ),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 6),
           ),
           icon: Icon(widget.icon, size: 14),
-          label: Text(widget.label, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+          label: Text(
+            widget.label,
+            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600),
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ),
     );
@@ -707,7 +863,13 @@ class _HoverIconButton extends StatefulWidget {
   final Color? background;
   final VoidCallback onPressed;
   final String? tooltip;
-  const _HoverIconButton({required this.icon, required this.onPressed, this.color, this.background, this.tooltip});
+  const _HoverIconButton({
+    required this.icon,
+    required this.onPressed,
+    this.color,
+    this.background,
+    this.tooltip,
+  });
 
   @override
   State<_HoverIconButton> createState() => _HoverIconButtonState();
@@ -728,7 +890,9 @@ class _HoverIconButtonState extends State<_HoverIconButton> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: _hovered ? baseBg.withValues(alpha: (baseBg.a + 0.10).clamp(0.0, 1.0)) : baseBg,
+          color: _hovered
+              ? baseBg.withValues(alpha: (baseBg.a + 0.10).clamp(0.0, 1.0))
+              : baseBg,
           borderRadius: BorderRadius.circular(11),
         ),
         child: IconButton(
@@ -746,7 +910,11 @@ class _StyledTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final bool autofocus;
-  const _StyledTextField({required this.controller, required this.hintText, this.autofocus = false});
+  const _StyledTextField({
+    required this.controller,
+    required this.hintText,
+    this.autofocus = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -757,8 +925,14 @@ class _StyledTextField extends StatelessWidget {
         hintText: hintText,
         filled: true,
         fillColor: AppColors.tintGray,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+          borderSide: BorderSide.none,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: const BorderSide(color: AppColors.neutral200),
@@ -801,7 +975,9 @@ class _StyledDialog extends StatelessWidget {
       // here keeps it legible regardless of the active app theme — same
       // fix as admin_cities_screen.dart's _StyledDialog.
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radius18),
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420),
         child: Padding(
@@ -812,11 +988,21 @@ class _StyledDialog extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: iconColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                ),
                 child: Icon(icon, color: iconColor, size: 22),
               ),
               const SizedBox(height: 14),
-              Text(title, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: AppFontSizes.title,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.gray900,
+                ),
+              ),
               const SizedBox(height: 14),
               content,
               const SizedBox(height: 20),
@@ -839,15 +1025,31 @@ class _EmptyState extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 90),
           child: Center(
-            child: Column(children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(color: AppColors.neutral100, shape: BoxShape.circle),
-                child: Icon(Icons.public_rounded, size: 44, color: Colors.grey.shade400),
-              ),
-              const SizedBox(height: 14),
-              const Text('No countries added yet', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600, color: AppColors.gray700)),
-            ]),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.neutral100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.public_rounded,
+                    size: 44,
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'No countries added yet',
+                  style: TextStyle(
+                    fontSize: AppFontSizes.body,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.gray700,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -867,11 +1069,25 @@ class _ErrorState extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.08), shape: BoxShape.circle),
-            child: const Icon(Icons.error_outline_rounded, size: 40, color: AppColors.error),
+            decoration: BoxDecoration(
+              color: AppColors.error.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.error_outline_rounded,
+              size: 40,
+              color: AppColors.error,
+            ),
           ),
           const SizedBox(height: 14),
-          const Text('Failed to load countries', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray900)),
+          const Text(
+            'Failed to load countries',
+            style: TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w700,
+              color: AppColors.gray900,
+            ),
+          ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: onRetry,
@@ -882,7 +1098,9 @@ class _ErrorState extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+              ),
             ),
           ),
         ],
@@ -902,7 +1120,8 @@ class _EntranceScale extends StatelessWidget {
       tween: Tween(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 320),
       curve: Curves.easeOutBack,
-      builder: (context, value, child) => Transform.scale(scale: value, child: child),
+      builder: (context, value, child) =>
+          Transform.scale(scale: value, child: child),
       child: child,
     );
   }
@@ -917,7 +1136,11 @@ class _AnimatedListEntry extends StatelessWidget {
   // Stable identity for this row (the country's id). Falls back to index
   // only if no id is available, so old callers don't break.
   final dynamic itemKey;
-  const _AnimatedListEntry({required this.index, required this.child, this.itemKey});
+  const _AnimatedListEntry({
+    required this.index,
+    required this.child,
+    this.itemKey,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -929,7 +1152,10 @@ class _AnimatedListEntry extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, value, child) => Opacity(
         opacity: value,
-        child: Transform.translate(offset: Offset(0, (1 - value) * 14), child: child),
+        child: Transform.translate(
+          offset: Offset(0, (1 - value) * 14),
+          child: child,
+        ),
       ),
       child: child,
     );

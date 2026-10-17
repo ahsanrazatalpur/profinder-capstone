@@ -24,176 +24,204 @@ Future<Map<String, dynamic>?> showEditReviewSheet(
   BuildContext context, {
   required int initialRating,
   required String initialComment,
-}) {
+}) async {
   int rating = initialRating;
   final controller = TextEditingController(text: initialComment);
 
-  return showModalBottomSheet<Map<String, dynamic>>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet))),
-    builder: (sheetContext) {
-      final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
-      return StatefulBuilder(
-        builder: (sheetContext, setSheetState) {
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-            child: Container(
-              decoration: BoxDecoration(
-                color: sheetContext.colors.surface,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
-                boxShadow: [
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.black.withValues(alpha: 0.3)
-                        : Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, -4),
+  try {
+    return await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
+      ),
+      builder: (sheetContext) {
+        final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
+        return StatefulBuilder(
+          builder: (sheetContext, setSheetState) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: sheetContext.colors.surface,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(AppSizes.radiusSheet),
                   ),
-                ],
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 16,
-                  bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark
+                          ? Colors.black.withValues(alpha: 0.3)
+                          : Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 20,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
                 ),
-                child: SafeArea(
-                  top: false,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 36,
-                          height: 4,
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.15)
-                                : sheetContext.colors.divider,
-                            borderRadius: BorderRadius.circular(AppSizes.radiusXs),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        AppLocalizations.of(context).editReviewTitle,
-                        style: TextStyle(
-                          fontSize: AppFontSizes.title,
-                          fontWeight: FontWeight.w700,
-                          color: sheetContext.colors.textPrimary,
-                          letterSpacing: -0.3,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        AppLocalizations.of(context).editReviewSubtitle,
-                        style: TextStyle(
-                          fontSize: AppFontSizes.small,
-                          color: sheetContext.colors.textSecondary,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: List.generate(5, (i) {
-                            final star = i + 1;
-                            return GestureDetector(
-                              onTap: () => setSheetState(() => rating = star),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 150),
-                                curve: Curves.easeOut,
-                                padding: const EdgeInsets.symmetric(horizontal: 4),
-                                child: Icon(
-                                  star <= rating
-                                      ? Icons.star_rounded
-                                      : Icons.star_outline_rounded,
-                                  size: 34,
-                                  color: star <= rating
-                                      ? AppColors.warningAmber
-                                      : sheetContext.colors.textSecondary
-                                          .withValues(alpha: 0.3),
-                                ),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 16,
+                    bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
+                  ),
+                  child: SafeArea(
+                    top: false,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 36,
+                            height: 4,
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.15)
+                                  : sheetContext.colors.divider,
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusXs,
                               ),
-                            );
-                          }),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      TextField(
-                        controller: controller,
-                        maxLines: 4,
-                        maxLength: 1000,
-                        style: TextStyle(
-                          fontSize: AppFontSizes.body,
-                          color: sheetContext.colors.textPrimary,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context).editReviewHint,
-                          filled: true,
-                          fillColor: sheetContext.colors.background,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                            borderSide: BorderSide(color: sheetContext.colors.divider),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                            borderSide: BorderSide(color: sheetContext.colors.divider),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                            borderSide: BorderSide(
-                              color: AppColors.professionalColor,
-                              width: 1.5,
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: rating == 0
-                              ? null
-                              : () => Navigator.pop(sheetContext, {
+                        Text(
+                          AppLocalizations.of(context).editReviewTitle,
+                          style: TextStyle(
+                            fontSize: AppFontSizes.title,
+                            fontWeight: FontWeight.w700,
+                            color: sheetContext.colors.textPrimary,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          AppLocalizations.of(context).editReviewSubtitle,
+                          style: TextStyle(
+                            fontSize: AppFontSizes.small,
+                            color: sheetContext.colors.textSecondary,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: List.generate(5, (i) {
+                              final star = i + 1;
+                              return GestureDetector(
+                                onTap: () => setSheetState(() => rating = star),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 150),
+                                  curve: Curves.easeOut,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  child: Icon(
+                                    star <= rating
+                                        ? Icons.star_rounded
+                                        : Icons.star_outline_rounded,
+                                    size: 34,
+                                    color: star <= rating
+                                        ? AppColors.warningAmber
+                                        : sheetContext.colors.textSecondary
+                                              .withValues(alpha: 0.3),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        TextField(
+                          controller: controller,
+                          maxLines: 4,
+                          maxLength: 1000,
+                          style: TextStyle(
+                            fontSize: AppFontSizes.body,
+                            color: sheetContext.colors.textPrimary,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: AppLocalizations.of(
+                              context,
+                            ).editReviewHint,
+                            filled: true,
+                            fillColor: sheetContext.colors.background,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
+                              borderSide: BorderSide(
+                                color: sheetContext.colors.divider,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
+                              borderSide: BorderSide(
+                                color: sheetContext.colors.divider,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
+                              borderSide: BorderSide(
+                                color: AppColors.professionalColor,
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: rating == 0
+                                ? null
+                                : () => Navigator.pop(sheetContext, {
                                     'rating': rating,
                                     'comment': controller.text.trim(),
                                   }),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.professionalColor,
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(double.infinity, 48),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.professionalColor,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(double.infinity, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radiusMd,
+                                ),
+                              ),
+                              elevation: 0,
                             ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            AppLocalizations.of(context).saveChangesCta,
-                            style: const TextStyle(
-                              fontSize: AppFontSizes.body,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.3,
+                            child: Text(
+                              AppLocalizations.of(context).saveChangesCta,
+                              style: const TextStyle(
+                                fontSize: AppFontSizes.body,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
-      );
-    },
-  );
+            );
+          },
+        );
+      },
+    );
+  } finally {
+    controller.dispose();
+  }
 }
 
 /// Confirms permanent deletion of the caller's own review. Returns true if confirmed.
@@ -289,254 +317,289 @@ Future<bool> showDeleteReviewConfirm(BuildContext context) async {
 
 /// Opens a bottom sheet to compose a professional reply.
 /// Returns the typed text, or null if cancelled.
-Future<String?> showReplySheet(BuildContext context, {String? existingText}) {
+Future<String?> showReplySheet(
+  BuildContext context, {
+  String? existingText,
+}) async {
   final controller = TextEditingController(text: existingText ?? '');
 
-  return showModalBottomSheet<String>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
-    ),
-    builder: (sheetContext) {
-      final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
-      return AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-        child: Container(
-          decoration: BoxDecoration(
-            color: sheetContext.colors.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.3)
-                    : Colors.black.withValues(alpha: 0.08),
-                blurRadius: 20,
-                offset: const Offset(0, -4),
+  try {
+    return await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
+      ),
+      builder: (sheetContext) {
+        final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          child: Container(
+            decoration: BoxDecoration(
+              color: sheetContext.colors.surface,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(AppSizes.radiusSheet),
               ),
-            ],
-          ),
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 16,
-                bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 36,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.15)
-                            : sheetContext.colors.divider,
-                        borderRadius: BorderRadius.circular(AppSizes.radiusXs),
-                      ),
-                    ),
-                  ),
-                  Text(
-                    AppLocalizations.of(context).replyTitle,
-                    style: TextStyle(
-                      fontSize: AppFontSizes.title,
-                      fontWeight: FontWeight.w700,
-                      color: sheetContext.colors.textPrimary,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    AppLocalizations.of(context).replySubtitle,
-                    style: TextStyle(
-                      fontSize: AppFontSizes.small,
-                      color: sheetContext.colors.textSecondary,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  TextField(
-                    controller: controller,
-                    maxLines: 4,
-                    maxLength: 1000,
-                    autofocus: true,
-                    style: TextStyle(
-                      fontSize: AppFontSizes.body,
-                      color: sheetContext.colors.textPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context).replyHint,
-                      filled: true,
-                      fillColor: sheetContext.colors.background,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                        borderSide: BorderSide(color: sheetContext.colors.divider),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                        borderSide: BorderSide(color: sheetContext.colors.divider),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                        borderSide: BorderSide(
-                          color: AppColors.professionalColor,
-                          width: 1.5,
+              boxShadow: [
+                BoxShadow(
+                  color: isDark
+                      ? Colors.black.withValues(alpha: 0.3)
+                      : Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, -4),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 16,
+                  bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 36,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.15)
+                              : sheetContext.colors.divider,
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusXs,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final text = controller.text.trim();
-                        if (text.isEmpty) return;
-                        Navigator.pop(sheetContext, text);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.professionalColor,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                        ),
-                        elevation: 0,
+                    Text(
+                      AppLocalizations.of(context).replyTitle,
+                      style: TextStyle(
+                        fontSize: AppFontSizes.title,
+                        fontWeight: FontWeight.w700,
+                        color: sheetContext.colors.textPrimary,
+                        letterSpacing: -0.3,
                       ),
-                      child: Text(
-                        AppLocalizations.of(context).postReplyCta,
-                        style: const TextStyle(
-                          fontSize: AppFontSizes.body,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.3,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      AppLocalizations.of(context).replySubtitle,
+                      style: TextStyle(
+                        fontSize: AppFontSizes.small,
+                        color: sheetContext.colors.textSecondary,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: controller,
+                      maxLines: 4,
+                      maxLength: 1000,
+                      autofocus: true,
+                      style: TextStyle(
+                        fontSize: AppFontSizes.body,
+                        color: sheetContext.colors.textPrimary,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context).replyHint,
+                        filled: true,
+                        fillColor: sheetContext.colors.background,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
+                          borderSide: BorderSide(
+                            color: sheetContext.colors.divider,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
+                          borderSide: BorderSide(
+                            color: sheetContext.colors.divider,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
+                          borderSide: BorderSide(
+                            color: AppColors.professionalColor,
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final text = controller.text.trim();
+                          if (text.isEmpty) return;
+                          Navigator.pop(sheetContext, text);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.professionalColor,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context).postReplyCta,
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.body,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-    },
-  );
+        );
+      },
+    );
+  } finally {
+    controller.dispose();
+  }
 }
 
 /// Opens a bottom sheet to select a report reason (+ optional note).
 /// Returns {'reason': ..., 'note': ...}, or null if cancelled.
-Future<Map<String, String>?> showReportSheet(BuildContext context) {
+Future<Map<String, String>?> showReportSheet(BuildContext context) async {
   String? selectedReason;
   final noteController = TextEditingController();
 
-  return showModalBottomSheet<Map<String, String>>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
-    ),
-    builder: (sheetContext) {
-      final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
-      return StatefulBuilder(
-        builder: (sheetContext, setSheetState) {
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-            child: Container(
-              decoration: BoxDecoration(
-                color: sheetContext.colors.surface,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
-                boxShadow: [
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.black.withValues(alpha: 0.3)
-                        : Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, -4),
+  try {
+    return await showModalBottomSheet<Map<String, String>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
+      ),
+      builder: (sheetContext) {
+        final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
+        return StatefulBuilder(
+          builder: (sheetContext, setSheetState) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: sheetContext.colors.surface,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(AppSizes.radiusSheet),
                   ),
-                ],
-              ),
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    top: 16,
-                    bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 36,
-                          height: 4,
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.15)
-                                : sheetContext.colors.divider,
-                            borderRadius: BorderRadius.circular(AppSizes.radiusXs),
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark
+                          ? Colors.black.withValues(alpha: 0.3)
+                          : Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 20,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      top: 16,
+                      bottom:
+                          MediaQuery.of(sheetContext).viewInsets.bottom + 20,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 36,
+                            height: 4,
+                            margin: const EdgeInsets.only(bottom: 16),
                             decoration: BoxDecoration(
-                              color: AppColors.error.withValues(alpha: 0.12),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.flag_outlined,
-                              color: AppColors.error,
-                              size: isDark ? 20 : 18,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              AppLocalizations.of(context).reportTitle,
-                              style: TextStyle(
-                                fontSize: AppFontSizes.title,
-                                fontWeight: FontWeight.w700,
-                                color: sheetContext.colors.textPrimary,
-                                letterSpacing: -0.3,
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.15)
+                                  : sheetContext.colors.divider,
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusXs,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        AppLocalizations.of(context).reportSubtitle,
-                        style: TextStyle(
-                          fontSize: AppFontSizes.small,
-                          color: sheetContext.colors.textSecondary,
-                          height: 1.4,
-                          letterSpacing: 0.2,
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      RadioGroup<String>(
-                        groupValue: selectedReason,
-                        onChanged: (v) => setSheetState(() => selectedReason = v),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: kReportReasons.entries
-                              .map((e) => RadioListTile<String>(
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColors.error.withValues(alpha: 0.12),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.flag_outlined,
+                                color: AppColors.error,
+                                size: isDark ? 20 : 18,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                AppLocalizations.of(context).reportTitle,
+                                style: TextStyle(
+                                  fontSize: AppFontSizes.title,
+                                  fontWeight: FontWeight.w700,
+                                  color: sheetContext.colors.textPrimary,
+                                  letterSpacing: -0.3,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          AppLocalizations.of(context).reportSubtitle,
+                          style: TextStyle(
+                            fontSize: AppFontSizes.small,
+                            color: sheetContext.colors.textSecondary,
+                            height: 1.4,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        RadioGroup<String>(
+                          groupValue: selectedReason,
+                          onChanged: (v) =>
+                              setSheetState(() => selectedReason = v),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: kReportReasons.entries
+                                .map(
+                                  (e) => RadioListTile<String>(
                                     value: e.key,
                                     dense: true,
                                     contentPadding: EdgeInsets.zero,
@@ -553,76 +616,94 @@ Future<Map<String, String>?> showReportSheet(BuildContext context) {
                                             : sheetContext.colors.textPrimary,
                                       ),
                                     ),
-                                  ))
-                              .toList(),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: noteController,
-                        maxLines: 2,
-                        style: TextStyle(
-                          fontSize: AppFontSizes.secondary,
-                          color: sheetContext.colors.textPrimary,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context).reportNoteHint,
-                          filled: true,
-                          fillColor: sheetContext.colors.background,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                            borderSide: BorderSide(color: sheetContext.colors.divider),
+                                  ),
+                                )
+                                .toList(),
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                            borderSide: BorderSide(color: sheetContext.colors.divider),
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: noteController,
+                          maxLines: 2,
+                          style: TextStyle(
+                            fontSize: AppFontSizes.secondary,
+                            color: sheetContext.colors.textPrimary,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                            borderSide: BorderSide(
-                              color: AppColors.professionalColor,
-                              width: 1.5,
+                          decoration: InputDecoration(
+                            hintText: AppLocalizations.of(
+                              context,
+                            ).reportNoteHint,
+                            filled: true,
+                            fillColor: sheetContext.colors.background,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
+                              borderSide: BorderSide(
+                                color: sheetContext.colors.divider,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
+                              borderSide: BorderSide(
+                                color: sheetContext.colors.divider,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
+                              borderSide: BorderSide(
+                                color: AppColors.professionalColor,
+                                width: 1.5,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: selectedReason == null
-                              ? null
-                              : () => Navigator.pop(sheetContext, {
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: selectedReason == null
+                                ? null
+                                : () => Navigator.pop(sheetContext, {
                                     'reason': selectedReason!,
                                     'note': noteController.text.trim(),
                                   }),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.error,
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(double.infinity, 48),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.error,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(double.infinity, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radiusMd,
+                                ),
+                              ),
+                              elevation: 0,
                             ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            AppLocalizations.of(context).submitReportCta,
-                            style: const TextStyle(
-                              fontSize: AppFontSizes.body,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.3,
+                            child: Text(
+                              AppLocalizations.of(context).submitReportCta,
+                              style: const TextStyle(
+                                fontSize: AppFontSizes.body,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
-      );
-    },
-  );
+            );
+          },
+        );
+      },
+    );
+  } finally {
+    noteController.dispose();
+  }
 }

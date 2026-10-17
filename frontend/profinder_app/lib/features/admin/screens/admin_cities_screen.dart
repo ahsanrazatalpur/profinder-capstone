@@ -61,9 +61,14 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      final query = widget.country != null ? '?country=${widget.country['id']}' : '';
+      final query = widget.country != null
+          ? '?country=${widget.country['id']}'
+          : '';
       final r = await _api.get('/admin-panel/cities/$query');
       if (!mounted) return;
       setState(() {
@@ -72,14 +77,19 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load cities'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load cities';
+      });
     }
   }
 
   Future<void> _toggleStatus(dynamic c) async {
     final newStatus = c['status'] == 'active' ? 'coming_soon' : 'active';
     try {
-      await _api.patch('/admin-panel/cities/${c['id']}/', {'status': newStatus});
+      await _api.patch('/admin-panel/cities/${c['id']}/', {
+        'status': newStatus,
+      });
       _load();
     } catch (e) {
       if (!mounted) return;
@@ -124,7 +134,10 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
 
   // Centralised snackbar so every failure path looks consistent instead of
   // the default Material SnackBar styling.
-  void _showSnack(String message, {IconData icon = Icons.error_outline_rounded}) {
+  void _showSnack(
+    String message, {
+    IconData icon = Icons.error_outline_rounded,
+  }) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -132,12 +145,22 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
           children: [
             Icon(icon, color: Colors.white, size: 18),
             const SizedBox(width: 10),
-            Expanded(child: Text(message, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600))),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ],
         ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.gray800,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
         margin: const EdgeInsets.all(14),
       ),
     );
@@ -154,93 +177,124 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
     await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
     final nameCtrl = TextEditingController();
-    showDialog(
-      context: context,
-      // `submitting`/`errorText` live in THIS outer builder, which Flutter
-      // calls only once per showDialog(). They must NOT be declared inside
-      // the StatefulBuilder's own builder below — that one re-runs on every
-      // setDialogState call, which would silently reset them back to their
-      // initial values on every rebuild and make the loading/error state
-      // never actually appear.
-      builder: (dialogContext) {
-        bool submitting = false;
-        String? errorText;
+    try {
+      await showDialog(
+        context: context,
+        // `submitting`/`errorText` live in THIS outer builder, which Flutter
+        // calls only once per showDialog(). They must NOT be declared inside
+        // the StatefulBuilder's own builder below — that one re-runs on every
+        // setDialogState call, which would silently reset them back to their
+        // initial values on every rebuild and make the loading/error state
+        // never actually appear.
+        builder: (dialogContext) {
+          bool submitting = false;
+          String? errorText;
 
-        return StatefulBuilder(
-          builder: (dialogContext, setDialogState) {
-            Future<void> submit() async {
-              final name = nameCtrl.text.trim();
-              if (name.isEmpty) return;
-              setDialogState(() { submitting = true; errorText = null; });
-              try {
-                await _api.post('/admin-panel/cities/', {
-                  'name': name, 'country': targetCountry['id'],
-                });
-                if (!dialogContext.mounted) return;
-                Navigator.pop(dialogContext);
-                _load();
-              } catch (e) {
-                // Keep the dialog open on failure and show the real reason
-                // inline, rather than closing and leaving the user guessing
-                // why nothing was added.
+          return StatefulBuilder(
+            builder: (dialogContext, setDialogState) {
+              Future<void> submit() async {
+                final name = nameCtrl.text.trim();
+                if (name.isEmpty) return;
                 setDialogState(() {
-                  submitting = false;
-                  errorText = _friendlyError(e, 'Failed to add — may already exist.');
+                  submitting = true;
+                  errorText = null;
                 });
+                try {
+                  await _api.post('/admin-panel/cities/', {
+                    'name': name,
+                    'country': targetCountry['id'],
+                  });
+                  if (!dialogContext.mounted) return;
+                  Navigator.pop(dialogContext);
+                  _load();
+                } catch (e) {
+                  // Keep the dialog open on failure and show the real reason
+                  // inline, rather than closing and leaving the user guessing
+                  // why nothing was added.
+                  setDialogState(() {
+                    submitting = false;
+                    errorText = _friendlyError(
+                      e,
+                      'Failed to add — may already exist.',
+                    );
+                  });
+                }
               }
-            }
 
-            return _StyledDialog(
-              icon: Icons.add_location_alt_rounded,
-              iconColor: AppColors.adminColor,
-              title: 'Add City to ${targetCountry['name']}',
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _StyledTextField(
-                    controller: nameCtrl,
-                    hintText: 'City name',
-                    autofocus: true,
-                    enabled: !submitting,
-                    onSubmitted: (_) => submit(),
-                  ),
-                  if (errorText != null) ...[
-                    const SizedBox(height: 10),
-                    _InlineFormError(message: errorText!),
+              return _StyledDialog(
+                icon: Icons.add_location_alt_rounded,
+                iconColor: AppColors.adminColor,
+                title: 'Add City to ${targetCountry['name']}',
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _StyledTextField(
+                      controller: nameCtrl,
+                      hintText: 'City name',
+                      autofocus: true,
+                      enabled: !submitting,
+                      onSubmitted: (_) => submit(),
+                    ),
+                    if (errorText != null) ...[
+                      const SizedBox(height: 10),
+                      _InlineFormError(message: errorText!),
+                    ],
                   ],
-                ],
-              ),
-              actions: [
-                TextButton(
-                  style: TextButton.styleFrom(foregroundColor: AppColors.grayDeep),
-                  onPressed: submitting ? null : () => Navigator.pop(dialogContext),
-                  child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.adminColor,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.adminColor.withValues(alpha: 0.6),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                actions: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.grayDeep,
+                    ),
+                    onPressed: submitting
+                        ? null
+                        : () => Navigator.pop(dialogContext),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                   ),
-                  onPressed: submitting ? null : submit,
-                  child: submitting
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Text('Add', style: TextStyle(fontWeight: FontWeight.w700)),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.adminColor,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: AppColors.adminColor.withValues(
+                        alpha: 0.6,
+                      ),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radius10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                    ),
+                    onPressed: submitting ? null : submit,
+                    child: submitting
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Add',
+                            style: TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    } finally {
+      nameCtrl.dispose();
+    }
   }
 
   // FAB entry point. When this screen is scoped to a country, add directly
@@ -269,7 +323,9 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
     List<dynamic> countries = [];
     bool fetchStarted = false;
 
-    Future<void> fetchCountries(void Function(void Function()) setDialogState) async {
+    Future<void> fetchCountries(
+      void Function(void Function()) setDialogState,
+    ) async {
       try {
         final r = await _api.get('/admin-panel/countries/');
         countries = r.data is List ? List<dynamic>.from(r.data) : [];
@@ -280,113 +336,157 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
       setDialogState(() {});
     }
 
-    showDialog(
-      context: context,
-      // Same rule as _addDialog: all mutable state above lives in this
-      // outer builder (called once), not inside StatefulBuilder's builder.
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) {
-          // Kick off the fetch exactly once, the first time this dialog
-          // is built, using the fetchStarted guard from the outer scope.
-          if (!fetchStarted) {
-            fetchStarted = true;
-            fetchCountries(setDialogState);
-          }
+    try {
+      await showDialog(
+        context: context,
+        // Same rule as _addDialog: all mutable state above lives in this
+        // outer builder (called once), not inside StatefulBuilder's builder.
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            // Kick off the fetch exactly once, the first time this dialog
+            // is built, using the fetchStarted guard from the outer scope.
+            if (!fetchStarted) {
+              fetchStarted = true;
+              fetchCountries(setDialogState);
+            }
 
-          final query = searchCtrl.text.trim().toLowerCase();
-          final filtered = query.isEmpty
-              ? countries
-              : countries.where((c) => c['name'].toString().toLowerCase().contains(query)).toList();
+            final query = searchCtrl.text.trim().toLowerCase();
+            final filtered = query.isEmpty
+                ? countries
+                : countries
+                      .where(
+                        (c) =>
+                            c['name'].toString().toLowerCase().contains(query),
+                      )
+                      .toList();
 
-          return Dialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420, maxHeight: 480),
-              child: Padding(
-                padding: const EdgeInsets.all(22),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppColors.adminColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            return Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius18),
+              ),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 420,
+                  maxHeight: 480,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(22),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.adminColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.public_rounded,
+                          color: AppColors.adminColor,
+                          size: 22,
+                        ),
                       ),
-                      child: const Icon(Icons.public_rounded, color: AppColors.adminColor, size: 22),
-                    ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'Which country is this city in?',
-                      style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900),
-                    ),
-                    const SizedBox(height: 14),
-                    _StyledTextField(
-                      controller: searchCtrl,
-                      hintText: 'Search countries...',
-                      onChanged: () => setDialogState(() {}),
-                    ),
-                    const SizedBox(height: 12),
-                    Flexible(
-                      child: loading
-                          ? const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 24),
-                              child: Center(
-                                child: SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(strokeWidth: 2.4, color: AppColors.adminColor),
-                                ),
-                              ),
-                            )
-                          : error != null
-                              ? _InlineFormError(message: error!)
-                              : filtered.isEmpty
-                                  ? const Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 24),
-                                      child: Center(
-                                        child: Text('No countries found.', style: TextStyle(color: AppColors.neutral400)),
-                                      ),
-                                    )
-                                  : ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: filtered.length,
-                                      itemBuilder: (_, i) {
-                                        final country = filtered[i];
-                                        return ListTile(
-                                          contentPadding: EdgeInsets.zero,
-                                          leading: const Icon(Icons.flag_rounded, size: 18, color: AppColors.grayDeep),
-                                          title: Text(
-                                            country['name']?.toString() ?? '',
-                                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: AppFontSizes.body),
-                                          ),
-                                          onTap: () {
-                                            Navigator.pop(dialogContext);
-                                            _addDialog(country);
-                                          },
-                                        );
-                                      },
+                      const SizedBox(height: 14),
+                      const Text(
+                        'Which country is this city in?',
+                        style: TextStyle(
+                          fontSize: AppFontSizes.title,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.gray900,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      _StyledTextField(
+                        controller: searchCtrl,
+                        hintText: 'Search countries...',
+                        onChanged: () => setDialogState(() {}),
+                      ),
+                      const SizedBox(height: 12),
+                      Flexible(
+                        child: loading
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 24),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.4,
+                                      color: AppColors.adminColor,
                                     ),
-                    ),
-                    const SizedBox(height: 12),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        style: TextButton.styleFrom(foregroundColor: AppColors.grayDeep),
-                        onPressed: () => Navigator.pop(dialogContext),
-                        child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                                  ),
+                                ),
+                              )
+                            : error != null
+                            ? _InlineFormError(message: error!)
+                            : filtered.isEmpty
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 24),
+                                child: Center(
+                                  child: Text(
+                                    'No countries found.',
+                                    style: TextStyle(
+                                      color: AppColors.neutral400,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: filtered.length,
+                                itemBuilder: (_, i) {
+                                  final country = filtered[i];
+                                  return ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    leading: const Icon(
+                                      Icons.flag_rounded,
+                                      size: 18,
+                                      color: AppColors.grayDeep,
+                                    ),
+                                    title: Text(
+                                      country['name']?.toString() ?? '',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: AppFontSizes.body,
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(dialogContext);
+                                      _addDialog(country);
+                                    },
+                                  );
+                                },
+                              ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.grayDeep,
+                          ),
+                          onPressed: () => Navigator.pop(dialogContext),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
+    } finally {
+      searchCtrl.dispose();
+    }
   }
 
   void _mergeDialog(dynamic city) async {
@@ -394,99 +494,136 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
     await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
     final variantsCtrl = TextEditingController();
-    showDialog(
-      context: context,
-      // See _addDialog: this state must live in the outer (once-called)
-      // builder, not inside StatefulBuilder's own builder.
-      builder: (dialogContext) {
-        bool submitting = false;
-        String? errorText;
+    try {
+      await showDialog(
+        context: context,
+        // See _addDialog: this state must live in the outer (once-called)
+        // builder, not inside StatefulBuilder's own builder.
+        builder: (dialogContext) {
+          bool submitting = false;
+          String? errorText;
 
-        return StatefulBuilder(
-          builder: (dialogContext, setDialogState) {
-            Future<void> submit() async {
-              final variants = variantsCtrl.text
-                  .split(',')
-                  .map((s) => s.trim())
-                  .where((s) => s.isNotEmpty)
-                  .toList();
-              if (variants.isEmpty) return;
-              setDialogState(() { submitting = true; errorText = null; });
-              try {
-                final r = await _api.post('/admin-panel/cities/${city['id']}/merge/', {'variants': variants});
-                if (!dialogContext.mounted) return;
-                Navigator.pop(dialogContext);
-                if (!mounted) return;
-                _showSnack(r.data['message']?.toString() ?? 'Merged.', icon: Icons.check_circle_outline_rounded);
-                _load(); // Refresh — merge succeeds on the backend but the list
-                         // needs a reload to stop showing the now-merged variant.
-              } catch (e) {
-                // Stay open and show the real reason (e.g. a variant that
-                // doesn't exist, or belongs to another city) instead of just
-                // closing with a generic "Merge failed."
+          return StatefulBuilder(
+            builder: (dialogContext, setDialogState) {
+              Future<void> submit() async {
+                final variants = variantsCtrl.text
+                    .split(',')
+                    .map((s) => s.trim())
+                    .where((s) => s.isNotEmpty)
+                    .toList();
+                if (variants.isEmpty) return;
                 setDialogState(() {
-                  submitting = false;
-                  errorText = _friendlyError(e, 'Merge failed.');
+                  submitting = true;
+                  errorText = null;
                 });
+                try {
+                  final r = await _api.post(
+                    '/admin-panel/cities/${city['id']}/merge/',
+                    {'variants': variants},
+                  );
+                  if (!dialogContext.mounted) return;
+                  Navigator.pop(dialogContext);
+                  if (!mounted) return;
+                  _showSnack(
+                    r.data['message']?.toString() ?? 'Merged.',
+                    icon: Icons.check_circle_outline_rounded,
+                  );
+                  _load(); // Refresh — merge succeeds on the backend but the list
+                  // needs a reload to stop showing the now-merged variant.
+                } catch (e) {
+                  // Stay open and show the real reason (e.g. a variant that
+                  // doesn't exist, or belongs to another city) instead of just
+                  // closing with a generic "Merge failed."
+                  setDialogState(() {
+                    submitting = false;
+                    errorText = _friendlyError(e, 'Merge failed.');
+                  });
+                }
               }
-            }
 
-            return _StyledDialog(
-              icon: Icons.merge_type_rounded,
-              iconColor: AppColors.adminColor,
-              title: 'Merge into "${city['name']}"',
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Enter typo/variant spellings, comma-separated.',
-                    style: TextStyle(fontSize: 12.5, color: AppColors.grayDeep, height: 1.4),
-                  ),
-                  const SizedBox(height: 12),
-                  _StyledTextField(
-                    controller: variantsCtrl,
-                    hintText: 'variant1, variant2, ...',
-                    autofocus: true,
-                    enabled: !submitting,
-                    onSubmitted: (_) => submit(),
-                  ),
-                  if (errorText != null) ...[
-                    const SizedBox(height: 10),
-                    _InlineFormError(message: errorText!),
+              return _StyledDialog(
+                icon: Icons.merge_type_rounded,
+                iconColor: AppColors.adminColor,
+                title: 'Merge into "${city['name']}"',
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Enter typo/variant spellings, comma-separated.',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: AppColors.grayDeep,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _StyledTextField(
+                      controller: variantsCtrl,
+                      hintText: 'variant1, variant2, ...',
+                      autofocus: true,
+                      enabled: !submitting,
+                      onSubmitted: (_) => submit(),
+                    ),
+                    if (errorText != null) ...[
+                      const SizedBox(height: 10),
+                      _InlineFormError(message: errorText!),
+                    ],
                   ],
-                ],
-              ),
-              actions: [
-                TextButton(
-                  style: TextButton.styleFrom(foregroundColor: AppColors.grayDeep),
-                  onPressed: submitting ? null : () => Navigator.pop(dialogContext),
-                  child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.adminColor,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.adminColor.withValues(alpha: 0.6),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                actions: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.grayDeep,
+                    ),
+                    onPressed: submitting
+                        ? null
+                        : () => Navigator.pop(dialogContext),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                   ),
-                  onPressed: submitting ? null : submit,
-                  child: submitting
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Text('Merge', style: TextStyle(fontWeight: FontWeight.w700)),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.adminColor,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: AppColors.adminColor.withValues(
+                        alpha: 0.6,
+                      ),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radius10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                    ),
+                    onPressed: submitting ? null : submit,
+                    child: submitting
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Merge',
+                            style: TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    } finally {
+      variantsCtrl.dispose();
+    }
   }
 
   @override
@@ -512,7 +649,10 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
           elevation: 3,
           onPressed: _addFabPressed,
           icon: const Icon(Icons.add_rounded, color: Colors.white),
-          label: const Text('Add City', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+          label: const Text(
+            'Add City',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
         ),
       ),
       body: SafeArea(
@@ -520,7 +660,9 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth;
-            final crossAxisCount = width >= _kDesktopBreakpoint ? 3 : (width >= _kTabletBreakpoint ? 2 : 1);
+            final crossAxisCount = width >= _kDesktopBreakpoint
+                ? 3
+                : (width >= _kTabletBreakpoint ? 2 : 1);
 
             return Column(
               children: [
@@ -532,22 +674,28 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
                     child: _loading
                         ? const Center(
                             key: ValueKey('loading'),
-                            child: CircularProgressIndicator(color: AppColors.adminColor, strokeWidth: 2.5),
+                            child: CircularProgressIndicator(
+                              color: AppColors.adminColor,
+                              strokeWidth: 2.5,
+                            ),
                           )
                         : _error != null
-                            ? _ErrorState(key: const ValueKey('error'), onRetry: _load)
-                            : _cities.isEmpty
-                                ? const _EmptyState(key: ValueKey('empty'))
-                                : _CitiesList(
-                                    key: const ValueKey('content'),
-                                    cities: _cities,
-                                    isNested: isNested,
-                                    crossAxisCount: crossAxisCount,
-                                    onRefresh: _load,
-                                    onToggle: _toggleStatus,
-                                    onMerge: _mergeDialog,
-                                    onDelete: _delete,
-                                  ),
+                        ? _ErrorState(
+                            key: const ValueKey('error'),
+                            onRetry: _load,
+                          )
+                        : _cities.isEmpty
+                        ? const _EmptyState(key: ValueKey('empty'))
+                        : _CitiesList(
+                            key: const ValueKey('content'),
+                            cities: _cities,
+                            isNested: isNested,
+                            crossAxisCount: crossAxisCount,
+                            onRefresh: _load,
+                            onToggle: _toggleStatus,
+                            onMerge: _mergeDialog,
+                            onDelete: _delete,
+                          ),
                   ),
                 ),
               ],
@@ -608,42 +756,42 @@ class _CitiesList extends StatelessWidget {
                   onDelete: onDelete,
                 )
               : crossAxisCount == 1
-                  ? ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 96),
-                      itemCount: cities.length,
-                      itemBuilder: (_, i) => _AnimatedListEntry(
-                        index: i,
-                        child: _CityCard(
-                          city: cities[i],
-                          isNested: isNested,
-                          onToggle: onToggle,
-                          onMerge: onMerge,
-                          onDelete: onDelete,
-                        ),
-                      ),
-                    )
-                  : GridView.builder(
-                      padding: const EdgeInsets.fromLTRB(20, 14, 20, 100),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                        crossAxisSpacing: 14,
-                        mainAxisSpacing: 14,
-                        // A fixed extent (rather than an aspect ratio) keeps
-                        // card height predictable regardless of content length.
-                        mainAxisExtent: isNested ? 168 : 190,
-                      ),
-                      itemCount: cities.length,
-                      itemBuilder: (_, i) => _AnimatedListEntry(
-                        index: i,
-                        child: _CityCard(
-                          city: cities[i],
-                          isNested: isNested,
-                          onToggle: onToggle,
-                          onMerge: onMerge,
-                          onDelete: onDelete,
-                        ),
-                      ),
+              ? ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 96),
+                  itemCount: cities.length,
+                  itemBuilder: (_, i) => _AnimatedListEntry(
+                    index: i,
+                    child: _CityCard(
+                      city: cities[i],
+                      isNested: isNested,
+                      onToggle: onToggle,
+                      onMerge: onMerge,
+                      onDelete: onDelete,
                     ),
+                  ),
+                )
+              : GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 100),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                    // A fixed extent (rather than an aspect ratio) keeps
+                    // card height predictable regardless of content length.
+                    mainAxisExtent: isNested ? 168 : 190,
+                  ),
+                  itemCount: cities.length,
+                  itemBuilder: (_, i) => _AnimatedListEntry(
+                    index: i,
+                    child: _CityCard(
+                      city: cities[i],
+                      isNested: isNested,
+                      onToggle: onToggle,
+                      onMerge: onMerge,
+                      onDelete: onDelete,
+                    ),
+                  ),
+                ),
         ),
       ),
     );
@@ -752,15 +900,35 @@ class _CountryGroupHeader extends StatelessWidget {
         Container(
           width: 4,
           height: 18,
-          decoration: BoxDecoration(color: AppColors.adminColor, borderRadius: BorderRadius.circular(AppSizes.radiusTiny)),
+          decoration: BoxDecoration(
+            color: AppColors.adminColor,
+            borderRadius: BorderRadius.circular(AppSizes.radiusTiny),
+          ),
         ),
         const SizedBox(width: 8),
-        Text(name, style: const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w800, color: AppColors.gray900)),
+        Text(
+          name,
+          style: const TextStyle(
+            fontSize: AppFontSizes.input,
+            fontWeight: FontWeight.w800,
+            color: AppColors.gray900,
+          ),
+        ),
         const SizedBox(width: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(color: AppColors.neutral100, borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
-          child: Text('$count', style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, color: AppColors.grayDeep)),
+          decoration: BoxDecoration(
+            color: AppColors.neutral100,
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+          ),
+          child: Text(
+            '$count',
+            style: const TextStyle(
+              fontSize: AppFontSizes.small,
+              fontWeight: FontWeight.w700,
+              color: AppColors.grayDeep,
+            ),
+          ),
         ),
         const SizedBox(width: 12),
         const Expanded(child: Divider(color: AppColors.neutral200)),
@@ -808,14 +976,22 @@ class _CityCardState extends State<_CityCard> {
         padding: const EdgeInsets.all(14),
         // Subtle lift-on-hover for desktop/web; a no-op on touch devices
         // since MouseRegion never fires enter/exit there.
-        transform: _hovered ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0)) : Matrix4.identity(),
+        transform: _hovered
+            ? (Matrix4.identity()..translateByDouble(0.0, -2.0, 0.0, 1.0))
+            : Matrix4.identity(),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-          border: Border.all(color: _hovered ? AppColors.adminColor.withValues(alpha: 0.35) : AppColors.neutral200),
+          border: Border.all(
+            color: _hovered
+                ? AppColors.adminColor.withValues(alpha: 0.35)
+                : AppColors.neutral200,
+          ),
           boxShadow: [
             BoxShadow(
-              color: _hovered ? Colors.black.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
+              color: _hovered
+                  ? Colors.black.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.03),
               blurRadius: _hovered ? 16 : 6,
               offset: Offset(0, _hovered ? 6 : 2),
             ),
@@ -838,7 +1014,11 @@ class _CityCardState extends State<_CityCard> {
                     children: [
                       Text(
                         c['name']?.toString() ?? '',
-                        style: const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w800, color: AppColors.gray900),
+                        style: const TextStyle(
+                          fontSize: AppFontSizes.input,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.gray900,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -847,12 +1027,19 @@ class _CityCardState extends State<_CityCard> {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.public_rounded, size: 11, color: AppColors.neutral400),
+                            const Icon(
+                              Icons.public_rounded,
+                              size: 11,
+                              color: AppColors.neutral400,
+                            ),
                             const SizedBox(width: 3),
                             Flexible(
                               child: Text(
                                 c['country_name']?.toString() ?? '',
-                                style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400),
+                                style: const TextStyle(
+                                  fontSize: AppFontSizes.caption,
+                                  color: AppColors.neutral400,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -864,7 +1051,10 @@ class _CityCardState extends State<_CityCard> {
                   ),
                 ),
                 const SizedBox(width: 6),
-                _StatusSwitch(isActive: isActive, onChanged: (_) => widget.onToggle(c)),
+                _StatusSwitch(
+                  isActive: isActive,
+                  onChanged: (_) => widget.onToggle(c),
+                ),
               ],
             ),
             const SizedBox(height: 10),
@@ -872,8 +1062,14 @@ class _CityCardState extends State<_CityCard> {
               spacing: 10,
               runSpacing: 6,
               children: [
-                _StatChip(icon: Icons.people_outline_rounded, label: '${c['user_count']} users'),
-                _StatChip(icon: Icons.work_outline_rounded, label: '${c['professional_count']} pros'),
+                _StatChip(
+                  icon: Icons.people_outline_rounded,
+                  label: '${c['user_count']} users',
+                ),
+                _StatChip(
+                  icon: Icons.work_outline_rounded,
+                  label: '${c['professional_count']} pros',
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -917,7 +1113,11 @@ class _StatusSwitch extends StatelessWidget {
       children: [
         Transform.scale(
           scale: 0.85,
-          child: Switch(value: isActive, activeThumbColor: context.colors.accent, onChanged: onChanged),
+          child: Switch(
+            value: isActive,
+            activeThumbColor: context.colors.accent,
+            onChanged: onChanged,
+          ),
         ),
         Text(
           isActive ? 'Active' : 'Coming soon',
@@ -941,13 +1141,23 @@ class _StatChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(color: AppColors.neutral100, borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
+      decoration: BoxDecoration(
+        color: AppColors.neutral100,
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 12, color: AppColors.grayDeep),
           const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AppColors.grayDeep)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              color: AppColors.grayDeep,
+            ),
+          ),
         ],
       ),
     );
@@ -960,7 +1170,11 @@ class _HoverOutlinedButton extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onPressed;
-  const _HoverOutlinedButton({required this.icon, required this.label, required this.onPressed});
+  const _HoverOutlinedButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
 
   @override
   State<_HoverOutlinedButton> createState() => _HoverOutlinedButtonState();
@@ -980,12 +1194,23 @@ class _HoverOutlinedButtonState extends State<_HoverOutlinedButton> {
           onPressed: widget.onPressed,
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.adminColor,
-            backgroundColor: _hovered ? AppColors.adminColor.withValues(alpha: 0.06) : Colors.transparent,
-            side: BorderSide(color: AppColors.adminColor.withValues(alpha: _hovered ? 0.6 : 0.35)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+            backgroundColor: _hovered
+                ? AppColors.adminColor.withValues(alpha: 0.06)
+                : Colors.transparent,
+            side: BorderSide(
+              color: AppColors.adminColor.withValues(
+                alpha: _hovered ? 0.6 : 0.35,
+              ),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
+            ),
           ),
           icon: Icon(widget.icon, size: 15),
-          label: Text(widget.label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
+          label: Text(
+            widget.label,
+            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+          ),
         ),
       ),
     );
@@ -999,7 +1224,12 @@ class _HoverIconButton extends StatefulWidget {
   final Color? color;
   final Color? background;
   final VoidCallback onPressed;
-  const _HoverIconButton({required this.icon, required this.onPressed, this.color, this.background});
+  const _HoverIconButton({
+    required this.icon,
+    required this.onPressed,
+    this.color,
+    this.background,
+  });
 
   @override
   State<_HoverIconButton> createState() => _HoverIconButtonState();
@@ -1020,7 +1250,9 @@ class _HoverIconButtonState extends State<_HoverIconButton> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: _hovered ? baseBg.withValues(alpha: (baseBg.a + 0.10).clamp(0.0, 1.0)) : baseBg,
+          color: _hovered
+              ? baseBg.withValues(alpha: (baseBg.a + 0.10).clamp(0.0, 1.0))
+              : baseBg,
           borderRadius: BorderRadius.circular(11),
         ),
         child: IconButton(
@@ -1062,8 +1294,14 @@ class _StyledTextField extends StatelessWidget {
         hintText: hintText,
         filled: true,
         fillColor: AppColors.tintGray,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+          borderSide: BorderSide.none,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: const BorderSide(color: AppColors.neutral200),
@@ -1096,12 +1334,20 @@ class _InlineFormError extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 15, color: AppColors.error),
+          const Icon(
+            Icons.error_outline_rounded,
+            size: 15,
+            color: AppColors.error,
+          ),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: AppColors.error),
+              style: const TextStyle(
+                fontSize: AppFontSizes.small,
+                fontWeight: FontWeight.w600,
+                color: AppColors.error,
+              ),
             ),
           ),
         ],
@@ -1137,7 +1383,9 @@ class _StyledDialog extends StatelessWidget {
       // box in dark mode. Forcing white here keeps it legible regardless of
       // the active app theme.
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radius18),
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420),
         child: Padding(
@@ -1148,11 +1396,21 @@ class _StyledDialog extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: iconColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                ),
                 child: Icon(icon, color: iconColor, size: 22),
               ),
               const SizedBox(height: 14),
-              Text(title, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: AppFontSizes.title,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.gray900,
+                ),
+              ),
               const SizedBox(height: 14),
               content,
               const SizedBox(height: 20),
@@ -1183,16 +1441,30 @@ class _EmptyState extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(20),
-                  decoration: const BoxDecoration(color: AppColors.neutral100, shape: BoxShape.circle),
-                  child: Icon(Icons.location_city_rounded, size: 44, color: Colors.grey.shade400),
+                  decoration: const BoxDecoration(
+                    color: AppColors.neutral100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.location_city_rounded,
+                    size: 44,
+                    color: Colors.grey.shade400,
+                  ),
                 ),
                 const SizedBox(height: 14),
                 const Text(
                   'No cities added yet',
-                  style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600, color: AppColors.gray700),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.body,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.gray700,
+                  ),
                 ),
                 const SizedBox(height: 4),
-                const Text('Tap "Add City" to get started', style: TextStyle(fontSize: 12.5, color: AppColors.neutral400)),
+                const Text(
+                  'Tap "Add City" to get started',
+                  style: TextStyle(fontSize: 12.5, color: AppColors.neutral400),
+                ),
               ],
             ),
           ),
@@ -1215,11 +1487,25 @@ class _ErrorState extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.08), shape: BoxShape.circle),
-            child: const Icon(Icons.error_outline_rounded, size: 40, color: AppColors.error),
+            decoration: BoxDecoration(
+              color: AppColors.error.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.error_outline_rounded,
+              size: 40,
+              color: AppColors.error,
+            ),
           ),
           const SizedBox(height: 14),
-          const Text('Failed to load cities', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray900)),
+          const Text(
+            'Failed to load cities',
+            style: TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w700,
+              color: AppColors.gray900,
+            ),
+          ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: onRetry,
@@ -1230,7 +1516,9 @@ class _ErrorState extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+              ),
             ),
           ),
         ],
@@ -1251,7 +1539,8 @@ class _EntranceScale extends StatelessWidget {
       tween: Tween(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 320),
       curve: Curves.easeOutBack,
-      builder: (context, value, child) => Transform.scale(scale: value, child: child),
+      builder: (context, value, child) =>
+          Transform.scale(scale: value, child: child),
       child: child,
     );
   }
@@ -1276,7 +1565,10 @@ class _AnimatedListEntry extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, value, child) => Opacity(
         opacity: value,
-        child: Transform.translate(offset: Offset(0, (1 - value) * 12), child: child),
+        child: Transform.translate(
+          offset: Offset(0, (1 - value) * 12),
+          child: child,
+        ),
       ),
       child: child,
     );

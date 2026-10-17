@@ -10,6 +10,7 @@
 //   POST /api/admin-panel/verification-requests/<user_id>/action/
 //     Body: { "action": "approve" | "reject", "reason": "optional text" }
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../services/api_service.dart';
@@ -100,18 +101,9 @@ class _AdminVerificationRequestsScreenState
       _filtered = q.isEmpty
           ? List<dynamic>.from(_all)
           : _all.where((r) {
-              return (r['name'] ?? '')
-                      .toString()
-                      .toLowerCase()
-                      .contains(q) ||
-                  (r['email'] ?? '')
-                      .toString()
-                      .toLowerCase()
-                      .contains(q) ||
-                  (r['category'] ?? '')
-                      .toString()
-                      .toLowerCase()
-                      .contains(q);
+              return (r['name'] ?? '').toString().toLowerCase().contains(q) ||
+                  (r['email'] ?? '').toString().toLowerCase().contains(q) ||
+                  (r['category'] ?? '').toString().toLowerCase().contains(q);
             }).toList();
     });
   }
@@ -146,11 +138,13 @@ class _AdminVerificationRequestsScreenState
                     ? const Center(
                         key: ValueKey('loader'),
                         child: CircularProgressIndicator(
-                            color: AppColors.adminColor, strokeWidth: 2.5),
+                          color: AppColors.adminColor,
+                          strokeWidth: 2.5,
+                        ),
                       )
                     : _error != null
-                        ? _buildError()
-                        : _buildList(maxWidth, hPad, isDesktop),
+                    ? _buildError()
+                    : _buildList(maxWidth, hPad, isDesktop),
               ),
             ),
           ],
@@ -175,29 +169,28 @@ class _AdminVerificationRequestsScreenState
                   children: [_emptyState()],
                 )
               : isDesktop
-                  ? GridView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics()),
-                      padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 20),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 14,
-                        mainAxisSpacing: 14,
-                        mainAxisExtent: 400,
-                      ),
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) =>
-                          _buildAnimatedCard(_filtered[i], i),
-                    )
-                  : ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics()),
-                      padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 20),
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) =>
-                          _buildAnimatedCard(_filtered[i], i),
-                    ),
+              ? GridView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 20),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                    mainAxisExtent: 400,
+                  ),
+                  itemCount: _filtered.length,
+                  itemBuilder: (_, i) => _buildAnimatedCard(_filtered[i], i),
+                )
+              : ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 20),
+                  itemCount: _filtered.length,
+                  itemBuilder: (_, i) => _buildAnimatedCard(_filtered[i], i),
+                ),
         ),
       ),
     );
@@ -240,10 +233,15 @@ class _AdminVerificationRequestsScreenState
         style: const TextStyle(fontSize: AppFontSizes.secondary),
         decoration: InputDecoration(
           hintText: 'Search by name, email, or category…',
-          hintStyle:
-              const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
-          prefixIcon: const Icon(Icons.search_rounded,
-              size: 20, color: AppColors.neutral400),
+          hintStyle: const TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.neutral400,
+          ),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            size: 20,
+            color: AppColors.neutral400,
+          ),
           suffixIcon: hasText
               ? IconButton(
                   icon: const Icon(Icons.close_rounded, size: 18),
@@ -256,8 +254,10 @@ class _AdminVerificationRequestsScreenState
               : null,
           filled: true,
           fillColor: AppColors.lightScaffold,
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 12,
+            horizontal: 12,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             borderSide: BorderSide.none,
@@ -268,8 +268,10 @@ class _AdminVerificationRequestsScreenState
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            borderSide:
-                const BorderSide(color: AppColors.adminColor, width: 1.4),
+            borderSide: const BorderSide(
+              color: AppColors.adminColor,
+              width: 1.4,
+            ),
           ),
         ),
       ),
@@ -317,8 +319,9 @@ class _AdminVerificationRequestsScreenState
                 children: [
                   CircleAvatar(
                     radius: 22,
-                    backgroundColor:
-                        AppColors.professionalColor.withValues(alpha: 0.12),
+                    backgroundColor: AppColors.professionalColor.withValues(
+                      alpha: 0.12,
+                    ),
                     child: Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
                       style: const TextStyle(
@@ -337,28 +340,40 @@ class _AdminVerificationRequestsScreenState
                             if (index == 0) ...[
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 7, vertical: 3),
+                                  horizontal: 7,
+                                  vertical: 3,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.warningAmber
-                                      .withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                                  color: AppColors.warningAmber.withValues(
+                                    alpha: 0.12,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                    AppSizes.radiusChip,
+                                  ),
                                   border: Border.all(
-                                      color: AppColors.warningAmber
-                                          .withValues(alpha: 0.3)),
+                                    color: AppColors.warningAmber.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                  ),
                                 ),
                                 child: const Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.schedule_rounded,
-                                        size: 9,
-                                        color: AppColors.warningAmber),
+                                    Icon(
+                                      Icons.schedule_rounded,
+                                      size: 9,
+                                      color: AppColors.warningAmber,
+                                    ),
                                     SizedBox(width: 3),
-                                    Text('OLDEST',
-                                        style: TextStyle(
-                                            fontSize: AppFontSizes.nano,
-                                            fontWeight: FontWeight.w800,
-                                            color: AppColors.warningAmber,
-                                            letterSpacing: 0.3)),
+                                    Text(
+                                      'OLDEST',
+                                      style: TextStyle(
+                                        fontSize: AppFontSizes.nano,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.warningAmber,
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -368,9 +383,10 @@ class _AdminVerificationRequestsScreenState
                               child: Text(
                                 name,
                                 style: const TextStyle(
-                                    fontSize: AppFontSizes.body,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.gray900),
+                                  fontSize: AppFontSizes.body,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.gray900,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -381,7 +397,9 @@ class _AdminVerificationRequestsScreenState
                         Text(
                           email,
                           style: const TextStyle(
-                              fontSize: 11.5, color: AppColors.neutral400),
+                            fontSize: 11.5,
+                            color: AppColors.neutral400,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -419,9 +437,10 @@ class _AdminVerificationRequestsScreenState
                   child: Text(
                     bio,
                     style: const TextStyle(
-                        fontSize: AppFontSizes.small,
-                        color: AppColors.gray700,
-                        height: 1.45),
+                      fontSize: AppFontSizes.small,
+                      color: AppColors.gray700,
+                      height: 1.45,
+                    ),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -456,22 +475,29 @@ class _AdminVerificationRequestsScreenState
                         onPressed: isProcessing
                             ? null
                             : () => _rejectDialog(userId, name),
-                        icon: const Icon(Icons.close_rounded,
-                            size: 16, color: AppColors.error),
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          size: 16,
+                          color: AppColors.error,
+                        ),
                         label: const Text(
                           'Reject',
                           style: TextStyle(
-                              color: AppColors.error,
-                              fontWeight: FontWeight.w600),
+                            color: AppColors.error,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
-                              color: AppColors.error, width: 1.4),
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 12),
+                            color: AppColors.error,
+                            width: 1.4,
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           minimumSize: const Size(0, 46),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppSizes.radius10),
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radius10,
+                            ),
                           ),
                         ),
                       ),
@@ -491,22 +517,30 @@ class _AdminVerificationRequestsScreenState
                                 width: 14,
                                 height: 14,
                                 child: CircularProgressIndicator(
-                                    color: Colors.white, strokeWidth: 2))
-                            : const Icon(Icons.check_rounded,
-                                size: 16, color: Colors.white),
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.check_rounded,
+                                size: 16,
+                                color: Colors.white,
+                              ),
                         label: const Text(
                           'Approve',
                           style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.accent,
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           minimumSize: const Size(0, 46),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppSizes.radius10),
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radius10,
+                            ),
                           ),
                           elevation: 0,
                         ),
@@ -538,9 +572,10 @@ class _AdminVerificationRequestsScreenState
           Text(
             label,
             style: const TextStyle(
-                fontSize: AppFontSizes.caption,
-                color: AppColors.gray700,
-                fontWeight: FontWeight.w500),
+              fontSize: AppFontSizes.caption,
+              color: AppColors.gray700,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -556,49 +591,55 @@ class _AdminVerificationRequestsScreenState
         children: [
           Row(
             children: [
-              const Icon(Icons.description_outlined,
-                  size: 12, color: AppColors.grayDeep),
+              const Icon(
+                Icons.description_outlined,
+                size: 12,
+                color: AppColors.grayDeep,
+              ),
               const SizedBox(width: 4),
               Text(
                 label,
                 style: const TextStyle(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.grayDeep,
-                    letterSpacing: 0.3),
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.grayDeep,
+                  letterSpacing: 0.3,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 5),
           ClipRRect(
             borderRadius: BorderRadius.circular(AppSizes.radius10),
-            child: Image.network(
-              url,
+            child: CachedNetworkImage(
+              imageUrl: url,
               height: 100,
               width: double.infinity,
               fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => Container(
+              memCacheWidth: 600,
+              memCacheHeight: 300,
+              placeholder: (_, _) => Container(
                 height: 100,
                 color: AppColors.neutral100,
                 child: const Center(
-                  child: Icon(Icons.insert_drive_file_outlined,
-                      color: AppColors.neutral300, size: 28),
+                  child: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                 ),
               ),
-              loadingBuilder: (_, child, progress) => progress == null
-                  ? child
-                  : Container(
-                      height: 100,
-                      color: AppColors.neutral100,
-                      child: const Center(
-                        child: SizedBox(
-                          width: 18,
-                          height: 18,
-                          child:
-                              CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                    ),
+              errorWidget: (_, _, _) => Container(
+                height: 100,
+                color: AppColors.neutral100,
+                child: const Center(
+                  child: Icon(
+                    Icons.insert_drive_file_outlined,
+                    color: AppColors.neutral300,
+                    size: 28,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -633,17 +674,24 @@ class _AdminVerificationRequestsScreenState
                         height: 34,
                         decoration: BoxDecoration(
                           color: AppColors.adminColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(AppSizes.radius10),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radius10,
+                          ),
                         ),
-                        child: const Icon(Icons.description_outlined,
-                            size: 18, color: AppColors.adminColor),
+                        child: const Icon(
+                          Icons.description_outlined,
+                          size: 18,
+                          color: AppColors.adminColor,
+                        ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           label,
                           style: const TextStyle(
-                              fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
+                            fontSize: AppFontSizes.body,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                       IconButton(
@@ -654,13 +702,24 @@ class _AdminVerificationRequestsScreenState
                   ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(AppSizes.radius10),
-                    child: Image.network(
-                      url,
+                    child: CachedNetworkImage(
+                      imageUrl: url,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, _, _) => const Padding(
+                      memCacheWidth: 1200,
+                      memCacheHeight: 1200,
+                      placeholder: (_, _) => const Padding(
+                        padding: EdgeInsets.all(40),
+                        child: Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                      errorWidget: (_, _, _) => const Padding(
                         padding: EdgeInsets.all(30),
-                        child: Icon(Icons.broken_image_outlined,
-                            size: 48, color: AppColors.neutral300),
+                        child: Icon(
+                          Icons.broken_image_outlined,
+                          size: 48,
+                          color: AppColors.neutral300,
+                        ),
                       ),
                     ),
                   ),
@@ -679,8 +738,9 @@ class _AdminVerificationRequestsScreenState
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
         titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
         contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
         title: Row(
@@ -692,15 +752,20 @@ class _AdminVerificationRequestsScreenState
                 color: context.colors.accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(9),
               ),
-              child: Icon(Icons.verified_rounded,
-                  size: 18, color: context.colors.accent),
+              child: Icon(
+                Icons.verified_rounded,
+                size: 18,
+                color: context.colors.accent,
+              ),
             ),
             const SizedBox(width: 10),
             const Expanded(
               child: Text(
                 'Approve verification?',
-                style:
-                    TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontSize: AppFontSizes.title,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
@@ -708,7 +773,10 @@ class _AdminVerificationRequestsScreenState
         content: Text(
           '$name will be marked as a verified professional.',
           style: const TextStyle(
-              fontSize: AppFontSizes.secondary, color: AppColors.grayDeep, height: 1.5),
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.grayDeep,
+            height: 1.5,
+          ),
         ),
         actions: [
           TextButton(
@@ -717,8 +785,10 @@ class _AdminVerificationRequestsScreenState
               minimumSize: const Size(0, 44),
               padding: const EdgeInsets.symmetric(horizontal: 12),
             ),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppColors.neutral400)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.neutral400),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -726,15 +796,20 @@ class _AdminVerificationRequestsScreenState
               minimumSize: const Size(0, 44),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+              ),
             ),
             onPressed: () {
               Navigator.pop(context);
               _submitAction(userId, 'approve', null);
             },
-            child: const Text('Approve',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
+            child: const Text(
+              'Approve',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -743,103 +818,125 @@ class _AdminVerificationRequestsScreenState
 
   /// Rejection reason dialog. Behavior unchanged — same controller, same
   /// `_submitAction` call, same Cancel semantics.
-  void _rejectDialog(int userId, String name) {
+  void _rejectDialog(int userId, String name) async {
     final reasonCtrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-        titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-        contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-        title: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(9),
+    try {
+      await showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
+          titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+          contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+          title: Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  size: 18,
+                  color: AppColors.error,
+                ),
               ),
-              child: const Icon(Icons.close_rounded,
-                  size: 18, color: AppColors.error),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'Reject $name\'s request?',
-                style:
-                    const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Reject $name\'s request?',
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.input,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'This reason will be sent to the professional so they can resubmit.',
+                style: TextStyle(
+                  fontSize: AppFontSizes.small,
+                  color: AppColors.grayDeep,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: reasonCtrl,
+                maxLines: 3,
+                style: const TextStyle(fontSize: AppFontSizes.secondary),
+                decoration: InputDecoration(
+                  hintText: 'e.g. CNIC image is blurry, please re-upload…',
+                  hintStyle: const TextStyle(
+                    fontSize: 12.5,
+                    color: AppColors.neutral400,
+                  ),
+                  filled: true,
+                  fillColor: AppColors.lightScaffold,
+                  contentPadding: const EdgeInsets.all(12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              style: TextButton.styleFrom(
+                minimumSize: const Size(0, 44),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+              ),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.neutral400),
               ),
             ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'This reason will be sent to the professional so they can resubmit.',
-              style: TextStyle(
-                  fontSize: AppFontSizes.small, color: AppColors.grayDeep, height: 1.5),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: reasonCtrl,
-              maxLines: 3,
-              style: const TextStyle(fontSize: AppFontSizes.secondary),
-              decoration: InputDecoration(
-                hintText: 'e.g. CNIC image is blurry, please re-upload…',
-                hintStyle: const TextStyle(
-                    fontSize: 12.5, color: AppColors.neutral400),
-                filled: true,
-                fillColor: AppColors.lightScaffold,
-                contentPadding: const EdgeInsets.all(12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.radius10),
-                  borderSide: BorderSide.none,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                minimumSize: const Size(0, 44),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                ),
+              ),
+              onPressed: () {
+                final reason = reasonCtrl.text.trim();
+                Navigator.pop(dialogContext);
+                _submitAction(userId, 'reject', reason);
+              },
+              child: const Text(
+                'Reject',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            style: TextButton.styleFrom(
-              minimumSize: const Size(0, 44),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-            ),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppColors.neutral400)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              minimumSize: const Size(0, 44),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
-            ),
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              _submitAction(userId, 'reject', reasonCtrl.text.trim());
-            },
-            child: const Text('Reject',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
-          ),
-        ],
-      ),
-    );
+      );
+    } finally {
+      reasonCtrl.dispose();
+    }
   }
 
   /// Submits an approve / reject action and removes the request from the
   /// local list on success. Behavior unchanged.
-  Future<void> _submitAction(
-      int userId, String action, String? reason) async {
+  Future<void> _submitAction(int userId, String action, String? reason) async {
     setState(() => _processingIds.add(userId));
     try {
       await _api.post('/admin-panel/verification-requests/$userId/action/', {
@@ -854,13 +951,17 @@ class _AdminVerificationRequestsScreenState
                 ? 'Professional verified successfully.'
                 : 'Request rejected and professional notified.',
             style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          backgroundColor:
-              action == 'approve' ? AppColors.success : AppColors.error,
+          backgroundColor: action == 'approve'
+              ? AppColors.success
+              : AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radius10)),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
+          ),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -877,12 +978,15 @@ class _AdminVerificationRequestsScreenState
           content: Text(
             'Failed to ${action == 'approve' ? 'approve' : 'reject'} request.',
             style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radius10)),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
+          ),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -905,22 +1009,29 @@ class _AdminVerificationRequestsScreenState
                 color: AppColors.success.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.verified_rounded,
-                  size: 42, color: AppColors.success),
+              child: const Icon(
+                Icons.verified_rounded,
+                size: 42,
+                color: AppColors.success,
+              ),
             ),
             const SizedBox(height: 16),
             const Text(
               'No pending verification requests',
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.grayDeep),
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+                color: AppColors.grayDeep,
+              ),
             ),
             const SizedBox(height: 6),
             const Text(
               'All caught up on verifications.',
-              style: TextStyle(fontSize: AppFontSizes.small, color: AppColors.neutral400),
+              style: TextStyle(
+                fontSize: AppFontSizes.small,
+                color: AppColors.neutral400,
+              ),
             ),
           ],
         ),
@@ -943,16 +1054,20 @@ class _AdminVerificationRequestsScreenState
                 color: AppColors.error.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.error_outline_rounded,
-                  size: 40, color: AppColors.error),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                size: 40,
+                color: AppColors.error,
+              ),
             ),
             const SizedBox(height: 14),
             const Text(
               'Failed to load verification requests',
               style: TextStyle(
-                  fontSize: AppFontSizes.input,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.gray700),
+                fontSize: AppFontSizes.input,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray700,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 18),
@@ -962,10 +1077,13 @@ class _AdminVerificationRequestsScreenState
               label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.adminColor,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
+                ),
               ),
             ),
           ],
@@ -982,8 +1100,18 @@ class _AdminVerificationRequestsScreenState
     try {
       final d = DateTime.parse(raw.toString()).toLocal();
       const months = [
-        'Jan','Feb','Mar','Apr','May','Jun',
-        'Jul','Aug','Sep','Oct','Nov','Dec',
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
       ];
       return '${months[d.month - 1]} ${d.day}, ${d.year}';
     } catch (_) {

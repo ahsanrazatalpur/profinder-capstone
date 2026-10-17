@@ -12,6 +12,7 @@
 // app — no Django admin trip required.
 
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -159,7 +160,9 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
         titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
         contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
         title: Row(
@@ -171,14 +174,20 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                 color: AppColors.error.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(9),
               ),
-              child: const Icon(Icons.delete_outline_rounded,
-                  color: AppColors.error, size: 18),
+              child: const Icon(
+                Icons.delete_outline_rounded,
+                color: AppColors.error,
+                size: 18,
+              ),
             ),
             const SizedBox(width: 10),
             const Expanded(
               child: Text(
                 'Delete this banner?',
-                style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontSize: AppFontSizes.input,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
@@ -186,7 +195,10 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
         content: Text(
           '"${banner['title']}" will be permanently deleted.',
           style: const TextStyle(
-              fontSize: AppFontSizes.secondary, color: AppColors.grayDeep, height: 1.5),
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.grayDeep,
+            height: 1.5,
+          ),
         ),
         actions: [
           TextButton(
@@ -195,8 +207,10 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               minimumSize: const Size(0, 44),
               padding: const EdgeInsets.symmetric(horizontal: 12),
             ),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppColors.neutral400)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.neutral400),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -204,12 +218,17 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               minimumSize: const Size(0, 44),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+              ),
             ),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
+            child: const Text(
+              'Delete',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -253,8 +272,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
       barrierColor: Colors.black.withValues(alpha: 0.65),
       builder: (ctx) => Dialog(
         backgroundColor: Colors.transparent,
-        insetPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -265,8 +283,10 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               right: 0,
               child: Center(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.adminColor,
                     borderRadius: BorderRadius.circular(AppSizes.radiusChip),
@@ -282,8 +302,11 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.visibility_rounded,
-                          color: Colors.white, size: 13),
+                      Icon(
+                        Icons.visibility_rounded,
+                        color: Colors.white,
+                        size: 13,
+                      ),
                       SizedBox(width: 6),
                       Text(
                         'PREVIEW MODE',
@@ -322,7 +345,9 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
       objectId: (banner['id'] as num).toInt(),
       title: banner['title']?.toString() ?? '',
       fields: _tFields,
-      existing: banner['translations'] is List ? banner['translations'] as List : null,
+      existing: banner['translations'] is List
+          ? banner['translations'] as List
+          : null,
       baseValues: {
         'title': banner['title']?.toString() ?? '',
         'description': banner['description']?.toString() ?? '',
@@ -336,18 +361,22 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
     final isEdit = existing != null;
 
     final titleCtrl = TextEditingController(text: existing?['title'] ?? '');
-    final descCtrl =
-        TextEditingController(text: existing?['description'] ?? '');
-    final imageCtrl =
-        TextEditingController(text: existing?['image_url'] ?? '');
-    final buttonTextCtrl =
-        TextEditingController(text: existing?['button_text'] ?? 'Get Premium');
-    final linkValueCtrl =
-        TextEditingController(text: existing?['button_link_value'] ?? '');
-    final priorityCtrl =
-        TextEditingController(text: (existing?['priority'] ?? 0).toString());
+    final descCtrl = TextEditingController(
+      text: existing?['description'] ?? '',
+    );
+    final imageCtrl = TextEditingController(text: existing?['image_url'] ?? '');
+    final buttonTextCtrl = TextEditingController(
+      text: existing?['button_text'] ?? 'Get Premium',
+    );
+    final linkValueCtrl = TextEditingController(
+      text: existing?['button_link_value'] ?? '',
+    );
+    final priorityCtrl = TextEditingController(
+      text: (existing?['priority'] ?? 0).toString(),
+    );
     final xDaysCtrl = TextEditingController(
-        text: (existing?['trigger_x_days'] ?? 3).toString());
+      text: (existing?['trigger_x_days'] ?? 3).toString(),
+    );
 
     String targetAudience = existing?['target_audience'] ?? 'everyone';
     String trigger = existing?['trigger'] ?? 'home';
@@ -401,15 +430,21 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               dio.MultipartFile multipart;
               if (kIsWeb) {
                 final bytes = await picked.readAsBytes();
-                multipart = dio.MultipartFile.fromBytes(bytes,
-                    filename: picked.name);
+                multipart = dio.MultipartFile.fromBytes(
+                  bytes,
+                  filename: picked.name,
+                );
               } else {
-                multipart = await dio.MultipartFile.fromFile(picked.path,
-                    filename: picked.name);
+                multipart = await dio.MultipartFile.fromFile(
+                  picked.path,
+                  filename: picked.name,
+                );
               }
               final formData = dio.FormData.fromMap({'image': multipart});
               final res = await _api.postForm(
-                  '/admin-panel/promo-banners/upload-image/', formData);
+                '/admin-panel/promo-banners/upload-image/',
+                formData,
+              );
               imageCtrl.text = res.data['url'] ?? '';
               setDialogState(() => uploadingImage = false);
             } catch (e) {
@@ -422,10 +457,10 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
 
           /// Validates + submits the banner body. Behavior unchanged.
           Future<void> save() async {
-            if (titleCtrl.text.trim().isEmpty ||
-                descCtrl.text.trim().isEmpty) {
+            if (titleCtrl.text.trim().isEmpty || descCtrl.text.trim().isEmpty) {
               setDialogState(
-                  () => dialogError = 'Title and description are required');
+                () => dialogError = 'Title and description are required',
+              );
               return;
             }
             setDialogState(() {
@@ -454,28 +489,35 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
             try {
               if (isEdit) {
                 final res = await _api.patch(
-                    '/admin-panel/promo-banners/${existing['id']}/', body);
-                final idx = _banners
-                    .indexWhere((b) => b['id'] == existing['id']);
+                  '/admin-panel/promo-banners/${existing['id']}/',
+                  body,
+                );
+                final idx = _banners.indexWhere(
+                  (b) => b['id'] == existing['id'],
+                );
                 if (idx != -1 && mounted) {
                   final updated = res.data is Map
                       ? Map<String, dynamic>.from(res.data as Map)
                       : res.data;
-                  if (updated is Map<String, dynamic> && updated['translations'] == null) {
+                  if (updated is Map<String, dynamic> &&
+                      updated['translations'] == null) {
                     updated['translations'] = existing['translations'];
                   }
                   setState(() => _banners[idx] = updated);
                 }
               } else {
-                final res =
-                    await _api.post('/admin-panel/promo-banners/', body);
+                final res = await _api.post(
+                  '/admin-panel/promo-banners/',
+                  body,
+                );
                 if (mounted) setState(() => _banners.insert(0, res.data));
               }
               if (ctx.mounted) Navigator.pop(ctx);
               if (!mounted) return;
               _showSnack(
-                  isEdit ? 'Banner updated' : 'Banner created',
-                  AppColors.success);
+                isEdit ? 'Banner updated' : 'Banner created',
+                AppColors.success,
+              );
             } catch (e) {
               // Surface the backend's actual validation error when possible.
               String msg = 'Save failed. Please check all fields.';
@@ -508,19 +550,23 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
           final availableHeight =
               mq.size.height - keyboardHeight - 48; // 48 = top/bottom margin
           final dialogMaxHeight = availableHeight.clamp(280.0, 640.0);
-          final dialogMaxWidth =
-              mq.size.width > 520 ? 480.0 : mq.size.width - 32;
+          final dialogMaxWidth = mq.size.width > 520
+              ? 480.0
+              : mq.size.width - 32;
 
           return Dialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radius18),
+            ),
             insetPadding: EdgeInsets.symmetric(
               horizontal: 16,
               vertical: (keyboardHeight > 0 ? 12 : 24),
             ),
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                  maxWidth: dialogMaxWidth, maxHeight: dialogMaxHeight),
+                maxWidth: dialogMaxWidth,
+                maxHeight: dialogMaxHeight,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -534,8 +580,9 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(AppSizes.radius18)),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(AppSizes.radius18),
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -544,12 +591,12 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                           height: 34,
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(AppSizes.radius10),
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radius10,
+                            ),
                           ),
                           child: Icon(
-                            isEdit
-                                ? Icons.edit_outlined
-                                : Icons.add_rounded,
+                            isEdit ? Icons.edit_outlined : Icons.add_rounded,
                             color: Colors.white,
                             size: 18,
                           ),
@@ -559,9 +606,10 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                           child: Text(
                             isEdit ? 'Edit Banner' : 'Create New Banner',
                             style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: AppFontSizes.title,
-                                fontWeight: FontWeight.w700),
+                              color: Colors.white,
+                              fontSize: AppFontSizes.title,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ],
@@ -584,16 +632,23 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: AppColors.error.withValues(alpha: 0.08),
-                                borderRadius: BorderRadius.circular(AppSizes.radius10),
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radius10,
+                                ),
                                 border: Border.all(
-                                    color:
-                                        AppColors.error.withValues(alpha: 0.35)),
+                                  color: AppColors.error.withValues(
+                                    alpha: 0.35,
+                                  ),
+                                ),
                               ),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.error_outline_rounded,
-                                      color: AppColors.error, size: 18),
+                                  const Icon(
+                                    Icons.error_outline_rounded,
+                                    color: AppColors.error,
+                                    size: 18,
+                                  ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
@@ -608,9 +663,13 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                                   ),
                                   GestureDetector(
                                     onTap: () => setDialogState(
-                                        () => dialogError = null),
-                                    child: const Icon(Icons.close_rounded,
-                                        color: AppColors.error, size: 16),
+                                      () => dialogError = null,
+                                    ),
+                                    child: const Icon(
+                                      Icons.close_rounded,
+                                      color: AppColors.error,
+                                      size: 16,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -643,39 +702,56 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                           // ── Section: Behavior ───────────────
                           _sectionLabel('Behavior'),
                           const SizedBox(height: 8),
-                          _dropdown('Button Link Type', linkType,
-                              _linkTypeChoices,
-                              (v) => setDialogState(() => linkType = v)),
+                          _dropdown(
+                            'Button Link Type',
+                            linkType,
+                            _linkTypeChoices,
+                            (v) => setDialogState(() => linkType = v),
+                          ),
                           const SizedBox(height: 12),
-                          _field('Button Link Value (URL or category id)',
-                              linkValueCtrl),
+                          _field(
+                            'Button Link Value (URL or category id)',
+                            linkValueCtrl,
+                          ),
                           const SizedBox(height: 12),
-                          _dropdown('Target Audience', targetAudience,
-                              _targetChoices,
-                              (v) => setDialogState(
-                                  () => targetAudience = v)),
+                          _dropdown(
+                            'Target Audience',
+                            targetAudience,
+                            _targetChoices,
+                            (v) => setDialogState(() => targetAudience = v),
+                          ),
                           const SizedBox(height: 12),
-                          _dropdown('Trigger', trigger, _triggerChoices,
-                              (v) => setDialogState(() => trigger = v)),
+                          _dropdown(
+                            'Trigger',
+                            trigger,
+                            _triggerChoices,
+                            (v) => setDialogState(() => trigger = v),
+                          ),
                           const SizedBox(height: 6),
                           Text(
                             _triggerHelp[trigger] ?? '',
                             style: const TextStyle(
-                                fontSize: AppFontSizes.caption,
-                                color: AppColors.neutral400,
-                                height: 1.4),
+                              fontSize: AppFontSizes.caption,
+                              color: AppColors.neutral400,
+                              height: 1.4,
+                            ),
                           ),
                           const SizedBox(height: 12),
 
                           if (trigger == 'every_x_days') ...[
-                            _field('Show every X days', xDaysCtrl,
-                                isNumber: true),
+                            _field(
+                              'Show every X days',
+                              xDaysCtrl,
+                              isNumber: true,
+                            ),
                             const SizedBox(height: 12),
                           ],
 
-                          _field('Priority (higher = shows first)',
-                              priorityCtrl,
-                              isNumber: true),
+                          _field(
+                            'Priority (higher = shows first)',
+                            priorityCtrl,
+                            isNumber: true,
+                          ),
                           const SizedBox(height: 14),
 
                           // ── Section: Schedule ───────────────
@@ -684,13 +760,19 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                           Row(
                             children: [
                               Expanded(
-                                child: _dateTile('Start Date', startDate,
-                                    () => pickDate(true)),
+                                child: _dateTile(
+                                  'Start Date',
+                                  startDate,
+                                  () => pickDate(true),
+                                ),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: _dateTile('End Date', endDate,
-                                    () => pickDate(false)),
+                                child: _dateTile(
+                                  'End Date',
+                                  endDate,
+                                  () => pickDate(false),
+                                ),
                               ),
                             ],
                           ),
@@ -702,15 +784,20 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                             onChanged: (v) =>
                                 setDialogState(() => isActive = v),
                             activeThumbColor: AppColors.adminColor,
-                            title: const Text('Active',
-                                style: TextStyle(
-                                    fontSize: AppFontSizes.secondary,
-                                    fontWeight: FontWeight.w600)),
+                            title: const Text(
+                              'Active',
+                              style: TextStyle(
+                                fontSize: AppFontSizes.secondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                             subtitle: const Text(
-                                'Turning this off hides the banner from everyone',
-                                style: TextStyle(
-                                    fontSize: AppFontSizes.caption,
-                                    color: AppColors.neutral400)),
+                              'Turning this off hides the banner from everyone',
+                              style: TextStyle(
+                                fontSize: AppFontSizes.caption,
+                                color: AppColors.neutral400,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -723,18 +810,21 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                     decoration: const BoxDecoration(
                       color: AppColors.tintGray,
                       border: Border(
-                          top: BorderSide(color: AppColors.neutral200)),
+                        top: BorderSide(color: AppColors.neutral200),
+                      ),
                     ),
                     child: Row(
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed:
-                                saving ? null : () => Navigator.pop(ctx),
+                            onPressed: saving ? null : () => Navigator.pop(ctx),
                             style: OutlinedButton.styleFrom(
                               minimumSize: const Size(0, 46),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radius10,
+                                ),
+                              ),
                             ),
                             child: const Text('Cancel'),
                           ),
@@ -747,7 +837,10 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                               backgroundColor: AppColors.adminColor,
                               minimumSize: const Size(0, 46),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radius10,
+                                ),
+                              ),
                             ),
                             onPressed: saving ? null : save,
                             child: saving
@@ -755,13 +848,16 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                                     width: 18,
                                     height: 18,
                                     child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white))
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
                                 : Text(
                                     isEdit ? 'Save Changes' : 'Create Banner',
                                     style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                           ),
                         ),
@@ -825,10 +921,19 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
           ),
           clipBehavior: Clip.hardEdge,
           child: hasImage
-              ? Image.network(
-                  imageUrl,
+              ? CachedNetworkImage(
+                  imageUrl: imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => const Icon(
+                  memCacheWidth: 200,
+                  memCacheHeight: 200,
+                  placeholder: (_, _) => const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                  errorWidget: (_, _, _) => const Icon(
                     Icons.broken_image_outlined,
                     color: AppColors.neutral300,
                     size: 28,
@@ -856,7 +961,10 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               const SizedBox(height: 4),
               const Text(
                 'Recommended: 1200×600, JPG or PNG',
-                style: TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400),
+                style: TextStyle(
+                  fontSize: AppFontSizes.caption,
+                  color: AppColors.neutral400,
+                ),
               ),
               const SizedBox(height: 8),
               OutlinedButton.icon(
@@ -871,16 +979,21 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                 label: Text(
                   uploading ? 'Uploading…' : 'Pick from Gallery',
                   style: const TextStyle(
-                      fontSize: AppFontSizes.small, fontWeight: FontWeight.w600),
+                    fontSize: AppFontSizes.small,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.adminColor,
                   side: const BorderSide(color: AppColors.adminColor),
                   minimumSize: const Size(0, 40),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
+                  ),
                 ),
               ),
             ],
@@ -891,8 +1004,12 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
   }
 
   /// Standard text field used across the dialog. Single or multi-line.
-  Widget _field(String label, TextEditingController ctrl,
-      {int maxLines = 1, bool isNumber = false}) {
+  Widget _field(
+    String label,
+    TextEditingController ctrl, {
+    int maxLines = 1,
+    bool isNumber = false,
+  }) {
     return TextField(
       controller: ctrl,
       maxLines: maxLines,
@@ -901,9 +1018,13 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(fontSize: AppFontSizes.small),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: const BorderSide(color: AppColors.neutral200),
@@ -913,26 +1034,43 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
   }
 
   /// Dropdown helper matching the `_field` styling.
-  Widget _dropdown(String label, String value, List<(String, String)> choices,
-      ValueChanged<String> onChanged) {
+  Widget _dropdown(
+    String label,
+    String value,
+    List<(String, String)> choices,
+    ValueChanged<String> onChanged,
+  ) {
     return DropdownButtonFormField<String>(
       initialValue: value,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(fontSize: AppFontSizes.small),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radius10),
           borderSide: const BorderSide(color: AppColors.neutral200),
         ),
       ),
-      style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.gray900),
+      style: const TextStyle(
+        fontSize: AppFontSizes.secondary,
+        color: AppColors.gray900,
+      ),
       items: choices
-          .map((c) => DropdownMenuItem(
+          .map(
+            (c) => DropdownMenuItem(
               value: c.$1,
-              child: Text(c.$2, style: const TextStyle(fontSize: AppFontSizes.secondary))))
+              child: Text(
+                c.$2,
+                style: const TextStyle(fontSize: AppFontSizes.secondary),
+              ),
+            ),
+          )
           .toList(),
       onChanged: (v) {
         if (v != null) onChanged(v);
@@ -953,8 +1091,11 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
         ),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today_outlined,
-                size: 14, color: AppColors.neutral400),
+            const Icon(
+              Icons.calendar_today_outlined,
+              size: 14,
+              color: AppColors.neutral400,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -983,11 +1124,17 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
       backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Promo Banners',
-        subtitle: '${_banners.length} ${_banners.length == 1 ? 'banner' : 'banners'}',
+        subtitle:
+            '${_banners.length} ${_banners.length == 1 ? 'banner' : 'banners'}',
         icon: Icons.campaign_rounded,
         showBack: false,
         actions: [
-          AppBarIconButton(icon: Icons.refresh_rounded, tooltip: 'Refresh', onPressed: _load, onGradient: true),
+          AppBarIconButton(
+            icon: Icons.refresh_rounded,
+            tooltip: 'Refresh',
+            onPressed: _load,
+            onGradient: true,
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -1008,13 +1155,15 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
             ? const Center(
                 key: ValueKey('loader'),
                 child: CircularProgressIndicator(
-                    color: AppColors.adminColor, strokeWidth: 2.5),
+                  color: AppColors.adminColor,
+                  strokeWidth: 2.5,
+                ),
               )
             : _error != null
-                ? _buildError()
-                : _banners.isEmpty
-                    ? _buildEmpty()
-                    : _buildBannerList(),
+            ? _buildError()
+            : _banners.isEmpty
+            ? _buildEmpty()
+            : _buildBannerList(),
       ),
     );
   }
@@ -1039,7 +1188,8 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               child: GridView.builder(
                 padding: EdgeInsets.fromLTRB(hPad, 16, hPad, 96),
                 physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics()),
+                  parent: BouncingScrollPhysics(),
+                ),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: columns,
                   crossAxisSpacing: 12,
@@ -1047,8 +1197,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                   mainAxisExtent: 300,
                 ),
                 itemCount: _banners.length,
-                itemBuilder: (_, i) =>
-                    _buildAnimatedBannerCard(_banners[i], i),
+                itemBuilder: (_, i) => _buildAnimatedBannerCard(_banners[i], i),
               ),
             ),
           ),
@@ -1123,14 +1272,31 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                   height: 110,
                   width: double.infinity,
                   child: imageUrl.isNotEmpty
-                      ? Image.network(
-                          imageUrl,
+                      ? CachedNetworkImage(
+                          imageUrl: imageUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => Container(
+                          memCacheWidth: 600,
+                          memCacheHeight: 300,
+                          placeholder: (_, _) => Container(
                             color: AppColors.neutral100,
                             child: const Center(
-                              child: Icon(Icons.broken_image_outlined,
-                                  color: AppColors.neutral300, size: 32),
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                          errorWidget: (_, _, _) => Container(
+                            color: AppColors.neutral100,
+                            child: const Center(
+                              child: Icon(
+                                Icons.broken_image_outlined,
+                                color: AppColors.neutral300,
+                                size: 32,
+                              ),
                             ),
                           ),
                         )
@@ -1139,8 +1305,9 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                           child: Center(
                             child: Icon(
                               Icons.campaign_outlined,
-                              color:
-                                  AppColors.adminColor.withValues(alpha: 0.35),
+                              color: AppColors.adminColor.withValues(
+                                alpha: 0.35,
+                              ),
                               size: 36,
                             ),
                           ),
@@ -1212,12 +1379,17 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                       spacing: 6,
                       runSpacing: 6,
                       children: [
-                        _chip(Icons.group_outlined, target,
-                            AppColors.accentPurple),
-                        _chip(Icons.bolt_outlined, trigger,
-                            AppColors.sky),
-                        _chip(Icons.low_priority_rounded,
-                            'priority $priority', AppColors.warningAmber),
+                        _chip(
+                          Icons.group_outlined,
+                          target,
+                          AppColors.accentPurple,
+                        ),
+                        _chip(Icons.bolt_outlined, trigger, AppColors.sky),
+                        _chip(
+                          Icons.low_priority_rounded,
+                          'priority $priority',
+                          AppColors.warningAmber,
+                        ),
                       ],
                     ),
                     const Spacer(),
@@ -1330,7 +1502,10 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
           Text(
             label.replaceAll('_', ' '),
             style: TextStyle(
-                fontSize: AppFontSizes.micro, color: color, fontWeight: FontWeight.w600),
+              fontSize: AppFontSizes.micro,
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -1353,21 +1528,28 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                 color: AppColors.adminColor.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.campaign_outlined,
-                  size: 42, color: AppColors.adminColor),
+              child: const Icon(
+                Icons.campaign_outlined,
+                size: 42,
+                color: AppColors.adminColor,
+              ),
             ),
             const SizedBox(height: 16),
             const Text(
               'No banners yet',
               style: TextStyle(
-                  fontSize: AppFontSizes.input,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.grayDeep),
+                fontSize: AppFontSizes.input,
+                fontWeight: FontWeight.w600,
+                color: AppColors.grayDeep,
+              ),
             ),
             const SizedBox(height: 6),
             const Text(
               'Tap "New Banner" to create your first one',
-              style: TextStyle(fontSize: AppFontSizes.small, color: AppColors.neutral400),
+              style: TextStyle(
+                fontSize: AppFontSizes.small,
+                color: AppColors.neutral400,
+              ),
             ),
           ],
         ),
@@ -1390,16 +1572,20 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
                 color: AppColors.error.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.error_outline_rounded,
-                  size: 40, color: AppColors.error),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                size: 40,
+                color: AppColors.error,
+              ),
             ),
             const SizedBox(height: 14),
             const Text(
               'Failed to load banners',
               style: TextStyle(
-                  fontSize: AppFontSizes.input,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.gray700),
+                fontSize: AppFontSizes.input,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray700,
+              ),
             ),
             const SizedBox(height: 18),
             ElevatedButton.icon(
@@ -1408,10 +1594,13 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.adminColor,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
+                ),
               ),
             ),
           ],
@@ -1422,16 +1611,23 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
 
   /// Floating snackbar tinted by the outcome of the action.
   void _showSnack(String msg, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg,
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          msg,
           style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w600)),
-      backgroundColor: color,
-      behavior: SnackBarBehavior.floating,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
-      duration: const Duration(seconds: 2),
-    ));
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 }
 
@@ -1444,10 +1640,8 @@ class _HoverLift extends StatefulWidget {
   final BorderRadius borderRadius;
   final double hoverScale;
 
-  const _HoverLift({
-    required this.child,
-    required this.borderRadius,
-  }) : hoverScale = 1.012;
+  const _HoverLift({required this.child, required this.borderRadius})
+    : hoverScale = 1.012;
 
   @override
   State<_HoverLift> createState() => _HoverLiftState();
@@ -1546,16 +1740,14 @@ class _BannerStatusBadgeState extends State<_BannerStatusBadge> {
       icon = Icons.pause_circle_outline_rounded;
     } else if (widget.isLive) {
       if (widget.endDate != null) {
-        label =
-            'Ends in ${_formatRemaining(widget.endDate!.difference(now))}';
+        label = 'Ends in ${_formatRemaining(widget.endDate!.difference(now))}';
       } else {
         label = 'LIVE';
       }
       color = AppColors.success;
       icon = Icons.bolt_rounded;
     } else if (widget.startDate != null && widget.startDate!.isAfter(now)) {
-      label =
-          'Starts ${DateFormat('d MMM, h:mm a').format(widget.startDate!)}';
+      label = 'Starts ${DateFormat('d MMM, h:mm a').format(widget.startDate!)}';
       color = AppColors.warningAmber;
       icon = Icons.schedule_rounded;
     } else if (widget.endDate != null && widget.endDate!.isBefore(now)) {

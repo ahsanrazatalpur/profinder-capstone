@@ -1,6 +1,7 @@
 // lib/features/admin/screens/admin_articles_screen.dart
 
 import 'dart:typed_data';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -34,22 +35,22 @@ class AdminArticlesScreen extends StatefulWidget {
 
 class _AdminArticlesScreenState extends State<AdminArticlesScreen>
     with TickerProviderStateMixin {
-
   final _service = MagazineService();
-  final _picker  = ImagePicker();
-  final _api     = ApiService();
+  final _picker = ImagePicker();
+  final _api = ApiService();
 
   late TabController _tabCtrl;
   late AnimationController _animationController;
 
-  bool                  _loading    = true;
-  String?               _error;
-  List<Article>         _articles   = [];
+  bool _loading = true;
+  String? _error;
+  List<Article> _articles = [];
   List<ArticleCategory> _categories = [];
-  Map<String, dynamic>  _summary    = {};
+  Map<String, dynamic> _summary = {};
 
-  List<Article> get _published => _articles.where((a) => a.isPublished).toList();
-  List<Article> get _drafts    => _articles.where((a) => !a.isPublished).toList();
+  List<Article> get _published =>
+      _articles.where((a) => a.isPublished).toList();
+  List<Article> get _drafts => _articles.where((a) => !a.isPublished).toList();
 
   @override
   void initState() {
@@ -70,7 +71,10 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
   }
 
   Future<void> _loadAll() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final results = await Future.wait([
         _service.adminGetAll(),
@@ -78,8 +82,8 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
       ]);
       if (!mounted) return;
       setState(() {
-        _loading    = false;
-        _articles   = results[0] as List<Article>;
+        _loading = false;
+        _articles = results[0] as List<Article>;
         _categories = results[1] as List<ArticleCategory>;
       });
       _animationController.forward(from: 0);
@@ -87,16 +91,23 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
       try {
         final r = await _api.get('/articles/admin/analytics/');
         if (!mounted) return;
-        setState(() => _summary = Map<String, dynamic>.from(r.data['summary'] ?? {}));
+        setState(
+          () => _summary = Map<String, dynamic>.from(r.data['summary'] ?? {}),
+        );
       } catch (_) {}
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load data.'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load data.';
+      });
     }
   }
 
   Future<void> _togglePublish(Article a) async {
-    final result = await _service.adminUpdate(a.slug, {'is_published': !a.isPublished});
+    final result = await _service.adminUpdate(a.slug, {
+      'is_published': !a.isPublished,
+    });
     if (!mounted) return;
     if (result['success'] == true) {
       await _loadAll();
@@ -114,22 +125,37 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius18),
+        ),
         icon: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: AppColors.error.withValues(alpha: 0.08),
             shape: BoxShape.circle,
           ),
-          child: Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 26),
+          child: Icon(
+            Icons.delete_outline_rounded,
+            color: AppColors.error,
+            size: 26,
+          ),
         ),
-        title: const Text('Delete Article',
-            style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700),
-            textAlign: TextAlign.center),
+        title: const Text(
+          'Delete Article',
+          style: TextStyle(
+            fontSize: AppFontSizes.title,
+            fontWeight: FontWeight.w700,
+          ),
+          textAlign: TextAlign.center,
+        ),
         content: Text(
           '"${a.title}" will be permanently deleted.',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep, height: 1.4),
+          style: const TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.grayDeep,
+            height: 1.4,
+          ),
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
@@ -137,10 +163,15 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
             style: TextButton.styleFrom(
               foregroundColor: AppColors.grayDeep,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+              ),
             ),
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -148,10 +179,15 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+              ),
             ),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.w700)),
+            child: const Text(
+              'Delete',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
           ),
         ],
       ),
@@ -173,11 +209,14 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
       context: context,
       barrierDismissible: false,
       builder: (_) => _ArticleFormDialog(
-        editing:    editing,
+        editing: editing,
         categories: _categories,
-        service:    _service,
-        picker:     _picker,
-        onSaved: () { Navigator.pop(context); _loadAll(); },
+        service: _service,
+        picker: _picker,
+        onSaved: () {
+          Navigator.pop(context);
+          _loadAll();
+        },
       ),
     );
   }
@@ -187,8 +226,8 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
       context: context,
       builder: (_) => _CategoryManagerDialog(
         categories: _categories,
-        service:    _service,
-        onChanged:  _loadAll,
+        service: _service,
+        onChanged: _loadAll,
       ),
     );
   }
@@ -214,31 +253,34 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
               ? const Center(
                   key: ValueKey('loading'),
                   child: CircularProgressIndicator(
-                      color: AppColors.adminColor, strokeWidth: 2.5),
+                    color: AppColors.adminColor,
+                    strokeWidth: 2.5,
+                  ),
                 )
               : _error != null
-                  ? _buildError()
-                  : Column(
-                      key: const ValueKey('content'),
-                      children: [
-                        if (_summary.isNotEmpty) _buildSummaryCards(),
-                        Expanded(
-                          child: Center(
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: isWide ? 1080 : double.infinity,
-                              ),
-                              child: _buildTabView(),
-                            ),
+              ? _buildError()
+              : Column(
+                  key: const ValueKey('content'),
+                  children: [
+                    if (_summary.isNotEmpty) _buildSummaryCards(),
+                    Expanded(
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: isWide ? 1080 : double.infinity,
                           ),
+                          child: _buildTabView(),
                         ),
-                      ],
+                      ),
                     ),
+                  ],
+                ),
         ),
       ),
       floatingActionButton: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
-        transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
+        transitionBuilder: (child, anim) =>
+            ScaleTransition(scale: anim, child: child),
         child: isWide
             ? FloatingActionButton.extended(
                 key: const ValueKey('fab_extended'),
@@ -249,7 +291,10 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
                 icon: const Icon(Icons.add_rounded, color: Colors.white),
                 label: const Text(
                   'New Article',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               )
             : FloatingActionButton(
@@ -260,7 +305,11 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
                 elevation: 3,
                 highlightElevation: 6,
                 tooltip: 'Create Article',
-                child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+                child: const Icon(
+                  Icons.add_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
               ),
       ),
     );
@@ -276,7 +325,9 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
         tooltip: 'Analytics',
         onPressed: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const AdminMagazineAnalyticsScreen()),
+          MaterialPageRoute(
+            builder: (_) => const AdminMagazineAnalyticsScreen(),
+          ),
         ),
         onGradient: true,
       ),
@@ -335,7 +386,8 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
           // updates instead of snapping to the new number.
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
-            transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
+            transitionBuilder: (child, anim) =>
+                ScaleTransition(scale: anim, child: child),
             child: Container(
               key: ValueKey(count),
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
@@ -361,11 +413,32 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
   Widget _buildSummaryCards() {
     if (_summary.isEmpty) return const SizedBox.shrink();
     final cards = [
-      ('Total', '${_summary['total_articles'] ?? 0}', Icons.article_rounded, AppColors.adminColor),
-      ('Published', '${_summary['published_this_month'] ?? 0}', Icons.check_rounded, context.colors.accent),
-      ('Views', '${_summary['total_views'] ?? 0}', Icons.visibility_rounded, AppColors.info),
-      ('Popular', _summary['most_read_title'] != null
-          ? '${_summary['most_read_views']}' : '—', Icons.trending_up_rounded, AppColors.accentPurple),
+      (
+        'Total',
+        '${_summary['total_articles'] ?? 0}',
+        Icons.article_rounded,
+        AppColors.adminColor,
+      ),
+      (
+        'Published',
+        '${_summary['published_this_month'] ?? 0}',
+        Icons.check_rounded,
+        context.colors.accent,
+      ),
+      (
+        'Views',
+        '${_summary['total_views'] ?? 0}',
+        Icons.visibility_rounded,
+        AppColors.info,
+      ),
+      (
+        'Popular',
+        _summary['most_read_title'] != null
+            ? '${_summary['most_read_views']}'
+            : '—',
+        Icons.trending_up_rounded,
+        AppColors.accentPurple,
+      ),
     ];
 
     return Container(
@@ -380,7 +453,12 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
           separatorBuilder: (_, _) => const SizedBox(width: 12),
           itemBuilder: (_, i) {
             final (label, value, icon, color) = cards[i];
-            return _SummaryCard(label: label, value: value, icon: icon, color: color);
+            return _SummaryCard(
+              label: label,
+              value: value,
+              icon: icon,
+              color: color,
+            );
           },
         ),
       ),
@@ -399,38 +477,41 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
   Widget _buildList(List<Article> list) {
     if (list.isEmpty) {
       return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.adminColor.withValues(alpha: 0.06),
-              shape: BoxShape.circle,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AppColors.adminColor.withValues(alpha: 0.06),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.article_outlined,
+                color: AppColors.adminColor.withValues(alpha: 0.4),
+                size: 36,
+              ),
             ),
-            child: Icon(
-              Icons.article_outlined,
-              color: AppColors.adminColor.withValues(alpha: 0.4),
-              size: 36,
+            const SizedBox(height: 16),
+            const Text(
+              'No articles found',
+              style: TextStyle(
+                fontSize: AppFontSizes.title,
+                fontWeight: FontWeight.w700,
+                color: AppColors.gray700,
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'No articles found',
-            style: TextStyle(
-              fontSize: AppFontSizes.title,
-              fontWeight: FontWeight.w700,
-              color: AppColors.gray700,
+            const SizedBox(height: 4),
+            Text(
+              'Tap the + button to create one',
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: AppColors.neutral400,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Tap the + button to create one',
-            style: TextStyle(
-              fontSize: AppFontSizes.secondary,
-              color: AppColors.neutral400,
-            ),
-          ),
-        ]),
+          ],
+        ),
       );
     }
 
@@ -502,48 +583,55 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
 
   Widget _buildError() => Center(
     key: const ValueKey('error'),
-    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.error.withValues(alpha: 0.06),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(Icons.error_outline_rounded, size: 56, color: AppColors.error),
-      ),
-      const SizedBox(height: 16),
-      Text(
-        _error!,
-        style: const TextStyle(
-          fontSize: AppFontSizes.title,
-          color: AppColors.gray700,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      const SizedBox(height: 4),
-      const Text(
-        'Please check your connection and try again',
-        style: TextStyle(
-          fontSize: AppFontSizes.secondary,
-          color: AppColors.neutral400,
-        ),
-      ),
-      const SizedBox(height: 24),
-      ElevatedButton.icon(
-        onPressed: _loadAll,
-        icon: const Icon(Icons.refresh_rounded, size: 18),
-        label: const Text('Retry'),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.adminColor,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.error.withValues(alpha: 0.06),
+            shape: BoxShape.circle,
           ),
-          elevation: 0,
+          child: Icon(
+            Icons.error_outline_rounded,
+            size: 56,
+            color: AppColors.error,
+          ),
         ),
-      ),
-    ]),
+        const SizedBox(height: 16),
+        Text(
+          _error!,
+          style: const TextStyle(
+            fontSize: AppFontSizes.title,
+            color: AppColors.gray700,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          'Please check your connection and try again',
+          style: TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.neutral400,
+          ),
+        ),
+        const SizedBox(height: 24),
+        ElevatedButton.icon(
+          onPressed: _loadAll,
+          icon: const Icon(Icons.refresh_rounded, size: 18),
+          label: const Text('Retry'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.adminColor,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            ),
+            elevation: 0,
+          ),
+        ),
+      ],
+    ),
   );
 
   void _showSnack(String msg, Color color) {
@@ -552,7 +640,9 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
         content: Row(
           children: [
             Icon(
-              color == AppColors.error ? Icons.error_outline_rounded : Icons.check_circle_rounded,
+              color == AppColors.error
+                  ? Icons.error_outline_rounded
+                  : Icons.check_circle_rounded,
               color: Colors.white,
               size: 18,
             ),
@@ -570,7 +660,9 @@ class _AdminArticlesScreenState extends State<AdminArticlesScreen>
         ),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        ),
         elevation: 2,
         duration: const Duration(seconds: 2),
         margin: const EdgeInsets.all(16),
@@ -623,7 +715,10 @@ class _SummaryCardState extends State<_SummaryCard> {
         decoration: BoxDecoration(
           color: widget.color.withValues(alpha: _hovering ? 0.09 : 0.06),
           borderRadius: BorderRadius.circular(AppSizes.radius14),
-          border: Border.all(color: widget.color.withValues(alpha: 0.14), width: 1.5),
+          border: Border.all(
+            color: widget.color.withValues(alpha: 0.14),
+            width: 1.5,
+          ),
           boxShadow: _hovering
               ? [
                   BoxShadow(
@@ -723,7 +818,11 @@ class _HoverIconButtonState extends State<_HoverIconButton> {
             label: widget.tooltip,
             button: true,
             child: IconButton(
-              icon: Icon(widget.icon, color: widget.color ?? AppColors.gray700, size: 22),
+              icon: Icon(
+                widget.icon,
+                color: widget.color ?? AppColors.gray700,
+                size: 22,
+              ),
               onPressed: widget.onPressed,
             ),
           ),
@@ -821,7 +920,9 @@ class _ArticleCardState extends State<_ArticleCard> {
             ),
           ],
           border: Border.all(
-            color: _hovering ? AppColors.adminColor.withValues(alpha: 0.15) : AppColors.slate100,
+            color: _hovering
+                ? AppColors.adminColor.withValues(alpha: 0.15)
+                : AppColors.slate100,
             width: 1,
           ),
         ),
@@ -833,32 +934,32 @@ class _ArticleCardState extends State<_ArticleCard> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 child: a.coverImage.isNotEmpty
-                    ? Image.network(
-                        a.coverImage,
+                    ? CachedNetworkImage(
+                        imageUrl: a.coverImage,
                         width: 80,
                         height: 80,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => _thumb(context, a.categoryColor),
-                        loadingBuilder: (_, child, progress) {
-                          if (progress == null) return child;
-                          return Container(
-                            width: 80,
-                            height: 80,
-                            color: AppColors.slate100,
-                            child: Center(
-                              child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.adminColor,
-                                  ),
+                        memCacheWidth: 160,
+                        memCacheHeight: 160,
+                        placeholder: (_, _) => Container(
+                          width: 80,
+                          height: 80,
+                          color: AppColors.slate100,
+                          child: Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.adminColor,
                                 ),
                               ),
                             ),
-                          );
-                        },
+                          ),
+                        ),
+                        errorWidget: (_, _, _) =>
+                            _thumb(context, a.categoryColor),
                       )
                     : _thumb(context, a.categoryColor),
               ),
@@ -877,8 +978,12 @@ class _ArticleCardState extends State<_ArticleCard> {
                           decoration: BoxDecoration(
                             color: a.isPublished
                                 ? context.colors.accent.withValues(alpha: 0.10)
-                                : AppColors.warningAmber.withValues(alpha: 0.10),
-                            borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
+                                : AppColors.warningAmber.withValues(
+                                    alpha: 0.10,
+                                  ),
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusBadge,
+                            ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -916,7 +1021,9 @@ class _ArticleCardState extends State<_ArticleCard> {
                               ),
                               decoration: BoxDecoration(
                                 color: AppColors.slate100,
-                                borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radiusBadge,
+                                ),
                               ),
                               child: Text(
                                 a.categoryName,
@@ -999,8 +1106,12 @@ class _ArticleCardState extends State<_ArticleCard> {
                         ),
                         _btn(
                           a.isPublished ? 'Unpublish' : 'Publish',
-                          a.isPublished ? AppColors.warningAmber : context.colors.accent,
-                          a.isPublished ? Icons.unpublished_rounded : Icons.publish_rounded,
+                          a.isPublished
+                              ? AppColors.warningAmber
+                              : context.colors.accent,
+                          a.isPublished
+                              ? Icons.unpublished_rounded
+                              : Icons.publish_rounded,
                           widget.onTogglePublish,
                         ),
                         _btn(
@@ -1029,13 +1140,20 @@ class _ArticleCardState extends State<_ArticleCard> {
 
   Widget _thumb(BuildContext context, String hex) {
     Color c;
-    try { c = Color(int.parse(hex.replaceFirst('#', '0xFF'))); }
-    catch (_) { c = context.colors.primary; }
+    try {
+      c = Color(int.parse(hex.replaceFirst('#', '0xFF')));
+    } catch (_) {
+      c = context.colors.primary;
+    }
     return Container(
       width: 80,
       height: 80,
       color: c.withValues(alpha: 0.08),
-      child: Icon(Icons.image_rounded, color: c.withValues(alpha: 0.3), size: 32),
+      child: Icon(
+        Icons.image_rounded,
+        color: c.withValues(alpha: 0.3),
+        size: 32,
+      ),
     );
   }
 
@@ -1071,18 +1189,19 @@ class _ArticleCardState extends State<_ArticleCard> {
     );
   }
 
-  String _fmtCount(int n) => n >= 1000 ? '${(n / 1000).toStringAsFixed(1)}k' : '$n';
+  String _fmtCount(int n) =>
+      n >= 1000 ? '${(n / 1000).toStringAsFixed(1)}k' : '$n';
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  Article Form Dialog — Premium Design
 // ═══════════════════════════════════════════════════════════════════════════════
 class _ArticleFormDialog extends StatefulWidget {
-  final Article?              editing;
+  final Article? editing;
   final List<ArticleCategory> categories;
-  final MagazineService       service;
-  final ImagePicker           picker;
-  final VoidCallback          onSaved;
+  final MagazineService service;
+  final ImagePicker picker;
+  final VoidCallback onSaved;
 
   const _ArticleFormDialog({
     required this.editing,
@@ -1097,11 +1216,11 @@ class _ArticleFormDialog extends StatefulWidget {
 }
 
 class _ArticleFormDialogState extends State<_ArticleFormDialog> {
-  final _titleCtrl     = TextEditingController();
-  final _summaryCtrl   = TextEditingController();
-  final _contentCtrl   = TextEditingController();
-  final _imageCtrl     = TextEditingController();
-  final _readCtrl      = TextEditingController(text: '3');
+  final _titleCtrl = TextEditingController();
+  final _summaryCtrl = TextEditingController();
+  final _contentCtrl = TextEditingController();
+  final _imageCtrl = TextEditingController();
+  final _readCtrl = TextEditingController(text: '3');
   final _editorialCtrl = TextEditingController(text: 'ProFinder Editorial');
 
   // Dedicated controller for the dialog's scrollable body. Required so the
@@ -1110,10 +1229,10 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
   // and throws on every scroll/hover event.
   final _formScrollCtrl = ScrollController();
 
-  int?    _catId;
-  bool    _isPublished    = false;
-  bool    _saving         = false;
-  bool    _uploadingImage = false;
+  int? _catId;
+  bool _isPublished = false;
+  bool _saving = false;
+  bool _uploadingImage = false;
   String? _dialogError;
 
   static const _editorialSuggestions = [
@@ -1130,16 +1249,16 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
     super.initState();
     final e = widget.editing;
     if (e != null) {
-      _titleCtrl.text     = e.title;
-      _summaryCtrl.text   = e.summary;
-      _contentCtrl.text   = e.content;
-      _imageCtrl.text     = e.coverImage;
-      _readCtrl.text      = e.readTime.toString();
+      _titleCtrl.text = e.title;
+      _summaryCtrl.text = e.summary;
+      _contentCtrl.text = e.content;
+      _imageCtrl.text = e.coverImage;
+      _readCtrl.text = e.readTime.toString();
       _editorialCtrl.text = e.editorialLabel.isNotEmpty
           ? e.editorialLabel
           : 'ProFinder Editorial';
-      _catId              = e.categoryId;
-      _isPublished        = e.isPublished;
+      _catId = e.categoryId;
+      _isPublished = e.isPublished;
     }
   }
 
@@ -1157,45 +1276,63 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
 
   Future<void> _pickImage() async {
     final picked = await widget.picker.pickImage(
-        source: ImageSource.gallery, imageQuality: 85);
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (picked == null) return;
-    setState(() { _uploadingImage = true; _dialogError = null; });
+    setState(() {
+      _uploadingImage = true;
+      _dialogError = null;
+    });
     try {
       dio.MultipartFile mp;
       if (kIsWeb) {
         final Uint8List bytes = await picked.readAsBytes();
         mp = dio.MultipartFile.fromBytes(bytes, filename: picked.name);
       } else {
-        mp = await dio.MultipartFile.fromFile(picked.path, filename: picked.name);
+        mp = await dio.MultipartFile.fromFile(
+          picked.path,
+          filename: picked.name,
+        );
       }
       final url = await widget.service.uploadCoverImage(
-          dio.FormData.fromMap({'image': mp}));
+        dio.FormData.fromMap({'image': mp}),
+      );
       if (url != null) _imageCtrl.text = url;
     } catch (_) {
-      setState(() { _dialogError = 'Image upload failed.'; });
+      setState(() {
+        _dialogError = 'Image upload failed.';
+      });
     } finally {
-      setState(() { _uploadingImage = false; });
+      setState(() {
+        _uploadingImage = false;
+      });
     }
   }
 
   Future<void> _save() async {
-    final title     = _titleCtrl.text.trim();
-    final content   = _contentCtrl.text.trim();
+    final title = _titleCtrl.text.trim();
+    final content = _contentCtrl.text.trim();
     final editorial = _editorialCtrl.text.trim();
 
     if (title.isEmpty || content.isEmpty) {
-      setState(() { _dialogError = 'Title and content are required.'; });
+      setState(() {
+        _dialogError = 'Title and content are required.';
+      });
       return;
     }
-    setState(() { _saving = true; _dialogError = null; });
+    setState(() {
+      _saving = true;
+      _dialogError = null;
+    });
 
     final data = <String, dynamic>{
-      'title':           title,
-      'summary':         _summaryCtrl.text.trim(),
-      'content':         content,
-      'cover_image':     _imageCtrl.text.trim(),
-      'read_time':       int.tryParse(_readCtrl.text.trim()) ?? 3,
-      'is_published':    _isPublished,
+      'title': title,
+      'summary': _summaryCtrl.text.trim(),
+      'content': content,
+      'cover_image': _imageCtrl.text.trim(),
+      'read_time': int.tryParse(_readCtrl.text.trim()) ?? 3,
+      'is_published': _isPublished,
       'editorial_label': editorial.isEmpty ? 'ProFinder Editorial' : editorial,
       if (_catId != null) 'category': _catId,
     };
@@ -1204,11 +1341,15 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
         ? await widget.service.adminUpdate(widget.editing!.slug, data)
         : await widget.service.adminCreate(data);
 
-    setState(() { _saving = false; });
+    setState(() {
+      _saving = false;
+    });
     if (result['success'] == true) {
       widget.onSaved();
     } else {
-      setState(() { _dialogError = result['message'] ?? 'Save failed.'; });
+      setState(() {
+        _dialogError = result['message'] ?? 'Save failed.';
+      });
     }
   }
 
@@ -1216,12 +1357,12 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
   Widget build(BuildContext context) {
     final isEditing = widget.editing != null;
     final screenSize = MediaQuery.of(context).size;
-    final dialogWidth = screenSize.width >= 640
-        ? 560.0
-        : screenSize.width - 32;
+    final dialogWidth = screenSize.width >= 640 ? 560.0 : screenSize.width - 32;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusXl)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+      ),
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       // TweenAnimationBuilder gives the dialog a light fade + scale-in on
       // open without needing a manually managed AnimationController.
@@ -1234,481 +1375,536 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
           child: Transform.scale(scale: scale, child: child),
         ),
         child: Container(
-        width: dialogWidth,
-        constraints: BoxConstraints(
-          maxHeight: screenSize.height * 0.92,
-        ),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Dialog Header ─────────────────────────────────────────────
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.adminColor.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  ),
-                  child: Icon(
-                    isEditing ? Icons.edit_rounded : Icons.add_rounded,
-                    color: AppColors.adminColor,
-                    size: 22,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Text(
-                    isEditing ? 'Edit Article' : 'Create Article',
-                    style: const TextStyle(
-                      fontSize: AppFontSizes.title2,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.gray900,
+          width: dialogWidth,
+          constraints: BoxConstraints(maxHeight: screenSize.height * 0.92),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Dialog Header ─────────────────────────────────────────────
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.adminColor.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    ),
+                    child: Icon(
+                      isEditing ? Icons.edit_rounded : Icons.add_rounded,
+                      color: AppColors.adminColor,
+                      size: 22,
                     ),
                   ),
-                ),
-                _HoverIconButton(
-                  icon: Icons.close_rounded,
-                  tooltip: 'Close',
-                  color: AppColors.neutral400,
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            const Divider(height: 1),
-            const SizedBox(height: 18),
-            // ── Scrollable Fields ─────────────────────────────────────────
-            Expanded(
-              child: Scrollbar(
-                controller: _formScrollCtrl,
-                thumbVisibility: false,
-                child: SingleChildScrollView(
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      isEditing ? 'Edit Article' : 'Create Article',
+                      style: const TextStyle(
+                        fontSize: AppFontSizes.title2,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.gray900,
+                      ),
+                    ),
+                  ),
+                  _HoverIconButton(
+                    icon: Icons.close_rounded,
+                    tooltip: 'Close',
+                    color: AppColors.neutral400,
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              const Divider(height: 1),
+              const SizedBox(height: 18),
+              // ── Scrollable Fields ─────────────────────────────────────────
+              Expanded(
+                child: Scrollbar(
                   controller: _formScrollCtrl,
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTextField(
-                        _titleCtrl,
-                        'Title',
-                        'Enter article title',
-                        'Title is required',
-                        maxLines: 2,
-                        isRequired: true,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTextField(
-                        _summaryCtrl,
-                        'Summary',
-                        'Brief preview for cards',
-                        'Summarize your article',
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTextField(
-                        _contentCtrl,
-                        'Content',
-                        'Write full article content',
-                        'Content is required',
-                        maxLines: 8,
-                        isRequired: true,
-                      ),
-                      const SizedBox(height: 16),
-                      // ── Cover Image ───────────────────────────────────────
-                      _buildLabel('Cover Image', false),
-                      const SizedBox(height: 6),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _imageCtrl,
-                              style: const TextStyle(fontSize: AppFontSizes.secondary),
-                              decoration: _buildInputDecoration(
-                                'Enter image URL',
-                                null,
+                  thumbVisibility: false,
+                  child: SingleChildScrollView(
+                    controller: _formScrollCtrl,
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTextField(
+                          _titleCtrl,
+                          'Title',
+                          'Enter article title',
+                          'Title is required',
+                          maxLines: 2,
+                          isRequired: true,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          _summaryCtrl,
+                          'Summary',
+                          'Brief preview for cards',
+                          'Summarize your article',
+                          maxLines: 2,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          _contentCtrl,
+                          'Content',
+                          'Write full article content',
+                          'Content is required',
+                          maxLines: 8,
+                          isRequired: true,
+                        ),
+                        const SizedBox(height: 16),
+                        // ── Cover Image ───────────────────────────────────────
+                        _buildLabel('Cover Image', false),
+                        const SizedBox(height: 6),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _imageCtrl,
+                                style: const TextStyle(
+                                  fontSize: AppFontSizes.secondary,
+                                ),
+                                decoration: _buildInputDecoration(
+                                  'Enter image URL',
+                                  null,
+                                ),
+                                onChanged: (_) => setState(() {}),
                               ),
-                              onChanged: (_) => setState(() {}),
                             ),
+                            const SizedBox(width: 10),
+                            Tooltip(
+                              message: 'Upload from device',
+                              child: _HoverScale(
+                                onTap: _uploadingImage ? () {} : _pickImage,
+                                child: Container(
+                                  height: 48,
+                                  width: 48,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.adminColor.withValues(
+                                      alpha: 0.08,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      AppSizes.radiusMd,
+                                    ),
+                                    border: Border.all(
+                                      color: AppColors.adminColor.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: _uploadingImage
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: AppColors.adminColor,
+                                          ),
+                                        )
+                                      : Icon(
+                                          Icons.photo_library_rounded,
+                                          color: AppColors.adminColor,
+                                          size: 22,
+                                        ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // AnimatedSize smoothly reveals the image preview as
+                        // soon as a valid URL is entered or uploaded.
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeOut,
+                          child: _imageCtrl.text.trim().isNotEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                      AppSizes.radiusMd,
+                                    ),
+                                    child: CachedNetworkImage(
+                                      imageUrl: _imageCtrl.text.trim(),
+                                      height: 120,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      memCacheWidth: 800,
+                                      memCacheHeight: 400,
+                                      placeholder: (_, _) => const SizedBox(
+                                        height: 120,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      ),
+                                      errorWidget: (_, _, _) =>
+                                          const SizedBox.shrink(),
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                        const SizedBox(height: 16),
+                        // ── Editorial Label ─────────────────────────────
+                        _buildLabel('Editorial Byline', false),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _editorialCtrl,
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.secondary,
                           ),
-                          const SizedBox(width: 10),
-                          Tooltip(
-                            message: 'Upload from device',
-                            child: _HoverScale(
-                              onTap: _uploadingImage ? () {} : _pickImage,
-                              child: Container(
-                                height: 48,
-                                width: 48,
-                                alignment: Alignment.center,
+                          decoration: _buildInputDecoration(
+                            'e.g. ProFinder Health Desk',
+                            null,
+                          ),
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        const SizedBox(height: 10),
+                        // Quick suggestion chips
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: _editorialSuggestions.map((s) {
+                            final isSelected = _editorialCtrl.text == s;
+                            return _HoverScale(
+                              onTap: () =>
+                                  setState(() => _editorialCtrl.text = s),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 150),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.adminColor.withValues(alpha: 0.08),
-                                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                                  color: isSelected
+                                      ? AppColors.adminColor
+                                      : AppColors.slate100,
+                                  borderRadius: BorderRadius.circular(
+                                    AppSizes.radiusChip,
+                                  ),
                                   border: Border.all(
-                                    color: AppColors.adminColor.withValues(alpha: 0.2),
+                                    color: isSelected
+                                        ? AppColors.adminColor
+                                        : AppColors.neutral200,
                                     width: 1.5,
                                   ),
                                 ),
-                                child: _uploadingImage
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: AppColors.adminColor,
-                                        ),
-                                      )
-                                    : Icon(
-                                        Icons.photo_library_rounded,
-                                        color: AppColors.adminColor,
-                                        size: 22,
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      // AnimatedSize smoothly reveals the image preview as
-                      // soon as a valid URL is entered or uploaded.
-                      AnimatedSize(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOut,
-                        child: _imageCtrl.text.trim().isNotEmpty
-                            ? Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                                  child: Image.network(
-                                    _imageCtrl.text.trim(),
-                                    height: 120,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                                child: Text(
+                                  s,
+                                  style: TextStyle(
+                                    fontSize: AppFontSizes.caption,
+                                    fontWeight: FontWeight.w600,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : AppColors.gray700,
                                   ),
                                 ),
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                      const SizedBox(height: 16),
-                      // ── Editorial Label ─────────────────────────────
-                      _buildLabel('Editorial Byline', false),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: _editorialCtrl,
-                        style: const TextStyle(fontSize: AppFontSizes.secondary),
-                        decoration: _buildInputDecoration(
-                          'e.g. ProFinder Health Desk',
-                          null,
+                              ),
+                            );
+                          }).toList(),
                         ),
-                        onChanged: (_) => setState(() {}),
-                      ),
-                      const SizedBox(height: 10),
-                      // Quick suggestion chips
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _editorialSuggestions.map((s) {
-                          final isSelected = _editorialCtrl.text == s;
-                          return _HoverScale(
-                            onTap: () => setState(() => _editorialCtrl.text = s),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 150),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? AppColors.adminColor
-                                    : AppColors.slate100,
-                                borderRadius: BorderRadius.circular(AppSizes.radiusChip),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? AppColors.adminColor
-                                      : AppColors.neutral200,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Text(
-                                s,
-                                style: TextStyle(
-                                  fontSize: AppFontSizes.caption,
-                                  fontWeight: FontWeight.w600,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : AppColors.gray700,
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 16),
-                      // ── Category + Read Time ──────────────────────────────
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildLabel('Category', false),
-                                const SizedBox(height: 6),
-                                DropdownButtonFormField<int>(
-                                  initialValue: _catId,
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.keyboard_arrow_down_rounded,
-                                      color: AppColors.neutral400),
-                                  hint: const Text(
-                                    'Select category',
-                                    style: TextStyle(
-                                      fontSize: AppFontSizes.secondary,
-                                      color: AppColors.neutral400,
-                                    ),
-                                  ),
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 12,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                                      borderSide: const BorderSide(
-                                        color: AppColors.neutral200,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                                      borderSide: const BorderSide(
-                                        color: AppColors.neutral200,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                                      borderSide: const BorderSide(
-                                        color: AppColors.adminColor,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    filled: true,
-                                    fillColor: AppColors.tintGray,
-                                  ),
-                                  items: widget.categories
-                                      .map((c) => DropdownMenuItem(
-                                            value: c.id,
-                                            child: Text(
-                                              c.name,
-                                              style: const TextStyle(fontSize: AppFontSizes.secondary),
-                                            ),
-                                          ))
-                                      .toList(),
-                                  onChanged: (v) => setState(() => _catId = v),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildLabel('Read Time', false),
-                                const SizedBox(height: 6),
-                                TextField(
-                                  controller: _readCtrl,
-                                  keyboardType: TextInputType.number,
-                                  style: const TextStyle(fontSize: AppFontSizes.secondary),
-                                  decoration: _buildInputDecoration(
-                                    'Minutes',
-                                    null,
-                                  ).copyWith(
-                                    suffixText: 'min',
-                                    suffixStyle: const TextStyle(
-                                      fontSize: AppFontSizes.caption,
-                                      color: AppColors.neutral400,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      // ── Publish Toggle ────────────────────────────────────
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: _isPublished
-                              ? context.colors.accent.withValues(alpha: 0.04)
-                              : AppColors.tintGray,
-                          borderRadius: BorderRadius.circular(AppSizes.radius14),
-                          border: Border.all(
-                            color: _isPublished
-                                ? context.colors.accent.withValues(alpha: 0.2)
-                                : AppColors.neutral200,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Row(
+                        const SizedBox(height: 16),
+                        // ── Category + Read Time ──────────────────────────────
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: _isPublished
-                                    ? context.colors.accent.withValues(alpha: 0.12)
-                                    : AppColors.slate100,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                _isPublished
-                                    ? Icons.public_rounded
-                                    : Icons.lock_outline_rounded,
-                                color: _isPublished
-                                    ? context.colors.accent
-                                    : AppColors.neutral400,
-                                size: 18,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
                             Expanded(
+                              flex: 3,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    _isPublished ? 'Published' : 'Draft',
-                                    style: TextStyle(
-                                      fontSize: AppFontSizes.body,
-                                      fontWeight: FontWeight.w700,
-                                      color: _isPublished
-                                          ? context.colors.accent
-                                          : AppColors.gray700,
-                                    ),
-                                  ),
-                                  Text(
-                                    _isPublished
-                                        ? 'Visible to all users'
-                                        : 'Only visible to admins',
-                                    style: const TextStyle(
-                                      fontSize: AppFontSizes.caption,
+                                  _buildLabel('Category', false),
+                                  const SizedBox(height: 6),
+                                  DropdownButtonFormField<int>(
+                                    initialValue: _catId,
+                                    isExpanded: true,
+                                    icon: const Icon(
+                                      Icons.keyboard_arrow_down_rounded,
                                       color: AppColors.neutral400,
                                     ),
+                                    hint: const Text(
+                                      'Select category',
+                                      style: TextStyle(
+                                        fontSize: AppFontSizes.secondary,
+                                        color: AppColors.neutral400,
+                                      ),
+                                    ),
+                                    decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 12,
+                                          ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          AppSizes.radiusMd,
+                                        ),
+                                        borderSide: const BorderSide(
+                                          color: AppColors.neutral200,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          AppSizes.radiusMd,
+                                        ),
+                                        borderSide: const BorderSide(
+                                          color: AppColors.neutral200,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          AppSizes.radiusMd,
+                                        ),
+                                        borderSide: const BorderSide(
+                                          color: AppColors.adminColor,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor: AppColors.tintGray,
+                                    ),
+                                    items: widget.categories
+                                        .map(
+                                          (c) => DropdownMenuItem(
+                                            value: c.id,
+                                            child: Text(
+                                              c.name,
+                                              style: const TextStyle(
+                                                fontSize:
+                                                    AppFontSizes.secondary,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (v) =>
+                                        setState(() => _catId = v),
                                   ),
                                 ],
                               ),
                             ),
-                            Switch(
-                              value: _isPublished,
-                              activeThumbColor: context.colors.accent,
-                              onChanged: (v) => setState(() => _isPublished = v),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // ── Error Box ─────────────────────────────────────────
-                      AnimatedSize(
-                        duration: const Duration(milliseconds: 200),
-                        child: _dialogError != null
-                            ? Padding(
-                                padding: const EdgeInsets.only(top: 14),
-                                child: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.error.withValues(alpha: 0.06),
-                                    borderRadius: BorderRadius.circular(AppSizes.radius10),
-                                    border: Border.all(
-                                      color: AppColors.error.withValues(alpha: 0.2),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildLabel('Read Time', false),
+                                  const SizedBox(height: 6),
+                                  TextField(
+                                    controller: _readCtrl,
+                                    keyboardType: TextInputType.number,
+                                    style: const TextStyle(
+                                      fontSize: AppFontSizes.secondary,
                                     ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.error_outline_rounded,
-                                        color: AppColors.error,
-                                        size: 18,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                          _dialogError!,
-                                          style: const TextStyle(
-                                            fontSize: AppFontSizes.small,
-                                            color: AppColors.error,
-                                            fontWeight: FontWeight.w500,
+                                    decoration:
+                                        _buildInputDecoration(
+                                          'Minutes',
+                                          null,
+                                        ).copyWith(
+                                          suffixText: 'min',
+                                          suffixStyle: const TextStyle(
+                                            fontSize: AppFontSizes.caption,
+                                            color: AppColors.neutral400,
                                           ),
                                         ),
-                                      ),
-                                    ],
                                   ),
-                                ),
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Divider(height: 1),
-            const SizedBox(height: 16),
-            // ── Save Button ────────────────────────────────────────────
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _saving ? null : _save,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.adminColor,
-                  disabledBackgroundColor: AppColors.adminColor.withValues(alpha: 0.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radius14),
-                  ),
-                  elevation: 0,
-                ),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 150),
-                  child: _saving
-                      ? const SizedBox(
-                          key: ValueKey('saving'),
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
-                          ),
-                        )
-                      : Row(
-                          key: const ValueKey('idle'),
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              isEditing
-                                  ? Icons.save_rounded
-                                  : Icons.add_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              isEditing ? 'Save Changes' : 'Create Article',
-                              style: const TextStyle(
-                                fontSize: AppFontSizes.input,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                                ],
                               ),
                             ),
                           ],
                         ),
+                        const SizedBox(height: 18),
+                        // ── Publish Toggle ────────────────────────────────────
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: _isPublished
+                                ? context.colors.accent.withValues(alpha: 0.04)
+                                : AppColors.tintGray,
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radius14,
+                            ),
+                            border: Border.all(
+                              color: _isPublished
+                                  ? context.colors.accent.withValues(alpha: 0.2)
+                                  : AppColors.neutral200,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: _isPublished
+                                      ? context.colors.accent.withValues(
+                                          alpha: 0.12,
+                                        )
+                                      : AppColors.slate100,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  _isPublished
+                                      ? Icons.public_rounded
+                                      : Icons.lock_outline_rounded,
+                                  color: _isPublished
+                                      ? context.colors.accent
+                                      : AppColors.neutral400,
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _isPublished ? 'Published' : 'Draft',
+                                      style: TextStyle(
+                                        fontSize: AppFontSizes.body,
+                                        fontWeight: FontWeight.w700,
+                                        color: _isPublished
+                                            ? context.colors.accent
+                                            : AppColors.gray700,
+                                      ),
+                                    ),
+                                    Text(
+                                      _isPublished
+                                          ? 'Visible to all users'
+                                          : 'Only visible to admins',
+                                      style: const TextStyle(
+                                        fontSize: AppFontSizes.caption,
+                                        color: AppColors.neutral400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Switch(
+                                value: _isPublished,
+                                activeThumbColor: context.colors.accent,
+                                onChanged: (v) =>
+                                    setState(() => _isPublished = v),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // ── Error Box ─────────────────────────────────────────
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          child: _dialogError != null
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 14),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.error.withValues(
+                                        alpha: 0.06,
+                                      ),
+                                      borderRadius: BorderRadius.circular(
+                                        AppSizes.radius10,
+                                      ),
+                                      border: Border.all(
+                                        color: AppColors.error.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.error_outline_rounded,
+                                          color: AppColors.error,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            _dialogError!,
+                                            style: const TextStyle(
+                                              fontSize: AppFontSizes.small,
+                                              color: AppColors.error,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
+              const SizedBox(height: 16),
+              const Divider(height: 1),
+              const SizedBox(height: 16),
+              // ── Save Button ────────────────────────────────────────────
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _saving ? null : _save,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.adminColor,
+                    disabledBackgroundColor: AppColors.adminColor.withValues(
+                      alpha: 0.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radius14),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 150),
+                    child: _saving
+                        ? const SizedBox(
+                            key: ValueKey('saving'),
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : Row(
+                            key: const ValueKey('idle'),
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                isEditing
+                                    ? Icons.save_rounded
+                                    : Icons.add_rounded,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                isEditing ? 'Save Changes' : 'Create Article',
+                                style: const TextStyle(
+                                  fontSize: AppFontSizes.input,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1766,9 +1962,15 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
   InputDecoration _buildInputDecoration(String hint, String? helper) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.neutral400),
+      hintStyle: const TextStyle(
+        fontSize: AppFontSizes.small,
+        color: AppColors.neutral400,
+      ),
       helperText: helper,
-      helperStyle: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400),
+      helperStyle: const TextStyle(
+        fontSize: AppFontSizes.caption,
+        color: AppColors.neutral400,
+      ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -1793,8 +1995,8 @@ class _ArticleFormDialogState extends State<_ArticleFormDialog> {
 // ═══════════════════════════════════════════════════════════════════════════════
 class _CategoryManagerDialog extends StatefulWidget {
   final List<ArticleCategory> categories;
-  final MagazineService       service;
-  final VoidCallback          onChanged;
+  final MagazineService service;
+  final VoidCallback onChanged;
 
   const _CategoryManagerDialog({
     required this.categories,
@@ -1815,7 +2017,7 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
   final _listScrollCtrl = ScrollController();
 
   late List<ArticleCategory> _cats;
-  bool    _saving = false;
+  bool _saving = false;
   String? _err;
 
   @override
@@ -1833,17 +2035,29 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
 
   Future<void> _add() async {
     final name = _nameCtrl.text.trim();
-    if (name.isEmpty) { setState(() { _err = 'Name is required.'; }); return; }
-    setState(() { _saving = true; _err = null; });
+    if (name.isEmpty) {
+      setState(() {
+        _err = 'Name is required.';
+      });
+      return;
+    }
+    setState(() {
+      _saving = true;
+      _err = null;
+    });
     final res = await widget.service.adminCreateCategory({'name': name});
-    setState(() { _saving = false; });
+    setState(() {
+      _saving = false;
+    });
     if (res['success'] == true) {
       _nameCtrl.clear();
       widget.onChanged();
       final updated = await widget.service.getCategories();
       if (mounted) setState(() => _cats = updated);
     } else {
-      setState(() { _err = 'Failed to add.'; });
+      setState(() {
+        _err = 'Failed to add.';
+      });
     }
   }
 
@@ -1859,12 +2073,12 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final dialogWidth = screenSize.width >= 560
-        ? 480.0
-        : screenSize.width - 40;
+    final dialogWidth = screenSize.width >= 560 ? 480.0 : screenSize.width - 40;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+      ),
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       // Same lightweight fade + scale entrance as the article form dialog.
       child: TweenAnimationBuilder<double>(
@@ -1876,203 +2090,227 @@ class _CategoryManagerDialogState extends State<_CategoryManagerDialog> {
           child: Transform.scale(scale: scale, child: child),
         ),
         child: Container(
-        width: dialogWidth,
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.adminColor.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(AppSizes.radius10),
-                  ),
-                  child: const Icon(
-                    Icons.folder_rounded,
-                    color: AppColors.adminColor,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'Manage Categories',
-                    style: TextStyle(
-                      fontSize: AppFontSizes.titleMd,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.gray900,
+          width: dialogWidth,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.adminColor.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(AppSizes.radius10),
+                    ),
+                    child: const Icon(
+                      Icons.folder_rounded,
+                      color: AppColors.adminColor,
+                      size: 20,
                     ),
                   ),
-                ),
-                _HoverIconButton(
-                  icon: Icons.close_rounded,
-                  tooltip: 'Close',
-                  color: AppColors.neutral400,
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Existing categories list
-            if (_cats.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.folder_outlined,
-                        size: 48,
-                        color: AppColors.neutral400.withValues(alpha: 0.3),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Manage Categories',
+                      style: TextStyle(
+                        fontSize: AppFontSizes.titleMd,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.gray900,
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'No categories',
-                        style: TextStyle(
-                          fontSize: AppFontSizes.body,
-                          color: AppColors.neutral400,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              )
-            else
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 260),
-                child: Scrollbar(
-                  controller: _listScrollCtrl,
-                  child: ListView.builder(
-                    controller: _listScrollCtrl,
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: _cats.length,
-                    itemBuilder: (_, i) {
-                      final c = _cats[i];
-                      Color col;
-                      try {
-                        col = Color(int.parse(c.color.replaceFirst('#', '0xFF')));
-                      } catch (_) { col = context.colors.primary; }
-
-                      return _CategoryRow(
-                        name: c.name,
-                        articlesCount: c.articlesCount,
-                        color: col,
-                        onDelete: () => _delete(c),
-                      );
-                    },
+                  _HoverIconButton(
+                    icon: Icons.close_rounded,
+                    tooltip: 'Close',
+                    color: AppColors.neutral400,
+                    onPressed: () => Navigator.pop(context),
                   ),
-                ),
+                ],
               ),
-            const Divider(height: 24),
-            const Text(
-              'Add New Category',
-              style: TextStyle(
-                fontSize: AppFontSizes.secondary,
-                fontWeight: FontWeight.w700,
-                color: AppColors.gray700,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _nameCtrl,
-                    style: const TextStyle(fontSize: AppFontSizes.secondary),
-                    decoration: InputDecoration(
-                      hintText: 'Category name',
-                      hintStyle: const TextStyle(
-                        fontSize: AppFontSizes.small,
-                        color: AppColors.neutral400,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                        borderSide: const BorderSide(color: AppColors.neutral200),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                        borderSide: const BorderSide(color: AppColors.neutral200),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                        borderSide: const BorderSide(
-                          color: AppColors.adminColor,
-                          width: 1.5,
+              const SizedBox(height: 16),
+              // Existing categories list
+              if (_cats.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.folder_outlined,
+                          size: 48,
+                          color: AppColors.neutral400.withValues(alpha: 0.3),
                         ),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.tintGray,
-                    ),
-                    onSubmitted: (_) => _add(),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                SizedBox(
-                  height: 46,
-                  width: 46,
-                  child: ElevatedButton(
-                    onPressed: _saving ? null : _add,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.adminColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                      ),
-                      elevation: 0,
-                      padding: EdgeInsets.zero,
-                    ),
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 150),
-                      child: _saving
-                          ? const SizedBox(
-                              key: ValueKey('saving'),
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : const Icon(Icons.add_rounded, key: ValueKey('idle'), size: 24),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            // AnimatedSize smooths the inline validation message in/out.
-            AnimatedSize(
-              duration: const Duration(milliseconds: 180),
-              child: _err != null
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Row(
-                        children: [
-                          Icon(Icons.error_outline_rounded, color: AppColors.error, size: 14),
-                          const SizedBox(width: 6),
-                          Text(
-                            _err!,
-                            style: const TextStyle(
-                              fontSize: AppFontSizes.caption,
-                              color: AppColors.error,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'No categories',
+                          style: TextStyle(
+                            fontSize: AppFontSizes.body,
+                            color: AppColors.neutral400,
+                            fontWeight: FontWeight.w600,
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 260),
+                  child: Scrollbar(
+                    controller: _listScrollCtrl,
+                    child: ListView.builder(
+                      controller: _listScrollCtrl,
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: _cats.length,
+                      itemBuilder: (_, i) {
+                        final c = _cats[i];
+                        Color col;
+                        try {
+                          col = Color(
+                            int.parse(c.color.replaceFirst('#', '0xFF')),
+                          );
+                        } catch (_) {
+                          col = context.colors.primary;
+                        }
+
+                        return _CategoryRow(
+                          name: c.name,
+                          articlesCount: c.articlesCount,
+                          color: col,
+                          onDelete: () => _delete(c),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              const Divider(height: 24),
+              const Text(
+                'Add New Category',
+                style: TextStyle(
+                  fontSize: AppFontSizes.secondary,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.gray700,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _nameCtrl,
+                      style: const TextStyle(fontSize: AppFontSizes.secondary),
+                      decoration: InputDecoration(
+                        hintText: 'Category name',
+                        hintStyle: const TextStyle(
+                          fontSize: AppFontSizes.small,
+                          color: AppColors.neutral400,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
+                          borderSide: const BorderSide(
+                            color: AppColors.neutral200,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
+                          borderSide: const BorderSide(
+                            color: AppColors.neutral200,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
+                          borderSide: const BorderSide(
+                            color: AppColors.adminColor,
+                            width: 1.5,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: AppColors.tintGray,
                       ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-          ],
-        ),
+                      onSubmitted: (_) => _add(),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    height: 46,
+                    width: 46,
+                    child: ElevatedButton(
+                      onPressed: _saving ? null : _add,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.adminColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
+                        ),
+                        elevation: 0,
+                        padding: EdgeInsets.zero,
+                      ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 150),
+                        child: _saving
+                            ? const SizedBox(
+                                key: ValueKey('saving'),
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.add_rounded,
+                                key: ValueKey('idle'),
+                                size: 24,
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // AnimatedSize smooths the inline validation message in/out.
+              AnimatedSize(
+                duration: const Duration(milliseconds: 180),
+                child: _err != null
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.error_outline_rounded,
+                              color: AppColors.error,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              _err!,
+                              style: const TextStyle(
+                                fontSize: AppFontSizes.caption,
+                                color: AppColors.error,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -2126,11 +2364,7 @@ class _CategoryRowState extends State<_CategoryRow> {
               color: widget.color.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.label_rounded,
-              color: widget.color,
-              size: 18,
-            ),
+            child: Icon(Icons.label_rounded, color: widget.color, size: 18),
           ),
           title: Text(
             widget.name,

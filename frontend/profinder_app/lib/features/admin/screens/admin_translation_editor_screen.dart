@@ -23,18 +23,20 @@ class AdminTranslationEditorScreen extends StatefulWidget {
   const AdminTranslationEditorScreen({super.key, required this.language});
 
   @override
-  State<AdminTranslationEditorScreen> createState() => _AdminTranslationEditorScreenState();
+  State<AdminTranslationEditorScreen> createState() =>
+      _AdminTranslationEditorScreenState();
 }
 
-class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScreen> {
-  final _api        = ApiService();
+class _AdminTranslationEditorScreenState
+    extends State<AdminTranslationEditorScreen> {
+  final _api = ApiService();
   final _searchCtrl = TextEditingController();
 
-  bool          _loading = true;
-  bool          _saving  = false;
-  String?       _error;
-  List<dynamic> _rows      = [];
-  List<dynamic> _filtered  = [];
+  bool _loading = true;
+  bool _saving = false;
+  String? _error;
+  List<dynamic> _rows = [];
+  List<dynamic> _filtered = [];
   final Map<int, TextEditingController> _controllers = {};
   final Set<int> _dirtyKeyIds = {};
 
@@ -55,12 +57,19 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
 
   // ── Load ──────────────────────────────────────────────────
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      final r = await _api.get('/admin-panel/languages/${widget.language['id']}/translations/');
+      final r = await _api.get(
+        '/admin-panel/languages/${widget.language['id']}/translations/',
+      );
       if (!mounted) return;
 
-      final rows = r.data['rows'] is List ? List<dynamic>.from(r.data['rows']) : [];
+      final rows = r.data['rows'] is List
+          ? List<dynamic>.from(r.data['rows'])
+          : [];
 
       for (final c in _controllers.values) {
         c.dispose();
@@ -70,17 +79,22 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
 
       for (final row in rows) {
         final keyId = row['key_id'] as int;
-        _controllers[keyId] = TextEditingController(text: row['text']?.toString() ?? '');
+        _controllers[keyId] = TextEditingController(
+          text: row['text']?.toString() ?? '',
+        );
       }
 
       setState(() {
         _loading = false;
-        _rows     = rows;
+        _rows = rows;
       });
       _applySearch();
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load translations'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load translations';
+      });
     }
   }
 
@@ -91,7 +105,9 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
           ? List<dynamic>.from(_rows)
           : _rows.where((row) {
               return (row['key'] ?? '').toString().toLowerCase().contains(q) ||
-                     (row['description'] ?? '').toString().toLowerCase().contains(q);
+                  (row['description'] ?? '').toString().toLowerCase().contains(
+                    q,
+                  );
             }).toList();
     });
   }
@@ -99,24 +115,30 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
   // ── Save ──────────────────────────────────────────────────
   Future<void> _save() async {
     if (_dirtyKeyIds.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No changes to save.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No changes to save.')));
       return;
     }
     setState(() => _saving = true);
     try {
       final payload = <String, String>{
-        for (final keyId in _dirtyKeyIds) keyId.toString(): _controllers[keyId]?.text ?? '',
+        for (final keyId in _dirtyKeyIds)
+          keyId.toString(): _controllers[keyId]?.text ?? '',
       };
       final r = await _api.patch(
         '/admin-panel/languages/${widget.language['id']}/translations/',
         {'translations': payload},
       );
       if (!mounted) return;
-      setState(() { _saving = false; _dirtyKeyIds.clear(); });
+      setState(() {
+        _saving = false;
+        _dirtyKeyIds.clear();
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(r.data['message']?.toString() ?? 'Translations saved.')),
+        SnackBar(
+          content: Text(r.data['message']?.toString() ?? 'Translations saved.'),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
@@ -128,58 +150,85 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
   }
 
   // ── Add new key ───────────────────────────────────────────
-  void _addKeyDialog() {
-    final keyCtrl  = TextEditingController();
+  void _addKeyDialog() async {
+    final keyCtrl = TextEditingController();
     final descCtrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-        title: const Text('Add Translation Key',
-            style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: keyCtrl,
-              decoration: const InputDecoration(hintText: 'Key (e.g. home.welcome_title)'),
+    try {
+      await showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
+          title: const Text(
+            'Add Translation Key',
+            style: TextStyle(
+              fontSize: AppFontSizes.title,
+              fontWeight: FontWeight.w700,
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: descCtrl,
-              decoration: const InputDecoration(hintText: 'Description (optional)'),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: keyCtrl,
+                decoration: const InputDecoration(
+                  hintText: 'Key (e.g. home.welcome_title)',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: descCtrl,
+                decoration: const InputDecoration(
+                  hintText: 'Description (optional)',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.neutral400),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.adminColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                ),
+              ),
+              onPressed: () async {
+                final key = keyCtrl.text.trim();
+                final desc = descCtrl.text.trim();
+                if (key.isEmpty) return;
+                Navigator.pop(dialogContext);
+                try {
+                  await _api.post('/admin-panel/translation-keys/', {
+                    'key': key,
+                    'description': desc,
+                  });
+                  _load();
+                } catch (e) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Failed to add — key may already exist.'),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Add', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.neutral400)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.adminColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
-            onPressed: () async {
-              final key = keyCtrl.text.trim();
-              if (key.isEmpty) return;
-              Navigator.pop(dialogContext);
-              try {
-                await _api.post('/admin-panel/translation-keys/',
-                    {'key': key, 'description': descCtrl.text.trim()});
-                _load();
-              } catch (e) {
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Failed to add — key may already exist.')),
-                );
-              }
-            },
-            child: const Text('Add', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
+      );
+    } finally {
+      keyCtrl.dispose();
+      descCtrl.dispose();
+    }
   }
 
   Future<bool> _confirmDiscard() async {
@@ -187,15 +236,30 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
     final result = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-        title: const Text('Discard changes?',
-            style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
-        content: Text('You have ${_dirtyKeyIds.length} unsaved translation(s).',
-            style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
+        title: const Text(
+          'Discard changes?',
+          style: TextStyle(
+            fontSize: AppFontSizes.title,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: Text(
+          'You have ${_dirtyKeyIds.length} unsaved translation(s).',
+          style: const TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.grayDeep,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep Editing', style: TextStyle(color: AppColors.neutral400)),
+            child: const Text(
+              'Keep Editing',
+              style: TextStyle(color: AppColors.neutral400),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
@@ -236,7 +300,10 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
                       height: 42,
                       child: Padding(
                         padding: EdgeInsets.all(11),
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       ),
                     )
                   : AppBarIconButton(
@@ -251,7 +318,10 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
           backgroundColor: AppColors.adminColor,
           onPressed: _addKeyDialog,
           icon: const Icon(Icons.add_rounded, color: Colors.white),
-          label: const Text('Add Key', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+          label: const Text(
+            'Add Key',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
         ),
         body: SafeArea(
           top: false,
@@ -261,16 +331,20 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
               Expanded(
                 child: _loading
                     ? const Center(
-                        child: CircularProgressIndicator(color: AppColors.adminColor, strokeWidth: 2.5))
+                        child: CircularProgressIndicator(
+                          color: AppColors.adminColor,
+                          strokeWidth: 2.5,
+                        ),
+                      )
                     : _error != null
-                        ? _buildError()
-                        : _filtered.isEmpty
-                            ? _emptyState()
-                            : ListView.builder(
-                                padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
-                                itemCount: _filtered.length,
-                                itemBuilder: (_, i) => _translationRow(_filtered[i]),
-                              ),
+                    ? _buildError()
+                    : _filtered.isEmpty
+                    ? _emptyState()
+                    : ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
+                        itemCount: _filtered.length,
+                        itemBuilder: (_, i) => _translationRow(_filtered[i]),
+                      ),
               ),
             ],
           ),
@@ -288,13 +362,21 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
         onChanged: (_) => _applySearch(),
         decoration: InputDecoration(
           hintText: 'Search keys…',
-          hintStyle: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
+          hintStyle: const TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.neutral400,
+          ),
           prefixIcon: const Icon(Icons.search_rounded, size: 20),
           filled: true,
           fillColor: AppColors.lightScaffold,
-          contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 0,
+            horizontal: 12,
+          ),
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
+            borderSide: BorderSide.none,
+          ),
         ),
       ),
     );
@@ -313,7 +395,10 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
         color: Colors.white,
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
-            color: isDirty ? AppColors.adminColor.withValues(alpha: 0.4) : AppColors.neutral200),
+          color: isDirty
+              ? AppColors.adminColor.withValues(alpha: 0.4)
+              : AppColors.neutral200,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,25 +406,45 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
           Row(
             children: [
               Expanded(
-                child: Text(row['key']?.toString() ?? '',
-                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, fontFamily: 'monospace')),
+                child: Text(
+                  row['key']?.toString() ?? '',
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'monospace',
+                  ),
+                ),
               ),
               if (isEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
                   ),
-                  child: const Text('Missing',
-                      style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w800, color: AppColors.error)),
+                  child: const Text(
+                    'Missing',
+                    style: TextStyle(
+                      fontSize: AppFontSizes.nano,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.error,
+                    ),
+                  ),
                 ),
             ],
           ),
           if ((row['description'] ?? '').toString().isNotEmpty) ...[
             const SizedBox(height: 2),
-            Text(row['description'].toString(),
-                style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
+            Text(
+              row['description'].toString(),
+              style: const TextStyle(
+                fontSize: AppFontSizes.caption,
+                color: AppColors.neutral400,
+              ),
+            ),
           ],
           const SizedBox(height: 8),
           TextField(
@@ -352,9 +457,14 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
               isDense: true,
               filled: true,
               fillColor: AppColors.tintGray,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 8,
+              ),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusSm), borderSide: BorderSide.none),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
         ],
@@ -371,13 +481,28 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
           child: Center(
             child: Column(
               children: [
-                Icon(Icons.translate_rounded, size: 48, color: Colors.grey.shade300),
+                Icon(
+                  Icons.translate_rounded,
+                  size: 48,
+                  color: Colors.grey.shade300,
+                ),
                 const SizedBox(height: 10),
-                const Text('No translation keys yet',
-                    style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: AppColors.neutral400)),
+                const Text(
+                  'No translation keys yet',
+                  style: TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.neutral400,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                const Text('Tap "Add Key" to create the first one.',
-                    style: TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
+                const Text(
+                  'Tap "Add Key" to create the first one.',
+                  style: TextStyle(
+                    fontSize: AppFontSizes.caption,
+                    color: AppColors.neutral400,
+                  ),
+                ),
               ],
             ),
           ),
@@ -391,16 +516,27 @@ class _AdminTranslationEditorScreenState extends State<AdminTranslationEditorScr
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+          const Icon(
+            Icons.error_outline_rounded,
+            size: 48,
+            color: AppColors.error,
+          ),
           const SizedBox(height: 10),
-          const Text('Failed to load translations',
-              style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600)),
+          const Text(
+            'Failed to load translations',
+            style: TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 12),
           ElevatedButton.icon(
             onPressed: _load,
             icon: const Icon(Icons.refresh_rounded),
             label: const Text('Retry'),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.adminColor,
+            ),
           ),
         ],
       ),
