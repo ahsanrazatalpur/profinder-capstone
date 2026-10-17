@@ -1,4 +1,4 @@
-﻿name: profinder_app
+name: profinder_app
 description: "A new Flutter project."
 publish_to: 'none'
 
@@ -35,7 +35,6 @@ dependencies:
 
   # --- Utils ---
   intl: any
-  cupertino_icons: ^1.0.8
   image_picker: ^1.2.2
   firebase_core: ^4.11.0
   web: ^1.1.0

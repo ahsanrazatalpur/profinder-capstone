@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:google_sign_in/google_sign_in.dart'; // ✅ Google Sign-In
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_strings.dart';
@@ -15,7 +15,7 @@ import '../../../core/utils/app_validators.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/app_loader.dart';
-import '../../../core/widgets/google_logo.dart'; // ✅ real Google "G" (flutter_svg)
+import '../../../core/widgets/google_logo.dart';
 import '../../../services/auth_provider.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/home_service.dart';
@@ -27,6 +27,7 @@ import '../widgets/account_type_card.dart';
 import '../widgets/social_auth_button.dart';
 import '../widgets/registration_success_dialog.dart';
 import 'login_screen.dart';
+import '../../support/screens/privacy_policy_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
@@ -48,32 +49,32 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
-  final _formKey               = GlobalKey<FormState>();
-  final _nameController        = TextEditingController();
-  final _emailController       = TextEditingController();
-  final _passwordController    = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _confirmPassController = TextEditingController();
 
-  final _nameFocusNode     = FocusNode();
-  final _emailFocusNode    = FocusNode();
+  final _nameFocusNode = FocusNode();
+  final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
-  final _confirmFocusNode  = FocusNode();
+  final _confirmFocusNode = FocusNode();
 
   late String _selectedRole = widget.initialRole ?? 'customer';
   Map<String, dynamic>? _selectedCategory;
-  bool    _obscurePassword  = true;
-  bool    _obscureConfirm   = true;
-  bool    _capsLockOn       = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
+  bool _capsLockOn = false;
   List<dynamic> _categories = [];
 
   // ── Step 2: Location ──────────────────────────────────────
   final _geoService = GeoService();
-  List<dynamic> _countries       = [];
-  List<dynamic> _cities          = [];
+  List<dynamic> _countries = [];
+  List<dynamic> _cities = [];
   Map<String, dynamic>? _selectedCountry;
   Map<String, dynamic>? _selectedCity;
   bool _loadingCountries = true;
-  bool _loadingCities    = false;
+  bool _loadingCities = false;
 
   final _authService = AuthService();
   _EmailStatus _emailStatus = _EmailStatus.idle;
@@ -84,12 +85,14 @@ class _RegisterScreenState extends State<RegisterScreen>
     vsync: this,
     duration: const Duration(milliseconds: 400),
   );
-  late final Animation<double> _shakeAnimation = TweenSequence<double>([
-    TweenSequenceItem(tween: Tween(begin: 0.0, end: -8.0), weight: 1),
-    TweenSequenceItem(tween: Tween(begin: -8.0, end: 8.0), weight: 2),
-    TweenSequenceItem(tween: Tween(begin: 8.0, end: -8.0), weight: 2),
-    TweenSequenceItem(tween: Tween(begin: -8.0, end: 0.0), weight: 1),
-  ]).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeInOut));
+  late final Animation<double> _shakeAnimation = TweenSequence<double>(
+    [
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: -8.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -8.0, end: 8.0), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: 8.0, end: -8.0), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: -8.0, end: 0.0), weight: 1),
+    ],
+  ).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeInOut));
 
   @override
   void initState() {
@@ -120,8 +123,9 @@ class _RegisterScreenState extends State<RegisterScreen>
   void _refresh() => setState(() {});
 
   bool _handleKeyEvent(KeyEvent event) {
-    final caps = HardwareKeyboard.instance.lockModesEnabled
-        .contains(KeyboardLockMode.capsLock);
+    final caps = HardwareKeyboard.instance.lockModesEnabled.contains(
+      KeyboardLockMode.capsLock,
+    );
     if (caps != _capsLockOn && mounted) {
       setState(() => _capsLockOn = caps);
     }
@@ -172,8 +176,9 @@ class _RegisterScreenState extends State<RegisterScreen>
       return;
     }
     setState(() {
-      _emailStatus =
-          result['available'] == true ? _EmailStatus.available : _EmailStatus.taken;
+      _emailStatus = result['available'] == true
+          ? _EmailStatus.available
+          : _EmailStatus.taken;
     });
   }
 
@@ -182,13 +187,15 @@ class _RegisterScreenState extends State<RegisterScreen>
   // Form's validate() (which shows error text); this stays silent and just
   // gates the button.
   bool get _isFormValid {
-    final nameOk    = AppValidators.name(_nameController.text) == null;
-    final emailOk   = AppValidators.email(_emailController.text) == null &&
+    final nameOk = AppValidators.name(_nameController.text) == null;
+    final emailOk =
+        AppValidators.email(_emailController.text) == null &&
         _emailStatus == _EmailStatus.available;
-    final passOk    = AppValidators.password(_passwordController.text) == null;
-    final confirmOk = _confirmPassController.text.isNotEmpty &&
+    final passOk = AppValidators.password(_passwordController.text) == null;
+    final confirmOk =
+        _confirmPassController.text.isNotEmpty &&
         _confirmPassController.text == _passwordController.text;
-    final cityOk    = _selectedCountry != null && _selectedCity != null;
+    final cityOk = _selectedCountry != null && _selectedCity != null;
     final categoryOk =
         _selectedRole != 'professional' || _selectedCategory != null;
 
@@ -207,7 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     final result = await _geoService.getCountries();
     if (!mounted) return;
     setState(() {
-      _countries        = result['data'] ?? [];
+      _countries = result['data'] ?? [];
       _loadingCountries = false;
     });
   }
@@ -215,14 +222,14 @@ class _RegisterScreenState extends State<RegisterScreen>
   Future<void> _onCountrySelected(Map<String, dynamic> country) async {
     setState(() {
       _selectedCountry = country;
-      _selectedCity    = null; // reset — city list belongs to the new country
-      _cities          = [];
-      _loadingCities   = true;
+      _selectedCity = null; // reset — city list belongs to the new country
+      _cities = [];
+      _loadingCities = true;
     });
     final result = await _geoService.getCities(country['id'] as int);
     if (!mounted) return;
     setState(() {
-      _cities        = result['data'] ?? [];
+      _cities = result['data'] ?? [];
       _loadingCities = false;
     });
   }
@@ -253,7 +260,10 @@ class _RegisterScreenState extends State<RegisterScreen>
     // Professional must select category
     if (_selectedRole == 'professional' && _selectedCategory == null) {
       _shakeController.forward(from: 0);
-      AppHelpers.showError(context, AppLocalizations.of(context).registerCategoryRequired);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).registerCategoryRequired,
+      );
       return;
     }
 
@@ -267,12 +277,12 @@ class _RegisterScreenState extends State<RegisterScreen>
     final auth = context.read<AuthProvider>();
 
     final success = await auth.register(
-      email:      _emailController.text.trim().toLowerCase(),
-      name:       AppValidators.normalizeName(_nameController.text),
-      role:       _selectedRole,
-      password:   _passwordController.text,
-      city:       _selectedCity?['name'] as String?,
-      country:    _selectedCountry?['name'] as String?,
+      email: _emailController.text.trim().toLowerCase(),
+      name: AppValidators.normalizeName(_nameController.text),
+      role: _selectedRole,
+      password: _passwordController.text,
+      city: _selectedCity?['name'] as String?,
+      country: _selectedCountry?['name'] as String?,
       categoryId: _selectedCategory?['id'] as int?,
     );
 
@@ -291,7 +301,7 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   void _showSuccessDialog() {
     showDialog(
-      context:            context,
+      context: context,
       barrierDismissible: false,
       builder: (_) => RegistrationSuccessDialog(
         onContinue: () {
@@ -322,11 +332,14 @@ class _RegisterScreenState extends State<RegisterScreen>
         Navigator.pushNamedAndRemoveUntil(context, '/admin', (route) => false);
         break;
       default:
-        AppHelpers.showError(context, AppLocalizations.of(context).unknownRoleError);
+        AppHelpers.showError(
+          context,
+          AppLocalizations.of(context).unknownRoleError,
+        );
     }
   }
 
-  // ✅ NEW — Google Sign-In. `_selectedRole` (Customer/Professional toggle
+  // — Google Sign-In. `_selectedRole` (Customer/Professional toggle
   // at the top of this screen) is sent along so a brand-new Google account
   // gets created with the role the person picked; an existing account
   // just logs in with whatever role it already has.
@@ -354,7 +367,7 @@ class _RegisterScreenState extends State<RegisterScreen>
 
       final googleAuth = await googleUser.authentication;
       final idToken = googleAuth.idToken;
-      // 🐛 FIX: on web, google_sign_in never returns an idToken — only an
+      // on web, google_sign_in never returns an idToken — only an
       // accessToken. Only treat this as a failure when BOTH are missing.
       final accessToken = googleAuth.accessToken;
       if (idToken == null && accessToken == null) {
@@ -385,10 +398,13 @@ class _RegisterScreenState extends State<RegisterScreen>
       }
     } catch (e) {
       if (!mounted) return;
-      // TEMP DEBUG — remove once Google Sign-In is confirmed working.
-      // ignore: avoid_print
-      print('[GOOGLE SIGN-IN DEBUG] $e');
-      AppHelpers.showError(context, AppLocalizations.of(context).registerServerError);
+      if (kDebugMode) {
+        debugPrint('[GOOGLE SIGN-IN DEBUG] $e');
+      }
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).registerServerError,
+      );
     }
   }
 
@@ -461,9 +477,8 @@ class _RegisterScreenState extends State<RegisterScreen>
               onPressed: () => Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => LoginScreen(
-                    initialEmail: _emailController.text.trim(),
-                  ),
+                  builder: (_) =>
+                      LoginScreen(initialEmail: _emailController.text.trim()),
                 ),
               ),
               child: Text(
@@ -493,7 +508,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSizes.screenPadding,
-            vertical:   AppSizes.sm,
+            vertical: AppSizes.sm,
           ),
           child: AnimatedBuilder(
             animation: _shakeAnimation,
@@ -538,24 +553,29 @@ class _RegisterScreenState extends State<RegisterScreen>
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           AccountTypeCard(
-                            title:       AppStrings.customer,
-                            description: AppLocalizations.of(context).customerAccountDescription,
-                            icon:        Icons.person_outline,
+                            title: AppStrings.customer,
+                            description: AppLocalizations.of(
+                              context,
+                            ).customerAccountDescription,
+                            icon: Icons.person_outline,
                             accentColor: AppColors.customerColor,
-                            isSelected:  _selectedRole == 'customer',
+                            isSelected: _selectedRole == 'customer',
                             onTap: () => setState(() {
-                              _selectedRole     = 'customer';
+                              _selectedRole = 'customer';
                               _selectedCategory = null;
                             }),
                           ),
                           const SizedBox(width: AppSizes.sm),
                           AccountTypeCard(
-                            title:       AppStrings.professional,
-                            description: AppLocalizations.of(context).professionalAccountDescription,
-                            icon:        Icons.work_outline,
+                            title: AppStrings.professional,
+                            description: AppLocalizations.of(
+                              context,
+                            ).professionalAccountDescription,
+                            icon: Icons.work_outline,
                             accentColor: AppColors.professionalColor,
-                            isSelected:  _selectedRole == 'professional',
-                            onTap: () => setState(() => _selectedRole = 'professional'),
+                            isSelected: _selectedRole == 'professional',
+                            onTap: () =>
+                                setState(() => _selectedRole = 'professional'),
                           ),
                         ],
                       ),
@@ -565,11 +585,11 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                     // ── Full Name ─────────────────────────────
                     TextFormField(
-                      controller:         _nameController,
-                      focusNode:          _nameFocusNode,
-                      style:              context.textStyles.inputText,
+                      controller: _nameController,
+                      focusNode: _nameFocusNode,
+                      style: context.textStyles.inputText,
                       textCapitalization: TextCapitalization.words,
-                      textInputAction:    TextInputAction.next,
+                      textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.name],
                       onFieldSubmitted: (_) =>
                           FocusScope.of(context).requestFocus(_emailFocusNode),
@@ -578,29 +598,32 @@ class _RegisterScreenState extends State<RegisterScreen>
                         hintText: AppLocalizations.of(context).fullNameHint,
                         prefixIcon: const Icon(Icons.person_outline),
                       ),
-                      validator: (v) => AppValidators.name(v, AppLocalizations.of(context)),
+                      validator: (v) =>
+                          AppValidators.name(v, AppLocalizations.of(context)),
                     ),
 
                     const SizedBox(height: AppSizes.sm),
 
                     // ── Email ─────────────────────────────────
                     TextFormField(
-                      controller:   _emailController,
-                      focusNode:    _emailFocusNode,
+                      controller: _emailController,
+                      focusNode: _emailFocusNode,
                       keyboardType: TextInputType.emailAddress,
-                      autocorrect:  false,
-                      style:        context.textStyles.inputText,
+                      autocorrect: false,
+                      style: context.textStyles.inputText,
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.email],
-                      onFieldSubmitted: (_) =>
-                          FocusScope.of(context).requestFocus(_passwordFocusNode),
+                      onFieldSubmitted: (_) => FocusScope.of(
+                        context,
+                      ).requestFocus(_passwordFocusNode),
                       decoration: InputDecoration(
-                        labelText:  AppStrings.email,
-                        hintText:   AppLocalizations.of(context).emailHint,
+                        labelText: AppStrings.email,
+                        hintText: AppLocalizations.of(context).emailHint,
                         prefixIcon: const Icon(Icons.email_outlined),
                         suffixIcon: _emailSuffixIcon(),
                       ),
-                      validator: (v) => AppValidators.email(v, AppLocalizations.of(context)),
+                      validator: (v) =>
+                          AppValidators.email(v, AppLocalizations.of(context)),
                     ),
                     _buildEmailHint(),
 
@@ -608,53 +631,68 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                     // ── Country ───────────────────────────────
                     SearchablePickerField<Map<String, dynamic>>(
-                      value:      _selectedCountry,
-                      items:      List<Map<String, dynamic>>.from(_countries),
-                      itemLabel:  (c) => c['name'] as String,
+                      value: _selectedCountry,
+                      items: List<Map<String, dynamic>>.from(_countries),
+                      itemLabel: (c) => c['name'] as String,
                       itemLeading: (c) {
                         final flag = CountryFlags.flagFor(c['name'] as String);
                         return flag != null
-                            ? Text(flag, style: const TextStyle(fontSize: AppFontSizes.h3))
+                            ? Text(
+                                flag,
+                                style: const TextStyle(
+                                  fontSize: AppFontSizes.h3,
+                                ),
+                              )
                             : const Icon(Icons.public, size: 20);
                       },
-                      label:      AppLocalizations.of(context).countryLabel,
-                      hint:       AppLocalizations.of(context).countryHint,
+                      label: AppLocalizations.of(context).countryLabel,
+                      hint: AppLocalizations.of(context).countryHint,
                       prefixIcon: Icons.public_outlined,
-                      loading:    _loadingCountries,
-                      searchHint: AppLocalizations.of(context).countrySearchHint,
-                      emptyMessage: AppLocalizations.of(context).countryEmptyMessage,
+                      loading: _loadingCountries,
+                      searchHint: AppLocalizations.of(
+                        context,
+                      ).countrySearchHint,
+                      emptyMessage: AppLocalizations.of(
+                        context,
+                      ).countryEmptyMessage,
                       onChanged: (country) {
                         if (country != null) _onCountrySelected(country);
                       },
-                      validator: (value) =>
-                          value == null ? AppLocalizations.of(context).countryRequiredError : null,
+                      validator: (value) => value == null
+                          ? AppLocalizations.of(context).countryRequiredError
+                          : null,
                     ),
 
                     const SizedBox(height: AppSizes.sm),
 
                     // ── City — depends on Country ─────────────
                     SearchablePickerField<Map<String, dynamic>>(
-                      key:        ValueKey(_selectedCountry?['id']),
-                      value:      _selectedCity,
-                      items:      List<Map<String, dynamic>>.from(_cities),
-                      itemLabel:  (c) => c['name'] as String,
-                      label:      AppLocalizations.of(context).cityLabel,
-                      hint:       AppLocalizations.of(context).cityHint,
+                      key: ValueKey(_selectedCountry?['id']),
+                      value: _selectedCity,
+                      items: List<Map<String, dynamic>>.from(_cities),
+                      itemLabel: (c) => c['name'] as String,
+                      label: AppLocalizations.of(context).cityLabel,
+                      hint: AppLocalizations.of(context).cityHint,
                       prefixIcon: Icons.location_city_outlined,
-                      enabled:    _selectedCountry != null,
-                      loading:    _loadingCities,
-                      disabledHint: AppLocalizations.of(context).cityDisabledHint,
+                      enabled: _selectedCountry != null,
+                      loading: _loadingCities,
+                      disabledHint: AppLocalizations.of(
+                        context,
+                      ).cityDisabledHint,
                       searchHint: AppLocalizations.of(context).citySearchHint,
-                      emptyMessage: AppLocalizations.of(context).cityEmptyMessage,
+                      emptyMessage: AppLocalizations.of(
+                        context,
+                      ).cityEmptyMessage,
                       onChanged: (city) => setState(() => _selectedCity = city),
-                      validator: (value) =>
-                          value == null ? AppLocalizations.of(context).cityRequiredError : null,
+                      validator: (value) => value == null
+                          ? AppLocalizations.of(context).cityRequiredError
+                          : null,
                     ),
 
                     // ── Category — only for professionals ─────
                     AnimatedSize(
                       duration: const Duration(milliseconds: 250),
-                      curve:    Curves.easeOut,
+                      curve: Curves.easeOut,
                       alignment: Alignment.topCenter,
                       child: _selectedRole != 'professional'
                           ? const SizedBox(width: double.infinity)
@@ -663,24 +701,39 @@ class _RegisterScreenState extends State<RegisterScreen>
                               child: AnimatedOpacity(
                                 duration: const Duration(milliseconds: 250),
                                 opacity: 1,
-                                child: SearchablePickerField<Map<String, dynamic>>(
-                                  value: _selectedCategory,
-                                  items: List<Map<String, dynamic>>.from(_categories),
-                                  itemLabel: (cat) => cat['name'] ?? '',
-                                  label:      AppLocalizations.of(context).professionLabel,
-                                  hint:       AppLocalizations.of(context).professionHint,
-                                  prefixIcon: Icons.category_outlined,
-                                  searchHint: AppLocalizations.of(context).professionSearchHint,
-                                  emptyMessage: AppLocalizations.of(context).professionEmptyMessage,
-                                  onChanged: (cat) =>
-                                      setState(() => _selectedCategory = cat),
-                                  validator: (value) {
-                                    if (_selectedRole == 'professional' && value == null) {
-                                      return AppLocalizations.of(context).professionRequiredError;
-                                    }
-                                    return null;
-                                  },
-                                ),
+                                child:
+                                    SearchablePickerField<Map<String, dynamic>>(
+                                      value: _selectedCategory,
+                                      items: List<Map<String, dynamic>>.from(
+                                        _categories,
+                                      ),
+                                      itemLabel: (cat) => cat['name'] ?? '',
+                                      label: AppLocalizations.of(
+                                        context,
+                                      ).professionLabel,
+                                      hint: AppLocalizations.of(
+                                        context,
+                                      ).professionHint,
+                                      prefixIcon: Icons.category_outlined,
+                                      searchHint: AppLocalizations.of(
+                                        context,
+                                      ).professionSearchHint,
+                                      emptyMessage: AppLocalizations.of(
+                                        context,
+                                      ).professionEmptyMessage,
+                                      onChanged: (cat) => setState(
+                                        () => _selectedCategory = cat,
+                                      ),
+                                      validator: (value) {
+                                        if (_selectedRole == 'professional' &&
+                                            value == null) {
+                                          return AppLocalizations.of(
+                                            context,
+                                          ).professionRequiredError;
+                                        }
+                                        return null;
+                                      },
+                                    ),
                               ),
                             ),
                     ),
@@ -689,17 +742,18 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                     // ── Password ──────────────────────────────
                     TextFormField(
-                      controller:  _passwordController,
-                      focusNode:   _passwordFocusNode,
+                      controller: _passwordController,
+                      focusNode: _passwordFocusNode,
                       obscureText: _obscurePassword,
-                      style:       context.textStyles.inputText,
+                      style: context.textStyles.inputText,
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.newPassword],
-                      onFieldSubmitted: (_) =>
-                          FocusScope.of(context).requestFocus(_confirmFocusNode),
+                      onFieldSubmitted: (_) => FocusScope.of(
+                        context,
+                      ).requestFocus(_confirmFocusNode),
                       decoration: InputDecoration(
-                        labelText:  AppStrings.password,
-                        hintText:   AppLocalizations.of(context).passwordHint,
+                        labelText: AppStrings.password,
+                        hintText: AppLocalizations.of(context).passwordHint,
                         prefixIcon: const Icon(Icons.lock_outlined),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -707,19 +761,29 @@ class _RegisterScreenState extends State<RegisterScreen>
                                 ? Icons.visibility_outlined
                                 : Icons.visibility_off_outlined,
                           ),
-                          onPressed: () =>
-                              setState(() => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                       ),
-                      validator: (v) => AppValidators.password(v, AppLocalizations.of(context)),
+                      validator: (v) => AppValidators.password(
+                        v,
+                        AppLocalizations.of(context),
+                      ),
                     ),
-                    if (_showCapsLockHint && _capsLockOn && _passwordFocusNode.hasFocus)
+                    if (_showCapsLockHint &&
+                        _capsLockOn &&
+                        _passwordFocusNode.hasFocus)
                       Padding(
                         padding: const EdgeInsets.only(top: 6, left: 4),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.info_outline, size: 14, color: AppColors.warning),
+                            const Icon(
+                              Icons.info_outline,
+                              size: 14,
+                              color: AppColors.warning,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               AppLocalizations.of(context).capsLockOnHint,
@@ -738,26 +802,31 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                     // ── Confirm Password ──────────────────────
                     TextFormField(
-                      controller:  _confirmPassController,
-                      focusNode:   _confirmFocusNode,
+                      controller: _confirmPassController,
+                      focusNode: _confirmFocusNode,
                       obscureText: _obscureConfirm,
-                      style:       context.textStyles.inputText,
+                      style: context.textStyles.inputText,
                       textInputAction: TextInputAction.done,
                       autofillHints: const [AutofillHints.newPassword],
                       onFieldSubmitted: (_) => _onRegisterPressed(),
                       decoration: InputDecoration(
-                        labelText:  AppStrings.confirmPass,
-                        hintText:   AppLocalizations.of(context).confirmPasswordHint,
+                        labelText: AppStrings.confirmPass,
+                        hintText: AppLocalizations.of(
+                          context,
+                        ).confirmPasswordHint,
                         prefixIcon: const Icon(Icons.lock_outlined),
                         suffixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (_confirmPassController.text.isNotEmpty)
                               Icon(
-                                _confirmPassController.text == _passwordController.text
+                                _confirmPassController.text ==
+                                        _passwordController.text
                                     ? Icons.check_circle
                                     : Icons.cancel,
-                                color: _confirmPassController.text == _passwordController.text
+                                color:
+                                    _confirmPassController.text ==
+                                        _passwordController.text
                                     ? AppColors.success
                                     : AppColors.error,
                                 size: 20,
@@ -768,8 +837,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     ? Icons.visibility_outlined
                                     : Icons.visibility_off_outlined,
                               ),
-                              onPressed: () =>
-                                  setState(() => _obscureConfirm = !_obscureConfirm),
+                              onPressed: () => setState(
+                                () => _obscureConfirm = !_obscureConfirm,
+                              ),
                             ),
                           ],
                         ),
@@ -787,11 +857,15 @@ class _RegisterScreenState extends State<RegisterScreen>
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: (auth.isLoading || !_isFormValid) ? null : _onRegisterPressed,
+                        onPressed: (auth.isLoading || !_isFormValid)
+                            ? null
+                            : _onRegisterPressed,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
                           ),
                         ),
                         child: auth.isLoading
@@ -806,7 +880,31 @@ class _RegisterScreenState extends State<RegisterScreen>
                       ),
                     ),
 
-                    const SizedBox(height: AppSizes.md),
+                    // ── Privacy notice (links to the in-app policy) ─────
+                    const SizedBox(height: AppSizes.sm),
+                    Text(
+                      AppLocalizations.of(context).registerPrivacyNotice,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: AppFontSizes.small,
+                        color: context.colors.textSecondary,
+                      ),
+                    ),
+                    Center(
+                      child: TextButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const PrivacyPolicyScreen(),
+                          ),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context).profilePrivacyPolicy,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: AppSizes.sm),
 
                     // ── Divider ───────────────────────────────
                     Row(
@@ -819,7 +917,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSizes.sm,
+                          ),
                           child: Text(
                             AppLocalizations.of(context).orContinueWithLabel,
                             style: AppTextStyles.label,
@@ -839,13 +939,15 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                     // ── Google ────────────────────────────────
                     SocialAuthButton(
-                      // ✅ replaced CustomPaint(painter: _GoogleLogoPainter())
+                      // replaced CustomPaint(painter: _GoogleLogoPainter())
                       // with the real Google "G" SVG widget — everything else
                       // about the button (size, colors, border, spacing,
                       // onTap) is unchanged.
                       logo: const GoogleLogo(size: 18),
                       label: AppLocalizations.of(context).googleSignInLabel,
-                      background: isDark ? const Color(0xFF2C2C2E) : AppColors.white,
+                      background: isDark
+                          ? const Color(0xFF2C2C2E)
+                          : AppColors.white,
                       textColor: context.colors.textPrimary,
                       borderColor: context.colors.divider,
                       onTap: _handleGoogleSignIn,

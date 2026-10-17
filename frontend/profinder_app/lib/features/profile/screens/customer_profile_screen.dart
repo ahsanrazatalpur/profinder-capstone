@@ -4,7 +4,7 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
@@ -21,7 +21,7 @@ import '../../../core/constants/country_flags.dart';
 import '../../auth/widgets/searchable_picker_field.dart';
 import '../../notifications/screens/notification_screen.dart';
 import '../../subscription/services/subscription_service.dart';
-import '../../subscription/screens/subscription_screen.dart';  // ✅ FIX: navigate here
+import '../../subscription/screens/subscription_screen.dart';
 import 'wallet_screen.dart';
 import 'payments_screen.dart';
 import 'saved_professionals_screen.dart';
@@ -38,6 +38,9 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/profile_header_card.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../about/screens/about_screen.dart';
+import '../../support/screens/help_center_screen.dart';
+import '../../support/screens/my_tickets_screen.dart';
+import '../../support/screens/privacy_policy_screen.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
 class CustomerProfileScreen extends StatefulWidget {
@@ -52,39 +55,37 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   Map<String, dynamic>? _profile;
   bool _isLoading = true;
   bool _isEditing = false;
-  bool _isSaving  = false;
+  bool _isSaving = false;
 
   // Header stats + notification badge — real counts, no fake numbers
-  int  _unreadNotifications = 0;
-  int  _bookingsCount       = 0;
-  int  _savedCount          = 0;
-  bool _isPremium           = false;
-  String _planName          = 'Free';
+  int _unreadNotifications = 0;
+  int _bookingsCount = 0;
+  int _savedCount = 0;
+  bool _isPremium = false;
+  String _planName = 'Free';
 
-  // Image handling — web aur mobile alag hai
-  // Mobile: File object use hota hai
-  // Web:    XFile se bytes nikalte hain (File() web pe kaam nahi karta)
-  File?      _pickedImage;   // mobile only
-  XFile?     _pickedXFile;   // web + mobile dono ke liye reference
-  Uint8List? _webImageBytes; // web pe preview ke liye
-  String?    _photoUrl;      // Cloudinary HTTPS URL — server se
+  // Platform-aware image storage: File for mobile IO, in-memory bytes for Web
+  File? _pickedImage;
+  XFile? _pickedXFile;
+  Uint8List? _webImageBytes;
+  String? _photoUrl;
 
   // ── Controllers ──────────────────────────────────────────
-  final _nameController  = TextEditingController();
+  final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _api             = ApiService();
-  final _bookingSvc      = BookingService();
-  final _favStore        = FavoritesStore();
-  final _subSvc          = SubscriptionService();
-  final _picker          = ImagePicker();
+  final _api = ApiService();
+  final _bookingSvc = BookingService();
+  final _favStore = FavoritesStore();
+  final _subSvc = SubscriptionService();
+  final _picker = ImagePicker();
 
   final _geoService = GeoService();
-  List<Map<String, dynamic>> _countries       = [];
-  List<Map<String, dynamic>> _cities          = [];
-  Map<String, dynamic>?      _selectedCountry;
-  Map<String, dynamic>?      _selectedCity;
+  List<Map<String, dynamic>> _countries = [];
+  List<Map<String, dynamic>> _cities = [];
+  Map<String, dynamic>? _selectedCountry;
+  Map<String, dynamic>? _selectedCity;
   bool _loadingCountries = false;
-  bool _loadingCities    = false;
+  bool _loadingCities = false;
 
   @override
   void initState() {
@@ -104,11 +105,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   Future<void> _loadProfile() async {
     setState(() => _isLoading = true);
     try {
-      final meRes      = await _api.get(AppConstants.me);
+      final meRes = await _api.get(AppConstants.me);
       final profileRes = await _api.get(AppConstants.userProfile);
       if (!mounted) return;
 
-      final meData      = meRes.data      as Map<String, dynamic>;
+      final meData = meRes.data as Map<String, dynamic>;
       final profileData = profileRes.data as Map<String, dynamic>;
 
       final merged = {
@@ -120,26 +121,33 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       };
 
       setState(() {
-        _profile   = merged;
+        _profile = merged;
         _isLoading = false;
-        _photoUrl  = profileData['photo_url'] as String?;
-        _nameController.text  = merged['name']  ?? '';
+        _photoUrl = profileData['photo_url'] as String?;
+        _nameController.text = merged['name'] ?? '';
         _phoneController.text = merged['phone'] ?? '';
       });
       _loadCountriesAndPreselect(
         merged['country'] as String?,
-        merged['city']    as String?,
+        merged['city'] as String?,
       );
     } catch (e) {
-      // ignore: avoid_print
-      print('❌ _loadProfile error: $e'); // TEMP DEBUG — console mein pura error dekhne ke liye
+      if (kDebugMode) {
+        debugPrint('❌ _loadProfile error: $e');
+      }
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, AppLocalizations.of(context).profileLoadError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).profileLoadError,
+      );
     }
   }
 
-  Future<void> _loadCountriesAndPreselect(String? countryName, String? cityName) async {
+  Future<void> _loadCountriesAndPreselect(
+    String? countryName,
+    String? cityName,
+  ) async {
     setState(() => _loadingCountries = true);
     final result = await _geoService.getCountries();
     if (!mounted) return;
@@ -159,8 +167,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     }
 
     setState(() {
-      _countries        = countries;
-      _selectedCountry  = matchedCountry;
+      _countries = countries;
+      _selectedCountry = matchedCountry;
       _loadingCountries = false;
     });
 
@@ -185,8 +193,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     }
 
     setState(() {
-      _cities        = cities;
-      _selectedCity  = matchedCity;
+      _cities = cities;
+      _selectedCity = matchedCity;
       _loadingCities = false;
     });
   }
@@ -195,9 +203,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     if (country == null) return;
     setState(() {
       _selectedCountry = country;
-      _selectedCity    = null;
-      _loadingCities   = true;
-      _cities          = [];
+      _selectedCity = null;
+      _loadingCities = true;
+      _cities = [];
     });
     final result = await _geoService.getCities(country['id'] as int);
     if (!mounted) return;
@@ -212,23 +220,27 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   // ── Load header stats — real counts, no fake numbers ──────
   Future<void> _loadStats() async {
     try {
-      final notifRes  = await _api.get(AppConstants.notifications);
-      final notifList = notifRes.data is List ? List<dynamic>.from(notifRes.data) : [];
-      final unread    = notifList.where((n) => n['is_read'] != true).length;
+      final notifRes = await _api.get(AppConstants.notifications);
+      final notifList = notifRes.data is List
+          ? List<dynamic>.from(notifRes.data)
+          : [];
+      final unread = notifList.where((n) => n['is_read'] != true).length;
 
       final bookingsRes = await _bookingSvc.getMyBookings();
-      final bookings    = bookingsRes['success'] == true ? List<dynamic>.from(bookingsRes['data'] ?? []) : [];
+      final bookings = bookingsRes['success'] == true
+          ? List<dynamic>.from(bookingsRes['data'] ?? [])
+          : [];
 
       final saved = await _favStore.getAll();
-      final plan  = await _subSvc.getMyPlan();
+      final plan = await _subSvc.getMyPlan();
 
       if (!mounted) return;
       setState(() {
         _unreadNotifications = unread;
-        _bookingsCount       = bookings.length;
-        _savedCount          = saved.length;
-        _isPremium           = plan?.isPremium ?? false;
-        _planName            = plan?.planName ?? 'Free';
+        _bookingsCount = bookings.length;
+        _savedCount = saved.length;
+        _isPremium = plan?.isPremium ?? false;
+        _planName = plan?.planName ?? 'Free';
       });
     } catch (_) {
       // stats are non-critical — header still renders without them
@@ -240,29 +252,32 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     Navigator.pop(context); // close bottom sheet
     try {
       final picked = await _picker.pickImage(
-        source:       source,
+        source: source,
         imageQuality: 80,
-        maxWidth:     800,
+        maxWidth: 800,
       );
       if (picked == null) return;
 
       if (kIsWeb) {
-        // Web pe File() nahi chalta — bytes read karo preview ke liye
+        // Read in-memory bytes for Web image preview
         final bytes = await picked.readAsBytes();
         setState(() {
-          _pickedXFile    = picked;
-          _webImageBytes  = bytes;
+          _pickedXFile = picked;
+          _webImageBytes = bytes;
         });
       } else {
-        // Mobile — normal File
+        // Use local File reference on mobile platforms
         setState(() {
-          _pickedXFile  = picked;
-          _pickedImage  = File(picked.path);
+          _pickedXFile = picked;
+          _pickedImage = File(picked.path);
         });
       }
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context).imagePickError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).imagePickError,
+      );
     }
   }
 
@@ -274,12 +289,16 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusChip)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusChip),
+        ),
       ),
       builder: (_) => Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusChip)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppSizes.radiusChip),
+          ),
           boxShadow: [
             BoxShadow(
               color: isDark
@@ -341,7 +360,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   ),
                   onTap: () => _pickImage(ImageSource.gallery),
                 ),
-                // Camera option — web pe hide karo (web me camera support limited hai)
+                // Camera option — excluded on Web due to platform sandbox limits
                 if (!kIsWeb)
                   ListTile(
                     leading: Container(
@@ -382,10 +401,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     try {
       MultipartFile? photoMultipart;
 
-      // Photo file ko multipart mein convert karo
+      // Convert selected image file into a multipart payload
       if (_pickedXFile != null) {
         if (kIsWeb) {
-          // Web: bytes se MultipartFile banao
+          // Read bytes in memory for Web multipart upload
           final bytes = _webImageBytes ?? await _pickedXFile!.readAsBytes();
           photoMultipart = MultipartFile.fromBytes(
             bytes,
@@ -402,9 +421,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 
       final formData = FormData.fromMap({
         'full_name': _nameController.text.trim(),
-        'phone':     _phoneController.text.trim(),
-        'city':      _selectedCity?['name']    ?? '',
-        'country':   _selectedCountry?['name'] ?? '',
+        'phone': _phoneController.text.trim(),
+        'city': _selectedCity?['name'] ?? '',
+        'country': _selectedCountry?['name'] ?? '',
         'photo': ?photoMultipart,
       });
 
@@ -412,34 +431,40 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
 
       if (!mounted) return;
       setState(() {
-        _isEditing     = false;
-        _isSaving      = false;
-        _pickedImage   = null;
-        _pickedXFile   = null;
+        _isEditing = false;
+        _isSaving = false;
+        _pickedImage = null;
+        _pickedXFile = null;
         _webImageBytes = null;
       });
-      AppHelpers.showSuccess(context, AppLocalizations.of(context).profileUpdateSuccess);
+      AppHelpers.showSuccess(
+        context,
+        AppLocalizations.of(context).profileUpdateSuccess,
+      );
       _loadProfile();
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      AppHelpers.showError(context, AppLocalizations.of(context).profileUpdateError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).profileUpdateError,
+      );
     }
   }
 
   // ── Cancel Edit ──────────────────────────────────────────
   void _cancelEdit() {
     setState(() {
-      _isEditing     = false;
-      _pickedImage   = null;
-      _pickedXFile   = null;
+      _isEditing = false;
+      _pickedImage = null;
+      _pickedXFile = null;
       _webImageBytes = null;
-      _nameController.text  = _profile?['name']  ?? '';
+      _nameController.text = _profile?['name'] ?? '';
       _phoneController.text = _profile?['phone'] ?? '';
     });
     _loadCountriesAndPreselect(
       _profile?['country'] as String?,
-      _profile?['city']    as String?,
+      _profile?['city'] as String?,
     );
   }
 
@@ -551,7 +576,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   ImageProvider? _getAvatarImage() {
     if (kIsWeb && _webImageBytes != null) return MemoryImage(_webImageBytes!);
     if (!kIsWeb && _pickedImage != null) return FileImage(_pickedImage!);
-    if (_photoUrl != null && _photoUrl!.isNotEmpty) return NetworkImage(_photoUrl!);
+    if (_photoUrl != null && _photoUrl!.isNotEmpty) {
+      return NetworkImage(_photoUrl!);
+    }
     return null;
   }
 
@@ -564,8 +591,14 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         ProfileHeaderCard(
           accentColor: AppColors.customerColor,
           accentColorSecondary: AppColors.heroGradientLight2,
-          heroGradientLight: const [AppColors.heroGradientLight1, AppColors.heroGradientLight2],
-          heroGradientDark: const [AppColors.heroGradientLight1, AppColors.heroGradientLight2],
+          heroGradientLight: const [
+            AppColors.heroGradientLight1,
+            AppColors.heroGradientLight2,
+          ],
+          heroGradientDark: const [
+            AppColors.heroGradientLight1,
+            AppColors.heroGradientLight2,
+          ],
           decorativeIconSecondary: null,
           name: _profile?['name'] ?? '',
           avatarImageProvider: _getAvatarImage(),
@@ -587,9 +620,13 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   ),
                 )
               : null,
-          statusText: _isPremium ? AppLocalizations.of(context).premiumMemberLabel : null,
+          statusText: _isPremium
+              ? AppLocalizations.of(context).premiumMemberLabel
+              : null,
           statusIcon: Icons.workspace_premium_rounded,
-          description: (_profile?['email'] as String?)?.isNotEmpty == true ? _profile!['email'] as String : null,
+          description: (_profile?['email'] as String?)?.isNotEmpty == true
+              ? _profile!['email'] as String
+              : null,
           stats: [
             ProfileHeaderStat(
               icon: Icons.calendar_today_rounded,
@@ -687,45 +724,50 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
           _buildLocationField(
             label: AppLocalizations.of(context).countryLabel,
             icon: Icons.public_outlined,
-            displayValue: (_selectedCountry?['name'] as String?) ??
+            displayValue:
+                (_selectedCountry?['name'] as String?) ??
                 (_profile?['country'] as String?),
             editingBuilder: () => SearchablePickerField<Map<String, dynamic>>(
-              value:      _selectedCountry,
-              items:      _countries,
-              itemLabel:  (c) => c['name'] as String,
+              value: _selectedCountry,
+              items: _countries,
+              itemLabel: (c) => c['name'] as String,
               itemLeading: (c) {
                 final flag = CountryFlags.flagFor(c['name'] as String);
-                return Text(flag ?? '🌐', style: const TextStyle(fontSize: AppFontSizes.title2));
+                return Text(
+                  flag ?? '🌐',
+                  style: const TextStyle(fontSize: AppFontSizes.title2),
+                );
               },
-              label:      AppLocalizations.of(context).countryLabel,
-              hint:       AppLocalizations.of(context).countryHint,
+              label: AppLocalizations.of(context).countryLabel,
+              hint: AppLocalizations.of(context).countryHint,
               prefixIcon: Icons.public_outlined,
-              loading:    _loadingCountries,
+              loading: _loadingCountries,
               searchHint: AppLocalizations.of(context).countrySearchHint,
               emptyMessage: AppLocalizations.of(context).countryEmptyMessage,
-              onChanged:  _onCountrySelected,
+              onChanged: _onCountrySelected,
             ),
           ),
           const SizedBox(height: 12),
           _buildLocationField(
             label: AppLocalizations.of(context).cityLabel,
             icon: Icons.location_city_outlined,
-            displayValue: (_selectedCity?['name'] as String?) ??
+            displayValue:
+                (_selectedCity?['name'] as String?) ??
                 (_profile?['city'] as String?),
             editingBuilder: () => SearchablePickerField<Map<String, dynamic>>(
-              key:        ValueKey(_selectedCountry?['id']),
-              value:      _selectedCity,
-              items:      _cities,
-              itemLabel:  (c) => c['name'] as String,
-              label:      AppLocalizations.of(context).cityLabel,
-              hint:       AppLocalizations.of(context).cityHint,
+              key: ValueKey(_selectedCountry?['id']),
+              value: _selectedCity,
+              items: _cities,
+              itemLabel: (c) => c['name'] as String,
+              label: AppLocalizations.of(context).cityLabel,
+              hint: AppLocalizations.of(context).cityHint,
               prefixIcon: Icons.location_city_outlined,
-              enabled:    _selectedCountry != null,
-              loading:    _loadingCities,
+              enabled: _selectedCountry != null,
+              loading: _loadingCities,
               disabledHint: AppLocalizations.of(context).cityDisabledHint,
               searchHint: AppLocalizations.of(context).citySearchHint,
               emptyMessage: AppLocalizations.of(context).cityEmptyMessage,
-              onChanged:  (city) => setState(() => _selectedCity = city),
+              onChanged: (city) => setState(() => _selectedCity = city),
             ),
           ),
         ],
@@ -752,7 +794,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             Icons.workspace_premium_rounded,
             AppLocalizations.of(context).subscriptionActionLabel,
             _isPremium
-                ? AppLocalizations.of(context).subscriptionActiveStatus(_planName)
+                ? AppLocalizations.of(
+                    context,
+                  ).subscriptionActiveStatus(_planName)
                 : AppLocalizations.of(context).subscriptionUpgradeStatus,
             () => Navigator.push(
               context,
@@ -785,7 +829,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             AppLocalizations.of(context).savedProfessionalsActionSubtitle,
             () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const SavedProfessionalsScreen()),
+              MaterialPageRoute(
+                builder: (_) => const SavedProfessionalsScreen(),
+              ),
             ),
             iconColor: AppColors.pink,
           ),
@@ -821,9 +867,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             () => Navigator.pushNamed(context, '/notifications'),
             iconColor: AppColors.rose,
           ),
-          // FIX: language ka direct shortcut — pehle sirf Settings ke andar
-          // chhupa hua tha. Same LanguageSettingsScreen, current language
-          // subtitle mein live dikhti hai.
+          // Direct language selection shortcut displaying current locale
           _actionTile(
             Icons.language_rounded,
             AppLocalizations.of(context).languageLabel,
@@ -856,7 +900,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             ),
             iconColor: AppColors.emerald,
           ),
-          // ✅ Trust & Safety Part 8 — user-facing account status + reports.
+          // Trust & Safety Part 8 — user-facing account status + reports.
           _actionTile(
             Icons.shield_outlined,
             AppLocalizations.of(context).myTsAccountStatusTitle,
@@ -883,9 +927,34 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             AppLocalizations.of(context).helpActionSubtitle,
             () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const HelpScreen()),
+              MaterialPageRoute(
+                builder: (_) => HelpCenterScreen(
+                  audience: 'customer',
+                  fallbackBuilder: (_) => const HelpScreen(),
+                ),
+              ),
             ),
             iconColor: AppColors.teal,
+          ),
+          _actionTile(
+            Icons.support_agent_rounded,
+            AppLocalizations.of(context).ticketsTitle,
+            AppLocalizations.of(context).ticketsTileSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MyTicketsScreen()),
+            ),
+            iconColor: AppColors.teal,
+          ),
+          _actionTile(
+            Icons.privacy_tip_outlined,
+            AppLocalizations.of(context).profilePrivacyPolicy,
+            AppLocalizations.of(context).privacyActionSubtitle,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+            ),
+            iconColor: AppColors.emerald,
           ),
           _actionTile(
             Icons.info_outline_rounded,
@@ -903,22 +972,26 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   }
 
   Widget _groupLabel(String text) => Padding(
-        padding: const EdgeInsets.only(left: 4, bottom: 8),
-        child: Text(
-          text.toUpperCase(),
-          style: TextStyle(
-            fontSize: AppFontSizes.caption,
-            fontWeight: FontWeight.bold,
-            color: context.colors.textSecondary,
-            letterSpacing: 0.6,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.only(left: 4, bottom: 8),
+    child: Text(
+      text.toUpperCase(),
+      style: TextStyle(
+        fontSize: AppFontSizes.caption,
+        fontWeight: FontWeight.bold,
+        color: context.colors.textSecondary,
+        letterSpacing: 0.6,
+      ),
+    ),
+  );
 
   Widget _menuGroup(List<Widget> tiles) {
     final withDividers = <Widget>[];
     for (var i = 0; i < tiles.length; i++) {
-      if (i > 0) withDividers.add(Divider(height: 1, indent: 68, color: context.colors.divider));
+      if (i > 0) {
+        withDividers.add(
+          Divider(height: 1, indent: 68, color: context.colors.divider),
+        );
+      }
       withDividers.add(tiles[i]);
     }
     return Material(
@@ -1001,7 +1074,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   }
 
   // ── Field Builder ────────────────────────────────────────
-  Widget _buildField(String label, TextEditingController controller, IconData icon, {TextInputType? type}) {
+  Widget _buildField(
+    String label,
+    TextEditingController controller,
+    IconData icon, {
+    TextInputType? type,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
@@ -1030,7 +1108,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                     size: 18,
                     color: context.colors.textSecondary,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   filled: true,
                   fillColor: isDark
                       ? Colors.white.withValues(alpha: 0.04)
@@ -1057,7 +1138,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                   Icon(icon, size: 16, color: context.colors.textSecondary),
                   const SizedBox(width: 8),
                   Text(
-                    controller.text.isEmpty ? AppLocalizations.of(context).notSetPlaceholder : controller.text,
+                    controller.text.isEmpty
+                        ? AppLocalizations.of(context).notSetPlaceholder
+                        : controller.text,
                     style: TextStyle(
                       fontSize: AppFontSizes.body,
                       color: controller.text.isEmpty
@@ -1073,7 +1156,14 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   }
 
   // ── Action Tile ──────────────────────────────────────────
-  Widget _actionTile(IconData icon, String label, String? subtitle, VoidCallback onTap, {Color? iconColor, Color? titleColor}) {
+  Widget _actionTile(
+    IconData icon,
+    String label,
+    String? subtitle,
+    VoidCallback onTap, {
+    Color? iconColor,
+    Color? titleColor,
+  }) {
     final c = iconColor ?? AppColors.customerColor;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -1123,8 +1213,13 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         return Dialog(
           backgroundColor: ctx.colors.surface,
           elevation: 0,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 28,
+            vertical: 24,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 380),
             child: Padding(
@@ -1140,7 +1235,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                         color: AppColors.error.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.logout_rounded, color: AppColors.error, size: 26),
+                      child: const Icon(
+                        Icons.logout_rounded,
+                        color: AppColors.error,
+                        size: 26,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -1173,11 +1272,21 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                             minimumSize: const Size.fromHeight(46),
                             foregroundColor: ctx.colors.textSecondary,
                             side: BorderSide(color: ctx.colors.divider),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
+                            ),
                           ),
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
-                            child: Text(t.cancelCta, maxLines: 1, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            child: Text(
+                              t.cancelCta,
+                              maxLines: 1,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -1190,11 +1299,21 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                             backgroundColor: AppColors.error,
                             foregroundColor: Colors.white,
                             elevation: 0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
+                            ),
                           ),
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
-                            child: Text(t.logoutCta, maxLines: 1, style: const TextStyle(fontWeight: FontWeight.w700)),
+                            child: Text(
+                              t.logoutCta,
+                              maxLines: 1,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ),
                       ),
