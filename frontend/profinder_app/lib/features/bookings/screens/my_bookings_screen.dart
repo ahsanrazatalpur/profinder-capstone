@@ -1250,112 +1250,124 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   Future<void> _confirmCancel(int bookingId) async {
     final reasonCtrl = TextEditingController();
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    bool? confirmed;
+    String reason = '';
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        ),
-        title: Row(
-          children: [
-            const Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                '${AppLocalizations.of(context).professionalCancelBooking}?',
-                style: const TextStyle(
-                  fontSize: AppFontSizes.title,
-                  fontWeight: FontWeight.w700,
-                ),
+    try {
+      confirmed = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.cancel_outlined,
+                color: AppColors.error,
+                size: 20,
               ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context).professionalSureWantCancelBooking,
-              style: TextStyle(
-                fontSize: AppFontSizes.secondary,
-                color: context.colors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              AppLocalizations.of(context).professionalReasonCancellingOptional,
-              style: TextStyle(
-                fontSize: AppFontSizes.small,
-                fontWeight: FontWeight.w600,
-                color: context.colors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: reasonCtrl,
-              maxLines: 3,
-              style: const TextStyle(fontSize: AppFontSizes.secondary),
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(
-                  context,
-                ).bookingsEGScheduleChangedNoLonger,
-                hintStyle: TextStyle(
-                  fontSize: AppFontSizes.small,
-                  color: context.colors.textSecondary,
-                ),
-                filled: true,
-                fillColor: isDark
-                    ? context.colors.background
-                    : AppColors.tintGray,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  borderSide: BorderSide(color: context.colors.divider),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  borderSide: BorderSide(color: context.colors.divider),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  borderSide: const BorderSide(
-                    color: AppColors.error,
-                    width: 1.5,
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '${AppLocalizations.of(context).professionalCancelBooking}?',
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.title,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppLocalizations.of(context).professionalSureWantCancelBooking,
+                style: TextStyle(
+                  fontSize: AppFontSizes.secondary,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                AppLocalizations.of(
+                  context,
+                ).professionalReasonCancellingOptional,
+                style: TextStyle(
+                  fontSize: AppFontSizes.small,
+                  fontWeight: FontWeight.w600,
+                  color: context.colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: reasonCtrl,
+                maxLines: 3,
+                style: const TextStyle(fontSize: AppFontSizes.secondary),
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(
+                    context,
+                  ).bookingsEGScheduleChangedNoLonger,
+                  hintStyle: TextStyle(
+                    fontSize: AppFontSizes.small,
+                    color: context.colors.textSecondary,
+                  ),
+                  filled: true,
+                  fillColor: isDark
+                      ? context.colors.background
+                      : AppColors.tintGray,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    borderSide: BorderSide(color: context.colors.divider),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    borderSide: BorderSide(color: context.colors.divider),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    borderSide: const BorderSide(
+                      color: AppColors.error,
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(
+                AppLocalizations.of(context).magazineGoBack,
+                style: TextStyle(color: context.colors.textSecondary),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                ),
+              ),
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(
+                AppLocalizations.of(context).professionalYesCancelIt,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              AppLocalizations.of(context).magazineGoBack,
-              style: TextStyle(color: context.colors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-              ),
-            ),
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              AppLocalizations.of(context).professionalYesCancelIt,
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
+      );
+      reason = reasonCtrl.text.trim();
+    } finally {
+      reasonCtrl.dispose();
+    }
 
     if (confirmed != true) return;
 
-    final reason = reasonCtrl.text.trim();
     final result = await _service.cancelBooking(bookingId, reason: reason);
     if (!mounted) return;
 

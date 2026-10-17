@@ -22,8 +22,8 @@ class MessageBubble extends StatelessWidget {
   final bool isMe;
   final VoidCallback onReply;
   final void Function(String newText) onEdit;
-  final VoidCallback onDelete;         // Delete for everyone (sender only)
-  final VoidCallback onDeleteForMe;    // Delete solely for current user
+  final VoidCallback onDelete; // Delete for everyone (sender only)
+  final VoidCallback onDeleteForMe; // Delete solely for current user
   final void Function(String emoji) onReact;
   final VoidCallback onRetry;
 
@@ -48,11 +48,15 @@ class MessageBubble extends StatelessWidget {
       child: Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Column(
-          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isMe
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             Container(
               margin: const EdgeInsets.symmetric(vertical: 3),
-              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.76),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.76,
+              ),
               decoration: BoxDecoration(
                 color: isMe ? context.colors.primary : context.colors.surface,
                 borderRadius: BorderRadius.only(
@@ -71,7 +75,9 @@ class MessageBubble extends StatelessWidget {
                   if (message.replyTo != null) _buildReplyQuote(context),
                   if (message.hasImage) _buildImage(context),
                   if (message.hasAudio) _buildAudio(),
-                  if (message.text.isNotEmpty || (!message.hasImage && !message.hasAudio)) _buildTextRow(context),
+                  if (message.text.isNotEmpty ||
+                      (!message.hasImage && !message.hasAudio))
+                    _buildTextRow(context),
                 ],
               ),
             ),
@@ -93,11 +99,18 @@ class MessageBubble extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
             decoration: BoxDecoration(
-              color: isMine ? context.colors.primary.withValues(alpha: 0.12) : context.colors.background,
+              color: isMine
+                  ? context.colors.primary.withValues(alpha: 0.12)
+                  : context.colors.background,
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              border: isMine ? Border.all(color: context.colors.primary, width: 1) : null,
+              border: isMine
+                  ? Border.all(color: context.colors.primary, width: 1)
+                  : null,
             ),
-            child: Text('${e.key} ${e.value}', style: const TextStyle(fontSize: AppFontSizes.small)),
+            child: Text(
+              '${e.key} ${e.value}',
+              style: const TextStyle(fontSize: AppFontSizes.small),
+            ),
           );
         }).toList(),
       ),
@@ -119,8 +132,14 @@ class MessageBubble extends StatelessWidget {
           children: [
             Icon(Icons.block, size: 15, color: context.colors.textSecondary),
             const SizedBox(width: 6),
-            Text(AppLocalizations.of(context).chatMessageWasDeleted,
-                style: TextStyle(fontSize: AppFontSizes.secondary, fontStyle: FontStyle.italic, color: context.colors.textSecondary)),
+            Text(
+              AppLocalizations.of(context).chatMessageWasDeleted,
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                fontStyle: FontStyle.italic,
+                color: context.colors.textSecondary,
+              ),
+            ),
           ],
         ),
       ),
@@ -129,28 +148,47 @@ class MessageBubble extends StatelessWidget {
 
   Widget _buildReplyQuote(BuildContext context) {
     final r = message.replyTo!;
-    final preview = r.text.isNotEmpty ? r.text : (r.hasAttachment ? AppLocalizations.of(context).chatPhotoReplyPlaceholder : '');
+    final preview = r.text.isNotEmpty
+        ? r.text
+        : (r.hasAttachment
+              ? AppLocalizations.of(context).chatPhotoReplyPlaceholder
+              : '');
     return Container(
       margin: const EdgeInsets.fromLTRB(8, 8, 8, 4),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: isMe ? Colors.white.withValues(alpha: 0.16) : context.colors.background,
+        color: isMe
+            ? Colors.white.withValues(alpha: 0.16)
+            : context.colors.background,
         borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-        border: Border(left: BorderSide(color: isMe ? Colors.white : context.colors.primary, width: 3)),
+        border: Border(
+          left: BorderSide(
+            color: isMe ? Colors.white : context.colors.primary,
+            width: 3,
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(r.senderName,
-              style: TextStyle(
-                  fontSize: AppFontSizes.small,
-                  fontWeight: FontWeight.w700,
-                  color: isMe ? Colors.white : context.colors.primary)),
-          Text(preview,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: AppFontSizes.small, color: isMe ? Colors.white70 : context.colors.textSecondary)),
+          Text(
+            r.senderName,
+            style: TextStyle(
+              fontSize: AppFontSizes.small,
+              fontWeight: FontWeight.w700,
+              color: isMe ? Colors.white : context.colors.primary,
+            ),
+          ),
+          Text(
+            preview,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: AppFontSizes.small,
+              color: isMe ? Colors.white70 : context.colors.textSecondary,
+            ),
+          ),
         ],
       ),
     );
@@ -162,14 +200,23 @@ class MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       child: GestureDetector(
         onTap: () => Navigator.of(context).push(
-          FullscreenImageViewer.route(heroTag: heroTag, imageUrl: AppHelpers.getFullImageUrl(message.imageUrl), localPath: message.localImagePath),
+          FullscreenImageViewer.route(
+            heroTag: heroTag,
+            imageUrl: AppHelpers.getFullImageUrl(message.imageUrl),
+            localPath: message.localImagePath,
+          ),
         ),
         child: Hero(
           tag: heroTag,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             child: message.localImagePath != null
-                ? LocalImagePreview(path: message.localImagePath!, width: 220, height: 220, fit: BoxFit.cover)
+                ? LocalImagePreview(
+                    path: message.localImagePath!,
+                    width: 220,
+                    height: 220,
+                    fit: BoxFit.cover,
+                  )
                 : CachedNetworkImage(
                     imageUrl: AppHelpers.getFullImageUrl(message.imageUrl),
                     width: 220,
@@ -179,13 +226,18 @@ class MessageBubble extends StatelessWidget {
                       width: 220,
                       height: 220,
                       color: context.colors.background,
-                      child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                      child: const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
                     ),
                     errorWidget: (_, _, _) => Container(
                       width: 220,
                       height: 220,
                       color: context.colors.background,
-                      child: Icon(Icons.broken_image, color: context.colors.textSecondary),
+                      child: Icon(
+                        Icons.broken_image,
+                        color: context.colors.textSecondary,
+                      ),
                     ),
                   ),
           ),
@@ -199,7 +251,9 @@ class MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 10, 14, 4),
       child: _VoiceMessagePlayer(
-        url: message.audioUrl == null ? null : AppHelpers.getFullImageUrl(message.audioUrl),
+        url: message.audioUrl == null
+            ? null
+            : AppHelpers.getFullImageUrl(message.audioUrl),
         localPath: message.localAudioPath,
         durationSeconds: message.audioDurationSeconds ?? 0,
         isMe: isMe,
@@ -218,7 +272,11 @@ class MessageBubble extends StatelessWidget {
             Flexible(
               child: Text(
                 message.text,
-                style: TextStyle(fontSize: AppFontSizes.input, color: isMe ? Colors.white : context.colors.textPrimary, height: 1.3),
+                style: TextStyle(
+                  fontSize: AppFontSizes.input,
+                  color: isMe ? Colors.white : context.colors.textPrimary,
+                  height: 1.3,
+                ),
               ),
             ),
           const SizedBox(width: 8),
@@ -234,12 +292,21 @@ class MessageBubble extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (message.isEdited)
-          Text('${AppLocalizations.of(context).chatEdited} ', style: TextStyle(fontSize: AppFontSizes.caption, color: isMe ? Colors.white60 : context.colors.textSecondary)),
-        Text(time, style: TextStyle(fontSize: AppFontSizes.caption, color: isMe ? Colors.white70 : context.colors.textSecondary)),
-        if (isMe) ...[
-          const SizedBox(width: 3),
-          _buildStatusIcon(),
-        ],
+          Text(
+            '${AppLocalizations.of(context).chatEdited} ',
+            style: TextStyle(
+              fontSize: AppFontSizes.caption,
+              color: isMe ? Colors.white60 : context.colors.textSecondary,
+            ),
+          ),
+        Text(
+          time,
+          style: TextStyle(
+            fontSize: AppFontSizes.caption,
+            color: isMe ? Colors.white70 : context.colors.textSecondary,
+          ),
+        ),
+        if (isMe) ...[const SizedBox(width: 3), _buildStatusIcon()],
       ],
     );
   }
@@ -250,28 +317,45 @@ class MessageBubble extends StatelessWidget {
         return const SizedBox(
           width: 11,
           height: 11,
-          child: CircularProgressIndicator(strokeWidth: 1.5, color: Colors.white70),
+          child: CircularProgressIndicator(
+            strokeWidth: 1.5,
+            color: Colors.white70,
+          ),
         );
       case MessageStatus.failed:
         return GestureDetector(
           onTap: onRetry,
-          child: const Icon(Icons.error_outline, size: 14, color: Colors.redAccent),
+          child: const Icon(
+            Icons.error_outline,
+            size: 14,
+            color: Colors.redAccent,
+          ),
         );
       case MessageStatus.sent:
         return const Icon(Icons.done, size: 14, color: Colors.white70);
       case MessageStatus.delivered:
         return const Icon(Icons.done_all, size: 14, color: Colors.white70);
       case MessageStatus.seen:
-        return const Icon(Icons.done_all, size: 14, color: Color(0xFF60D1FF)); // WhatsApp-style blue double tick
+        return const Icon(
+          Icons.done_all,
+          size: 14,
+          color: Color(0xFF60D1FF),
+        ); // WhatsApp-style blue double tick
     }
   }
 
   void _showActions(BuildContext context) {
-    if (message.status == MessageStatus.sending) return; // nothing to do on an in-flight bubble
+    if (message.status == MessageStatus.sending) {
+      return; // nothing to do on an in-flight bubble
+    }
 
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusLg))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusLg),
+        ),
+      ),
       builder: (sheetContext) {
         return SafeArea(
           child: Column(
@@ -293,9 +377,14 @@ class MessageBubble extends StatelessWidget {
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isMine ? context.colors.primary.withValues(alpha: 0.12) : Colors.transparent,
+                          color: isMine
+                              ? context.colors.primary.withValues(alpha: 0.12)
+                              : Colors.transparent,
                         ),
-                        child: Text(emoji, style: const TextStyle(fontSize: AppFontSizes.h2)),
+                        child: Text(
+                          emoji,
+                          style: const TextStyle(fontSize: AppFontSizes.h2),
+                        ),
                       ),
                     );
                   }).toList(),
@@ -332,8 +421,14 @@ class MessageBubble extends StatelessWidget {
                   ),
                   if (isMe)
                     ListTile(
-                      leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                      title: Text(AppLocalizations.of(context).chatDeleteEveryone, style: const TextStyle(color: Colors.redAccent)),
+                      leading: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.redAccent,
+                      ),
+                      title: Text(
+                        AppLocalizations.of(context).chatDeleteEveryone,
+                        style: const TextStyle(color: Colors.redAccent),
+                      ),
                       onTap: () {
                         Navigator.pop(sheetContext);
                         onDelete();
@@ -348,27 +443,38 @@ class MessageBubble extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context) {
+  Future<void> _showEditDialog(BuildContext context) async {
     final controller = TextEditingController(text: message.text);
     final t = AppLocalizations.of(context);
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.chatEditMessage),
-        content: TextField(controller: controller, maxLines: 4, autofocus: true),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(t.cancel)),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              final text = controller.text.trim();
-              if (text.isNotEmpty) onEdit(text);
-            },
-            child: Text(t.save),
+    try {
+      await showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(t.chatEditMessage),
+          content: TextField(
+            controller: controller,
+            maxLines: 4,
+            autofocus: true,
           ),
-        ],
-      ),
-    );
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(t.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                final text = controller.text.trim();
+                if (text.isNotEmpty) onEdit(text);
+              },
+              child: Text(t.save),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      controller.dispose();
+    }
   }
 }
 
@@ -409,7 +515,9 @@ class _VoiceMessagePlayerState extends State<_VoiceMessagePlayer> {
   void initState() {
     super.initState();
     _total = Duration(seconds: widget.durationSeconds);
-    _player.onPositionChanged.listen((p) => mounted ? setState(() => _position = p) : null);
+    _player.onPositionChanged.listen(
+      (p) => mounted ? setState(() => _position = p) : null,
+    );
     // Real duration from the decoder — covers voice notes whose server
     // metadata is missing (duration_seconds == 0 / null).
     _player.onDurationChanged.listen((d) {
@@ -465,7 +573,8 @@ class _VoiceMessagePlayerState extends State<_VoiceMessagePlayer> {
   Source? _resolveSource() {
     final local = widget.localPath;
     if (local != null && local.isNotEmpty) {
-      final isUrl = kIsWeb || local.startsWith('blob:') || local.startsWith('http');
+      final isUrl =
+          kIsWeb || local.startsWith('blob:') || local.startsWith('http');
       return isUrl ? UrlSource(local) : DeviceFileSource(local);
     }
     final url = widget.url;
@@ -482,8 +591,13 @@ class _VoiceMessagePlayerState extends State<_VoiceMessagePlayer> {
   @override
   Widget build(BuildContext context) {
     final color = widget.isMe ? Colors.white : context.colors.primary;
-    final total = _total.inMilliseconds == 0 ? const Duration(seconds: 1) : _total;
-    final progress = (_position.inMilliseconds / total.inMilliseconds).clamp(0.0, 1.0);
+    final total = _total.inMilliseconds == 0
+        ? const Duration(seconds: 1)
+        : _total;
+    final progress = (_position.inMilliseconds / total.inMilliseconds).clamp(
+      0.0,
+      1.0,
+    );
 
     return SizedBox(
       width: 190,
@@ -494,8 +608,15 @@ class _VoiceMessagePlayerState extends State<_VoiceMessagePlayer> {
             child: Container(
               width: 34,
               height: 34,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: color.withValues(alpha: 0.15)),
-              child: Icon(_isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded, color: color, size: 20),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: color.withValues(alpha: 0.15),
+              ),
+              child: Icon(
+                _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                color: color,
+                size: 20,
+              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -516,7 +637,12 @@ class _VoiceMessagePlayerState extends State<_VoiceMessagePlayer> {
                 const SizedBox(height: 4),
                 Text(
                   _isPlaying ? _fmt(_position) : _fmt(_total),
-                  style: TextStyle(fontSize: AppFontSizes.caption, color: widget.isMe ? Colors.white70 : context.colors.textSecondary),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.caption,
+                    color: widget.isMe
+                        ? Colors.white70
+                        : context.colors.textSecondary,
+                  ),
                 ),
               ],
             ),

@@ -38,6 +38,12 @@ class SimpleRichTextEditor extends StatefulWidget {
 class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
   final _focusNode = FocusNode();
 
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   void _wrap(String openTag, String closeTag, {String placeholder = 'text'}) {
     final controller = widget.controller;
     final selection = controller.selection;
@@ -111,89 +117,106 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
 
   Future<void> _link() async {
     final urlController = TextEditingController();
-    final url = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: context.colors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        ),
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context).editorInsertLinkTitle,
-          style: TextStyle(
-            fontSize: AppFontSizes.titleMd,
-            fontWeight: FontWeight.w700,
-            color: context.colors.textPrimary,
-            letterSpacing: -0.3,
+    String? url;
+    try {
+      url = await showDialog<String>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: context.colors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           ),
-        ),
-        content: TextField(
-          controller: urlController,
-          autofocus: true,
-          style: TextStyle(
-            fontSize: AppFontSizes.body,
-            color: context.colors.textPrimary,
+          elevation: 0,
+          title: Text(
+            AppLocalizations.of(context).editorInsertLinkTitle,
+            style: TextStyle(
+              fontSize: AppFontSizes.titleMd,
+              fontWeight: FontWeight.w700,
+              color: context.colors.textPrimary,
+              letterSpacing: -0.3,
+            ),
           ),
-          decoration: InputDecoration(
-            hintText: AppLocalizations.of(context).editorLinkHint,
-            hintStyle: TextStyle(
-              fontSize: AppFontSizes.secondary,
-              color: context.colors.textSecondary,
+          content: TextField(
+            controller: urlController,
+            autofocus: true,
+            style: TextStyle(
+              fontSize: AppFontSizes.body,
+              color: context.colors.textPrimary,
             ),
-            filled: true,
-            fillColor: context.colors.background,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radius10),
-              borderSide: BorderSide(color: context.colors.divider),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radius10),
-              borderSide: BorderSide(color: context.colors.divider),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radius10),
-              borderSide: BorderSide(
-                color: AppColors.customerColor,
-                width: 1.5,
+            decoration: InputDecoration(
+              hintText: AppLocalizations.of(context).editorLinkHint,
+              hintStyle: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: context.colors.textSecondary,
+              ),
+              filled: true,
+              fillColor: context.colors.background,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+                borderSide: BorderSide(color: context.colors.divider),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+                borderSide: BorderSide(color: context.colors.divider),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+                borderSide: BorderSide(
+                  color: AppColors.customerColor,
+                  width: 1.5,
+                ),
               ),
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: TextButton.styleFrom(
+                foregroundColor: context.colors.textSecondary,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                ),
+              ),
+              child: Text(
+                AppLocalizations.of(context).cancelCta,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, urlController.text.trim()),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.customerColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                ),
+                elevation: 0,
+              ),
+              child: Text(
+                AppLocalizations.of(context).editorInsertCta,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: TextButton.styleFrom(
-              foregroundColor: context.colors.textSecondary,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-              ),
-            ),
-            child: Text(
-              AppLocalizations.of(context).cancelCta,
-              style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.3),
-            ),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, urlController.text.trim()),
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.customerColor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-              ),
-              elevation: 0,
-            ),
-            child: Text(
-              AppLocalizations.of(context).editorInsertCta,
-              style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.3),
-            ),
-          ),
-        ],
-      ),
-    );
+      );
+    } finally {
+      urlController.dispose();
+    }
     if (url == null || url.isEmpty || !mounted) return;
     _wrap(
       '<a href="$url">',

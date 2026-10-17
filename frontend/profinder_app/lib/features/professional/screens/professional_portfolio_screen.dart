@@ -116,7 +116,7 @@ class _ProfessionalPortfolioScreenState
     );
   }
 
-  void _showAddSheet() {
+  Future<void> _showAddSheet() async {
     final titleCtrl = TextEditingController();
     final descCtrl = TextEditingController();
     XFile? pickedXFile;
@@ -124,307 +124,314 @@ class _ProfessionalPortfolioScreenState
     Uint8List? webBytes;
     bool isSaving = false;
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppSizes.radiusSheet),
-        ),
-      ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 16,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+    try {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppSizes.radiusSheet),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Handle
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: context.colors.divider,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                AppLocalizations.of(context).addPortfolioTitle,
-                style: TextStyle(
-                  fontSize: AppFontSizes.title,
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Image picker
-              GestureDetector(
-                onTap: () async {
-                  final picked = await _picker.pickImage(
-                    source: ImageSource.gallery,
-                    imageQuality: 80,
-                    maxWidth: 800,
-                  );
-                  if (picked == null) return;
-                  if (kIsWeb) {
-                    final bytes = await picked.readAsBytes();
-                    setSheetState(() {
-                      pickedXFile = picked;
-                      webBytes = bytes;
-                    });
-                  } else {
-                    setSheetState(() {
-                      pickedXFile = picked;
-                      pickedFile = File(picked.path);
-                    });
-                  }
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOut,
-                  width: double.infinity,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    color: context.colors.background,
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    border: Border.all(
-                      color: pickedXFile != null
-                          ? AppColors.professionalColor
-                          : context.colors.divider,
-                      width: pickedXFile != null ? 2 : 1,
-                    ),
-                  ),
-                  child: pickedXFile != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                            AppSizes.radiusMd,
-                          ),
-                          child: kIsWeb && webBytes != null
-                              ? Image.memory(
-                                  webBytes!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                )
-                              : Image.file(
-                                  pickedFile!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                ),
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_photo_alternate_outlined,
-                              size: 32,
-                              color: AppColors.professionalColor,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              AppLocalizations.of(context).addImageLabel,
-                              style: TextStyle(
-                                fontSize: AppFontSizes.secondary,
-                                color: AppColors.professionalColor,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Title
-              TextField(
-                controller: titleCtrl,
-                style: const TextStyle(fontSize: AppFontSizes.body),
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).titleLabelRequired,
-                  hintText: AppLocalizations.of(context).titleHint,
-                  filled: true,
-                  fillColor: context.colors.background,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: context.colors.divider),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: context.colors.divider),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(
-                      color: AppColors.professionalColor,
-                      width: 1.5,
+        ),
+        builder: (ctx) => StatefulBuilder(
+          builder: (ctx, setSheetState) => Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 16,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Handle
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: context.colors.divider,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-
-              // Description
-              TextField(
-                controller: descCtrl,
-                maxLines: 3,
-                style: const TextStyle(fontSize: AppFontSizes.body),
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(
-                    context,
-                  ).descriptionLabelOptional,
-                  hintText: AppLocalizations.of(context).descriptionHint,
-                  filled: true,
-                  fillColor: context.colors.background,
-                  contentPadding: const EdgeInsets.all(12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: context.colors.divider),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: context.colors.divider),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(
-                      color: AppColors.professionalColor,
-                      width: 1.5,
-                    ),
+                const SizedBox(height: 16),
+                Text(
+                  AppLocalizations.of(context).addPortfolioTitle,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.title,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // Info note
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.tintAmber,
-                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  border: Border.all(color: AppColors.amber200),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.info_outline_rounded,
-                      size: 16,
-                      color: AppColors.warningAmber,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        AppLocalizations.of(context).portfolioInfoNote,
-                        style: const TextStyle(
-                          fontSize: AppFontSizes.caption,
-                          color: AppColors.amber800,
-                        ),
+                // Image picker
+                GestureDetector(
+                  onTap: () async {
+                    final picked = await _picker.pickImage(
+                      source: ImageSource.gallery,
+                      imageQuality: 80,
+                      maxWidth: 800,
+                    );
+                    if (picked == null) return;
+                    if (kIsWeb) {
+                      final bytes = await picked.readAsBytes();
+                      setSheetState(() {
+                        pickedXFile = picked;
+                        webBytes = bytes;
+                      });
+                    } else {
+                      setSheetState(() {
+                        pickedXFile = picked;
+                        pickedFile = File(picked.path);
+                      });
+                    }
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                    width: double.infinity,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      color: context.colors.background,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      border: Border.all(
+                        color: pickedXFile != null
+                            ? AppColors.professionalColor
+                            : context.colors.divider,
+                        width: pickedXFile != null ? 2 : 1,
                       ),
                     ),
-                  ],
+                    child: pickedXFile != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
+                            child: kIsWeb && webBytes != null
+                                ? Image.memory(
+                                    webBytes!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  )
+                                : Image.file(
+                                    pickedFile!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  ),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_photo_alternate_outlined,
+                                size: 32,
+                                color: AppColors.professionalColor,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                AppLocalizations.of(context).addImageLabel,
+                                style: TextStyle(
+                                  fontSize: AppFontSizes.secondary,
+                                  color: AppColors.professionalColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
-              // Submit button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.professionalColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
+                // Title
+                TextField(
+                  controller: titleCtrl,
+                  style: const TextStyle(fontSize: AppFontSizes.body),
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context).titleLabelRequired,
+                    hintText: AppLocalizations.of(context).titleHint,
+                    filled: true,
+                    fillColor: context.colors.background,
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(color: context.colors.divider),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(color: context.colors.divider),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(
+                        color: AppColors.professionalColor,
+                        width: 1.5,
+                      ),
                     ),
                   ),
-                  onPressed: isSaving
-                      ? null
-                      : () async {
-                          if (titleCtrl.text.trim().isEmpty) {
-                            AppHelpers.showError(
-                              ctx,
-                              AppLocalizations.of(context).titleValidationError,
-                            );
-                            return;
-                          }
-                          setSheetState(() => isSaving = true);
-                          try {
-                            MultipartFile? imageMultipart;
-                            if (pickedXFile != null) {
-                              if (kIsWeb) {
-                                final bytes =
-                                    webBytes ??
-                                    await pickedXFile!.readAsBytes();
-                                imageMultipart = MultipartFile.fromBytes(
-                                  bytes,
-                                  filename: 'portfolio.jpg',
-                                );
-                              } else {
-                                imageMultipart = await MultipartFile.fromFile(
-                                  pickedXFile!.path,
-                                  filename: 'portfolio.jpg',
-                                );
-                              }
-                            }
+                ),
+                const SizedBox(height: 10),
 
-                            final formData = FormData.fromMap({
-                              'title': titleCtrl.text.trim(),
-                              'description': descCtrl.text.trim(),
-                              'image': ?imageMultipart,
-                            });
+                // Description
+                TextField(
+                  controller: descCtrl,
+                  maxLines: 3,
+                  style: const TextStyle(fontSize: AppFontSizes.body),
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(
+                      context,
+                    ).descriptionLabelOptional,
+                    hintText: AppLocalizations.of(context).descriptionHint,
+                    filled: true,
+                    fillColor: context.colors.background,
+                    contentPadding: const EdgeInsets.all(12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(color: context.colors.divider),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(color: context.colors.divider),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(
+                        color: AppColors.professionalColor,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
 
-                            await _api.postForm(
-                              AppConstants.portfolio,
-                              formData,
-                            );
-
-                            if (!mounted || !ctx.mounted) return;
-                            Navigator.pop(ctx);
-                            AppHelpers.showSuccess(
-                              context,
-                              AppLocalizations.of(context).uploadSuccess,
-                            );
-                            _load();
-                          } catch (e) {
-                            if (!mounted || !ctx.mounted) return;
-                            setSheetState(() => isSaving = false);
-                            AppHelpers.showError(
-                              ctx,
-                              AppLocalizations.of(context).uploadError,
-                            );
-                          }
-                        },
-                  child: isSaving
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          AppLocalizations.of(context).submitReviewCta,
+                // Info note
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.tintAmber,
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    border: Border.all(color: AppColors.amber200),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.info_outline_rounded,
+                        size: 16,
+                        color: AppColors.warningAmber,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          AppLocalizations.of(context).portfolioInfoNote,
                           style: const TextStyle(
-                            fontSize: AppFontSizes.body,
-                            fontWeight: FontWeight.w600,
+                            fontSize: AppFontSizes.caption,
+                            color: AppColors.amber800,
                           ),
                         ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+
+                // Submit button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.professionalColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
+                    ),
+                    onPressed: isSaving
+                        ? null
+                        : () async {
+                            if (titleCtrl.text.trim().isEmpty) {
+                              AppHelpers.showError(
+                                ctx,
+                                AppLocalizations.of(
+                                  context,
+                                ).titleValidationError,
+                              );
+                              return;
+                            }
+                            setSheetState(() => isSaving = true);
+                            try {
+                              MultipartFile? imageMultipart;
+                              if (pickedXFile != null) {
+                                if (kIsWeb) {
+                                  final bytes =
+                                      webBytes ??
+                                      await pickedXFile!.readAsBytes();
+                                  imageMultipart = MultipartFile.fromBytes(
+                                    bytes,
+                                    filename: 'portfolio.jpg',
+                                  );
+                                } else {
+                                  imageMultipart = await MultipartFile.fromFile(
+                                    pickedXFile!.path,
+                                    filename: 'portfolio.jpg',
+                                  );
+                                }
+                              }
+
+                              final formData = FormData.fromMap({
+                                'title': titleCtrl.text.trim(),
+                                'description': descCtrl.text.trim(),
+                                'image': ?imageMultipart,
+                              });
+
+                              await _api.postForm(
+                                AppConstants.portfolio,
+                                formData,
+                              );
+
+                              if (!mounted || !ctx.mounted) return;
+                              Navigator.pop(ctx);
+                              AppHelpers.showSuccess(
+                                context,
+                                AppLocalizations.of(context).uploadSuccess,
+                              );
+                              _load();
+                            } catch (e) {
+                              if (!mounted || !ctx.mounted) return;
+                              setSheetState(() => isSaving = false);
+                              AppHelpers.showError(
+                                ctx,
+                                AppLocalizations.of(context).uploadError,
+                              );
+                            }
+                          },
+                    child: isSaving
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            AppLocalizations.of(context).submitReviewCta,
+                            style: const TextStyle(
+                              fontSize: AppFontSizes.body,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } finally {
+      titleCtrl.dispose();
+      descCtrl.dispose();
+    }
   }
 
   @override

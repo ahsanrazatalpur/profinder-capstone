@@ -18,7 +18,8 @@ class ProfessionalWalletScreen extends StatefulWidget {
   const ProfessionalWalletScreen({super.key});
 
   @override
-  State<ProfessionalWalletScreen> createState() => _ProfessionalWalletScreenState();
+  State<ProfessionalWalletScreen> createState() =>
+      _ProfessionalWalletScreenState();
 }
 
 class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
@@ -46,12 +47,15 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, AppLocalizations.of(context).loadWalletError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).loadWalletError,
+      );
     }
   }
 
   // Displays withdrawal bottom sheet with payout method selection (PayPal or Bank Transfer).
-  void _showWithdrawSheet() {
+  Future<void> _showWithdrawSheet() async {
     final bankOnFile = _wallet?['bank_on_file'] ?? false;
     final available = (_wallet?['available_balance'] ?? 0).toDouble();
     final minAmount = (_wallet?['min_withdrawal'] ?? 20).toDouble();
@@ -60,197 +64,281 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
     String payoutMethod = 'paypal'; // Default to global PayPal
     String? errorText;
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet))),
-      builder: (sheetContext) => StatefulBuilder(
-        builder: (sheetContext, setSheetState) => Padding(
-          padding: EdgeInsets.only(
-            left: 20, right: 20, top: 20,
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppLocalizations.of(context).withdrawTitle,
-                style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                AppLocalizations.of(context).availableBalanceLabel(available.toStringAsFixed(2)),
-                style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
-              ),
-              const SizedBox(height: 14),
-
-              // ── Payout Method Selector ──────────────────────────────────
-              Row(
-                children: [
-                  Expanded(
-                    child: ChoiceChip(
-                      label: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.payment_rounded, size: 16),
-                          SizedBox(width: 6),
-                          Text('PayPal'),
-                        ],
-                      ),
-                      selected: payoutMethod == 'paypal',
-                      onSelected: (val) {
-                        if (val) setSheetState(() => payoutMethod = 'paypal');
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ChoiceChip(
-                      label: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.account_balance_rounded, size: 16),
-                          SizedBox(width: 6),
-                          Text('Bank Transfer'),
-                        ],
-                      ),
-                      selected: payoutMethod == 'bank_transfer',
-                      onSelected: (val) {
-                        if (val) {
-                          if (!bankOnFile) {
-                            _showAddBankNote();
-                            return;
-                          }
-                          setSheetState(() => payoutMethod = 'bank_transfer');
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-
-              if (payoutMethod == 'paypal') ...[
-                TextField(
-                  controller: paypalEmailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'PayPal Email',
-                    hintText: 'your-email@paypal.com',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    filled: true,
-                    fillColor: context.colors.background,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
-
-              TextField(
-                controller: amountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                style: const TextStyle(fontSize: AppFontSizes.title),
-                decoration: InputDecoration(
-                  prefixText: 'Rs ',
-                  hintText: AppLocalizations.of(context).enterAmountHint,
-                  errorText: errorText,
-                  filled: true,
-                  fillColor: context.colors.background,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: context.colors.divider),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: context.colors.divider),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: AppColors.professionalColor, width: 1.5),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                AppLocalizations.of(context).minWithdrawalLabel(minAmount.toStringAsFixed(0)),
-                style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary),
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isRequesting ? null : () async {
-                    final amount = double.tryParse(amountController.text.trim());
-                    if (amount == null || amount <= 0) {
-                      setSheetState(() => errorText = AppLocalizations.of(context).validAmountError);
-                      return;
-                    }
-                    if (amount < minAmount) {
-                      setSheetState(() => errorText = AppLocalizations.of(context).minAmountError(minAmount.toStringAsFixed(0)));
-                      return;
-                    }
-                    if (amount > available) {
-                      setSheetState(() => errorText = AppLocalizations.of(context).exceedsBalanceError);
-                      return;
-                    }
-                    if (payoutMethod == 'paypal' && paypalEmailController.text.trim().isEmpty) {
-                      setSheetState(() => errorText = 'Please enter your PayPal email');
-                      return;
-                    }
-                    setSheetState(() { errorText = null; });
-                    setState(() => _isRequesting = true);
-                    try {
-                      await _api.post(AppConstants.withdrawals, {
-                        'amount': amount,
-                        'payout_method': payoutMethod,
-                        'paypal_email': paypalEmailController.text.trim(),
-                      });
-                      if (!mounted || !sheetContext.mounted) return;
-                      Navigator.pop(sheetContext);
-                      AppHelpers.showSuccess(context, AppLocalizations.of(context).withdrawSuccess);
-                      _loadWallet();
-                    } catch (e) {
-                      String msg = AppLocalizations.of(context).withdrawErrorDefault;
-                      if (e is DioException) {
-                        final data = e.response?.data;
-                        if (data is Map && data['error'] != null) msg = data['error'].toString();
-                      }
-                      setSheetState(() => errorText = msg);
-                    } finally {
-                      if (mounted) setState(() => _isRequesting = false);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: context.colors.accent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
-                  ),
-                  child: _isRequesting
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : Text(AppLocalizations.of(context).requestWithdrawCta, style: const TextStyle(fontWeight: FontWeight.w700)),
-                ),
-              ),
-            ],
+    try {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppSizes.radiusSheet),
           ),
         ),
-      ),
-    );
+        builder: (sheetContext) => StatefulBuilder(
+          builder: (sheetContext, setSheetState) => Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppLocalizations.of(context).withdrawTitle,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.title,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  AppLocalizations.of(
+                    context,
+                  ).availableBalanceLabel(available.toStringAsFixed(2)),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    color: context.colors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // ── Payout Method Selector ──────────────────────────────────
+                Row(
+                  children: [
+                    Expanded(
+                      child: ChoiceChip(
+                        label: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.payment_rounded, size: 16),
+                            SizedBox(width: 6),
+                            Text('PayPal'),
+                          ],
+                        ),
+                        selected: payoutMethod == 'paypal',
+                        onSelected: (val) {
+                          if (val) setSheetState(() => payoutMethod = 'paypal');
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ChoiceChip(
+                        label: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.account_balance_rounded, size: 16),
+                            SizedBox(width: 6),
+                            Text('Bank Transfer'),
+                          ],
+                        ),
+                        selected: payoutMethod == 'bank_transfer',
+                        onSelected: (val) {
+                          if (val) {
+                            if (!bankOnFile) {
+                              _showAddBankNote();
+                              return;
+                            }
+                            setSheetState(() => payoutMethod = 'bank_transfer');
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+
+                if (payoutMethod == 'paypal') ...[
+                  TextField(
+                    controller: paypalEmailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'PayPal Email',
+                      hintText: 'your-email@paypal.com',
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      filled: true,
+                      fillColor: context.colors.background,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+
+                TextField(
+                  controller: amountController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  style: const TextStyle(fontSize: AppFontSizes.title),
+                  decoration: InputDecoration(
+                    prefixText: 'Rs ',
+                    hintText: AppLocalizations.of(context).enterAmountHint,
+                    errorText: errorText,
+                    filled: true,
+                    fillColor: context.colors.background,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(color: context.colors.divider),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(color: context.colors.divider),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(
+                        color: AppColors.professionalColor,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  AppLocalizations.of(
+                    context,
+                  ).minWithdrawalLabel(minAmount.toStringAsFixed(0)),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.caption,
+                    color: context.colors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isRequesting
+                        ? null
+                        : () async {
+                            final amount = double.tryParse(
+                              amountController.text.trim(),
+                            );
+                            if (amount == null || amount <= 0) {
+                              setSheetState(
+                                () => errorText = AppLocalizations.of(
+                                  context,
+                                ).validAmountError,
+                              );
+                              return;
+                            }
+                            if (amount < minAmount) {
+                              setSheetState(
+                                () => errorText = AppLocalizations.of(
+                                  context,
+                                ).minAmountError(minAmount.toStringAsFixed(0)),
+                              );
+                              return;
+                            }
+                            if (amount > available) {
+                              setSheetState(
+                                () => errorText = AppLocalizations.of(
+                                  context,
+                                ).exceedsBalanceError,
+                              );
+                              return;
+                            }
+                            if (payoutMethod == 'paypal' &&
+                                paypalEmailController.text.trim().isEmpty) {
+                              setSheetState(
+                                () => errorText =
+                                    'Please enter your PayPal email',
+                              );
+                              return;
+                            }
+                            setSheetState(() {
+                              errorText = null;
+                            });
+                            setState(() => _isRequesting = true);
+                            try {
+                              await _api.post(AppConstants.withdrawals, {
+                                'amount': amount,
+                                'payout_method': payoutMethod,
+                                'paypal_email': paypalEmailController.text
+                                    .trim(),
+                              });
+                              if (!mounted || !sheetContext.mounted) return;
+                              Navigator.pop(sheetContext);
+                              AppHelpers.showSuccess(
+                                context,
+                                AppLocalizations.of(context).withdrawSuccess,
+                              );
+                              _loadWallet();
+                            } catch (e) {
+                              String msg = AppLocalizations.of(
+                                context,
+                              ).withdrawErrorDefault;
+                              if (e is DioException) {
+                                final data = e.response?.data;
+                                if (data is Map && data['error'] != null) {
+                                  msg = data['error'].toString();
+                                }
+                              }
+                              setSheetState(() => errorText = msg);
+                            } finally {
+                              if (mounted) {
+                                setState(() => _isRequesting = false);
+                              }
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: context.colors.accent,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
+                    ),
+                    child: _isRequesting
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            AppLocalizations.of(context).requestWithdrawCta,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } finally {
+      amountController.dispose();
+      paypalEmailController.dispose();
+    }
   }
 
   void _showAddBankNote() {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
         title: Text(
           AppLocalizations.of(context).bankDetailsRequiredTitle,
-          style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700),
+          style: const TextStyle(
+            fontSize: AppFontSizes.title,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         content: Text(
           AppLocalizations.of(context).bankDetailsRequiredMessage,
-          style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+          style: TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: context.colors.textSecondary,
+          ),
         ),
         actions: [
           TextButton(
@@ -298,7 +386,9 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
                   const SizedBox(height: 12),
                   _buildStatsRow(),
                   const SizedBox(height: 20),
-                  _buildSectionHeader(AppLocalizations.of(context).transactionHistoryTitle),
+                  _buildSectionHeader(
+                    AppLocalizations.of(context).transactionHistoryTitle,
+                  ),
                   const SizedBox(height: 10),
                   _buildTransactionList(),
                   const SizedBox(height: 32),
@@ -324,9 +414,13 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
   }
 
   Widget _buildSectionHeader(String title) => Text(
-        title,
-        style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
-      );
+    title,
+    style: TextStyle(
+      fontSize: AppFontSizes.body,
+      fontWeight: FontWeight.w700,
+      color: context.colors.textPrimary,
+    ),
+  );
 
   // ── Available Balance — hero card, Withdraw CTA seedha yahin ──────
   Widget _buildBalanceCard() {
@@ -337,7 +431,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
       curve: Curves.easeOut,
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-          clipBehavior: Clip.antiAlias,
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [AppColors.emerald, AppColors.successDeep],
@@ -353,39 +447,79 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
           ),
         ],
       ),
-      child: Stack(children: [
-          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.10)))),
-          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.08)))),
-          Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Text(
-            AppLocalizations.of(context).availableBalanceTitle,
-            style: TextStyle(fontSize: AppFontSizes.secondary, color: Colors.white.withValues(alpha: 0.85), fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Rs ${available.toStringAsFixed(2)}',
-            style: const TextStyle(fontSize: AppFontSizes.h1, fontWeight: FontWeight.w800, color: Colors.white),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _showWithdrawSheet,
-              icon: const Icon(Icons.account_balance_wallet_outlined, size: 18),
-              label: Text(AppLocalizations.of(context).withdrawCta, style: const TextStyle(fontWeight: FontWeight.w700)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: AppColors.successDeep,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+          Positioned(
+            right: -36,
+            top: -52,
+            child: Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.10),
               ),
             ),
           ),
+          Positioned(
+            right: 70,
+            bottom: -64,
+            child: Container(
+              width: 110,
+              height: 110,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.08),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppLocalizations.of(context).availableBalanceTitle,
+                style: TextStyle(
+                  fontSize: AppFontSizes.secondary,
+                  color: Colors.white.withValues(alpha: 0.85),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Rs ${available.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontSize: AppFontSizes.h1,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _showWithdrawSheet,
+                  icon: const Icon(
+                    Icons.account_balance_wallet_outlined,
+                    size: 18,
+                  ),
+                  label: Text(
+                    AppLocalizations.of(context).withdrawCta,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.successDeep,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
-        ]),
     );
   }
 
@@ -396,11 +530,32 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
 
     return Row(
       children: [
-        Expanded(child: _miniStat(AppLocalizations.of(context).totalEarnedLabel, totalEarned, Icons.savings_outlined, context.colors.primary)),
+        Expanded(
+          child: _miniStat(
+            AppLocalizations.of(context).totalEarnedLabel,
+            totalEarned,
+            Icons.savings_outlined,
+            context.colors.primary,
+          ),
+        ),
         const SizedBox(width: 10),
-        Expanded(child: _miniStat(AppLocalizations.of(context).withdrawnLabel, totalWithdrawn, Icons.check_circle_outline_rounded, context.colors.accent)),
+        Expanded(
+          child: _miniStat(
+            AppLocalizations.of(context).withdrawnLabel,
+            totalWithdrawn,
+            Icons.check_circle_outline_rounded,
+            context.colors.accent,
+          ),
+        ),
         const SizedBox(width: 10),
-        Expanded(child: _miniStat(AppLocalizations.of(context).pendingLabel, pending, Icons.access_time_rounded, AppColors.warning)),
+        Expanded(
+          child: _miniStat(
+            AppLocalizations.of(context).pendingLabel,
+            pending,
+            Icons.access_time_rounded,
+            AppColors.warning,
+          ),
+        ),
       ],
     );
   }
@@ -427,10 +582,20 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
           const SizedBox(height: 6),
           Text(
             'Rs ${amount.toStringAsFixed(0)}',
-            style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+            style: TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w700,
+              color: context.colors.textPrimary,
+            ),
             overflow: TextOverflow.ellipsis,
           ),
-          Text(label, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: AppFontSizes.caption,
+              color: context.colors.textSecondary,
+            ),
+          ),
         ],
       ),
     );
@@ -451,11 +616,18 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
         ),
         child: Column(
           children: [
-            Icon(Icons.receipt_long_outlined, color: context.colors.textDisabled, size: 32),
+            Icon(
+              Icons.receipt_long_outlined,
+              color: context.colors.textDisabled,
+              size: 32,
+            ),
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context).noTransactionsLabel,
-              style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: context.colors.textSecondary,
+              ),
             ),
           ],
         ),
@@ -476,25 +648,48 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
   /// comes from the .arb files; only the customer name is dynamic content.
   Widget _txnLabel(String label) {
     final t = AppLocalizations.of(context);
-    final style = TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.textPrimary);
+    final style = TextStyle(
+      fontSize: AppFontSizes.secondary,
+      fontWeight: FontWeight.w600,
+      color: context.colors.textPrimary,
+    );
     const sep = ' — ';
     if (label == 'Withdrawal request') {
-      return Text(t.walletWithdrawalRequestLabel, style: style, maxLines: 1, overflow: TextOverflow.ellipsis);
+      return Text(
+        t.walletWithdrawalRequestLabel,
+        style: style,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
     }
     if (label == 'Job completed') {
-      return Text(t.walletJobCompleted, style: style, maxLines: 1, overflow: TextOverflow.ellipsis);
+      return Text(
+        t.walletJobCompleted,
+        style: style,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
     }
     if (label.startsWith('Job completed$sep')) {
       final name = label.substring('Job completed$sep'.length);
       return ListenableBuilder(
         listenable: ContentLocalizer.instance,
         builder: (context, _) => Text(
-          t.walletJobCompletedWithName(ContentLocalizer.instance.peek(name, LocKind.name)),
-          style: style, maxLines: 1, overflow: TextOverflow.ellipsis,
+          t.walletJobCompletedWithName(
+            ContentLocalizer.instance.peek(name, LocKind.name),
+          ),
+          style: style,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       );
     }
-    return Text(label, style: style, maxLines: 1, overflow: TextOverflow.ellipsis);
+    return Text(
+      label,
+      style: style,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 
   Widget _buildTransactionTile(dynamic t) {
@@ -544,11 +739,14 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: (isCredit ? context.colors.accent : AppColors.error).withValues(alpha: 0.1),
+              color: (isCredit ? context.colors.accent : AppColors.error)
+                  .withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
             child: Icon(
-              isCredit ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+              isCredit
+                  ? Icons.arrow_downward_rounded
+                  : Icons.arrow_upward_rounded,
               color: isCredit ? context.colors.accent : AppColors.error,
               size: 16,
             ),
@@ -560,7 +758,13 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
               children: [
                 _txnLabel(label),
                 if (date.isNotEmpty)
-                  Text(date, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
+                  Text(
+                    date,
+                    style: TextStyle(
+                      fontSize: AppFontSizes.caption,
+                      color: context.colors.textSecondary,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -572,7 +776,9 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
                 style: TextStyle(
                   fontSize: AppFontSizes.secondary,
                   fontWeight: FontWeight.w700,
-                  color: isCredit ? context.colors.accent : context.colors.textPrimary,
+                  color: isCredit
+                      ? context.colors.accent
+                      : context.colors.textPrimary,
                 ),
               ),
               Container(
@@ -584,7 +790,11 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
                 ),
                 child: Text(
                   statusLabel,
-                  style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: statusColor),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.caption,
+                    fontWeight: FontWeight.w600,
+                    color: statusColor,
+                  ),
                 ),
               ),
             ],

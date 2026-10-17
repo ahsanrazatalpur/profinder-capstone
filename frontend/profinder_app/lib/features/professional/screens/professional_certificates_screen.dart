@@ -122,7 +122,7 @@ class _ProfessionalCertificatesScreenState
     );
   }
 
-  void _showAddSheet() {
+  Future<void> _showAddSheet() async {
     final titleCtrl = TextEditingController();
     final orgCtrl = TextEditingController();
     DateTime? issueDate;
@@ -131,319 +131,328 @@ class _ProfessionalCertificatesScreenState
     Uint8List? webBytes;
     bool isSaving = false;
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppSizes.radiusSheet),
-        ),
-      ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 16,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+    try {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppSizes.radiusSheet),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: context.colors.divider,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                AppLocalizations.of(context).addCertificateTitle,
-                style: TextStyle(
-                  fontSize: AppFontSizes.title,
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              GestureDetector(
-                onTap: () async {
-                  final picked = await _picker.pickImage(
-                    source: ImageSource.gallery,
-                    imageQuality: 80,
-                    maxWidth: 900,
-                  );
-                  if (picked == null) return;
-                  if (kIsWeb) {
-                    final bytes = await picked.readAsBytes();
-                    setSheetState(() {
-                      pickedXFile = picked;
-                      webBytes = bytes;
-                    });
-                  } else {
-                    setSheetState(() {
-                      pickedXFile = picked;
-                      pickedFile = File(picked.path);
-                    });
-                  }
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOut,
-                  width: double.infinity,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    color: context.colors.background,
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    border: Border.all(
-                      color: pickedXFile != null
-                          ? AppColors.professionalColor
-                          : context.colors.divider,
-                      width: pickedXFile != null ? 2 : 1,
-                    ),
-                  ),
-                  child: pickedXFile != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                            AppSizes.radiusMd,
-                          ),
-                          child: kIsWeb && webBytes != null
-                              ? Image.memory(
-                                  webBytes!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                )
-                              : Image.file(
-                                  pickedFile!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                ),
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.card_membership_outlined,
-                              size: 32,
-                              color: AppColors.professionalColor,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              AppLocalizations.of(
-                                context,
-                              ).addCertificateImageLabel,
-                              style: TextStyle(
-                                fontSize: AppFontSizes.secondary,
-                                color: AppColors.professionalColor,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              TextField(
-                controller: titleCtrl,
-                style: const TextStyle(fontSize: AppFontSizes.body),
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(
-                    context,
-                  ).certificateTitleLabelRequired,
-                  hintText: AppLocalizations.of(context).certificateTitleHint,
-                  filled: true,
-                  fillColor: context.colors.background,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: context.colors.divider),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: context.colors.divider),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(
-                      color: AppColors.professionalColor,
-                      width: 1.5,
+        ),
+        builder: (ctx) => StatefulBuilder(
+          builder: (ctx, setSheetState) => Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 16,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: context.colors.divider,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-
-              TextField(
-                controller: orgCtrl,
-                style: const TextStyle(fontSize: AppFontSizes.body),
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(
-                    context,
-                  ).issuingOrganizationLabel,
-                  hintText: AppLocalizations.of(
-                    context,
-                  ).issuingOrganizationHint,
-                  filled: true,
-                  fillColor: context.colors.background,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: context.colors.divider),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: context.colors.divider),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(
-                      color: AppColors.professionalColor,
-                      width: 1.5,
-                    ),
+                const SizedBox(height: 16),
+                Text(
+                  AppLocalizations.of(context).addCertificateTitle,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.title,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
+                const SizedBox(height: 16),
 
-              GestureDetector(
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: ctx,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(1980),
-                    lastDate: DateTime.now(),
-                  );
-                  if (picked != null) setSheetState(() => issueDate = picked);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    color: context.colors.background,
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    border: Border.all(color: context.colors.divider),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today_outlined,
-                        size: 16,
-                        color: context.colors.textSecondary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        issueDate == null
-                            ? AppLocalizations.of(
-                                context,
-                              ).issueDateLabelOptional
-                            : '${issueDate!.year}-${issueDate!.month.toString().padLeft(2, '0')}-${issueDate!.day.toString().padLeft(2, '0')}',
-                        style: TextStyle(
-                          fontSize: AppFontSizes.body,
-                          color: issueDate == null
-                              ? context.colors.textSecondary
-                              : context.colors.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: isSaving
-                      ? null
-                      : () async {
-                          if (titleCtrl.text.trim().isEmpty) {
-                            AppHelpers.showError(
-                              ctx,
-                              AppLocalizations.of(context).titleValidationError,
-                            );
-                            return;
-                          }
-                          setSheetState(() => isSaving = true);
-                          try {
-                            MultipartFile? imgPart;
-                            if (pickedXFile != null) {
-                              imgPart = kIsWeb
-                                  ? MultipartFile.fromBytes(
-                                      webBytes ??
-                                          await pickedXFile!.readAsBytes(),
-                                      filename: 'cert.jpg',
-                                    )
-                                  : await MultipartFile.fromFile(
-                                      pickedXFile!.path,
-                                      filename: 'cert.jpg',
-                                    );
-                            }
-                            await _api.postForm(
-                              AppConstants.certificates,
-                              FormData.fromMap({
-                                'title': titleCtrl.text.trim(),
-                                'issuing_organization': orgCtrl.text.trim(),
-                                if (issueDate != null)
-                                  'issue_date': issueDate!
-                                      .toIso8601String()
-                                      .split('T')
-                                      .first,
-                                'image': ?imgPart,
-                              }),
-                            );
-                            if (!mounted || !ctx.mounted) return;
-                            Navigator.pop(ctx);
-                            AppHelpers.showSuccess(
-                              context,
-                              AppLocalizations.of(
-                                context,
-                              ).certificateAddSuccess,
-                            );
-                            _load();
-                          } catch (e) {
-                            if (!mounted || !ctx.mounted) return;
-                            setSheetState(() => isSaving = false);
-                            AppHelpers.showError(
-                              ctx,
-                              AppLocalizations.of(context).certificateAddError,
-                            );
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.professionalColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
+                GestureDetector(
+                  onTap: () async {
+                    final picked = await _picker.pickImage(
+                      source: ImageSource.gallery,
+                      imageQuality: 80,
+                      maxWidth: 900,
+                    );
+                    if (picked == null) return;
+                    if (kIsWeb) {
+                      final bytes = await picked.readAsBytes();
+                      setSheetState(() {
+                        pickedXFile = picked;
+                        webBytes = bytes;
+                      });
+                    } else {
+                      setSheetState(() {
+                        pickedXFile = picked;
+                        pickedFile = File(picked.path);
+                      });
+                    }
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                    width: double.infinity,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      color: context.colors.background,
                       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      border: Border.all(
+                        color: pickedXFile != null
+                            ? AppColors.professionalColor
+                            : context.colors.divider,
+                        width: pickedXFile != null ? 2 : 1,
+                      ),
+                    ),
+                    child: pickedXFile != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
+                            child: kIsWeb && webBytes != null
+                                ? Image.memory(
+                                    webBytes!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  )
+                                : Image.file(
+                                    pickedFile!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  ),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.card_membership_outlined,
+                                size: 32,
+                                color: AppColors.professionalColor,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                AppLocalizations.of(
+                                  context,
+                                ).addCertificateImageLabel,
+                                style: TextStyle(
+                                  fontSize: AppFontSizes.secondary,
+                                  color: AppColors.professionalColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                TextField(
+                  controller: titleCtrl,
+                  style: const TextStyle(fontSize: AppFontSizes.body),
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(
+                      context,
+                    ).certificateTitleLabelRequired,
+                    hintText: AppLocalizations.of(context).certificateTitleHint,
+                    filled: true,
+                    fillColor: context.colors.background,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(color: context.colors.divider),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(color: context.colors.divider),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(
+                        color: AppColors.professionalColor,
+                        width: 1.5,
+                      ),
                     ),
                   ),
-                  child: isSaving
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          AppLocalizations.of(context).saveCertificateCta,
-                          style: const TextStyle(fontWeight: FontWeight.w700),
-                        ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+
+                TextField(
+                  controller: orgCtrl,
+                  style: const TextStyle(fontSize: AppFontSizes.body),
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(
+                      context,
+                    ).issuingOrganizationLabel,
+                    hintText: AppLocalizations.of(
+                      context,
+                    ).issuingOrganizationHint,
+                    filled: true,
+                    fillColor: context.colors.background,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(color: context.colors.divider),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(color: context.colors.divider),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      borderSide: BorderSide(
+                        color: AppColors.professionalColor,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                GestureDetector(
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: ctx,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(1980),
+                      lastDate: DateTime.now(),
+                    );
+                    if (picked != null) setSheetState(() => issueDate = picked);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.colors.background,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      border: Border.all(color: context.colors.divider),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today_outlined,
+                          size: 16,
+                          color: context.colors.textSecondary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          issueDate == null
+                              ? AppLocalizations.of(
+                                  context,
+                                ).issueDateLabelOptional
+                              : '${issueDate!.year}-${issueDate!.month.toString().padLeft(2, '0')}-${issueDate!.day.toString().padLeft(2, '0')}',
+                          style: TextStyle(
+                            fontSize: AppFontSizes.body,
+                            color: issueDate == null
+                                ? context.colors.textSecondary
+                                : context.colors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: isSaving
+                        ? null
+                        : () async {
+                            if (titleCtrl.text.trim().isEmpty) {
+                              AppHelpers.showError(
+                                ctx,
+                                AppLocalizations.of(
+                                  context,
+                                ).titleValidationError,
+                              );
+                              return;
+                            }
+                            setSheetState(() => isSaving = true);
+                            try {
+                              MultipartFile? imgPart;
+                              if (pickedXFile != null) {
+                                imgPart = kIsWeb
+                                    ? MultipartFile.fromBytes(
+                                        webBytes ??
+                                            await pickedXFile!.readAsBytes(),
+                                        filename: 'cert.jpg',
+                                      )
+                                    : await MultipartFile.fromFile(
+                                        pickedXFile!.path,
+                                        filename: 'cert.jpg',
+                                      );
+                              }
+                              await _api.postForm(
+                                AppConstants.certificates,
+                                FormData.fromMap({
+                                  'title': titleCtrl.text.trim(),
+                                  'issuing_organization': orgCtrl.text.trim(),
+                                  if (issueDate != null)
+                                    'issue_date': issueDate!
+                                        .toIso8601String()
+                                        .split('T')
+                                        .first,
+                                  'image': ?imgPart,
+                                }),
+                              );
+                              if (!mounted || !ctx.mounted) return;
+                              Navigator.pop(ctx);
+                              AppHelpers.showSuccess(
+                                context,
+                                AppLocalizations.of(
+                                  context,
+                                ).certificateAddSuccess,
+                              );
+                              _load();
+                            } catch (e) {
+                              if (!mounted || !ctx.mounted) return;
+                              setSheetState(() => isSaving = false);
+                              AppHelpers.showError(
+                                ctx,
+                                AppLocalizations.of(
+                                  context,
+                                ).certificateAddError,
+                              );
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.professionalColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
+                    ),
+                    child: isSaving
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            AppLocalizations.of(context).saveCertificateCta,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } finally {
+      titleCtrl.dispose();
+      orgCtrl.dispose();
+    }
   }
 
   @override
