@@ -14,7 +14,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
-// ✅ NEW — the 6 quick-pick reactions, WhatsApp-style
+// Standard reaction emoji choices for quick selection.
 const _quickReactions = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
 
 class MessageBubble extends StatelessWidget {
@@ -22,9 +22,9 @@ class MessageBubble extends StatelessWidget {
   final bool isMe;
   final VoidCallback onReply;
   final void Function(String newText) onEdit;
-  final VoidCallback onDelete;         // delete for everyone (sender only)
-  final VoidCallback onDeleteForMe;    // ✅ NEW — hide for me only (anyone)
-  final void Function(String emoji) onReact; // ✅ NEW
+  final VoidCallback onDelete;         // Delete for everyone (sender only)
+  final VoidCallback onDeleteForMe;    // Delete solely for current user
+  final void Function(String emoji) onReact;
   final VoidCallback onRetry;
 
   const MessageBubble({
@@ -70,19 +70,19 @@ class MessageBubble extends StatelessWidget {
                 children: [
                   if (message.replyTo != null) _buildReplyQuote(context),
                   if (message.hasImage) _buildImage(context),
-                  if (message.hasAudio) _buildAudio(),   // ✅ NEW
+                  if (message.hasAudio) _buildAudio(),
                   if (message.text.isNotEmpty || (!message.hasImage && !message.hasAudio)) _buildTextRow(context),
                 ],
               ),
             ),
-            if (message.hasReactions) _buildReactionsRow(context),  // ✅ NEW
+            if (message.hasReactions) _buildReactionsRow(context),
           ],
         ),
       ),
     );
   }
 
-  // ✅ NEW — reactions pill row, tap to open the quick-picker again
+  // Horizontal list of active emoji reactions attached to this message.
   Widget _buildReactionsRow(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 2, left: 6, right: 6),
@@ -194,7 +194,7 @@ class MessageBubble extends StatelessWidget {
     );
   }
 
-  // ✅ NEW — voice message player
+  // Embedded voice note audio player within the message bubble.
   Widget _buildAudio() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 10, 14, 4),
@@ -277,7 +277,7 @@ class MessageBubble extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // ✅ NEW — quick reaction row at the very top of the sheet
+              // Quick emoji reaction bar
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 child: Row(
@@ -321,7 +321,7 @@ class MessageBubble extends StatelessWidget {
                         _showEditDialog(context);
                       },
                     ),
-                  // ✅ NEW — split delete options
+                  // Delete message options
                   ListTile(
                     leading: const Icon(Icons.person_remove_outlined),
                     title: Text(AppLocalizations.of(context).chatDeleteMe),
@@ -381,9 +381,7 @@ extension _TimeFormat on TimeOfDay {
   }
 }
 
-// ✅ NEW — minimal play/pause voice-note player. Uses `audioplayers`
-// (add to pubspec.yaml). No waveform — just a progress bar + duration,
-// which covers "voice messages" without over-scoping the UI work.
+// Compact audio player widget rendering playback progress and duration for voice messages.
 class _VoiceMessagePlayer extends StatefulWidget {
   final String? url;
   final String? localPath;
@@ -461,11 +459,9 @@ class _VoiceMessagePlayerState extends State<_VoiceMessagePlayer> {
     }
   }
 
-  /// 🐛 FIX: a just-recorded (still uploading) note used DeviceFileSource
-  /// unconditionally. On web the recorder returns a `blob:` URL, and
-  /// DeviceFileSource isn't supported there — so the sender couldn't play
-  /// back their own note on desktop browsers. Use UrlSource for anything
-  /// that is a URL, DeviceFileSource only for a real on-disk path.
+  /// Resolves audio playback source across web and mobile platforms.
+  /// Uses [UrlSource] for remote HTTP endpoints and browser blob URLs,
+  /// and [DeviceFileSource] for native local file paths.
   Source? _resolveSource() {
     final local = widget.localPath;
     if (local != null && local.isNotEmpty) {

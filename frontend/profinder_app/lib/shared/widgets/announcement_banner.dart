@@ -66,17 +66,11 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
     );
 
     _slideAnimation = Tween<double>(begin: -0.3, end: 0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutCubic,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
     );
 
     _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeIn,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
 
     // Auto-start animation when widget is ready
@@ -103,7 +97,10 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
       if (!mounted) return;
 
       if (results.isEmpty) {
-        setState(() { _loading = false; _announcement = null; });
+        setState(() {
+          _loading = false;
+          _announcement = null;
+        });
         return;
       }
 
@@ -125,7 +122,10 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
       });
     } catch (e) {
       if (mounted) {
-        setState(() { _loading = false; _announcement = null; });
+        setState(() {
+          _loading = false;
+          _announcement = null;
+        });
       }
     }
   }
@@ -231,10 +231,7 @@ class _AnnouncementBannerState extends State<AnnouncementBanner>
       builder: (context, child) {
         return Transform.translate(
           offset: Offset(0, _slideAnimation.value * 60),
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: child,
-          ),
+          child: FadeTransition(opacity: _fadeAnimation, child: child),
         );
       },
       child: GestureDetector(
@@ -392,10 +389,14 @@ class UniversalCard extends StatelessWidget {
     final borderRadius = BorderRadius.circular(radius);
 
     final hasTopRow = badge != null || meta != null;
-    final lead = leading ??
+    final lead =
+        leading ??
         (leadingIcon != null ? UniversalCardTile(icon: leadingIcon) : null);
-    final end = trailing ??
-        (onClose != null ? UniversalCardCloseButton(onPressed: onClose!) : null);
+    final end =
+        trailing ??
+        (onClose != null
+            ? UniversalCardCloseButton(onPressed: onClose!)
+            : null);
 
     final header = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -534,13 +535,13 @@ class _GlassCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white.withValues(alpha: opacity),
-        ),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.white.withValues(alpha: opacity),
+    ),
+  );
 }
 
 class _Pill extends StatelessWidget {
@@ -609,7 +610,10 @@ class UniversalCardTile extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
       ),
       child: emoji != null
-          ? Text(emoji!, style: const TextStyle(fontSize: AppFontSizes.h3, height: 1))
+          ? Text(
+              emoji!,
+              style: const TextStyle(fontSize: AppFontSizes.h3, height: 1),
+            )
           : Icon(icon, size: 22, color: Colors.white),
     );
   }

@@ -7,6 +7,7 @@
 
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,16 +24,17 @@ class ProfessionalGalleryScreen extends StatefulWidget {
   const ProfessionalGalleryScreen({super.key});
 
   @override
-  State<ProfessionalGalleryScreen> createState() => _ProfessionalGalleryScreenState();
+  State<ProfessionalGalleryScreen> createState() =>
+      _ProfessionalGalleryScreenState();
 }
 
 class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
-  final _api    = ApiService();
+  final _api = ApiService();
   final _picker = ImagePicker();
 
-  List<dynamic> _items     = [];
-  bool          _isLoading = true;
-  bool          _isUploading = false;
+  List<dynamic> _items = [];
+  bool _isLoading = true;
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -46,20 +48,27 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
       final res = await _api.get(AppConstants.gallery);
       if (!mounted) return;
       setState(() {
-        _items     = res.data is List ? res.data as List : [];
+        _items = res.data is List ? res.data as List : [];
         _isLoading = false;
       });
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
       if (mounted) {
-        AppHelpers.showError(context, AppLocalizations.of(context).loadGalleryError);
+        AppHelpers.showError(
+          context,
+          AppLocalizations.of(context).loadGalleryError,
+        );
       }
     }
   }
 
   Future<void> _pickAndUpload() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 80, maxWidth: 900);
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 900,
+    );
     if (picked == null) return;
 
     setState(() => _isUploading = true);
@@ -69,15 +78,27 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
         final bytes = await picked.readAsBytes();
         imgPart = MultipartFile.fromBytes(bytes, filename: 'gallery.jpg');
       } else {
-        imgPart = await MultipartFile.fromFile(picked.path, filename: 'gallery.jpg');
+        imgPart = await MultipartFile.fromFile(
+          picked.path,
+          filename: 'gallery.jpg',
+        );
       }
-      await _api.postForm(AppConstants.gallery, FormData.fromMap({'image': imgPart}));
+      await _api.postForm(
+        AppConstants.gallery,
+        FormData.fromMap({'image': imgPart}),
+      );
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context).galleryUploadSuccess);
+      AppHelpers.showSuccess(
+        context,
+        AppLocalizations.of(context).galleryUploadSuccess,
+      );
       _load();
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context).galleryUploadError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).galleryUploadError,
+      );
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }
@@ -87,7 +108,10 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
     try {
       await _api.delete('${AppConstants.gallery}$id/');
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context).deleteSuccess);
+      AppHelpers.showSuccess(
+        context,
+        AppLocalizations.of(context).deleteSuccess,
+      );
       _load();
     } catch (e) {
       if (!mounted) return;
@@ -99,14 +123,22 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
         title: Text(
           AppLocalizations.of(context).deleteGalleryDialogTitle,
-          style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
+          style: const TextStyle(
+            fontSize: AppFontSizes.body,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         content: Text(
           AppLocalizations.of(context).deleteGalleryDialogContent,
-          style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+          style: TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: context.colors.textSecondary,
+          ),
         ),
         actions: [
           TextButton(
@@ -115,7 +147,10 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            onPressed: () { Navigator.pop(context); _delete(item['id']); },
+            onPressed: () {
+              Navigator.pop(context);
+              _delete(item['id']);
+            },
             child: Text(AppLocalizations.of(context).deleteCta),
           ),
         ],
@@ -138,15 +173,21 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
                 fit: BoxFit.contain,
                 width: double.infinity,
                 height: double.infinity,
-                errorBuilder: (_, _, _) => Container(
+                memCacheWidth: 800,
+                placeholder: (_, _) => const SizedBox(),
+                errorWidget: (_, _, _) => Container(
                   height: 300,
                   color: context.colors.surface,
-                  child: Icon(Icons.broken_image, size: 48, color: context.colors.textDisabled),
+                  child: Icon(
+                    Icons.broken_image,
+                    size: 48,
+                    color: context.colors.textDisabled,
+                  ),
                 ),
               ),
             ),
@@ -159,10 +200,17 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
-                  icon: const Icon(Icons.close_rounded, color: Colors.white, size: 20),
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                   onPressed: () => Navigator.pop(ctx),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+                  constraints: const BoxConstraints.tightFor(
+                    width: 36,
+                    height: 36,
+                  ),
                 ),
               ),
             ),
@@ -234,7 +282,9 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                                 width: 88,
                                 height: 88,
                                 decoration: BoxDecoration(
-                                  color: AppColors.professionalColor.withValues(alpha: 0.1),
+                                  color: AppColors.professionalColor.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -254,19 +304,33 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                AppLocalizations.of(context).emptyGallerySubtitle,
-                                style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+                                AppLocalizations.of(
+                                  context,
+                                ).emptyGallerySubtitle,
+                                style: TextStyle(
+                                  fontSize: AppFontSizes.secondary,
+                                  color: context.colors.textSecondary,
+                                ),
                               ),
                               const SizedBox(height: 22),
                               ElevatedButton.icon(
                                 onPressed: _pickAndUpload,
                                 icon: const Icon(Icons.add_rounded, size: 18),
-                                label: Text(AppLocalizations.of(context).addPhotoCta),
+                                label: Text(
+                                  AppLocalizations.of(context).addPhotoCta,
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.professionalColor,
                                   foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      AppSizes.radiusMd,
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
                                 ),
                               ),
                             ],
@@ -284,15 +348,21 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                       itemCount: _items.length,
                       itemBuilder: (_, i) {
                         final item = _items[i];
-                        final imageUrl = item['image_url']?.toString() ?? item['image']?.toString();
+                        final imageUrl =
+                            item['image_url']?.toString() ??
+                            item['image']?.toString();
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 350),
                           curve: Curves.easeOut,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.08),
+                                color: isDark
+                                    ? Colors.black.withValues(alpha: 0.2)
+                                    : Colors.grey.withValues(alpha: 0.08),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
                               ),
@@ -302,12 +372,29 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                             onTap: () => _showImagePreview(item),
                             onLongPress: () => _confirmDelete(item),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
                               child: imageUrl != null && imageUrl.isNotEmpty
-                                  ? Image.network(
-                                      imageUrl,
+                                  ? CachedNetworkImage(
+                                      imageUrl: imageUrl,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, _, _) => Container(
+                                      memCacheWidth: 400,
+                                      placeholder: (ctx, url) => Container(
+                                        color: context.colors.background,
+                                        child: const Center(
+                                          child: SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color:
+                                                  AppColors.professionalColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      errorWidget: (_, _, _) => Container(
                                         color: context.colors.divider,
                                         child: Icon(
                                           Icons.broken_image_outlined,
@@ -315,25 +402,6 @@ class _ProfessionalGalleryScreenState extends State<ProfessionalGalleryScreen> {
                                           color: context.colors.textDisabled,
                                         ),
                                       ),
-                                      loadingBuilder: (ctx, child, progress) {
-                                        if (progress == null) return child;
-                                        return Container(
-                                          color: context.colors.background,
-                                          child: Center(
-                                            child: SizedBox(
-                                              width: 24,
-                                              height: 24,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                                color: AppColors.professionalColor,
-                                                value: progress.expectedTotalBytes != null
-                                                    ? progress.cumulativeBytesLoaded / progress.expectedTotalBytes!
-                                                    : null,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
                                     )
                                   : Container(
                                       color: context.colors.divider,

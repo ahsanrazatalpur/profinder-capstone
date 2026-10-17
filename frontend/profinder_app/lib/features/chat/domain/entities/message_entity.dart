@@ -31,7 +31,7 @@ class MessageEntity {
   final String text;
   final String? imageUrl;      // full URL, already resolved
   final String? localImagePath; // set only while an optimistic image upload is in flight
-  // ✅ NEW — voice messages reuse the same optimistic-upload pattern as images
+  /// Remote URL, local cache path, and duration for audio voice notes.
   final String? audioUrl;
   final int? audioDurationSeconds;
   final String? localAudioPath;
@@ -43,8 +43,7 @@ class MessageEntity {
   final bool isEdited;
   final bool isDeleted;
 
-  // ✅ NEW — reactions grouped by emoji (e.g. {"❤️": 3, "👍": 1}) and
-  // which one (if any) the CURRENT user picked, for highlighting.
+  /// Reactions grouped by emoji (e.g. `{"❤️": 3, "👍": 1}`) and the current user's reaction.
   final Map<String, int> reactions;
   final String? myReaction;
 

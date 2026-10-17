@@ -56,32 +56,20 @@ class AppHelpers {
     return DateFormat('dd MMM yyyy • hh:mm a').format(dt);
   }
 
-  // ─── Image URL Fix ──────────────────────────────────────
-  // ✅ FIX: Backend se sirf relative path aata tha jaise /media/photos/abc.jpg
-  // Flutter ka NetworkImage/Image.network poora URL chahta hai.
-  // Yeh helper relative URL ko full URL mein convert karta hai.
-  //
-  // Usage:
-  //   NetworkImage(AppHelpers.getFullImageUrl(photoUrl))
-  //   Image.network(AppHelpers.getFullImageUrl(imageUrl))
+  // ─── Image URL Resolution ──────────────────────────────
+  /// Resolves relative media paths into absolute URLs using [AppConstants.baseUrl].
+  ///
+  /// Preserves already absolute URLs (starting with http:// or https://).
   static String getFullImageUrl(String? url) {
     if (url == null || url.trim().isEmpty) return '';
 
-    // Pehle se full URL hai — kuch mat karo
+    // Already an absolute URL — return as-is
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
 
-    // ✅ FIX: pehle yahan hardcoded 'http://127.0.0.1:8000' (web) /
-    // 'http://10.0.2.2:8000' (Android emulator) tha — sirf local dev
-    // server ke liye kaam karta tha. Production backend (PythonAnywhere
-    // waghera) se connect hote hi images/voice notes 404 dete the kyunki
-    // app hamesha localhost se file maangta rehta tha.
-    // Ab AppConstants.baseUrl (jo asal backend host hai, e.g.
-    // https://ahsanrazatalpur.pythonanywhere.com/api) se hi '/api' hata
-    // kar media base nikal lete hain — jahan bhi backend point ho, images
-    // wahin se load hongi.
+    // Derive media base URL by stripping trailing '/api' from baseUrl
     final base = AppConstants.baseUrl.replaceFirst(RegExp(r'/api/?$'), '');
 
-    // Leading slash ensure karo
+    // Ensure leading slash on relative path
     final path = url.startsWith('/') ? url : '/$url';
     return '$base$path';
   }
@@ -151,7 +139,7 @@ class AppHelpers {
   }
 
   // ─── String Helpers ─────────────────────────────────────
-  // Pehla letter capital karo
+  /// Capitalizes the first character of the given string.
   static String capitalize(String text) {
     if (text.isEmpty) return text;
     return text[0].toUpperCase() + text.substring(1);
@@ -173,5 +161,87 @@ class AppHelpers {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
     }
     return parts[0][0].toUpperCase();
+  }
+
+  // ─── Currency Helpers ────────────────────────────────────
+  /// Returns currency symbol ('Rs', '$', '€', '£', etc.)
+  /// Inspects currency code, country, or city with default fallback to 'Rs' for Pakistan.
+  static String getCurrencySymbol({
+    dynamic professional,
+    String? currency,
+    String? country,
+    String? city,
+  }) {
+    if (professional is Map) {
+      if (professional['currency_symbol'] != null &&
+          professional['currency_symbol'].toString().trim().isNotEmpty) {
+        return professional['currency_symbol'].toString().trim();
+      }
+      if (professional['currency'] != null &&
+          professional['currency'].toString().trim().isNotEmpty) {
+        currency = professional['currency'].toString();
+      }
+      country ??= professional['country']?.toString();
+      city ??= professional['city']?.toString();
+    }
+
+    if (currency != null && currency.trim().isNotEmpty) {
+      final c = currency.trim().toUpperCase();
+      switch (c) {
+        case 'PKR': return 'Rs';
+        case 'INR': return '₹';
+        case 'EUR': return '€';
+        case 'GBP': return '£';
+        case 'AED': return 'AED';
+        case 'SAR': return 'SAR';
+        case 'CAD': return 'CA\$';
+        case 'AUD': return 'A\$';
+        case 'JPY': return '¥';
+        case 'CNY': return '¥';
+        case 'USD': return '\$';
+      }
+    }
+
+    final cLower = (country ?? '').trim().toLowerCase();
+    final cityLower = (city ?? '').trim().toLowerCase();
+
+    const pkCities = {
+      'badin', 'karachi', 'lahore', 'islamabad', 'rawalpindi', 'faisalabad',
+      'multan', 'peshawar', 'quetta', 'hyderabad', 'sukkur', 'gujranwala',
+      'sialkot', 'larkana', 'abbottabad', 'bahawalpur', 'sargodha', 'mirpurkhas',
+      'sheikhupura', 'jhang', 'gujrat', 'kasur', 'mardan', 'swat', 'sahiwal',
+      'okara', 'wah cantt', 'dera ghazi khan', 'rahim yar khan', 'dadu',
+      'tando allahyar', 'tando muhammad khan', 'khairpur', 'shikarpur', 'jacobabad',
+      'umerkot', 'sanghar', 'matiari', 'kashmore', 'ghotki',
+    };
+
+    if (cLower == 'pk' || cLower == 'pakistan' || pkCities.contains(cityLower)) {
+      return 'Rs';
+    }
+    if (cLower == 'in' || cLower == 'india') return '₹';
+    if (cLower == 'gb' || cLower == 'uk' || cLower == 'united kingdom') return '£';
+    if (cLower == 'ae' || cLower == 'uae') return 'AED';
+    if (cLower == 'sa' || cLower == 'saudi arabia') return 'SAR';
+    if (cLower == 'ca' || cLower == 'canada') return 'CA\$';
+    if (cLower == 'au' || cLower == 'australia') return 'A\$';
+    if (cLower == 'us' || cLower == 'usa' || cLower == 'united states') return '\$';
+
+    // ProFinder default currency is PKR (Rs)
+    return 'Rs';
+  }
+
+  /// Formats hourly rate with dynamic currency symbol: e.g. "Rs 500/hr" or "$50/hr"
+  static String formatHourlyRate(dynamic rate, {dynamic professional, String? currency, String? country, String? city}) {
+    final sym = getCurrencySymbol(professional: professional, currency: currency, country: country, city: city);
+    final val = double.tryParse(rate?.toString() ?? '0') ?? 0.0;
+    final formattedVal = val == val.roundToDouble() ? val.toStringAsFixed(0) : val.toStringAsFixed(2);
+    return '$sym $formattedVal/hr';
+  }
+
+  /// Formats price amount with dynamic currency symbol: e.g. "Rs 500" or "$50"
+  static String formatPrice(dynamic amount, {dynamic professional, String? currency, String? country, String? city, int decimals = 0}) {
+    final sym = getCurrencySymbol(professional: professional, currency: currency, country: country, city: city);
+    final val = double.tryParse(amount?.toString() ?? '0') ?? 0.0;
+    return '$sym ${val.toStringAsFixed(decimals)}';
   }
 }

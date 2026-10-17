@@ -1,6 +1,8 @@
 // lib/features/home/screens/guest_home_screen.dart
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_colors.dart';
@@ -86,7 +88,10 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           latitude: location?.lat ?? 0,
           longitude: location?.lng ?? 0,
         ),
-        provider.loadHomeFeed(latitude: location?.lat, longitude: location?.lng),
+        provider.loadHomeFeed(
+          latitude: location?.lat,
+          longitude: location?.lng,
+        ),
       ]);
     } catch (e) {
       // Handle error silently
@@ -124,7 +129,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
       context: context,
       backgroundColor: context.colors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusXl)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusXl),
+        ),
       ),
       builder: (_) => Padding(
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
@@ -147,10 +154,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    context.colors.primary,
-                    context.colors.primaryLight,
-                  ],
+                  colors: [context.colors.primary, context.colors.primaryLight],
                 ),
                 shape: BoxShape.circle,
               ),
@@ -195,7 +199,10 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                 ),
                 child: Text(
                   t.login,
-                  style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.title,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -218,7 +225,10 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                 ),
                 child: Text(
                   t.homeCreateAccount,
-                  style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.title,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -240,121 +250,185 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     final recentlyAdded = home.recentlyAddedFeed;
     final popular = home.popularProfessionalsFeed;
 
-    final hasAnyProfessionals = topRated.isNotEmpty || trending.isNotEmpty ||
-        recentlyAdded.isNotEmpty || nearby.isNotEmpty ||
+    final hasAnyProfessionals =
+        topRated.isNotEmpty ||
+        trending.isNotEmpty ||
+        recentlyAdded.isNotEmpty ||
+        nearby.isNotEmpty ||
         popular.isNotEmpty;
     final feedStillLoading = home.feedLoading && !hasAnyProfessionals;
     final t = AppLocalizations.of(context);
 
-    return Scaffold(
-      backgroundColor: context.colors.background,
-      body: SafeArea(
-        bottom: false,
-        child: RefreshIndicator(
-          color: context.colors.primary,
-          onRefresh: _refresh,
-          child: CustomScrollView(
-            slivers: [
-              const SliverToBoxAdapter(child: AnnouncementBanner(audience: 'guest')),
-              GuestAppBar(
-                onLogin: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                ),
-                onRegister: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                ),
-                onSearch: _openSearch,
-              ),
-              SliverToBoxAdapter(child: _buildHeader(nearby, isDark)),
-              SliverToBoxAdapter(child: _buildHeroSearch(isDark)),
-              SliverToBoxAdapter(child: _buildQuickActionChips(home.categories, isDark)),
-
-              if (feedStillLoading)
-                SliverToBoxAdapter(child: _buildLoadingSkeleton(isDark))
-              else ...[
-                SliverToBoxAdapter(
-                  child: _buildSectionHeader(t.homePopularCategories,
-                      onViewAll: () => _showAllCategories(home.categories, isDark)),
-                ),
-                SliverToBoxAdapter(
-                    child: _buildPopularCategories(home.categories, isDark)),
-
-                SliverToBoxAdapter(
-                  child: _buildSectionHeader(t.homeFeaturedCategoriesSection),
-                ),
-                SliverToBoxAdapter(
-                    child: _buildFeaturedCategories(home.featuredCategories, isDark)),
-
-                if (!hasAnyProfessionals) ...[
-                  SliverToBoxAdapter(child: _buildEmptyState(isDark)),
-                ] else ...[
-                  _buildProSection(t.homeTopRatedProfessionals, topRated,
-                      icon: Icons.star_rounded,
-                      limit: 10,
-                      badgeTag: t.homeTopRatedLabel,
-                      badgeIcon: Icons.emoji_events_rounded,
-                      badgeColor: AppColors.badgeTopRated,
-                      isDark: isDark),
-
-                  ..._buildNearbySection(nearby, home.feedNearbyMeta, isDark),
-
-                  SliverToBoxAdapter(
-                    child: CtaBanner(
-                      isDark: isDark,
-                      onTap: () => Navigator.push(
+    // Status-bar icons (time / network / battery) in white, because the strip
+    // behind them is now the brand blue — same as the customer dashboard.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light, // Android
+        statusBarBrightness: Brightness.dark, // iOS
+      ),
+      child: Scaffold(
+        backgroundColor: context.colors.background,
+        // Paints a primary color backdrop behind the device status bar inset
+        // so the app header seamlessly extends beneath system status indicators.
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: MediaQuery.paddingOf(context).top,
+              child: ColoredBox(color: context.colors.primary),
+            ),
+            SafeArea(
+              bottom: false,
+              child: RefreshIndicator(
+                color: context.colors.primary,
+                onRefresh: _refresh,
+                child: CustomScrollView(
+                  slivers: [
+                    const SliverToBoxAdapter(
+                      child: AnnouncementBanner(audience: 'guest'),
+                    ),
+                    GuestAppBar(
+                      onLogin: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      ),
+                      onRegister: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const RegisterScreen(initialRole: 'professional')),
+                          builder: (_) => const RegisterScreen(),
+                        ),
                       ),
+                      onSearch: _openSearch,
                     ),
-                  ),
+                    SliverToBoxAdapter(child: _buildHeader(nearby, isDark)),
+                    SliverToBoxAdapter(child: _buildHeroSearch(isDark)),
+                    SliverToBoxAdapter(
+                      child: _buildQuickActionChips(home.categories, isDark),
+                    ),
 
-                  _buildProSection(t.homeTrendingThisWeek, trending,
-                      icon: Icons.trending_up_rounded,
-                      limit: 10,
-                      badgeTag: t.homeTrendingLabel,
-                      badgeIcon: Icons.trending_up_rounded,
-                      badgeColor: AppColors.badgeTrending,
-                      headerTopPadding: AppSizes.sm,
-                      isDark: isDark),
-                  _buildProSection(t.homePopularProfessionals, popular,
-                      icon: Icons.local_fire_department_rounded,
-                      limit: 10,
-                      badgeTag: t.homePopularLabel,
-                      badgeIcon: Icons.local_fire_department_rounded,
-                      badgeColor: AppColors.badgePopular,
-                      isDark: isDark),
-                  _buildProSection(t.homeRecentlyAdded, recentlyAdded,
-                      icon: Icons.new_releases_rounded,
-                      limit: 10,
-                      badgeTag: t.homeNewLabel,
-                      badgeIcon: Icons.fiber_new_rounded,
-                      badgeColor: AppColors.badgeNew,
-                      isDark: isDark),
-                ],
+                    if (feedStillLoading)
+                      SliverToBoxAdapter(child: _buildLoadingSkeleton(isDark))
+                    else ...[
+                      SliverToBoxAdapter(
+                        child: _buildSectionHeader(
+                          t.homePopularCategories,
+                          onViewAll: () =>
+                              _showAllCategories(home.categories, isDark),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: _buildPopularCategories(home.categories, isDark),
+                      ),
 
-                SliverToBoxAdapter(
-                  child: _buildSectionHeader(t.homeFromTheMagazine,
-                      onViewAll: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const MagazineScreen()),
-                        );
-                      }),
+                      SliverToBoxAdapter(
+                        child: _buildSectionHeader(
+                          t.homeFeaturedCategoriesSection,
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: _buildFeaturedCategories(
+                          home.featuredCategories,
+                          isDark,
+                        ),
+                      ),
+
+                      if (!hasAnyProfessionals) ...[
+                        SliverToBoxAdapter(child: _buildEmptyState(isDark)),
+                      ] else ...[
+                        _buildProSection(
+                          t.homeTopRatedProfessionals,
+                          topRated,
+                          icon: Icons.star_rounded,
+                          limit: 10,
+                          badgeTag: t.homeTopRatedLabel,
+                          badgeIcon: Icons.emoji_events_rounded,
+                          badgeColor: AppColors.badgeTopRated,
+                          isDark: isDark,
+                        ),
+
+                        ..._buildNearbySection(
+                          nearby,
+                          home.feedNearbyMeta,
+                          isDark,
+                        ),
+
+                        SliverToBoxAdapter(
+                          child: CtaBanner(
+                            isDark: isDark,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterScreen(
+                                  initialRole: 'professional',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        _buildProSection(
+                          t.homeTrendingThisWeek,
+                          trending,
+                          icon: Icons.trending_up_rounded,
+                          limit: 10,
+                          badgeTag: t.homeTrendingLabel,
+                          badgeIcon: Icons.trending_up_rounded,
+                          badgeColor: AppColors.badgeTrending,
+                          headerTopPadding: AppSizes.sm,
+                          isDark: isDark,
+                        ),
+                        _buildProSection(
+                          t.homePopularProfessionals,
+                          popular,
+                          icon: Icons.local_fire_department_rounded,
+                          limit: 10,
+                          badgeTag: t.homePopularLabel,
+                          badgeIcon: Icons.local_fire_department_rounded,
+                          badgeColor: AppColors.badgePopular,
+                          isDark: isDark,
+                        ),
+                        _buildProSection(
+                          t.homeRecentlyAdded,
+                          recentlyAdded,
+                          icon: Icons.new_releases_rounded,
+                          limit: 10,
+                          badgeTag: t.homeNewLabel,
+                          badgeIcon: Icons.fiber_new_rounded,
+                          badgeColor: AppColors.badgeNew,
+                          isDark: isDark,
+                        ),
+                      ],
+
+                      SliverToBoxAdapter(
+                        child: _buildSectionHeader(
+                          t.homeFromTheMagazine,
+                          onViewAll: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const MagazineScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      SliverToBoxAdapter(child: _buildMagazineSection(isDark)),
+
+                      SliverToBoxAdapter(child: _buildLoginBanner(isDark)),
+                      const SliverToBoxAdapter(child: SizedBox(height: 32)),
+                    ],
+                  ],
                 ),
-                SliverToBoxAdapter(child: _buildMagazineSection(isDark)),
-
-                SliverToBoxAdapter(child: _buildLoginBanner(isDark)),
-                const SliverToBoxAdapter(child: SizedBox(height: 32)),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
+              ),
+            ), // SafeArea
+          ],
+        ), // Stack
+      ), // Scaffold
+    ); // AnnotatedRegion
   }
 
   void _openSearch({int? categoryId, String? categoryName}) {
@@ -377,7 +451,11 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     final t = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(
-          AppSizes.screenPadding, AppSizes.md, AppSizes.screenPadding, AppSizes.sm),
+        AppSizes.screenPadding,
+        AppSizes.md,
+        AppSizes.screenPadding,
+        AppSizes.sm,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -434,7 +512,11 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     final t = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(
-          AppSizes.screenPadding, 0, AppSizes.screenPadding, AppSizes.lg),
+        AppSizes.screenPadding,
+        0,
+        AppSizes.screenPadding,
+        AppSizes.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -497,7 +579,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: context.colors.primary,
                       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -543,7 +627,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
         height: 44,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.screenPadding,
+          ),
           itemCount: top.length + 1,
           separatorBuilder: (_, _) => const SizedBox(width: 10),
           itemBuilder: (_, i) {
@@ -575,8 +661,14 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     );
   }
 
-  Widget _chip(String label, Color color,
-      {bool filled = false, IconData? icon, VoidCallback? onTap, required bool isDark}) {
+  Widget _chip(
+    String label,
+    Color color, {
+    bool filled = false,
+    IconData? icon,
+    VoidCallback? onTap,
+    required bool isDark,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -588,8 +680,8 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             color: filled
                 ? color
                 : isDark
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : context.colors.divider,
+                ? Colors.white.withValues(alpha: 0.1)
+                : context.colors.divider,
             width: 1.5,
           ),
           boxShadow: filled
@@ -631,11 +723,20 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // ═══════════════════════════════════════════════════════════════════
   // SECTION HEADER
   // ═══════════════════════════════════════════════════════════════════
-  Widget _buildSectionHeader(String title,
-      {IconData? icon, String? caption, VoidCallback? onViewAll, double? topPadding}) {
+  Widget _buildSectionHeader(
+    String title, {
+    IconData? icon,
+    String? caption,
+    VoidCallback? onViewAll,
+    double? topPadding,
+  }) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(AppSizes.screenPadding,
-          topPadding ?? AppSizes.lg, AppSizes.screenPadding, AppSizes.sm),
+      padding: EdgeInsets.fromLTRB(
+        AppSizes.screenPadding,
+        topPadding ?? AppSizes.lg,
+        AppSizes.screenPadding,
+        AppSizes.sm,
+      ),
       child: Row(
         children: [
           if (icon != null) ...[
@@ -645,11 +746,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                 color: context.colors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
-              child: Icon(
-                icon,
-                size: 20,
-                color: context.colors.primary,
-              ),
+              child: Icon(icon, size: 20, color: context.colors.primary),
             ),
             const SizedBox(width: 10),
           ],
@@ -681,7 +778,10 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             GestureDetector(
               onTap: onViewAll,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: context.colors.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -735,13 +835,14 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
         isDark: isDark,
         limit: 8,
         onCategoryTap: (cat) => _openSearch(
-          categoryId: cat['id'] is int ? cat['id'] : int.tryParse('${cat['id']}'),
+          categoryId: cat['id'] is int
+              ? cat['id']
+              : int.tryParse('${cat['id']}'),
           categoryName: cat['name']?.toString(),
         ),
       ),
     );
   }
-
 
   // ═══════════════════════════════════════════════════════════════════
   // FEATURED CATEGORIES
@@ -759,7 +860,10 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
         separatorBuilder: (_, _) => const SizedBox(width: 14),
         itemBuilder: (_, i) {
           final cat = items[i] as Map;
-          final style = CategoryStyles.forName(cat['name']?.toString() ?? '', i);
+          final style = CategoryStyles.forName(
+            cat['name']?.toString() ?? '',
+            i,
+          );
           return FeaturedCategoryCard(
             title: cat['name']?.toString() ?? '',
             icon: style.icon,
@@ -780,7 +884,10 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // NEARBY PROFESSIONALS SECTION
   // ═══════════════════════════════════════════════════════════════════
   List<Widget> _buildNearbySection(
-      List<dynamic> nearby, Map<String, dynamic> meta, bool isDark) {
+    List<dynamic> nearby,
+    Map<String, dynamic> meta,
+    bool isDark,
+  ) {
     final t = AppLocalizations.of(context);
     final source = meta['results_source'] as String?;
     final unavailableMessage = meta['city_unavailable_message'] as String?;
@@ -801,7 +908,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
         if (locationLabel != null) caption = t.homeNearLocation(locationLabel);
         break;
       case 'saved_city':
-        if (locationLabel != null) title = t.homeProfessionalsInLocation(locationLabel);
+        if (locationLabel != null) {
+          title = t.homeProfessionalsInLocation(locationLabel);
+        }
         break;
       case 'popular':
         title = t.homePopularProfessionals;
@@ -828,20 +937,31 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
         SliverToBoxAdapter(
           child: _buildLocationFallbackBanner(bannerLine1, bannerLine2, isDark),
         ),
-      _buildProSection(title, nearby,
-          icon: icon,
-          caption: caption,
-          badgeTag: badgeTag,
-          badgeIcon: badgeIcon,
-          badgeColor: badgeColor,
-          isDark: isDark),
+      _buildProSection(
+        title,
+        nearby,
+        icon: icon,
+        caption: caption,
+        badgeTag: badgeTag,
+        badgeIcon: badgeIcon,
+        badgeColor: badgeColor,
+        isDark: isDark,
+      ),
     ];
   }
 
-  Widget _buildLocationFallbackBanner(String line1, String? line2, bool isDark) {
+  Widget _buildLocationFallbackBanner(
+    String line1,
+    String? line2,
+    bool isDark,
+  ) {
     return Container(
       margin: const EdgeInsets.fromLTRB(
-          AppSizes.screenPadding, AppSizes.sm, AppSizes.screenPadding, 0),
+        AppSizes.screenPadding,
+        AppSizes.sm,
+        AppSizes.screenPadding,
+        0,
+      ),
       padding: const EdgeInsets.all(AppSizes.md),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -864,7 +984,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: context.colors.primary.withValues(alpha: isDark ? 0.15 : 0.1),
+              color: context.colors.primary.withValues(
+                alpha: isDark ? 0.15 : 0.1,
+              ),
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
             child: Icon(
@@ -905,29 +1027,38 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // ═══════════════════════════════════════════════════════════════════
   // PROFESSIONAL SECTION
   // ═══════════════════════════════════════════════════════════════════
-  Widget _buildProSection(String title, List<dynamic> list,
-      {IconData? icon,
-      String? caption,
-      int? limit,
-      String? badgeTag,
-      IconData? badgeIcon,
-      Color? badgeColor,
-      double? headerTopPadding,
-      required bool isDark}) {
+  Widget _buildProSection(
+    String title,
+    List<dynamic> list, {
+    IconData? icon,
+    String? caption,
+    int? limit,
+    String? badgeTag,
+    IconData? badgeIcon,
+    Color? badgeColor,
+    double? headerTopPadding,
+    required bool isDark,
+  }) {
     if (list.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
     final items = limit != null ? list.take(limit).toList() : list;
     return SliverMainAxisGroup(
       slivers: [
         SliverToBoxAdapter(
-            child: _buildSectionHeader(title,
-                icon: icon, caption: caption, topPadding: headerTopPadding)),
+          child: _buildSectionHeader(
+            title,
+            icon: icon,
+            caption: caption,
+            topPadding: headerTopPadding,
+          ),
+        ),
         SliverToBoxAdapter(
           child: SizedBox(
             height: ProfessionalCard.heightFor(context),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.screenPadding,
+              ),
               itemCount: items.length,
               separatorBuilder: (_, _) => const SizedBox(width: 14),
               itemBuilder: (_, i) => _buildProfessionalCard(
@@ -947,11 +1078,13 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // ═══════════════════════════════════════════════════════════════════
   // PROFESSIONAL CARD
   // ═══════════════════════════════════════════════════════════════════
-  Widget _buildProfessionalCard(Map pro,
-      {String? badgeTag,
-      IconData? badgeIcon,
-      Color? badgeColor,
-      required bool isDark}) {
+  Widget _buildProfessionalCard(
+    Map pro, {
+    String? badgeTag,
+    IconData? badgeIcon,
+    Color? badgeColor,
+    required bool isDark,
+  }) {
     final t = AppLocalizations.of(context);
     final id = pro['id']?.toString() ?? '';
     final name = pro['name']?.toString() ?? 'Professional';
@@ -968,7 +1101,8 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           context,
           MaterialPageRoute(
             builder: (_) => ProfessionalDetailScreen(
-                professional: Map<String, dynamic>.from(pro)),
+              professional: Map<String, dynamic>.from(pro),
+            ),
           ),
         ),
         onBookNow: () => _requireLogin(t.homeLoginToBookName(name)),
@@ -985,13 +1119,17 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
         height: 180,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.screenPadding,
+          ),
           itemCount: 3,
           separatorBuilder: (_, _) => const SizedBox(width: 14),
           itemBuilder: (_, _) => Container(
             width: 240,
             decoration: BoxDecoration(
-              color: context.colors.divider.withValues(alpha: isDark ? 0.2 : 0.3),
+              color: context.colors.divider.withValues(
+                alpha: isDark ? 0.2 : 0.3,
+              ),
               borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             ),
           ),
@@ -1000,8 +1138,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     }
     if (_articles.isEmpty) return const SizedBox.shrink();
     final items = _articles.take(6).toList();
-    final textScaler =
-        MediaQuery.textScalerOf(context).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.15);
+    final textScaler = MediaQuery.textScalerOf(
+      context,
+    ).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.15);
     final cardHeight = 190 + (textScaler.scale(1.0) - 1.0) * 50;
     return SizedBox(
       height: cardHeight,
@@ -1009,7 +1148,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
         data: MediaQuery.of(context).copyWith(textScaler: textScaler),
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.screenPadding,
+          ),
           itemCount: items.length,
           separatorBuilder: (_, _) => const SizedBox(width: 14),
           itemBuilder: (_, i) {
@@ -1017,9 +1158,11 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             final cover = AppHelpers.getFullImageUrl(a.coverImage);
             return GestureDetector(
               onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => ArticleDetailScreen(slug: a.slug))),
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ArticleDetailScreen(slug: a.slug),
+                ),
+              ),
               child: Container(
                 width: 240,
                 decoration: BoxDecoration(
@@ -1033,7 +1176,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.2 : 0.04,
+                      ),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
@@ -1045,16 +1190,19 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                   children: [
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(AppSizes.radiusLg)),
+                        top: Radius.circular(AppSizes.radiusLg),
+                      ),
                       child: Container(
                         height: 100,
                         width: double.infinity,
                         color: context.colors.primaryLight,
                         child: cover.isNotEmpty
-                            ? Image.network(
-                                cover,
+                            ? CachedNetworkImage(
+                                imageUrl: cover,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) => Icon(
+                                memCacheWidth: 400,
+                                placeholder: (_, _) => const SizedBox(),
+                                errorWidget: (_, _, _) => Icon(
                                   Icons.menu_book_rounded,
                                   color: context.colors.primary,
                                   size: 40,
@@ -1095,7 +1243,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                AppLocalizations.of(context).magazineMinRead('${a.readTime}'),
+                                AppLocalizations.of(
+                                  context,
+                                ).magazineMinRead('${a.readTime}'),
                                 style: TextStyle(
                                   fontSize: AppFontSizes.caption,
                                   color: context.colors.textSecondary,
@@ -1105,10 +1255,16 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                               const Spacer(),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: context.colors.primary.withValues(alpha: 0.08),
-                                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                                  color: context.colors.primary.withValues(
+                                    alpha: 0.08,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                    AppSizes.radiusSm,
+                                  ),
                                 ),
                                 child: Text(
                                   AppLocalizations.of(context).homeArticleLabel,
@@ -1141,7 +1297,11 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     final t = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.fromLTRB(
-          AppSizes.screenPadding, AppSizes.md, AppSizes.screenPadding, 0),
+        AppSizes.screenPadding,
+        AppSizes.md,
+        AppSizes.screenPadding,
+        0,
+      ),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -1163,7 +1323,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: context.colors.primary.withValues(alpha: isDark ? 0.15 : 0.1),
+              color: context.colors.primary.withValues(
+                alpha: isDark ? 0.15 : 0.1,
+              ),
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
             child: Icon(
@@ -1207,7 +1369,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
               ),
             ),
             onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => const LoginScreen())),
+              context,
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+            ),
             child: Text(
               t.login,
               style: const TextStyle(
@@ -1233,7 +1397,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: context.colors.primary.withValues(alpha: isDark ? 0.1 : 0.06),
+              color: context.colors.primary.withValues(
+                alpha: isDark ? 0.1 : 0.06,
+              ),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -1273,7 +1439,10 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
             ),
             child: Text(
               t.homeSearchNow,
-              style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: AppFontSizes.body,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -1283,38 +1452,42 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
 
   Widget _buildLoadingSkeleton(bool isDark) {
     Widget bar(double w, double h) => Container(
-          width: w,
-          height: h,
-          margin: const EdgeInsets.only(bottom: 10),
-          decoration: BoxDecoration(
-            color: context.colors.divider.withValues(alpha: isDark ? 0.2 : 0.4),
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          ),
-        );
+      width: w,
+      height: h,
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: context.colors.divider.withValues(alpha: isDark ? 0.2 : 0.4),
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.all(AppSizes.screenPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           bar(160, 22),
-          Row(children: [
-            bar(70, 70),
-            const SizedBox(width: 12),
-            bar(70, 70),
-            const SizedBox(width: 12),
-            bar(70, 70),
-            const SizedBox(width: 12),
-            bar(70, 70),
-          ]),
+          Row(
+            children: [
+              bar(70, 70),
+              const SizedBox(width: 12),
+              bar(70, 70),
+              const SizedBox(width: 12),
+              bar(70, 70),
+              const SizedBox(width: 12),
+              bar(70, 70),
+            ],
+          ),
           const SizedBox(height: 20),
           bar(140, 20),
           SizedBox(
             height: 280,
-            child: Row(children: [
-              Expanded(child: bar(double.infinity, 280)),
-              const SizedBox(width: 14),
-              Expanded(child: bar(double.infinity, 280)),
-            ]),
+            child: Row(
+              children: [
+                Expanded(child: bar(double.infinity, 280)),
+                const SizedBox(width: 14),
+                Expanded(child: bar(double.infinity, 280)),
+              ],
+            ),
           ),
         ],
       ),

@@ -14,7 +14,6 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/api_service.dart';
 import '../../subscription/screens/subscription_screen.dart';
 import 'payments_screen.dart';
-import '../../../shared/widgets/cta_banner.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
 class WalletScreen extends StatefulWidget {
@@ -66,6 +65,8 @@ class _WalletScreenState extends State<WalletScreen> {
     final width = MediaQuery.sizeOf(context).width;
     final isTablet = width > 600;
 
+    final t = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
@@ -91,107 +92,132 @@ class _WalletScreenState extends State<WalletScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    // ── Balance Card ──────────────────────────
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.easeOut,
+                    // ── Balance Card (Matches Customer Dashboard) ──
+                    Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-          clipBehavior: Clip.antiAlias,
+                      padding: const EdgeInsets.all(18),
+                      clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                         gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [AppColors.successDeep, AppColors.emerald],
+                          colors: [AppColors.walletGradientStart, AppColors.walletGradientEnd],
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.emerald.withValues(alpha: 0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
                       ),
-                      child: Stack(children: [
-          Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.10)))),
-          Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.08)))),
-          Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          Row(
+                          Positioned(
+                            right: -36,
+                            top: -52,
+                            child: Container(
+                              width: 150,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withValues(alpha: 0.10),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            right: 70,
+                            bottom: -64,
+                            child: Container(
+                              width: 110,
+                              height: 110,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withValues(alpha: 0.08),
+                              ),
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.15),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.account_balance_wallet_rounded,
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.account_balance_wallet_rounded,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    t.homeTotalSpent,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: AppFontSizes.secondary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                'Rs ${_totalSpent.toStringAsFixed(2)}',
+                                style: const TextStyle(
                                   color: Colors.white,
-                                  size: 22,
+                                  fontSize: AppFontSizes.display,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(height: 2),
                               Text(
-                                AppLocalizations.of(context).totalSpentLabel,
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: AppFontSizes.secondary,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.3,
+                                _txCount == 1
+                                    ? t.homeAcrossTransaction('$_txCount')
+                                    : t.homeAcrossTransactions('$_txCount'),
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.7),
+                                  fontSize: AppFontSizes.caption,
                                 ),
+                              ),
+                              const Divider(color: Colors.white30, height: 24),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.workspace_premium_rounded,
+                                    color: _isPremium ? Colors.white : Colors.white38,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      t.homePlan(_planName.isEmpty ? t.homeDefaultPlanFree : _planName),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: AppFontSizes.secondary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const SubscriptionScreen(userRole: 'customer'),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      _isPremium ? t.homeManageButton : t.homeUpgradeButton,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: AppFontSizes.small,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          const SizedBox(height: 14),
-                          Text(
-                            '\$${_totalSpent.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: AppFontSizes.h1,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            AppLocalizations.of(context).transactionCountLabel(_txCount),
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.75),
-                              fontSize: AppFontSizes.small,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
                         ],
                       ),
-        ]),
                     ),
 
-                    const SizedBox(height: 14),
-
-                    // ── Subscription Banner ──────────────────
-                    CtaBanner(
-                      isDark: isDark,
-                      title: AppLocalizations.of(context).currentPlanLabel(_planName),
-                      subtitle: _isPremium
-                          ? AppLocalizations.of(context).premiumActiveSubtitle
-                          : AppLocalizations.of(context).premiumUpgradeSubtitle,
-                      ctaLabel: _isPremium ? AppLocalizations.of(context).manageCta : AppLocalizations.of(context).upgradeCta,
-                      icon: Icons.workspace_premium_rounded,
-                      accentStart: AppColors.violetLight,
-                      accentEnd: AppColors.violet,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SubscriptionScreen(userRole: 'customer'),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
 
                     // ── Payment History Tile ──────────────────
                     Material(

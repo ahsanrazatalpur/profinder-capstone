@@ -43,17 +43,26 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
   String? _error;
 
   Future<void> _pick() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (picked == null) return;
 
-    setState(() { _uploading = true; _error = null; });
+    setState(() {
+      _uploading = true;
+      _error = null;
+    });
     try {
       dio.MultipartFile multipart;
       if (kIsWeb) {
         final Uint8List bytes = await picked.readAsBytes();
         multipart = dio.MultipartFile.fromBytes(bytes, filename: picked.name);
       } else {
-        multipart = await dio.MultipartFile.fromFile(picked.path, filename: picked.name);
+        multipart = await dio.MultipartFile.fromFile(
+          picked.path,
+          filename: picked.name,
+        );
       }
       final result = await _service.uploadImage(multipart);
       if (!mounted) return;
@@ -61,11 +70,18 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
       if (result['success'] == true) {
         widget.onChanged(result['url'] as String);
       } else {
-        setState(() => _error = result['error']?.toString() ?? AppLocalizations.of(context).uploadError);
+        setState(
+          () => _error =
+              result['error']?.toString() ??
+              AppLocalizations.of(context).uploadError,
+        );
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() { _uploading = false; _error = AppLocalizations.of(context).uploadFailedTryAgain; });
+      setState(() {
+        _uploading = false;
+        _error = AppLocalizations.of(context).uploadFailedTryAgain;
+      });
     }
   }
 
@@ -74,7 +90,14 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.label, style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.textSecondary)),
+        Text(
+          widget.label,
+          style: TextStyle(
+            fontSize: AppFontSizes.secondary,
+            fontWeight: FontWeight.w600,
+            color: context.colors.textSecondary,
+          ),
+        ),
         const SizedBox(height: 8),
         Container(
           height: widget.height,
@@ -92,27 +115,46 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
                 Container(
                   color: context.colors.background,
                   child: CachedNetworkImage(
-                    imageUrl: widget.imageUrl, fit: BoxFit.contain,
-                    errorWidget: (_, _, _) => Icon(Icons.broken_image_outlined, color: context.colors.textSecondary),
+                    imageUrl: widget.imageUrl,
+                    fit: BoxFit.contain,
+                    errorWidget: (_, _, _) => Icon(
+                      Icons.broken_image_outlined,
+                      color: context.colors.textSecondary,
+                    ),
                   ),
                 )
               else
                 Center(
-                  child: Icon(Icons.image_outlined, size: 32, color: context.colors.textSecondary.withValues(alpha: 0.5)),
+                  child: Icon(
+                    Icons.image_outlined,
+                    size: 32,
+                    color: context.colors.textSecondary.withValues(alpha: 0.5),
+                  ),
                 ),
               if (_uploading)
                 Container(
                   color: Colors.black.withValues(alpha: 0.35),
-                  child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+                  child: const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  ),
                 ),
               Positioned(
-                right: 8, bottom: 8,
+                right: 8,
+                bottom: 8,
                 child: Row(
                   children: [
-                    _roundIconButton(Icons.upload_rounded, widget.imageUrl.isEmpty ? 'Upload' : 'Replace', _pick),
+                    _roundIconButton(
+                      Icons.upload_rounded,
+                      widget.imageUrl.isEmpty ? 'Upload' : 'Replace',
+                      _pick,
+                    ),
                     if (widget.imageUrl.isNotEmpty) ...[
                       const SizedBox(width: 8),
-                      _roundIconButton(Icons.delete_outline_rounded, 'Remove', () => widget.onChanged('')),
+                      _roundIconButton(
+                        Icons.delete_outline_rounded,
+                        'Remove',
+                        () => widget.onChanged(''),
+                      ),
                     ],
                   ],
                 ),
@@ -122,7 +164,13 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
         ),
         if (_error != null) ...[
           const SizedBox(height: 4),
-          Text(_error!, style: const TextStyle(fontSize: AppFontSizes.small, color: Colors.red)),
+          Text(
+            _error!,
+            style: const TextStyle(
+              fontSize: AppFontSizes.small,
+              color: Colors.red,
+            ),
+          ),
         ],
       ],
     );
@@ -136,7 +184,10 @@ class _AboutImagePickerFieldState extends State<AboutImagePickerField> {
         borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         child: Container(
           padding: const EdgeInsets.all(8),
-          decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+          decoration: const BoxDecoration(
+            color: Colors.black54,
+            shape: BoxShape.circle,
+          ),
           child: Icon(icon, size: 16, color: Colors.white),
         ),
       ),

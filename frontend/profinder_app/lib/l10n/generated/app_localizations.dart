@@ -478,6 +478,18 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
+  /// No description provided for @favoriteAddTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favourites'**
+  String get favoriteAddTooltip;
+
+  /// No description provided for @favoriteRemoveTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favourites'**
+  String get favoriteRemoveTooltip;
+
   /// No description provided for @confirm.
   ///
   /// In en, this message translates to:
@@ -6917,7 +6929,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteAccountDialogContent.
   ///
   /// In en, this message translates to:
-  /// **'This will permanently delete your account and all associated data. This action cannot be undone.'**
+  /// **'To delete your account and all associated data, please contact support. We will verify your identity and process the request.'**
   String get deleteAccountDialogContent;
 
   /// No description provided for @deleteAccountDialogTitle.
@@ -6925,6 +6937,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete Account'**
   String get deleteAccountDialogTitle;
+
+  /// No description provided for @deleteAccountContactSupportCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Support'**
+  String get deleteAccountContactSupportCta;
 
   /// No description provided for @deleteAccountLabel.
   ///
@@ -8569,6 +8587,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{value1}d ago'**
   String notificationsDaysAgo(Object value1);
+
+  /// No description provided for @notificationsClearAllCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get notificationsClearAllCta;
+
+  /// No description provided for @notificationsClearAllTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all notifications?'**
+  String get notificationsClearAllTitle;
+
+  /// No description provided for @notificationsClearAllMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes every notification from your list. This cannot be undone.'**
+  String get notificationsClearAllMessage;
+
+  /// No description provided for @notificationsClearAllSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'All notifications cleared'**
+  String get notificationsClearAllSuccess;
+
+  /// No description provided for @notificationsClearAllError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not clear notifications. Please try again.'**
+  String get notificationsClearAllError;
 
   /// No description provided for @notificationsEmptyMessage.
   ///
@@ -12697,6 +12745,450 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Carpenter'**
   String get categoryCarpenter;
+
+  /// No description provided for @supportErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load this right now. Check your connection and try again.'**
+  String get supportErrorMessage;
+
+  /// No description provided for @privacyShownInEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'This policy is shown in English because a reviewed translation in your language isn\'t available yet.'**
+  String get privacyShownInEnglish;
+
+  /// No description provided for @privacyNotPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'The privacy policy hasn\'t been published yet. Please check back soon.'**
+  String get privacyNotPublished;
+
+  /// No description provided for @privacyVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String privacyVersionLabel(int version);
+
+  /// No description provided for @privacyEffectiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Effective {date}'**
+  String privacyEffectiveLabel(String date);
+
+  /// No description provided for @privacyActionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How we use and protect your data'**
+  String get privacyActionSubtitle;
+
+  /// No description provided for @registerPrivacyNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'By creating an account, you acknowledge how we handle your data.'**
+  String get registerPrivacyNotice;
+
+  /// No description provided for @helpSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search help articles'**
+  String get helpSearchHint;
+
+  /// No description provided for @helpBrowseTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse topics'**
+  String get helpBrowseTopics;
+
+  /// No description provided for @helpSearchResultsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Search results'**
+  String get helpSearchResultsHeading;
+
+  /// No description provided for @helpNoResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get helpNoResultsTitle;
+
+  /// No description provided for @helpNoResultsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Try different or fewer words.'**
+  String get helpNoResultsMessage;
+
+  /// No description provided for @helpSearchTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Type at least 2 characters to search.'**
+  String get helpSearchTooShort;
+
+  /// No description provided for @helpArticleCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 article} other{{count} articles}}'**
+  String helpArticleCount(int count);
+
+  /// No description provided for @helpNoArticlesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No articles yet'**
+  String get helpNoArticlesTitle;
+
+  /// No description provided for @helpNoArticlesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Help articles will appear here soon.'**
+  String get helpNoArticlesMessage;
+
+  /// No description provided for @helpArticleNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This article is no longer available.'**
+  String get helpArticleNotFound;
+
+  /// No description provided for @helpShownInEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'Some help content is shown in English because a reviewed translation in your language isn\'t available yet.'**
+  String get helpShownInEnglish;
+
+  /// No description provided for @helpContactSupportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get helpContactSupportTitle;
+
+  /// No description provided for @helpContactSupportSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email, phone and common questions'**
+  String get helpContactSupportSubtitle;
+
+  /// No description provided for @ticketsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Support'**
+  String get ticketsTitle;
+
+  /// No description provided for @ticketsTileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a message and see our replies'**
+  String get ticketsTileSubtitle;
+
+  /// No description provided for @ticketsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get ticketsEmptyTitle;
+
+  /// No description provided for @ticketsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Have a question or a problem? Send us a message and our team will reply right here.'**
+  String get ticketsEmptyMessage;
+
+  /// No description provided for @ticketsNewCta.
+  ///
+  /// In en, this message translates to:
+  /// **'New message'**
+  String get ticketsNewCta;
+
+  /// No description provided for @ticketsContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get ticketsContactTitle;
+
+  /// No description provided for @ticketsContactSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a message to our team'**
+  String get ticketsContactSubtitle;
+
+  /// No description provided for @helpOtherWaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More ways to reach us'**
+  String get helpOtherWaysTitle;
+
+  /// No description provided for @ticketNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send us a message'**
+  String get ticketNewTitle;
+
+  /// No description provided for @ticketCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you need help with?'**
+  String get ticketCategoryLabel;
+
+  /// No description provided for @ticketSubjectLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Subject'**
+  String get ticketSubjectLabel;
+
+  /// No description provided for @ticketSubjectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'In a few words, what is the problem?'**
+  String get ticketSubjectHint;
+
+  /// No description provided for @ticketMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get ticketMessageLabel;
+
+  /// No description provided for @ticketMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what happened. The more detail you give, the faster we can help.'**
+  String get ticketMessageHint;
+
+  /// No description provided for @ticketSubmitCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Send message'**
+  String get ticketSubmitCta;
+
+  /// No description provided for @ticketCreatedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message sent. Your reference number is {reference}'**
+  String ticketCreatedMessage(String reference);
+
+  /// No description provided for @ticketReplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a reply'**
+  String get ticketReplyHint;
+
+  /// No description provided for @ticketReplySendTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Send reply'**
+  String get ticketReplySendTooltip;
+
+  /// No description provided for @ticketCloseCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as solved'**
+  String get ticketCloseCta;
+
+  /// No description provided for @ticketCloseConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark this as solved?'**
+  String get ticketCloseConfirmTitle;
+
+  /// No description provided for @ticketCloseConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You will not be able to reply after this. If you need help again later, just send a new message.'**
+  String get ticketCloseConfirmMessage;
+
+  /// No description provided for @ticketClosedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation is closed. Need more help? Send us a new message.'**
+  String get ticketClosedNotice;
+
+  /// No description provided for @ticketNewReplyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'New reply'**
+  String get ticketNewReplyBadge;
+
+  /// No description provided for @ticketYouLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get ticketYouLabel;
+
+  /// No description provided for @ticketSupportTeamLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ProFinder Support'**
+  String get ticketSupportTeamLabel;
+
+  /// No description provided for @ticketStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get ticketStatusOpen;
+
+  /// No description provided for @ticketStatusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'We are working on it'**
+  String get ticketStatusInProgress;
+
+  /// No description provided for @ticketStatusAwaitingUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for your reply'**
+  String get ticketStatusAwaitingUser;
+
+  /// No description provided for @ticketStatusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Solved'**
+  String get ticketStatusResolved;
+
+  /// No description provided for @ticketStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get ticketStatusClosed;
+
+  /// No description provided for @ticketCatAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account and login'**
+  String get ticketCatAccount;
+
+  /// No description provided for @ticketCatBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get ticketCatBooking;
+
+  /// No description provided for @ticketCatPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments and withdrawals'**
+  String get ticketCatPayment;
+
+  /// No description provided for @ticketCatVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile verification'**
+  String get ticketCatVerification;
+
+  /// No description provided for @ticketCatTechnical.
+  ///
+  /// In en, this message translates to:
+  /// **'App not working'**
+  String get ticketCatTechnical;
+
+  /// No description provided for @ticketCatPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'My data and privacy'**
+  String get ticketCatPrivacy;
+
+  /// No description provided for @ticketCatFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion or feedback'**
+  String get ticketCatFeedback;
+
+  /// No description provided for @ticketCatOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get ticketCatOther;
+
+  /// No description provided for @ticketFieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill this in'**
+  String get ticketFieldRequired;
+
+  /// No description provided for @ticketErrRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'You have sent too many messages. Please try again after a little while.'**
+  String get ticketErrRateLimited;
+
+  /// No description provided for @ticketErrClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation is closed.'**
+  String get ticketErrClosed;
+
+  /// No description provided for @ticketErrNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not find this message. It may have been removed.'**
+  String get ticketErrNotFound;
+
+  /// No description provided for @ticketErrSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again.'**
+  String get ticketErrSignIn;
+
+  /// No description provided for @ticketErrInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Something does not look right. Please check your details and try again.'**
+  String get ticketErrInvalid;
+
+  /// No description provided for @guestContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get guestContactTitle;
+
+  /// No description provided for @guestContactIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Send us a message and we will reply to your email.'**
+  String get guestContactIntro;
+
+  /// No description provided for @guestEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email'**
+  String get guestEmailLabel;
+
+  /// No description provided for @guestEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get guestEmailInvalid;
+
+  /// No description provided for @guestContactSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Message sent'**
+  String get guestContactSentTitle;
+
+  /// No description provided for @guestContactSentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you! We received your message and will reply to the email you gave us.'**
+  String get guestContactSentMessage;
+
+  /// No description provided for @guestContactReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference number: {reference}'**
+  String guestContactReference(String reference);
+
+  /// No description provided for @themeModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get themeModeTitle;
+
+  /// No description provided for @themeModeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get themeModeSystem;
+
+  /// No description provided for @themeModeSystemHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches your device setting'**
+  String get themeModeSystemHint;
 }
 
 class _AppLocalizationsDelegate

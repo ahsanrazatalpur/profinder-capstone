@@ -1,11 +1,6 @@
-// lib/features/subscription/widgets/promo_banner_mixin.dart
+// Mixin for stateful widgets that triggers and manages promotional banner popups.
 //
-// FIXES:
-//   • every_x_days — X din ke cooldown ke baad DOBARA dikhao (admin ne set kiya woh X)
-//   • Guest ke liye sahi userType='guest' ja raha hai
-//   • Booking trigger — booking_screen ke liye naya support
-//   • Professional ke home screen pe sirf 'home' trigger waala banner dikhe
-//     (customer wala nahi) — yeh backend audience targeting se handle hota hai
+// Handles frequency capping, cooldown intervals, and role-based audience targeting.
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,8 +16,8 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
   final _authService   = AuthService();
   final _subService    = SubscriptionService();
 
-  /// Main method — iss screen ke trigger ke saath call karo
-  /// trigger: 'home' | 'search' | 'ai_search' | 'booking' | 'login'
+  /// Displays an eligible promotional banner for the specified screen trigger.
+  /// [trigger]: Screen context ('home', 'search', 'ai_search', 'booking', 'login').
   Future<void> showBannerForScreen(
     String trigger, {
     int delaySeconds = 2,
@@ -35,14 +30,12 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
 
     debugPrint('[Banner] isLoggedIn=$isLoggedIn  role=$role');
 
-    // Login ke turant baad → pehle 'login' trigger try karo
-    // Agar 'login' trigger ka koi banner na mile, toh original trigger
-    // (jaise 'home') pe hi fallback karo — warna home banner kabhi nahi dikhega
+    // Prioritize login-triggered banners immediately following user authentication,
+    // falling back to the default screen trigger if none are found.
     final justLoggedIn = prefs.getBool('just_logged_in_banner_flag') ?? false;
     bool tryLoginTriggerFirst = false;
     if (justLoggedIn) {
-      // Sirf logged-in users ke liye login trigger dikhao
-      // Guest agar ye flag dekhe (edge case) — flag hata do, banner mat dikhao
+      // Verify user is authenticated before evaluating login banners.
       if (!isLoggedIn) {
         await prefs.remove('just_logged_in_banner_flag');
         debugPrint('[Banner] ✗ guest + just_logged_in flag — skipping');
@@ -53,12 +46,12 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
       debugPrint('[Banner] just logged in — will try login trigger first, then fallback to $trigger');
     }
 
-    // Per-user unique key (role + JWT signature ke last 30 chars)
+    // Unique user cache key based on role and token signature
     final userKey = await _getCurrentUserKey(role);
     debugPrint('[Banner] userKey=$userKey');
 
-    // User type determine karo
-    String userType = 'guest'; // default — guest / not logged in
+    // Resolve audience segment according to auth status and plan tier
+    String userType = 'guest';
     if (isLoggedIn) {
       bool isPremium = false;
       try {
@@ -91,14 +84,14 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
         );
         debugPrint('[Banner] login-trigger fetch returned ${banners.length} banner(s)');
         if (banners.isEmpty) {
-          // Koi login banner nahi mila → original trigger pe fallback (e.g. home)
+          // Fall back to original screen trigger if no login banner is configured
           banners = await _bannerService.getActiveBanners(
             trigger:  trigger,
             userType: userType,
           );
           debugPrint('[Banner] fallback to "$trigger" returned ${banners.length} banner(s)');
         } else {
-          trigger = 'login'; // sirf shown-key/logging consistency ke liye
+          trigger = 'login';
         }
       } else {
         banners = await _bannerService.getActiveBanners(
@@ -121,7 +114,7 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
       return;
     }
 
-    // Pehla eligible (unseen / cooldown expired) banner nikalo
+    // Select the first eligible banner that is not currently in cooldown
     PromoBanner? toShow;
     for (final b in banners) {
       final recentlyShown = await _wasShownRecently(userKey, b);
@@ -138,9 +131,9 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
 
     if (toShow == null || !mounted) return;
 
-    debugPrint('[Banner] ✅ showing banner #${toShow.id}: "${toShow.title}"');
+    debugPrint('[Banner] showing banner #${toShow.id}: "${toShow.title}"');
 
-    // Guest ke liye role 'customer' treat karo (subscription screen etc.)
+    // Default guest display role to customer for dialog presentation
     final displayRole = role == 'professional' ? 'professional' : 'customer';
 
     final userTappedCta = await PromoBannerPopup.show(
@@ -166,9 +159,8 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
     await showBannerForScreen(trigger, delaySeconds: delaySeconds);
   }
 
-  // ── User key: role + token signature ──────────────────────────────────────
-  // JWT ke first chars algorithm header hote hain (same for all)
-  // Last 30 chars = HMAC signature = unique per user
+  // ── User Key Resolution ──────────────────────────────────────────────────
+  // Creates a stable identifier combining role and token signature for per-user tracking.
   Future<String> _getCurrentUserKey(String role) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(AppConstants.accessTokenKey);
@@ -177,16 +169,14 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
     return '${role}_$suffix';
   }
 
-  // ── Was shown recently? ────────────────────────────────────────────────────
-  // every_x_days:  admin ne jo X set kiya woh din cooldown
-  // baki triggers: 30 din cooldown (ek baar dikhao per month)
-  // 3+ dismiss:    permanently hide
+  // ── Frequency Capping & Cooldown Checks ────────────────────────────────────
+  // Checks whether a banner is in its cooldown window or has reached the 3-dismiss cap.
   Future<bool> _wasShownRecently(String userKey, PromoBanner banner) async {
     final prefs      = await SharedPreferences.getInstance();
     final shownKey   = 'banner_${userKey}_${banner.id}';
     final dismissKey = 'banner_dismiss_${userKey}_${banner.id}';
 
-    // 3 baar dismiss → permanently hide
+    // Permanently suppress if dismissed 3 or more times
     final dismissCount = prefs.getInt(dismissKey) ?? 0;
     if (dismissCount >= 3) {
       debugPrint('[Banner] #${banner.id} permanently hidden (dismissed $dismissCount times)');
@@ -194,12 +184,12 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
     }
 
     final ts = prefs.getInt(shownKey);
-    if (ts == null) return false; // Kabhi nahi dikha → dikhao
+    if (ts == null) return false;
 
-    // Cooldown calculate karo
+    // Determine cooldown days based on banner configuration
     final int cooldownDays = banner.trigger == 'every_x_days'
-        ? banner.triggerXDays.clamp(1, 365) // Admin ne set kiya X din
-        : 30;                                // Default: month mein ek baar
+        ? banner.triggerXDays.clamp(1, 365)
+        : 30;
 
     final cooldownMs = cooldownDays * 24 * 60 * 60 * 1000;
     final elapsedMs  = DateTime.now().millisecondsSinceEpoch - ts;
@@ -231,12 +221,12 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
     final shownKey   = 'banner_${userKey}_$bannerId';
     final current    = prefs.getInt(dismissKey) ?? 0;
     await prefs.setInt(dismissKey, current + 1);
-    // Shown timestamp reset — cooldown next check ke liye
+    // Reset timestamp for subsequent cooldown calculation
     await prefs.setInt(shownKey, DateTime.now().millisecondsSinceEpoch);
     debugPrint('[Banner] #$bannerId dismiss count: ${current + 1}/3 for $userKey');
   }
 
-  /// Dev helper: current user ki banner cache clear karo
+  /// Clears persisted banner display timestamps and dismissal counts for testing.
   Future<void> clearBannerCache() async {
     final prefs   = await SharedPreferences.getInstance();
     final role    = await _authService.getSavedRole() ?? 'guest';

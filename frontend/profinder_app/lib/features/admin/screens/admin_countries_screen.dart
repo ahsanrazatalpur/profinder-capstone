@@ -79,7 +79,7 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
   // Confirms destructive delete before hitting the API — UI-only guard,
   // the underlying _delete() call and its error handling are unchanged.
   Future<void> _confirmDelete(dynamic c) async {
-    // ✅ FIX: showDialog() called synchronously from a button's onPressed,
+    // showDialog() called synchronously from a button's onPressed,
     // while the grid behind it still has many hover-tracking MouseRegion
     // cards mounted, crashes Flutter's MouseTracker on web/desktop
     // ("BoxConstraints forces an infinite width" + a flood of cascading
@@ -134,7 +134,7 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
   }
 
   void _addDialog() async {
-    // ✅ FIX: see _confirmDelete above — same MouseTracker crash fix.
+    // see _confirmDelete above — same MouseTracker crash fix.
     await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
     final nameCtrl = TextEditingController();
@@ -174,7 +174,7 @@ class _AdminCountriesScreenState extends State<AdminCountriesScreen> {
   }
 
   void _mergeDialog(dynamic country) async {
-    // ✅ FIX: see _confirmDelete above — same MouseTracker crash fix.
+    // see _confirmDelete above — same MouseTracker crash fix.
     await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
     final variantsCtrl = TextEditingController();

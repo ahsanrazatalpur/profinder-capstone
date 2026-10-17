@@ -1,7 +1,5 @@
 // lib/features/profile/screens/guest_profile_screen.dart
 
-import '../../../core/constants/app_sizes.dart';
-import '../../../core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/utils/responsive_utils.dart';
@@ -11,13 +9,19 @@ import '../../auth/screens/register_screen.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/theme/theme_provider.dart';
+import '../../../core/theme/theme_mode_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/profile_header_card.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../about/screens/about_screen.dart';
+import '../../support/screens/help_center_screen.dart';
+import '../../support/screens/privacy_policy_screen.dart';
 import '../../../core/localization/locale_provider.dart';
 import '../../../core/localization/supported_languages.dart';
 import 'language_settings_screen.dart';
+import '../../../shared/widgets/profile_menu_tile.dart';
+import '../../../shared/widgets/profile_quick_action_card.dart';
+import '../../../shared/widgets/profile_section_header.dart';
 
 class GuestProfileScreen extends StatelessWidget {
   const GuestProfileScreen({super.key});
@@ -79,38 +83,60 @@ class GuestProfileScreen extends StatelessWidget {
 
                 SizedBox(height: sectionGap),
 
-                // ── Quick Actions (locked — same layout as customer,
-                //    tap par login screen khulta hai) ────────────────
+                // ── Quick Actions (locked placeholders prompting guests to sign in) ──
                 Row(children: [
-                  Expanded(child: _lockedQuickAction(context, Icons.calendar_today_rounded, t.bookings, scale)),
+                  Expanded(
+                    child: ProfileQuickActionCard(
+                      icon: Icons.calendar_today_rounded,
+                      label: t.bookings,
+                      isLocked: true,
+                    ),
+                  ),
                   const SizedBox(width: 10),
-                  Expanded(child: _lockedQuickAction(context, Icons.account_balance_wallet_rounded, t.profileWalletLabel, scale)),
+                  Expanded(
+                    child: ProfileQuickActionCard(
+                      icon: Icons.account_balance_wallet_rounded,
+                      label: t.profileWalletLabel,
+                      isLocked: true,
+                    ),
+                  ),
                   const SizedBox(width: 10),
-                  Expanded(child: _lockedQuickAction(context, Icons.favorite_rounded, t.profileSavedLabel, scale)),
+                  Expanded(
+                    child: ProfileQuickActionCard(
+                      icon: Icons.favorite_rounded,
+                      label: t.profileSavedLabel,
+                      isLocked: true,
+                    ),
+                  ),
                   const SizedBox(width: 10),
-                  Expanded(child: _lockedQuickAction(context, Icons.rate_review_rounded, t.profileReviewsLabel, scale)),
+                  Expanded(
+                    child: ProfileQuickActionCard(
+                      icon: Icons.rate_review_rounded,
+                      label: t.profileReviewsLabel,
+                      isLocked: true,
+                    ),
+                  ),
                 ]),
 
                 SizedBox(height: sectionGap),
 
                 // ── Account Section ─────────────────────────────
-                _sectionHeader(context, t.accountSection, Icons.account_circle_rounded, scale),
-                const SizedBox(height: 10),
-                Opacity(
-                  opacity: 0.55,
-                  child: _menuTile(
-                    context,
-                    icon: Icons.edit_outlined,
-                    iconColor: AppColors.sky,
-                    title: t.profileEditProfile,
-                    subtitle: t.profileNotAvailable,
-                    scale: scale,
-                    onTap: () {},
-                    trailing: const SizedBox.shrink(),
-                  ),
+                ProfileSectionHeader(
+                  title: t.accountSection,
+                  icon: Icons.account_circle_rounded,
+                  iconColor: AppColors.indigo,
+                  scale: scale,
                 ),
-                _menuTile(
-                  context,
+                ProfileMenuTile(
+                  icon: Icons.edit_outlined,
+                  iconColor: AppColors.sky,
+                  title: t.profileEditProfile,
+                  subtitle: t.profileNotAvailable,
+                  isLocked: true,
+                  scale: scale,
+                  trailing: const SizedBox.shrink(),
+                ),
+                ProfileMenuTile(
                   icon: Icons.login_rounded,
                   iconColor: AppColors.indigo,
                   title: t.login,
@@ -118,8 +144,7 @@ class GuestProfileScreen extends StatelessWidget {
                   scale: scale,
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen())),
                 ),
-                _menuTile(
-                  context,
+                ProfileMenuTile(
                   icon: Icons.person_add_rounded,
                   iconColor: AppColors.emerald,
                   title: t.register,
@@ -127,8 +152,7 @@ class GuestProfileScreen extends StatelessWidget {
                   scale: scale,
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen())),
                 ),
-                _menuTile(
-                  context,
+                ProfileMenuTile(
                   icon: Icons.workspace_premium_rounded,
                   iconColor: AppColors.accentPurple,
                   title: t.profileBecomeProfessional,
@@ -143,32 +167,26 @@ class GuestProfileScreen extends StatelessWidget {
                 SizedBox(height: sectionGap),
 
                 // ── Preferences Section ─────────────────────────
-                _sectionHeader(context, t.preferencesSection, Icons.settings_rounded, scale),
-                const SizedBox(height: 10),
-                Opacity(
-                  opacity: 0.55,
-                  child: _menuTile(
-                    context,
-                    icon: Icons.notifications_outlined,
-                    iconColor: AppColors.badgePopular,
-                    title: t.notifications,
-                    subtitle: t.profileNotAvailable,
-                    scale: scale,
-                    onTap: () {},
-                    trailing: const SizedBox.shrink(),
-                  ),
+                ProfileSectionHeader(
+                  title: t.preferencesSection,
+                  icon: Icons.settings_rounded,
+                  iconColor: AppColors.indigo,
+                  scale: scale,
                 ),
-                // FIX: language ab guest ke liye bhi kaam karta hai — pehle
-                // sirf "coming soon" snackbar tha aur subtitle hamesha
-                // "English" dikhata tha. Ab wahi LanguageSettingsScreen
-                // khulti hai jo customer/professional use karte hain
-                // (guest ke liye backend sync skip hota hai, sirf local).
+                ProfileMenuTile(
+                  icon: Icons.notifications_outlined,
+                  iconColor: AppColors.badgePopular,
+                  title: t.notifications,
+                  subtitle: t.profileNotAvailable,
+                  isLocked: true,
+                  scale: scale,
+                  trailing: const SizedBox.shrink(),
+                ),
                 Builder(builder: (context) {
                   final currentLang = SupportedLanguages.byCode(
                     context.watch<LocaleProvider>().locale.languageCode,
                   );
-                  return _menuTile(
-                    context,
+                  return ProfileMenuTile(
                     icon: Icons.language_rounded,
                     iconColor: AppColors.cyan,
                     title: t.languageLabel,
@@ -178,69 +196,62 @@ class GuestProfileScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(builder: (_) => const LanguageSettingsScreen()),
                     ),
-                    trailing: Icon(
-                      Icons.chevron_right_rounded,
-                      color: context.colors.textSecondary.withValues(alpha: 0.4),
-                      size: ResponsiveUtils.sp(20, scale, min: 18, max: 24),
-                    ),
                   );
                 }),
                 Builder(builder: (context) {
-                  final themeProvider = context.watch<ThemeProvider>();
-                  return _menuSwitchTile(
-                    context,
-                    icon: Icons.dark_mode_rounded,
+                  final mode = context.watch<ThemeProvider>().themeMode;
+                  return ProfileMenuTile(
+                    icon: themeModeIcon(mode),
                     iconColor: AppColors.indigoDeep,
-                    title: t.darkModeLabel,
-                    subtitle: themeProvider.isDarkMode ? t.profileOn : t.profileOff,
+                    title: t.themeModeTitle,
+                    subtitle: themeModeLabel(t, mode),
                     scale: scale,
-                    value: themeProvider.isDarkMode,
-                    onChanged: (v) => context.read<ThemeProvider>().toggleTheme(),
+                    onTap: () => showThemeModeSheet(context),
                   );
                 }),
-                Opacity(
-                  opacity: 0.55,
-                  child: _menuTile(
-                    context,
-                    icon: Icons.security_rounded,
-                    iconColor: AppColors.greenDeep,
-                    title: t.security,
-                    subtitle: t.profileNotAvailable,
-                    scale: scale,
-                    onTap: () {},
-                    trailing: const SizedBox.shrink(),
-                  ),
+                ProfileMenuTile(
+                  icon: Icons.security_rounded,
+                  iconColor: AppColors.greenDeep,
+                  title: t.security,
+                  subtitle: t.profileNotAvailable,
+                  isLocked: true,
+                  scale: scale,
+                  trailing: const SizedBox.shrink(),
                 ),
 
                 SizedBox(height: sectionGap),
 
                 // ── Support Section ─────────────────────────────
-                _sectionHeader(context, t.supportSection, Icons.support_rounded, scale),
-                const SizedBox(height: 10),
-                _menuTile(
-                  context,
+                ProfileSectionHeader(
+                  title: t.supportSection,
+                  icon: Icons.support_rounded,
+                  iconColor: AppColors.indigo,
+                  scale: scale,
+                ),
+                ProfileMenuTile(
                   icon: Icons.help_center_rounded,
                   iconColor: AppColors.warningAmber,
                   title: t.profileHelpSupport,
                   scale: scale,
-                  onTap: () => _showComingSoon(context, t.homeHelpCenter),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HelpCenterScreen()),
+                  ),
                 ),
-                _menuTile(
-                  context,
+                ProfileMenuTile(
                   icon: Icons.privacy_tip_rounded,
                   iconColor: AppColors.emerald,
                   title: t.profilePrivacyPolicy,
                   scale: scale,
-                  onTap: () => _showComingSoon(context, t.profilePrivacyPolicy),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+                  ),
                 ),
-                _menuTile(
-                  context,
+                ProfileMenuTile(
                   icon: Icons.info_rounded,
                   iconColor: AppColors.indigo,
                   title: t.profileAboutProfinder,
-                  // FIX: dummy static dialog ki jagah ab wahi AboutScreen
-                  // jo customer/professional profile use karte hain — admin
-                  // ka post kiya hua About content yahan bhi dikhega
                   scale: scale,
                   onTap: () => Navigator.push(
                       context, MaterialPageRoute(builder: (_) => const AboutScreen())),
@@ -274,293 +285,4 @@ class GuestProfileScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _sectionHeader(BuildContext context, String text, IconData icon, double scale) => Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.indigo.withValues(alpha: 0.12),
-                  AppColors.indigo.withValues(alpha: 0.05),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-            ),
-            child: Icon(
-              icon,
-              color: AppColors.indigo,
-              size: ResponsiveUtils.sp(15, scale, min: 13, max: 17),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Text(
-            text.toUpperCase(),
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 13),
-              fontWeight: FontWeight.w700,
-              color: AppColors.indigo,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ],
-      );
-
-  Widget _lockedQuickAction(BuildContext context, IconData icon, String label, double scale) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Opacity(
-      opacity: 0.55,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
-        decoration: BoxDecoration(
-          color: context.colors.surface,
-          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-          border: Border.all(
-            color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.06),
-          ),
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 38, height: 38,
-              decoration: BoxDecoration(color: context.colors.textSecondary.withValues(alpha: 0.12), shape: BoxShape.circle),
-              child: Icon(icon, size: 18, color: context.colors.textSecondary),
-            ),
-            const SizedBox(height: 8),
-            Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _menuTile(
-    BuildContext context, {
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required double scale,
-    String? subtitle,
-    required VoidCallback onTap,
-    Widget? trailing,
-  }) {
-    final leadingSize = ResponsiveUtils.sp(40, scale, min: 36, max: 46);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        border: Border.all(
-          color: isDark 
-              ? Colors.white.withValues(alpha: 0.06) 
-              : Colors.black.withValues(alpha: 0.06),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark 
-                ? Colors.black.withValues(alpha: 0.15) 
-                : Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: leadingSize,
-                  height: leadingSize,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        iconColor.withValues(alpha: 0.12),
-                        iconColor.withValues(alpha: 0.04),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: iconColor,
-                    size: ResponsiveUtils.sp(20, scale, min: 18, max: 24),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 17),
-                          fontWeight: FontWeight.w500,
-                          color: context.colors.textPrimary,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                      if (subtitle != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          subtitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(12.5, scale, min: 12, max: 14),
-                            fontWeight: FontWeight.w400,
-                            color: context.colors.textSecondary.withValues(alpha: 0.6),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                ?trailing,
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _menuSwitchTile(
-    BuildContext context, {
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required double scale,
-    String? subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    final leadingSize = ResponsiveUtils.sp(40, scale, min: 36, max: 46);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        border: Border.all(
-          color: isDark 
-              ? Colors.white.withValues(alpha: 0.06) 
-              : Colors.black.withValues(alpha: 0.06),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark 
-                ? Colors.black.withValues(alpha: 0.15) 
-                : Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Container(
-              width: leadingSize,
-              height: leadingSize,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    iconColor.withValues(alpha: 0.12),
-                    iconColor.withValues(alpha: 0.04),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              ),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: ResponsiveUtils.sp(20, scale, min: 18, max: 24),
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 17),
-                      fontWeight: FontWeight.w500,
-                      color: context.colors.textPrimary,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                  if (subtitle != null) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(12.5, scale, min: 12, max: 14),
-                        fontWeight: FontWeight.w400,
-                        color: context.colors.textSecondary.withValues(alpha: 0.6),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            Switch(
-              value: value,
-              activeThumbColor: AppColors.indigo,
-              activeTrackColor: AppColors.indigo.withValues(alpha: 0.25),
-              inactiveThumbColor: isDark ? AppColors.slate600 : AppColors.textSecondary,
-              inactiveTrackColor: isDark ? AppColors.divider : AppColors.slate300,
-              onChanged: onChanged,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showComingSoon(BuildContext context, String feature) {
-    final t = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(t.comingSoon(feature)),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.indigo,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-}
+}

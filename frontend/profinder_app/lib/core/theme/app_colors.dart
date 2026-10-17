@@ -2,9 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+/// Central color palette defining brand, semantic, surface, and role colors.
 class AppColors {
-  // Private constructor — koi AppColors() nahi bana sakta
-  // Kyun? Ye sirf constants ki class hai, object banana useless hoga
   AppColors._();
 
   // ─── Primary Brand Colors ────────────────────────────────
@@ -40,8 +39,7 @@ class AppColors {
   static const Color adminColor        = Color(0xFFF87171); // Red — brightened for dark bg
 
   // ─── Section Badge Colors (Top Rated / Trending / Popular / New) ──
-  // Global taake har home screen (guest, customer, ...) same badge color
-  // dikhaye, alag-alag hardcoded hex na likhna pade har jagah.
+  // Centralized badge colors shared across guest and customer home screens.
   static const Color badgeTopRated    = Color(0xFFF59E0B);
   static const Color badgeTrending    = Color(0xFFF97316);
   static const Color badgePopular     = Color(0xFFDB2777);

@@ -88,7 +88,6 @@ class ChatSocketDataSource {
           data['last_seen'] != null ? DateTime.parse(data['last_seen'].toString()).toLocal() : null,
         ));
         break;
-      // ✅ NEW — reactions
       case 'reaction_update':
         final msgJson = data['message'] as Map<String, dynamic>;
         _controller!.add(ReactionSocketEvent(MessageModel.fromJson(msgJson)));

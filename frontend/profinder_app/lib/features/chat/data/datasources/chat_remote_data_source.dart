@@ -33,7 +33,7 @@ class ChatRemoteDataSource {
     return ConversationModel.fromJson(res.data as Map<String, dynamic>);
   }
 
-  // ✅ NEW — pin / archive / mute / draft, all through one PATCH
+  // Updates conversation state (pin, archive, mute, draft) via PATCH endpoint.
   Future<void> setPinned(int conversationId, bool value) async {
     await _api.patch(AppConstants.conversationState(conversationId), {'is_pinned': value});
   }
@@ -78,12 +78,7 @@ class ChatRemoteDataSource {
     final endpoint = AppConstants.conversationMessages(conversationId);
 
     if (image != null) {
-      // 🐛 FIX: MultipartFile.fromFile() reads through dart:io, which is a
-      // non-functional stub on Flutter Web — it throws the moment it tries
-      // to open/stream the picked file, crashing right when "Send" is
-      // tapped. XFile.readAsBytes() is cross-platform-safe (handles the
-      // `blob:` URL image_picker hands back on web, and a real path on
-      // Android/iOS), so we upload bytes instead of streaming from disk.
+      // Reads bytes via XFile for cross-platform compatibility across web blob URLs and native filesystem paths.
       final bytes = await XFile(image.path).readAsBytes();
       final formData = FormData.fromMap({
         if (text != null && text.isNotEmpty) 'text': text,
@@ -101,18 +96,14 @@ class ChatRemoteDataSource {
     return MessageModel.fromJson(res.data as Map<String, dynamic>);
   }
 
-  // ✅ NEW — voice message upload (same endpoint, 'audio' field instead of 'image')
+  // Voice message upload with dynamic audio MIME-type sniffing.
   Future<MessageModel> sendVoiceMessage(
     int conversationId, {
     required File audio,
     required int durationSeconds,
     String? replyToId,
   }) async {
-    // 🐛 FIX: the file was always uploaded as "chat_audio.m4a" with no MIME
-    // type, even when the recorder produced WebM/Opus (browsers) or WAV
-    // (some desktop backends). The server then stored a mislabelled file
-    // that other devices couldn't play. Detect the real format from the
-    // bytes and label the upload accordingly.
+    // Detect the exact audio container format (m4a, webm, wav) from byte headers.
     final bytes = await XFile(audio.path).readAsBytes();
     final fmt = sniffAudioFormat(bytes);
     final formData = FormData.fromMap({
@@ -146,21 +137,21 @@ class ChatRemoteDataSource {
     await _api.post(AppConstants.markSeen(conversationId), const {});
   }
 
-  // ✅ NEW — reactions
+  // Toggles an emoji reaction on a message.
   Future<MessageModel> toggleReaction(String messageId, String emoji) async {
     final res = await _api.post(AppConstants.messageReactions(messageId), {'emoji': emoji});
     final data = res.data as Map<String, dynamic>;
     return MessageModel.fromJson(data['message'] as Map<String, dynamic>);
   }
 
-  // ✅ NEW — in-conversation text search
+  // In-conversation text search.
   Future<List<MessageModel>> searchMessages(int conversationId, String query) async {
     final res = await _api.get(AppConstants.messageSearch(conversationId, query));
     final data = res.data as Map<String, dynamic>;
     return (data['results'] as List? ?? []).map((e) => MessageModel.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  // ✅ NEW — shared media gallery
+  // Shared media gallery for a conversation.
   Future<List<MediaAttachmentEntity>> getMedia(int conversationId) async {
     final res = await _api.get(AppConstants.conversationMedia(conversationId));
     final list = res.data is List ? res.data as List : <dynamic>[];
@@ -176,7 +167,7 @@ class ChatRemoteDataSource {
     }).toList();
   }
 
-  // ✅ NEW — block / report
+  // Moderation: blocked user listing, blocking, and reporting.
   Future<List<BlockedUserEntity>> getBlockedUsers() async {
     final res = await _api.get(AppConstants.blockedUsers);
     final list = res.data is List ? res.data as List : <dynamic>[];
@@ -200,14 +191,7 @@ class ChatRemoteDataSource {
   }
 
   Future<void> reportUser(int userId, String reason, String details, {String? messageId, String? evidenceUrl}) async {
-    // 🐛 FIX: field names now match apps.admin_panel's CreateUserReportSerializer
-    // ({reported_user, reason, description}), not messaging's UserReport
-    // ({reported, reason, details, message}) — see AppConstants.reportUser.
-    // That serializer has no message-link field, so `messageId` (still
-    // accepted for API compatibility with call sites) isn't sent.
-    // ✅ Trust & Safety Part 8: `evidence_url` is now also accepted by the
-    // backend serializer (optional reference link) — sent only if non-empty
-    // so older call sites that never pass it behave exactly as before.
+    // Payload formatted for backend CreateUserReportSerializer endpoint.
     final body = <String, dynamic>{
       'reported_user': userId,
       'reason': reason,

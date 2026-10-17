@@ -200,6 +200,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get save => 'Enregistrer';
 
   @override
+  String get favoriteAddTooltip => 'Ajouter aux favoris';
+
+  @override
+  String get favoriteRemoveTooltip => 'Retirer des favoris';
+
+  @override
   String get confirm => 'Confirmer';
 
   @override
@@ -3911,10 +3917,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteAccountDialogContent =>
-      'Cela supprimera définitivement votre compte et toutes les données associées. Cette action est irréversible.';
+      'Pour supprimer votre compte et toutes les données associées, veuillez contacter le support. Nous vérifierons votre identité et traiterons la demande.';
 
   @override
   String get deleteAccountDialogTitle => 'Supprimer le compte';
+
+  @override
+  String get deleteAccountContactSupportCta => 'Contacter le support';
 
   @override
   String get deleteAccountLabel => 'Supprimer le compte';
@@ -4808,6 +4817,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String notificationsDaysAgo(Object value1) {
     return 'il y a $value1 j';
   }
+
+  @override
+  String get notificationsClearAllCta => 'Tout effacer';
+
+  @override
+  String get notificationsClearAllTitle => 'Effacer toutes les notifications ?';
+
+  @override
+  String get notificationsClearAllMessage =>
+      'Cela supprime toutes les notifications de votre liste. Cette action est irréversible.';
+
+  @override
+  String get notificationsClearAllSuccess =>
+      'Toutes les notifications ont été effacées';
+
+  @override
+  String get notificationsClearAllError =>
+      'Les notifications n’ont pas pu être effacées. Veuillez réessayer.';
 
   @override
   String get notificationsEmptyMessage => 'Vous êtes à jour !';
@@ -7098,4 +7125,263 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get categoryCarpenter => 'Menuisier';
+
+  @override
+  String get supportErrorMessage =>
+      'Impossible de charger ce contenu pour le moment. Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get privacyShownInEnglish =>
+      'Cette politique est affichée en anglais, car une traduction relue dans votre langue n\'est pas encore disponible.';
+
+  @override
+  String get privacyNotPublished =>
+      'La politique de confidentialité n\'a pas encore été publiée. Revenez bientôt.';
+
+  @override
+  String privacyVersionLabel(int version) {
+    return 'Version $version';
+  }
+
+  @override
+  String privacyEffectiveLabel(String date) {
+    return 'En vigueur le $date';
+  }
+
+  @override
+  String get privacyActionSubtitle =>
+      'Comment nous utilisons et protégeons vos données';
+
+  @override
+  String get registerPrivacyNotice =>
+      'En créant un compte, vous reconnaissez la manière dont nous traitons vos données.';
+
+  @override
+  String get helpSearchHint => 'Rechercher dans l\'aide';
+
+  @override
+  String get helpBrowseTopics => 'Parcourir les sujets';
+
+  @override
+  String get helpSearchResultsHeading => 'Résultats de la recherche';
+
+  @override
+  String get helpNoResultsTitle => 'Aucun résultat';
+
+  @override
+  String get helpNoResultsMessage =>
+      'Essayez des mots différents ou moins nombreux.';
+
+  @override
+  String get helpSearchTooShort =>
+      'Saisissez au moins 2 caractères pour rechercher.';
+
+  @override
+  String helpArticleCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count articles',
+      one: '1 article',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpNoArticlesTitle => 'Pas encore d\'articles';
+
+  @override
+  String get helpNoArticlesMessage =>
+      'Les articles d\'aide apparaîtront bientôt ici.';
+
+  @override
+  String get helpArticleNotFound => 'Cet article n\'est plus disponible.';
+
+  @override
+  String get helpShownInEnglish =>
+      'Une partie du contenu d\'aide est affichée en anglais car une traduction révisée dans votre langue n\'est pas encore disponible.';
+
+  @override
+  String get helpContactSupportTitle => 'Contacter le support';
+
+  @override
+  String get helpContactSupportSubtitle =>
+      'E-mail, téléphone et questions fréquentes';
+
+  @override
+  String get ticketsTitle => 'Contacter le support';
+
+  @override
+  String get ticketsTileSubtitle =>
+      'Envoyez un message et consultez nos réponses';
+
+  @override
+  String get ticketsEmptyTitle => 'Aucun message pour le moment';
+
+  @override
+  String get ticketsEmptyMessage =>
+      'Une question ou un problème ? Envoyez-nous un message, notre équipe vous répondra ici.';
+
+  @override
+  String get ticketsNewCta => 'Nouveau message';
+
+  @override
+  String get ticketsContactTitle => 'Contacter le support';
+
+  @override
+  String get ticketsContactSubtitle => 'Envoyer un message à notre équipe';
+
+  @override
+  String get helpOtherWaysTitle => 'Autres moyens de nous joindre';
+
+  @override
+  String get ticketNewTitle => 'Envoyez-nous un message';
+
+  @override
+  String get ticketCategoryLabel => 'Sur quel sujet avez-vous besoin d’aide ?';
+
+  @override
+  String get ticketSubjectLabel => 'Objet';
+
+  @override
+  String get ticketSubjectHint => 'En quelques mots, quel est le problème ?';
+
+  @override
+  String get ticketMessageLabel => 'Détails';
+
+  @override
+  String get ticketMessageHint =>
+      'Dites-nous ce qui s’est passé. Plus vous donnez de détails, plus vite nous pouvons vous aider.';
+
+  @override
+  String get ticketSubmitCta => 'Envoyer le message';
+
+  @override
+  String ticketCreatedMessage(String reference) {
+    return 'Message envoyé. Votre numéro de référence est $reference';
+  }
+
+  @override
+  String get ticketReplyHint => 'Écrire une réponse';
+
+  @override
+  String get ticketReplySendTooltip => 'Envoyer la réponse';
+
+  @override
+  String get ticketCloseCta => 'Marquer comme résolu';
+
+  @override
+  String get ticketCloseConfirmTitle => 'Marquer comme résolu ?';
+
+  @override
+  String get ticketCloseConfirmMessage =>
+      'Vous ne pourrez plus répondre ensuite. Si vous avez de nouveau besoin d’aide, envoyez simplement un nouveau message.';
+
+  @override
+  String get ticketClosedNotice =>
+      'Cette conversation est fermée. Besoin d’aide ? Envoyez-nous un nouveau message.';
+
+  @override
+  String get ticketNewReplyBadge => 'Nouvelle réponse';
+
+  @override
+  String get ticketYouLabel => 'Vous';
+
+  @override
+  String get ticketSupportTeamLabel => 'Support ProFinder';
+
+  @override
+  String get ticketStatusOpen => 'Reçu';
+
+  @override
+  String get ticketStatusInProgress => 'Nous nous en occupons';
+
+  @override
+  String get ticketStatusAwaitingUser => 'En attente de votre réponse';
+
+  @override
+  String get ticketStatusResolved => 'Résolu';
+
+  @override
+  String get ticketStatusClosed => 'Fermé';
+
+  @override
+  String get ticketCatAccount => 'Compte et connexion';
+
+  @override
+  String get ticketCatBooking => 'Réservations';
+
+  @override
+  String get ticketCatPayment => 'Paiements et retraits';
+
+  @override
+  String get ticketCatVerification => 'Vérification du profil';
+
+  @override
+  String get ticketCatTechnical => 'L’application ne fonctionne pas';
+
+  @override
+  String get ticketCatPrivacy => 'Mes données et confidentialité';
+
+  @override
+  String get ticketCatFeedback => 'Suggestion ou avis';
+
+  @override
+  String get ticketCatOther => 'Autre chose';
+
+  @override
+  String get ticketFieldRequired => 'Veuillez remplir ce champ';
+
+  @override
+  String get ticketErrRateLimited =>
+      'Vous avez envoyé trop de messages. Réessayez dans quelques instants.';
+
+  @override
+  String get ticketErrClosed => 'Cette conversation est fermée.';
+
+  @override
+  String get ticketErrNotFound =>
+      'Impossible de trouver ce message. Il a peut-être été supprimé.';
+
+  @override
+  String get ticketErrSignIn =>
+      'Votre session a expiré. Veuillez vous reconnecter.';
+
+  @override
+  String get ticketErrInvalid =>
+      'Quelque chose ne semble pas correct. Vérifiez vos informations et réessayez.';
+
+  @override
+  String get guestContactTitle => 'Contacter le support';
+
+  @override
+  String get guestContactIntro =>
+      'Envoyez-nous un message et nous vous répondrons par e-mail.';
+
+  @override
+  String get guestEmailLabel => 'Votre e-mail';
+
+  @override
+  String get guestEmailInvalid => 'Saisissez une adresse e-mail valide';
+
+  @override
+  String get guestContactSentTitle => 'Message envoyé';
+
+  @override
+  String get guestContactSentMessage =>
+      'Merci ! Nous avons bien reçu votre message et nous vous répondrons à l’adresse e-mail indiquée.';
+
+  @override
+  String guestContactReference(String reference) {
+    return 'Numéro de référence : $reference';
+  }
+
+  @override
+  String get themeModeTitle => 'Thème';
+
+  @override
+  String get themeModeSystem => 'Par défaut du système';
+
+  @override
+  String get themeModeSystemHint => 'Suit le réglage de votre appareil';
 }

@@ -50,17 +50,14 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
     }
   }
 
-  // ── Withdrawal request — bank details missing hone par pehle wahi maangte hain ──
+  // Displays withdrawal bottom sheet with payout method selection (PayPal or Bank Transfer).
   void _showWithdrawSheet() {
     final bankOnFile = _wallet?['bank_on_file'] ?? false;
-    if (bankOnFile != true) {
-      _showAddBankNote();
-      return;
-    }
-
     final available = (_wallet?['available_balance'] ?? 0).toDouble();
     final minAmount = (_wallet?['min_withdrawal'] ?? 20).toDouble();
     final amountController = TextEditingController();
+    final paypalEmailController = TextEditingController();
+    String payoutMethod = 'paypal'; // Default to global PayPal
     String? errorText;
 
     showModalBottomSheet(
@@ -86,13 +83,76 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
                 AppLocalizations.of(context).availableBalanceLabel(available.toStringAsFixed(2)),
                 style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
+
+              // ── Payout Method Selector ──────────────────────────────────
+              Row(
+                children: [
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.payment_rounded, size: 16),
+                          SizedBox(width: 6),
+                          Text('PayPal'),
+                        ],
+                      ),
+                      selected: payoutMethod == 'paypal',
+                      onSelected: (val) {
+                        if (val) setSheetState(() => payoutMethod = 'paypal');
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.account_balance_rounded, size: 16),
+                          SizedBox(width: 6),
+                          Text('Bank Transfer'),
+                        ],
+                      ),
+                      selected: payoutMethod == 'bank_transfer',
+                      onSelected: (val) {
+                        if (val) {
+                          if (!bankOnFile) {
+                            _showAddBankNote();
+                            return;
+                          }
+                          setSheetState(() => payoutMethod = 'bank_transfer');
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+
+              if (payoutMethod == 'paypal') ...[
+                TextField(
+                  controller: paypalEmailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'PayPal Email',
+                    hintText: 'your-email@paypal.com',
+                    prefixIcon: const Icon(Icons.email_outlined),
+                    filled: true,
+                    fillColor: context.colors.background,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+
               TextField(
                 controller: amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 style: const TextStyle(fontSize: AppFontSizes.title),
                 decoration: InputDecoration(
-                  prefixText: '\$ ',
+                  prefixText: 'Rs ',
                   hintText: AppLocalizations.of(context).enterAmountHint,
                   errorText: errorText,
                   filled: true,
@@ -134,10 +194,18 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
                       setSheetState(() => errorText = AppLocalizations.of(context).exceedsBalanceError);
                       return;
                     }
+                    if (payoutMethod == 'paypal' && paypalEmailController.text.trim().isEmpty) {
+                      setSheetState(() => errorText = 'Please enter your PayPal email');
+                      return;
+                    }
                     setSheetState(() { errorText = null; });
                     setState(() => _isRequesting = true);
                     try {
-                      await _api.post(AppConstants.withdrawals, {'amount': amount});
+                      await _api.post(AppConstants.withdrawals, {
+                        'amount': amount,
+                        'payout_method': payoutMethod,
+                        'paypal_email': paypalEmailController.text.trim(),
+                      });
                       if (!mounted || !sheetContext.mounted) return;
                       Navigator.pop(sheetContext);
                       AppHelpers.showSuccess(context, AppLocalizations.of(context).withdrawSuccess);
@@ -241,9 +309,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
   }
 
   // ── Add Bank Details Banner ──────────────────────────
-  // Global CtaBanner widget — yahan wallet ke apne emoji, color aur
-  // content ke sath, taaki bina bank details ke withdrawal na attempt
-  // ho (upar wale _showWithdrawSheet mein bhi yehi check hai).
+  // Prompts professionals to configure their payout accounts before withdrawing.
   Widget _buildAddBankBanner(bool isDark) {
     return CtaBanner(
       isDark: isDark,
@@ -299,7 +365,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            '\$${available.toStringAsFixed(2)}',
+            'Rs ${available.toStringAsFixed(2)}',
             style: const TextStyle(fontSize: AppFontSizes.h1, fontWeight: FontWeight.w800, color: Colors.white),
           ),
           const SizedBox(height: 16),
@@ -360,7 +426,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
           Icon(icon, color: color, size: 16),
           const SizedBox(height: 6),
           Text(
-            '\$${amount.toStringAsFixed(0)}',
+            'Rs ${amount.toStringAsFixed(0)}',
             style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
             overflow: TextOverflow.ellipsis,
           ),
@@ -406,7 +472,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
   }
 
   /// The backend sends the history label as a fixed English sentence
-  /// ("Job completed — <customer>", "Withdrawal request"). Static wording
+  /// ("Job completed — `<customer>`", "Withdrawal request"). Static wording
   /// comes from the .arb files; only the customer name is dynamic content.
   Widget _txnLabel(String label) {
     final t = AppLocalizations.of(context);
@@ -502,7 +568,7 @@ class _ProfessionalWalletScreenState extends State<ProfessionalWalletScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '${isCredit ? '+' : '-'}\$${amount.toStringAsFixed(2)}',
+                '${isCredit ? '+' : '-'}Rs ${amount.toStringAsFixed(2)}',
                 style: TextStyle(
                   fontSize: AppFontSizes.secondary,
                   fontWeight: FontWeight.w700,

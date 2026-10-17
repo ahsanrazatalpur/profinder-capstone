@@ -13,9 +13,9 @@ import '../../../../l10n/generated/app_localizations.dart';
 class ChatInputBar extends StatefulWidget {
   final void Function(String text) onSendText;
   final void Function(File image, {String? caption}) onSendImage;
-  final void Function(File audio, int durationSeconds) onSendVoice; // ✅ NEW
+  final void Function(File audio, int durationSeconds) onSendVoice;
   final void Function(String text) onChanged;
-  final String initialText; // ✅ NEW — pre-fills from a saved draft
+  final String initialText;
 
   const ChatInputBar({
     super.key,
@@ -35,7 +35,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
   final _focusNode = FocusNode();
   final _picker = ImagePicker();
   bool _hasText = false;
-  bool _showEmojiPicker = false; // ✅ NEW
+  bool _showEmojiPicker = false;
 
   @override
   void initState() {
@@ -67,8 +67,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
     setState(() => _hasText = false);
   }
 
-  // ✅ NEW — emoji picker toggle. Closes the keyboard first so the panel
-  // takes over the same screen real-estate rather than stacking on top.
+  /// Toggles between the software keyboard and the emoji picker sheet.
   void _toggleEmojiPicker() {
     if (_showEmojiPicker) {
       setState(() => _showEmojiPicker = false);
@@ -100,7 +99,6 @@ class _ChatInputBarState extends State<ChatInputBar> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // ✅ NEW — emoji toggle
               IconButton(
                 icon: Icon(_showEmojiPicker ? Icons.keyboard_alt_outlined : Icons.emoji_emotions_outlined,
                     color: context.colors.textSecondary),
@@ -146,7 +144,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 ),
               ),
               const SizedBox(width: 8),
-              // ✅ CHANGED — mic when empty (WhatsApp-style), send when there's text
+              // Show send button when text is present, otherwise display voice recorder button
               _hasText
                   ? GestureDetector(
                       onTap: _send,
@@ -160,7 +158,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
             ],
           ),
         ),
-        // ✅ NEW — collapsible emoji panel
+        // Collapsible emoji picker panel
         if (_showEmojiPicker)
           SizedBox(
             height: 250,

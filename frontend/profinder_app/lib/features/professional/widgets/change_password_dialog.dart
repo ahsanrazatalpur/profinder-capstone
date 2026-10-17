@@ -1,10 +1,5 @@
-// lib/features/professional/widgets/change_password_dialog.dart
-//
-// ⚠️ BACKEND NOTE: Ye dialog `AppConstants.changePassword` ('/users/change-password/')
-// endpoint ko call karta hai. Filhaal project mein koi aisa endpoint maujood nahi
-// tha (sirf 'forgot-password' tha, jo email-based hai, logged-in change nahi).
-// Backend team ko ye endpoint banana hoga jo {old_password, new_password} le
-// aur logged-in user ka password update kare — warna ye dialog error dikhayega.
+// Dialog allowing authenticated users to update their account password.
+// Submits current and new password values to [AppConstants.changePassword].
 
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';

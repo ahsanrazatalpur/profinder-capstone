@@ -129,9 +129,7 @@ class AboutSection {
 
   bool get isCollectionType => collectionTypes.contains(sectionType);
 
-  // ✅ FIX: needed for optimistic toggle updates in the admin section list —
-  // without this the switch could only reflect the server response, so on
-  // a slow connection a single tap looked like it did nothing.
+  /// Creates a copy of this section with updated properties for optimistic UI updates.
   AboutSection copyWith({bool? isEnabled}) {
     return AboutSection(
       id: id,

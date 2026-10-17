@@ -1,9 +1,5 @@
-// PATH: lib/features/chat/presentation/screens/conversation_list_entry.dart
-//
-// ✅ NEW — Thin wrapper so both the Customer and Professional "Messages"
-// tab can share one implementation instead of each fetching their own
-// user id inline. Resolves `/users/me/` once, then renders the real
-// ConversationListScreen.
+// Shared entry point for both Customer and Professional message tabs.
+// Resolves the authenticated user ID via `/users/me/` before initializing [ConversationListScreen].
 
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_constants.dart';

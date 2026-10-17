@@ -9,16 +9,16 @@ import '../../../../core/utils/app_helpers.dart';
 import '../../domain/entities/conversation_entity.dart';
 import '../../domain/entities/message_entity.dart';
 import '../providers/chat_provider.dart';
-import '../providers/conversation_list_provider.dart';   // ✅ NEW — for mute toggle
+import '../providers/conversation_list_provider.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/date_separator.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/online_status_dot.dart';
 import '../widgets/reply_preview_bar.dart';
 import '../widgets/typing_indicator.dart';
-import 'media_gallery_screen.dart';       // ✅ NEW
-import '../widgets/report_user_dialog.dart'; // ✅ NEW
-import '../widgets/message_search_sheet.dart'; // ✅ NEW
+import 'media_gallery_screen.dart';
+import '../widgets/report_user_dialog.dart';
+import '../widgets/message_search_sheet.dart';
 import '../../../../core/theme/theme_context_ext.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../shared/widgets/universal_app_bar.dart';
@@ -171,13 +171,9 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
 
   @override
   Widget build(BuildContext context) {
-    // 🐛 FIX: PopupMenuButton opens its menu via `showMenu`, which inserts
-    // the menu into the Navigator's Overlay — a route detached from this
-    // screen's local widget subtree. A Consumer<ChatProvider> placed
-    // inside a PopupMenuItem can't find the (locally-scoped) ChatProvider
-    // from there and throws "Could not find the correct Provider". Fix:
-    // read the values HERE, in the normal build(), where the provider
-    // scope is valid — then use the captured plain values inside the menu.
+    // Note: PopupMenuButton renders its menu in the Navigator's root Overlay.
+    // To prevent provider lookup issues outside this widget's immediate subtree,
+    // dependencies are observed here in build() and passed as captured values.
     final chatProvider = context.watch<ChatProvider>();
     final listProvider = context.watch<ConversationListProvider>();
     ConversationEntity? currentConv;
@@ -371,12 +367,9 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
     );
   }
 
-  // ✅ NEW — replaces the input bar whenever `canMessage` is false.
-  // Two distinct views:
-  //  - I blocked them: explicit "You blocked X" + an Unblock action
-  //    (safe to show — it's my own action, Instagram shows this too).
-  //  - They blocked me (or role/account issue): a generic "message
-  //    unavailable" notice that never confirms who blocked whom.
+  /// Renders a banner replacing the input bar when messaging is disabled.
+  /// Shows explicit unblock options if blocked by the current user,
+  /// or a neutral notice when blocked by the remote participant.
   Widget _buildBlockedBanner(BuildContext context, ChatProvider provider) {
     final t = AppLocalizations.of(context);
     return Container(

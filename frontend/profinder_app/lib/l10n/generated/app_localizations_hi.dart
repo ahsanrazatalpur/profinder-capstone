@@ -198,6 +198,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get save => 'सहेजें';
 
   @override
+  String get favoriteAddTooltip => 'पसंदीदा में जोड़ें';
+
+  @override
+  String get favoriteRemoveTooltip => 'पसंदीदा से हटाएं';
+
+  @override
   String get confirm => 'पुष्टि करें';
 
   @override
@@ -3850,10 +3856,13 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get deleteAccountDialogContent =>
-      'इससे आपका खाता और उससे जुड़ा सारा डेटा हमेशा के लिए हट जाएगा। यह कार्रवाई वापस नहीं ली जा सकती।';
+      'अपना खाता और उससे जुड़ा सारा डेटा हटाने के लिए कृपया सपोर्ट से संपर्क करें। हम आपकी पहचान सत्यापित करके अनुरोध पर कार्रवाई करेंगे।';
 
   @override
   String get deleteAccountDialogTitle => 'खाता हटाएँ';
+
+  @override
+  String get deleteAccountContactSupportCta => 'सपोर्ट से संपर्क करें';
 
   @override
   String get deleteAccountLabel => 'खाता हटाएँ';
@@ -4726,6 +4735,23 @@ class AppLocalizationsHi extends AppLocalizations {
   String notificationsDaysAgo(Object value1) {
     return '$value1 दिन पहले';
   }
+
+  @override
+  String get notificationsClearAllCta => 'सभी साफ़ करें';
+
+  @override
+  String get notificationsClearAllTitle => 'सभी सूचनाएँ साफ़ करें?';
+
+  @override
+  String get notificationsClearAllMessage =>
+      'इससे आपकी सूची की सभी सूचनाएँ हट जाएँगी। इसे वापस नहीं किया जा सकता।';
+
+  @override
+  String get notificationsClearAllSuccess => 'सभी सूचनाएँ साफ़ कर दी गईं';
+
+  @override
+  String get notificationsClearAllError =>
+      'सूचनाएँ साफ़ नहीं हो सकीं। कृपया फिर से प्रयास करें।';
 
   @override
   String get notificationsEmptyMessage => 'आप सब देख चुके हैं!';
@@ -6986,4 +7012,258 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get categoryCarpenter => 'बढ़ई';
+
+  @override
+  String get supportErrorMessage =>
+      'अभी यह लोड नहीं हो सका। अपना इंटरनेट जाँचें और फिर कोशिश करें।';
+
+  @override
+  String get privacyShownInEnglish =>
+      'यह नीति अंग्रेज़ी में दिखाई जा रही है क्योंकि आपकी भाषा में समीक्षित अनुवाद अभी उपलब्ध नहीं है।';
+
+  @override
+  String get privacyNotPublished =>
+      'गोपनीयता नीति अभी प्रकाशित नहीं हुई है। कृपया कुछ समय बाद देखें।';
+
+  @override
+  String privacyVersionLabel(int version) {
+    return 'संस्करण $version';
+  }
+
+  @override
+  String privacyEffectiveLabel(String date) {
+    return 'प्रभावी: $date';
+  }
+
+  @override
+  String get privacyActionSubtitle =>
+      'हम आपके डेटा का उपयोग और सुरक्षा कैसे करते हैं';
+
+  @override
+  String get registerPrivacyNotice =>
+      'खाता बनाकर, आप स्वीकार करते हैं कि हम आपके डेटा को कैसे संभालते हैं।';
+
+  @override
+  String get helpSearchHint => 'सहायता लेख खोजें';
+
+  @override
+  String get helpBrowseTopics => 'विषय देखें';
+
+  @override
+  String get helpSearchResultsHeading => 'खोज परिणाम';
+
+  @override
+  String get helpNoResultsTitle => 'कोई परिणाम नहीं मिला';
+
+  @override
+  String get helpNoResultsMessage => 'अलग या कम शब्द आज़माएं।';
+
+  @override
+  String get helpSearchTooShort => 'खोजने के लिए कम से कम 2 अक्षर लिखें।';
+
+  @override
+  String helpArticleCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count लेख',
+      one: '1 लेख',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpNoArticlesTitle => 'अभी कोई लेख नहीं';
+
+  @override
+  String get helpNoArticlesMessage => 'सहायता लेख जल्द ही यहां दिखाई देंगे।';
+
+  @override
+  String get helpArticleNotFound => 'यह लेख अब उपलब्ध नहीं है।';
+
+  @override
+  String get helpShownInEnglish =>
+      'कुछ सहायता सामग्री अंग्रेज़ी में दिखाई गई है क्योंकि आपकी भाषा में समीक्षित अनुवाद अभी उपलब्ध नहीं है।';
+
+  @override
+  String get helpContactSupportTitle => 'सहायता से संपर्क करें';
+
+  @override
+  String get helpContactSupportSubtitle => 'ईमेल, फ़ोन और सामान्य प्रश्न';
+
+  @override
+  String get ticketsTitle => 'सपोर्ट से संपर्क करें';
+
+  @override
+  String get ticketsTileSubtitle => 'संदेश भेजें और हमारे जवाब देखें';
+
+  @override
+  String get ticketsEmptyTitle => 'अभी कोई संदेश नहीं';
+
+  @override
+  String get ticketsEmptyMessage =>
+      'कोई सवाल या समस्या है? हमें संदेश भेजें, हमारी टीम यहीं जवाब देगी।';
+
+  @override
+  String get ticketsNewCta => 'नया संदेश';
+
+  @override
+  String get ticketsContactTitle => 'सहायता से संपर्क करें';
+
+  @override
+  String get ticketsContactSubtitle => 'हमारी टीम को संदेश भेजें';
+
+  @override
+  String get helpOtherWaysTitle => 'संपर्क के और तरीके';
+
+  @override
+  String get ticketNewTitle => 'हमें संदेश भेजें';
+
+  @override
+  String get ticketCategoryLabel => 'आपको किस बारे में मदद चाहिए?';
+
+  @override
+  String get ticketSubjectLabel => 'विषय';
+
+  @override
+  String get ticketSubjectHint => 'कुछ शब्दों में बताएं कि समस्या क्या है';
+
+  @override
+  String get ticketMessageLabel => 'विवरण';
+
+  @override
+  String get ticketMessageHint =>
+      'बताएं क्या हुआ। जितना ज़्यादा विवरण देंगे, उतनी जल्दी हम मदद कर सकेंगे।';
+
+  @override
+  String get ticketSubmitCta => 'संदेश भेजें';
+
+  @override
+  String ticketCreatedMessage(String reference) {
+    return 'संदेश भेज दिया गया। आपका संदर्भ नंबर $reference है';
+  }
+
+  @override
+  String get ticketReplyHint => 'जवाब लिखें';
+
+  @override
+  String get ticketReplySendTooltip => 'जवाब भेजें';
+
+  @override
+  String get ticketCloseCta => 'हल हो गया';
+
+  @override
+  String get ticketCloseConfirmTitle => 'क्या समस्या हल हो गई?';
+
+  @override
+  String get ticketCloseConfirmMessage =>
+      'इसके बाद आप जवाब नहीं दे सकेंगे। बाद में मदद चाहिए तो नया संदेश भेज दें।';
+
+  @override
+  String get ticketClosedNotice =>
+      'यह बातचीत बंद हो चुकी है। और मदद चाहिए? नया संदेश भेजें।';
+
+  @override
+  String get ticketNewReplyBadge => 'नया जवाब';
+
+  @override
+  String get ticketYouLabel => 'आप';
+
+  @override
+  String get ticketSupportTeamLabel => 'ProFinder सहायता';
+
+  @override
+  String get ticketStatusOpen => 'मिल गया';
+
+  @override
+  String get ticketStatusInProgress => 'हम काम कर रहे हैं';
+
+  @override
+  String get ticketStatusAwaitingUser => 'आपके जवाब का इंतज़ार';
+
+  @override
+  String get ticketStatusResolved => 'हल हो गया';
+
+  @override
+  String get ticketStatusClosed => 'बंद';
+
+  @override
+  String get ticketCatAccount => 'खाता और लॉग इन';
+
+  @override
+  String get ticketCatBooking => 'बुकिंग';
+
+  @override
+  String get ticketCatPayment => 'भुगतान और निकासी';
+
+  @override
+  String get ticketCatVerification => 'प्रोफ़ाइल सत्यापन';
+
+  @override
+  String get ticketCatTechnical => 'ऐप काम नहीं कर रहा';
+
+  @override
+  String get ticketCatPrivacy => 'मेरा डेटा और गोपनीयता';
+
+  @override
+  String get ticketCatFeedback => 'सुझाव या राय';
+
+  @override
+  String get ticketCatOther => 'कुछ और';
+
+  @override
+  String get ticketFieldRequired => 'कृपया यह भरें';
+
+  @override
+  String get ticketErrRateLimited =>
+      'आपने बहुत ज़्यादा संदेश भेज दिए हैं। कुछ देर बाद फिर कोशिश करें।';
+
+  @override
+  String get ticketErrClosed => 'यह बातचीत बंद हो चुकी है।';
+
+  @override
+  String get ticketErrNotFound =>
+      'यह संदेश नहीं मिला। हो सकता है इसे हटा दिया गया हो।';
+
+  @override
+  String get ticketErrSignIn =>
+      'आपका सेशन खत्म हो गया है। कृपया फिर से साइन इन करें।';
+
+  @override
+  String get ticketErrInvalid =>
+      'कुछ ठीक नहीं लग रहा। अपनी जानकारी जांचकर फिर कोशिश करें।';
+
+  @override
+  String get guestContactTitle => 'सहायता से संपर्क करें';
+
+  @override
+  String get guestContactIntro =>
+      'हमें संदेश भेजें, हम आपके ईमेल पर जवाब देंगे।';
+
+  @override
+  String get guestEmailLabel => 'आपका ईमेल';
+
+  @override
+  String get guestEmailInvalid => 'मान्य ईमेल पता दर्ज करें';
+
+  @override
+  String get guestContactSentTitle => 'संदेश भेजा गया';
+
+  @override
+  String get guestContactSentMessage =>
+      'धन्यवाद! हमें आपका संदेश मिल गया है और हम आपके दिए गए ईमेल पर जवाब देंगे।';
+
+  @override
+  String guestContactReference(String reference) {
+    return 'संदर्भ नंबर: $reference';
+  }
+
+  @override
+  String get themeModeTitle => 'थीम';
+
+  @override
+  String get themeModeSystem => 'सिस्टम डिफ़ॉल्ट';
+
+  @override
+  String get themeModeSystemHint => 'आपके डिवाइस की सेटिंग के अनुसार';
 }

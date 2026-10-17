@@ -46,7 +46,11 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
     if (!selection.isValid || selection.isCollapsed) {
       // No selection — insert a tagged placeholder at the cursor.
       final insertAt = selection.isValid ? selection.start : text.length;
-      final newText = text.replaceRange(insertAt, insertAt, '$openTag$placeholder$closeTag');
+      final newText = text.replaceRange(
+        insertAt,
+        insertAt,
+        '$openTag$placeholder$closeTag',
+      );
       controller.value = TextEditingValue(
         text: newText,
         selection: TextSelection(
@@ -58,10 +62,20 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
     }
 
     final selected = text.substring(selection.start, selection.end);
-    final newText = text.replaceRange(selection.start, selection.end, '$openTag$selected$closeTag');
+    final newText = text.replaceRange(
+      selection.start,
+      selection.end,
+      '$openTag$selected$closeTag',
+    );
     controller.value = TextEditingValue(
       text: newText,
-      selection: TextSelection.collapsed(offset: selection.start + openTag.length + selected.length + closeTag.length),
+      selection: TextSelection.collapsed(
+        offset:
+            selection.start +
+            openTag.length +
+            selected.length +
+            closeTag.length,
+      ),
     );
   }
 
@@ -71,17 +85,27 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
     final text = controller.text;
 
     if (!selection.isValid || selection.isCollapsed) {
-      _wrap('<ul>\n  <li>', '</li>\n</ul>', placeholder: AppLocalizations.of(context).editorListItemPlaceholder);
+      _wrap(
+        '<ul>\n  <li>',
+        '</li>\n</ul>',
+        placeholder: AppLocalizations.of(context).editorListItemPlaceholder,
+      );
       return;
     }
     final selected = text.substring(selection.start, selection.end);
     final lines = selected.split('\n').where((l) => l.trim().isNotEmpty);
     final li = lines.map((l) => '  <li>${l.trim()}</li>').join('\n');
     final replacement = '<ul>\n$li\n</ul>';
-    final newText = text.replaceRange(selection.start, selection.end, replacement);
+    final newText = text.replaceRange(
+      selection.start,
+      selection.end,
+      replacement,
+    );
     controller.value = TextEditingValue(
       text: newText,
-      selection: TextSelection.collapsed(offset: selection.start + replacement.length),
+      selection: TextSelection.collapsed(
+        offset: selection.start + replacement.length,
+      ),
     );
   }
 
@@ -148,10 +172,7 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
             ),
             child: Text(
               AppLocalizations.of(context).cancelCta,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.3,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.3),
             ),
           ),
           FilledButton(
@@ -167,17 +188,18 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
             ),
             child: Text(
               AppLocalizations.of(context).editorInsertCta,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.3),
             ),
           ),
         ],
       ),
     );
     if (url == null || url.isEmpty || !mounted) return;
-    _wrap('<a href="$url">', '</a>', placeholder: AppLocalizations.of(context).editorLinkPlaceholder);
+    _wrap(
+      '<a href="$url">',
+      '</a>',
+      placeholder: AppLocalizations.of(context).editorLinkPlaceholder,
+    );
   }
 
   @override
@@ -224,7 +246,9 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
                   color: isDark
                       ? Colors.white.withValues(alpha: 0.04)
                       : context.colors.surface,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusMd)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(AppSizes.radiusMd),
+                  ),
                   border: Border(
                     bottom: BorderSide(
                       color: isDark
@@ -237,14 +261,53 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
                   spacing: 2,
                   runSpacing: 2,
                   children: [
-                    _toolBtn('H1', () => _wrap('<h1>', '</h1>', placeholder: AppLocalizations.of(context).editorHeadingPlaceholder)),
-                    _toolBtn('H2', () => _wrap('<h2>', '</h2>', placeholder: AppLocalizations.of(context).editorHeadingPlaceholder)),
-                    _toolBtn('H3', () => _wrap('<h3>', '</h3>', placeholder: AppLocalizations.of(context).editorHeadingPlaceholder)),
+                    _toolBtn(
+                      'H1',
+                      () => _wrap(
+                        '<h1>',
+                        '</h1>',
+                        placeholder: AppLocalizations.of(
+                          context,
+                        ).editorHeadingPlaceholder,
+                      ),
+                    ),
+                    _toolBtn(
+                      'H2',
+                      () => _wrap(
+                        '<h2>',
+                        '</h2>',
+                        placeholder: AppLocalizations.of(
+                          context,
+                        ).editorHeadingPlaceholder,
+                      ),
+                    ),
+                    _toolBtn(
+                      'H3',
+                      () => _wrap(
+                        '<h3>',
+                        '</h3>',
+                        placeholder: AppLocalizations.of(
+                          context,
+                        ).editorHeadingPlaceholder,
+                      ),
+                    ),
                     _divider(isDark),
-                    _iconBtn(Icons.format_bold_rounded, () => _wrap('<b>', '</b>'), isDark),
-                    _iconBtn(Icons.format_italic_rounded, () => _wrap('<i>', '</i>'), isDark),
+                    _iconBtn(
+                      Icons.format_bold_rounded,
+                      () => _wrap('<b>', '</b>'),
+                      isDark,
+                    ),
+                    _iconBtn(
+                      Icons.format_italic_rounded,
+                      () => _wrap('<i>', '</i>'),
+                      isDark,
+                    ),
                     _divider(isDark),
-                    _iconBtn(Icons.format_list_bulleted_rounded, _bulletList, isDark),
+                    _iconBtn(
+                      Icons.format_list_bulleted_rounded,
+                      _bulletList,
+                      isDark,
+                    ),
                     _iconBtn(Icons.link_rounded, _link, isDark),
                   ],
                 ),
@@ -326,13 +389,13 @@ class _SimpleRichTextEditorState extends State<SimpleRichTextEditor> {
   }
 
   Widget _divider(bool isDark) => Container(
-        width: 1,
-        height: 20,
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.1)
-            : Colors.grey.withValues(alpha: 0.3),
-      );
+    width: 1,
+    height: 20,
+    margin: const EdgeInsets.symmetric(horizontal: 4),
+    color: isDark
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.grey.withValues(alpha: 0.3),
+  );
 }
 
 /// Turns blank-line-separated plain paragraphs into `<p>...</p>` blocks
@@ -343,10 +406,13 @@ String wrapPlainParagraphs(String raw) {
   final trimmed = raw.trim();
   if (trimmed.isEmpty) return '';
   final chunks = trimmed.split(RegExp(r'\n\s*\n'));
-  return chunks.map((chunk) {
-    final c = chunk.trim();
-    if (c.isEmpty) return '';
-    if (c.startsWith('<')) return c;
-    return '<p>${c.replaceAll('\n', '<br>')}</p>';
-  }).where((c) => c.isNotEmpty).join('\n');
+  return chunks
+      .map((chunk) {
+        final c = chunk.trim();
+        if (c.isEmpty) return '';
+        if (c.startsWith('<')) return c;
+        return '<p>${c.replaceAll('\n', '<br>')}</p>';
+      })
+      .where((c) => c.isNotEmpty)
+      .join('\n');
 }

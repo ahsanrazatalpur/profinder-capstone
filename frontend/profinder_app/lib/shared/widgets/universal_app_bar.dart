@@ -63,13 +63,13 @@ class _BarGlassCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white.withValues(alpha: opacity),
-        ),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.white.withValues(alpha: opacity),
+    ),
+  );
 }
 
 /// Frosted back tile — use it inside custom / hero bars too.
@@ -123,7 +123,9 @@ class AppBarPopupButton<T> extends StatelessWidget {
     return PopupMenuButton<T>(
       tooltip: tooltip,
       padding: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      ),
       onSelected: onSelected,
       itemBuilder: itemBuilder,
       child: Container(
@@ -191,7 +193,8 @@ class UniversalAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-      kUniversalAppBarHeight + (bottom?.preferredSize.height ?? 0));
+    kUniversalAppBarHeight + (bottom?.preferredSize.height ?? 0),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -199,8 +202,11 @@ class UniversalAppBar extends StatelessWidget implements PreferredSizeWidget {
     final wide = width >= 600;
     final pad = roleAppBarHPad(width);
     final bg = color ?? universalBarColor(context);
-    final back = showBack ??
-        (onBack != null || onBackPressed != null || Navigator.of(context).canPop());
+    final back =
+        showBack ??
+        (onBack != null ||
+            onBackPressed != null ||
+            Navigator.of(context).canPop());
 
     const radius = BorderRadius.only(
       bottomLeft: Radius.circular(AppSizes.radiusXl),
@@ -286,13 +292,19 @@ class UniversalAppBar extends StatelessWidget implements PreferredSizeWidget {
               padding: EdgeInsets.only(left: pad, right: 12),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: UniversalBackButton(onBack: onBack, onPressed: onBackPressed),
+                child: UniversalBackButton(
+                  onBack: onBack,
+                  onPressed: onBackPressed,
+                ),
               ),
             )
           : null,
       titleSpacing: back ? 0 : pad,
       title: titleWidget ?? defaultTitle,
-      actions: [...actions, SizedBox(width: pad)],
+      actions: [
+        ...actions,
+        SizedBox(width: pad),
+      ],
     );
   }
 }

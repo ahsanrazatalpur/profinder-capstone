@@ -1,6 +1,7 @@
 // lib/features/magazine/widgets/article_card.dart
 
 import '../../../services/content_localizer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../models/article_model.dart';
 import '../../../core/theme/app_colors.dart';
@@ -10,7 +11,7 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 class ArticleCard extends StatelessWidget {
-  final Article      article;
+  final Article article;
   final VoidCallback onTap;
 
   const ArticleCard({super.key, required this.article, required this.onTap});
@@ -28,9 +29,9 @@ class ArticleCard extends StatelessWidget {
   // than a 1-column phone layout).
   static double heightFor(BuildContext context, {required double cardWidth}) {
     final imageHeight = _imageHeightFor(cardWidth);
-    final textScale = MediaQuery.textScalerOf(context)
-        .clamp(minScaleFactor: 0.9, maxScaleFactor: 1.3)
-        .scale(1.0);
+    final textScale = MediaQuery.textScalerOf(
+      context,
+    ).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.3).scale(1.0);
     // Base text/body area measured at textScale == 1.0 (padding + chip +
     // title(2 lines) + summary(2 lines) + divider + meta row), plus a
     // proportional buffer so larger accessibility font sizes don't blow
@@ -40,7 +41,8 @@ class ArticleCard extends StatelessWidget {
     return imageHeight + body;
   }
 
-  static double _imageHeightFor(double cardWidth) => (cardWidth * 0.42).clamp(120.0, 190.0);
+  static double _imageHeightFor(double cardWidth) =>
+      (cardWidth * 0.42).clamp(120.0, 190.0);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,9 @@ class ArticleCard extends StatelessWidget {
     // Clamp accessibility text scaling so a very large system font size
     // can't push this card's content taller than the buffer heightFor()
     // already reserves for it in the parent grid.
-    final clampedTextScaler = MediaQuery.textScalerOf(context).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.3);
+    final clampedTextScaler = MediaQuery.textScalerOf(
+      context,
+    ).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.3);
 
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaler: clampedTextScaler),
@@ -81,7 +85,6 @@ class ArticleCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               // ── Cover — height is now proportional to the card's actual
               // rendered width (via LayoutBuilder) instead of a fixed 180px,
               // so it scales correctly whether the grid gives this card the
@@ -89,15 +92,23 @@ class ArticleCard extends StatelessWidget {
               // Width-proportional cover via AspectRatio (intrinsic-friendly,
               // so the parent row can size the card to its content).
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusLg)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(AppSizes.radiusLg),
+                ),
                 child: AspectRatio(
                   aspectRatio: 1 / 0.42,
                   child: article.coverImage.isNotEmpty
-                      ? Image.network(
-                          article.coverImage,
+                      ? CachedNetworkImage(
+                          imageUrl: article.coverImage,
                           width: double.infinity,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => _placeholderCover(catColor, double.infinity, isDark),
+                          memCacheWidth: 600,
+                          placeholder: (_, _) => const SizedBox(),
+                          errorWidget: (_, _, _) => _placeholderCover(
+                            catColor,
+                            double.infinity,
+                            isDark,
+                          ),
                         )
                       : _placeholderCover(catColor, double.infinity, isDark),
                 ),
@@ -109,7 +120,6 @@ class ArticleCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     // Category chip
                     if (article.categoryName.isNotEmpty)
                       Container(
@@ -121,9 +131,13 @@ class ArticleCard extends StatelessWidget {
                           color: isDark
                               ? catColor.withValues(alpha: 0.15)
                               : catColor.withValues(alpha: 0.10),
-                          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusChip,
+                          ),
                           border: Border.all(
-                            color: catColor.withValues(alpha: isDark ? 0.2 : 0.15),
+                            color: catColor.withValues(
+                              alpha: isDark ? 0.2 : 0.15,
+                            ),
                             width: 1,
                           ),
                         ),
@@ -239,7 +253,9 @@ class ArticleCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 3),
                               Text(
-                                AppLocalizations.of(context).articleReadTimeLabel(article.readTime),
+                                AppLocalizations.of(
+                                  context,
+                                ).articleReadTimeLabel(article.readTime),
                                 style: TextStyle(
                                   fontSize: AppFontSizes.small,
                                   letterSpacing: 0.1,
@@ -311,7 +327,10 @@ class ArticleCard extends StatelessWidget {
   }
 
   Color _hexColor(String hex) {
-    try { return Color(int.parse(hex.replaceFirst('#', '0xFF'))); }
-    catch (_) { return AppColors.customerColor; }
+    try {
+      return Color(int.parse(hex.replaceFirst('#', '0xFF')));
+    } catch (_) {
+      return AppColors.customerColor;
+    }
   }
 }

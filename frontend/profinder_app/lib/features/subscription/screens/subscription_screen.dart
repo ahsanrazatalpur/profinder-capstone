@@ -9,6 +9,7 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../services/payment_service.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   /// role: 'customer' ya 'professional'
@@ -53,23 +54,92 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Future<void> _subscribe(SubscriptionPlan plan) async {
-    if (plan.isFree) return; // Free plan subscribe nahi hoti
+    if (plan.isFree) return; // Free plan is active by default and does not require subscription payment
 
     final confirm = await _showConfirmDialog(plan);
     if (!confirm) return;
 
     setState(() => _subscribing = true);
-    final result = await _service.subscribe(plan.id);
+    final result = await _service.subscribe(plan.id, isFree: plan.isFree);
+
+    if (!mounted) {
+      setState(() => _subscribing = false);
+      return;
+    }
+
+    if (result['success'] == true && result['requires_payment'] == true) {
+      final approvalUrl = result['approval_url']?.toString() ?? '';
+      final paypalOrderId = result['paypal_order_id']?.toString() ?? '';
+      final orderId = result['order_id']?.toString() ?? '';
+
+      setState(() => _subscribing = false);
+
+      if (approvalUrl.isNotEmpty) {
+        await PaymentService().launchApprovalUrl(approvalUrl);
+      }
+
+      final completed = await _showPaymentConfirmationDialog(plan);
+      if (completed == true && mounted) {
+        setState(() => _subscribing = true);
+        final captureRes = await PaymentService().capturePayment(
+          paypalOrderId: paypalOrderId,
+          orderId: orderId,
+        );
+        setState(() => _subscribing = false);
+
+        if (!mounted) return;
+        if (captureRes['success'] == true) {
+          _showSuccess(AppLocalizations.of(context).subscriptionSubscribedTo(plan.name));
+          await _loadData();
+        } else {
+          _showError(captureRes['error'] ?? 'Payment capture failed. Please try again.');
+        }
+      }
+      return;
+    }
+
     setState(() => _subscribing = false);
-
-    if (!mounted) return;
-
     if (result['success'] == true) {
       _showSuccess(AppLocalizations.of(context).subscriptionSubscribedTo(plan.name));
       await _loadData(); // Refresh plan status
     } else {
       _showError(result['error'] ?? AppLocalizations.of(context).subscriptionSubscriptionFailed);
     }
+  }
+
+  Future<bool> _showPaymentConfirmationDialog(SubscriptionPlan plan) async {
+    final t = AppLocalizations.of(context);
+    return await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        title: Row(
+          children: [
+            const Icon(Icons.payment_rounded, color: AppColors.customerColor),
+            const SizedBox(width: 8),
+            Expanded(child: Text('Complete Checkout', style: const TextStyle(fontWeight: FontWeight.bold))),
+          ],
+        ),
+        content: Text(
+          'Please finish payment on PayPal in your browser. Once completed, tap "Confirm Payment" below.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(t.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.colors.primary,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            ),
+            child: const Text('Confirm Payment'),
+          ),
+        ],
+      ),
+    ) ?? false;
   }
 
   Future<bool> _showConfirmDialog(SubscriptionPlan plan) async {

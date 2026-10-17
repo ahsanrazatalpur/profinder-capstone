@@ -1,7 +1,5 @@
-// lib/features/subscription/widgets/ai_limit_dialog.dart
-//
-// Free customer ka daily AI search limit khatam hone par yeh dialog dikhta hai.
-// Backend 429 + error:'daily_limit_reached' bhejta hai.
+// Modal dialog displayed when a customer exceeds their daily AI search quota.
+// Informs the user of their usage limit and prompts them to upgrade to a premium plan.
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';

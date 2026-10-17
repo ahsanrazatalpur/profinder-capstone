@@ -40,7 +40,7 @@ class PresenceSocketEvent extends ChatSocketEvent {
   const PresenceSocketEvent(this.userId, this.isOnline, this.lastSeen);
 }
 
-// ✅ NEW — a reaction was added/changed/removed on a message
+/// Dispatched when a reaction is added, modified, or removed on a message.
 class ReactionSocketEvent extends ChatSocketEvent {
   final MessageEntity message; // full updated message, including new reactions map
   const ReactionSocketEvent(this.message);
@@ -51,8 +51,7 @@ class SocketErrorEvent extends ChatSocketEvent {
   const SocketErrorEvent(this.message);
 }
 
-// ✅ NEW — small supporting entities, co-located here since they're only
-// ever produced/consumed through the repository (not worth a separate file each).
+/// Supporting domain entities consumed through [ChatRepository].
 class MediaAttachmentEntity {
   final String id;
   final String fileUrl;
@@ -86,7 +85,7 @@ abstract class ChatRepository {
   Future<List<ConversationEntity>> getConversations({String? search, bool archived = false});
   Future<ConversationEntity> startConversation(int otherUserId);
 
-  // ✅ NEW — pin / archive / mute / draft (all one PATCH under the hood)
+  // Conversation state management (pin, archive, mute notifications, save drafts).
   Future<void> setPinned(int conversationId, bool value);
   Future<void> setArchived(int conversationId, bool value);
   Future<void> setMuted(int conversationId, bool value, {DateTime? until});
@@ -109,7 +108,7 @@ abstract class ChatRepository {
     File? image,
   });
 
-  // ✅ NEW — voice notes reuse the same upload flow with a distinct field
+  // Upload and dispatch voice note audio file.
   Future<MessageEntity> sendVoiceMessage(
     int conversationId, {
     required File audio,
@@ -126,16 +125,16 @@ abstract class ChatRepository {
   Future<void> markDelivered(int conversationId);
   Future<void> markSeen(int conversationId);
 
-  // ✅ NEW — reactions. Passing the SAME emoji again removes it (toggle).
+  // Toggle emoji reaction on a specific message.
   Future<MessageEntity> toggleReaction(String messageId, String emoji);
 
-  // ✅ NEW — search text within one conversation's history
+  // Search message text within a conversation history.
   Future<List<MessageEntity>> searchMessages(int conversationId, String query);
 
-  // ✅ NEW — shared media gallery for a conversation
+  // Retrieve shared media attachments for a conversation.
   Future<List<MediaAttachmentEntity>> getMedia(int conversationId);
 
-  // ✅ NEW — block / report
+  // Moderation and user safety (block, unblock, report).
   Future<List<BlockedUserEntity>> getBlockedUsers();
   Future<void> blockUser(int userId);
   Future<void> unblockUser(int userId);

@@ -36,7 +36,7 @@ class Article {
   final int?    categoryId;
   final String  categoryName;
   final String  categoryColor;
-  final String  editorialLabel;   // ✅ "ProFinder Health Desk" etc. — admin naam nahi
+  final String  editorialLabel; // Editorial byline (e.g. "ProFinder Health Desk")
   final int     readTime;
   final int     viewsCount;
   final bool    isPublished;

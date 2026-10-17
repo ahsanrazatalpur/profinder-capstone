@@ -13,8 +13,8 @@ import '../../../core/utils/responsive_utils.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/app_loader.dart';
 import '../../../services/auth_provider.dart';
-import '../../../core/localization/locale_provider.dart'; // ✅ i18n
-import '../../../core/localization/language_sync_service.dart'; // ✅ i18n
+import '../../../core/localization/locale_provider.dart';
+import '../../../core/localization/language_sync_service.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
-      // ✅ i18n — reconcile local vs backend language right after login.
+      // i18n — reconcile local vs backend language right after login.
       // Backend's preferred_language wins if set; otherwise we upload
       // whatever's currently selected locally. Best-effort — never
       // blocks navigation below.
@@ -96,15 +96,8 @@ class _LoginScreenState extends State<LoginScreen> {
       final String? role = auth.role;
       switch (role) {
         case 'customer':
-          // ✅ FIX: pushNamedAndRemoveUntil — poora stack clear karta hai.
-          // pushReplacementNamed sirf top route (LoginScreen) replace karta
-          // tha; agar user guest home se yahan Navigator.push() ke zariye
-          // aaya tha (e.g. guest_home_screen "Login" button), to purana
-          // GuestHomeScreen route stack mein neeche reh jata tha. Back
-          // button dabane pe wahi purana route dobara surface hota tha —
-          // aur HomeGate role check nahi karta, isliye customer/admin/
-          // professional sab ke liye galat interface (ya stuck loading)
-          // dikhta tha.
+          // Clear the navigation stack upon login to prevent returning
+          // to previous guest screens or outdated route states.
           Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
           break;
         case 'professional':
@@ -130,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // Guest mode — browse only, cannot book or review
   void _onGuestPressed() {
     context.read<AuthProvider>().setGuest();
-    // ✅ FIX: same stack-clear treatment as the logged-in cases above.
+    // same stack-clear treatment as the logged-in cases above.
     Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
   }
 

@@ -217,7 +217,7 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
 
   // Shows the "delete with reason" confirmation dialog.
   //
-  // ✅ FIX: Previously, pressing Delete with an empty reason silently
+  // Previously, pressing Delete with an empty reason silently
   // returned with no feedback — the dialog just sat there and looked
   // "stuck", with nothing telling the admin why. This now shows an
   // inline validation message instead, and also surfaces the *actual*

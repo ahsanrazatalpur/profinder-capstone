@@ -41,8 +41,8 @@ class AppFontSizes {
   static const double titleMd = 17;
 }
 
+/// Central typography styling hierarchy using standardized weights and sizes.
 class AppTextStyles {
-  // Private constructor — sirf constants hain, object ki zaroorat nahi
   AppTextStyles._();
 
   // ─── Headings ───────────────────────────────────────────

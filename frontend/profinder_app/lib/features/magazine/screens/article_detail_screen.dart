@@ -1,5 +1,6 @@
 // lib/features/magazine/screens/article_detail_screen.dart
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
@@ -21,8 +22,8 @@ class ArticleDetailScreen extends StatefulWidget {
 
 class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   final _service = MagazineService();
-  bool     _loading = true;
-  String?  _error;
+  bool _loading = true;
+  String? _error;
   Article? _article;
 
   @override
@@ -32,13 +33,22 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     final article = await _service.getArticle(widget.slug);
     if (!mounted) return;
     if (article == null) {
-      setState(() { _loading = false; _error = AppLocalizations.of(context).articleNotFoundError; });
+      setState(() {
+        _loading = false;
+        _error = AppLocalizations.of(context).articleNotFoundError;
+      });
     } else {
-      setState(() { _loading = false; _article = article; });
+      setState(() {
+        _loading = false;
+        _article = article;
+      });
     }
   }
 
@@ -73,13 +83,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               ),
             )
           : _error != null
-              ? _buildError()
-              : _buildContent(),
+          ? _buildError()
+          : _buildContent(),
     );
   }
 
   Widget _buildContent() {
-    final a        = _article!;
+    final a = _article!;
     final catColor = _hexColor(a.categoryColor);
     final width = MediaQuery.sizeOf(context).width;
     final scale = ResponsiveUtils.scaleForWidth(width);
@@ -92,11 +102,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
     return CustomScrollView(
       slivers: [
-
         // ── Hero AppBar ────────────────────────────────────
         SliverAppBar(
           expandedHeight: a.coverImage.isNotEmpty ? 260 : 140,
-          pinned:         true,
+          pinned: true,
           backgroundColor: universalBarColor(context),
           elevation: 0,
           leadingWidth: 66,
@@ -109,10 +118,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                 ? Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.network(
-                        a.coverImage,
+                      CachedNetworkImage(
+                        imageUrl: a.coverImage,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) =>
+                        memCacheWidth: 800,
+                        placeholder: (_, _) => const SizedBox(),
+                        errorWidget: (_, _, _) =>
                             Container(color: context.colors.primary),
                       ),
                       // gradient overlay so text is readable
@@ -170,7 +181,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     // Category chip
                     if (a.categoryName.isNotEmpty)
                       Container(
@@ -180,7 +190,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: catColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusChip,
+                          ),
                           border: Border.all(
                             color: catColor.withValues(alpha: 0.2),
                             width: 1,
@@ -203,7 +215,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     Text(
                       a.title,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(26, scale, min: 22, max: 32),
+                        fontSize: ResponsiveUtils.sp(
+                          26,
+                          scale,
+                          min: 22,
+                          max: 32,
+                        ),
                         fontWeight: FontWeight.w900,
                         color: context.colors.textPrimary,
                         height: 1.25,
@@ -228,7 +245,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                               color: isDark
                                   ? Colors.white.withValues(alpha: 0.05)
                                   : context.colors.surface,
-                              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusSm,
+                              ),
                               border: Border.all(
                                 color: isDark
                                     ? Colors.white.withValues(alpha: 0.08)
@@ -271,7 +290,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         ),
                         const SizedBox(width: 3),
                         Text(
-                          AppLocalizations.of(context).articleReadTime(a.readTime),
+                          AppLocalizations.of(
+                            context,
+                          ).articleReadTime(a.readTime),
                           style: TextStyle(
                             fontSize: AppFontSizes.small,
                             color: context.colors.textSecondary,
@@ -327,7 +348,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           color: isDark
                               ? AppColors.customerColor.withValues(alpha: 0.08)
                               : context.colors.primaryLight,
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
                           border: Border.all(
                             color: AppColors.customerColor.withValues(
                               alpha: isDark ? 0.15 : 0.15,
@@ -337,7 +360,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         child: Text(
                           a.summary,
                           style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
+                            fontSize: ResponsiveUtils.sp(
+                              15,
+                              scale,
+                              min: 14,
+                              max: 18,
+                            ),
                             fontWeight: FontWeight.w600,
                             color: isDark
                                 ? const Color(0xFF93C5FD)
@@ -375,7 +403,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: AppColors.customerColor.withValues(alpha: 0.12),
+                              color: AppColors.customerColor.withValues(
+                                alpha: 0.12,
+                              ),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -401,7 +431,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                   ),
                                 ),
                                 Text(
-                                  AppLocalizations.of(context).articleFooterMagazineLabel,
+                                  AppLocalizations.of(
+                                    context,
+                                  ).articleFooterMagazineLabel,
                                   style: TextStyle(
                                     fontSize: AppFontSizes.caption,
                                     color: context.colors.textSecondary,
@@ -478,78 +510,93 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   Widget _buildError() => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.customerColor.withValues(alpha: 0.1),
-                      AppColors.customerColor.withValues(alpha: 0.05),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.article_outlined,
-                  size: 40,
-                  color: context.colors.textSecondary,
-                ),
+    child: Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.customerColor.withValues(alpha: 0.1),
+                  AppColors.customerColor.withValues(alpha: 0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              const SizedBox(height: 20),
-              Text(
-                _error!,
-                style: TextStyle(
-                  fontSize: AppFontSizes.title,
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                  letterSpacing: -0.2,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                AppLocalizations.of(context).articleNotFoundMessage,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: AppFontSizes.body,
-                  color: context.colors.textSecondary,
-                  letterSpacing: 0.2,
-                ),
-              ),
-              const SizedBox(height: 28),
-              ElevatedButton.icon(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back_rounded, size: 18),
-                label: Text(AppLocalizations.of(context).goBackCta),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.customerColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  ),
-                  elevation: 0,
-                ),
-              ),
-            ],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.article_outlined,
+              size: 40,
+              color: context.colors.textSecondary,
+            ),
           ),
-        ),
-      );
+          const SizedBox(height: 20),
+          Text(
+            _error!,
+            style: TextStyle(
+              fontSize: AppFontSizes.title,
+              fontWeight: FontWeight.w700,
+              color: context.colors.textPrimary,
+              letterSpacing: -0.2,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            AppLocalizations.of(context).articleNotFoundMessage,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: AppFontSizes.body,
+              color: context.colors.textSecondary,
+              letterSpacing: 0.2,
+            ),
+          ),
+          const SizedBox(height: 28),
+          ElevatedButton.icon(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_rounded, size: 18),
+            label: Text(AppLocalizations.of(context).goBackCta),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.customerColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+              ),
+              elevation: 0,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 
   String _formatDate(String raw) {
     try {
       final dt = DateTime.parse(raw).toLocal();
-      const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const months = [
+        '',
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
       return '${months[dt.month]} ${dt.day}, ${dt.year}';
-    } catch (_) { return ''; }
+    } catch (_) {
+      return '';
+    }
   }
 
   String _formatCount(int count) {
@@ -558,7 +605,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   Color _hexColor(String hex) {
-    try { return Color(int.parse(hex.replaceFirst('#', '0xFF'))); }
-    catch (_) { return AppColors.customerColor; }
+    try {
+      return Color(int.parse(hex.replaceFirst('#', '0xFF')));
+    } catch (_) {
+      return AppColors.customerColor;
+    }
   }
 }

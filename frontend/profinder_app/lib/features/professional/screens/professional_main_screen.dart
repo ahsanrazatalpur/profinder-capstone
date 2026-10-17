@@ -6,9 +6,9 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../magazine/screens/magazine_screen.dart'; 
-import '../../chat/presentation/screens/conversation_list_entry.dart';   // ✅ FIX: shared entry (was ad-hoc user-id fetch)
+import '../../chat/presentation/screens/conversation_list_entry.dart';
 import '../../chat/presentation/providers/conversation_list_provider.dart';
-import '../../chat/presentation/widgets/unread_nav_badge.dart';          // ✅ NEW — unread badge on nav icon
+import '../../chat/presentation/widgets/unread_nav_badge.dart';
 import 'professional_home_screen.dart';
 import 'professional_bookings_screen.dart';
 import 'professional_analytics_screen.dart';
@@ -34,7 +34,7 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
   void initState() {
     super.initState();
     _current = this;
-    // ✅ NEW — load the conversation list once at app start (not just when
+    // — load the conversation list once at app start (not just when
     // the Messages tab is opened) so the unread badge is accurate from
     // the very first frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -60,7 +60,7 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
     final width = MediaQuery.sizeOf(context).width;
     final isTablet = width > 600;
 
-    // ✅ FIX: same root-pop issue as guest_main_screen.dart — see that
+    // same root-pop issue as guest_main_screen.dart — see that
     // file for full explanation.
     return PopScope(
       canPop: false,
@@ -70,7 +70,7 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
           children: [
             ProfessionalHomeScreen(isVisible: _currentIndex == 0),
             ProfessionalBookingsScreen(isVisible: _currentIndex == 1),
-            // ✅ FIX: was `const ProfessionalMessagesScreen()` — the old
+            // was `const ProfessionalMessagesScreen()` — the old
             // simple REST-polling chat. Now uses the premium WebSocket-based
             // chat feature (typing, ticks, images, reply, pagination).
             ConversationListEntry(isVisible: _currentIndex == 2),

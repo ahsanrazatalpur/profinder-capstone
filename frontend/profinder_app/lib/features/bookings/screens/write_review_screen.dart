@@ -1,19 +1,11 @@
-// lib/features/bookings/screens/write_review_screen.dart
+// Review submission screen for customers upon booking completion.
+// Supports 1-5 star ratings, optional feedback comments, and photo uploads.
 //
-// Customer completed booking ke baad professional ko review deta hai
-// Stars (1-5) + optional comment + optional photos (up to 5)
-//
-// Backend endpoint:
-//   POST /api/reviews/professionals/<professional_id>/reviews/
-//   multipart body: rating, comment, photos (0-5 files)
-//
-// Effect:
-//   Professional ke profile pe average_rating update hota hai
-//   Professional detail screen pe stars dikhte hain
-//   Verified Service badge automatically set agar completed booking mila
+// Submissions update the professional's aggregate rating and verified service badge.
 
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
@@ -34,16 +26,17 @@ class _PickedPhoto {
 }
 
 class WriteReviewScreen extends StatefulWidget {
-  final int    professionalId;
+  final int professionalId;
   final String professionalName;
-  final int?   bookingId;
+  final int? bookingId;
 
-  // ✅ NEW — Edit mode. When existingReviewId is set, this screen PATCHes
+  // — Edit mode. When existingReviewId is set, this screen PATCHes
   // that review (rating/comment only — photos aren't editable) instead of
   // creating a new one.
-  final int?    existingReviewId;
-  final int?    initialRating;
+  final int? existingReviewId;
+  final int? initialRating;
   final String? initialComment;
+  final String? professionalPhoto;
 
   const WriteReviewScreen({
     super.key,
@@ -53,6 +46,7 @@ class WriteReviewScreen extends StatefulWidget {
     this.existingReviewId,
     this.initialRating,
     this.initialComment,
+    this.professionalPhoto,
   });
 
   bool get isEditMode => existingReviewId != null;
@@ -62,13 +56,13 @@ class WriteReviewScreen extends StatefulWidget {
 }
 
 class _WriteReviewScreenState extends State<WriteReviewScreen> {
-  final _api         = ApiService();
+  final _api = ApiService();
   final _commentCtrl = TextEditingController();
-  final _picker      = ImagePicker();
+  final _picker = ImagePicker();
 
   static const _maxPhotos = 5;
 
-  int  _rating    = 0;
+  int _rating = 0;
   bool _isLoading = false;
   bool _submitted = false;
 
@@ -100,11 +94,18 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
   Future<void> _addPhoto() async {
     if (_photos.length >= _maxPhotos) {
-      AppHelpers.showInfo(context, AppLocalizations.of(context).photoLimitReached(_maxPhotos));
+      AppHelpers.showInfo(
+        context,
+        AppLocalizations.of(context).photoLimitReached(_maxPhotos),
+      );
       return;
     }
     try {
-      final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 80, maxWidth: 1200);
+      final picked = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxWidth: 1200,
+      );
       if (picked == null) return;
 
       Uint8List? bytes;
@@ -113,7 +114,10 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
       setState(() => _photos.add(_PickedPhoto(file: picked, webBytes: bytes)));
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context).photoPickError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).photoPickError,
+      );
     }
   }
 
@@ -123,7 +127,10 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
   Future<void> _submit() async {
     if (_rating == 0) {
-      AppHelpers.showError(context, AppLocalizations.of(context).ratingRequiredError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).ratingRequiredError,
+      );
       return;
     }
 
@@ -133,25 +140,29 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
       if (widget.isEditMode) {
         // Edit mode — rating/comment only, no photos, matches backend
         // ReviewDetailView which only accepts those two fields.
-        await _api.patch(
-          '/reviews/${widget.existingReviewId}/',
-          {'rating': _rating, 'comment': _commentCtrl.text.trim()},
-        );
+        await _api.patch('/reviews/${widget.existingReviewId}/', {
+          'rating': _rating,
+          'comment': _commentCtrl.text.trim(),
+        });
       } else {
         final photoFiles = <MultipartFile>[];
         for (final p in _photos) {
           if (kIsWeb) {
-            photoFiles.add(MultipartFile.fromBytes(
-              p.webBytes ?? await p.file.readAsBytes(),
-              filename: p.file.name,
-            ));
+            photoFiles.add(
+              MultipartFile.fromBytes(
+                p.webBytes ?? await p.file.readAsBytes(),
+                filename: p.file.name,
+              ),
+            );
           } else {
-            photoFiles.add(await MultipartFile.fromFile(p.file.path, filename: p.file.name));
+            photoFiles.add(
+              await MultipartFile.fromFile(p.file.path, filename: p.file.name),
+            );
           }
         }
 
         final formData = FormData.fromMap({
-          'rating':  _rating.toString(),
+          'rating': _rating.toString(),
           'comment': _commentCtrl.text.trim(),
           if (photoFiles.isNotEmpty) 'photos': photoFiles,
         });
@@ -163,7 +174,10 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
       }
 
       if (!mounted) return;
-      setState(() { _isLoading = false; _submitted = true; });
+      setState(() {
+        _isLoading = false;
+        _submitted = true;
+      });
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
@@ -192,11 +206,15 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: widget.isEditMode ? AppLocalizations.of(context).editReviewTitle : AppLocalizations.of(context).writeReviewTitle,
+        title: widget.isEditMode
+            ? AppLocalizations.of(context).editReviewTitle
+            : AppLocalizations.of(context).writeReviewTitle,
         icon: Icons.rate_review_rounded,
         onBackPressed: () => Navigator.pop(context, _submitted),
       ),
-      body: _submitted ? _buildSuccessState(isDark, isTablet) : _buildForm(isDark, isTablet),
+      body: _submitted
+          ? _buildSuccessState(isDark, isTablet)
+          : _buildForm(isDark, isTablet),
     );
   }
 
@@ -208,7 +226,6 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           // ── Professional banner ───────────────────────
           AnimatedContainer(
             duration: const Duration(milliseconds: 400),
@@ -234,19 +251,58 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
             ),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: isTablet ? 30 : 26,
-                  backgroundColor: isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : context.colors.primaryLight,
-                  child: Text(
-                    AppHelpers.getInitials(widget.professionalName),
-                    style: TextStyle(
-                      color: AppColors.customerColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: isTablet ? 16 : 14,
-                    ),
-                  ),
+                Builder(
+                  builder: (_) {
+                    final photo = AppHelpers.getFullImageUrl(
+                      widget.professionalPhoto,
+                    );
+                    final size = isTablet ? 60.0 : 52.0;
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(size / 2),
+                      child: Container(
+                        width: size,
+                        height: size,
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : context.colors.primaryLight,
+                        child: photo.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: photo,
+                                width: size,
+                                height: size,
+                                fit: BoxFit.cover,
+                                memCacheWidth: 150,
+                                memCacheHeight: 150,
+                                placeholder: (_, _) => const SizedBox(),
+                                errorWidget: (context, error, stackTrace) =>
+                                    Center(
+                                      child: Text(
+                                        AppHelpers.getInitials(
+                                          widget.professionalName,
+                                        ),
+                                        style: TextStyle(
+                                          color: AppColors.customerColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: isTablet ? 16 : 14,
+                                        ),
+                                      ),
+                                    ),
+                              )
+                            : Center(
+                                child: Text(
+                                  AppHelpers.getInitials(
+                                    widget.professionalName,
+                                  ),
+                                  style: TextStyle(
+                                    color: AppColors.customerColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: isTablet ? 16 : 14,
+                                  ),
+                                ),
+                              ),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -336,8 +392,8 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                           color: isActive
                               ? AppColors.warningAmber
                               : (isDark
-                                  ? Colors.white.withValues(alpha: 0.2)
-                                  : AppColors.neutral300),
+                                    ? Colors.white.withValues(alpha: 0.2)
+                                    : AppColors.neutral300),
                           size: isTablet ? 48 : 40,
                         ),
                       ),
@@ -390,7 +446,9 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
               color: context.colors.textPrimary,
             ),
             decoration: InputDecoration(
-              hintText: AppLocalizations.of(context).commentHint(widget.professionalName),
+              hintText: AppLocalizations.of(
+                context,
+              ).commentHint(widget.professionalName),
               hintStyle: TextStyle(
                 fontSize: isTablet ? 14 : 13,
                 color: context.colors.textSecondary,
@@ -453,7 +511,8 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
               height: 84,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: _photos.length + (_photos.length < _maxPhotos ? 1 : 0),
+                itemCount:
+                    _photos.length + (_photos.length < _maxPhotos ? 1 : 0),
                 separatorBuilder: (_, _) => const SizedBox(width: 10),
                 itemBuilder: (context, index) {
                   if (index == _photos.length) {
@@ -548,8 +607,12 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
             const SizedBox(height: 8),
             Text(
               widget.isEditMode
-                  ? AppLocalizations.of(context).reviewUpdatedSuccessMessage(widget.professionalName)
-                  : AppLocalizations.of(context).reviewSubmittedSuccessMessage(widget.professionalName),
+                  ? AppLocalizations.of(
+                      context,
+                    ).reviewUpdatedSuccessMessage(widget.professionalName)
+                  : AppLocalizations.of(
+                      context,
+                    ).reviewSubmittedSuccessMessage(widget.professionalName),
               style: TextStyle(
                 fontSize: isTablet ? 14 : 13,
                 color: context.colors.textSecondary,
@@ -563,13 +626,14 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
             // Stars display
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (i) => Icon(
-                i < _rating
-                    ? Icons.star_rounded
-                    : Icons.star_outline_rounded,
-                color: AppColors.warningAmber,
-                size: isTablet ? 32 : 28,
-              )),
+              children: List.generate(
+                5,
+                (i) => Icon(
+                  i < _rating ? Icons.star_rounded : Icons.star_outline_rounded,
+                  color: AppColors.warningAmber,
+                  size: isTablet ? 32 : 28,
+                ),
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -626,9 +690,7 @@ class _AddPhotoTile extends StatelessWidget {
         width: 84,
         height: 84,
         decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.white,
+          color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white,
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           border: Border.all(
             color: isDark
@@ -651,7 +713,11 @@ class _PhotoThumb extends StatelessWidget {
   final _PickedPhoto photo;
   final VoidCallback onRemove;
   final bool isDark;
-  const _PhotoThumb({required this.photo, required this.onRemove, required this.isDark});
+  const _PhotoThumb({
+    required this.photo,
+    required this.onRemove,
+    required this.isDark,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -660,8 +726,18 @@ class _PhotoThumb extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           child: kIsWeb
-              ? Image.memory(photo.webBytes!, width: 84, height: 84, fit: BoxFit.cover)
-              : Image.file(File(photo.file.path), width: 84, height: 84, fit: BoxFit.cover),
+              ? Image.memory(
+                  photo.webBytes!,
+                  width: 84,
+                  height: 84,
+                  fit: BoxFit.cover,
+                )
+              : Image.file(
+                  File(photo.file.path),
+                  width: 84,
+                  height: 84,
+                  fit: BoxFit.cover,
+                ),
         ),
         Positioned(
           top: 4,

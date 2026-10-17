@@ -63,10 +63,11 @@ class FeaturedCategoryCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: (isDark
-                      ? Colors.black.withValues(alpha: 0.4)
-                      : gradient.last.withValues(alpha: 0.35))
-                  .withValues(alpha: 0.35),
+              color:
+                  (isDark
+                          ? Colors.black.withValues(alpha: 0.4)
+                          : gradient.last.withValues(alpha: 0.35))
+                      .withValues(alpha: 0.35),
               blurRadius: 16,
               offset: const Offset(0, 8),
             ),

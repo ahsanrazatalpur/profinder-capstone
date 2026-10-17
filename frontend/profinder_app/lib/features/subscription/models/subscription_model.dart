@@ -143,7 +143,7 @@ class UserPlanStatus {
   bool get hasFeaturedProfile => getBool('featured_profile');
   bool get hasPriorityRanking => getBool('priority_ranking');
 
-  // Free default (jab API call na ho)
+  // Default free-tier fallback when offline or prior to network resolution.
   factory UserPlanStatus.free(String role) {
     return UserPlanStatus(
       hasSubscription: false,

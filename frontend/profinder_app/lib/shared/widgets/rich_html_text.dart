@@ -39,8 +39,10 @@ class RichHtmlText extends StatelessWidget {
   List<_Block> _splitBlocks(String raw) {
     final blocks = <_Block>[];
     final tagPattern = RegExp(
-        r'<(h[1-3]|p|ul|li)[^>]*>(.*?)</\1>',
-        caseSensitive: false, dotAll: true);
+      r'<(h[1-3]|p|ul|li)[^>]*>(.*?)</\1>',
+      caseSensitive: false,
+      dotAll: true,
+    );
 
     var remaining = raw.trim();
     if (remaining.isEmpty) return blocks;
@@ -56,8 +58,15 @@ class RichHtmlText extends StatelessWidget {
       final tag = match.group(1)!.toLowerCase();
       final inner = match.group(2)!.trim();
       if (tag == 'ul') {
-        final liPattern = RegExp(r'<li[^>]*>(.*?)</li>', caseSensitive: false, dotAll: true);
-        final items = liPattern.allMatches(inner).map((m) => m.group(1)!.trim()).toList();
+        final liPattern = RegExp(
+          r'<li[^>]*>(.*?)</li>',
+          caseSensitive: false,
+          dotAll: true,
+        );
+        final items = liPattern
+            .allMatches(inner)
+            .map((m) => m.group(1)!.trim())
+            .toList();
         blocks.add(_Block('ul', items.join('\u0000')));
       } else if (_hasVisibleText(inner)) {
         // Rich-text editors often leave empty paragraphs like <p><br></p> or
@@ -87,17 +96,35 @@ class RichHtmlText extends StatelessWidget {
       case 'h1':
         return Padding(
           padding: const EdgeInsets.only(bottom: 8, top: 12),
-          child: _richSpan(context, block.content, baseFontSize + 8, FontWeight.w800, textColor),
+          child: _richSpan(
+            context,
+            block.content,
+            baseFontSize + 8,
+            FontWeight.w800,
+            textColor,
+          ),
         );
       case 'h2':
         return Padding(
           padding: const EdgeInsets.only(bottom: 8, top: 10),
-          child: _richSpan(context, block.content, baseFontSize + 5, FontWeight.w700, textColor),
+          child: _richSpan(
+            context,
+            block.content,
+            baseFontSize + 5,
+            FontWeight.w700,
+            textColor,
+          ),
         );
       case 'h3':
         return Padding(
           padding: const EdgeInsets.only(bottom: 6, top: 8),
-          child: _richSpan(context, block.content, baseFontSize + 2, FontWeight.w700, textColor),
+          child: _richSpan(
+            context,
+            block.content,
+            baseFontSize + 2,
+            FontWeight.w700,
+            textColor,
+          ),
         );
       case 'ul':
         final items = block.content.split('\u0000').where((s) => s.isNotEmpty);
@@ -114,11 +141,23 @@ class RichHtmlText extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 6, right: 8),
                       child: Container(
-                        width: 5, height: 5,
-                        decoration: BoxDecoration(color: context.colors.primary, shape: BoxShape.circle),
+                        width: 5,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: context.colors.primary,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ),
-                    Expanded(child: _richSpan(context, item, baseFontSize, FontWeight.normal, textColor)),
+                    Expanded(
+                      child: _richSpan(
+                        context,
+                        item,
+                        baseFontSize,
+                        FontWeight.normal,
+                        textColor,
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -129,46 +168,80 @@ class RichHtmlText extends StatelessWidget {
       default:
         return Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child: _richSpan(context, block.content, baseFontSize, FontWeight.normal, textColor),
+          child: _richSpan(
+            context,
+            block.content,
+            baseFontSize,
+            FontWeight.normal,
+            textColor,
+          ),
         );
     }
   }
 
   // ── Inline formatting (bold, italic, links) within a block ─────────────
 
-  Widget _richSpan(BuildContext context, String inner, double size, FontWeight weight, Color textColor) {
+  Widget _richSpan(
+    BuildContext context,
+    String inner,
+    double size,
+    FontWeight weight,
+    Color textColor,
+  ) {
     final spans = <InlineSpan>[];
     final inlinePattern = RegExp(
-        r'<(b|strong|i|em|a)([^>]*)>(.*?)</\1>|<br\s*/?>',
-        caseSensitive: false, dotAll: true);
+      r'<(b|strong|i|em|a)([^>]*)>(.*?)</\1>|<br\s*/?>',
+      caseSensitive: false,
+      dotAll: true,
+    );
 
     int cursor = 0;
     for (final match in inlinePattern.allMatches(inner)) {
       if (match.start > cursor) {
-        spans.add(TextSpan(text: _stripTags(inner.substring(cursor, match.start))));
+        spans.add(
+          TextSpan(text: _stripTags(inner.substring(cursor, match.start))),
+        );
       }
       final tag = match.group(1)?.toLowerCase();
       if (tag == null) {
         spans.add(const TextSpan(text: '\n'));
       } else if (tag == 'b' || tag == 'strong') {
-        spans.add(TextSpan(
+        spans.add(
+          TextSpan(
             text: _stripTags(match.group(3) ?? ''),
-            style: const TextStyle(fontWeight: FontWeight.w700)));
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+        );
       } else if (tag == 'i' || tag == 'em') {
-        spans.add(TextSpan(
+        spans.add(
+          TextSpan(
             text: _stripTags(match.group(3) ?? ''),
-            style: const TextStyle(fontStyle: FontStyle.italic)));
+            style: const TextStyle(fontStyle: FontStyle.italic),
+          ),
+        );
       } else if (tag == 'a') {
-        final hrefMatch = RegExp(r'href=["\x27]([^"\x27]*)["\x27]').firstMatch(match.group(2) ?? '');
+        final hrefMatch = RegExp(
+          r'href=["\x27]([^"\x27]*)["\x27]',
+        ).firstMatch(match.group(2) ?? '');
         final href = hrefMatch?.group(1) ?? '';
-        spans.add(TextSpan(
-          text: _stripTags(match.group(3) ?? ''),
-          style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              if (href.isNotEmpty) launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
-            },
-        ));
+        spans.add(
+          TextSpan(
+            text: _stripTags(match.group(3) ?? ''),
+            style: TextStyle(
+              color: context.colors.primary,
+              decoration: TextDecoration.underline,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                if (href.isNotEmpty) {
+                  launchUrl(
+                    Uri.parse(href),
+                    mode: LaunchMode.externalApplication,
+                  );
+                }
+              },
+          ),
+        );
       }
       cursor = match.end;
     }
@@ -178,14 +251,21 @@ class RichHtmlText extends StatelessWidget {
 
     return Text.rich(
       TextSpan(
-        style: TextStyle(fontSize: size, fontWeight: weight, color: textColor, height: 1.5),
+        style: TextStyle(
+          fontSize: size,
+          fontWeight: weight,
+          color: textColor,
+          height: 1.5,
+        ),
         children: spans,
       ),
     );
   }
 
-  String _stripTags(String s) =>
-      s.replaceAll(RegExp(r'<[^>]+>'), '').replaceAll('&nbsp;', ' ').replaceAll('&amp;', '&');
+  String _stripTags(String s) => s
+      .replaceAll(RegExp(r'<[^>]+>'), '')
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&amp;', '&');
 }
 
 class _Block {

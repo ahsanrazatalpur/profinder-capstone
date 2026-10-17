@@ -203,7 +203,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                           ],
                         ),
                       ),
-                      // ✅ FIX: These three action icons previously used the
+                      // These three action icons previously used the
                       // default IconButton hit-box (48x48 each, no gaps),
                       // which on a narrow phone screen pushed the row past
                       // its available width. The row would silently clip,
@@ -753,7 +753,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// Icon button with a subtle hover background on desktop/web and a tooltip.
-/// ✅ FIX: previously wrapped a plain `IconButton`, which carries a default
+/// previously wrapped a plain `IconButton`, which carries a default
 /// 48x48 minimum hit box and internal padding. Placed three-in-a-row (star/
 /// edit/delete) on a narrow phone screen, that pushed the row wider than
 /// the card, so the row silently clipped — the Delete icon got cut in half

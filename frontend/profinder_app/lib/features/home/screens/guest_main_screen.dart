@@ -56,7 +56,7 @@ class GuestMainScreenState extends State<GuestMainScreen> {
 
     final t = AppLocalizations.of(context);
 
-    // ✅ FIX: this screen sits alone at the bottom of the Navigator stack
+    // this screen sits alone at the bottom of the Navigator stack
     // (tabs switch via IndexedStack, not real routes) — pressing back here
     // used to try popping past the root, which on web leaves an empty
     // Navigator (blank white screen) and on mobile could leave the app in
@@ -69,7 +69,7 @@ class GuestMainScreenState extends State<GuestMainScreen> {
         index: _currentIndex,
         children: [
           GuestHomeScreen(isVisible: _currentIndex == 0),
-          // ✅ FIX: SearchScreen sits here as a bottom-nav TAB (IndexedStack),
+          // SearchScreen sits here as a bottom-nav TAB (IndexedStack),
           // not a pushed route — this screen is also wrapped in
           // PopScope(canPop: false), so SearchScreen's back arrow found
           // `Navigator.canPop(context) == false` and fell through to

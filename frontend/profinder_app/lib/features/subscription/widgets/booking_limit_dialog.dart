@@ -1,7 +1,5 @@
-// lib/features/subscription/widgets/booking_limit_dialog.dart
-//
-// Yeh dialog tab dikhta hai jab professional ka monthly booking limit khatam ho.
-// Backend se 403 + error:'booking_limit_reached' aane par show karo.
+// Modal dialog displayed when a professional reaches their monthly booking limit.
+// Prompts the professional to upgrade their plan for higher booking capacity.
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
@@ -12,10 +10,10 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 class BookingLimitDialog extends StatelessWidget {
-  final int    limit;           // max bookings (e.g. 5)
-  final int    usedThisMonth;   // is mahine kitne ho gaye
-  final String? subscriptionEnd; // kab reset hoga (e.g. "30 Jun 2026")
-  final String  userRole;        // 'professional'
+  final int limit;
+  final int usedThisMonth;
+  final String? subscriptionEnd;
+  final String userRole;
 
   const BookingLimitDialog({
     super.key,
@@ -25,7 +23,7 @@ class BookingLimitDialog extends StatelessWidget {
     required this.userRole,
   });
 
-  /// Static helper — seedha call karo jab booking fail ho
+  /// Displays the booking limit dialog with current usage statistics.
   static Future<void> show(
     BuildContext context, {
     required int limit,

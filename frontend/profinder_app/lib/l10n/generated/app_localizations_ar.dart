@@ -198,6 +198,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get save => 'حفظ';
 
   @override
+  String get favoriteAddTooltip => 'إضافة إلى المفضلة';
+
+  @override
+  String get favoriteRemoveTooltip => 'إزالة من المفضلة';
+
+  @override
   String get confirm => 'تأكيد';
 
   @override
@@ -3831,10 +3837,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get deleteAccountDialogContent =>
-      'سيؤدي هذا إلى حذف حسابك وجميع البيانات المرتبطة به نهائيًا. لا يمكن التراجع عن هذا الإجراء.';
+      'لحذف حسابك وجميع البيانات المرتبطة به، يرجى التواصل مع الدعم. سنتحقق من هويتك ونعالج الطلب.';
 
   @override
   String get deleteAccountDialogTitle => 'حذف الحساب';
+
+  @override
+  String get deleteAccountContactSupportCta => 'التواصل مع الدعم';
 
   @override
   String get deleteAccountLabel => 'حذف الحساب';
@@ -4698,6 +4707,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String notificationsDaysAgo(Object value1) {
     return 'منذ $value1 ي';
   }
+
+  @override
+  String get notificationsClearAllCta => 'مسح الكل';
+
+  @override
+  String get notificationsClearAllTitle => 'مسح جميع الإشعارات؟';
+
+  @override
+  String get notificationsClearAllMessage =>
+      'سيؤدي هذا إلى إزالة كل الإشعارات من قائمتك. لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get notificationsClearAllSuccess => 'تم مسح جميع الإشعارات';
+
+  @override
+  String get notificationsClearAllError =>
+      'تعذّر مسح الإشعارات. يرجى المحاولة مرة أخرى.';
 
   @override
   String get notificationsEmptyMessage => 'لا يوجد جديد!';
@@ -6942,4 +6968,259 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get categoryCarpenter => 'نجار';
+
+  @override
+  String get supportErrorMessage =>
+      'تعذّر تحميل هذا الآن. تحقق من اتصالك وحاول مرة أخرى.';
+
+  @override
+  String get privacyShownInEnglish =>
+      'تُعرض هذه السياسة بالإنجليزية لأن ترجمة مراجَعة بلغتك غير متاحة بعد.';
+
+  @override
+  String get privacyNotPublished =>
+      'لم تُنشر سياسة الخصوصية بعد. يُرجى المحاولة لاحقًا.';
+
+  @override
+  String privacyVersionLabel(int version) {
+    return 'الإصدار $version';
+  }
+
+  @override
+  String privacyEffectiveLabel(String date) {
+    return 'ساري المفعول: $date';
+  }
+
+  @override
+  String get privacyActionSubtitle => 'كيف نستخدم بياناتك ونحميها';
+
+  @override
+  String get registerPrivacyNotice =>
+      'بإنشاء حساب، فإنك تقرّ بكيفية تعاملنا مع بياناتك.';
+
+  @override
+  String get helpSearchHint => 'ابحث في مقالات المساعدة';
+
+  @override
+  String get helpBrowseTopics => 'تصفح المواضيع';
+
+  @override
+  String get helpSearchResultsHeading => 'نتائج البحث';
+
+  @override
+  String get helpNoResultsTitle => 'لم يتم العثور على نتائج';
+
+  @override
+  String get helpNoResultsMessage => 'جرّب كلمات مختلفة أو أقل.';
+
+  @override
+  String get helpSearchTooShort => 'اكتب حرفين على الأقل للبحث.';
+
+  @override
+  String helpArticleCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مقال',
+      many: '$count مقالًا',
+      few: '$count مقالات',
+      two: 'مقالان',
+      one: 'مقال واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get helpNoArticlesTitle => 'لا توجد مقالات بعد';
+
+  @override
+  String get helpNoArticlesMessage => 'ستظهر مقالات المساعدة هنا قريبًا.';
+
+  @override
+  String get helpArticleNotFound => 'هذا المقال لم يعد متاحًا.';
+
+  @override
+  String get helpShownInEnglish =>
+      'يتم عرض بعض محتوى المساعدة بالإنجليزية لأن الترجمة المراجَعة بلغتك غير متوفرة بعد.';
+
+  @override
+  String get helpContactSupportTitle => 'تواصل مع الدعم';
+
+  @override
+  String get helpContactSupportSubtitle =>
+      'البريد الإلكتروني والهاتف والأسئلة الشائعة';
+
+  @override
+  String get ticketsTitle => 'التواصل مع الدعم';
+
+  @override
+  String get ticketsTileSubtitle => 'أرسل رسالة وتابع ردودنا';
+
+  @override
+  String get ticketsEmptyTitle => 'لا توجد رسائل بعد';
+
+  @override
+  String get ticketsEmptyMessage =>
+      'لديك سؤال أو مشكلة؟ أرسل لنا رسالة وسيرد فريقنا هنا.';
+
+  @override
+  String get ticketsNewCta => 'رسالة جديدة';
+
+  @override
+  String get ticketsContactTitle => 'تواصل مع الدعم';
+
+  @override
+  String get ticketsContactSubtitle => 'أرسل رسالة إلى فريقنا';
+
+  @override
+  String get helpOtherWaysTitle => 'طرق أخرى للتواصل معنا';
+
+  @override
+  String get ticketNewTitle => 'أرسل لنا رسالة';
+
+  @override
+  String get ticketCategoryLabel => 'بماذا تحتاج إلى المساعدة؟';
+
+  @override
+  String get ticketSubjectLabel => 'الموضوع';
+
+  @override
+  String get ticketSubjectHint => 'ما المشكلة في بضع كلمات؟';
+
+  @override
+  String get ticketMessageLabel => 'التفاصيل';
+
+  @override
+  String get ticketMessageHint =>
+      'أخبرنا بما حدث. كلما زادت التفاصيل، ساعدناك أسرع.';
+
+  @override
+  String get ticketSubmitCta => 'إرسال الرسالة';
+
+  @override
+  String ticketCreatedMessage(String reference) {
+    return 'تم إرسال الرسالة. رقمك المرجعي هو $reference';
+  }
+
+  @override
+  String get ticketReplyHint => 'اكتب رداً';
+
+  @override
+  String get ticketReplySendTooltip => 'إرسال الرد';
+
+  @override
+  String get ticketCloseCta => 'تم الحل';
+
+  @override
+  String get ticketCloseConfirmTitle => 'هل تم حل المشكلة؟';
+
+  @override
+  String get ticketCloseConfirmMessage =>
+      'لن تتمكن من الرد بعد ذلك. إذا احتجت إلى مساعدة لاحقاً، أرسل رسالة جديدة.';
+
+  @override
+  String get ticketClosedNotice =>
+      'هذه المحادثة مغلقة. تحتاج إلى مزيد من المساعدة؟ أرسل رسالة جديدة.';
+
+  @override
+  String get ticketNewReplyBadge => 'رد جديد';
+
+  @override
+  String get ticketYouLabel => 'أنت';
+
+  @override
+  String get ticketSupportTeamLabel => 'دعم ProFinder';
+
+  @override
+  String get ticketStatusOpen => 'تم الاستلام';
+
+  @override
+  String get ticketStatusInProgress => 'نعمل على ذلك';
+
+  @override
+  String get ticketStatusAwaitingUser => 'بانتظار ردك';
+
+  @override
+  String get ticketStatusResolved => 'تم الحل';
+
+  @override
+  String get ticketStatusClosed => 'مغلقة';
+
+  @override
+  String get ticketCatAccount => 'الحساب وتسجيل الدخول';
+
+  @override
+  String get ticketCatBooking => 'الحجوزات';
+
+  @override
+  String get ticketCatPayment => 'المدفوعات والسحب';
+
+  @override
+  String get ticketCatVerification => 'توثيق الملف الشخصي';
+
+  @override
+  String get ticketCatTechnical => 'التطبيق لا يعمل';
+
+  @override
+  String get ticketCatPrivacy => 'بياناتي وخصوصيتي';
+
+  @override
+  String get ticketCatFeedback => 'اقتراح أو ملاحظات';
+
+  @override
+  String get ticketCatOther => 'شيء آخر';
+
+  @override
+  String get ticketFieldRequired => 'يرجى ملء هذا الحقل';
+
+  @override
+  String get ticketErrRateLimited =>
+      'أرسلت رسائل كثيرة. يرجى المحاولة بعد قليل.';
+
+  @override
+  String get ticketErrClosed => 'هذه المحادثة مغلقة.';
+
+  @override
+  String get ticketErrNotFound =>
+      'تعذر العثور على هذه الرسالة. ربما تمت إزالتها.';
+
+  @override
+  String get ticketErrSignIn => 'انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.';
+
+  @override
+  String get ticketErrInvalid =>
+      'يبدو أن هناك خطأ. تحقق من بياناتك وحاول مرة أخرى.';
+
+  @override
+  String get guestContactTitle => 'تواصل مع الدعم';
+
+  @override
+  String get guestContactIntro => 'أرسل لنا رسالة وسنرد على بريدك الإلكتروني.';
+
+  @override
+  String get guestEmailLabel => 'بريدك الإلكتروني';
+
+  @override
+  String get guestEmailInvalid => 'أدخل عنوان بريد إلكتروني صالحًا';
+
+  @override
+  String get guestContactSentTitle => 'تم إرسال الرسالة';
+
+  @override
+  String get guestContactSentMessage =>
+      'شكراً! استلمنا رسالتك وسنرد على البريد الإلكتروني الذي قدمته.';
+
+  @override
+  String guestContactReference(String reference) {
+    return 'الرقم المرجعي: $reference';
+  }
+
+  @override
+  String get themeModeTitle => 'المظهر';
+
+  @override
+  String get themeModeSystem => 'افتراضي النظام';
+
+  @override
+  String get themeModeSystemHint => 'يتبع إعداد جهازك';
 }

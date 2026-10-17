@@ -22,6 +22,8 @@ import 'admin_revenue_screen.dart';
 import 'admin_subscriptions_screen.dart';
 import 'admin_reviews_screen.dart';
 import 'admin_complaints_screen.dart';
+import 'admin_support_tickets_screen.dart';
+import 'admin_support_content_screen.dart';
 import 'admin_reports_hub_screen.dart';
 import 'admin_notifications_screen.dart';
 import 'admin_languages_screen.dart';
@@ -42,12 +44,12 @@ class AdminMainScreen extends StatefulWidget {
 }
 
 class _AdminMainScreenState extends State<AdminMainScreen> {
-  // ✅ GlobalKey — Scaffold.of(context) crash fix
+  // GlobalKey — Scaffold.of(context) crash fix
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   int _currentIndex = 0;
 
-  // ✅ FIX — lazy tab loading (was: `late final List<Widget> _screens = [...]`
+  // — lazy tab loading (was: `late final List<Widget> _screens = [...]`
   // built eagerly, all 26 at once, then handed straight to IndexedStack).
   //
   // IndexedStack keeps every child in the tree permanently — including the
@@ -95,6 +97,8 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
     () => const AdminAnnouncementsScreen(),
     () => const AdminAboutPageScreen(),
     () => const AdminAppealsScreen(), // index 26 — appended, keeps existing indices stable
+    () => const AdminSupportTicketsScreen(), // index 27 — appended
+    () => const AdminSupportContentScreen(), // index 28 — appended
   ];
 
   // Returns the widget for tab [i], building (and caching) it on first
@@ -136,6 +140,8 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
     _NavItem(Icons.campaign_rounded, Icons.campaign_outlined, 'Announcements'),
     _NavItem(Icons.info_rounded, Icons.info_outline_rounded, 'About Page'),
     _NavItem(Icons.gavel_rounded, Icons.gavel_outlined, 'Appeals'),
+    _NavItem(Icons.support_agent_rounded, Icons.support_agent_outlined, 'Support'),
+    _NavItem(Icons.edit_note_rounded, Icons.edit_note_outlined, 'Help Content'),
   ];
 
   void _goTo(int index) {
@@ -148,12 +154,12 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ FIX: same root-pop issue as guest_main_screen.dart — see that
+    // same root-pop issue as guest_main_screen.dart — see that
     // file for full explanation.
     return PopScope(
       canPop: false,
       child: Scaffold(
-        key:    _scaffoldKey, // ✅ GlobalKey attach
+        key:    _scaffoldKey, // GlobalKey attach
         drawer: _buildDrawer(),
         body:   IndexedStack(
           index: _currentIndex,
@@ -240,10 +246,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
 
           const Divider(height: 1),
 
-          // ✅ FIX: Logout ListTile ko Material mein wrap kiya.
-          // Pehle ListTile seedha Column mein tha jiske andar koi
-          // Material ancestor nahi tha — isliye "ListTile background
-          // color or ink splashes may be invisible" warning aati thi.
+          // Wrap ListTile in Material to ensure proper ink splash and background rendering.
           Material(
             color: Colors.transparent,
             child: ListTile(
@@ -277,8 +280,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
             : Colors.transparent,
         borderRadius: BorderRadius.circular(AppSizes.radius10),
       ),
-      // ✅ FIX: Drawer ke andar ListView ke ListTile ko bhi Material wrap kiya
-      // taake ink splash aur background sahi se render ho.
+      // Material wrapper provides ancestor surface for drawer ink splash.
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(AppSizes.radius10),
@@ -371,7 +373,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                 );
               }),
 
-              // ✅ More button — _scaffoldKey use karo, Scaffold.of(context) nahi
+              // More button opens the navigation drawer using _scaffoldKey
               Expanded(
                 child: GestureDetector(
                   onTap: () => _scaffoldKey.currentState?.openDrawer(),
@@ -457,7 +459,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
     if (confirmed == true && mounted) {
       await auth.logout();
       if (!mounted) return;
-      // ✅ FIX: pushNamedAndRemoveUntil clears the whole stack on logout —
+      // pushNamedAndRemoveUntil clears the whole stack on logout —
       // see login_screen.dart for details on the underlying bug.
       Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
     }

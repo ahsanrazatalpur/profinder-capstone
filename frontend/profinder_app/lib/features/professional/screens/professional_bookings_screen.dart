@@ -35,6 +35,7 @@
 
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,7 +56,8 @@ class ProfessionalBookingsScreen extends StatefulWidget {
   const ProfessionalBookingsScreen({super.key, this.isVisible = true});
 
   @override
-  State<ProfessionalBookingsScreen> createState() => _ProfessionalBookingsScreenState();
+  State<ProfessionalBookingsScreen> createState() =>
+      _ProfessionalBookingsScreenState();
 }
 
 class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
@@ -71,9 +73,17 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   bool _isStartingChat = false;
 
   String _myServiceCategory = '';
-  final Map<String, Map<String, String>> _suggestedTimes = {}; // bookingId -> {date,time}
+  final Map<String, Map<String, String>> _suggestedTimes =
+      {}; // bookingId -> {date,time}
 
-  final _tabs = ['All', 'Pending', 'Rescheduled', 'Accepted', 'Completed', 'Cancelled'];
+  final _tabs = [
+    'All',
+    'Pending',
+    'Rescheduled',
+    'Accepted',
+    'Completed',
+    'Cancelled',
+  ];
 
   @override
   void initState() {
@@ -106,7 +116,11 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   }
 
   Future<void> _loadAll() async {
-    await Future.wait([_loadBookings(), _loadServiceCategory(), _loadSuggestedTimes()]);
+    await Future.wait([
+      _loadBookings(),
+      _loadServiceCategory(),
+      _loadSuggestedTimes(),
+    ]);
   }
 
   Future<void> _loadBookings() async {
@@ -114,8 +128,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     try {
       final res = await _api.get(AppConstants.professionalBookings);
       if (!mounted) return;
-      // ✅ FIX: backend key 'bookings' hai, 'results' nahi — isi wajah se
-      // bookings list hamesha khali aati thi.
+      // Parse bookings list safely from response data or top-level 'bookings' key.
       final data = res.data is List ? res.data : (res.data['bookings'] ?? []);
       setState(() {
         _bookings = data as List;
@@ -124,7 +137,10 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, AppLocalizations.of(context).loadBookingsError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).loadBookingsError,
+      );
     }
   }
 
@@ -135,7 +151,9 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       final res = await _api.get(AppConstants.professionalProfile);
       final data = res.data as Map<String, dynamic>;
       if (!mounted) return;
-      setState(() => _myServiceCategory = (data['category_name'] ?? '').toString());
+      setState(
+        () => _myServiceCategory = (data['category_name'] ?? '').toString(),
+      );
     } catch (_) {
       // Non-critical — cards simply omit the Service row if unavailable.
     }
@@ -144,14 +162,19 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   Future<void> _loadSuggestedTimes() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final keys = prefs.getKeys().where((k) => k.startsWith('${_suggestedTimesPrefsKey}_'));
+      final keys = prefs.getKeys().where(
+        (k) => k.startsWith('${_suggestedTimesPrefsKey}_'),
+      );
       final loaded = <String, Map<String, String>>{};
       for (final k in keys) {
         final raw = prefs.getString(k);
         if (raw == null) continue;
         final parts = raw.split('|'); // "yyyy-MM-dd|h:mm a"
         if (parts.length != 2) continue;
-        loaded[k.substring('${_suggestedTimesPrefsKey}_'.length)] = {'date': parts[0], 'time': parts[1]};
+        loaded[k.substring('${_suggestedTimesPrefsKey}_'.length)] = {
+          'date': parts[0],
+          'time': parts[1],
+        };
       }
       if (!mounted) return;
       setState(() {
@@ -164,13 +187,22 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     }
   }
 
-  Future<void> _saveSuggestedTime(String bookingId, DateTime date, TimeOfDay time) async {
+  Future<void> _saveSuggestedTime(
+    String bookingId,
+    DateTime date,
+    TimeOfDay time,
+  ) async {
     final dateStr = DateFormat('yyyy-MM-dd').format(date);
     final timeStr = time.format(context);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('${_suggestedTimesPrefsKey}_$bookingId', '$dateStr|$timeStr');
+    await prefs.setString(
+      '${_suggestedTimesPrefsKey}_$bookingId',
+      '$dateStr|$timeStr',
+    );
     if (!mounted) return;
-    setState(() => _suggestedTimes[bookingId] = {'date': dateStr, 'time': timeStr});
+    setState(
+      () => _suggestedTimes[bookingId] = {'date': dateStr, 'time': timeStr},
+    );
   }
 
   Future<void> _clearSuggestedTime(String bookingId) async {
@@ -182,14 +214,17 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   }
 
   // ── Helpers ──────────────────────────────────────────────
-  String _statusOf(dynamic b) => (b['status']?.toString() ?? 'pending').toLowerCase();
-  bool _isSuggested(dynamic b) => _suggestedTimes.containsKey(b['id'].toString());
+  String _statusOf(dynamic b) =>
+      (b['status']?.toString() ?? 'pending').toLowerCase();
+  bool _isSuggested(dynamic b) =>
+      _suggestedTimes.containsKey(b['id'].toString());
 
   // The customer booking flow folds "Location: ..." as the first line of
   // the free-text `note`. Parse it back out for display only.
   Map<String, String> _splitNote(String rawNote) {
     final lines = rawNote.split('\n');
-    if (lines.isNotEmpty && lines.first.trim().toLowerCase().startsWith('location:')) {
+    if (lines.isNotEmpty &&
+        lines.first.trim().toLowerCase().startsWith('location:')) {
       final location = lines.first.trim().substring('location:'.length).trim();
       final rest = lines.skip(1).join('\n').trim();
       return {'location': location, 'note': rest};
@@ -202,22 +237,34 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       case 'All':
         return _bookings;
       case 'Pending':
-        return _bookings.where((b) => _statusOf(b) == 'pending' && !_isSuggested(b)).toList();
+        return _bookings
+            .where((b) => _statusOf(b) == 'pending' && !_isSuggested(b))
+            .toList();
       case 'Rescheduled':
-        return _bookings.where((b) => _statusOf(b) == 'pending' && _isSuggested(b)).toList();
+        return _bookings
+            .where((b) => _statusOf(b) == 'pending' && _isSuggested(b))
+            .toList();
       case 'Accepted':
         return _bookings.where((b) => _statusOf(b) == 'accepted').toList();
       case 'Completed':
         return _bookings.where((b) => _statusOf(b) == 'completed').toList();
       case 'Cancelled':
-        return _bookings.where((b) => _statusOf(b) == 'cancelled' || _statusOf(b) == 'rejected').toList();
+        return _bookings
+            .where(
+              (b) => _statusOf(b) == 'cancelled' || _statusOf(b) == 'rejected',
+            )
+            .toList();
       default:
         return _bookings;
     }
   }
 
   // ── Accept / Reject / Complete / Cancel booking — unchanged endpoint ──
-  Future<void> _updateStatus(dynamic booking, String newStatus, {String? reason}) async {
+  Future<void> _updateStatus(
+    dynamic booking,
+    String newStatus, {
+    String? reason,
+  }) async {
     try {
       final id = booking['id'];
       final body = <String, dynamic>{'status': newStatus};
@@ -226,11 +273,17 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       if (!mounted) return;
       await _clearSuggestedTime(id.toString());
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context).bookingStatusUpdated(newStatus));
+      AppHelpers.showSuccess(
+        context,
+        AppLocalizations.of(context).bookingStatusUpdated(newStatus),
+      );
       _loadBookings();
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context).updateBookingError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).updateBookingError,
+      );
     }
   }
 
@@ -241,12 +294,20 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
         title: Row(
           children: [
             const Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
             const SizedBox(width: 8),
-            Text(AppLocalizations.of(context).cancelBookingTitle, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
+            Text(
+              AppLocalizations.of(context).cancelBookingTitle,
+              style: const TextStyle(
+                fontSize: AppFontSizes.title,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
         content: Column(
@@ -255,12 +316,19 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
           children: [
             Text(
               AppLocalizations.of(context).cancelConfirmationMessage,
-              style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: context.colors.textSecondary,
+              ),
             ),
             const SizedBox(height: 14),
             Text(
               AppLocalizations.of(context).cancelReasonLabel,
-              style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: context.colors.textPrimary),
+              style: TextStyle(
+                fontSize: AppFontSizes.small,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textPrimary,
+              ),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -269,16 +337,27 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
               style: const TextStyle(fontSize: AppFontSizes.secondary),
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context).cancelReasonHint,
-                hintStyle: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
+                hintStyle: TextStyle(
+                  fontSize: AppFontSizes.small,
+                  color: context.colors.textSecondary,
+                ),
                 filled: true,
                 fillColor: context.colors.background,
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  borderSide: BorderSide(color: context.colors.divider),
+                ),
                 enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide(color: context.colors.divider)),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  borderSide: BorderSide(color: context.colors.divider),
+                ),
                 focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  borderSide: const BorderSide(
+                    color: AppColors.error,
+                    width: 1.5,
+                  ),
+                ),
               ),
             ),
           ],
@@ -286,13 +365,23 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.of(context).goBackCta, style: TextStyle(color: context.colors.textSecondary)),
+            child: Text(
+              AppLocalizations.of(context).goBackCta,
+              style: TextStyle(color: context.colors.textSecondary),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
+              backgroundColor: AppColors.error,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+              ),
+            ),
             onPressed: () => Navigator.pop(context, true),
-            child: Text(AppLocalizations.of(context).yesCancelCta, style: const TextStyle(color: Colors.white)),
+            child: Text(
+              AppLocalizations.of(context).yesCancelCta,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -311,29 +400,52 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       lastDate: DateTime.now().add(const Duration(days: 180)),
     );
     if (date == null || !mounted) return;
-    final time = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
     if (time == null || !mounted) return;
 
     await _saveSuggestedTime(booking['id'].toString(), date, time);
     if (!mounted) return;
-    AppHelpers.showSuccess(context, AppLocalizations.of(context).suggestTimeSuccess);
+    AppHelpers.showSuccess(
+      context,
+      AppLocalizations.of(context).suggestTimeSuccess,
+    );
 
     final openChat = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-        title: Text(AppLocalizations.of(context).notifyCustomerTitle, style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
+        title: Text(
+          AppLocalizations.of(context).notifyCustomerTitle,
+          style: const TextStyle(
+            fontSize: AppFontSizes.body,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         content: Text(
           AppLocalizations.of(context).notifyCustomerMessage(
             DateFormat('EEE, MMM d').format(date),
             time.format(context),
           ),
-          style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+          style: TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: context.colors.textSecondary,
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context).laterCta)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(AppLocalizations.of(context).laterCta),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.professionalColor, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.professionalColor,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(AppLocalizations.of(context).openChatCta),
           ),
@@ -349,20 +461,28 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     setState(() => _isStartingChat = true);
     try {
       final customerId = booking['customer'];
-      final customerName = (booking['customer_name'] ?? booking['customer'] ?? AppLocalizations.of(context).customerDefault).toString();
+      final customerName =
+          (booking['customer_name'] ??
+                  booking['customer'] ??
+                  AppLocalizations.of(context).customerDefault)
+              .toString();
       final results = await Future.wait([
         _api.post(AppConstants.conversations, {'other_user_id': customerId}),
         _api.get(AppConstants.me),
       ]);
       if (!mounted) return;
       final data = results[0].data as Map<String, dynamic>;
-      final myId = int.parse((results[1].data as Map<String, dynamic>)['id'].toString());
+      final myId = int.parse(
+        (results[1].data as Map<String, dynamic>)['id'].toString(),
+      );
 
       await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => ChatScreen(
-            conversationId: data['id'] is int ? data['id'] as int : int.parse(data['id'].toString()),
+            conversationId: data['id'] is int
+                ? data['id'] as int
+                : int.parse(data['id'].toString()),
             currentUserId: myId,
             otherUserName: data['other_user_name']?.toString() ?? customerName,
             otherUserPhoto: data['other_user_photo']?.toString(),
@@ -421,8 +541,13 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     final isPending = status == 'pending';
     final isAccepted = status == 'accepted';
     final isCancellable = isPending || isAccepted;
-    final customerName = (b['customer_name'] ?? b['customer'] ?? AppLocalizations.of(context).customerDefault).toString();
-    final date = b['date']?.toString() ?? AppLocalizations.of(context).dateNotSet;
+    final customerName =
+        (b['customer_name'] ??
+                b['customer'] ??
+                AppLocalizations.of(context).customerDefault)
+            .toString();
+    final date =
+        b['date']?.toString() ?? AppLocalizations.of(context).dateNotSet;
     final time = b['time']?.toString() ?? '';
     final split = _splitNote(b['note']?.toString() ?? '');
     final location = split['location'] ?? '';
@@ -438,7 +563,9 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
       builder: (_) => Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusXl)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppSizes.radiusXl),
+          ),
         ),
         padding: EdgeInsets.only(
           left: 20,
@@ -457,7 +584,10 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                   width: 40,
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(color: context.colors.divider, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
+                  decoration: BoxDecoration(
+                    color: context.colors.divider,
+                    borderRadius: BorderRadius.circular(AppSizes.radiusXs),
+                  ),
                 ),
               ),
               Row(
@@ -465,25 +595,64 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                   Expanded(
                     child: Text(
                       AppLocalizations.of(context).bookingDetailsTitle,
-                      style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: context.colors.textPrimary),
+                      style: TextStyle(
+                        fontSize: AppFontSizes.title,
+                        fontWeight: FontWeight.w800,
+                        color: context.colors.textPrimary,
+                      ),
                     ),
                   ),
                   _statusChip(b, large: true),
                 ],
               ),
               const SizedBox(height: 18),
-              _detailRow(Icons.person_outline_rounded, AppLocalizations.of(context).customerLabel, customerName),
-              if (_myServiceCategory.isNotEmpty) _detailRow(Icons.design_services_rounded, AppLocalizations.of(context).serviceLabel, _myServiceCategory),
-              _detailRow(Icons.calendar_today_outlined, AppLocalizations.of(context).dateLabel, date),
-              if (time.isNotEmpty) _detailRow(Icons.access_time_rounded, AppLocalizations.of(context).timeLabel, time),
-              _detailRow(Icons.location_on_outlined, AppLocalizations.of(context).locationLabel, location.isNotEmpty ? location : AppLocalizations.of(context).locationNotSpecified),
-              if (notes.isNotEmpty) _detailRow(Icons.notes_rounded, AppLocalizations.of(context).notesLabel, notes),
+              _detailRow(
+                Icons.person_outline_rounded,
+                AppLocalizations.of(context).customerLabel,
+                customerName,
+              ),
+              if (_myServiceCategory.isNotEmpty)
+                _detailRow(
+                  Icons.design_services_rounded,
+                  AppLocalizations.of(context).serviceLabel,
+                  _myServiceCategory,
+                ),
+              _detailRow(
+                Icons.calendar_today_outlined,
+                AppLocalizations.of(context).dateLabel,
+                date,
+              ),
+              if (time.isNotEmpty)
+                _detailRow(
+                  Icons.access_time_rounded,
+                  AppLocalizations.of(context).timeLabel,
+                  time,
+                ),
+              _detailRow(
+                Icons.location_on_outlined,
+                AppLocalizations.of(context).locationLabel,
+                location.isNotEmpty
+                    ? location
+                    : AppLocalizations.of(context).locationNotSpecified,
+              ),
+              if (notes.isNotEmpty)
+                _detailRow(
+                  Icons.notes_rounded,
+                  AppLocalizations.of(context).notesLabel,
+                  notes,
+                ),
               if (suggested != null)
-                _detailRow(Icons.update_rounded, AppLocalizations.of(context).suggestedTimeLabel, '${suggested['date']} · ${suggested['time']}'),
+                _detailRow(
+                  Icons.update_rounded,
+                  AppLocalizations.of(context).suggestedTimeLabel,
+                  '${suggested['date']} · ${suggested['time']}',
+                ),
               if (status == 'cancelled' && cancelReason.isNotEmpty)
                 _detailRow(
                   Icons.info_outline_rounded,
-                  cancelledBy == 'customer' ? AppLocalizations.of(context).cancelledByCustomerLabel : AppLocalizations.of(context).cancelledByYouLabel,
+                  cancelledBy == 'customer'
+                      ? AppLocalizations.of(context).cancelledByCustomerLabel
+                      : AppLocalizations.of(context).cancelledByYouLabel,
                   cancelReason,
                 ),
               const SizedBox(height: 18),
@@ -500,9 +669,15 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                         label: Text(AppLocalizations.of(context).declineCta),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.error,
-                          side: BorderSide(color: AppColors.error.withValues(alpha: 0.4)),
+                          side: BorderSide(
+                            color: AppColors.error.withValues(alpha: 0.4),
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 13),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -520,7 +695,11 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 13),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -538,9 +717,13 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     label: Text(AppLocalizations.of(context).suggestTimeCta),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.info,
-                      side: BorderSide(color: AppColors.info.withValues(alpha: 0.4)),
+                      side: BorderSide(
+                        color: AppColors.info.withValues(alpha: 0.4),
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 13),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
                     ),
                   ),
                 ),
@@ -558,7 +741,9 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       backgroundColor: context.colors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 13),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
                     ),
                   ),
                 ),
@@ -575,9 +760,13 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                   label: Text(AppLocalizations.of(context).openChatCta),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.professionalColor,
-                    side: BorderSide(color: AppColors.professionalColor.withValues(alpha: 0.4)),
+                    side: BorderSide(
+                      color: AppColors.professionalColor.withValues(alpha: 0.4),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 13),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    ),
                   ),
                 ),
               ),
@@ -596,7 +785,9 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       foregroundColor: context.colors.textSecondary,
                       side: BorderSide(color: context.colors.divider),
                       padding: const EdgeInsets.symmetric(vertical: 13),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
                     ),
                   ),
                 ),
@@ -618,12 +809,22 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
           const SizedBox(width: 10),
           SizedBox(
             width: 92,
-            child: Text(label, style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary)),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: context.colors.textSecondary,
+              ),
+            ),
           ),
           Expanded(
             child: Text(
               value,
-              style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.textPrimary),
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textPrimary,
+              ),
             ),
           ),
         ],
@@ -634,8 +835,14 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   Widget _statusChip(dynamic b, {bool large = false}) {
     final color = _statusColor(b);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: large ? 12 : 9, vertical: large ? 7 : 4),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(large ? 10 : 8)),
+      padding: EdgeInsets.symmetric(
+        horizontal: large ? 12 : 9,
+        vertical: large ? 7 : 4,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(large ? 10 : 8),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -643,7 +850,11 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
           SizedBox(width: large ? 6 : 4),
           Text(
             _statusLabel(b),
-            style: TextStyle(fontSize: large ? 12.5 : 10.5, fontWeight: FontWeight.w700, color: color),
+            style: TextStyle(
+              fontSize: large ? 12.5 : 10.5,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
           ),
         ],
       ),
@@ -673,10 +884,14 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
             isScrollable: true,
             tabAlignment: TabAlignment.start,
             labelPadding: const EdgeInsets.symmetric(horizontal: 14),
-            labelStyle:
-                const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
-            unselectedLabelStyle:
-                const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w500),
+            labelStyle: const TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w700,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w500,
+            ),
             tabs: _tabs.map((t) {
               final count = _filtered(t).length;
               return Tab(height: 44, text: count > 0 ? '$t ($count)' : t);
@@ -685,7 +900,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
         ),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: AppColors.professionalColor, strokeWidth: 3))
+          ? Center(
+              child: CircularProgressIndicator(
+                color: AppColors.professionalColor,
+                strokeWidth: 3,
+              ),
+            )
           : RefreshIndicator(
               onRefresh: _loadAll,
               color: AppColors.professionalColor,
@@ -700,7 +920,8 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: EdgeInsets.all(isTablet ? 20 : 14),
                     itemCount: list.length,
-                    itemBuilder: (ctx, i) => _buildBookingCard(list[i], isTablet),
+                    itemBuilder: (ctx, i) =>
+                        _buildBookingCard(list[i], isTablet),
                   );
                 }).toList(),
               ),
@@ -759,7 +980,11 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
         Center(
           child: Text(
             emptyText,
-            style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: AppFontSizes.body,
+              color: context.colors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
@@ -769,7 +994,14 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   // ── Booking card ─────────────────────────────────────────
   Widget _buildBookingCard(dynamic b, bool isTablet) {
     final status = _statusOf(b);
-    final customerName = (b['customer_name'] ?? b['customer'] ?? AppLocalizations.of(context).customerDefault).toString();
+    final customerName =
+        (b['customer_name'] ??
+                b['customer'] ??
+                AppLocalizations.of(context).customerDefault)
+            .toString();
+    final rawPhoto =
+        b['customer_photo'] ?? b['photo_url'] ?? b['photo'] ?? b['avatar'];
+    final photo = AppHelpers.getFullImageUrl(rawPhoto?.toString());
     final date = b['date']?.toString() ?? '';
     final time = b['time']?.toString() ?? '';
     final split = _splitNote(b['note']?.toString() ?? '');
@@ -790,14 +1022,20 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
           margin: const EdgeInsets.only(bottom: 12),
           padding: EdgeInsets.all(isTablet ? 18 : 15),
           decoration: BoxDecoration(
-            color: isCompleted ? context.colors.background : context.colors.surface,
+            color: isCompleted
+                ? context.colors.background
+                : context.colors.surface,
             borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : Colors.grey.withValues(alpha: 0.1),
             ),
             boxShadow: [
               BoxShadow(
-                color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.12)
+                    : Colors.grey.withValues(alpha: 0.06),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -809,16 +1047,43 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: isTablet ? 24 : 21,
-                    backgroundColor: context.colors.primaryLight,
-                    child: Text(
-                      AppHelpers.getInitials(customerName),
-                      style: TextStyle(
-                        fontSize: AppFontSizes.secondary,
-                        fontWeight: FontWeight.w700,
-                        color: isCompleted ? context.colors.textSecondary : context.colors.primary,
-                      ),
+                  ClipOval(
+                    child: Container(
+                      width: isTablet ? 48 : 42,
+                      height: isTablet ? 48 : 42,
+                      color: context.colors.primaryLight,
+                      child: photo.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: photo,
+                              fit: BoxFit.cover,
+                              memCacheWidth: 120,
+                              memCacheHeight: 120,
+                              placeholder: (_, _) => const SizedBox(),
+                              errorWidget: (_, _, _) => Center(
+                                child: Text(
+                                  AppHelpers.getInitials(customerName),
+                                  style: TextStyle(
+                                    fontSize: AppFontSizes.secondary,
+                                    fontWeight: FontWeight.w700,
+                                    color: isCompleted
+                                        ? context.colors.textSecondary
+                                        : context.colors.primary,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Center(
+                              child: Text(
+                                AppHelpers.getInitials(customerName),
+                                style: TextStyle(
+                                  fontSize: AppFontSizes.secondary,
+                                  fontWeight: FontWeight.w700,
+                                  color: isCompleted
+                                      ? context.colors.textSecondary
+                                      : context.colors.primary,
+                                ),
+                              ),
+                            ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -832,15 +1097,23 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                           style: TextStyle(
                             fontSize: isTablet ? 15.5 : 14.5,
                             fontWeight: FontWeight.w700,
-                            color: isCompleted ? context.colors.textSecondary : context.colors.textPrimary,
+                            color: isCompleted
+                                ? context.colors.textSecondary
+                                : context.colors.textPrimary,
                           ),
                         ),
                         if (_myServiceCategory.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
-                            AppHelpers.localizedCategoryName(context, _myServiceCategory),
+                            AppHelpers.localizedCategoryName(
+                              context,
+                              _myServiceCategory,
+                            ),
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: isTablet ? 12 : 11, color: context.colors.textSecondary),
+                            style: TextStyle(
+                              fontSize: isTablet ? 12 : 11,
+                              color: context.colors.textSecondary,
+                            ),
                           ),
                         ],
                       ],
@@ -851,9 +1124,14 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
               ),
               SizedBox(height: isTablet ? 14 : 12),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: isTablet ? 14 : 12, vertical: isTablet ? 12 : 10),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isTablet ? 14 : 12,
+                  vertical: isTablet ? 12 : 10,
+                ),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.05),
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.03)
+                      : Colors.grey.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 child: Column(
@@ -864,16 +1142,30 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                         Expanded(
                           child: _infoChip(
                             Icons.calendar_today_outlined,
-                            date.isNotEmpty ? date : AppLocalizations.of(context).dateNotSetShort,
+                            date.isNotEmpty
+                                ? date
+                                : AppLocalizations.of(context).dateNotSetShort,
                             isTablet,
                           ),
                         ),
-                        if (time.isNotEmpty) Expanded(child: _infoChip(Icons.access_time_rounded, time, isTablet)),
+                        if (time.isNotEmpty)
+                          Expanded(
+                            child: _infoChip(
+                              Icons.access_time_rounded,
+                              time,
+                              isTablet,
+                            ),
+                          ),
                       ],
                     ),
                     if (location.isNotEmpty) ...[
                       SizedBox(height: isTablet ? 8 : 6),
-                      _infoChip(Icons.location_on_outlined, location, isTablet, fullWidth: true),
+                      _infoChip(
+                        Icons.location_on_outlined,
+                        location,
+                        isTablet,
+                        fullWidth: true,
+                      ),
                     ],
                   ],
                 ),
@@ -889,12 +1181,23 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       child: OutlinedButton.icon(
                         onPressed: () => _updateStatus(b, 'rejected'),
                         icon: const Icon(Icons.close_rounded, size: 15),
-                        label: Text(AppLocalizations.of(context).declineCta, style: const TextStyle(fontSize: AppFontSizes.secondary)),
+                        label: Text(
+                          AppLocalizations.of(context).declineCta,
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.secondary,
+                          ),
+                        ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.error,
-                          side: BorderSide(color: AppColors.error.withValues(alpha: 0.35)),
+                          side: BorderSide(
+                            color: AppColors.error.withValues(alpha: 0.35),
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -903,13 +1206,22 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       child: ElevatedButton.icon(
                         onPressed: () => _updateStatus(b, 'accepted'),
                         icon: const Icon(Icons.check_rounded, size: 15),
-                        label: Text(AppLocalizations.of(context).acceptCta, style: const TextStyle(fontSize: AppFontSizes.secondary)),
+                        label: Text(
+                          AppLocalizations.of(context).acceptCta,
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.secondary,
+                          ),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.accent,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -955,13 +1267,22 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                       child: ElevatedButton.icon(
                         onPressed: () => _updateStatus(b, 'completed'),
                         icon: const Icon(Icons.done_all_rounded, size: 15),
-                        label: Text(AppLocalizations.of(context).markCompletedCtaShort, style: const TextStyle(fontSize: AppFontSizes.secondary)),
+                        label: Text(
+                          AppLocalizations.of(context).markCompletedCtaShort,
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.secondary,
+                          ),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.primary,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -975,7 +1296,12 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     );
   }
 
-  Widget _infoChip(IconData icon, String text, bool isTablet, {bool fullWidth = false}) {
+  Widget _infoChip(
+    IconData icon,
+    String text,
+    bool isTablet, {
+    bool fullWidth = false,
+  }) {
     return Row(
       mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
       children: [
@@ -1025,7 +1351,11 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                 child: Text(
                   label,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, color: color),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.small,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
                 ),
               ),
             ],

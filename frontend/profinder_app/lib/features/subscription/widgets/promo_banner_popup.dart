@@ -1,11 +1,5 @@
-// lib/features/subscription/widgets/promo_banner_popup.dart
-//
-// REDESIGNED — Duolingo / Spotify / premium app jesa professional style
-// FIXES:
-//   • Image white blank — cached_network_image use karo
-//   • Skip button kaam nahi — PopScope logic fix
-//   • Guest ke liye bhi kaam karta hai
-//   • Full-width bottom-sheet style on mobile
+// Centered modal popup presenting active promotional banners.
+// Supports countdown skip lock, cached banner graphics, and deep-linked CTAs.
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -32,13 +26,13 @@ class PromoBannerPopup extends StatefulWidget {
     required this.userRole,
   });
 
-  /// Returns true agar user ne CTA press kiya, false agar dismiss
+  /// Displays the modal dialog, returning true if the user engaged with the CTA.
   static Future<bool> show(
     BuildContext context, {
     required PromoBanner banner,
     required String userRole,
   }) async {
-    // Dialog use karo taake banner screen ke CENTER mein aaye
+    // Present as a centered modal dialog with an opaque backdrop
     final result = await showDialog<bool>(
       context:           context,
       barrierDismissible: false,   // lock period mein tap-outside blocked
@@ -110,14 +104,14 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
     super.dispose();
   }
 
-  // ── Dismiss — sirf canSkip=true pe ──────────────────────────────────────
+  // ── Dismiss Action ───────────────────────────────────────────────────────
   void _dismiss() {
     if (!_canSkip) return;
     _timer?.cancel();
     Navigator.pop(context, false);
   }
 
-  // ── CTA pressed ──────────────────────────────────────────────────────────
+  // ── CTA Pressed ──────────────────────────────────────────────────────────
   void _handleCta() {
     _timer?.cancel();
     Navigator.pop(context, true);
@@ -167,12 +161,11 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
 
   @override
   Widget build(BuildContext context) {
-    // PopScope: canPop tab true ho jab _canSkip=true ho
+    // Intercept back navigation until the countdown timer enables skipping
     return PopScope(
       canPop: _canSkip,
       onPopInvokedWithResult: (didPop, _) {
-        // Agar system ne pop nahi kiya (blocked tha) — kuch nahi karna
-        // Agar kiya — result false (dismiss) already ho gaya
+        // Prevent dismissal while skip lock is active
       },
       child: ScaleTransition(
         scale: _scaleAnim,
@@ -261,16 +254,14 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Image — StackFit.expand se poora area cover karega, koi white gap nahi
+          // Network banner image cached locally with shimmer placeholder and gradient fallback
           CachedNetworkImage(
             imageUrl:    widget.banner.imageUrl.trim(),
             fit:         BoxFit.cover,
-            // Jab tak load ho raha — shimmer placeholder
             placeholder: (_, _) => _buildShimmer(),
-            // Load fail ho — gradient fallback
             errorWidget: (_, _, _) => _buildGradientHeader(),
           ),
-          // Gradient overlay — text readability ke liye
+          // Subtle gradient overlay to ensure subtitle and title readability
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(

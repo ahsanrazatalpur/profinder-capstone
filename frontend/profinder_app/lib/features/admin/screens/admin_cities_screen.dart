@@ -144,7 +144,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
   }
 
   void _addDialog(dynamic targetCountry) async {
-    // ✅ FIX: showDialog() called synchronously from a button's onPressed,
+    // showDialog() called synchronously from a button's onPressed,
     // while the grid behind it still has many hover-tracking MouseRegion
     // cards mounted, crashes Flutter's MouseTracker on web/desktop
     // ("BoxConstraints forces an infinite width" + cascading "Assertion
@@ -260,7 +260,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
   // (opened from the global "All Cities" tab rather than from a Country's
   // detail page).
   void _pickCountryThenAdd() async {
-    // ✅ FIX: see _addDialog above — same MouseTracker crash fix.
+    // see _addDialog above — same MouseTracker crash fix.
     await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
     final searchCtrl = TextEditingController();
@@ -390,7 +390,7 @@ class _AdminCitiesScreenState extends State<AdminCitiesScreen> {
   }
 
   void _mergeDialog(dynamic city) async {
-    // ✅ FIX: see _addDialog above — same MouseTracker crash fix.
+    // see _addDialog above — same MouseTracker crash fix.
     await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
     final variantsCtrl = TextEditingController();

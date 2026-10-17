@@ -1,8 +1,5 @@
-// lib/core/constants/category_style.dart
-//
-// GLOBAL category icon + color + gradient + style registry.
-// Ab yeh ek complete premium styling system hai with animations,
-// dark mode support, and advanced features.
+// Central category icon, color, gradient, and styling registry
+// providing light and dark mode design tokens for service categories.
 
 import 'package:flutter/material.dart';
 

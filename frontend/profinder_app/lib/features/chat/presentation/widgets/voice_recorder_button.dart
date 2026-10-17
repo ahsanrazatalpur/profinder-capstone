@@ -1,23 +1,10 @@
-// lib/features/chat/presentation/widgets/voice_recorder_button.dart
+// Cross-platform voice message recorder component supporting mobile, desktop, and web.
 //
-// Voice message recording (mobile + desktop + web). Uses the `record`
-// package. Tap once to start, tap again to stop & send, or tap the X that
-// appears alongside to discard.
-//
-// 🐛 FIXES (voice notes didn't work reliably across platforms):
-//  • Web: getTemporaryDirectory() (path_provider) is not supported in the
-//    browser and threw before recording even started. On web we now pass a
-//    dummy name — the `record` web implementation ignores it and hands back
-//    a `blob:` URL from stop().
-//  • Encoder: AAC (.m4a) isn't available in every browser / desktop
-//    backend, so we ask the recorder which encoder it supports instead of
-//    hard-coding aacLc.
-//  • Discard now uses recorder.cancel() (stops + deletes the file on every
-//    platform) instead of File.exists()/delete(), which throws on web.
-//  • Double-tap while the recorder is still starting no longer starts two
-//    recordings; duration comes from a Stopwatch (not a tick counter that
-//    drifts); recordings stop automatically at [_maxSeconds]; leaving the
-//    screen mid-recording discards it instead of leaking the microphone.
+// Technical considerations:
+//  - Web support: Browser environments use blob URLs where local temporary paths are unavailable.
+//  - Codec negotiation: Audio encoder is dynamically negotiated based on platform runtime capabilities.
+//  - Lifecycle and memory safety: Disposing or navigating away automatically cancels the recorder session,
+//    releasing microphone hardware handles without dangling streams.
 
 import 'dart:async';
 import 'dart:io' show File;

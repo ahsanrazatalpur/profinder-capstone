@@ -1,9 +1,5 @@
-// PATH: lib/features/chat/presentation/widgets/unread_nav_badge.dart
-//
-// ✅ NEW — Wraps a bottom-nav icon with a small red unread-count badge.
-// Listens to ConversationListProvider directly so both the Customer and
-// Professional bottom navs update instantly whenever the conversation
-// list refreshes (poll, socket-triggered refresh, or returning from a chat).
+// Decorator widget wrapping navigation icons with real-time unread message counters.
+// Listens to [ConversationListProvider] for immediate badge updates across customer and professional interfaces.
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

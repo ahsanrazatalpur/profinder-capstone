@@ -1,12 +1,5 @@
-// lib/shared/widgets/category_card.dart
-//
-// GLOBAL "popular category" card + grid + "view all" sheet.
-//
-// Pehle yeh poora UI (card design, grid, aur "view all" bottom sheet)
-// guest_home_screen.dart mein likha tha, aur customer_home_screen.dart
-// mein ek bilkul alag copy thi. Ab dono screens isi ek widget ko use
-// karte hain — jahan bhi "Popular Categories" chahiye, bas yahi import
-// karo, dobara code likhne ki zaroorat nahi.
+// Reusable category card, category grid, and full-screen category browser sheet.
+// Shared across guest, customer, and search interfaces.
 
 import 'package:flutter/material.dart';
 import '../../core/constants/category_style.dart';
@@ -37,8 +30,10 @@ class PremiumCategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final name = category['name']?.toString() ?? '';
     final style = CategoryStyles.forName(name, fallbackIndex);
-    final color = style.color;
-    final gradient = style.gradient
+    // Detect theme brightness from BuildContext to ensure responsive dark-mode styling
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final color = dark ? style.darkColor : style.color;
+    final gradient = (dark ? style.darkGradient : style.gradient)
         .map((c) => Color.lerp(c, Colors.white, 0.18)!)
         .toList();
 
@@ -51,7 +46,7 @@ class PremiumCategoryCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: isDark
+            colors: dark
                 ? const [AppColors.surface, AppColors.background]
                 : const [Colors.white, AppColors.slate50],
           ),
@@ -59,14 +54,14 @@ class PremiumCategoryCard extends StatelessWidget {
           border: Border.all(
             color: selected
                 ? color
-                : (isDark
-                    ? Colors.white.withValues(alpha: 0.06)
-                    : color.withValues(alpha: 0.15)),
+                : (dark
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : color.withValues(alpha: 0.15)),
             width: selected ? 2 : 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: isDark
+              color: dark
                   ? Colors.black.withValues(alpha: 0.3)
                   : color.withValues(alpha: 0.08),
               blurRadius: selected ? 20 : 16,
@@ -115,9 +110,7 @@ class PremiumCategoryCard extends StatelessWidget {
                     fontSize: AppFontSizes.caption,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                     height: 1.15,
-                    color: selected
-                        ? color
-                        : context.colors.textPrimary,
+                    color: selected ? color : context.colors.textPrimary,
                     letterSpacing: -0.2,
                   ),
                 ),
@@ -141,9 +134,8 @@ class PremiumCategoryCard extends StatelessWidget {
   }
 }
 
-/// Popular categories grid (home-screen "Popular Categories" section).
-/// [onCategoryTap] gets the raw category Map — caller decides kya karna
-/// hai (guest: search screen open; customer: local filter select).
+/// Responsive grid displaying popular category cards.
+/// [onCategoryTap] passes the selected category map to the caller for filtering or navigation.
 class PopularCategoriesGrid extends StatelessWidget {
   final List<dynamic> categories;
   final bool isDark;
@@ -199,19 +191,22 @@ void showAllCategoriesSheet(
   required bool isDark,
   required void Function(Map category) onCategoryTap,
 }) {
+  isDark = Theme.of(context).brightness == Brightness.dark; // theme se hi lo
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radius28)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(AppSizes.radius28),
+      ),
     ),
     builder: (_) => Container(
       decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.background
-            : context.colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radius28)),
+        color: isDark ? AppColors.background : context.colors.surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radius28),
+        ),
         boxShadow: [
           BoxShadow(
             color: isDark

@@ -2,6 +2,7 @@
 
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_helpers.dart';
@@ -14,7 +15,8 @@ class ProfessionalReviewsScreen extends StatefulWidget {
   const ProfessionalReviewsScreen({super.key});
 
   @override
-  State<ProfessionalReviewsScreen> createState() => _ProfessionalReviewsScreenState();
+  State<ProfessionalReviewsScreen> createState() =>
+      _ProfessionalReviewsScreenState();
 }
 
 class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
@@ -33,9 +35,16 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
     try {
       final res = await _api.get(AppConstants.reviews);
       final data = res.data;
-      final list = data is List ? data : (data is Map ? (data['results'] ?? data['reviews'] ?? []) as List : []);
+      final list = data is List
+          ? data
+          : (data is Map
+                ? (data['results'] ?? data['reviews'] ?? []) as List
+                : []);
       if (!mounted) return;
-      setState(() { _reviews = list; _isLoading = false; });
+      setState(() {
+        _reviews = list;
+        _isLoading = false;
+      });
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
@@ -44,7 +53,10 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
 
   double get _averageRating {
     if (_reviews.isEmpty) return 0;
-    final sum = _reviews.fold<double>(0, (acc, r) => acc + (r['rating'] ?? 0).toDouble());
+    final sum = _reviews.fold<double>(
+      0,
+      (acc, r) => acc + (r['rating'] ?? 0).toDouble(),
+    );
     return sum / _reviews.length;
   }
 
@@ -55,8 +67,22 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
       appBar: AppBar(
         backgroundColor: context.colors.surface,
         elevation: 0,
-        title: Text(AppLocalizations.of(context).reviews, style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
-        leading: IconButton(icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: context.colors.textPrimary), onPressed: () => Navigator.pop(context)),
+        title: Text(
+          AppLocalizations.of(context).reviews,
+          style: TextStyle(
+            fontSize: AppFontSizes.title,
+            fontWeight: FontWeight.w700,
+            color: context.colors.textPrimary,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 18,
+            color: context.colors.textPrimary,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -73,9 +99,19 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
                       padding: const EdgeInsets.only(top: 60),
                       child: Column(
                         children: [
-                          Icon(Icons.rate_review_outlined, size: 56, color: context.colors.textDisabled),
+                          Icon(
+                            Icons.rate_review_outlined,
+                            size: 56,
+                            color: context.colors.textDisabled,
+                          ),
                           const SizedBox(height: 12),
-                          Text(AppLocalizations.of(context).searchNoReviewsYet, style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary)),
+                          Text(
+                            AppLocalizations.of(context).searchNoReviewsYet,
+                            style: TextStyle(
+                              fontSize: AppFontSizes.body,
+                              color: context.colors.textSecondary,
+                            ),
+                          ),
                         ],
                       ),
                     )
@@ -91,25 +127,50 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [AppColors.warningAmber, AppColors.amberDeep],
-            begin: Alignment.topLeft, end: Alignment.bottomRight),
+        gradient: const LinearGradient(
+          colors: [AppColors.warningAmber, AppColors.amberDeep],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       ),
       child: Row(
         children: [
-          Text(_averageRating.toStringAsFixed(1),
-              style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: Colors.white)),
+          Text(
+            _averageRating.toStringAsFixed(1),
+            style: const TextStyle(
+              fontSize: 34,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
+          ),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: List.generate(5, (i) => Icon(
-                    i < _averageRating.round() ? Icons.star_rounded : Icons.star_border_rounded,
-                    size: 16, color: Colors.white,
-                  ))),
+              Row(
+                children: List.generate(
+                  5,
+                  (i) => Icon(
+                    i < _averageRating.round()
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    size: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(AppLocalizations.of(context).professionalReview('${_reviews.length}', _reviews.length == 1 ? '' : 's'),
-                  style: TextStyle(fontSize: AppFontSizes.small, color: Colors.white.withValues(alpha: 0.9))),
+              Text(
+                AppLocalizations.of(context).professionalReview(
+                  '${_reviews.length}',
+                  _reviews.length == 1 ? '' : 's',
+                ),
+                style: TextStyle(
+                  fontSize: AppFontSizes.small,
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
+              ),
             ],
           ),
         ],
@@ -119,9 +180,18 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
 
   Widget _buildReviewCard(dynamic r) {
     final customerName = r['reviewer_name'] ?? r['customer_name'] ?? 'Customer';
-    final rating       = (r['rating'] ?? 0).toDouble();
-    final comment      = r['comment']?.toString() ?? r['review']?.toString() ?? '';
-    final date         = r['created_at']?.toString().split('T').first ?? r['date']?.toString() ?? '';
+    final rawPhoto =
+        r['reviewer_photo'] ??
+        r['customer_photo'] ??
+        r['photo_url'] ??
+        r['photo'];
+    final photo = AppHelpers.getFullImageUrl(rawPhoto?.toString());
+    final rating = (r['rating'] ?? 0).toDouble();
+    final comment = r['comment']?.toString() ?? r['review']?.toString() ?? '';
+    final date =
+        r['created_at']?.toString().split('T').first ??
+        r['date']?.toString() ??
+        '';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -136,31 +206,89 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 18,
-                backgroundColor: context.colors.primaryLight,
-                child: Text(AppHelpers.getInitials(customerName.toString()),
-                    style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.bold, color: context.colors.primary)),
+              ClipOval(
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  color: context.colors.primaryLight,
+                  child: photo.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: photo,
+                          fit: BoxFit.cover,
+                          memCacheWidth: 100,
+                          memCacheHeight: 100,
+                          placeholder: (_, _) => const SizedBox(),
+                          errorWidget: (_, _, _) => Center(
+                            child: Text(
+                              AppHelpers.getInitials(customerName.toString()),
+                              style: TextStyle(
+                                fontSize: AppFontSizes.small,
+                                fontWeight: FontWeight.bold,
+                                color: context.colors.primary,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Center(
+                          child: Text(
+                            AppHelpers.getInitials(customerName.toString()),
+                            style: TextStyle(
+                              fontSize: AppFontSizes.small,
+                              fontWeight: FontWeight.bold,
+                              color: context.colors.primary,
+                            ),
+                          ),
+                        ),
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(customerName.toString(), style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
-                    if (date.isNotEmpty) Text(date, style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
+                    Text(
+                      customerName.toString(),
+                      style: TextStyle(
+                        fontSize: AppFontSizes.body,
+                        fontWeight: FontWeight.w700,
+                        color: context.colors.textPrimary,
+                      ),
+                    ),
+                    if (date.isNotEmpty)
+                      Text(
+                        date,
+                        style: TextStyle(
+                          fontSize: AppFontSizes.caption,
+                          color: context.colors.textSecondary,
+                        ),
+                      ),
                   ],
                 ),
               ),
-              Row(children: List.generate(5, (i) => Icon(
-                    i < rating.round() ? Icons.star_rounded : Icons.star_border_rounded,
-                    size: 14, color: AppColors.warningAmber,
-                  ))),
+              Row(
+                children: List.generate(
+                  5,
+                  (i) => Icon(
+                    i < rating.round()
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    size: 14,
+                    color: AppColors.warningAmber,
+                  ),
+                ),
+              ),
             ],
           ),
           if (comment.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(comment, style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textPrimary, height: 1.5)),
+            Text(
+              comment,
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: context.colors.textPrimary,
+                height: 1.5,
+              ),
+            ),
           ],
         ],
       ),

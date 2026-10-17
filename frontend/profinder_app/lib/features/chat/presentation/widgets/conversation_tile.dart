@@ -62,9 +62,7 @@ class ConversationTile extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // ✅ NEW — the only visible confirmation that
-                            // "Mute" actually did something; previously
-                            // muting changed nothing anyone could see.
+                            // Visual indicator when notifications for this conversation are muted
                             if (conversation.isMuted) ...[
                               const SizedBox(width: 5),
                               Icon(Icons.notifications_off_rounded, size: 14, color: context.colors.textSecondary),

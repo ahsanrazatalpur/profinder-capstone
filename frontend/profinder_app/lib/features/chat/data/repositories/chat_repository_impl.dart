@@ -23,7 +23,6 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<ConversationEntity> startConversation(int otherUserId) => _remote.startConversation(otherUserId);
 
-  // ✅ NEW — pin / archive / mute / draft
   @override
   Future<void> setPinned(int conversationId, bool value) => _remote.setPinned(conversationId, value);
 
@@ -52,7 +51,6 @@ class ChatRepositoryImpl implements ChatRepository {
     return _remote.sendMessage(conversationId, text: text, replyToId: replyToId, image: image);
   }
 
-  // ✅ NEW — voice messages
   @override
   Future<MessageEntity> sendVoiceMessage(
     int conversationId, {
@@ -76,20 +74,16 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<void> markSeen(int conversationId) => _remote.markSeen(conversationId);
 
-  // ✅ NEW — reactions
   @override
   Future<MessageEntity> toggleReaction(String messageId, String emoji) => _remote.toggleReaction(messageId, emoji);
 
-  // ✅ NEW — search
   @override
   Future<List<MessageEntity>> searchMessages(int conversationId, String query) =>
       _remote.searchMessages(conversationId, query);
 
-  // ✅ NEW — media gallery
   @override
   Future<List<MediaAttachmentEntity>> getMedia(int conversationId) => _remote.getMedia(conversationId);
 
-  // ✅ NEW — block / report
   @override
   Future<List<BlockedUserEntity>> getBlockedUsers() => _remote.getBlockedUsers();
 

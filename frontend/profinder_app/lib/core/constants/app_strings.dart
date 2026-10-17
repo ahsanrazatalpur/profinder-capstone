@@ -1,27 +1,10 @@
-// lib/core/constants/app_strings.dart
-//
-// ✅ i18n fix — this class used to hold hardcoded English text. That's why
-// switching to Urdu flipped the layout to RTL (Flutter derives text
-// direction from the active locale automatically) but left every string
-// on screens that used AppStrings.xxx untranslated — they were never
-// reading from AppLocalizations/the .arb files in the first place.
-//
-// Fix: keep the exact same `AppStrings.xxx` API (so login_screen.dart,
-// register_screen.dart, forgot_password_screen.dart,
-// professional_detail_screen.dart and app_logo.dart don't need to change
-// even one line — no UI/logic touched) but back every field with a
-// getter that reads the CURRENT AppLocalizations for the CURRENT locale.
-// English is only used as a safety-net fallback (e.g. the very first
-// frame, before the root context is available).
-//
-// The other ~99% of the app already calls AppLocalizations.of(context)
-// directly per-screen (that's the correct/normal Flutter pattern) and
-// was already translating fine — this file only patches the few legacy
-// screens still using the old AppStrings shortcut.
-
 import 'package:flutter/widgets.dart';
 import '../../l10n/generated/app_localizations.dart';
 
+/// Centralized string accessor backed by [AppLocalizations].
+///
+/// Provides dynamic localization for screens while resolving strings against
+/// the currently active locale, with fallback to default English labels.
 class AppStrings {
   AppStrings._();
 

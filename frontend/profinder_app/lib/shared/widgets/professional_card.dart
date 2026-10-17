@@ -119,9 +119,9 @@ class ProfessionalCard extends StatelessWidget {
   // truth parent screens size their wrappers from, so nothing that
   // reads this card's layout elsewhere needed to change.
   static const double _basePhotoHeight = 168.0;
-  static const double _baseBodyHeight  = 210.0;
-  static const double _baseCardWidth   = 230.0;
-  static const double _cardRadius      = 20.0;
+  static const double _baseBodyHeight = 210.0;
+  static const double _baseCardWidth = 230.0;
+  static const double _cardRadius = 20.0;
 
   static double _scaleFor(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
@@ -153,7 +153,9 @@ class ProfessionalCard extends StatelessWidget {
   // width instead of this fixed scale).
   static double _bodyHeightFor(BuildContext context) {
     final s = _scaleFor(context);
-    final textScale = MediaQuery.textScalerOf(context).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.25).scale(1.0);
+    final textScale = MediaQuery.textScalerOf(
+      context,
+    ).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.25).scale(1.0);
     final textBuffer = textScale > 1.0 ? (textScale - 1.0) * 60.0 : 0.0;
     // Raised from 8 -> 16: extra headroom so the card stays overflow-free
     // across small phones, tablets, and different system font scales —
@@ -163,9 +165,15 @@ class ProfessionalCard extends StatelessWidget {
   }
 
   /// Compact-mode card width for this screen (ignored when `fullWidth`).
-  static double widthFor(BuildContext context) => (_baseCardWidth * _scaleFor(context)).clamp(190.0, 278.0);
+  static double widthFor(BuildContext context) =>
+      (_baseCardWidth * _scaleFor(context)).clamp(190.0, 278.0);
 
-  static double _sp(double base, double scale, {double min = 0, double max = 999}) => (base * scale).clamp(min, max);
+  static double _sp(
+    double base,
+    double scale, {
+    double min = 0,
+    double max = 999,
+  }) => (base * scale).clamp(min, max);
 
   // Hero photo width:height ratio used ONLY in fullWidth (vertical list)
   // mode, where the card is as wide as the screen. Compact carousel mode
@@ -175,49 +183,59 @@ class ProfessionalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scale = _scaleFor(context);
-    final dpr   = MediaQuery.devicePixelRatioOf(context);
+    final dpr = MediaQuery.devicePixelRatioOf(context);
     // Respect the user's OS text-size accessibility setting, but clamp it
     // — otherwise an extreme system font scale would overflow this
     // fixed-height card no matter how it's built.
-    final clampedTextScaler = MediaQuery.textScalerOf(context).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.25);
+    final clampedTextScaler = MediaQuery.textScalerOf(
+      context,
+    ).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.25);
 
-    final id           = pro['id']?.toString() ?? pro['user_id']?.toString() ?? '';
-    final name         = pro['name']?.toString() ?? AppLocalizations.of(context).professionalDefaultName;
-    final profession   = pro['category_name']?.toString().trim().isNotEmpty == true
+    final id = pro['id']?.toString() ?? pro['user_id']?.toString() ?? '';
+    final name =
+        pro['name']?.toString() ??
+        AppLocalizations.of(context).professionalDefaultName;
+    final profession =
+        pro['category_name']?.toString().trim().isNotEmpty == true
         ? pro['category_name'].toString()
         : (pro['specialization']?.toString() ?? '');
-    final photo        = AppHelpers.getFullImageUrl(pro['photo_url']?.toString());
-    final rating       = _asDouble(pro['average_rating']);
-    final reviews      = pro['reviews_count']; // shown only if the backend returned it
-    final experience   = pro['experience_years'];
-    final distance     = pro['distance_km'];
-    final city         = pro['city']?.toString() ?? '';
-    final price        = _asDouble(pro['hourly_rate']);
-    final isVerified   = pro['is_verified'] == true; // admin-controlled — never inferred client-side
-    final isPremium    = pro['is_premium'] == true;
+    final photo = AppHelpers.getFullImageUrl(pro['photo_url']?.toString());
+    final rating = _asDouble(pro['average_rating']);
+    final reviews =
+        pro['reviews_count']; // shown only if the backend returned it
+    final experience = pro['experience_years'];
+    final distance = pro['distance_km'];
+    final city = pro['city']?.toString() ?? '';
+    final price = _asDouble(pro['hourly_rate']);
+    final currencySym = AppHelpers.getCurrencySymbol(professional: pro);
+    final isVerified =
+        pro['is_verified'] ==
+        true; // admin-controlled — never inferred client-side
+    final isPremium = pro['is_premium'] == true;
 
-    final badgeText  = sectionTag ?? (isPremium ? AppLocalizations.of(context).proBadgeLabel : null);
-    final badgeIcon  = sectionTag != null ? sectionTagIcon : (isPremium ? Icons.workspace_premium_rounded : null);
-    final badgeColor = sectionTag != null ? (sectionTagColor ?? context.colors.primary) : AppColors.accentPurple;
+    final badgeText =
+        sectionTag ??
+        (isPremium ? AppLocalizations.of(context).proBadgeLabel : null);
+    final badgeIcon = sectionTag != null
+        ? sectionTagIcon
+        : (isPremium ? Icons.workspace_premium_rounded : null);
+    final badgeColor = sectionTag != null
+        ? (sectionTagColor ?? context.colors.primary)
+        : AppColors.accentPurple;
 
     final bodyHeight = _bodyHeightFor(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final compactWidth = _sp(_baseCardWidth, scale, min: 190, max: 278);
-        final cardWidth    = fullWidth ? constraints.maxWidth : compactWidth;
+        final cardWidth = fullWidth ? constraints.maxWidth : compactWidth;
 
-        // 🔧 FIX: previously every card used the SAME fixed photo height
-        // regardless of card width. That's fine for the narrow ~230px
-        // carousel card, but on a fullWidth card (screen-wide, in a
-        // vertical list) it made the photo far too short for how wide it
-        // now was — BoxFit.cover had to crop most of the face off just
-        // to fill that shape (exactly the "dp sahi se nazar nahi aata"
-        // bug). fullWidth cards now derive their photo height from the
-        // real available width via a sane portrait-friendly aspect
-        // ratio instead of reusing the carousel's short fixed height.
+        // Derive photo height dynamically on full-width cards using a portrait aspect
+        // ratio to prevent improper image cropping.
         final photoHeight = fullWidth
-            ? (cardWidth.isFinite ? (cardWidth / _fullWidthPhotoAspect).clamp(200.0, 280.0) : 240.0)
+            ? (cardWidth.isFinite
+                  ? (cardWidth / _fullWidthPhotoAspect).clamp(200.0, 280.0)
+                  : 240.0)
             : _sp(_basePhotoHeight, scale);
         final totalHeight = photoHeight + bodyHeight;
 
@@ -225,11 +243,14 @@ class ProfessionalCard extends StatelessWidget {
         // rendered — avoids decoding a full-resolution source photo just
         // to paint it at its rendered size.
         final memCacheH = (photoHeight * dpr).round();
-        final memCacheW = ((cardWidth.isFinite ? cardWidth : 360.0) * dpr).round();
+        final memCacheW = ((cardWidth.isFinite ? cardWidth : 360.0) * dpr)
+            .round();
 
         return RepaintBoundary(
           child: MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaler: clampedTextScaler),
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: clampedTextScaler),
             child: _PressableCard(
               key: ValueKey('pro_card_$id'),
               onTap: onTap,
@@ -239,168 +260,236 @@ class ProfessionalCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildPhoto(context, name, photo, isVerified, badgeText, badgeIcon, badgeColor, photoHeight, scale, memCacheW, memCacheH),
+                  _buildPhoto(
+                    context,
+                    name,
+                    photo,
+                    isVerified,
+                    badgeText,
+                    badgeIcon,
+                    badgeColor,
+                    photoHeight,
+                    scale,
+                    memCacheW,
+                    memCacheH,
+                  ),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(_sp(14, scale, min: 12, max: 17), _sp(13, scale, min: 11, max: 16),
-                          _sp(14, scale, min: 12, max: 17), _sp(10, scale, min: 8, max: 13)),
+                      padding: EdgeInsets.fromLTRB(
+                        _sp(14, scale, min: 12, max: 17),
+                        _sp(13, scale, min: 11, max: 16),
+                        _sp(14, scale, min: 12, max: 17),
+                        _sp(10, scale, min: 8, max: 13),
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      // 4 + 5. Category icon + Profession (bold, primary
-                      // color, now the single loudest text on the card)
-                      // with the name underneath, clearly secondary.
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            width: _sp(38, scale, min: 34, max: 44),
-                            height: _sp(38, scale, min: 34, max: 44),
-                            decoration: BoxDecoration(
-                              color: context.colors.primaryLight,
-                              borderRadius: BorderRadius.circular(_sp(11, scale, min: 9, max: 13)),
-                            ),
-                            child: Icon(
-                              _categoryIcon(profession),
-                              color: context.colors.primary,
-                              size: _sp(20, scale, min: 18, max: 23),
-                            ),
-                          ),
-                          SizedBox(width: _sp(10, scale, min: 8, max: 12)),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ListenableBuilder(
-                                  listenable: ContentLocalizer.instance,
-                                  builder: (context, _) => Text(
-                                  profession.isNotEmpty ? AppHelpers.localizedCategoryName(context, profession) : AppLocalizations.of(context).serviceProfessionalLabel,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize:   _sp(18.5, scale, min: 16.5, max: 21.5),
-                                    fontWeight: FontWeight.w800,
-                                    color:      context.colors.primary,
-                                    height:     1.12,
-                                    letterSpacing: 0.1,
-                                  ),
+                          // 4 + 5. Category icon + Profession (bold, primary
+                          // color, now the single loudest text on the card)
+                          // with the name underneath, clearly secondary.
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: _sp(38, scale, min: 34, max: 44),
+                                height: _sp(38, scale, min: 34, max: 44),
+                                decoration: BoxDecoration(
+                                  color: context.colors.primaryLight,
+                                  borderRadius: BorderRadius.circular(
+                                    _sp(11, scale, min: 9, max: 13),
                                   ),
                                 ),
-                                SizedBox(height: _sp(3, scale, min: 2, max: 4)),
-                                // 5. Name — clearly secondary to the profession above:
-                                //    smaller, lighter weight, muted color.
-                                LocalizedText(
-                                  name,
-                                  kind: LocKind.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                child: Icon(
+                                  _categoryIcon(profession),
+                                  color: context.colors.primary,
+                                  size: _sp(20, scale, min: 18, max: 23),
+                                ),
+                              ),
+                              SizedBox(width: _sp(10, scale, min: 8, max: 12)),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListenableBuilder(
+                                      listenable: ContentLocalizer.instance,
+                                      builder: (context, _) => Text(
+                                        profession.isNotEmpty
+                                            ? AppHelpers.localizedCategoryName(
+                                                context,
+                                                profession,
+                                              )
+                                            : AppLocalizations.of(
+                                                context,
+                                              ).serviceProfessionalLabel,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: _sp(
+                                            18.5,
+                                            scale,
+                                            min: 16.5,
+                                            max: 21.5,
+                                          ),
+                                          fontWeight: FontWeight.w800,
+                                          color: context.colors.primary,
+                                          height: 1.12,
+                                          letterSpacing: 0.1,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: _sp(3, scale, min: 2, max: 4),
+                                    ),
+                                    // 5. Name — clearly secondary to the profession above:
+                                    //    smaller, lighter weight, muted color.
+                                    LocalizedText(
+                                      name,
+                                      kind: LocKind.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: _sp(
+                                          13.5,
+                                          scale,
+                                          min: 12,
+                                          max: 15.5,
+                                        ),
+                                        fontWeight: FontWeight.w500,
+                                        color: context.colors.textSecondary,
+                                        letterSpacing: 0.15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: _sp(10, scale, min: 8, max: 12)),
+                          // 6. Rating + review count + experience
+                          _buildRatingRow(
+                            context,
+                            rating,
+                            reviews,
+                            experience,
+                            scale,
+                          ),
+                          SizedBox(height: _sp(8, scale, min: 6, max: 10)),
+                          // 7. City + distance
+                          _buildLocationRow(context, city, distance, scale),
+                          const Spacer(),
+                          // 8. Starting price — now its own visually distinct
+                          //    block: quiet uppercase label on top, then a
+                          //    large green premium-accent price. This is
+                          //    meant to be one of the first things the eye
+                          //    lands on, per the redesign brief.
+                          Text(
+                            AppLocalizations.of(context).startingFromLabel,
+                            style: TextStyle(
+                              fontSize: _sp(9.5, scale, min: 8.5, max: 11),
+                              fontWeight: FontWeight.w700,
+                              color: context.colors.textSecondary,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                          SizedBox(height: _sp(2, scale, min: 1.5, max: 3)),
+                          RichText(
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text:
+                                      '$currencySym ${price.toStringAsFixed(0)}',
                                   style: TextStyle(
-                                    fontSize:   _sp(13.5, scale, min: 12, max: 15.5),
-                                    fontWeight: FontWeight.w500,
-                                    color:      context.colors.textSecondary,
-                                    letterSpacing: 0.15,
+                                    fontSize: _sp(23, scale, min: 20, max: 26),
+                                    fontWeight: FontWeight.w800,
+                                    color: context.colors.accent,
+                                    letterSpacing: 0.2,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: AppLocalizations.of(
+                                    context,
+                                  ).perHourLabel,
+                                  style: TextStyle(
+                                    fontSize: _sp(
+                                      12,
+                                      scale,
+                                      min: 10.5,
+                                      max: 13.5,
+                                    ),
+                                    fontWeight: FontWeight.w600,
+                                    color: context.colors.textSecondary,
+                                    letterSpacing: 0.2,
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          SizedBox(height: _sp(12, scale, min: 10, max: 15)),
+                          // 9 + 10. View Profile, then Book Now.
+                          _buildActionRow(context, scale),
                         ],
                       ),
-                      SizedBox(height: _sp(10, scale, min: 8, max: 12)),
-                      // 6. Rating + review count + experience
-                      _buildRatingRow(context, rating, reviews, experience, scale),
-                      SizedBox(height: _sp(8, scale, min: 6, max: 10)),
-                      // 7. City + distance
-                      _buildLocationRow(context, city, distance, scale),
-                      const Spacer(),
-                      // 8. Starting price — now its own visually distinct
-                      //    block: quiet uppercase label on top, then a
-                      //    large green premium-accent price. This is
-                      //    meant to be one of the first things the eye
-                      //    lands on, per the redesign brief.
-                      Text(
-                        AppLocalizations.of(context).startingFromLabel,
-                        style: TextStyle(
-                          fontSize: _sp(9.5, scale, min: 8.5, max: 11),
-                          fontWeight: FontWeight.w700,
-                          color: context.colors.textSecondary,
-                          letterSpacing: 0.8,
-                        ),
-                      ),
-                      SizedBox(height: _sp(2, scale, min: 1.5, max: 3)),
-                      RichText(
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        text: TextSpan(children: [
-                          TextSpan(
-                            text: '\$${price.toStringAsFixed(0)}',
-                            style: TextStyle(
-                              fontSize: _sp(23, scale, min: 20, max: 26),
-                              fontWeight: FontWeight.w800,
-                              color: context.colors.accent,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                          TextSpan(
-                            text: AppLocalizations.of(context).perHourLabel,
-                            style: TextStyle(
-                              fontSize: _sp(12, scale, min: 10.5, max: 13.5),
-                              fontWeight: FontWeight.w600,
-                              color: context.colors.textSecondary,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                        ]),
-                      ),
-                      SizedBox(height: _sp(12, scale, min: 10, max: 15)),
-                      // 9 + 10. View Profile, then Book Now.
-                      _buildActionRow(context, scale),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        );
       },
     );
   }
 
   // ── 1–3. Photo + Verified badge + Section badge + favourite ──────────
-  Widget _buildPhoto(BuildContext context, String name, String photo, bool isVerified, String? badgeText, IconData? badgeIcon, Color badgeColor,
-      double photoHeight, double scale, int memCacheW, int memCacheH) {
+  Widget _buildPhoto(
+    BuildContext context,
+    String name,
+    String photo,
+    bool isVerified,
+    String? badgeText,
+    IconData? badgeIcon,
+    Color badgeColor,
+    double photoHeight,
+    double scale,
+    int memCacheW,
+    int memCacheH,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(_cardRadius)),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(_cardRadius),
+      ),
       child: SizedBox(
         height: photoHeight,
-        width:  double.infinity,
+        width: double.infinity,
         child: Stack(
           fit: StackFit.expand,
           children: [
             RepaintBoundary(
               child: photo.isNotEmpty
                   ? CachedNetworkImage(
-                      imageUrl:       photo,
-                      fit:            BoxFit.cover,
-                      memCacheWidth:  memCacheW,
+                      imageUrl: photo,
+                      fit: BoxFit.cover,
+                      memCacheWidth: memCacheW,
                       memCacheHeight: memCacheH,
                       fadeInDuration: const Duration(milliseconds: 220),
-                      fadeInCurve:    Curves.easeOut,
-                      placeholder:    (_, _) => const _ShimmerBox(),
-                      errorWidget:    (_, _, _) => _avatarFallback(context, name, scale),
+                      fadeInCurve: Curves.easeOut,
+                      placeholder: (_, _) => const _ShimmerBox(),
+                      errorWidget: (_, _, _) =>
+                          _avatarFallback(context, name, scale),
                     )
                   : _avatarFallback(context, name, scale),
             ),
             // 2. Verified badge — top-left, admin-controlled only.
             if (isVerified)
               Positioned(
-                left: _sp(9, scale, min: 7, max: 11), top: _sp(9, scale, min: 7, max: 11),
+                left: _sp(9, scale, min: 7, max: 11),
+                top: _sp(9, scale, min: 7, max: 11),
                 child: _pill(
                   color: context.colors.accent,
                   icon: Icons.verified_rounded,
@@ -413,8 +502,16 @@ class ProfessionalCard extends StatelessWidget {
             //    the other.
             if (badgeText != null)
               Positioned(
-                left: _sp(9, scale, min: 7, max: 11), top: isVerified ? _sp(33, scale, min: 27, max: 39) : _sp(9, scale, min: 7, max: 11),
-                child: _pill(color: badgeColor, icon: badgeIcon, text: badgeText, scale: scale),
+                left: _sp(9, scale, min: 7, max: 11),
+                top: isVerified
+                    ? _sp(38, scale, min: 31, max: 44)
+                    : _sp(9, scale, min: 7, max: 11),
+                child: _pill(
+                  color: badgeColor,
+                  icon: badgeIcon,
+                  text: badgeText,
+                  scale: scale,
+                ),
               ),
             // Favourite heart — existing utility action, kept as a small
             // unobtrusive overlay. Now animates between states instead of
@@ -422,35 +519,44 @@ class ProfessionalCard extends StatelessWidget {
             // never repaints the photo or badges above it.
             if (onFavoriteToggle != null)
               Positioned(
-                right: _sp(8, scale, min: 6, max: 10), top: _sp(8, scale, min: 6, max: 10),
+                right: _sp(8, scale, min: 6, max: 10),
+                top: _sp(8, scale, min: 6, max: 10),
                 child: RepaintBoundary(
                   child: GestureDetector(
                     onTap: onFavoriteToggle,
                     child: Container(
-                      width: _sp(31, scale, min: 27, max: 35), height: _sp(31, scale, min: 27, max: 35),
+                      width: _sp(31, scale, min: 27, max: 35),
+                      height: _sp(31, scale, min: 27, max: 35),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? AppColors.surface
-                            : Colors.white,
+                        color: isDark ? AppColors.surface : Colors.white,
                         shape: BoxShape.circle,
-                        boxShadow: [BoxShadow(
-                          color: isDark
-                              ? Colors.black.withValues(alpha: 0.3)
-                              : Colors.black.withValues(alpha: 0.18),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        )],
+                        boxShadow: [
+                          BoxShadow(
+                            color: isDark
+                                ? Colors.black.withValues(alpha: 0.3)
+                                : Colors.black.withValues(alpha: 0.18),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Center(
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 220),
                           switchInCurve: Curves.easeOutBack,
                           switchOutCurve: Curves.easeIn,
-                          transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: FadeTransition(opacity: anim, child: child)),
+                          transitionBuilder: (child, anim) => ScaleTransition(
+                            scale: anim,
+                            child: FadeTransition(opacity: anim, child: child),
+                          ),
                           child: Icon(
-                            isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                            isFavorite
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
                             key: ValueKey<bool>(isFavorite),
-                            color: isFavorite ? AppColors.error : context.colors.textSecondary,
+                            color: isFavorite
+                                ? AppColors.error
+                                : context.colors.textSecondary,
                             size: _sp(17, scale, min: 15, max: 19),
                           ),
                         ),
@@ -465,198 +571,309 @@ class ProfessionalCard extends StatelessWidget {
     );
   }
 
-  Widget _pill({required Color color, IconData? icon, required String text, required double scale}) {
+  Widget _pill({
+    required Color color,
+    IconData? icon,
+    required String text,
+    required double scale,
+  }) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: _sp(8, scale, min: 6.5, max: 10), vertical: _sp(4, scale, min: 3.5, max: 5)),
+      padding: EdgeInsets.symmetric(
+        horizontal: _sp(8, scale, min: 6.5, max: 10),
+        vertical: _sp(4, scale, min: 3.5, max: 5),
+      ),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.35), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.35),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[Icon(icon, color: Colors.white, size: _sp(12, scale, min: 10.5, max: 14)), SizedBox(width: _sp(3, scale, min: 2, max: 4))],
-          Text(text, style: TextStyle(color: Colors.white, fontSize: _sp(10.5, scale, min: 9, max: 12), fontWeight: FontWeight.w700, letterSpacing: 0.4)),
+          if (icon != null) ...[
+            Icon(
+              icon,
+              color: Colors.white,
+              size: _sp(12, scale, min: 10.5, max: 14),
+            ),
+            SizedBox(width: _sp(3, scale, min: 2, max: 4)),
+          ],
+          Text(
+            text,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: _sp(10.5, scale, min: 9, max: 12),
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.4,
+            ),
+          ),
         ],
       ),
     );
   }
 
   // ── 6. Rating + review count + experience ─────────────────────────────
-  Widget _buildRatingRow(BuildContext context, double rating, dynamic reviews, dynamic experience, double scale) {
+  Widget _buildRatingRow(
+    BuildContext context,
+    double rating,
+    dynamic reviews,
+    dynamic experience,
+    double scale,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Row(children: [
-      Container(
-        padding: EdgeInsets.symmetric(horizontal: _sp(7, scale, min: 6, max: 8.5), vertical: _sp(3, scale, min: 2.5, max: 4)),
-        decoration: BoxDecoration(
-          color: isDark
-              ? AppColors.warningAmber.withValues(alpha: 0.15)
-              : const Color(0xFFFEF3C7),
-          borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: _sp(7, scale, min: 6, max: 8.5),
+            vertical: _sp(3, scale, min: 2.5, max: 4),
+          ),
+          decoration: BoxDecoration(
+            color: isDark
+                ? AppColors.warningAmber.withValues(alpha: 0.15)
+                : const Color(0xFFFEF3C7),
+            borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.star_rounded,
+                color: AppColors.warningAmber,
+                size: _sp(14.5, scale, min: 13, max: 16.5),
+              ),
+              SizedBox(width: _sp(2, scale, min: 1.5, max: 3)),
+              Text(
+                rating.toStringAsFixed(1),
+                style: TextStyle(
+                  fontSize: _sp(12, scale, min: 10.5, max: 14),
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? AppColors.starGold : AppColors.amber800,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ],
+          ),
         ),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.star_rounded, color: AppColors.warningAmber, size: _sp(14.5, scale, min: 13, max: 16.5)),
+        if (reviews != null) ...[
+          SizedBox(width: _sp(6, scale, min: 5, max: 8)),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                AppLocalizations.of(context).reviewsCountLabel(reviews),
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: _sp(12, scale, min: 10.5, max: 14),
+                  color: context.colors.textSecondary,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ),
+          ),
+        ],
+        if (experience != null) ...[
+          SizedBox(width: _sp(8, scale, min: 6, max: 10)),
+          Icon(
+            Icons.work_outline_rounded,
+            size: _sp(13, scale, min: 11.5, max: 15),
+            color: context.colors.textSecondary,
+          ),
           SizedBox(width: _sp(2, scale, min: 1.5, max: 3)),
-          Text(rating.toStringAsFixed(1),
-              style: TextStyle(
-                fontSize: _sp(12, scale, min: 10.5, max: 14),
-                fontWeight: FontWeight.w700,
-                color: isDark
-                    ? AppColors.starGold
-                    : AppColors.amber800,
-                letterSpacing: 0.2,
-              )),
-        ]),
-      ),
-      if (reviews != null) ...[
-        SizedBox(width: _sp(6, scale, min: 5, max: 8)),
-        Flexible(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(AppLocalizations.of(context).reviewsCountLabel(reviews),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                AppLocalizations.of(context).experienceYearsLabel(experience),
                 maxLines: 1,
                 style: TextStyle(
                   fontSize: _sp(12, scale, min: 10.5, max: 14),
                   color: context.colors.textSecondary,
                   letterSpacing: 0.2,
-                )),
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       ],
-      if (experience != null) ...[
-        SizedBox(width: _sp(8, scale, min: 6, max: 10)),
-        Icon(Icons.work_outline_rounded, size: _sp(13, scale, min: 11.5, max: 15), color: context.colors.textSecondary),
-        SizedBox(width: _sp(2, scale, min: 1.5, max: 3)),
-        Flexible(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(AppLocalizations.of(context).experienceYearsLabel(experience),
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: _sp(12, scale, min: 10.5, max: 14),
-                  color: context.colors.textSecondary,
-                  letterSpacing: 0.2,
-                )),
-          ),
-        ),
-      ],
-    ]);
+    );
   }
 
   // ── 7. City + distance ─────────────────────────────────────────────────
-  Widget _buildLocationRow(BuildContext context, String city, dynamic distance, double scale) {
-    // FIX (bidi): pehle city + bullet + distance ek hi string thi. Urdu (RTL)
-    // mein English city ("Islamabad") aur number mix hone se order bigar jata
-    // tha. Ab city aur distance alag Text widgets hain, number ko LRI..PDI
-    // isolate mein rakha hai taa-ke "1083.3" kabhi ulta/ bikhra na ho.
+  Widget _buildLocationRow(
+    BuildContext context,
+    String city,
+    dynamic distance,
+    double scale,
+  ) {
+    // Separate city and distance into distinct widgets with bidirectional isolates
+    // to guarantee correct number and text ordering in RTL locales like Urdu and Arabic.
     final t = AppLocalizations.of(context);
     final km = distance == null ? null : double.tryParse(distance.toString());
     String? distLabel;
     if (km != null) {
-      final num_ = km < 1 ? (km * 1000).round().toString() : km.toStringAsFixed(1);
+      final num_ = km < 1
+          ? (km * 1000).round().toString()
+          : km.toStringAsFixed(1);
       final isolated = '\u2066$num_\u2069';
-      distLabel = km < 1 ? t.searchMetersAway(isolated) : t.searchKmAway(isolated);
+      distLabel = km < 1
+          ? t.searchMetersAway(isolated)
+          : t.searchKmAway(isolated);
     }
     final style = TextStyle(
       fontSize: _sp(12.5, scale, min: 11, max: 14.5),
       color: context.colors.textSecondary,
       letterSpacing: 0.2,
     );
-    final cityText = city.isNotEmpty ? city : (distLabel == null ? t.nearbyLabel : '');
-    return Row(children: [
-      Icon(Icons.location_on_outlined, size: _sp(14, scale, min: 12.5, max: 16), color: context.colors.textSecondary),
-      SizedBox(width: _sp(4, scale, min: 3, max: 5)),
-      if (cityText.isNotEmpty)
-        Flexible(
-          child: cityText == t.nearbyLabel
-              ? Text('\u2068$cityText\u2069', maxLines: 1, overflow: TextOverflow.ellipsis, style: style)
-              : LocalizedText(cityText, kind: LocKind.city, isolate: true, maxLines: 1, overflow: TextOverflow.ellipsis, style: style),
+    final cityText = city.isNotEmpty
+        ? city
+        : (distLabel == null ? t.nearbyLabel : '');
+    return Row(
+      children: [
+        Icon(
+          Icons.location_on_outlined,
+          size: _sp(14, scale, min: 12.5, max: 16),
+          color: context.colors.textSecondary,
         ),
-      if (cityText.isNotEmpty && distLabel != null) Text('  •  ', style: style),
-      if (distLabel != null)
-        Flexible(
-          flex: 2,
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(distLabel, maxLines: 1, style: style),
+        SizedBox(width: _sp(4, scale, min: 3, max: 5)),
+        if (cityText.isNotEmpty)
+          Flexible(
+            child: cityText == t.nearbyLabel
+                ? Text(
+                    '\u2068$cityText\u2069',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: style,
+                  )
+                : LocalizedText(
+                    cityText,
+                    kind: LocKind.city,
+                    isolate: true,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: style,
+                  ),
           ),
-        ),
-    ]);
+        if (cityText.isNotEmpty && distLabel != null)
+          Text('  •  ', style: style),
+        if (distLabel != null)
+          Flexible(
+            flex: 2,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(distLabel, maxLines: 1, style: style),
+            ),
+          ),
+      ],
+    );
   }
 
   // ── 9 + 10. View Profile, Book Now ────────────────────────────────────
   Widget _buildActionRow(BuildContext context, double scale) {
-    final vPad  = _sp(15, scale, min: 12.5, max: 18);
+    final vPad = _sp(15, scale, min: 12.5, max: 18);
     final fSize = _sp(13, scale, min: 11.5, max: 15);
     final btnRadius = BorderRadius.circular(AppSizes.radiusMd);
-    return Row(children: [
-      Expanded(
-        child: OutlinedButton(
-          onPressed: onTap,
-          style: OutlinedButton.styleFrom(
-            padding:     EdgeInsets.symmetric(vertical: vPad),
-            side:        BorderSide(color: context.colors.divider, width: 1.3),
-            shape:       RoundedRectangleBorder(borderRadius: btnRadius),
-            foregroundColor: context.colors.textPrimary,
-            // 🔧 Without these, Material enforces a hidden 48px minimum
-            // touch-target height regardless of our padding — that
-            // uncounted extra height was the real cause of the bottom
-            // overflow on smaller/narrower phones.
-            minimumSize:  Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: Text(AppLocalizations.of(context).viewProfileCta,
-              maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: fSize, fontWeight: FontWeight.w700, letterSpacing: 0.2)),
-        ),
-      ),
-      SizedBox(width: _sp(9, scale, min: 7, max: 11)),
-      Expanded(
-        // Soft brand-colored shadow under the primary CTA — the modern
-        // "elevated pill button" look (Fiverr/LinkedIn-style), instead of
-        // a flat, shadowless button competing visually with View Profile.
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: btnRadius,
-            boxShadow: [BoxShadow(color: context.colors.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 5))],
-          ),
-          child: ElevatedButton(
-            onPressed: onBookNow,
-            style: ElevatedButton.styleFrom(
-              padding:         EdgeInsets.symmetric(vertical: vPad),
-              backgroundColor: context.colors.primary,
-              foregroundColor: Colors.white,
-              elevation:       0,
-              shape:           RoundedRectangleBorder(borderRadius: btnRadius),
-              // Same fix as View Profile — no hidden 48px min height.
-              minimumSize:  Size.zero,
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: onTap,
+            style: OutlinedButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: vPad),
+              side: BorderSide(color: context.colors.divider, width: 1.3),
+              shape: RoundedRectangleBorder(borderRadius: btnRadius),
+              foregroundColor: context.colors.textPrimary,
+              // Without these, Material enforces a hidden 48px minimum
+              // touch-target height regardless of our padding — that
+              // uncounted extra height was the real cause of the bottom
+              // overflow on smaller/narrower phones.
+              minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: Text(AppLocalizations.of(context).bookNowCta,
-                maxLines: 1, overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: fSize, fontWeight: FontWeight.w700, letterSpacing: 0.3)),
+            child: Text(
+              AppLocalizations.of(context).viewProfileCta,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: fSize,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.2,
+              ),
+            ),
           ),
         ),
-      ),
-    ]);
+        SizedBox(width: _sp(9, scale, min: 7, max: 11)),
+        Expanded(
+          // Soft brand-colored shadow under the primary CTA — the modern
+          // "elevated pill button" look (Fiverr/LinkedIn-style), instead of
+          // a flat, shadowless button competing visually with View Profile.
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: btnRadius,
+              boxShadow: [
+                BoxShadow(
+                  color: context.colors.primary.withValues(alpha: 0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: ElevatedButton(
+              onPressed: onBookNow,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: vPad),
+                backgroundColor: context.colors.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: btnRadius),
+                // Same fix as View Profile — no hidden 48px min height.
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                AppLocalizations.of(context).bookNowCta,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: fSize,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
-  Widget _avatarFallback(BuildContext context, String name, double scale) => Container(
+  Widget _avatarFallback(BuildContext context, String name, double scale) =>
+      Container(
         color: context.colors.primaryLight,
         child: Center(
           child: Text(
             AppHelpers.getInitials(name),
-            style: TextStyle(color: context.colors.primary, fontSize: _sp(24, scale, min: 20, max: 28), fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: context.colors.primary,
+              fontSize: _sp(24, scale, min: 20, max: 28),
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       );
 
-  double _asDouble(dynamic v) => v == null ? 0.0 : (double.tryParse(v.toString()) ?? 0.0);
+  double _asDouble(dynamic v) =>
+      v == null ? 0.0 : (double.tryParse(v.toString()) ?? 0.0);
 
   // Best-effort icon for the category/profession chip — matches the icon
   // set already used for category tiles on the home/search screens, keyed
@@ -664,9 +881,15 @@ class ProfessionalCard extends StatelessWidget {
   // Falls back to a generic briefcase icon when nothing matches.
   static IconData _categoryIcon(String profession) {
     final p = profession.toLowerCase();
-    if (p.contains('tutor') || p.contains('educat') || p.contains('teach')) return Icons.menu_book_rounded;
-    if (p.contains('doctor') || p.contains('medic') || p.contains('health')) return Icons.medical_services_outlined;
-    if (p.contains('lawyer') || p.contains('legal')) return Icons.gavel_outlined;
+    if (p.contains('tutor') || p.contains('educat') || p.contains('teach')) {
+      return Icons.menu_book_rounded;
+    }
+    if (p.contains('doctor') || p.contains('medic') || p.contains('health')) {
+      return Icons.medical_services_outlined;
+    }
+    if (p.contains('lawyer') || p.contains('legal')) {
+      return Icons.gavel_outlined;
+    }
     if (p.contains('engineer')) return Icons.engineering_outlined;
     if (p.contains('plumb')) return Icons.plumbing_outlined;
     if (p.contains('electric')) return Icons.electrical_services;
@@ -674,10 +897,21 @@ class ProfessionalCard extends StatelessWidget {
     if (p.contains('carpent')) return Icons.carpenter;
     if (p.contains('paint')) return Icons.format_paint_outlined;
     if (p.contains('architect')) return Icons.architecture;
-    if (p.contains('account') || p.contains('financ')) return Icons.account_balance_outlined;
-    if (p.contains('comput') || p.contains('it ') || p.contains('developer') || p.contains('software')) return Icons.computer_outlined;
-    if (p.contains('beauty') || p.contains('salon') || p.contains('makeup')) return Icons.face_retouching_natural_outlined;
-    if (p.contains('fitness') || p.contains('trainer') || p.contains('gym')) return Icons.fitness_center_outlined;
+    if (p.contains('account') || p.contains('financ')) {
+      return Icons.account_balance_outlined;
+    }
+    if (p.contains('comput') ||
+        p.contains('it ') ||
+        p.contains('developer') ||
+        p.contains('software')) {
+      return Icons.computer_outlined;
+    }
+    if (p.contains('beauty') || p.contains('salon') || p.contains('makeup')) {
+      return Icons.face_retouching_natural_outlined;
+    }
+    if (p.contains('fitness') || p.contains('trainer') || p.contains('gym')) {
+      return Icons.fitness_center_outlined;
+    }
     if (p.contains('photo')) return Icons.camera_alt_outlined;
     return Icons.work_outline_rounded;
   }
@@ -711,8 +945,8 @@ class _PressableCard extends StatefulWidget {
 }
 
 class _PressableCardState extends State<_PressableCard> {
-  bool _pressed   = false;
-  bool _hovering  = false;
+  bool _pressed = false;
+  bool _hovering = false;
 
   void _setPressed(bool value) {
     if (_pressed != value) setState(() => _pressed = value);
@@ -724,20 +958,20 @@ class _PressableCardState extends State<_PressableCard> {
     final borderRadius = BorderRadius.circular(widget.radius);
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
-      onExit:  (_) => setState(() => _hovering = false),
+      onExit: (_) => setState(() => _hovering = false),
       child: GestureDetector(
-        onTapDown:   (_) => _setPressed(true),
-        onTapCancel: ()  => _setPressed(false),
-        onTapUp:     (_) => _setPressed(false),
+        onTapDown: (_) => _setPressed(true),
+        onTapCancel: () => _setPressed(false),
+        onTapUp: (_) => _setPressed(false),
         onTap: widget.onTap,
         child: AnimatedScale(
-          scale:    _pressed ? 0.97 : 1.0,
+          scale: _pressed ? 0.97 : 1.0,
           duration: const Duration(milliseconds: 120),
-          curve:    Curves.easeOut,
+          curve: Curves.easeOut,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
-            curve:    Curves.easeOut,
-            width:  widget.width,
+            curve: Curves.easeOut,
+            width: widget.width,
             height: widget.height,
             decoration: BoxDecoration(
               color: context.colors.surface,
@@ -746,8 +980,8 @@ class _PressableCardState extends State<_PressableCard> {
                 color: _hovering
                     ? context.colors.primary.withValues(alpha: 0.35)
                     : (isDark
-                        ? Colors.white.withValues(alpha: 0.08)
-                        : context.colors.divider),
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : context.colors.divider),
               ),
               // Single soft shadow — enough to lift the card off the page
               // without the heavy double-shadow look.
@@ -783,8 +1017,12 @@ class _ShimmerBox extends StatefulWidget {
   State<_ShimmerBox> createState() => _ShimmerBoxState();
 }
 
-class _ShimmerBoxState extends State<_ShimmerBox> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1300))..repeat();
+class _ShimmerBoxState extends State<_ShimmerBox>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1300),
+  )..repeat();
 
   @override
   void dispose() {
@@ -799,21 +1037,28 @@ class _ShimmerBoxState extends State<_ShimmerBox> with SingleTickerProviderState
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
-        final sweep = (_controller.value * 3.2) - 1.6; // sweeps well past both edges
+        final sweep =
+            (_controller.value * 3.2) - 1.6; // sweeps well past both edges
         return ShaderMask(
           blendMode: BlendMode.srcIn,
           shaderCallback: (rect) => LinearGradient(
-            begin:  Alignment(sweep - 0.6, 0),
-            end:    Alignment(sweep + 0.6, 0),
+            begin: Alignment(sweep - 0.6, 0),
+            end: Alignment(sweep + 0.6, 0),
             colors: isDark
-                ? const [AppColors.surface, AppColors.divider, AppColors.surface]
-                : const [AppColors.slate200, AppColors.slate50, AppColors.slate200],
-            stops:  const [0.15, 0.5, 0.85],
+                ? const [
+                    AppColors.surface,
+                    AppColors.divider,
+                    AppColors.surface,
+                  ]
+                : const [
+                    AppColors.slate200,
+                    AppColors.slate50,
+                    AppColors.slate200,
+                  ],
+            stops: const [0.15, 0.5, 0.85],
           ).createShader(rect),
           child: Container(
-            color: isDark
-                ? AppColors.surface
-                : AppColors.slate200,
+            color: isDark ? AppColors.surface : AppColors.slate200,
           ),
         );
       },

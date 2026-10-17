@@ -4,12 +4,13 @@ import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../models/subscription_model.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../services/payment_service.dart';
 
 class SubscriptionService {
   final ApiService _api = ApiService();
 
   // ── Plans List ──────────────────────────────────────────────────────────────
-  /// GET /subscriptions/plans/?type=customer  ya  ?type=professional
+  /// Fetches subscription plans filtered by audience role (`customer` or `professional`).
   Future<List<SubscriptionPlan>> getPlans(String planType) async {
     try {
       final res = await _api.get(
@@ -23,8 +24,7 @@ class SubscriptionService {
   }
 
   // ── My Plan Status ──────────────────────────────────────────────────────────
-  /// GET /subscriptions/my-plan/
-  /// Flutter is se user ka current plan, limits, premium status jaanta hai
+  /// Retrieves the current authenticated user's plan details, quota usage, and premium entitlements.
   Future<UserPlanStatus?> getMyPlan() async {
     try {
       final res = await _api.get('${AppConstants.subscriptions}my-plan/');
@@ -35,15 +35,44 @@ class SubscriptionService {
   }
 
   // ── Subscribe ───────────────────────────────────────────────────────────────
-  /// POST /subscriptions/  { plan: plan_id }
-  Future<Map<String, dynamic>> subscribe(int planId) async {
-    try {
-      final res = await _api.post(AppConstants.subscriptions, {'plan': planId});
-      return {'success': true, 'data': res.data};
-    } catch (e) {
-      final msg = _extractError(e);
-      return {'success': false, 'error': msg};
+  /// Subscribes to a plan (free plans activate immediately, paid plans create checkout order)
+  Future<Map<String, dynamic>> subscribe(int planId, {bool isFree = false, String? currency}) async {
+    if (isFree) {
+      try {
+        final res = await _api.post(AppConstants.subscriptions, {'plan': planId});
+        return {'success': true, 'data': res.data};
+      } catch (e) {
+        final msg = _extractError(e);
+        return {'success': false, 'error': msg};
+      }
     }
+
+    // Paid plan: initiate payment checkout
+    final paymentService = PaymentService();
+    final paymentRes = await paymentService.createSubscriptionPayment(
+      planId: planId,
+      currency: currency,
+    );
+
+    if (paymentRes['success'] != true) {
+      return {'success': false, 'error': paymentRes['error']};
+    }
+
+    final data = paymentRes['data'] as Map<String, dynamic>;
+    if (data['is_free'] == true) {
+      return {'success': true, 'data': data};
+    }
+
+    return {
+      'success': true,
+      'requires_payment': true,
+      'approval_url': data['approval_url'] ?? '',
+      'paypal_order_id': data['paypal_order_id'] ?? '',
+      'order_id': data['order_id'] ?? '',
+      'amount': data['amount'],
+      'currency': data['currency'],
+      'display_formatted': data['display_formatted'],
+    };
   }
 
   // ── Cancel ──────────────────────────────────────────────────────────────────

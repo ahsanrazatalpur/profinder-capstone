@@ -14,8 +14,8 @@
 // without needing a separate API round-trip per tab. The backend endpoint
 // still supports ?status= if some other screen needs it — untouched.
 //
-// Changes reflect:
-//   cancel → customer + professional dono ki booking list mein 'cancelled' dikhta hai
+// State synchronization:
+//   Cancellation updates the booking status to 'cancelled' across both customer and professional interfaces.
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';

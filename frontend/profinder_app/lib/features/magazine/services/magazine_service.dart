@@ -41,7 +41,7 @@ class MagazineService {
     } catch (_) { return []; }
   }
 
-  // ✅ NEW — admin analytics
+  // — admin analytics
   Future<MagazineAnalyticsSummary?> adminGetAnalytics() async {
     try {
       final res = await _api.get('/articles/admin/analytics/');

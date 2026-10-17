@@ -1,7 +1,4 @@
-// PATH: lib/core/constants/app_constants.dart
-// lib/core/constants/app_constants.dart
-
-
+/// Central API endpoint registry, WebSocket URLs, and local storage keys for ProFinder.
 class AppConstants {
   AppConstants._();
 
@@ -9,9 +6,7 @@ class AppConstants {
     return 'https://ahsanrazatalpur.pythonanywhere.com/api';
   }
 
-  // ✅ NEW — WebSocket base (same host as baseUrl, ws:// scheme, no /api
-  // suffix since Channels routing is mounted at the ASGI root — see
-  // backend/apps/messaging/routing.py: `ws/chat/<id>/`).
+  // WebSocket base URL for real-time messaging using wss:// protocol.
   static String get wsBaseUrl {
     return 'wss://ahsanrazatalpur.pythonanywhere.com';
   }
@@ -19,39 +14,30 @@ class AppConstants {
   // ─── Auth ────────────────────────────────────────────────
   static const String register       = '/users/register/';
   static const String login          = '/users/login/';
-  static const String googleLogin    = '/users/google/'; // ✅ Google Sign-In
+  static const String googleLogin    = '/users/google/';
   static const String tokenRefresh   = '/users/token/refresh/';
   static const String me             = '/users/me/';
   static const String forgotPassword = '/users/forgot-password/';
-  static const String checkEmail     = '/users/check-email/'; // ✅ NEW — Register Step 1 live email check
-  static const String countries      = '/users/countries/';   // ✅ NEW — Register Step 2 location
-  static const String cities         = '/users/cities/';      // ✅ NEW — Register Step 2 location (append ?country=<id>)
-  static const String changePassword = '/users/change-password/'; // ✅ NEW — logged-in password change
-  static const String updateLanguage = '/users/language/'; // ✅ NEW — i18n sync
+  static const String checkEmail     = '/users/check-email/';
+  static const String countries      = '/users/countries/';
+  static const String cities         = '/users/cities/';
+  static const String changePassword = '/users/change-password/';
+  static const String updateLanguage = '/users/language/';
 
   // ─── Profiles ────────────────────────────────────────────
   static const String userProfile         = '/profiles/user/';
   static const String professionalProfile = '/profiles/professional/';
   static const String portfolio           = '/profiles/portfolio/';
   static const String adminPortfolio      = '/profiles/admin/portfolio/';
-  // ⚠️ BACKEND NOTE: '/profiles/certificates/' endpoint needs a matching
-  // model (title, issuing_organization, issue_date, certificate_image,
-  // status) + CRUD viewset, same shape as the existing Portfolio model.
-  static const String certificates        = '/profiles/certificates/'; // ✅ NEW
-  // ⚠️ BACKEND NOTE: '/profiles/gallery/' also needs a new model (image only,
-  // no title required) + CRUD viewset — distinct from Portfolio (which has
-  // title/description and admin approval).
-  static const String gallery              = '/profiles/gallery/'; // ✅ NEW
+  static const String certificates        = '/profiles/certificates/';
+  static const String gallery             = '/profiles/gallery/';
 
   // ─── Messaging ───────────────────────────────────────────
-  // ✅ NEW APP — apps/messaging (Conversation + Message models)
   static const String conversations = '/messaging/conversations/';
   static String conversationMessages(int conversationId) =>
       '/messaging/conversations/$conversationId/messages/';
 
-  // ✅ NEW — cursor pagination for the messages endpoint. Backward
-  // compatible: omitting both query params returns the same "latest page"
-  // behavior as before, just capped at `limit` instead of the full thread.
+  /// Cursor pagination for conversation messages.
   static String conversationMessagesPage(int conversationId, {String? beforeId, int limit = 30}) {
     final query = <String, String>{'limit': '$limit', 'before_id': ?beforeId};
     final qs = query.entries.map((e) => '${e.key}=${e.value}').join('&');
@@ -63,7 +49,7 @@ class AppConstants {
   static String messageDetail(String messageId) => '/messaging/messages/$messageId/';
   static String wsChat(int conversationId) => '/ws/chat/$conversationId/';
 
-  // ✅ NEW — premium messaging features
+  // Messaging search, state, and moderation
   static String conversationSearch(String query) => '/messaging/conversations/?search=${Uri.encodeQueryComponent(query)}';
   static String archivedConversations() => '/messaging/conversations/?archived=true';
   static String conversationState(int conversationId) => '/messaging/conversations/$conversationId/state/';
@@ -74,52 +60,35 @@ class AppConstants {
   static String deleteForMe(String messageId) => '/messaging/messages/$messageId/?for=me';
   static const String blockedUsers = '/messaging/blocked-users/';
   static String unblockUser(int userId) => '/messaging/blocked-users/$userId/';
-  // 🐛 FIX: was '/messaging/reports/', which writes into apps.messaging's
-  // OWN UserReport table. The Admin Panel's "Reported Users" screen reads
-  // from a completely different, unrelated UserReport model over in
-  // apps.admin_panel — so reports were submitting successfully but never
-  // showing up for admins. This is the endpoint admin_panel actually reads.
   static const String reportUser = '/admin-panel/reports/create/';
 
-  // ─── Trust & Safety (user-facing — Part 8) ──────────────────────────────
-  // Reports the CURRENT user submitted (never anyone else's).
+  // ─── Trust & Safety ──────────────────────────────────────
   static const String myReports = '/admin-panel/reports/mine/';
-  // The CURRENT user's own live moderation status — always re-derived
-  // server-side, never trusted from cached/local state.
   static const String myModerationStatus = '/admin-panel/moderation-status/mine/';
-  // Appeal one of the current user's OWN moderation actions.
   static const String appealCreate = '/admin-panel/appeals/create/';
   static const String myAppeals    = '/admin-panel/appeals/mine/';
 
-  // ✅ NEW — Analytics
+  // ─── Analytics ───────────────────────────────────────────
   static const String professionalAnalytics = '/profiles/professional/analytics/';
 
-  // ─── Search ──────────────────────────────────────────────
+  // ─── Search & Recommendations ────────────────────────────
   static const String categories = '/search/categories/';
   static const String featuredCategories = '/search/categories/featured/';
   static const String nearby     = '/search/nearby/';
-  // ✅ NEW — single-call Customer Dashboard feed: Recommended / Nearby /
-  // Top Rated / Trending, each properly ranked & de-duplicated server-side.
   static const String homeFeed   = '/search/home-feed/';
   static const String favorites  = '/search/favorites/';
   static String favoriteToggle(String professionalId) => '/search/favorites/$professionalId/toggle/';
   static const String aiSearch       = '/ai/search/';
   static const String aiSearchStatus = '/ai/search-status/';
-  static const String aiRecommendations = '/ai/recommendations/';   // ✅ confirmed: apps/ai_engine/urls.py
-  static const String aiLocalize        = '/ai/localize/';          // dynamic name/city/reason localization
-  static const String aiSearchHistory   = '/ai/search-history/';    // ✅ confirmed: apps/ai_engine/urls.py
-
-  // ✅ FIX: backend HAS a dedicated endpoint — AutoSuggestView at
-  // /api/search/suggest/ (apps/search/urls.py). This used to point at
-  // '/search/' (the full search), which returns {results, meta} and none of
-  // popular_searches / matching_professions / matching_categories /
-  // matching_professionals — so the suggestion panel always rendered blank.
+  static const String aiRecommendations = '/ai/recommendations/';
+  static const String aiLocalize        = '/ai/localize/';
+  static const String aiSearchHistory   = '/ai/search-history/';
   static const String suggest = '/search/suggest/';
 
   // ─── Bookings ─────────────────────────────────────────────
   static const String bookings             = '/bookings/';
   static const String professionalBookings = '/bookings/professional/';
-  static const String professionalDashboard = '/bookings/professional/dashboard/'; // ✅ NEW — Home Dashboard (single call)
+  static const String professionalDashboard = '/bookings/professional/dashboard/';
 
   // ─── Subscriptions ────────────────────────────────────────
   static const String subscriptions    = '/subscriptions/';
@@ -130,36 +99,29 @@ class AppConstants {
   // ─── Promo Banners ────────────────────────────────────────
   static const String activeBanner     = '/admin-panel/promo-banners/active/';
 
-  // ─── Others ──────────────────────────────────────────────
-  // ✅ FIX: matches new MyReviewsView — logged-in professional's own reviews
-  // (used by Dashboard "Recent Reviews" + full Reviews screen)
+  // ─── Reviews ──────────────────────────────────────────────
   static const String reviews       = '/reviews/my-reviews/';
-  // ✅ NEW: reviews for a *specific* professional_id (used when viewing
-  // someone else's profile, or by MyReviewsScreen to check "did I review them").
-  // Actual route: /reviews/professionals/<id>/reviews/
   static const String reviewsForProfessionalBase = '/reviews/professionals/';
-  // ✅ NEW — review-level actions. Build with a review id, e.g.
-  //   '${AppConstants.reviewDetailBase}42/'          → PATCH edit / DELETE
-  //   '${AppConstants.reviewDetailBase}42/helpful/'  → POST toggle helpful
-  //   '${AppConstants.reviewDetailBase}42/reply/'    → POST professional reply
-  //   '${AppConstants.reviewDetailBase}42/report/'   → POST report
   static const String reviewDetailBase = '/reviews/';
-  // ✅ NEW — the logged-in customer's own written reviews, across every
-  // professional. Replaces the old N-professional client-side loop.
   static const String myGivenReviews = '/reviews/mine/';
 
-  // ✅ NEW — premium review actions
   static String reviewDetail(int reviewId)  => '/reviews/$reviewId/';
   static String reviewHelpful(int reviewId) => '/reviews/$reviewId/helpful/';
   static String reviewReply(int reviewId)   => '/reviews/$reviewId/reply/';
   static String reviewReport(int reviewId)  => '/reviews/$reviewId/report/';
 
+  // ─── Notifications & Payments ─────────────────────────────
   static const String notifications = '/notifications/';
-  static const String payments      = '/payments/';   // ✅ confirmed: apps/payments/urls.py (PaymentView)
+  static const String payments      = '/payments/';
+  static const String paymentBookingCreate = '/payments/booking/create/';
+  static const String paymentSubscriptionCreate = '/payments/subscription/create/';
+  static const String paymentCapture = '/payments/capture/';
+  static const String paymentCurrencies = '/payments/currencies/';
+  static const String paymentExchangeRates = '/payments/exchange-rates/';
 
-  // ── Wallet & Earnings ──────────────────────────────────────────────
-  static const String walletSummary = '/payments/wallet/';       // ✅ NEW
-  static const String withdrawals   = '/payments/withdrawals/';  // ✅ NEW
+  // ─── Wallet & Withdrawals ─────────────────────────────────
+  static const String walletSummary = '/payments/wallet/';
+  static const String withdrawals   = '/payments/withdrawals/';
 
   // ─── Storage Keys ────────────────────────────────────────
   static const String accessTokenKey  = 'access_token';

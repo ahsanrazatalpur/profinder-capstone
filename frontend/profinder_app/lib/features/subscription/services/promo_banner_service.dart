@@ -8,10 +8,10 @@ import '../models/promo_banner_model.dart';
 class PromoBannerService {
   final ApiService _api = ApiService();
 
-  /// Active banners fetch karo
-  /// trigger: 'home' | 'search' | 'ai_search' | 'booking' | 'login'
-  /// userType: 'guest' | 'free_customer' | 'premium_customer' |
-  ///           'free_professional' | 'premium_professional'
+  /// Fetches active promotional banners targeting the specified trigger context and user role.
+  ///
+  /// [trigger]: Navigation trigger ('home', 'search', 'ai_search', 'booking', 'login').
+  /// [userType]: Audience role segment ('guest', 'free_customer', 'premium_customer', etc.).
   Future<List<PromoBanner>> getActiveBanners({
     String trigger  = 'home',
     String userType = 'guest',

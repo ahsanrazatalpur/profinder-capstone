@@ -6,6 +6,7 @@
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../services/content_localizer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
@@ -20,7 +21,8 @@ class SavedProfessionalsScreen extends StatefulWidget {
   const SavedProfessionalsScreen({super.key});
 
   @override
-  State<SavedProfessionalsScreen> createState() => _SavedProfessionalsScreenState();
+  State<SavedProfessionalsScreen> createState() =>
+      _SavedProfessionalsScreenState();
 }
 
 class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
@@ -40,7 +42,7 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
     if (!mounted) return;
     setState(() {
       _favorites = favs;
-      _loading   = false;
+      _loading = false;
     });
   }
 
@@ -49,7 +51,8 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
     _load();
   }
 
-  double _num(dynamic v) => v == null ? 0.0 : double.tryParse(v.toString()) ?? 0.0;
+  double _num(dynamic v) =>
+      v == null ? 0.0 : double.tryParse(v.toString()) ?? 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +64,7 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
         title: AppLocalizations.of(context).savedProfessionalsTitle,
-        icon: Icons.bookmark_rounded,
+        icon: Icons.favorite_rounded,
       ),
       body: _loading
           ? Center(
@@ -75,71 +78,77 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
               ),
             )
           : _favorites.isEmpty
-              ? _empty(isDark)
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  color: AppColors.customerColor,
-                  child: ListView.separated(
-                    padding: EdgeInsets.all(isTablet ? 20 : 16),
-                    itemCount: _favorites.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 10),
-                    itemBuilder: (_, i) => _card(_favorites[i], isDark, isTablet),
-                  ),
-                ),
+          ? _empty(isDark)
+          : RefreshIndicator(
+              onRefresh: _load,
+              color: AppColors.customerColor,
+              child: ListView.separated(
+                padding: EdgeInsets.all(isTablet ? 20 : 16),
+                itemCount: _favorites.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
+                itemBuilder: (_, i) => _card(_favorites[i], isDark, isTablet),
+              ),
+            ),
     );
   }
 
   Widget _empty(bool isDark) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 88,
-              height: 88,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : AppColors.neutral100,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.favorite_border_rounded,
-                size: 40,
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.3)
-                    : AppColors.neutral300,
-              ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              AppLocalizations.of(context).savedProfessionalsEmptyTitle,
-              style: TextStyle(
-                fontSize: AppFontSizes.title,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-                letterSpacing: -0.2,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              AppLocalizations.of(context).savedProfessionalsEmptySubtitle,
-              style: TextStyle(
-                fontSize: AppFontSizes.secondary,
-                color: context.colors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 88,
+          height: 88,
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : AppColors.neutral100,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            Icons.favorite_border_rounded,
+            size: 40,
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.3)
+                : AppColors.neutral300,
+          ),
         ),
-      );
+        const SizedBox(height: 18),
+        Text(
+          AppLocalizations.of(context).savedProfessionalsEmptyTitle,
+          style: TextStyle(
+            fontSize: AppFontSizes.title,
+            fontWeight: FontWeight.w700,
+            color: context.colors.textPrimary,
+            letterSpacing: -0.2,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          AppLocalizations.of(context).savedProfessionalsEmptySubtitle,
+          style: TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: context.colors.textSecondary,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    ),
+  );
 
   Widget _card(Map<String, dynamic> pro, bool isDark, bool isTablet) {
-    final id         = pro['id']?.toString() ?? '';
-    final name       = pro['name']?.toString() ?? AppLocalizations.of(context).professionalDefaultName;
-    final profession = pro['category_name']?.toString() ?? pro['specialization']?.toString() ?? '';
-    final photo      = AppHelpers.getFullImageUrl(pro['photo_url']?.toString());
-    final rating     = _num(pro['average_rating']);
-    final price      = _num(pro['hourly_rate']);
+    final id = pro['id']?.toString() ?? '';
+    final name =
+        pro['name']?.toString() ??
+        AppLocalizations.of(context).professionalDefaultName;
+    final profession =
+        pro['category_name']?.toString() ??
+        pro['specialization']?.toString() ??
+        '';
+    final photo = AppHelpers.getFullImageUrl(pro['photo_url']?.toString());
+    final rating = _num(pro['average_rating']);
+    final price = _num(pro['hourly_rate']);
+    final currencySym = AppHelpers.getCurrencySymbol(professional: pro);
     final isVerified = pro['is_verified'] == true;
 
     return AnimatedContainer(
@@ -183,10 +192,13 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
                     ? Colors.white.withValues(alpha: 0.05)
                     : context.colors.primaryLight,
                 child: photo.isNotEmpty
-                    ? Image.network(
-                        photo,
+                    ? CachedNetworkImage(
+                        imageUrl: photo,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Center(
+                        memCacheWidth: 200,
+                        memCacheHeight: 200,
+                        placeholder: (_, _) => const SizedBox(),
+                        errorWidget: (_, _, _) => Center(
                           child: Text(
                             AppHelpers.getInitials(name),
                             style: TextStyle(
@@ -264,7 +276,7 @@ class _SavedProfessionalsScreenState extends State<SavedProfessionalsScreen> {
                     ),
                     const SizedBox(width: 2),
                     Text(
-                      ' ${AppLocalizations.of(context).profileHr(rating.toStringAsFixed(1), price.toStringAsFixed(0))}',
+                      ' ${rating.toStringAsFixed(1)} • $currencySym ${price.toStringAsFixed(0)}/hr',
                       style: TextStyle(
                         fontSize: isTablet ? 12.0 : 11.5,
                         color: context.colors.textSecondary,

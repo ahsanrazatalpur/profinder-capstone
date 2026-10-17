@@ -26,12 +26,11 @@ class ChatProvider extends ChangeNotifier {
   final ChatRepository _repo;
   final int conversationId;
   final int currentUserId;
-  int? _otherUserId; // ✅ NEW — for the "Block user" menu action
+  int? _otherUserId;
 
-  // ✅ NEW — block/unblock visibility. `isBlockedByMe` drives the "You
-  // blocked X" banner + swaps the menu action to "Unblock". `canMessage`
-  // covers BOTH directions (mine or theirs) and gates the input bar —
-  // it never reveals which side did the blocking if it was the other user.
+  /// Visibility states for user block status.
+  /// [isBlockedByMe] indicates the current user blocked the participant.
+  /// [canMessage] indicates bidirectional ability to send messages.
   bool isBlockedByMe = false;
   bool canMessage = true;
 
@@ -45,13 +44,13 @@ class ChatProvider extends ChangeNotifier {
       otherUserOnline = initialSnapshot.otherUserOnline;
       otherUserLastSeen = initialSnapshot.otherUserLastSeen;
       initialDraftText = initialSnapshot.draftText;
-      _otherUserId = initialSnapshot.otherUserId; // ✅ NEW
+      _otherUserId = initialSnapshot.otherUserId;
       isBlockedByMe = initialSnapshot.isBlockedByMe;
       canMessage = initialSnapshot.canMessage;
     }
   }
 
-  // ✅ NEW
+  /// Blocks the other participant in this conversation.
   Future<void> blockOtherUser() async {
     if (_otherUserId == null) return;
     await _repo.blockUser(_otherUserId!);
@@ -60,7 +59,7 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ✅ NEW — Instagram-style unblock, straight from the chat itself.
+  /// Unblocks the other participant directly from the conversation.
   Future<void> unblockOtherUser() async {
     if (_otherUserId == null) return;
     await _repo.unblockUser(_otherUserId!);
@@ -72,8 +71,7 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ✅ NEW — central place any send path calls on a blocked-send failure,
-  // so the input locks immediately without needing to reopen the chat.
+  /// Intercepts blocked send failures to immediately disable the input bar.
   void _handleBlockedError(Object error) {
     final msg = error.toString();
     if (msg.contains('"code":"blocked"') || msg.contains("'code': 'blocked'") || msg.contains('code: blocked')) {
@@ -82,7 +80,7 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  // ✅ NEW — pre-fills the input bar when the screen first opens
+  /// Pre-populates the input bar with draft text when the screen opens.
   String initialDraftText = '';
 
   // ── State ────────────────────────────────────────────────────────────
@@ -103,7 +101,7 @@ class ChatProvider extends ChangeNotifier {
   StreamSubscription<ChatSocketEvent>? _socketSub;
   Timer? _typingClearTimer;
   Timer? _typingDebounce;
-  Timer? _draftDebounce;  // ✅ NEW
+  Timer? _draftDebounce;
   bool _iAmTyping = false;
 
   // ── Lifecycle ────────────────────────────────────────────────────────
@@ -239,7 +237,7 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  // ✅ NEW — voice messages, same optimistic pattern as sendImage
+  /// Sends a voice note using optimistic UI and uploads the audio file.
   Future<void> sendVoice(File audio, int durationSeconds) async {
     if (!canMessage) return;
     final tempId = 'temp_${DateTime.now().microsecondsSinceEpoch}';
@@ -312,7 +310,7 @@ class ChatProvider extends ChangeNotifier {
         _markFailed(failedMessage.id);
       }
     } else if (failedMessage.localAudioPath != null) {
-      // ✅ NEW — voice message retry
+      // Retry failed voice message upload
       try {
         final sent = await _repo.sendVoiceMessage(
           conversationId,
@@ -369,9 +367,9 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  // ✅ CHANGED — supports both "delete for everyone" (soft-deletes, bubble
-  // stays visible as "This message was deleted") and "delete for me"
-  // (vanishes from THIS user's list only — the other side still sees it).
+  /// Deletes a message.
+  /// When [forEveryone] is true, soft-deletes the message for both participants.
+  /// When [forEveryone] is false, hides the message solely for the current user.
   Future<void> deleteMessage(String messageId, {bool forEveryone = true}) async {
     final idx = _messages.indexWhere((m) => m.id == messageId);
     if (idx == -1) return;
@@ -388,8 +386,7 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  // ✅ NEW — reactions. Optimistic with rollback so tapping an emoji feels
-  // instant even before the server round-trip completes.
+  /// Toggles an emoji reaction on a message with optimistic local update and server rollback.
   Future<void> toggleReaction(String messageId, String emoji) async {
     final idx = _messages.indexWhere((m) => m.id == messageId);
     if (idx == -1) return;
@@ -431,8 +428,7 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  // ✅ NEW — in-conversation search. Returns results for the caller (e.g.
-  // ChatScreen) to show as an overlay; doesn't touch the main list.
+  /// Searches messages within the current conversation history.
   Future<List<MessageEntity>> searchInChat(String query) async {
     if (query.trim().isEmpty) return [];
     try {
@@ -453,9 +449,7 @@ class ChatProvider extends ChangeNotifier {
       });
     }
 
-    // ✅ NEW — draft auto-save. Debounced longer than the typing signal
-    // (1.5s of no keystrokes) since this hits the DB, not just a socket
-    // broadcast — no need to save on every character.
+    // Auto-save draft debounced by 1.5 seconds to limit server writes.
     _draftDebounce?.cancel();
     _draftDebounce = Timer(const Duration(milliseconds: 1500), () {
       unawaited(_repo.saveDraft(conversationId, text));
@@ -463,7 +457,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void stopTypingOnSend() {
-    _draftDebounce?.cancel();  // ✅ NEW — backend clears the draft on send; don't let a stale debounced save overwrite that
+    _draftDebounce?.cancel(); // Cancel pending draft save upon sending message
     if (!_iAmTyping) return;
     _iAmTyping = false;
     _typingDebounce?.cancel();
@@ -528,7 +522,7 @@ class ChatProvider extends ChangeNotifier {
       otherUserLastSeen = event.lastSeen ?? otherUserLastSeen;
       notifyListeners();
     } else if (event is ReactionSocketEvent) {
-      // ✅ NEW
+      // Update message state on real-time reaction changes
       final idx = _messages.indexWhere((m) => m.id == event.message.id);
       if (idx != -1) {
         _messages[idx] = event.message;

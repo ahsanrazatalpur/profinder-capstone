@@ -1,31 +1,7 @@
-// lib/shared/widgets/cta_banner.dart
+// Reusable call-to-action and promotional banner card.
 //
-// GLOBAL small CTA/promo banner card — poore app mein jahan bhi chhota
-// promo/CTA card chahiye (guest ko "become a professional" dikhana ho,
-// professional ko "upgrade your plan" ya "add bank details" dikhana
-// ho, home pe "AI Pick" jaisa highlight card ho, ya kal koi aur role/
-// screen ko kuch aur) — sab isi ek widget ko import karke apni values
-// pass karte hain. Ek hi jagah maintain hota hai, sab jagah consistent
-// dikhta hai.
-//
-// Naam history: pehle "BecomeProBanner" (sirf guest/customer promo
-// samjha jata tha), fir "PromoCard" rakha gaya, lekin ab yeh
-// professional home, wallet, aur AI-pick jaisi jagah bhi use ho raha
-// hai — isliye "CtaBanner" (generic call-to-action banner) sabse theek
-// naam hai, kisi ek role/feature se bandha hua nahi hai.
-//
-// Leading badge do tarah se dikh sakta hai:
-//   - `emoji`  diya ho to emoji dikhta hai (e.g. '🚀', '🏦', '✨')
-//   - warna `icon` (IconData) fallback ke taur pe dikhta hai
-//
-// FIX: pehle jab yeh card kisi tang (narrow) jagah mein render hota
-// tha — grid cell, half-width column, chhoti screen — to badge aur
-// CTA button apni fixed width le lete the, aur beech mein text ke
-// liye itni kam jagah bachti thi ke title ek-ek word alag line pe
-// chala jata tha aur lamba word beech mein hi toot jata. Ab
-// LayoutBuilder se width check hoti hai: agar jagah tang hai to
-// layout khud stack ho jata hai (button neeche, poori width mein) —
-// text kabhi ajeeb tarah nahi toot-ta.
+// Adapts dynamically between horizontal (wide) and stacked (narrow) layouts
+// based on available constraints, supporting custom badges, emojis, and gradients.
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
@@ -37,24 +13,20 @@ import '../../l10n/generated/app_localizations.dart';
 class CtaBanner extends StatelessWidget {
   final bool isDark;
   final VoidCallback onTap;
-  // FIX: pehle defaults English mein hardcoded the ('Grow Your Business'
-  // etc.) isliye Urdu/Hindi/Arabic mein bhi English dikhta tha. Ab null
-  // ho to current language ke ARB keys use hote hain.
   final String? title;
   final String? subtitle;
   final String? ctaLabel;
 
-  /// Emoji badge — pass karo to yeh IconData `icon` se zyada priority
-  /// leta hai (e.g. '🚀', '🏦', '✨', '👑').
+  /// Optional emoji icon taking precedence over [icon].
   final String? emoji;
-  /// Fallback icon — sirf tab dikhta hai jab `emoji` null ho.
+
+  /// Fallback icon displayed when [emoji] is null.
   final IconData icon;
 
-  /// Badge aur CTA button ka gradient — role/screen ke hisaab se
-  /// badal sakte ho (guest ke liye indigo, professional ke liye amber,
-  /// wallet ke liye teal, wagera). Default AppColors.ctaGradientStart/
-  /// End hi hai, jaisa pehle tha.
+  /// Starting color of the badge and button gradient.
   final Color accentStart;
+
+  /// Ending color of the badge and button gradient.
   final Color accentEnd;
 
   const CtaBanner({
@@ -128,7 +100,7 @@ class CtaBanner extends StatelessWidget {
     );
   }
 
-  // Wide layout — badge, text aur button ek hi row mein (side by side).
+  // Wide layout: places badge, text description, and CTA button horizontally
   Widget _wideLayout(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -142,9 +114,7 @@ class CtaBanner extends StatelessWidget {
     );
   }
 
-  // Narrow layout — badge+text upar, CTA button neeche poori width
-  // mein. Yahi wajah se tang jagah mein bhi text saaf wrap hota hai,
-  // ek-ek word alag line pe nahi bikharta.
+  // Narrow layout: stacks the CTA button below the title to preserve readability
   Widget _narrowLayout(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -163,7 +133,7 @@ class CtaBanner extends StatelessWidget {
     );
   }
 
-  // Leading badge — emoji diya ho to emoji, warna icon.
+  // Leading badge graphic — displays emoji if provided, otherwise defaults to icon.
   Widget _badge() {
     return Container(
       width: 42,
@@ -185,7 +155,10 @@ class CtaBanner extends StatelessWidget {
         ],
       ),
       child: emoji != null
-          ? Text(emoji!, style: const TextStyle(fontSize: AppFontSizes.h3, height: 1))
+          ? Text(
+              emoji!,
+              style: const TextStyle(fontSize: AppFontSizes.h3, height: 1),
+            )
           : Icon(icon, color: Colors.white, size: 21),
     );
   }
@@ -260,7 +233,11 @@ class CtaBanner extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 5),
-          const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 16),
+          const Icon(
+            Icons.arrow_forward_rounded,
+            color: Colors.white,
+            size: 16,
+          ),
         ],
       ),
     );

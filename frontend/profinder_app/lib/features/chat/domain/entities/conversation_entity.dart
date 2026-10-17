@@ -13,15 +13,15 @@ class ConversationEntity {
   final int unreadCount;
   final DateTime updatedAt;
 
-  // ✅ NEW — per-user chat management state
+  // Conversation preferences and draft content.
   final bool isPinned;
   final bool isArchived;
   final bool isMuted;
   final String draftText;
 
-  // ✅ NEW — block visibility. `isBlockedByMe` is safe to show explicitly
-  // ("You blocked X"); `canMessage` covers both directions but never
-  // reveals whether it was the OTHER user who blocked me.
+  // Moderation and messaging permissions.
+  // [isBlockedByMe] indicates the current user blocked the participant.
+  // [canMessage] indicates bidirectional ability to send messages.
   final bool isBlockedByMe;
   final bool canMessage;
 

@@ -6,10 +6,7 @@ import '../../../../core/theme/theme_context_ext.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
-// 🐛 FIX: these must exactly match apps.admin_panel.models.UserReport
-// .REASON_CHOICES — the endpoint we now submit to (see AppConstants
-// .reportUser). The old list ('inappropriate', 'scam') matched a
-// different, unrelated model and would 400 against this one.
+// Predefined report categories matching backend UserReport model choice keys.
 const _reasonKeys = ['spam', 'harassment', 'fraud', 'fake_profile', 'inappropriate_content', 'other'];
 
 class ReportUserDialog extends StatefulWidget {

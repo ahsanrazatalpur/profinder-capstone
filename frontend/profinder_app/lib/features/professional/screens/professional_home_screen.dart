@@ -3,6 +3,7 @@
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
@@ -136,17 +137,32 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
 
       final dashboard = results[0].data as Map<String, dynamic>;
       final portfolio = results[1].data is List ? results[1].data as List : [];
-      final proProfile = results[2].data is Map ? results[2].data as Map<String, dynamic> : <String, dynamic>{};
-      final userProfile = results[3].data is Map ? results[3].data as Map<String, dynamic> : <String, dynamic>{};
+      final proProfile = results[2].data is Map
+          ? results[2].data as Map<String, dynamic>
+          : <String, dynamic>{};
+      final userProfile = results[3].data is Map
+          ? results[3].data as Map<String, dynamic>
+          : <String, dynamic>{};
       final reviewsData = results[4].data;
       final reviewsList = reviewsData is List
           ? reviewsData
-          : (reviewsData is Map ? (reviewsData['results'] ?? reviewsData['reviews'] ?? []) as List : []);
-      final myPlan = results[5].data is Map ? results[5].data as Map<String, dynamic> : <String, dynamic>{};
-      final conversations = results[6].data is List ? results[6].data as List : [];
+          : (reviewsData is Map
+                ? (reviewsData['results'] ?? reviewsData['reviews'] ?? [])
+                      as List
+                : []);
+      final myPlan = results[5].data is Map
+          ? results[5].data as Map<String, dynamic>
+          : <String, dynamic>{};
+      final conversations = results[6].data is List
+          ? results[6].data as List
+          : [];
       final bookingsData = results[7].data;
-      final bookingsList = bookingsData is Map ? (bookingsData['bookings'] ?? []) as List : [];
-      final meData = results[8].data is Map ? results[8].data as Map<String, dynamic> : <String, dynamic>{};
+      final bookingsList = bookingsData is Map
+          ? (bookingsData['bookings'] ?? []) as List
+          : [];
+      final meData = results[8].data is Map
+          ? results[8].data as Map<String, dynamic>
+          : <String, dynamic>{};
 
       setState(() {
         _dashboard = dashboard;
@@ -157,7 +173,11 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         _myPlan = myPlan;
         _proProfile = proProfile;
         _myUserId = int.tryParse(meData['id']?.toString() ?? '');
-        _profileCompletion = _calculateCompletion(proProfile, userProfile, portfolio);
+        _profileCompletion = _calculateCompletion(
+          proProfile,
+          userProfile,
+          portfolio,
+        );
         _isLoading = false;
       });
     } catch (e) {
@@ -185,10 +205,14 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     setState(() => _isSearching = true);
     _debounce = Timer(const Duration(milliseconds: 400), () async {
       try {
-        final res = await _api.get('${AppConstants.professionalBookings}?search=$query');
+        final res = await _api.get(
+          '${AppConstants.professionalBookings}?search=$query',
+        );
         if (!mounted || _searchQuery != query) return;
         final data = res.data;
-        final list = data is Map ? (data['bookings'] ?? []) as List : (data as List);
+        final list = data is Map
+            ? (data['bookings'] ?? []) as List
+            : (data as List);
         setState(() {
           _searchResults = list;
           _isSearching = false;
@@ -215,69 +239,91 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      body: SafeArea(bottom: false, child: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: CircularProgressIndicator(
-                      color: AppColors.professionalColor,
-                      strokeWidth: 3,
+      body: SafeArea(
+        bottom: false,
+        child: _isLoading
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: CircularProgressIndicator(
+                        color: AppColors.professionalColor,
+                        strokeWidth: 3,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppLocalizations.of(context).loadingDashboard,
-                    style: TextStyle(
-                      fontSize: AppFontSizes.body,
-                      color: context.colors.textSecondary,
-                      fontWeight: FontWeight.w400,
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizations.of(context).loadingDashboard,
+                      style: TextStyle(
+                        fontSize: AppFontSizes.body,
+                        color: context.colors.textSecondary,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            )
-          : RefreshIndicator(
-              onRefresh: _loadData,
-              color: AppColors.professionalColor,
-              child: CustomScrollView(
-                slivers: [
-                  const SliverToBoxAdapter(child: AnnouncementBanner(audience: 'professional')),
-                  _buildAppBar(),
-                  SliverToBoxAdapter(child: _buildGreetingAndKpis(isDark)),
-                  SliverToBoxAdapter(child: _buildSearchBar(isDark)),
-                  if (isSearchMode)
-                    SliverToBoxAdapter(child: _buildSearchResults(isDark))
-                  else ...[
-                    if (_error != null) SliverToBoxAdapter(child: _buildErrorBanner(isDark)),
-                    SliverToBoxAdapter(child: _buildProfileCompletionCard(isDark)),
-                    SliverToBoxAdapter(child: _buildSubscriptionUpgradeBanner(isDark)),
-                    SliverToBoxAdapter(child: _buildVerificationBanner(isDark)),
-                    SliverToBoxAdapter(child: _buildQuickActions(isDark)),
-                    SliverToBoxAdapter(child: _buildEarningsSection(isDark)),
-                    SliverToBoxAdapter(child: _buildStatsGrid(isDark)),
-                    SliverToBoxAdapter(child: _buildQuickProfileCard(isDark)),
-                    SliverToBoxAdapter(child: _buildTodaysScheduleSection(isDark)),
-                    SliverToBoxAdapter(child: _buildCalendarSection(isDark)),
-                    SliverToBoxAdapter(child: _buildPortfolioSection(isDark)),
-                    SliverToBoxAdapter(child: _buildRecentMessagesSection(isDark)),
-                    SliverToBoxAdapter(child: _buildRecentReviewsSection(isDark)),
-                    SliverToBoxAdapter(child: _buildRecentBookingsSection(isDark)),
                   ],
-                  const SliverToBoxAdapter(child: SizedBox(height: 80)),
-                ],
+                ),
+              )
+            : RefreshIndicator(
+                onRefresh: _loadData,
+                color: AppColors.professionalColor,
+                child: CustomScrollView(
+                  slivers: [
+                    const SliverToBoxAdapter(
+                      child: AnnouncementBanner(audience: 'professional'),
+                    ),
+                    _buildAppBar(),
+                    SliverToBoxAdapter(child: _buildGreetingAndKpis(isDark)),
+                    SliverToBoxAdapter(child: _buildSearchBar(isDark)),
+                    if (isSearchMode)
+                      SliverToBoxAdapter(child: _buildSearchResults(isDark))
+                    else ...[
+                      if (_error != null)
+                        SliverToBoxAdapter(child: _buildErrorBanner(isDark)),
+                      SliverToBoxAdapter(
+                        child: _buildProfileCompletionCard(isDark),
+                      ),
+                      SliverToBoxAdapter(
+                        child: _buildSubscriptionUpgradeBanner(isDark),
+                      ),
+                      SliverToBoxAdapter(
+                        child: _buildVerificationBanner(isDark),
+                      ),
+                      SliverToBoxAdapter(child: _buildQuickActions(isDark)),
+                      SliverToBoxAdapter(child: _buildEarningsSection(isDark)),
+                      SliverToBoxAdapter(child: _buildStatsGrid(isDark)),
+                      SliverToBoxAdapter(child: _buildQuickProfileCard(isDark)),
+                      SliverToBoxAdapter(
+                        child: _buildTodaysScheduleSection(isDark),
+                      ),
+                      SliverToBoxAdapter(child: _buildCalendarSection(isDark)),
+                      SliverToBoxAdapter(child: _buildPortfolioSection(isDark)),
+                      SliverToBoxAdapter(
+                        child: _buildRecentMessagesSection(isDark),
+                      ),
+                      SliverToBoxAdapter(
+                        child: _buildRecentReviewsSection(isDark),
+                      ),
+                      SliverToBoxAdapter(
+                        child: _buildRecentBookingsSection(isDark),
+                      ),
+                    ],
+                    const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                  ],
+                ),
               ),
-            )),
+      ),
     );
   }
 
   // ── AppBar (logo + notifications + profile avatar only) ──────────────
   Widget _buildAppBar() {
     final header = _dashboard?['header'] as Map<String, dynamic>? ?? {};
-    final fullName = (header['name'] ?? AppLocalizations.of(context).professionalDefaultName).toString();
+    final fullName =
+        (header['name'] ?? AppLocalizations.of(context).professionalDefaultName)
+            .toString();
     final photo = header['photo_url'];
     final unread = (_dashboard?['unread_notifications'] ?? 0) as int;
     return ProfessionalAppBar(
@@ -299,7 +345,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     final header = _dashboard?['header'] as Map<String, dynamic>? ?? {};
     final fullName = (header['name'] ?? t.professionalDefaultName).toString();
     final isVerified = header['is_verified'] ?? false;
-    final category = (header['category_name'] ?? _proProfile['category_name'] ?? '').toString();
+    final category =
+        (header['category_name'] ?? _proProfile['category_name'] ?? '')
+            .toString();
 
     final stats = _dashboard?['stats'] as Map<String, dynamic>? ?? {};
     final rating = _dashboard?['rating'] as Map<String, dynamic>? ?? {};
@@ -307,8 +355,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     final totalBookings = _allBookings.isNotEmpty
         ? _allBookings.length
         : ((stats['pending_bookings'] ?? 0) as int) +
-            ((stats['accepted_bookings'] ?? 0) as int) +
-            ((stats['completed_bookings'] ?? 0) as int);
+              ((stats['accepted_bookings'] ?? 0) as int) +
+              ((stats['completed_bookings'] ?? 0) as int);
     final avgRating = (rating['average'] ?? 0).toDouble();
     final totalEarnings = (earnings['total'] ?? 0).toDouble();
     final clientsCount = _allBookings
@@ -341,7 +389,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
-                          category.isNotEmpty ? AppHelpers.localizedCategoryName(context, category) : t.verifiedProfessionalLabel,
+                          category.isNotEmpty
+                              ? AppHelpers.localizedCategoryName(
+                                  context,
+                                  category,
+                                )
+                              : t.verifiedProfessionalLabel,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: AppFontSizes.secondary,
@@ -375,19 +428,35 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             child: Row(
               children: [
                 Expanded(
-                  child: _headerStat(Icons.calendar_month_rounded, '$totalBookings', t.totalBookingsLabel),
+                  child: _headerStat(
+                    Icons.calendar_month_rounded,
+                    '$totalBookings',
+                    t.totalBookingsLabel,
+                  ),
                 ),
                 _headerStatDivider(),
                 Expanded(
-                  child: _headerStat(Icons.star_rounded, avgRating > 0 ? avgRating.toStringAsFixed(1) : '—', t.ratingLabel),
+                  child: _headerStat(
+                    Icons.star_rounded,
+                    avgRating > 0 ? avgRating.toStringAsFixed(1) : '—',
+                    t.ratingLabel,
+                  ),
                 ),
                 _headerStatDivider(),
                 Expanded(
-                  child: _headerStat(Icons.people_alt_rounded, _formatCompactNumber(clientsCount), t.clientsLabel),
+                  child: _headerStat(
+                    Icons.people_alt_rounded,
+                    _formatCompactNumber(clientsCount),
+                    t.clientsLabel,
+                  ),
                 ),
                 _headerStatDivider(),
                 Expanded(
-                  child: _headerStat(Icons.account_balance_wallet_rounded, '\$${_formatMoney(totalEarnings)}', t.earningsLabel),
+                  child: _headerStat(
+                    Icons.account_balance_wallet_rounded,
+                    'Rs ${_formatMoney(totalEarnings)}',
+                    t.earningsLabel,
+                  ),
                 ),
               ],
             ),
@@ -437,11 +506,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     );
   }
 
-  Widget _headerStatDivider() => Container(
-        width: 1,
-        height: 34,
-        color: context.colors.divider,
-      );
+  Widget _headerStatDivider() =>
+      Container(width: 1, height: 34, color: context.colors.divider);
 
   String _formatCompactNumber(int n) {
     if (n < 1000) return '$n';
@@ -459,7 +525,6 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     }
     return buffer.toString();
   }
-
 
   IconData _categoryIcon(String profession) {
     final p = profession.toLowerCase();
@@ -496,7 +561,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     if (p.contains('account') || p.contains('financ')) {
       return Icons.account_balance_outlined;
     }
-    if (p.contains('comput') || p.contains('it ') || p.contains('developer') || p.contains('software')) {
+    if (p.contains('comput') ||
+        p.contains('it ') ||
+        p.contains('developer') ||
+        p.contains('software')) {
       return Icons.computer_outlined;
     }
     if (p.contains('beauty') || p.contains('salon') || p.contains('makeup')) {
@@ -527,8 +595,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             color: isFocused
                 ? AppColors.professionalColor
                 : isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.grey.withValues(alpha: 0.15),
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.grey.withValues(alpha: 0.15),
             width: isFocused ? 1.5 : 1,
           ),
           boxShadow: [
@@ -623,7 +691,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           Text(
             _isSearching
                 ? AppLocalizations.of(context).searchingLabel
-                : AppLocalizations.of(context).searchResultsLabel(_searchResults.length, _searchController.text),
+                : AppLocalizations.of(context).searchResultsLabel(
+                    _searchResults.length,
+                    _searchController.text,
+                  ),
             style: TextStyle(
               fontSize: AppFontSizes.secondary,
               fontWeight: FontWeight.w500,
@@ -667,7 +738,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     AppLocalizations.of(context).adjustSearchTerms,
                     style: TextStyle(
                       fontSize: AppFontSizes.small,
-                      color: context.colors.textSecondary.withValues(alpha: 0.6),
+                      color: context.colors.textSecondary.withValues(
+                        alpha: 0.6,
+                      ),
                     ),
                   ),
                 ],
@@ -681,9 +754,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   // ── Subscription Upgrade Banner ──────────────────────
-  // Global CtaBanner widget use karta hai (guest ke "become pro" card
-  // wali hi body/layout) — professional ke apne emoji, color aur
-  // content ke sath.
+  // Uses the shared CtaBanner component to prompt free-tier users to upgrade.
   Widget _buildSubscriptionUpgradeBanner(bool isDark) {
     final isPremium = _myPlan?['is_premium'] == true;
     if (isPremium) return const SizedBox.shrink();
@@ -700,7 +771,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       accentEnd: AppColors.professionalColor,
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const SubscriptionScreen(userRole: 'professional')),
+        MaterialPageRoute(
+          builder: (_) => const SubscriptionScreen(userRole: 'professional'),
+        ),
       ),
     );
   }
@@ -806,11 +879,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.error_outline_rounded,
-            color: AppColors.error,
-            size: 18,
-          ),
+          Icon(Icons.error_outline_rounded, color: AppColors.error, size: 18),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -872,7 +941,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             TextButton(
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ProfessionalPortfolioScreen()),
+                MaterialPageRoute(
+                  builder: (_) => const ProfessionalPortfolioScreen(),
+                ),
               ),
               style: TextButton.styleFrom(
                 minimumSize: Size.zero,
@@ -926,7 +997,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 color: AppColors.professionalColor,
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const ProfessionalPortfolioScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const ProfessionalPortfolioScreen(),
+                  ),
                 ),
                 isDark: isDark,
               ),
@@ -945,7 +1018,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 color: AppColors.warningAmber,
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const ProfessionalWalletScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const ProfessionalWalletScreen(),
+                  ),
                 ),
                 isDark: isDark,
               ),
@@ -963,10 +1038,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     required VoidCallback onTap,
     required bool isDark,
   }) {
-    final badgeGradient = [
-      Color.lerp(color, Colors.white, 0.15)!,
-      color,
-    ];
+    final badgeGradient = [Color.lerp(color, Colors.white, 0.15)!, color];
 
     return Expanded(
       child: GestureDetector(
@@ -977,12 +1049,16 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             color: context.colors.surface,
             borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.06) : color.withValues(alpha: 0.15),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : color.withValues(alpha: 0.15),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: isDark ? Colors.black.withValues(alpha: 0.15) : color.withValues(alpha: 0.08),
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.15)
+                    : color.withValues(alpha: 0.08),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -1054,7 +1130,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               GestureDetector(
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const ProfessionalWalletScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const ProfessionalWalletScreen(),
+                  ),
                 ),
                 child: Text(
                   AppLocalizations.of(context).viewWalletLabel,
@@ -1073,16 +1151,34 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             children: [
               Expanded(
                 flex: 3,
-                child: _earningsHeroCard(AppLocalizations.of(context).todaysEarningsLabel, today, isDark),
+                child: _earningsHeroCard(
+                  AppLocalizations.of(context).todaysEarningsLabel,
+                  today,
+                  isDark,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 10),
           Row(
             children: [
-              Expanded(child: _earningsMiniCard(AppLocalizations.of(context).thisMonthLabel, month, Icons.calendar_view_month_rounded, isDark)),
+              Expanded(
+                child: _earningsMiniCard(
+                  AppLocalizations.of(context).thisMonthLabel,
+                  month,
+                  Icons.calendar_view_month_rounded,
+                  isDark,
+                ),
+              ),
               const SizedBox(width: 10),
-              Expanded(child: _earningsMiniCard(AppLocalizations.of(context).totalEarnedLabel, total, Icons.savings_outlined, isDark)),
+              Expanded(
+                child: _earningsMiniCard(
+                  AppLocalizations.of(context).totalEarnedLabel,
+                  total,
+                  Icons.savings_outlined,
+                  isDark,
+                ),
+              ),
             ],
           ),
         ],
@@ -1092,32 +1188,92 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
 
   Widget _earningsHeroCard(String label, double amount, bool isDark) {
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfessionalWalletScreen())),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ProfessionalWalletScreen()),
+      ),
       child: Container(
         padding: const EdgeInsets.all(18),
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-          gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.successDeep, AppColors.emerald]),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.successDeep, AppColors.emerald],
+          ),
         ),
-        child: Stack(clipBehavior: Clip.none, children: [
-        Positioned(right: -36, top: -52, child: Container(width: 150, height: 150, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.10)))),
-        Positioned(right: 70, bottom: -64, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.08)))),
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            const Icon(Icons.trending_up_rounded, color: Colors.white, size: 22),
-            const SizedBox(width: 8),
-            Text(label, style: const TextStyle(color: Colors.white70, fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600)),
-          ]),
-          const SizedBox(height: 10),
-          Text('\$${amount.toStringAsFixed(0)}', style: const TextStyle(color: Colors.white, fontSize: AppFontSizes.display, fontWeight: FontWeight.bold)),
-        ]),
-      ]),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              right: -36,
+              top: -52,
+              child: Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.10),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 70,
+              bottom: -64,
+              child: Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.08),
+                ),
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.trending_up_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: AppFontSizes.secondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Rs ${amount.toStringAsFixed(0)}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: AppFontSizes.display,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _earningsMiniCard(String label, double amount, IconData icon, bool isDark) {
+  Widget _earningsMiniCard(
+    String label,
+    double amount,
+    IconData icon,
+    bool isDark,
+  ) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1141,14 +1297,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            color: AppColors.professionalColor,
-            size: 18,
-          ),
+          Icon(icon, color: AppColors.professionalColor, size: 18),
           const SizedBox(height: 8),
           Text(
-            '\$${amount.toStringAsFixed(0)}',
+            'Rs ${amount.toStringAsFixed(0)}',
             style: TextStyle(
               fontSize: AppFontSizes.title2,
               fontWeight: FontWeight.w700,
@@ -1204,10 +1356,34 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             crossAxisSpacing: 10,
             childAspectRatio: 2.4,
             children: [
-              _dashboardCard(AppLocalizations.of(context).pendingLabel, '$pending', Icons.access_time_rounded, AppColors.warning, isDark),
-              _dashboardCard(AppLocalizations.of(context).acceptedLabel, '$accepted', Icons.check_circle_outline_rounded, context.colors.primary, isDark),
-              _dashboardCard(AppLocalizations.of(context).completedLabel, '$completed', Icons.task_alt_rounded, context.colors.accent, isDark),
-              _dashboardCard(AppLocalizations.of(context).ratingLabel, '${avgRating.toStringAsFixed(1)} ($totalRev)', Icons.star_rounded, AppColors.warningAmber, isDark),
+              _dashboardCard(
+                AppLocalizations.of(context).pendingLabel,
+                '$pending',
+                Icons.access_time_rounded,
+                AppColors.warning,
+                isDark,
+              ),
+              _dashboardCard(
+                AppLocalizations.of(context).acceptedLabel,
+                '$accepted',
+                Icons.check_circle_outline_rounded,
+                context.colors.primary,
+                isDark,
+              ),
+              _dashboardCard(
+                AppLocalizations.of(context).completedLabel,
+                '$completed',
+                Icons.task_alt_rounded,
+                context.colors.accent,
+                isDark,
+              ),
+              _dashboardCard(
+                AppLocalizations.of(context).ratingLabel,
+                '${avgRating.toStringAsFixed(1)} ($totalRev)',
+                Icons.star_rounded,
+                AppColors.warningAmber,
+                isDark,
+              ),
             ],
           ),
         ],
@@ -1215,7 +1391,13 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     );
   }
 
-  Widget _dashboardCard(String label, String value, IconData icon, Color color, bool isDark) {
+  Widget _dashboardCard(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    bool isDark,
+  ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -1241,14 +1423,12 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: isDark ? color.withValues(alpha: 0.12) : color.withValues(alpha: 0.08),
+              color: isDark
+                  ? color.withValues(alpha: 0.12)
+                  : color.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 18,
-            ),
+            child: Icon(icon, color: color, size: 18),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -1285,7 +1465,11 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   // ── Quick Profile Card ──────────────────────────────────
   Widget _buildQuickProfileCard(bool isDark) {
     final skillsRaw = (_proProfile['skills'] ?? '').toString();
-    final skills = skillsRaw.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+    final skills = skillsRaw
+        .split(',')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
     final rate = _proProfile['hourly_rate']?.toString() ?? '0';
     final isAvailable = _proProfile['is_available'] ?? true;
 
@@ -1352,7 +1536,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      '\$$rate/hr',
+                      'Rs $rate/hr',
                       style: TextStyle(
                         fontSize: AppFontSizes.secondary,
                         fontWeight: FontWeight.w600,
@@ -1366,7 +1550,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               Row(
                 children: [
                   Text(
-                    isAvailable ? AppLocalizations.of(context).availableLabel : AppLocalizations.of(context).unavailableLabel,
+                    isAvailable
+                        ? AppLocalizations.of(context).availableLabel
+                        : AppLocalizations.of(context).unavailableLabel,
                     style: TextStyle(
                       fontSize: AppFontSizes.small,
                       fontWeight: FontWeight.w600,
@@ -1397,7 +1583,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                           child: Switch(
                             value: isAvailable,
                             activeThumbColor: context.colors.accent,
-                            activeTrackColor: context.colors.accent.withValues(alpha: 0.3),
+                            activeTrackColor: context.colors.accent.withValues(
+                              alpha: 0.3,
+                            ),
                             inactiveTrackColor: isDark
                                 ? Colors.white.withValues(alpha: 0.1)
                                 : Colors.grey.withValues(alpha: 0.3),
@@ -1422,27 +1610,41 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             Wrap(
               spacing: 6,
               runSpacing: 6,
-              children: skills.take(6).map((s) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? AppColors.professionalColor.withValues(alpha: 0.12)
-                          : AppColors.professionalColor.withValues(alpha: 0.06),
-                      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-                      border: Border.all(
-                        color: AppColors.professionalColor.withValues(alpha: isDark ? 0.15 : 0.1),
+              children: skills
+                  .take(6)
+                  .map(
+                    (s) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? AppColors.professionalColor.withValues(
+                                alpha: 0.12,
+                              )
+                            : AppColors.professionalColor.withValues(
+                                alpha: 0.06,
+                              ),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                        border: Border.all(
+                          color: AppColors.professionalColor.withValues(
+                            alpha: isDark ? 0.15 : 0.1,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        s,
+                        style: TextStyle(
+                          fontSize: AppFontSizes.caption,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.professionalColor,
+                          letterSpacing: 0.1,
+                        ),
                       ),
                     ),
-                    child: Text(
-                      s,
-                      style: TextStyle(
-                        fontSize: AppFontSizes.caption,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.professionalColor,
-                        letterSpacing: 0.1,
-                      ),
-                    ),
-                  )).toList(),
+                  )
+                  .toList(),
             ),
         ],
       ),
@@ -1463,12 +1665,17 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       if (!mounted) return;
       AppHelpers.showSuccess(
         context,
-        value ? AppLocalizations.of(context).availabilityOnSuccess : AppLocalizations.of(context).availabilityOffSuccess,
+        value
+            ? AppLocalizations.of(context).availabilityOnSuccess
+            : AppLocalizations.of(context).availabilityOffSuccess,
       );
     } catch (e) {
       if (!mounted) return;
       setState(() => _proProfile = {..._proProfile, 'is_available': previous});
-      AppHelpers.showError(context, AppLocalizations.of(context).availabilityUpdateError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).availabilityUpdateError,
+      );
     } finally {
       if (mounted) setState(() => _isTogglingAvailability = false);
     }
@@ -1476,22 +1683,31 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
 
   // ── Today's Schedule ──────────────────────────────────
   List<dynamic> _bookingsForDate(DateTime date) {
-    return _allBookings.where((b) {
-      final raw = b['date']?.toString();
-      if (raw == null) return false;
-      try {
-        final d = DateTime.parse(raw);
-        return d.year == date.year && d.month == date.month && d.day == date.day;
-      } catch (_) {
-        return false;
-      }
-    }).where((b) => b['status'] != 'cancelled' && b['status'] != 'rejected').toList();
+    return _allBookings
+        .where((b) {
+          final raw = b['date']?.toString();
+          if (raw == null) return false;
+          try {
+            final d = DateTime.parse(raw);
+            return d.year == date.year &&
+                d.month == date.month &&
+                d.day == date.day;
+          } catch (_) {
+            return false;
+          }
+        })
+        .where((b) => b['status'] != 'cancelled' && b['status'] != 'rejected')
+        .toList();
   }
 
   Widget _buildTodaysScheduleSection(bool isDark) {
     final today = DateTime.now();
     final todaysBookings = _bookingsForDate(today)
-      ..sort((a, b) => (a['time']?.toString() ?? '').compareTo(b['time']?.toString() ?? ''));
+      ..sort(
+        (a, b) => (a['time']?.toString() ?? '').compareTo(
+          b['time']?.toString() ?? '',
+        ),
+      );
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
@@ -1538,7 +1754,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildScheduleTile(dynamic booking, bool isDark) {
-    final customerName = booking['customer_name']?.toString() ?? AppLocalizations.of(context).customerDefault;
+    final customerName =
+        booking['customer_name']?.toString() ??
+        AppLocalizations.of(context).customerDefault;
     final time = booking['time']?.toString() ?? '';
     final status = booking['status']?.toString() ?? 'pending';
     final statusColor = status == 'accepted'
@@ -1659,11 +1877,15 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             children: [
               IconButton(
                 icon: const Icon(Icons.chevron_left_rounded, size: 20),
-                onPressed: () => setState(() => _selectedCalendarDate = DateTime(year, month - 1, 1)),
+                onPressed: () => setState(
+                  () => _selectedCalendarDate = DateTime(year, month - 1, 1),
+                ),
                 color: context.colors.textSecondary,
               ),
               Text(
-                DateFormat.yMMMM(Localizations.localeOf(context).toString()).format(DateTime(year, month, 1)),
+                DateFormat.yMMMM(
+                  Localizations.localeOf(context).toString(),
+                ).format(DateTime(year, month, 1)),
                 style: TextStyle(
                   fontSize: AppFontSizes.body,
                   fontWeight: FontWeight.w600,
@@ -1673,26 +1895,35 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               ),
               IconButton(
                 icon: const Icon(Icons.chevron_right_rounded, size: 20),
-                onPressed: () => setState(() => _selectedCalendarDate = DateTime(year, month + 1, 1)),
+                onPressed: () => setState(
+                  () => _selectedCalendarDate = DateTime(year, month + 1, 1),
+                ),
                 color: context.colors.textSecondary,
               ),
             ],
           ),
           const SizedBox(height: 8),
           Row(
-            children: AppLocalizations.of(context).calendarWeekDays.split('').map((d) => Expanded(
-                      child: Center(
-                        child: Text(
-                          d,
-                          style: TextStyle(
-                            fontSize: AppFontSizes.caption,
-                            fontWeight: FontWeight.w600,
-                            color: context.colors.textSecondary.withValues(alpha: 0.6),
-                            letterSpacing: 0.5,
+            children: AppLocalizations.of(context).calendarWeekDays
+                .split('')
+                .map(
+                  (d) => Expanded(
+                    child: Center(
+                      child: Text(
+                        d,
+                        style: TextStyle(
+                          fontSize: AppFontSizes.caption,
+                          fontWeight: FontWeight.w600,
+                          color: context.colors.textSecondary.withValues(
+                            alpha: 0.6,
                           ),
+                          letterSpacing: 0.5,
                         ),
                       ),
-                    )).toList(),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
           const SizedBox(height: 4),
           ...List.generate(((daysInMonth + startWeekday) / 7).ceil(), (week) {
@@ -1703,7 +1934,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   return const Expanded(child: SizedBox(height: 38));
                 }
                 final date = DateTime(year, month, dayNum);
-                final isToday = date.year == today.year && date.month == today.month && date.day == today.day;
+                final isToday =
+                    date.year == today.year &&
+                    date.month == today.month &&
+                    date.day == today.day;
                 final hasBookings = _bookingsForDate(date).isNotEmpty;
 
                 return Expanded(
@@ -1723,7 +1957,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                           '$dayNum',
                           style: TextStyle(
                             fontSize: AppFontSizes.small,
-                            fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
+                            fontWeight: isToday
+                                ? FontWeight.w700
+                                : FontWeight.w500,
                             color: isToday
                                 ? Colors.white
                                 : context.colors.textPrimary,
@@ -1738,7 +1974,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                               shape: BoxShape.circle,
                               color: isToday
                                   ? Colors.white
-                                  : AppColors.professionalColor.withValues(alpha: 0.6),
+                                  : AppColors.professionalColor.withValues(
+                                      alpha: 0.6,
+                                    ),
                             ),
                           ),
                       ],
@@ -1775,7 +2013,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               GestureDetector(
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const ProfessionalPortfolioScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const ProfessionalPortfolioScreen(),
+                  ),
                 ),
                 child: Text(
                   AppLocalizations.of(context).manageLabel,
@@ -1794,18 +2034,25 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             GestureDetector(
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ProfessionalPortfolioScreen()),
+                MaterialPageRoute(
+                  builder: (_) => const ProfessionalPortfolioScreen(),
+                ),
               ),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 14,
+                ),
                 decoration: BoxDecoration(
                   color: isDark
                       ? AppColors.professionalColor.withValues(alpha: 0.06)
                       : AppColors.professionalColor.withValues(alpha: 0.04),
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   border: Border.all(
-                    color: AppColors.professionalColor.withValues(alpha: isDark ? 0.12 : 0.08),
+                    color: AppColors.professionalColor.withValues(
+                      alpha: isDark ? 0.12 : 0.08,
+                    ),
                     width: 1.5,
                     style: BorderStyle.solid,
                   ),
@@ -1816,7 +2063,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: AppColors.professionalColor.withValues(alpha: isDark ? 0.12 : 0.06),
+                        color: AppColors.professionalColor.withValues(
+                          alpha: isDark ? 0.12 : 0.06,
+                        ),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -1844,7 +2093,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                             AppLocalizations.of(context).addPortfolioHint,
                             style: TextStyle(
                               fontSize: AppFontSizes.caption,
-                              color: context.colors.textSecondary.withValues(alpha: 0.6),
+                              color: context.colors.textSecondary.withValues(
+                                alpha: 0.6,
+                              ),
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -1872,7 +2123,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     return GestureDetector(
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const ProfessionalPortfolioScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const ProfessionalPortfolioScreen(),
+                        ),
                       ),
                       child: Container(
                         width: 90,
@@ -1880,7 +2133,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                           color: isDark
                               ? Colors.white.withValues(alpha: 0.03)
                               : AppColors.violet50,
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
                           border: Border.all(
                             color: isDark
                                 ? Colors.white.withValues(alpha: 0.06)
@@ -1933,11 +2188,15 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       Container(
                         width: 90,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
                           color: context.colors.divider,
                           image: imageUrl != null && imageUrl.isNotEmpty
                               ? DecorationImage(
-                                  image: NetworkImage(AppHelpers.getFullImageUrl(imageUrl)),
+                                  image: NetworkImage(
+                                    AppHelpers.getFullImageUrl(imageUrl),
+                                  ),
                                   fit: BoxFit.cover,
                                 )
                               : null,
@@ -1946,7 +2205,8 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                             ? Center(
                                 child: Icon(
                                   Icons.image_outlined,
-                                  color: context.colors.textSecondary.withValues(alpha: 0.3),
+                                  color: context.colors.textSecondary
+                                      .withValues(alpha: 0.3),
                                   size: 28,
                                 ),
                               )
@@ -2035,17 +2295,24 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               ),
             )
           else
-            ..._recentConversations.map((c) => _buildMessagePreviewTile(c, isDark)),
+            ..._recentConversations.map(
+              (c) => _buildMessagePreviewTile(c, isDark),
+            ),
         ],
       ),
     );
   }
 
   Widget _buildMessagePreviewTile(dynamic conv, bool isDark) {
-    final name = conv['other_user_name']?.toString() ?? AppLocalizations.of(context).customerDefault;
+    final name =
+        conv['other_user_name']?.toString() ??
+        AppLocalizations.of(context).customerDefault;
     final lastMessage = conv['last_message']?.toString() ?? '';
     final unread = (conv['unread_count'] ?? 0) as int;
-    final photo = conv['other_user_photo']?.toString();
+    final rawPhoto =
+        (conv['other_user_photo'] ?? conv['photo_url'] ?? conv['photo'] ?? '')
+            .toString();
+    final photo = AppHelpers.getFullImageUrl(rawPhoto);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -2065,7 +2332,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                           : int.parse(conv['id'].toString()),
                       currentUserId: _myUserId!,
                       otherUserName: name,
-                      otherUserPhoto: photo,
+                      otherUserPhoto: photo.isNotEmpty ? photo : null,
                       conversationSnapshot: ConversationModel.fromJson(
                         conv as Map<String, dynamic>,
                       ),
@@ -2092,22 +2359,43 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             ),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: context.colors.primaryLight,
-                  backgroundImage: (photo != null && photo.isNotEmpty)
-                      ? NetworkImage(photo)
-                      : null,
-                  child: (photo == null || photo.isEmpty)
-                      ? Text(
-                          AppHelpers.getInitials(name),
-                          style: TextStyle(
-                            fontSize: AppFontSizes.caption,
-                            fontWeight: FontWeight.w600,
-                            color: context.colors.primary,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    color: context.colors.primaryLight,
+                    child: photo.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: photo,
+                            width: 36,
+                            height: 36,
+                            fit: BoxFit.cover,
+                            memCacheWidth: 100,
+                            memCacheHeight: 100,
+                            placeholder: (_, _) => const SizedBox(),
+                            errorWidget: (context, error, stackTrace) => Center(
+                              child: Text(
+                                AppHelpers.getInitials(name),
+                                style: TextStyle(
+                                  fontSize: AppFontSizes.caption,
+                                  fontWeight: FontWeight.w600,
+                                  color: context.colors.primary,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Center(
+                            child: Text(
+                              AppHelpers.getInitials(name),
+                              style: TextStyle(
+                                fontSize: AppFontSizes.caption,
+                                fontWeight: FontWeight.w600,
+                                color: context.colors.primary,
+                              ),
+                            ),
                           ),
-                        )
-                      : null,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -2125,7 +2413,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        lastMessage.isEmpty ? AppLocalizations.of(context).noMessagesPlaceholder : lastMessage,
+                        lastMessage.isEmpty
+                            ? AppLocalizations.of(context).noMessagesPlaceholder
+                            : lastMessage,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -2143,7 +2433,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 ),
                 if (unread > 0)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.professionalColor,
                       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -2187,7 +2480,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               GestureDetector(
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const ProfessionalReviewsScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const ProfessionalReviewsScreen(),
+                  ),
                 ),
                 child: Text(
                   AppLocalizations.of(context).seeAllLabel,
@@ -2232,9 +2527,20 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildReviewTile(dynamic r, bool isDark) {
-    final customerName = r['reviewer_name'] ?? r['customer_name'] ?? AppLocalizations.of(context).customerDefault;
+    final customerName =
+        r['reviewer_name'] ??
+        r['customer_name'] ??
+        AppLocalizations.of(context).customerDefault;
     final rating = (r['rating'] ?? 0).toDouble();
     final comment = r['comment']?.toString() ?? r['review']?.toString() ?? '';
+    final rawPhoto =
+        (r['reviewer_photo'] ??
+                r['customer_photo'] ??
+                r['photo_url'] ??
+                r['photo'] ??
+                '')
+            .toString();
+    final photo = AppHelpers.getFullImageUrl(rawPhoto);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -2261,16 +2567,42 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: context.colors.primaryLight,
-                child: Text(
-                  AppHelpers.getInitials(customerName.toString()),
-                  style: TextStyle(
-                    fontSize: AppFontSizes.caption,
-                    fontWeight: FontWeight.w600,
-                    color: context.colors.primary,
-                  ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  color: context.colors.primaryLight,
+                  child: photo.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: photo,
+                          width: 32,
+                          height: 32,
+                          fit: BoxFit.cover,
+                          memCacheWidth: 100,
+                          memCacheHeight: 100,
+                          placeholder: (_, _) => const SizedBox(),
+                          errorWidget: (context, error, stackTrace) => Center(
+                            child: Text(
+                              AppHelpers.getInitials(customerName.toString()),
+                              style: TextStyle(
+                                fontSize: AppFontSizes.caption,
+                                fontWeight: FontWeight.w600,
+                                color: context.colors.primary,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Center(
+                          child: Text(
+                            AppHelpers.getInitials(customerName.toString()),
+                            style: TextStyle(
+                              fontSize: AppFontSizes.caption,
+                              fontWeight: FontWeight.w600,
+                              color: context.colors.primary,
+                            ),
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -2286,13 +2618,16 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 ),
               ),
               Row(
-                children: List.generate(5, (i) => Icon(
-                      i < rating.round()
-                          ? Icons.star_rounded
-                          : Icons.star_border_rounded,
-                      size: 14,
-                      color: AppColors.warningAmber,
-                    )),
+                children: List.generate(
+                  5,
+                  (i) => Icon(
+                    i < rating.round()
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    size: 14,
+                    color: AppColors.warningAmber,
+                  ),
+                ),
               ),
             ],
           ),
@@ -2381,10 +2716,14 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   Widget _buildBookingTile(dynamic b, bool isDark) {
-    final customerName = b['customer_name'] ?? AppLocalizations.of(context).customerDefault;
+    final customerName =
+        b['customer_name'] ?? AppLocalizations.of(context).customerDefault;
     final status = b['status']?.toString() ?? 'pending';
     final date = b['date']?.toString() ?? '';
     final time = b['time']?.toString() ?? '';
+    final rawPhoto = (b['customer_photo'] ?? b['photo_url'] ?? b['photo'] ?? '')
+        .toString();
+    final photo = AppHelpers.getFullImageUrl(rawPhoto);
 
     Color statusColor;
     switch (status.toLowerCase()) {
@@ -2426,16 +2765,42 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: context.colors.primaryLight,
-              child: Text(
-                AppHelpers.getInitials(customerName.toString()),
-                style: TextStyle(
-                  fontSize: AppFontSizes.small,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.primary,
-                ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                width: 40,
+                height: 40,
+                color: context.colors.primaryLight,
+                child: photo.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: photo,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                        memCacheWidth: 120,
+                        memCacheHeight: 120,
+                        placeholder: (_, _) => const SizedBox(),
+                        errorWidget: (context, error, stackTrace) => Center(
+                          child: Text(
+                            AppHelpers.getInitials(customerName.toString()),
+                            style: TextStyle(
+                              fontSize: AppFontSizes.small,
+                              fontWeight: FontWeight.w600,
+                              color: context.colors.primary,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          AppHelpers.getInitials(customerName.toString()),
+                          style: TextStyle(
+                            fontSize: AppFontSizes.small,
+                            fontWeight: FontWeight.w600,
+                            color: context.colors.primary,
+                          ),
+                        ),
+                      ),
               ),
             ),
             const SizedBox(width: 12),
@@ -2498,8 +2863,10 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     final isPending = status.toLowerCase() == 'pending';
     final isAccepted = status.toLowerCase() == 'accepted';
     final isCancellable = isPending || isAccepted;
-    final customerName = b['customer_name'] ?? AppLocalizations.of(context).customerDefault;
-    final date = b['date']?.toString() ?? AppLocalizations.of(context).dateNotSet;
+    final customerName =
+        b['customer_name'] ?? AppLocalizations.of(context).customerDefault;
+    final date =
+        b['date']?.toString() ?? AppLocalizations.of(context).dateNotSet;
     final time = b['time']?.toString() ?? '';
     final note = b['note']?.toString() ?? '';
     final bookingId = b['id'];
@@ -2508,7 +2875,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
       ),
       backgroundColor: context.colors.surface,
       builder: (sheetContext) => Padding(
@@ -2543,10 +2912,32 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               ),
             ),
             const SizedBox(height: 16),
-            _detailRow(Icons.person_outline_rounded, AppLocalizations.of(context).customerLabel, customerName.toString(), isDark),
-            _detailRow(Icons.calendar_today_outlined, AppLocalizations.of(context).dateLabel, date, isDark),
-            if (time.isNotEmpty) _detailRow(Icons.access_time_rounded, AppLocalizations.of(context).timeLabel, time, isDark),
-            if (note.isNotEmpty) _detailRow(Icons.notes_rounded, AppLocalizations.of(context).notesLabel, note, isDark),
+            _detailRow(
+              Icons.person_outline_rounded,
+              AppLocalizations.of(context).customerLabel,
+              customerName.toString(),
+              isDark,
+            ),
+            _detailRow(
+              Icons.calendar_today_outlined,
+              AppLocalizations.of(context).dateLabel,
+              date,
+              isDark,
+            ),
+            if (time.isNotEmpty)
+              _detailRow(
+                Icons.access_time_rounded,
+                AppLocalizations.of(context).timeLabel,
+                time,
+                isDark,
+              ),
+            if (note.isNotEmpty)
+              _detailRow(
+                Icons.notes_rounded,
+                AppLocalizations.of(context).notesLabel,
+                note,
+                isDark,
+              ),
             const SizedBox(height: 16),
             if (isPending) ...[
               Row(
@@ -2561,9 +2952,13 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       label: Text(AppLocalizations.of(context).rejectCta),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
-                        side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
+                        side: BorderSide(
+                          color: AppColors.error.withValues(alpha: 0.3),
+                        ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
                         ),
                       ),
                     ),
@@ -2581,7 +2976,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                         backgroundColor: context.colors.accent,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
                         ),
                         elevation: 0,
                       ),
@@ -2623,7 +3020,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   label: Text(AppLocalizations.of(context).cancelBookingCta),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.error,
-                    side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
+                    side: BorderSide(
+                      color: AppColors.error.withValues(alpha: 0.3),
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
@@ -2688,14 +3087,22 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
 
   Future<void> _updateBookingStatus(dynamic bookingId, String newStatus) async {
     try {
-      await _api.patch('${AppConstants.professionalBookings}$bookingId/', {'status': newStatus});
+      await _api.patch('${AppConstants.professionalBookings}$bookingId/', {
+        'status': newStatus,
+      });
       if (!mounted) return;
-      AppHelpers.showInfo(context, AppLocalizations.of(context).bookingUpdatedToast(newStatus));
+      AppHelpers.showInfo(
+        context,
+        AppLocalizations.of(context).bookingUpdatedToast(newStatus),
+      );
       await _loadData();
       if (_searchQuery.isNotEmpty) _onSearchChanged(_searchQuery);
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showInfo(context, AppLocalizations.of(context).bookingUpdateError);
+      AppHelpers.showInfo(
+        context,
+        AppLocalizations.of(context).bookingUpdateError,
+      );
     }
   }
 }

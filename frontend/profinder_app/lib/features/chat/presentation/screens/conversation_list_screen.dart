@@ -17,11 +17,8 @@ import '../../../../core/theme/app_text_styles.dart';
 class ConversationListScreen extends StatefulWidget {
   final int currentUserId;
 
-  /// ✅ NEW — pass `_currentIndex == messagesTabIndex` when this screen
-  /// lives inside an IndexedStack (Professional's bottom nav) so it knows
-  /// when it's the ACTIVE tab vs just sitting alive in the background.
-  /// Screens pushed via Navigator (Customer side) can leave this `true` —
-  /// they're naturally only "visible" while on top of the stack anyway.
+  /// Indicates whether this screen is the currently active tab (e.g., inside an IndexedStack).
+  /// Used to pause or resume background polling when switching tabs.
   final bool isVisible;
 
   const ConversationListScreen({super.key, required this.currentUserId, this.isVisible = true});
@@ -46,13 +43,8 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
   void didUpdateWidget(covariant ConversationListScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!oldWidget.isVisible && widget.isVisible) {
-      // 🐛 FIX: `refresh()` calls `notifyListeners()` synchronously (before
-      // any await), and didUpdateWidget runs DURING the framework's build
-      // phase (this screen sits inside an IndexedStack whose parent is
-      // rebuilding). Calling it directly triggers "setState() or
-      // markNeedsBuild() called during build". Deferring with
-      // addPostFrameCallback runs it right after the current frame
-      // finishes, which is still effectively instant to the user.
+      // Defer provider refresh via addPostFrameCallback to avoid calling setState
+      // synchronously during the parent IndexedStack's build cycle.
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         context.read<ConversationListProvider>().refresh();
@@ -69,11 +61,8 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
     super.dispose();
   }
 
-  // ✅ NEW — lightweight fallback so the list (order + unread counts)
-  // stays roughly live even while the user is just browsing it rather
-  // than inside a specific chat (which has its own WebSocket room).
-  // 15s is a deliberate compromise: frequent enough to feel "live" for a
-  // list screen, cheap enough to not worry about battery/data.
+  // Periodic polling interval to keep unread counts and conversation orders updated
+  // while the conversation list tab is visible in the foreground.
   void _startPolling() {
     _pollTimer?.cancel();
     _pollTimer = Timer.periodic(const Duration(seconds: 15), (_) {

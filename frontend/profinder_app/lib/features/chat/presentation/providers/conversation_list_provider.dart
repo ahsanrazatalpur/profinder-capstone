@@ -19,9 +19,8 @@ class ConversationListProvider extends ChangeNotifier {
   String? get error => _error;
   List<ConversationEntity> get conversations => _conversations;
 
-  /// ✅ NEW — sum of unread messages across every conversation. Used to
-  /// show a badge on the "Messages" bottom-nav icon (both Customer and
-  /// Professional sides) without a separate network call.
+  /// Sum of unread messages across all conversations.
+  /// Used for badge rendering on bottom navigation icons without extra API calls.
   int get totalUnreadCount => _conversations.fold(0, (sum, c) => sum + c.unreadCount);
 
   Future<void> load() async {

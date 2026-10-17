@@ -16,16 +16,54 @@
 import '../../../services/content_localizer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../services/api_service.dart';
+import '../../../services/auth_provider.dart';
+import '../../bookings/screens/my_bookings_screen.dart';
+import '../../profile/screens/payments_screen.dart';
+import '../../subscription/screens/subscription_screen.dart';
+import '../../support/screens/my_tickets_screen.dart';
+import '../../professional/screens/professional_main_screen.dart';
+import '../../professional/screens/professional_reviews_screen.dart';
+import '../../professional/screens/professional_wallet_screen.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({super.key});
+  /// Admin only: switches the admin shell to a tab (the dashboard passes its
+  /// own tab switcher). Not needed for customers and professionals.
+  final void Function(int tabIndex)? onNavigateToAdminTab;
+
+  const NotificationScreen({super.key, this.onNavigateToAdminTab});
+
+  /// Transforms raw technical or legacy notification strings
+  /// (e.g. "for Booking #31", "Booking #31 | 12 May 2026", "PF-2026-0004:")
+  /// into polite, natural, user-friendly language.
+  static String humanizeMessage(String input) {
+    if (input.isEmpty) return input;
+    String text = input;
+
+    // "Your payment of 50 USD for Booking #31 was successful." -> "... for your booking was successful."
+    text = text.replaceAll(RegExp(r'\bfor\s+Booking\s*#\d+\b', caseSensitive: false), 'for your booking');
+
+    // "Booking #31 | 12 May 2026 at 10:00 AM" -> "Scheduled for 12 May 2026 at 10:00 AM"
+    text = text.replaceAll(RegExp(r'\bBooking\s*#\d+\s*\|\s*', caseSensitive: false), 'Scheduled for ');
+
+    // Standalone "Booking #31" -> "your booking"
+    text = text.replaceAll(RegExp(r'\bBooking\s*#\d+\b', caseSensitive: false), 'your booking');
+
+    // Legacy ticket & report references: "PF-2026-0001: new reply" -> "Support: new reply"
+    text = text.replaceAll(RegExp(r'\bPF-\d{4}-\d+:\s*', caseSensitive: false), 'Support: ');
+    text = text.replaceAll(RegExp(r'\bPF-\d{4}-\d+\b', caseSensitive: false), 'your support request');
+    text = text.replaceAll(RegExp(r'\bReport\s*#\d+\b', caseSensitive: false), 'your report');
+    text = text.replaceAll(RegExp(r'\bTicket\s*#\d+\b', caseSensitive: false), 'your ticket');
+
+    return text.trim();
+  }
 
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
@@ -68,11 +106,75 @@ class _NotificationScreenState extends State<NotificationScreen> {
     if (notif['is_read'] == true) return;
     try {
       await _api.patch('/notifications/${notif['id']}/read/', {});
+      if (!mounted) return;
       setState(() {
         final idx = _notifications.indexWhere((n) => n['id'] == notif['id']);
         if (idx != -1) _notifications[idx]['is_read'] = true;
       });
     } catch (_) {}
+  }
+
+  // ── Tap: mark as read, then open the screen this notification is about ──
+  // `target_type` comes from the backend (worked out from the original English
+  // text, so it is correct in every app language). If an older server does not
+  // send it yet, we fall back to the plain `type`.
+  void _onNotificationTap(dynamic notif) {
+    _markRead(notif); // fire and forget, never delays the navigation
+    _openTarget(notif);
+  }
+
+  void _openTarget(dynamic notif) {
+    final role   = context.read<AuthProvider>().role;
+    final target = (notif['target_type'] ?? notif['type'] ?? 'general').toString();
+    final nav    = Navigator.of(context);
+    Widget? page;
+
+    if (role == 'customer') {
+      page = switch (target) {
+        // 'review' for a customer = "Service completed, please review" -> bookings
+        'booking' || 'review' => const MyBookingsScreen(),
+        'payment'             => const PaymentsScreen(),
+        'subscription'        => const SubscriptionScreen(userRole: 'customer'),
+        'support'             => const MyTicketsScreen(),
+        _                     => null,
+      };
+    } else if (role == 'admin') {
+      // Tab numbers of the admin shell (admin_main_screen.dart).
+      final tab = switch (target) {
+        'professional_signup' => 12, // Verify
+        'report'              => 9,  // Reports
+        'appeal'              => 26, // Appeals
+        'booking'             => 5,  // Bookings
+        'support'             => 27, // Support
+        _                     => null,
+      };
+      final goTo = widget.onNavigateToAdminTab;
+      if (tab != null && goTo != null) {
+        nav.pop(); // back to the admin shell, then show that tab
+        goTo(tab);
+      }
+      return;
+    } else if (role == 'professional') {
+      if (target == 'booking') {
+        // Bookings is a tab of the professional shell (same as a push tap).
+        nav.popUntil((r) => r.isFirst);
+        ProfessionalMainScreen.switchTab(1);
+        return;
+      }
+      page = switch (target) {
+        'review'       => const ProfessionalReviewsScreen(),
+        'payment'      => const ProfessionalWalletScreen(),
+        'subscription' => const SubscriptionScreen(userRole: 'professional'),
+        'support'      => const MyTicketsScreen(),
+        _              => null,
+      };
+    }
+    // Plain announcements: nothing to open, the tap only marks it read.
+
+    if (page != null) {
+      final screen = page;
+      nav.push(MaterialPageRoute(builder: (_) => screen));
+    }
   }
 
   // ── Mark all as read ──────────────────────────────────────
@@ -92,6 +194,40 @@ class _NotificationScreenState extends State<NotificationScreen> {
       }
     });
     _showSnack(AppLocalizations.of(context).notificationsMarkAllReadSuccess);
+  }
+
+  // ── Clear all (asks first, then deletes everything on the server) ──
+  Future<void> _clearAll() async {
+    final t = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(t.notificationsClearAllTitle),
+        content: Text(t.notificationsClearAllMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(t.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(t.notificationsClearAllCta),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await _api.delete('/notifications/clear/');
+      if (!mounted) return;
+      setState(() => _notifications = []);
+      _showSnack(AppLocalizations.of(context).notificationsClearAllSuccess);
+    } catch (_) {
+      if (!mounted) return;
+      _showSnack(AppLocalizations.of(context).notificationsClearAllError);
+    }
   }
 
   int get _unreadCount =>
@@ -212,7 +348,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final rawTitle   = notif['title']?.toString()   ?? '';
     final rawMessage = notif['message']?.toString() ?? '';
     final title      = _stripEmoji(rawTitle);
-    final message    = _stripEmoji(rawMessage);
+    final message    = NotificationScreen.humanizeMessage(_stripEmoji(rawMessage));
     final type       = notif['type']?.toString()    ?? 'general';
     final isRead     = notif['is_read'] == true;
     final createdAt  = notif['created_at']?.toString() ?? '';
@@ -225,7 +361,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ? Colors.transparent
           : AppColors.customerColor.withValues(alpha: 0.05),
       child: InkWell(
-        onTap: () => _markRead(notif),
+        onTap: () => _onNotificationTap(notif),
         splashColor: AppColors.customerColor.withValues(alpha: 0.1),
         highlightColor: AppColors.customerColor.withValues(alpha: 0.05),
         child: Padding(
@@ -277,7 +413,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         height: 1.4,
                         letterSpacing: 0.2,
                       ),
-                      maxLines: 2,
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
@@ -334,6 +470,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
             onGradient: true,
             badgeBorderColor: universalBarColor(context),
             onPressed: _markAllRead,
+          ),
+          const SizedBox(width: 8),
+        ],
+        if (_notifications.isNotEmpty) ...[
+          AppBarIconButton(
+            icon: Icons.delete_sweep_rounded,
+            tooltip: AppLocalizations.of(context).notificationsClearAllCta,
+            onGradient: true,
+            onPressed: _clearAll,
           ),
           const SizedBox(width: 8),
         ],

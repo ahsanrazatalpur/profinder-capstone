@@ -60,7 +60,7 @@ class AboutPageContent extends StatelessWidget {
 
   // ── Safe link launch ─────────────────────────────────────────────────────
   //
-  // ✅ FIX: every launchUrl(...) call used to fire-and-forget — if the
+  // every launchUrl(...) call used to fire-and-forget — if the
   // intent had nowhere to go (e.g. no dialer/mail app, or Android 11+
   // blocking the intent because AndroidManifest.xml is missing a
   // <queries> block for tel/mailto/https), the tap silently did nothing.
@@ -249,7 +249,7 @@ class AboutPageContent extends StatelessWidget {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ FIX: icon used to sit stacked ABOVE the title in its own row —
+          // icon used to sit stacked ABOVE the title in its own row —
           // now icon + title sit inline on one line (icon left, title
           // right), title picked up the accent color, subtitle got a
           // tinted color too instead of plain gray — closer to how
@@ -299,7 +299,7 @@ class AboutPageContent extends StatelessWidget {
           ],
           if (s.imageUrl.isNotEmpty) ...[
             const SizedBox(height: 14),
-            // ✅ FIX: was BoxFit.contain in a fixed 180px box — for a
+            // was BoxFit.contain in a fixed 180px box — for a
             // portrait photo that meant a small centered image with dead
             // space on both sides ("dull"). Now it's a taller, full-width
             // cover crop with bigger rounded corners.
@@ -702,7 +702,7 @@ class AboutPageContent extends StatelessWidget {
     final email = e['email']?.toString();
     final address = e['address']?.toString();
 
-    // ✅ FIX: contact rows were plain text before — now tappable, each
+    // contact rows were plain text before — now tappable, each
     // opening the right app (dialer / mail / maps) instead of doing nothing.
     addRow(Icons.phone_rounded, phone,
         onTap: phone != null && phone.trim().isNotEmpty
@@ -869,7 +869,7 @@ class AboutPageContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ✅ FIX: same icon-inline-with-title + colored heading treatment
+        // same icon-inline-with-title + colored heading treatment
         // as _textSection, so every section type looks consistent —
         // this heading previously never even rendered the section icon.
         if (s.icon.isNotEmpty || s.title.isNotEmpty)
@@ -915,7 +915,7 @@ class AboutPageContent extends StatelessWidget {
             ),
           ),
         ],
-        // ✅ FIX: these two were being filled in by the admin (Image /
+        // these two were being filled in by the admin (Image /
         // Rich Description fields on the section editor) but never
         // actually rendered anywhere for collection-type sections
         // (Team, Awards, Why Choose Us, etc.) — this heading is shared
@@ -943,7 +943,7 @@ class AboutPageContent extends StatelessWidget {
   }
 
   Widget _infoRow(BuildContext context, IconData icon, String text, {VoidCallback? onTap, bool showChevron = false}) {
-    // ✅ FIX: tappable rows (phone/email/address/legal links) looked like
+    // tappable rows (phone/email/address/legal links) looked like
     // plain black text, so nobody could tell they were clickable. Now
     // anything with an onTap gets the accent color + underline like a link.
     final isLink = onTap != null;

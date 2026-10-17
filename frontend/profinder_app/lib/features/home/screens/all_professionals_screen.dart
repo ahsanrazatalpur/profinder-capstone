@@ -45,9 +45,22 @@ double _responseHrs(Map p) => double.tryParse(p['response_time_hrs']?.toString()
 DateTime? _createdAt(Map p) => DateTime.tryParse(p['created_at']?.toString() ?? '');
 
 // ── Small list helpers used to build each filter's `apply` function.
-List<dynamic> _where(List<dynamic> src, bool Function(Map) test) => src.where((p) => test(p as Map)).toList();
-List<dynamic> _sortDesc(List<dynamic> src, num Function(Map) key) => (List<dynamic>.from(src)..sort((a, b) => key(b as Map).compareTo(key(a as Map))));
-List<dynamic> _sortAsc(List<dynamic> src, num Function(Map) key) => (List<dynamic>.from(src)..sort((a, b) => key(a as Map).compareTo(key(b as Map))));
+List<dynamic> _where(List<dynamic> src, bool Function(Map) test) =>
+    src.where((p) => p is Map && test(p)).toList();
+List<dynamic> _sortDesc(List<dynamic> src, num Function(Map) key) =>
+    (List<dynamic>.from(src)
+      ..sort((a, b) {
+        final ma = a is Map ? a : const {};
+        final mb = b is Map ? b : const {};
+        return key(mb).compareTo(key(ma));
+      }));
+List<dynamic> _sortAsc(List<dynamic> src, num Function(Map) key) =>
+    (List<dynamic>.from(src)
+      ..sort((a, b) {
+        final ma = a is Map ? a : const {};
+        final mb = b is Map ? b : const {};
+        return key(ma).compareTo(key(mb));
+      }));
 
 /// Builds the filter-chip set for a given [section]. Each section only
 /// exposes filters that make sense for it — nothing is shared across
@@ -147,22 +160,46 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
   final _favStore = FavoritesStore();
   final Map<String, Future<bool>> _favCache = {};
 
-  late final List<_FilterOption> _options =
-      _optionsFor(widget.section, AppLocalizations.of(context));
+  List<_FilterOption> _options = const [];
   int _selectedIndex = 0;
-  late List<dynamic> _list;
+  List<dynamic> _list = const [];
+  bool _initialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    _list = _options[_selectedIndex].apply(widget.professionals);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final t = AppLocalizations.of(context);
+    _options = _optionsFor(widget.section, t);
+    if (!_initialized) {
+      if (_selectedIndex >= _options.length) {
+        _selectedIndex = 0;
+      }
+      _list = _options.isNotEmpty
+          ? _options[_selectedIndex].apply(widget.professionals)
+          : List<dynamic>.from(widget.professionals);
+      _initialized = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(AllProfessionalsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.professionals != widget.professionals || oldWidget.section != widget.section) {
+      if (_options.isNotEmpty && _selectedIndex < _options.length) {
+        _list = _options[_selectedIndex].apply(widget.professionals);
+      } else {
+        _list = List<dynamic>.from(widget.professionals);
+      }
+    }
   }
 
   /// Applies the chip at [index] and re-renders the list from it.
   void _applyFilter(int index) {
     setState(() {
       _selectedIndex = index;
-      _list = _options[index].apply(widget.professionals);
+      _list = _options.isNotEmpty && index < _options.length
+          ? _options[index].apply(widget.professionals)
+          : List<dynamic>.from(widget.professionals);
     });
   }
 
@@ -178,7 +215,9 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
     await widget.onRefresh!();
     if (!mounted) return;
     setState(() {
-      _list = _options[_selectedIndex].apply(widget.professionals);
+      _list = _options.isNotEmpty && _selectedIndex < _options.length
+          ? _options[_selectedIndex].apply(widget.professionals)
+          : List<dynamic>.from(widget.professionals);
       _favCache.clear();
     });
   }
@@ -206,7 +245,11 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                       itemCount: _list.length,
                       separatorBuilder: (_, _) => const SizedBox(height: 14),
-                      itemBuilder: (_, i) => _buildCard(_list[i] as Map),
+                      itemBuilder: (_, i) {
+                        final item = _list[i];
+                        if (item is! Map) return const SizedBox.shrink();
+                        return _buildCard(item);
+                      },
                     ),
                   ),
           ),
@@ -271,7 +314,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
             onFavoriteToggle: () async {
               await _favStore.toggle(Map<String, dynamic>.from(pro));
               _favCache.remove(id);
-              setState(() {});
+              if (mounted) setState(() {});
             },
             onTap: () => Navigator.push(context,
                 MaterialPageRoute(builder: (_) => ProfessionalDetailScreen(professional: Map<String, dynamic>.from(pro)))),

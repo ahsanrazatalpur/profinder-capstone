@@ -39,13 +39,13 @@ class _GlassCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white.withValues(alpha: opacity),
-        ),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.white.withValues(alpha: opacity),
+    ),
+  );
 }
 
 /// Horizontal padding that follows screen width (phone / tablet / desktop+web).
@@ -75,13 +75,20 @@ class BrandLockup extends StatelessWidget {
   /// true when the bar has a coloured background (white text + glass logo tile).
   final bool onGradient;
 
-  const BrandLockup({super.key, this.badgeLabel, this.badgeColor, this.onGradient = false});
+  const BrandLockup({
+    super.key,
+    this.badgeLabel,
+    this.badgeColor,
+    this.onGradient = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final wide = width >= 600;
-    final tag = onGradient ? Colors.white : (badgeColor ?? context.colors.primary);
+    final tag = onGradient
+        ? Colors.white
+        : (badgeColor ?? context.colors.primary);
 
     final logo = onGradient
         // Same PF mark, "inverted" variant (white disc, brand-coloured P/F) so it
@@ -94,7 +101,9 @@ class BrandLockup extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
               border: Border.all(color: Colors.white.withValues(alpha: 0.32)),
             ),
-            child: Center(child: AppLogoMark(size: wide ? 42 : 38, inverted: true)),
+            child: Center(
+              child: AppLogoMark(size: wide ? 42 : 38, inverted: true),
+            ),
           )
         : AppLogoMark(size: wide ? 38 : 34);
 
@@ -127,7 +136,11 @@ class BrandLockup extends StatelessWidget {
             ),
             child: Text(
               badgeLabel!,
-              style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: tag),
+              style: TextStyle(
+                fontSize: AppFontSizes.caption,
+                fontWeight: FontWeight.w700,
+                color: tag,
+              ),
             ),
           ),
         ],
@@ -197,13 +210,17 @@ class RoleAppBarSliver extends StatelessWidget {
         ),
         titleSpacing: pad,
         title: leading,
-        actions: [...actions, SizedBox(width: pad)],
+        actions: [
+          ...actions,
+          SizedBox(width: pad),
+        ],
       );
     }
 
     return SliverAppBar(
       pinned: true,
-      primary: true, // adds the status-bar inset itself when no SafeArea wraps it
+      primary:
+          true, // adds the status-bar inset itself when no SafeArea wraps it
       automaticallyImplyLeading: false,
       centerTitle: false,
       toolbarHeight: kRoleAppBarHeight,
@@ -215,7 +232,10 @@ class RoleAppBarSliver extends StatelessWidget {
       shape: Border(bottom: BorderSide(color: context.colors.divider)),
       titleSpacing: pad,
       title: leading,
-      actions: [...actions, SizedBox(width: pad)],
+      actions: [
+        ...actions,
+        SizedBox(width: pad),
+      ],
     );
   }
 }
@@ -253,7 +273,9 @@ class AppBarIconButton extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Material(
-              color: onGradient ? Colors.white.withValues(alpha: 0.18) : c.primary.withValues(alpha: 0.08),
+              color: onGradient
+                  ? Colors.white.withValues(alpha: 0.18)
+                  : c.primary.withValues(alpha: 0.08),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(13),
                 side: onGradient
@@ -262,11 +284,17 @@ class AppBarIconButton extends StatelessWidget {
               ),
               child: InkWell(
                 onTap: onPressed,
-                customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+                customBorder: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(13),
+                ),
                 child: SizedBox(
                   width: 42,
                   height: 42,
-                  child: Icon(icon, size: 22, color: onGradient ? Colors.white : c.textPrimary),
+                  child: Icon(
+                    icon,
+                    size: 22,
+                    color: onGradient ? Colors.white : c.textPrimary,
+                  ),
                 ),
               ),
             ),
@@ -275,12 +303,23 @@ class AppBarIconButton extends StatelessWidget {
                 right: -4,
                 top: -4,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 1,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 18,
+                    minHeight: 18,
+                  ),
                   decoration: BoxDecoration(
-                    color: onGradient ? AppColors.badgeTopRated : AppColors.error,
+                    color: onGradient
+                        ? AppColors.badgeTopRated
+                        : AppColors.error,
                     borderRadius: BorderRadius.circular(9),
-                    border: Border.all(color: badgeBorderColor ?? c.surface, width: 1.5),
+                    border: Border.all(
+                      color: badgeBorderColor ?? c.surface,
+                      width: 1.5,
+                    ),
                   ),
                   child: Text(
                     badgeCount > 9 ? '9+' : '$badgeCount',
@@ -339,7 +378,9 @@ class AppBarAvatar extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: onGradient ? Colors.white.withValues(alpha: 0.55) : ringColor,
+                color: onGradient
+                    ? Colors.white.withValues(alpha: 0.55)
+                    : ringColor,
                 width: 2,
               ),
             ),
@@ -348,20 +389,26 @@ class AppBarAvatar extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: onGradient ? 18 : 16,
-                  backgroundColor: onGradient ? Colors.white.withValues(alpha: 0.22) : ringColor.withValues(alpha: 0.12),
+                  backgroundColor: onGradient
+                      ? Colors.white.withValues(alpha: 0.22)
+                      : ringColor.withValues(alpha: 0.12),
                   backgroundImage: hasPhoto ? NetworkImage(photoUrl!) : null,
                   child: hasPhoto
                       ? null
                       : (fallbackIcon != null
-                          ? Icon(fallbackIcon, size: 18, color: onGradient ? Colors.white : ringColor)
-                          : Text(
-                              AppHelpers.getInitials(name),
-                              style: TextStyle(
-                                fontSize: AppFontSizes.secondary,
-                                fontWeight: FontWeight.w700,
+                            ? Icon(
+                                fallbackIcon,
+                                size: 18,
                                 color: onGradient ? Colors.white : ringColor,
-                              ),
-                            )),
+                              )
+                            : Text(
+                                AppHelpers.getInitials(name),
+                                style: TextStyle(
+                                  fontSize: AppFontSizes.secondary,
+                                  fontWeight: FontWeight.w700,
+                                  color: onGradient ? Colors.white : ringColor,
+                                ),
+                              )),
                 ),
                 if (isVerified)
                   Positioned(
@@ -373,9 +420,16 @@ class AppBarAvatar extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: context.colors.accent,
                         shape: BoxShape.circle,
-                        border: Border.all(color: context.colors.surface, width: 1.5),
+                        border: Border.all(
+                          color: context.colors.surface,
+                          width: 1.5,
+                        ),
                       ),
-                      child: const Icon(Icons.check, color: Colors.white, size: 8),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 8,
+                      ),
                     ),
                   ),
               ],
@@ -430,7 +484,10 @@ class GuestAppBar extends StatelessWidget {
             foregroundColor: Colors.white,
             minimumSize: const Size(0, 40),
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            textStyle: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
+            textStyle: const TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           child: Text(t.login),
         ),
@@ -442,8 +499,13 @@ class GuestAppBar extends StatelessWidget {
             foregroundColor: c.primary,
             minimumSize: const Size(0, 40),
             padding: const EdgeInsets.symmetric(horizontal: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
-            textStyle: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            ),
+            textStyle: const TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           child: Text(t.register),
         ),
@@ -525,15 +587,15 @@ class CustomerAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _AuthedUserAppBar(
-        name: name,
-        photoUrl: photoUrl,
-        unreadCount: unreadCount,
-        onNotifications: onNotifications,
-        onProfile: onProfile,
-        ringColor: AppColors.customerColor,
-        // Same background the customer header always had: theme primary blue.
-        backgroundColor: context.colors.primary,
-      );
+    name: name,
+    photoUrl: photoUrl,
+    unreadCount: unreadCount,
+    onNotifications: onNotifications,
+    onProfile: onProfile,
+    ringColor: AppColors.customerColor,
+    // Same background the customer header always had: theme primary blue.
+    backgroundColor: context.colors.primary,
+  );
 }
 
 class ProfessionalAppBar extends StatelessWidget {
@@ -556,15 +618,15 @@ class ProfessionalAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _AuthedUserAppBar(
-        name: name,
-        photoUrl: photoUrl,
-        unreadCount: unreadCount,
-        onNotifications: onNotifications,
-        onProfile: onProfile,
-        ringColor: AppColors.professionalColor,
-        isVerified: isVerified,
-        backgroundColor: AppColors.professionalColor,
-      );
+    name: name,
+    photoUrl: photoUrl,
+    unreadCount: unreadCount,
+    onNotifications: onNotifications,
+    onProfile: onProfile,
+    ringColor: AppColors.professionalColor,
+    isVerified: isVerified,
+    backgroundColor: AppColors.professionalColor,
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -673,7 +735,11 @@ class RoleGreeting extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: TextStyle(fontSize: AppFontSizes.input, height: 1.35, color: c.textSecondary),
+            style: TextStyle(
+              fontSize: AppFontSizes.input,
+              height: 1.35,
+              color: c.textSecondary,
+            ),
           ),
           if (footer != null) ...[const SizedBox(height: 8), footer!],
         ],

@@ -57,23 +57,18 @@ class _SplashScreenState extends State<SplashScreen>
 
     final auth = context.read<AuthProvider>();
 
-    // ✅ FIX: checkLoginStatus ke andar isLoading set karo taake
-    // role aur token dono ek saath load hon — race condition khatam
+    // Verify authentication status, loading tokens and role atomically.
     await auth.checkLoginStatus();
 
     if (!mounted) return;
 
-    // ✅ FIX: bool getters (isCustomer/isAdmin) pe rely karne ki
-    // jagah directly role string check karo. Agar role null aa jaye
-    // (token hai lekin role prefs se delete ho gaya) to logout kar do.
+    // Explicitly check the role string to ensure session consistency.
     final String? role = auth.role;
 
     if (auth.isLoggedIn && role != null) {
       switch (role) {
         case 'customer':
-          // ✅ FIX: pushNamedAndRemoveUntil — see login_screen.dart for
-          // full explanation of why plain pushReplacementNamed was
-          // leaving stale routes in the stack.
+          // Clear navigation history when entering role dashboard.
           Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
           break;
         case 'professional':
@@ -83,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen>
           Navigator.pushNamedAndRemoveUntil(context, '/admin', (route) => false);
           break;
         default:
-          // Unknown role — corrupt state, logout karke clean slate
+          // Unknown role indicates corrupted session; clear auth state.
           await auth.logout();
           if (!mounted) return;
           Navigator.pushReplacement(
@@ -92,8 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
           );
       }
     } else {
-      // ✅ FIX: isLoggedIn true ho lekin role null ho (corrupted prefs)
-      // — yeh bhi logout karwa do
+      // Handle corrupted session where token exists without a valid role.
       if (auth.isLoggedIn && role == null) {
         await auth.logout();
         if (!mounted) return;
@@ -105,8 +99,7 @@ class _SplashScreenState extends State<SplashScreen>
       );
     }
 
-    // ✅ Push tap navigation — home tak pohanch gaye, ab cold-start wali
-    // notification (agar thi) sahi screen par khul sakti hai.
+    // Signal notification service that the app is ready to process cold-start payloads.
     PushNotificationService().onAppReady();
   }
 

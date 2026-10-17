@@ -15,13 +15,14 @@
 //     the same existing SearchView/NearbyProfessionalsView used
 //     everywhere else in the app, filtered to this professional's own
 //     category and excluding themselves.
-//   • Save/bookmark            → the existing FavoritesStore (used
+//   • Favourite (heart)        → the existing FavoritesStore (used
 //     elsewhere by ProfessionalCard), no new persistence layer.
 // "Top Rated" / "Fast Response" badges are UI thresholds computed from the
 // real average_rating / response_time_hrs numbers already on the profile —
 // no new field is invented.
 
 import '../../../services/content_localizer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:provider/provider.dart';
@@ -46,10 +47,7 @@ import '../../../l10n/generated/app_localizations.dart';
 class ProfessionalDetailScreen extends StatefulWidget {
   final Map<String, dynamic> professional;
 
-  const ProfessionalDetailScreen({
-    super.key,
-    required this.professional,
-  });
+  const ProfessionalDetailScreen({super.key, required this.professional});
 
   @override
   State<ProfessionalDetailScreen> createState() =>
@@ -59,37 +57,106 @@ class ProfessionalDetailScreen extends StatefulWidget {
 class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  // ONE single vertical scroll for the whole screen (header + info cards +
+  // tab bar + active tab). Tabs no longer own their own scrollables, so there
+  // is no nested-scroll fight any more.
+  final ScrollController _scroll = ScrollController();
+  final GlobalKey _quickInfoKey = GlobalKey();
+  int _tabIndex = 0;
   final ProfessionalService _service = ProfessionalService();
   final ApiService _api = ApiService();
   final FavoritesStore _favStore = FavoritesStore();
   bool _isStartingChat = false;
 
   Map<String, dynamic>? _fullProfile;
-  List<dynamic> _reviews      = [];
-  // ✅ FIX: /reviews/professionals/<id>/reviews/ returns a paginated object
+  List<dynamic> _reviews = [];
+  // /reviews/professionals/<id>/reviews/ returns a paginated object
   // ({summary, results, page, has_more}), not a bare list — _reviews only
   // ever holds the current page (max 10), so the true total (used for the
   // header/tab/pill counts and the Top Rated badge) is tracked separately.
   int _reviewsTotal = 0;
-  List<dynamic> _portfolio    = [];
+  List<dynamic> _portfolio = [];
   List<dynamic> _certificates = [];
-  List<dynamic> _related      = [];
-  bool _isLoading             = true;
+  List<dynamic> _related = [];
+  bool _isLoading = true;
   String? _loadError;
-  bool _isFavorite            = false;
+  bool _isFavorite = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
+    _tabController.addListener(_onTabChanged);
     _loadData();
     _loadFavoriteStatus();
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
+    _scroll.dispose();
     super.dispose();
+  }
+
+  // ── Tab switching helpers ─────────────────────────────────
+  void _onTabChanged() {
+    final i = _tabController.index;
+    if (!mounted || i == _tabIndex) return;
+    setState(() => _tabIndex = i);
+    _snapToTabTop();
+  }
+
+  double _headerExpandedHeight() {
+    final width = MediaQuery.sizeOf(context).width;
+    final scale = ResponsiveUtils.scaleForWidth(width);
+    return ResponsiveUtils.sp(420, scale, min: 400, max: 480);
+  }
+
+  // When the user is deep inside one tab and switches to another, start the
+  // new tab right under the pinned tab bar instead of in the middle of it.
+  void _snapToTabTop() {
+    if (!_scroll.hasClients) return;
+    final infoH = _quickInfoKey.currentContext?.size?.height;
+    if (infoH == null) return;
+    final collapse =
+        _headerExpandedHeight() -
+        (MediaQuery.paddingOf(context).top + kToolbarHeight);
+    final target = collapse + infoH;
+    if (_scroll.offset > target) _scroll.jumpTo(target);
+  }
+
+  // Horizontal swipe to change tab (replaces TabBarView's swipe), RTL-aware.
+  void _onSwipe(DragEndDetails d) {
+    final v = d.primaryVelocity ?? 0;
+    if (v.abs() < 300) return;
+    final rtl = Directionality.of(context) == TextDirection.rtl;
+    final forward = rtl ? v > 0 : v < 0;
+    final next = (_tabController.index + (forward ? 1 : -1))
+        .clamp(0, _tabController.length - 1)
+        .toInt();
+    if (next != _tabController.index) _tabController.animateTo(next);
+  }
+
+  Widget _buildActiveTab() {
+    final Widget tab;
+    switch (_tabIndex) {
+      case 0:
+        tab = _buildOverviewTab();
+        break;
+      case 1:
+        tab = _buildPortfolioTab();
+        break;
+      case 2:
+        tab = _buildReviewsTab();
+        break;
+      case 3:
+        tab = _buildServicesTab();
+        break;
+      default:
+        tab = _buildAvailabilityTab();
+    }
+    return KeyedSubtree(key: ValueKey('detail_tab_$_tabIndex'), child: tab);
   }
 
   Future<void> _loadFavoriteStatus() async {
@@ -120,12 +187,19 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
   // Same-category professionals via the existing nearby/search endpoint —
   // no new backend route, just an existing query param (`category_id`).
-  Future<Map<String, dynamic>> _fetchRelated(String? categoryId, String excludeId) async {
-    if (categoryId == null || categoryId.isEmpty) return {'success': false, 'data': []};
+  Future<Map<String, dynamic>> _fetchRelated(
+    String? categoryId,
+    String excludeId,
+  ) async {
+    if (categoryId == null || categoryId.isEmpty) {
+      return {'success': false, 'data': []};
+    }
     try {
       final res = await _api.get('/search/nearby/?category_id=$categoryId');
       final raw = res.data;
-      List list = (raw is Map && raw['results'] is List) ? List<dynamic>.from(raw['results']) : [];
+      List list = (raw is Map && raw['results'] is List)
+          ? List<dynamic>.from(raw['results'])
+          : [];
       // Exclude the professional being viewed AND dedupe by id — a
       // professional should never appear twice in "Related Professionals".
       final seenIds = <String>{};
@@ -145,11 +219,17 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   }
 
   Future<void> _loadData() async {
-    setState(() { _isLoading = true; _loadError = null; });
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
 
     final id = widget.professional['id']?.toString();
     if (id == null || id.isEmpty) {
-      setState(() { _isLoading = false; _loadError = AppLocalizations.of(context).professionalInvalidId; });
+      setState(() {
+        _isLoading = false;
+        _loadError = AppLocalizations.of(context).professionalInvalidId;
+      });
       return;
     }
     final categoryId = widget.professional['category_id']?.toString();
@@ -186,7 +266,8 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               _reviews = list is List ? list : [];
               final summary = data['summary'];
               _reviewsTotal = summary is Map
-                  ? (int.tryParse(summary['total_reviews']?.toString() ?? '') ?? _reviews.length)
+                  ? (int.tryParse(summary['total_reviews']?.toString() ?? '') ??
+                        _reviews.length)
                   : _reviews.length;
             } else if (data is List) {
               // Backward-compat, in case an older/unpaginated response shape is ever hit
@@ -230,40 +311,58 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       });
 
       if (results[0]['success'] != true && _fullProfile == null) {
-        setState(() { _loadError = AppLocalizations.of(context).professionalDetailLoadError; });
+        setState(() {
+          _loadError = AppLocalizations.of(context).professionalDetailLoadError;
+        });
       }
     } catch (e, st) {
       debugPrint('[ProfessionalDetail] _loadData failed for id=$id: $e\n$st');
       if (!mounted) return;
-      setState(() { _isLoading = false; _loadError = AppLocalizations.of(context).professionalDetailLoadError; });
+      setState(() {
+        _isLoading = false;
+        _loadError = AppLocalizations.of(context).professionalDetailLoadError;
+      });
     }
   }
 
   // ── Merged data helper — fullProfile overrides widget.professional ──────────
-  dynamic _get(String key) =>
-      _fullProfile?[key] ?? widget.professional[key];
+  dynamic _get(String key) => _fullProfile?[key] ?? widget.professional[key];
 
-  String get _name      => _get('name')?.toString()      ?? AppLocalizations.of(context).professionalDefaultName;
-  String get _photoUrl  => (_get('photo_url') ?? '').toString();
-  bool   get _verified  => _get('is_verified') == true;
-  double get _rating    => double.tryParse(_get('average_rating')?.toString() ?? '0') ?? 0.0;
-  bool   get _isTopRated => _rating >= 4.5 && _reviewsTotal >= 5;
-  int    get _completedJobs => int.tryParse(_get('completed_jobs')?.toString() ?? '0') ?? 0;
-  bool   get _isAvailable   => _get('is_available') != false;
-  // ✅ Real-time presence from the chat WebSocket (UserPresence), NOT the
+  String get _currencySym => AppHelpers.getCurrencySymbol(
+    professional: _fullProfile ?? widget.professional,
+  );
+  String get _name =>
+      _get('name')?.toString() ??
+      AppLocalizations.of(context).professionalDefaultName;
+  String get _photoUrl => (_get('photo_url') ?? _get('photo') ?? '').toString();
+  bool get _verified => _get('is_verified') == true;
+  double get _rating =>
+      double.tryParse(_get('average_rating')?.toString() ?? '0') ?? 0.0;
+  bool get _isTopRated => _rating >= 4.5 && _reviewsTotal >= 5;
+  int get _completedJobs =>
+      int.tryParse(_get('completed_jobs')?.toString() ?? '0') ?? 0;
+  bool get _isAvailable => _get('is_available') != false;
+  // Real-time presence from the chat WebSocket (UserPresence), NOT the
   // "available for bookings" toggle above — this is the actual live
   // Online/Offline status shown next to the location in the header.
-  bool   get _isOnline      => _get('is_online') == true;
+  bool get _isOnline => _get('is_online') == true;
 
-  double get _responseTimeHrs => double.tryParse(_get('response_time_hrs')?.toString() ?? '24') ?? 24.0;
-  bool   get _isFastResponder => _responseTimeHrs > 0 && _responseTimeHrs <= 1;
+  double get _responseTimeHrs =>
+      double.tryParse(_get('response_time_hrs')?.toString() ?? '24') ?? 24.0;
+  bool get _isFastResponder => _responseTimeHrs > 0 && _responseTimeHrs <= 1;
 
   String get _responseTimeLabel {
     final hrs = _responseTimeHrs;
     if (hrs <= 0) return AppLocalizations.of(context).instantLabel;
-    if (hrs < 1) return AppLocalizations.of(context).minutesLabel((hrs * 60).round());
-    if (hrs == hrs.roundToDouble()) return AppLocalizations.of(context).hoursLabel(hrs.round());
-    return AppLocalizations.of(context).hoursDecimalLabel(hrs.toStringAsFixed(1));
+    if (hrs < 1) {
+      return AppLocalizations.of(context).minutesLabel((hrs * 60).round());
+    }
+    if (hrs == hrs.roundToDouble()) {
+      return AppLocalizations.of(context).hoursLabel(hrs.round());
+    }
+    return AppLocalizations.of(
+      context,
+    ).hoursDecimalLabel(hrs.toStringAsFixed(1));
   }
 
   String get _memberSinceLabel {
@@ -271,7 +370,20 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     if (raw == null || raw.isEmpty) return '—';
     try {
       final dt = DateTime.parse(raw).toLocal();
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
       return '${months[dt.month - 1]} ${dt.year}';
     } catch (_) {
       return '—';
@@ -281,12 +393,16 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   List<String> _splitCsv(dynamic raw) {
     final s = (raw ?? '').toString().trim();
     if (s.isEmpty) return [];
-    return s.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+    return s
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
   }
 
   List<String> get _languagesList => _splitCsv(_get('languages'));
-  List<String> get _skillsList    => _splitCsv(_get('skills'));
-  List<String> get _servicesList  => _splitCsv(_get('services'));
+  List<String> get _skillsList => _splitCsv(_get('skills'));
+  List<String> get _servicesList => _splitCsv(_get('services'));
 
   @override
   Widget build(BuildContext context) {
@@ -294,38 +410,30 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark
-          ? AppColors.background
-          : AppColors.lightScaffold,
+      backgroundColor: isDark ? AppColors.background : AppColors.lightScaffold,
       body: _isLoading
           ? const AppFullLoader()
           : _loadError != null
-              ? _buildErrorState()
-              : CustomScrollView(
-                  slivers: [
-                    _buildHeader(),
-                    _buildQuickInfoRow(),
-                    _buildTabBar(),
-                    SliverFillRemaining(
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          _buildOverviewTab(),
-                          _buildPortfolioTab(),
-                          _buildReviewsTab(),
-                          _buildServicesTab(),
-                          _buildAvailabilityTab(),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+          ? _buildErrorState()
+          : GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onHorizontalDragEnd: _onSwipe,
+              child: CustomScrollView(
+                controller: _scroll,
+                slivers: [
+                  _buildHeader(),
+                  _buildQuickInfoRow(),
+                  _buildTabBar(),
+                  _buildActiveTab(),
+                ],
+              ),
+            ),
 
       bottomNavigationBar: _isLoading
           ? null
           : auth.isGuest
-              ? _buildGuestBar()
-              : _buildBookBar(),
+          ? _buildGuestBar()
+          : _buildBookBar(),
     );
   }
 
@@ -356,7 +464,8 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             ),
             const SizedBox(height: 20),
             Text(
-              _loadError ?? AppLocalizations.of(context).professionalDetailLoadError,
+              _loadError ??
+                  AppLocalizations.of(context).professionalDetailLoadError,
               style: TextStyle(
                 fontSize: AppFontSizes.title,
                 fontWeight: FontWeight.w600,
@@ -378,7 +487,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.customerColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 14,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
@@ -393,13 +505,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
   // ── Header ────────────────────────────────────────────────
   Widget _buildHeader() {
-    final photo = _photoUrl;
+    final photo = AppHelpers.getFullImageUrl(_photoUrl);
     final width = MediaQuery.sizeOf(context).width;
     final scale = ResponsiveUtils.scaleForWidth(width);
     final avatarR = ResponsiveUtils.sp(46, scale, min: 42, max: 60);
     // Extra headroom for the stats row now embedded inside the hero
     // (avatar + badges + name + category + rating + location + stats).
-    final expandedHeight = ResponsiveUtils.sp(420, scale, min: 400, max: 480);
+    final expandedHeight = _headerExpandedHeight();
 
     return SliverAppBar(
       expandedHeight: expandedHeight,
@@ -410,14 +522,18 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         padding: EdgeInsets.only(left: 12),
         child: Center(child: UniversalBackButton()),
       ),
-      // Save = single bookmark glass tile in the bar
+      // Favourite = single heart glass tile in the bar
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 12),
           child: Center(
             child: AppBarIconButton(
-              icon: _isFavorite ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-              tooltip: AppLocalizations.of(context).save,
+              icon: _isFavorite
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
+              tooltip: _isFavorite
+                  ? AppLocalizations.of(context).favoriteRemoveTooltip
+                  : AppLocalizations.of(context).favoriteAddTooltip,
               onGradient: true,
               onPressed: _toggleFavorite,
             ),
@@ -429,7 +545,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
-              end:   Alignment.bottomCenter,
+              end: Alignment.bottomCenter,
               colors: [context.colors.primaryDark, context.colors.primary],
             ),
           ),
@@ -445,7 +561,10 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 3),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.4),
+                          width: 3,
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.2),
@@ -457,7 +576,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                       child: CircleAvatar(
                         radius: avatarR,
                         backgroundColor: Colors.white.withValues(alpha: 0.2),
-                        backgroundImage: photo.isNotEmpty ? NetworkImage(photo) : null,
+                        backgroundImage: photo.isNotEmpty
+                            ? NetworkImage(photo)
+                            : null,
                         onBackgroundImageError: photo.isNotEmpty
                             ? (_, _) {}
                             : null,
@@ -465,7 +586,12 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                             ? Text(
                                 AppHelpers.getInitials(_name),
                                 style: TextStyle(
-                                  fontSize: ResponsiveUtils.sp(30, scale, min: 27, max: 38),
+                                  fontSize: ResponsiveUtils.sp(
+                                    30,
+                                    scale,
+                                    min: 27,
+                                    max: 38,
+                                  ),
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
@@ -473,17 +599,20 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                             : null,
                       ),
                     ),
-                    // ✅ Avatar corner now shows the REAL online/offline
+                    // Avatar corner now shows the REAL online/offline
                     // presence dot (like the mockup) instead of a static
                     // verified badge — verified moves next to the name below.
                     Positioned(
-                      right: 4, bottom: 4,
+                      right: 4,
+                      bottom: 4,
                       child: Container(
                         width: ResponsiveUtils.sp(18, scale, min: 16, max: 22),
                         height: ResponsiveUtils.sp(18, scale, min: 16, max: 22),
                         decoration: BoxDecoration(
-                          color:  _isOnline ? AppColors.success : AppColors.neutral400,
-                          shape:  BoxShape.circle,
+                          color: _isOnline
+                              ? AppColors.success
+                              : AppColors.neutral400,
+                          shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2.5),
                         ),
                       ),
@@ -500,16 +629,28 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (_verified) _headerBadge(Icons.verified_rounded, AppLocalizations.of(context).verifiedLabel, context.colors.accent),
+                        if (_verified)
+                          _headerBadge(
+                            Icons.verified_rounded,
+                            AppLocalizations.of(context).verifiedLabel,
+                            context.colors.accent,
+                          ),
                         if (_verified && _isTopRated) const SizedBox(width: 8),
-                        if (_isTopRated) _headerBadge(Icons.star_rounded, AppLocalizations.of(context).topRatedLabel, AppColors.badgeTopRated),
+                        if (_isTopRated)
+                          _headerBadge(
+                            Icons.star_rounded,
+                            AppLocalizations.of(context).topRatedLabel,
+                            AppColors.badgeTopRated,
+                          ),
                       ],
                     ),
                   ),
 
                 // ── Name (+ inline verified checkmark, like the mockup) ──
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.screenPadding(width)),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUtils.screenPadding(width),
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
@@ -522,7 +663,12 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(23, scale, min: 20, max: 29),
+                            fontSize: ResponsiveUtils.sp(
+                              23,
+                              scale,
+                              min: 20,
+                              max: 29,
+                            ),
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
                             letterSpacing: -0.3,
@@ -530,12 +676,36 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                         ),
                       ),
                       if (_verified) ...[
-                        SizedBox(width: ResponsiveUtils.sp(6, scale, min: 5, max: 8)),
+                        SizedBox(
+                          width: ResponsiveUtils.sp(6, scale, min: 5, max: 8),
+                        ),
                         Container(
-                          width: ResponsiveUtils.sp(20, scale, min: 18, max: 24),
-                          height: ResponsiveUtils.sp(20, scale, min: 18, max: 24),
-                          decoration: BoxDecoration(color: context.colors.accent, shape: BoxShape.circle),
-                          child: Icon(Icons.check, color: Colors.white, size: ResponsiveUtils.sp(12, scale, min: 11, max: 15)),
+                          width: ResponsiveUtils.sp(
+                            20,
+                            scale,
+                            min: 18,
+                            max: 24,
+                          ),
+                          height: ResponsiveUtils.sp(
+                            20,
+                            scale,
+                            min: 18,
+                            max: 24,
+                          ),
+                          decoration: BoxDecoration(
+                            color: context.colors.accent,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: ResponsiveUtils.sp(
+                              12,
+                              scale,
+                              min: 11,
+                              max: 15,
+                            ),
+                          ),
                         ),
                       ],
                     ],
@@ -544,12 +714,25 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
                 const SizedBox(height: 4),
 
-                if (_get('category_name') != null && _get('category_name').toString().isNotEmpty)
+                if (_get('category_name') != null &&
+                    _get('category_name').toString().isNotEmpty)
                   Text(
-                    AppHelpers.localizedCategoryName(context, _get('category_name').toString()),
+                    AppHelpers.localizedCategoryName(
+                      context,
+                      _get('category_name').toString(),
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: ResponsiveUtils.sp(14, scale, min: 12.5, max: 17), color: Colors.white.withValues(alpha: 0.85), fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(
+                        14,
+                        scale,
+                        min: 12.5,
+                        max: 17,
+                      ),
+                      color: Colors.white.withValues(alpha: 0.85),
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
 
                 const SizedBox(height: 6),
@@ -558,11 +741,24 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.star_rounded, color: AppColors.badgeTopRated, size: 16),
+                    const Icon(
+                      Icons.star_rounded,
+                      color: AppColors.badgeTopRated,
+                      size: 16,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${_rating.toStringAsFixed(1)} (${AppLocalizations.of(context).reviewCountPlural(_reviewsTotal)})',
-                      style: TextStyle(fontSize: ResponsiveUtils.sp(12.5, scale, min: 11.5, max: 15), color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(
+                          12.5,
+                          scale,
+                          min: 11.5,
+                          max: 15,
+                        ),
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -571,12 +767,18 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
                 if ((_get('city') ?? '').toString().isNotEmpty)
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.screenPadding(width)),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.screenPadding(width),
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.location_on_outlined, color: Colors.white.withValues(alpha: 0.8), size: ResponsiveUtils.sp(13, scale, min: 12, max: 16)),
+                        Icon(
+                          Icons.location_on_outlined,
+                          color: Colors.white.withValues(alpha: 0.8),
+                          size: ResponsiveUtils.sp(13, scale, min: 12, max: 16),
+                        ),
                         const SizedBox(width: 3),
                         Flexible(
                           child: LocalizedText(
@@ -585,17 +787,52 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                             isolate: true,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 15), color: Colors.white.withValues(alpha: 0.8)),
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(
+                                12,
+                                scale,
+                                min: 11,
+                                max: 15,
+                              ),
+                              color: Colors.white.withValues(alpha: 0.8),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Container(width: 4, height: 4, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.5), shape: BoxShape.circle)),
+                        Container(
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.5),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                         const SizedBox(width: 8),
-                        Container(width: 7, height: 7, decoration: BoxDecoration(color: _isOnline ? AppColors.success : Colors.white.withValues(alpha: 0.4), shape: BoxShape.circle)),
+                        Container(
+                          width: 7,
+                          height: 7,
+                          decoration: BoxDecoration(
+                            color: _isOnline
+                                ? AppColors.success
+                                : Colors.white.withValues(alpha: 0.4),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                         const SizedBox(width: 4),
                         Text(
-                          _isOnline ? AppLocalizations.of(context).onlineLabel : AppLocalizations.of(context).offlineLabel,
-                          style: TextStyle(fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 15), color: Colors.white.withValues(alpha: 0.85), fontWeight: FontWeight.w600),
+                          _isOnline
+                              ? AppLocalizations.of(context).onlineLabel
+                              : AppLocalizations.of(context).offlineLabel,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(
+                              12,
+                              scale,
+                              min: 11,
+                              max: 15,
+                            ),
+                            color: Colors.white.withValues(alpha: 0.85),
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -608,16 +845,52 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                 // (rating, reviews, completed jobs, response time) — no
                 // fabricated metrics.
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.screenPadding(width, base: 16)),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUtils.screenPadding(width, base: 16),
+                  ),
                   child: Row(
                     children: [
-                      Expanded(child: _heroStatPill(Icons.star_rounded, _rating.toStringAsFixed(1), AppLocalizations.of(context).ratingLabel, scale)),
-                      SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
-                      Expanded(child: _heroStatPill(Icons.forum_outlined, '$_reviewsTotal', AppLocalizations.of(context).reviewsLabel, scale)),
-                      SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
-                      Expanded(child: _heroStatPill(Icons.work_outline_rounded, '$_completedJobs', AppLocalizations.of(context).jobsDoneLabel, scale)),
-                      SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 12)),
-                      Expanded(child: _heroStatPill(Icons.bolt_rounded, _responseTimeLabel, AppLocalizations.of(context).responseLabel, scale)),
+                      Expanded(
+                        child: _heroStatPill(
+                          Icons.star_rounded,
+                          _rating.toStringAsFixed(1),
+                          AppLocalizations.of(context).ratingLabel,
+                          scale,
+                        ),
+                      ),
+                      SizedBox(
+                        width: ResponsiveUtils.sp(10, scale, min: 8, max: 12),
+                      ),
+                      Expanded(
+                        child: _heroStatPill(
+                          Icons.forum_outlined,
+                          '$_reviewsTotal',
+                          AppLocalizations.of(context).reviewsLabel,
+                          scale,
+                        ),
+                      ),
+                      SizedBox(
+                        width: ResponsiveUtils.sp(10, scale, min: 8, max: 12),
+                      ),
+                      Expanded(
+                        child: _heroStatPill(
+                          Icons.work_outline_rounded,
+                          '$_completedJobs',
+                          AppLocalizations.of(context).jobsDoneLabel,
+                          scale,
+                        ),
+                      ),
+                      SizedBox(
+                        width: ResponsiveUtils.sp(10, scale, min: 8, max: 12),
+                      ),
+                      Expanded(
+                        child: _heroStatPill(
+                          Icons.bolt_rounded,
+                          _responseTimeLabel,
+                          AppLocalizations.of(context).responseLabel,
+                          scale,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -631,9 +904,16 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     );
   }
 
-  Widget _heroStatPill(IconData icon, String value, String label, double scale) {
+  Widget _heroStatPill(
+    IconData icon,
+    String value,
+    String label,
+    double scale,
+  ) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.sp(10, scale, min: 8, max: 13)),
+      padding: EdgeInsets.symmetric(
+        vertical: ResponsiveUtils.sp(10, scale, min: 8, max: 13),
+      ),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
@@ -641,16 +921,31 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       ),
       child: Column(
         children: [
-          Icon(icon, color: Colors.white, size: ResponsiveUtils.sp(16, scale, min: 14, max: 20)),
+          Icon(
+            icon,
+            color: Colors.white,
+            size: ResponsiveUtils.sp(16, scale, min: 14, max: 20),
+          ),
           SizedBox(height: ResponsiveUtils.sp(4, scale, min: 3, max: 6)),
           Text(
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: ResponsiveUtils.sp(13, scale, min: 11.5, max: 16), fontWeight: FontWeight.w800, color: Colors.white),
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(13, scale, min: 11.5, max: 16),
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
           ),
           SizedBox(height: ResponsiveUtils.sp(1, scale, min: 1, max: 2)),
-          Text(label, style: TextStyle(fontSize: ResponsiveUtils.sp(10, scale, min: 9, max: 12.5), color: Colors.white.withValues(alpha: 0.75), fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(10, scale, min: 9, max: 12.5),
+              color: Colors.white.withValues(alpha: 0.75),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
@@ -669,7 +964,14 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         children: [
           Icon(icon, color: Colors.white, size: 13),
           const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: AppFontSizes.caption, color: Colors.white, fontWeight: FontWeight.w700)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: AppFontSizes.caption,
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
@@ -678,14 +980,37 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   // ── Quick Information Cards (replaces the old CTA button row) ──────
   Widget _buildQuickInfoRow() {
     final items = <Map<String, dynamic>>[
-      {'icon': Icons.calendar_today_outlined, 'label': AppLocalizations.of(context).memberSinceLabel, 'value': _memberSinceLabel},
-      {'icon': Icons.event_available_outlined, 'label': AppLocalizations.of(context).availabilityLabel, 'value': _isAvailable ? AppLocalizations.of(context).availableNowLabel : AppLocalizations.of(context).currentlyBusyLabel},
-      {'icon': Icons.language_rounded, 'label': AppLocalizations.of(context).languagesLabel, 'value': _languagesList.isNotEmpty ? _languagesList.join(', ') : AppLocalizations.of(context).notSpecifiedLabel},
-      {'icon': Icons.work_history_outlined, 'label': AppLocalizations.of(context).experienceLabel, 'value': AppLocalizations.of(context).yearsLabel(_get('experience_years') ?? 0)},
+      {
+        'icon': Icons.calendar_today_outlined,
+        'label': AppLocalizations.of(context).memberSinceLabel,
+        'value': _memberSinceLabel,
+      },
+      {
+        'icon': Icons.event_available_outlined,
+        'label': AppLocalizations.of(context).availabilityLabel,
+        'value': _isAvailable
+            ? AppLocalizations.of(context).availableNowLabel
+            : AppLocalizations.of(context).currentlyBusyLabel,
+      },
+      {
+        'icon': Icons.language_rounded,
+        'label': AppLocalizations.of(context).languagesLabel,
+        'value': _languagesList.isNotEmpty
+            ? _languagesList.join(', ')
+            : AppLocalizations.of(context).notSpecifiedLabel,
+      },
+      {
+        'icon': Icons.work_history_outlined,
+        'label': AppLocalizations.of(context).experienceLabel,
+        'value': AppLocalizations.of(
+          context,
+        ).yearsLabel(_get('experience_years') ?? 0),
+      },
     ];
 
     return SliverToBoxAdapter(
       child: Container(
+        key: _quickInfoKey,
         color: Theme.of(context).brightness == Brightness.dark
             ? AppColors.background
             : Colors.white,
@@ -697,7 +1022,15 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           childAspectRatio: 2.6,
-          children: items.map((it) => _quickInfoCard(it['icon'] as IconData, it['label'] as String, it['value'] as String)).toList(),
+          children: items
+              .map(
+                (it) => _quickInfoCard(
+                  it['icon'] as IconData,
+                  it['label'] as String,
+                  it['value'] as String,
+                ),
+              )
+              .toList(),
         ),
       ),
     );
@@ -730,11 +1063,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   : context.colors.primaryLight,
               borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
-            child: Icon(
-              icon,
-              size: 16,
-              color: AppColors.customerColor,
-            ),
+            child: Icon(icon, size: 16, color: AppColors.customerColor),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -775,17 +1104,28 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       pinned: true,
       delegate: _TabBarDelegate(
         TabBar(
-          controller:           _tabController,
-          isScrollable:         true,
-          labelColor:           AppColors.customerColor,
+          controller: _tabController,
+          isScrollable: true,
+          labelColor: AppColors.customerColor,
           unselectedLabelColor: context.colors.textSecondary,
-          indicatorColor:       AppColors.customerColor,
-          indicatorWeight:      2.5,
-          labelStyle: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600),
+          indicatorColor: AppColors.customerColor,
+          indicatorWeight: 2.5,
+          labelStyle: const TextStyle(
+            fontSize: AppFontSizes.secondary,
+            fontWeight: FontWeight.w600,
+          ),
           tabs: [
             Tab(text: AppLocalizations.of(context).detailTabOverview),
-            Tab(text: AppLocalizations.of(context).detailTabPortfolio(_portfolio.length)),
-            Tab(text: AppLocalizations.of(context).detailTabReviews(_reviewsTotal)),
+            Tab(
+              text: AppLocalizations.of(
+                context,
+              ).detailTabPortfolio(_portfolio.length),
+            ),
+            Tab(
+              text: AppLocalizations.of(
+                context,
+              ).detailTabReviews(_reviewsTotal),
+            ),
             Tab(text: AppLocalizations.of(context).detailTabServices),
             Tab(text: AppLocalizations.of(context).detailTabAvailability),
           ],
@@ -800,13 +1140,41 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     final exp = _get('experience_years') ?? 0;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (bio.isNotEmpty) ...[
-            _sectionTitle(AppLocalizations.of(context).aboutLabel),
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (bio.isNotEmpty) ...[
+              _sectionTitle(AppLocalizations.of(context).aboutLabel),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.04)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : AppColors.neutral200,
+                  ),
+                ),
+                child: Text(
+                  bio,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    color: context.colors.textPrimary,
+                    height: 1.6,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            _sectionTitle(AppLocalizations.of(context).detailsLabel),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(14),
@@ -821,119 +1189,143 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                       : AppColors.neutral200,
                 ),
               ),
-              child: Text(
-                bio,
-                style: TextStyle(
-                  fontSize: AppFontSizes.secondary,
-                  color: context.colors.textPrimary,
-                  height: 1.6,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-
-          _sectionTitle(AppLocalizations.of(context).detailsLabel),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : AppColors.neutral200,
-              ),
-            ),
-            child: Column(
-              children: [
-                _detailRow(Icons.work_outline_rounded, AppLocalizations.of(context).experienceLabel, AppLocalizations.of(context).yearsLabel(exp)),
-                const Divider(height: 20),
-                _detailRow(Icons.attach_money_rounded, AppLocalizations.of(context).hourlyRateLabel,
-                    '\$${_get('hourly_rate') ?? 0}/hr'),
-                const Divider(height: 20),
-                _detailRow(Icons.location_on_outlined, AppLocalizations.of(context).cityLabel,
-                    ContentLocalizer.instance.peek((_get('city') ?? AppLocalizations.of(context).detailNotAvailable).toString(), LocKind.city)),
-                const Divider(height: 20),
-                _detailRow(
-                  Icons.verified_outlined,
-                  AppLocalizations.of(context).verificationLabel,
-                  _verified ? AppLocalizations.of(context).verifiedProfessionalLabel : AppLocalizations.of(context).notVerifiedLabel,
-                  valueColor: _verified ? context.colors.accent : AppColors.warning,
-                ),
-                if ((_get('category_name') ?? '').toString().isNotEmpty) ...[
+              child: Column(
+                children: [
+                  _detailRow(
+                    Icons.work_outline_rounded,
+                    AppLocalizations.of(context).experienceLabel,
+                    AppLocalizations.of(context).yearsLabel(exp),
+                  ),
                   const Divider(height: 20),
-                  _detailRow(Icons.category_outlined, AppLocalizations.of(context).categoryLabel,
-                      AppHelpers.localizedCategoryName(context, _get('category_name').toString())),
-                ],
-              ],
-            ),
-          ),
-
-          if (_skillsList.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            _sectionTitle(AppLocalizations.of(context).skillsLabel),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _skillsList.map((s) => _pillChip(s)).toList(),
-            ),
-          ],
-
-          if (_verified || _isTopRated || _isFastResponder || _certificates.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            _sectionTitle(AppLocalizations.of(context).certificationsLabel),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                if (_verified) _badgeTile(Icons.verified_user_rounded, AppLocalizations.of(context).idVerifiedLabel, context.colors.accent),
-                if (_isTopRated) _badgeTile(Icons.workspace_premium_rounded, AppLocalizations.of(context).topRatedLabel, AppColors.badgeTopRated),
-                if (_isFastResponder) _badgeTile(Icons.bolt_rounded, AppLocalizations.of(context).fastResponseLabel, AppColors.info),
-              ],
-            ),
-            if (_certificates.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              ..._certificates.map((c) => _certificateRow(c)),
-            ],
-          ],
-
-          if (_related.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            _sectionTitle(AppLocalizations.of(context).relatedProfessionalsLabel),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: ProfessionalCard.heightFor(context),
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _related.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 12),
-                itemBuilder: (ctx, i) {
-                  final item = Map<String, dynamic>.from(_related[i] as Map);
-                  return SizedBox(
-                    width: ProfessionalCard.widthFor(context),
-                    child: ProfessionalCard(
-                      pro: item,
-                      onTap: () => Navigator.push(
+                  _detailRow(
+                    Icons.payments_outlined,
+                    AppLocalizations.of(context).hourlyRateLabel,
+                    '$_currencySym ${_get('hourly_rate') ?? 0}/hr',
+                  ),
+                  const Divider(height: 20),
+                  _detailRow(
+                    Icons.location_on_outlined,
+                    AppLocalizations.of(context).cityLabel,
+                    ContentLocalizer.instance.peek(
+                      (_get('city') ??
+                              AppLocalizations.of(context).detailNotAvailable)
+                          .toString(),
+                      LocKind.city,
+                    ),
+                  ),
+                  const Divider(height: 20),
+                  _detailRow(
+                    Icons.verified_outlined,
+                    AppLocalizations.of(context).verificationLabel,
+                    _verified
+                        ? AppLocalizations.of(context).verifiedProfessionalLabel
+                        : AppLocalizations.of(context).notVerifiedLabel,
+                    valueColor: _verified
+                        ? context.colors.accent
+                        : AppColors.warning,
+                  ),
+                  if ((_get('category_name') ?? '').toString().isNotEmpty) ...[
+                    const Divider(height: 20),
+                    _detailRow(
+                      Icons.category_outlined,
+                      AppLocalizations.of(context).categoryLabel,
+                      AppHelpers.localizedCategoryName(
                         context,
-                        MaterialPageRoute(builder: (_) => ProfessionalDetailScreen(professional: item)),
-                      ),
-                      onBookNow: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => BookingScreen(professional: item)),
+                        _get('category_name').toString(),
                       ),
                     ),
-                  );
-                },
+                  ],
+                ],
               ),
             ),
+
+            if (_skillsList.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              _sectionTitle(AppLocalizations.of(context).skillsLabel),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _skillsList.map((s) => _pillChip(s)).toList(),
+              ),
+            ],
+
+            if (_verified ||
+                _isTopRated ||
+                _isFastResponder ||
+                _certificates.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              _sectionTitle(AppLocalizations.of(context).certificationsLabel),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  if (_verified)
+                    _badgeTile(
+                      Icons.verified_user_rounded,
+                      AppLocalizations.of(context).idVerifiedLabel,
+                      context.colors.accent,
+                    ),
+                  if (_isTopRated)
+                    _badgeTile(
+                      Icons.workspace_premium_rounded,
+                      AppLocalizations.of(context).topRatedLabel,
+                      AppColors.badgeTopRated,
+                    ),
+                  if (_isFastResponder)
+                    _badgeTile(
+                      Icons.bolt_rounded,
+                      AppLocalizations.of(context).fastResponseLabel,
+                      AppColors.info,
+                    ),
+                ],
+              ),
+              if (_certificates.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                ..._certificates.map((c) => _certificateRow(c)),
+              ],
+            ],
+
+            if (_related.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              _sectionTitle(
+                AppLocalizations.of(context).relatedProfessionalsLabel,
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: ProfessionalCard.heightFor(context),
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _related.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
+                  itemBuilder: (ctx, i) {
+                    final item = Map<String, dynamic>.from(_related[i] as Map);
+                    return SizedBox(
+                      width: ProfessionalCard.widthFor(context),
+                      child: ProfessionalCard(
+                        pro: item,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ProfessionalDetailScreen(professional: item),
+                          ),
+                        ),
+                        onBookNow: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BookingScreen(professional: item),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -998,18 +1390,20 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   }
 
   Widget _certificateRow(dynamic cert) {
-    final title = cert['title']?.toString() ?? AppLocalizations.of(context).detailCertificateDefault;
-    final org   = cert['issuing_organization']?.toString() ?? '';
-    final date  = cert['issue_date'] != null ? _formatDate(cert['issue_date'].toString()) : '';
+    final title =
+        cert['title']?.toString() ??
+        AppLocalizations.of(context).detailCertificateDefault;
+    final org = cert['issuing_organization']?.toString() ?? '';
+    final date = cert['issue_date'] != null
+        ? _formatDate(cert['issue_date'].toString())
+        : '';
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.04)
-            : Colors.white,
+        color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white,
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
           color: isDark
@@ -1082,52 +1476,52 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         AppLocalizations.of(context).noServicesSubtitle,
       );
     }
-    return ListView.separated(
+    return SliverPadding(
       padding: const EdgeInsets.all(16),
-      itemCount: _servicesList.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
-      itemBuilder: (ctx, i) => Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.white,
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.08)
-                : AppColors.neutral200,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? AppColors.customerColor.withValues(alpha: 0.15)
-                    : context.colors.accentLight,
-                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-              ),
-              child: Icon(
-                Icons.check_rounded,
-                size: 17,
-                color: AppColors.customerColor,
-              ),
+      sliver: SliverList.separated(
+        itemCount: _servicesList.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
+        itemBuilder: (ctx, i) => Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white,
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : AppColors.neutral200,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                _servicesList[i],
-                style: TextStyle(
-                  fontSize: AppFontSizes.body,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.textPrimary,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? AppColors.customerColor.withValues(alpha: 0.15)
+                      : context.colors.accentLight,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                ),
+                child: Icon(
+                  Icons.check_rounded,
+                  size: 17,
+                  color: AppColors.customerColor,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  _servicesList[i],
+                  style: TextStyle(
+                    fontSize: AppFontSizes.body,
+                    fontWeight: FontWeight.w600,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1136,86 +1530,104 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   // ── Availability Tab ─────────────────────────────────────
   Widget _buildAvailabilityTab() {
     final start = (_get('working_hours_start') ?? '09:00').toString();
-    final end   = (_get('working_hours_end') ?? '18:00').toString();
+    final end = (_get('working_hours_end') ?? '18:00').toString();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: _isAvailable
-                  ? (isDark
-                      ? AppColors.emerald.withValues(alpha: 0.15)
-                      : context.colors.accentLight)
-                  : (isDark
-                      ? Colors.white.withValues(alpha: 0.05)
-                      : AppColors.neutral100),
-              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  _isAvailable ? Icons.check_circle_rounded : Icons.pause_circle_outline_rounded,
-                  color: _isAvailable ? context.colors.accent : context.colors.textSecondary,
-                  size: 22,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _isAvailable
+                    ? (isDark
+                          ? AppColors.emerald.withValues(alpha: 0.15)
+                          : context.colors.accentLight)
+                    : (isDark
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : AppColors.neutral100),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+              ),
+              child: Row(
+                children: [
+                  Icon(
                     _isAvailable
-                        ? AppLocalizations.of(context).acceptingBookingsLabel
-                        : AppLocalizations.of(context).notAcceptingBookingsLabel,
-                    style: TextStyle(
-                      fontSize: AppFontSizes.body,
-                      fontWeight: FontWeight.w700,
-                      color: _isAvailable ? context.colors.accent : context.colors.textSecondary,
+                        ? Icons.check_circle_rounded
+                        : Icons.pause_circle_outline_rounded,
+                    color: _isAvailable
+                        ? context.colors.accent
+                        : context.colors.textSecondary,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _isAvailable
+                          ? AppLocalizations.of(context).acceptingBookingsLabel
+                          : AppLocalizations.of(
+                              context,
+                            ).notAcceptingBookingsLabel,
+                      style: TextStyle(
+                        fontSize: AppFontSizes.body,
+                        fontWeight: FontWeight.w700,
+                        color: _isAvailable
+                            ? context.colors.accent
+                            : context.colors.textSecondary,
+                      ),
                     ),
                   ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            _sectionTitle(AppLocalizations.of(context).workingHoursLabel),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : AppColors.neutral200,
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          _sectionTitle(AppLocalizations.of(context).workingHoursLabel),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : AppColors.neutral200,
+              ),
+              child: _detailRow(
+                Icons.schedule_rounded,
+                AppLocalizations.of(context).dailyHoursLabel,
+                '$start – $end',
               ),
             ),
-            child: _detailRow(Icons.schedule_rounded, AppLocalizations.of(context).dailyHoursLabel, '$start – $end'),
-          ),
-          const SizedBox(height: 16),
-          _sectionTitle(AppLocalizations.of(context).responseTimeLabel),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              border: Border.all(
+            const SizedBox(height: 16),
+            _sectionTitle(AppLocalizations.of(context).responseTimeLabel),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : AppColors.neutral200,
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : AppColors.neutral200,
+                ),
+              ),
+              child: _detailRow(
+                Icons.bolt_rounded,
+                AppLocalizations.of(context).typicallyRepliesLabel,
+                _responseTimeLabel,
               ),
             ),
-            child: _detailRow(Icons.bolt_rounded, AppLocalizations.of(context).typicallyRepliesLabel, _responseTimeLabel),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1223,53 +1635,56 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   Widget _emptyTabState(IconData icon, String title, String subtitle) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 88,
-              height: 88,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : AppColors.neutral100,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 40,
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.3)
-                    : AppColors.neutral300,
-              ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: AppFontSizes.title,
-                fontWeight: FontWeight.w600,
-                color: context.colors.textPrimary,
-                letterSpacing: -0.2,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: AppFontSizes.secondary,
-                  color: context.colors.textSecondary,
-                  letterSpacing: 0.2,
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 88,
+                height: 88,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : AppColors.neutral100,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  size: 40,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.3)
+                      : AppColors.neutral300,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 18),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: AppFontSizes.title,
+                  fontWeight: FontWeight.w600,
+                  color: context.colors.textPrimary,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    color: context.colors.textSecondary,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1287,86 +1702,92 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       );
     }
 
-    return ListView.builder(
-      padding:     const EdgeInsets.all(16),
-      itemCount:   _reviews.length,
-      itemBuilder: (ctx, i) {
-        final review = _reviews[i];
-        final rating = (review['rating'] ?? 0).toInt();
-        final date   = review['created_at'] != null
-            ? _formatDate(review['created_at'].toString())
-            : '';
+    return SliverPadding(
+      padding: const EdgeInsets.all(16),
+      sliver: SliverList.builder(
+        itemCount: _reviews.length,
+        itemBuilder: (ctx, i) {
+          final review = _reviews[i];
+          final rating = (review['rating'] ?? 0).toInt();
+          final date = review['created_at'] != null
+              ? _formatDate(review['created_at'].toString())
+              : '';
 
-        return Container(
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.04)
-                : Colors.white,
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            border: Border.all(
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : AppColors.neutral200,
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : AppColors.neutral200,
+              ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          review['reviewer_name']?.toString() ?? AppLocalizations.of(context).userLabel,
-                          style: TextStyle(
-                            fontSize: AppFontSizes.body,
-                            fontWeight: FontWeight.w600,
-                            color: context.colors.textPrimary,
-                          ),
-                        ),
-                        if (date.isNotEmpty)
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            date,
+                            review['reviewer_name']?.toString() ??
+                                AppLocalizations.of(context).userLabel,
                             style: TextStyle(
-                              fontSize: AppFontSizes.caption,
-                              color: context.colors.textSecondary,
+                              fontSize: AppFontSizes.body,
+                              fontWeight: FontWeight.w600,
+                              color: context.colors.textPrimary,
                             ),
                           ),
-                      ],
+                          if (date.isNotEmpty)
+                            Text(
+                              date,
+                              style: TextStyle(
+                                fontSize: AppFontSizes.caption,
+                                color: context.colors.textSecondary,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: List.generate(
+                        5,
+                        (index) => Icon(
+                          index < rating
+                              ? Icons.star_rounded
+                              : Icons.star_outline_rounded,
+                          color: AppColors.warningAmber,
+                          size: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if ((review['comment'] ?? '').toString().isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    review['comment'].toString(),
+                    style: TextStyle(
+                      fontSize: AppFontSizes.secondary,
+                      color: context.colors.textSecondary,
+                      height: 1.5,
                     ),
                   ),
-                  Row(
-                    children: List.generate(5, (index) => Icon(
-                      index < rating
-                          ? Icons.star_rounded
-                          : Icons.star_outline_rounded,
-                      color: AppColors.warningAmber,
-                      size:  14,
-                    )),
-                  ),
                 ],
-              ),
-              if ((review['comment'] ?? '').toString().isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  review['comment'].toString(),
-                  style: TextStyle(
-                    fontSize: AppFontSizes.secondary,
-                    color: context.colors.textSecondary,
-                    height: 1.5,
-                  ),
-                ),
               ],
-            ],
-          ),
-        );
-      },
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -1383,166 +1804,179 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     }
 
     final width = MediaQuery.sizeOf(context).width;
-    final columns = ResponsiveUtils.gridColumns(width, base: 2, targetCellWidth: 170);
-    return GridView.builder(
+    final columns = ResponsiveUtils.gridColumns(
+      width,
+      base: 2,
+      targetCellWidth: 170,
+    );
+    return SliverPadding(
       padding: const EdgeInsets.all(16),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount:   columns,
-        crossAxisSpacing: 10,
-        mainAxisSpacing:  10,
-        childAspectRatio: 0.85,
-      ),
-      itemCount:   _portfolio.length,
-      itemBuilder: (ctx, i) {
-        final item     = _portfolio[i];
-        final imageUrl = item['image_url']?.toString() ?? '';
-        final title    = item['title']?.toString() ?? '';
-        final desc     = item['description']?.toString() ?? '';
+      sliver: SliverGrid.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: columns,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 0.85,
+        ),
+        itemCount: _portfolio.length,
+        itemBuilder: (ctx, i) {
+          final item = _portfolio[i];
+          final imageUrl = item['image_url']?.toString() ?? '';
+          final title = item['title']?.toString() ?? '';
+          final desc = item['description']?.toString() ?? '';
 
-        return GestureDetector(
-          onTap: () => _showPortfolioDetail(item),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              border: Border.all(
+          return GestureDetector(
+            onTap: () => _showPortfolioDetail(item),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : AppColors.neutral200,
-              ),
-              boxShadow: [
-                BoxShadow(
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                border: Border.all(
                   color: isDark
-                      ? Colors.black.withValues(alpha: 0.15)
-                      : Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : AppColors.neutral200,
                 ),
-              ],
-            ),
-            clipBehavior: Clip.hardEdge,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-
-                Expanded(
-                  child: imageUrl.isNotEmpty
-                      ? Image.network(
-                          imageUrl,
-                          width:      double.infinity,
-                          fit:        BoxFit.cover,
-                          errorBuilder: (_, _, _) => Container(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.05)
-                                : AppColors.neutral100,
-                            child: const Center(
-                              child: Icon(Icons.broken_image_outlined,
-                                  color: AppColors.neutral300, size: 32),
-                            ),
-                          ),
-                          loadingBuilder: (ctx, child, progress) {
-                            if (progress == null) return child;
-                            return Container(
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.15)
+                        : Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: imageUrl.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            memCacheWidth: 600,
+                            placeholder: (ctx, url) => Container(
                               color: isDark
                                   ? Colors.white.withValues(alpha: 0.05)
                                   : AppColors.neutral100,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  value: progress.expectedTotalBytes != null
-                                      ? progress.cumulativeBytesLoaded /
-                                          progress.expectedTotalBytes!
-                                      : null,
-                                  strokeWidth: 2,
-                                  color: AppColors.customerColor,
+                              child: const Center(
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.customerColor,
+                                  ),
                                 ),
                               ),
-                            );
-                          },
-                        )
-                      : Container(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.05)
-                              : context.colors.primaryLight,
-                          child: Center(
-                            child: Icon(Icons.image_outlined,
+                            ),
+                            errorWidget: (_, _, _) => Container(
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.05)
+                                  : AppColors.neutral100,
+                              child: const Center(
+                                child: Icon(
+                                  Icons.broken_image_outlined,
+                                  color: AppColors.neutral300,
+                                  size: 32,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.05)
+                                : context.colors.primaryLight,
+                            child: Center(
+                              child: Icon(
+                                Icons.image_outlined,
                                 color: isDark
                                     ? Colors.white.withValues(alpha: 0.3)
-                                    : context.colors.primary.withValues(alpha: 0.4),
-                                size: 36),
+                                    : context.colors.primary.withValues(
+                                        alpha: 0.4,
+                                      ),
+                                size: 36,
+                              ),
+                            ),
                           ),
-                        ),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (title.isNotEmpty)
-                        Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: AppFontSizes.small,
-                            fontWeight: FontWeight.w700,
-                            color: context.colors.textPrimary,
-                          ),
-                        ),
-                      if (desc.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          desc,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: AppFontSizes.caption,
-                            color: context.colors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ],
                   ),
-                ),
-              ],
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (title.isNotEmpty)
+                          Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: AppFontSizes.small,
+                              fontWeight: FontWeight.w700,
+                              color: context.colors.textPrimary,
+                            ),
+                          ),
+                        if (desc.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            desc,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: AppFontSizes.caption,
+                              color: context.colors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
   // ── Portfolio Detail Bottom Sheet ─────────────────────────
   void _showPortfolioDetail(Map<String, dynamic> item) {
     final imageUrl = item['image_url']?.toString() ?? '';
-    final title    = item['title']?.toString() ?? AppLocalizations.of(context).detailPortfolioItemDefault;
-    final desc     = item['description']?.toString() ?? '';
-    final date     = item['created_at'] != null
+    final title =
+        item['title']?.toString() ??
+        AppLocalizations.of(context).detailPortfolioItemDefault;
+    final desc = item['description']?.toString() ?? '';
+    final date = item['created_at'] != null
         ? _formatDate(item['created_at'].toString())
         : '';
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showModalBottomSheet(
-      context:         context,
+      context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
         decoration: BoxDecoration(
-          color: isDark
-              ? AppColors.surface
-              : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+          color: isDark ? AppColors.surface : Colors.white,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppSizes.radiusSheet),
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 12),
             Container(
-              width: 36, height: 4,
+              width: 36,
+              height: 4,
               decoration: BoxDecoration(
                 color: isDark
                     ? Colors.white.withValues(alpha: 0.15)
@@ -1561,16 +1995,20 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                       : AppColors.neutral100,
                 ),
                 clipBehavior: Clip.hardEdge,
-                child: Image.network(
-                  imageUrl,
-                  width:  double.infinity,
-                  fit:    BoxFit.cover,
-                  errorBuilder: (_, _, _) => Center(
-                    child: Icon(Icons.broken_image_outlined,
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.3)
-                            : AppColors.neutral300,
-                        size: 48),
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  memCacheWidth: 600,
+                  placeholder: (_, _) => const SizedBox(),
+                  errorWidget: (_, _, _) => Center(
+                    child: Icon(
+                      Icons.broken_image_outlined,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.3)
+                          : AppColors.neutral300,
+                      size: 48,
+                    ),
                   ),
                 ),
               ),
@@ -1629,10 +2067,18 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     final scale = ResponsiveUtils.scaleForWidth(width);
     final btnSize = ResponsiveUtils.sp(50, scale, min: 48, max: 62);
 
+    final resolvedPhoto = _photoUrl.isNotEmpty
+        ? _photoUrl
+        : (widget.professional['photo_url'] ??
+                  widget.professional['photo'] ??
+                  '')
+              .toString();
+
     final pro = {
       ...widget.professional,
       ...?_fullProfile,
-      'id':      originalUserId,
+      'photo_url': resolvedPhoto,
+      'id': originalUserId,
       'user_id': originalUserId,
     };
 
@@ -1642,38 +2088,55 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         border: Border(top: BorderSide(color: context.colors.divider)),
         boxShadow: [
           BoxShadow(
-              color:      Colors.black.withValues(alpha: 0.06),
-              blurRadius: 12,
-              offset:     const Offset(0, -4)),
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
+          ),
         ],
       ),
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(ResponsiveUtils.screenPadding(width, base: 16), 12, ResponsiveUtils.screenPadding(width, base: 16), 12),
+          padding: EdgeInsets.fromLTRB(
+            ResponsiveUtils.screenPadding(width, base: 16),
+            12,
+            ResponsiveUtils.screenPadding(width, base: 16),
+            12,
+          ),
           child: Row(
             children: [
               ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: width * 0.28),
                 child: Column(
-                  mainAxisSize:     MainAxisSize.min,
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       AppLocalizations.of(context).hourlyRateLabel,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(11, scale, min: 10, max: 14),
+                        fontSize: ResponsiveUtils.sp(
+                          11,
+                          scale,
+                          min: 10,
+                          max: 14,
+                        ),
                         color: context.colors.textSecondary,
                       ),
                     ),
                     Text(
-                      '\$${pro['hourly_rate'] ?? 0}/hr',
+                      '$_currencySym ${pro['hourly_rate'] ?? 0}/hr',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          fontSize:   ResponsiveUtils.sp(20, scale, min: 18, max: 25),
-                          fontWeight: FontWeight.w800,
-                          color:      context.colors.primary),
+                        fontSize: ResponsiveUtils.sp(
+                          20,
+                          scale,
+                          min: 18,
+                          max: 25,
+                        ),
+                        fontWeight: FontWeight.w800,
+                        color: context.colors.primary,
+                      ),
                     ),
                   ],
                 ),
@@ -1686,9 +2149,13 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   onTap: _isStartingChat ? null : () => _startConversation(pro),
                   child: Container(
-                    width: btnSize, height: btnSize,
+                    width: btnSize,
+                    height: btnSize,
                     decoration: BoxDecoration(
-                      border: Border.all(color: context.colors.primary, width: 1.5),
+                      border: Border.all(
+                        color: context.colors.primary,
+                        width: 1.5,
+                      ),
                       borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                     ),
                     child: _isStartingChat
@@ -1696,7 +2163,16 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                             padding: EdgeInsets.all(14),
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Icon(Icons.chat_bubble_outline_rounded, color: context.colors.primary, size: ResponsiveUtils.sp(22, scale, min: 20, max: 27)),
+                        : Icon(
+                            Icons.chat_bubble_outline_rounded,
+                            color: context.colors.primary,
+                            size: ResponsiveUtils.sp(
+                              22,
+                              scale,
+                              min: 20,
+                              max: 27,
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -1716,15 +2192,22 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     minimumSize: Size(0, btnSize),
                     elevation: 2,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                    ),
                   ),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
                       AppLocalizations.of(context).bookNowCta,
                       style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
-                          fontWeight: FontWeight.w700),
+                        fontSize: ResponsiveUtils.sp(
+                          15,
+                          scale,
+                          min: 14,
+                          max: 18,
+                        ),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
@@ -1746,13 +2229,22 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(ResponsiveUtils.screenPadding(width, base: 16), 12, ResponsiveUtils.screenPadding(width, base: 16), 12),
+          padding: EdgeInsets.fromLTRB(
+            ResponsiveUtils.screenPadding(width, base: 16),
+            12,
+            ResponsiveUtils.screenPadding(width, base: 16),
+            12,
+          ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.neutral400,
-              minimumSize:     Size(double.infinity, ResponsiveUtils.sp(50, scale, min: 48, max: 62)),
+              minimumSize: Size(
+                double.infinity,
+                ResponsiveUtils.sp(50, scale, min: 48, max: 62),
+              ),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+              ),
             ),
             onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
             child: Text(
@@ -1774,24 +2266,40 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     setState(() => _isStartingChat = true);
     try {
       final results = await Future.wait([
-        _api.post(AppConstants.conversations, {'other_user_id': pro['user_id']}),
+        _api.post(AppConstants.conversations, {
+          'other_user_id': pro['user_id'],
+        }),
         _api.get(AppConstants.me),
       ]);
       if (!mounted) return;
       final data = results[0].data as Map<String, dynamic>;
-      final myId = int.parse((results[1].data as Map<String, dynamic>)['id'].toString());
+      final myId = int.parse(
+        (results[1].data as Map<String, dynamic>)['id'].toString(),
+      );
 
-      await Navigator.push(context, MaterialPageRoute(
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
           builder: (_) => ChatScreen(
-              conversationId: data['id'] is int ? data['id'] as int : int.parse(data['id'].toString()),
-              currentUserId: myId,
-              otherUserName: data['other_user_name']?.toString() ?? pro['name']?.toString() ?? AppLocalizations.of(context).professionalDefaultName,
-              otherUserPhoto: data['other_user_photo']?.toString(),
-              conversationSnapshot: ConversationModel.fromJson(data),
-            )));
+            conversationId: data['id'] is int
+                ? data['id'] as int
+                : int.parse(data['id'].toString()),
+            currentUserId: myId,
+            otherUserName:
+                data['other_user_name']?.toString() ??
+                pro['name']?.toString() ??
+                AppLocalizations.of(context).professionalDefaultName,
+            otherUserPhoto: data['other_user_photo']?.toString(),
+            conversationSnapshot: ConversationModel.fromJson(data),
+          ),
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
-      AppHelpers.showError(context, AppLocalizations.of(context).startConversationError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).startConversationError,
+      );
     } finally {
       if (mounted) setState(() => _isStartingChat = false);
     }
@@ -1819,8 +2327,12 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     );
   }
 
-  Widget _detailRow(IconData icon, String label, String value,
-      {Color? valueColor}) {
+  Widget _detailRow(
+    IconData icon,
+    String label,
+    String value, {
+    Color? valueColor,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Row(
@@ -1834,11 +2346,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                 : context.colors.primaryLight,
             borderRadius: BorderRadius.circular(AppSizes.radiusSm),
           ),
-          child: Icon(
-            icon,
-            size: 17,
-            color: AppColors.customerColor,
-          ),
+          child: Icon(icon, size: 17, color: AppColors.customerColor),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -1876,17 +2384,22 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
   const _TabBarDelegate(this.tabBar);
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      color: isDark
-          ? AppColors.background
-          : Colors.white,
+      color: isDark ? AppColors.background : Colors.white,
       child: tabBar,
     );
   }
 
-  @override double get minExtent => tabBar.preferredSize.height;
-  @override double get maxExtent => tabBar.preferredSize.height;
-  @override bool shouldRebuild(covariant SliverPersistentHeaderDelegate old) => true;
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate old) => true;
 }

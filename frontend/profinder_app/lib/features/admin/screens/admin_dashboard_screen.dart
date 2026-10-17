@@ -245,7 +245,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       onNotifications: () async {
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const NotificationScreen()),
+          MaterialPageRoute(builder: (_) => NotificationScreen(onNavigateToAdminTab: widget.onNavigateToTab)),
         );
         _refreshUnreadCount();
       },
@@ -415,7 +415,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
 
   /// Bottom sheet containing the global search UI.
   ///
-  /// ✅ FIX: this used to be a pure placeholder — the "Search" button just
+  /// this used to be a pure placeholder — the "Search" button just
   /// closed the sheet and showed a SnackBar saying the module wasn't
   /// connected yet. It now actually queries the backend (Users +
   /// Professionals via `/users/?search=`, Bookings via
