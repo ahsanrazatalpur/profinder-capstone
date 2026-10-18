@@ -18,8 +18,13 @@ import '../../../l10n/generated/app_localizations.dart';
 
 class RegistrationSuccessDialog extends StatefulWidget {
   final VoidCallback onContinue;
+  final String? buttonLabel;
 
-  const RegistrationSuccessDialog({super.key, required this.onContinue});
+  const RegistrationSuccessDialog({
+    super.key,
+    required this.onContinue,
+    this.buttonLabel,
+  });
 
   @override
   State<RegistrationSuccessDialog> createState() =>
@@ -100,7 +105,10 @@ class _RegistrationSuccessDialogState extends State<RegistrationSuccessDialog>
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: widget.onContinue,
-                child: Text(AppLocalizations.of(context).authContinueLogin),
+                child: Text(
+                  widget.buttonLabel ??
+                      AppLocalizations.of(context).authContinueLogin,
+                ),
               ),
             ),
           ],

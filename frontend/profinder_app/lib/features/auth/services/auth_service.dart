@@ -98,7 +98,64 @@ class AuthService {
   Future<Map<String, dynamic>> forgotPassword({required String email}) async {
     try {
       final response = await _api.post(AppConstants.forgotPassword, {
-        'email': email,
+        'email': email.trim().toLowerCase(),
+      });
+      return {'success': true, 'data': response.data};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> sendOtp({
+    required String email,
+    required String purpose,
+  }) async {
+    try {
+      final response = await _api.post(AppConstants.sendOtp, {
+        'email': email.trim().toLowerCase(),
+        'purpose': purpose,
+      });
+      return {'success': true, 'data': response.data};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> verifyOtp({
+    required String email,
+    required String otp,
+    required String purpose,
+  }) async {
+    try {
+      final response = await _api.post(AppConstants.verifyOtp, {
+        'email': email.trim().toLowerCase(),
+        'otp': otp.trim(),
+        'purpose': purpose,
+      });
+      if (purpose == 'signup' && response.data['access'] != null) {
+        await _saveTokens(
+          access: response.data['access'],
+          refresh: response.data['refresh'],
+          role: response.data['role'],
+        );
+        await PushNotificationService().registerToken();
+      }
+      return {'success': true, 'data': response.data};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> resetPasswordWithOtp({
+    required String email,
+    required String resetToken,
+    required String password,
+  }) async {
+    try {
+      final response = await _api.post(AppConstants.resetPasswordOtp, {
+        'email': email.trim().toLowerCase(),
+        'reset_token': resetToken,
+        'password': password,
       });
       return {'success': true, 'data': response.data};
     } catch (e) {

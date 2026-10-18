@@ -66,6 +66,8 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
     _errorMessage = null;
     _errorStatusCode = null;
+    _requiresVerification = false;
+    _unverifiedEmail = null;
     final result = await _authService.login(email: email, password: password);
     _setLoading(false);
     if (result['success']) {
@@ -78,6 +80,11 @@ class AuthProvider extends ChangeNotifier {
     }
     _errorMessage = result['message'];
     _errorStatusCode = result['statusCode'] as int?;
+    if (_errorStatusCode == 403 &&
+        (_errorMessage?.toLowerCase().contains('verif') ?? false)) {
+      _requiresVerification = true;
+      _unverifiedEmail = email;
+    }
     notifyListeners();
     return false;
   }
@@ -114,6 +121,12 @@ class AuthProvider extends ChangeNotifier {
     return false;
   }
 
+  bool _requiresVerification = false;
+  String? _unverifiedEmail;
+
+  bool get requiresVerification => _requiresVerification;
+  String? get unverifiedEmail => _unverifiedEmail;
+
   Future<bool> forgotPassword({required String email}) async {
     _setLoading(true);
     _errorMessage = null;
@@ -125,12 +138,79 @@ class AuthProvider extends ChangeNotifier {
     return false;
   }
 
+  Future<Map<String, dynamic>> sendOtp({
+    required String email,
+    required String purpose,
+  }) async {
+    _setLoading(true);
+    _errorMessage = null;
+    final result = await _authService.sendOtp(email: email, purpose: purpose);
+    _setLoading(false);
+    if (!result['success']) {
+      _errorMessage = result['message'];
+      notifyListeners();
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> verifyOtp({
+    required String email,
+    required String otp,
+    required String purpose,
+  }) async {
+    _setLoading(true);
+    _errorMessage = null;
+    final result = await _authService.verifyOtp(
+      email: email,
+      otp: otp,
+      purpose: purpose,
+    );
+    _setLoading(false);
+    if (result['success']) {
+      if (purpose == 'signup' && result['data'] != null) {
+        _isLoggedIn = true;
+        _isGuest = false;
+        _role = result['data']['role'];
+        _loginPreferredLanguage = result['data']['preferred_language'];
+        _requiresVerification = false;
+        _unverifiedEmail = null;
+      }
+      notifyListeners();
+      return result;
+    }
+    _errorMessage = result['message'];
+    notifyListeners();
+    return result;
+  }
+
+  Future<Map<String, dynamic>> resetPasswordWithOtp({
+    required String email,
+    required String resetToken,
+    required String password,
+  }) async {
+    _setLoading(true);
+    _errorMessage = null;
+    final result = await _authService.resetPasswordWithOtp(
+      email: email,
+      resetToken: resetToken,
+      password: password,
+    );
+    _setLoading(false);
+    if (!result['success']) {
+      _errorMessage = result['message'];
+      notifyListeners();
+    }
+    return result;
+  }
+
   void setGuest() {
     _isGuest = true;
     _isLoggedIn = false;
     _role = null;
     _errorMessage = null;
     _errorStatusCode = null;
+    _requiresVerification = false;
+    _unverifiedEmail = null;
     notifyListeners();
   }
 
@@ -141,6 +221,8 @@ class AuthProvider extends ChangeNotifier {
     _role = null;
     _errorMessage = null;
     _errorStatusCode = null;
+    _requiresVerification = false;
+    _unverifiedEmail = null;
     notifyListeners();
   }
 

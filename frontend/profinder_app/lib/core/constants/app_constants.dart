@@ -18,6 +18,9 @@ class AppConstants {
   static const String tokenRefresh = '/users/token/refresh/';
   static const String me = '/users/me/';
   static const String forgotPassword = '/users/forgot-password/';
+  static const String sendOtp = '/users/send-otp/';
+  static const String verifyOtp = '/users/verify-otp/';
+  static const String resetPasswordOtp = '/users/reset-password-otp/';
   static const String checkEmail = '/users/check-email/';
   static const String countries = '/users/countries/';
   static const String cities = '/users/cities/';

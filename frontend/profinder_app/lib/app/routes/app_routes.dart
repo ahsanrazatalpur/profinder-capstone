@@ -7,6 +7,7 @@ import '../../features/admin/screens/admin_main_screen.dart';
 import '../../features/auth/screens/forgot_password_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
+import '../../features/auth/screens/otp_verification_screen.dart';
 import '../../features/bookings/screens/my_bookings_screen.dart';
 import '../../features/home/screens/customer_home_screen.dart';
 import '../../features/home/screens/guest_main_screen.dart';
@@ -26,6 +27,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
+  static const String otpVerification = '/otp-verification';
   static const String home = '/home';
   static const String search = '/search';
   static const String bookings = '/bookings';
@@ -47,6 +49,19 @@ class AppRoutes {
     login: (_) => const LoginScreen(),
     register: (_) => const RegisterScreen(),
     forgotPassword: (_) => ForgotPasswordScreen(),
+    otpVerification: (context) {
+      try {
+        final args = ModalRoute.of(context)?.settings.arguments;
+        if (args is Map<String, dynamic>) {
+          return OtpVerificationScreen(
+            email: args['email'] as String? ?? '',
+            purpose: args['purpose'] as String? ?? 'signup',
+            userName: args['userName'] as String?,
+          );
+        }
+      } catch (_) {}
+      return const OtpVerificationScreen(email: '');
+    },
     home: (_) => const HomeGate(),
     search: (_) => const SearchScreen(),
     bookings: (_) => const MyBookingsScreen(),

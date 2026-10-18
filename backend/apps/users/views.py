@@ -20,11 +20,16 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.conf import settings
 
+import re
+from datetime import timedelta
+
+from django.core import signing
+from django.utils import timezone
 from apps.users.serializers import RegisterSerializer, UpdateLanguageSerializer
-from apps.users.models import User
+from apps.users.models import User, EmailOTP
 from apps.profiles.models import UserProfile, ProfessionalProfile
 from apps.notifications.utils import notify_admins
-from apps.users.brevo_email import send_brevo_email
+from apps.users.brevo_email import send_brevo_email, send_otp_email
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +43,22 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            # Generate and send 6-digit signup OTP
+            otp_obj, plain_otp = EmailOTP.generate_otp(
+                email=user.email,
+                purpose=EmailOTP.PURPOSE_SIGNUP,
+                expiry_minutes=5,
+            )
+            try:
+                send_otp_email(
+                    to_email=user.email,
+                    to_name=user.name,
+                    otp_code=plain_otp,
+                    purpose=EmailOTP.PURPOSE_SIGNUP,
+                )
+            except Exception:
+                logger.exception("Failed to send signup OTP email to %s", user.email)
+
             # ✅ NEW — a new professional needs admin review/verification,
             # so admins should hear about it on their notification bell
             # instead of only finding out next time someone opens the
@@ -51,7 +72,12 @@ class RegisterView(APIView):
                     data={'user_id': user.id, 'event': 'professional_signup'},
                 )
             return Response(
-                {"message": "User created successfully"},
+                {
+                    "success": True,
+                    "message": "User created successfully. A 6-digit verification code has been sent to your email.",
+                    "email": user.email,
+                    "requires_verification": True,
+                },
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -143,6 +169,16 @@ class LoginView(APIView):
         if not user.is_active:
             return Response(
                 {"error": "Your account has been banned."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if not user.is_email_verified and user.role != 'admin':
+            return Response(
+                {
+                    "error": "Your email address is not verified. Please enter the 6-digit verification code sent to your email.",
+                    "requires_verification": True,
+                    "email": user.email,
+                },
                 status=status.HTTP_403_FORBIDDEN
             )
 
@@ -270,9 +306,13 @@ class GoogleLoginView(APIView):
             # the password field so it can never be guessed/brute-forced,
             # while set_unusable_password() still lets Django treat it as
             # a normal active user everywhere else.
-            user = User(email=email, name=name, role=role)
+            user = User(email=email, name=name, role=role, is_email_verified=True)
             user.set_unusable_password()
             user.save()
+
+        if not user.is_email_verified:
+            user.is_email_verified = True
+            user.save(update_fields=['is_email_verified'])
 
         if not user.is_active:
             return Response(
@@ -480,15 +520,14 @@ class AdminUserListView(APIView):
 
 class ForgotPasswordView(APIView):
     """
-    Starts the password-reset flow.
+    Starts the password-reset OTP flow.
+    Sends a 6-digit numeric OTP to the user's email via Brevo transactional email.
 
     Security design:
-    - The response is IDENTICAL whether or not the email is registered —
-      this endpoint must never be usable to enumerate accounts.
-    - Any SMTP/delivery failure is logged server-side only; the client
-      never sees exception details.
-    - Rate-limited (see `throttle_scope` + settings.DEFAULT_THROTTLE_RATES)
-      to blunt abuse — both inbox-spamming a real user and enumeration.
+    - Server-side 6-digit OTP generation, hashed in database, 5-minute expiry.
+    - 60-second resend cooldown and hourly rate limiting.
+    - The response is generic whether or not the email is registered to prevent user enumeration.
+    - Rate-limited via ScopedRateThrottle (throttle_scope = 'forgot_password').
     """
     permission_classes = [AllowAny]
     throttle_classes   = [ScopedRateThrottle]
@@ -496,7 +535,7 @@ class ForgotPasswordView(APIView):
 
     GENERIC_MESSAGE = (
         "If an account exists with this email address, "
-        "a password reset link has been sent."
+        "a 6-digit verification code has been sent."
     )
 
     def post(self, request):
@@ -507,59 +546,330 @@ class ForgotPasswordView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Check resend cooldown (60 seconds)
+        recent_otp = EmailOTP.objects.filter(
+            email=email,
+            purpose=EmailOTP.PURPOSE_FORGOT_PASSWORD,
+        ).order_by('-created_at').first()
+        if recent_otp:
+            elapsed = (timezone.now() - recent_otp.created_at).total_seconds()
+            if elapsed < 60:
+                retry_after = int(60 - elapsed)
+                return Response(
+                    {
+                        "success": False,
+                        "error": f"Please wait {retry_after} second{'s' if retry_after != 1 else ''} before requesting a new code.",
+                        "retry_after": retry_after,
+                    },
+                    status=status.HTTP_429_TOO_MANY_REQUESTS
+                )
+
+        # Check hourly rate limit (max 5 requests per hour)
+        one_hour_ago = timezone.now() - timedelta(hours=1)
+        if EmailOTP.objects.filter(email=email, created_at__gte=one_hour_ago).count() >= 5:
+            return Response(
+                {
+                    "success": False,
+                    "error": "Too many requests. Please try again after an hour.",
+                },
+                status=status.HTTP_429_TOO_MANY_REQUESTS
+            )
+
         try:
             user = User.objects.get(email=email)
-            self._send_reset_email(request, user)
+            otp_obj, plain_otp = EmailOTP.generate_otp(
+                email=user.email,
+                purpose=EmailOTP.PURPOSE_FORGOT_PASSWORD,
+                expiry_minutes=5,
+            )
+            send_otp_email(
+                to_email=user.email,
+                to_name=user.name,
+                otp_code=plain_otp,
+                purpose=EmailOTP.PURPOSE_FORGOT_PASSWORD,
+            )
         except User.DoesNotExist:
-            # Deliberately silent — falls through to the same generic
-            # response as the success path below.
+            # Deliberately silent to prevent enumeration
             pass
         except Exception:
-            # Covers SMTP auth failures, network timeouts to Brevo, etc.
-            # Never bubble this up to the client.
-            logger.exception("Password reset email failed to send for %s", email)
+            logger.exception("Password reset OTP email failed to send for %s", email)
 
-        return Response({"success": True, "message": self.GENERIC_MESSAGE})
+        return Response({
+            "success": True,
+            "message": self.GENERIC_MESSAGE,
+            "cooldown": 60,
+        })
 
-    def _send_reset_email(self, request, user):
-        token = default_token_generator.make_token(user)
-        uid   = urlsafe_base64_encode(force_bytes(user.pk))
-        reset_url = f"{settings.PUBLIC_BASE_URL}/api/users/reset-password/{uid}/{token}/"
 
-        context = {
-            "user_name":     getattr(user, "name", None) or user.email.split('@')[0],
-            "reset_url":     reset_url,
-            "expiry_hours":  settings.PASSWORD_RESET_TIMEOUT // 3600,
-            "support_email": settings.SUPPORT_EMAIL,
-        }
+class SendOTPView(APIView):
+    """
+    Sends or resends a 6-digit numeric OTP for signup verification or password reset.
+    Enforces a 60-second cooldown and hourly limit.
+    """
+    permission_classes = [AllowAny]
+    throttle_classes   = [ScopedRateThrottle]
+    throttle_scope     = 'otp_request'
 
-        text_body = render_to_string("password_reset.txt", context)
-        html_body = render_to_string("password_reset.html", context)
-        subject   = "Reset your ProFinder password"
+    def post(self, request):
+        email   = request.data.get('email', '').strip().lower()
+        purpose = request.data.get('purpose', '').strip()
 
-        if getattr(settings, "BREVO_API_KEY", None):
-            # PythonAnywhere free par SMTP blocked hai — Brevo HTTP API use hoti hai.
-            # Failure yahan raise hota hai, caller log karta hai, client ko kabhi nahi dikhta.
-            message_id = send_brevo_email(
-                to_email=user.email,
-                to_name=context["user_name"],
-                subject=subject,
-                html_body=html_body,
-                text_body=text_body,
+        if not email:
+            return Response(
+                {"success": False, "error": "Email is required."},
+                status=status.HTTP_400_BAD_REQUEST
             )
-            logger.info("Password reset email sent via Brevo API to user_id=%s (messageId=%s)",
-                        user.pk, message_id)
-        else:
-            # Local development fallback (SMTP / console backend)
-            message = EmailMultiAlternatives(
-                subject=subject,
-                body=text_body,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[user.email],
+
+        if purpose not in (EmailOTP.PURPOSE_SIGNUP, EmailOTP.PURPOSE_FORGOT_PASSWORD):
+            return Response(
+                {"success": False, "error": f"Invalid purpose. Must be '{EmailOTP.PURPOSE_SIGNUP}' or '{EmailOTP.PURPOSE_FORGOT_PASSWORD}'."},
+                status=status.HTTP_400_BAD_REQUEST
             )
-            message.attach_alternative(html_body, "text/html")
-            message.send(fail_silently=False)
-            logger.info("Password reset email sent via SMTP to user_id=%s", user.pk)
+
+        # 1. Hourly rate limit check (max 5/hr)
+        one_hour_ago = timezone.now() - timedelta(hours=1)
+        if EmailOTP.objects.filter(email=email, created_at__gte=one_hour_ago).count() >= 5:
+            return Response(
+                {
+                    "success": False,
+                    "error": "Too many requests. Please try again after an hour.",
+                },
+                status=status.HTTP_429_TOO_MANY_REQUESTS
+            )
+
+        # 2. Cooldown check (60s)
+        recent_otp = EmailOTP.objects.filter(
+            email=email,
+            purpose=purpose,
+        ).order_by('-created_at').first()
+        if recent_otp:
+            elapsed = (timezone.now() - recent_otp.created_at).total_seconds()
+            if elapsed < 60:
+                retry_after = int(60 - elapsed)
+                return Response(
+                    {
+                        "success": False,
+                        "error": f"Please wait {retry_after} second{'s' if retry_after != 1 else ''} before requesting a new code.",
+                        "retry_after": retry_after,
+                    },
+                    status=status.HTTP_429_TOO_MANY_REQUESTS
+                )
+
+        if purpose == EmailOTP.PURPOSE_SIGNUP:
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response(
+                    {"success": False, "error": "No account found with this email."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            if user.is_email_verified:
+                return Response(
+                    {"success": False, "error": "This email address is already verified. You can log in directly."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            otp_obj, plain_otp = EmailOTP.generate_otp(
+                email=user.email,
+                purpose=purpose,
+                expiry_minutes=5,
+            )
+            try:
+                send_otp_email(
+                    to_email=user.email,
+                    to_name=user.name,
+                    otp_code=plain_otp,
+                    purpose=purpose,
+                )
+            except Exception:
+                logger.exception("Failed to send signup OTP email to %s", email)
+
+            return Response({
+                "success": True,
+                "message": "A 6-digit verification code has been sent to your email.",
+                "cooldown": 60,
+            })
+
+        elif purpose == EmailOTP.PURPOSE_FORGOT_PASSWORD:
+            user = User.objects.filter(email=email).first()
+            if user:
+                otp_obj, plain_otp = EmailOTP.generate_otp(
+                    email=user.email,
+                    purpose=purpose,
+                    expiry_minutes=5,
+                )
+                try:
+                    send_otp_email(
+                        to_email=user.email,
+                        to_name=user.name,
+                        otp_code=plain_otp,
+                        purpose=purpose,
+                    )
+                except Exception:
+                    logger.exception("Failed to send forgot password OTP email to %s", email)
+
+            return Response({
+                "success": True,
+                "message": "If an account exists with this email address, a 6-digit verification code has been sent.",
+                "cooldown": 60,
+            })
+
+
+class VerifyOTPView(APIView):
+    """
+    Verifies a 6-digit numeric OTP for signup or password reset.
+    Enforces single-use, 5-minute expiry, and maximum 5 failed attempts.
+    """
+    permission_classes = [AllowAny]
+    throttle_classes   = [ScopedRateThrottle]
+    throttle_scope     = 'otp_verify'
+
+    def post(self, request):
+        email   = request.data.get('email', '').strip().lower()
+        otp     = str(request.data.get('otp', '')).strip()
+        purpose = request.data.get('purpose', '').strip()
+
+        if not email or not otp or not purpose:
+            return Response(
+                {"success": False, "error": "email, otp, and purpose are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not re.match(r'^\d{6}$', otp):
+            return Response(
+                {"success": False, "error": "Verification code must be exactly 6 digits."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        otp_obj = EmailOTP.objects.filter(
+            email=email,
+            purpose=purpose,
+            is_used=False,
+        ).order_by('-created_at').first()
+
+        if not otp_obj:
+            return Response(
+                {"success": False, "error": "No active verification code found for this email. Please request a new code."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        is_valid, err_msg = otp_obj.verify(otp, max_attempts=5)
+        if not is_valid:
+            return Response(
+                {"success": False, "error": err_msg},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if purpose == EmailOTP.PURPOSE_SIGNUP:
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response(
+                    {"success": False, "error": "User account not found."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            user.is_email_verified = True
+            user.save(update_fields=['is_email_verified'])
+
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "success": True,
+                "message": "Email verified successfully.",
+                "access":  str(refresh.access_token),
+                "refresh": str(refresh),
+                "role":    user.role,
+                "preferred_language": user.preferred_language,
+            })
+
+        elif purpose == EmailOTP.PURPOSE_FORGOT_PASSWORD:
+            user = User.objects.filter(email=email).first()
+            if not user:
+                return Response(
+                    {"success": False, "error": "User account not found."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            reset_token = signing.dumps(
+                {"user_id": str(user.id), "email": user.email, "purpose": "pwd_reset"},
+                salt="profinder-otp-reset-salt",
+            )
+            return Response({
+                "success": True,
+                "message": "Verification code confirmed successfully.",
+                "reset_token": reset_token,
+            })
+
+
+class ResetPasswordWithOTPView(APIView):
+    """
+    Completes password reset after OTP verification.
+    Requires the signed reset_token generated during successful OTP verification.
+    """
+    permission_classes = [AllowAny]
+    throttle_classes   = [ScopedRateThrottle]
+    throttle_scope     = 'reset_password'
+
+    def post(self, request):
+        email        = request.data.get('email', '').strip().lower()
+        reset_token  = request.data.get('reset_token', '').strip()
+        new_password = request.data.get('password', '')
+
+        if not email or not reset_token or not new_password:
+            return Response(
+                {"success": False, "error": "email, reset_token, and password are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            data = signing.loads(
+                reset_token,
+                salt="profinder-otp-reset-salt",
+                max_age=900,  # 15 minutes max validity
+            )
+        except signing.SignatureExpired:
+            return Response(
+                {"success": False, "error": "Password reset session has expired. Please request a new verification code."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception:
+            return Response(
+                {"success": False, "error": "Invalid reset token. Please request a new verification code."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if data.get("email") != email or data.get("purpose") != "pwd_reset":
+            return Response(
+                {"success": False, "error": "Invalid reset session. Please request a new code."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = User.objects.get(id=data["user_id"], email=email)
+        except User.DoesNotExist:
+            return Response(
+                {"success": False, "error": "User not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            validate_password(new_password, user=user)
+        except DjangoValidationError as e:
+            return Response(
+                {"success": False, "error": " ".join(e.messages)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.set_password(new_password)
+        user.is_email_verified = True
+        user.save(update_fields=['password', 'is_email_verified'])
+        logger.info("Password successfully reset via OTP for user_id=%s", user.pk)
+
+        return Response({
+            "success": True,
+            "message": "Your password has been reset successfully. You can now log in with your new password.",
+        })
 
 
 class ResetPasswordView(APIView):

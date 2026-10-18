@@ -18,6 +18,7 @@ import '../../../core/localization/language_sync_service.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
+import 'otp_verification_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   // Optional — lets callers (e.g. Register's "Sign In Instead" action when
@@ -120,6 +121,44 @@ class _LoginScreenState extends State<LoginScreen> {
           );
       }
     } else {
+      if (auth.requiresVerification) {
+        final email = _emailController.text.trim().toLowerCase();
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+            ),
+            title: const Text('Email Verification Required'),
+            content: Text(
+              'Your email address ($email) is not verified yet. Please enter the 6-digit verification code sent to your inbox to activate your account.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => OtpVerificationScreen(
+                        email: email,
+                        purpose: 'signup',
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Enter Code'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
       // 401 = bad credentials. Always show the same generic copy here —
       // never surface whether it was the email or the password that was
       // wrong, and never say "no account with that email".

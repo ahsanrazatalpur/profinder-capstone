@@ -27,6 +27,7 @@ import '../widgets/account_type_card.dart';
 import '../widgets/social_auth_button.dart';
 import '../widgets/registration_success_dialog.dart';
 import 'login_screen.dart';
+import 'otp_verification_screen.dart';
 import '../../support/screens/privacy_policy_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -300,15 +301,20 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   void _showSuccessDialog() {
+    final email = _emailController.text.trim().toLowerCase();
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => RegistrationSuccessDialog(
+        buttonLabel: 'Enter 6-Digit Code',
         onContinue: () {
           Navigator.pop(context);
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const LoginScreen()),
+            MaterialPageRoute(
+              builder: (_) =>
+                  OtpVerificationScreen(email: email, purpose: 'signup'),
+            ),
           );
         },
       ),

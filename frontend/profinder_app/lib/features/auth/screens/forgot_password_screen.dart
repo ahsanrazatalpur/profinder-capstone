@@ -13,6 +13,7 @@ import '../../../core/utils/responsive_utils.dart';
 import '../../../services/auth_provider.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import 'otp_verification_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -43,7 +44,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (!mounted) return;
 
     if (result) {
-      setState(() => _emailSent = true);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OtpVerificationScreen(
+            email: _emailController.text.trim().toLowerCase(),
+            purpose: 'forgot_password',
+          ),
+        ),
+      );
     } else {
       // Network/timeout/server errors are real failures worth surfacing —
       // but a successful response always shows the fixed generic message

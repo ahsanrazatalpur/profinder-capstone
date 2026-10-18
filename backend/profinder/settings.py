@@ -249,6 +249,8 @@ REST_FRAMEWORK = {
         # Forgot-password: generous enough for a real user who mistyped
         # their email, tight enough to blunt inbox-spam/enumeration abuse.
         'forgot_password': '5/hour',
+        'otp_request': '10/hour',
+        'otp_verify': '30/hour',
         # Reset-password: a few more attempts allowed since a legitimate
         # user may retype their new password a couple of times.
         'reset_password': '10/hour',
