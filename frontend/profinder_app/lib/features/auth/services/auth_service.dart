@@ -164,6 +164,35 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> requestDeleteAccountOtp() async {
+    try {
+      final response = await _api.post(AppConstants.deleteAccountRequestOtp, {});
+      return {'success': true, 'data': response.data};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> confirmDeleteAccount({
+    String? password,
+    String? otp,
+  }) async {
+    try {
+      final payload = <String, dynamic>{};
+      if (password != null && password.trim().isNotEmpty) {
+        payload['password'] = password.trim();
+      }
+      if (otp != null && otp.trim().isNotEmpty) {
+        payload['otp'] = otp.trim();
+      }
+      final response = await _api.post(AppConstants.deleteAccountConfirm, payload);
+      await logout();
+      return {'success': true, 'data': response.data};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
   Future<void> logout() async {
     await PushNotificationService().unregisterToken();
     final prefs = await SharedPreferences.getInstance();

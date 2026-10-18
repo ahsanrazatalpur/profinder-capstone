@@ -280,3 +280,49 @@ class EmailOTPTests(TestCase):
         self.assertIn(b"Desktop Authentication", resp.content)
         self.assertIn(b"405649887034", resp.content)
 
+    def test_delete_account_with_password_success(self):
+        """User can permanently delete their account using their account password."""
+        self.client.force_authenticate(user=self.user)
+        resp = self.client.post("/api/users/delete-account/confirm/", {
+            "password": "StrongPassword123!",
+        })
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertTrue(resp.data["success"])
+        self.assertFalse(User.objects.filter(email=self.test_email).exists())
+
+    def test_delete_account_with_wrong_password_fails(self):
+        """Wrong password fails account deletion."""
+        self.client.force_authenticate(user=self.user)
+        resp = self.client.post("/api/users/delete-account/confirm/", {
+            "password": "WrongPassword999!",
+        })
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(resp.data["success"])
+        self.assertTrue(User.objects.filter(email=self.test_email).exists())
+
+    def test_delete_account_with_otp_success(self):
+        """User can request a 6-digit OTP and confirm permanent account deletion."""
+        self.client.force_authenticate(user=self.user)
+        req_resp = self.client.post("/api/users/delete-account/request-otp/")
+        self.assertEqual(req_resp.status_code, status.HTTP_200_OK)
+        self.assertTrue(req_resp.data["success"])
+
+        # Fetch plain OTP from brevo mock call
+        self.assertTrue(self.mock_brevo.called)
+        otp_record = EmailOTP.objects.filter(
+            email=self.test_email,
+            purpose=EmailOTP.PURPOSE_DELETE_ACCOUNT,
+            is_used=False,
+        ).first()
+        self.assertIsNotNone(otp_record)
+
+        # Mock the verification call using generate_otp plain return
+        otp_obj, plain_otp = EmailOTP.generate_otp(self.test_email, EmailOTP.PURPOSE_DELETE_ACCOUNT)
+        confirm_resp = self.client.post("/api/users/delete-account/confirm/", {
+            "otp": plain_otp,
+        })
+        self.assertEqual(confirm_resp.status_code, status.HTTP_200_OK)
+        self.assertTrue(confirm_resp.data["success"])
+        self.assertFalse(User.objects.filter(email=self.test_email).exists())
+
+

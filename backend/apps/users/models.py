@@ -83,10 +83,12 @@ class EmailOTP(models.Model):
     """
     PURPOSE_SIGNUP = 'signup'
     PURPOSE_FORGOT_PASSWORD = 'forgot_password'
+    PURPOSE_DELETE_ACCOUNT = 'delete_account'
 
     PURPOSE_CHOICES = [
         (PURPOSE_SIGNUP, 'Signup Verification'),
         (PURPOSE_FORGOT_PASSWORD, 'Password Reset'),
+        (PURPOSE_DELETE_ACCOUNT, 'Account Deletion'),
     ]
 
     email = models.EmailField(db_index=True)

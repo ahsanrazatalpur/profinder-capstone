@@ -426,6 +426,7 @@ class UserView(APIView):
             "preferred_language": user.preferred_language,  # ✅ i18n
             "push_notifications": getattr(user, 'push_notifications', True),
             "email_notifications": getattr(user, 'email_notifications', True),
+            "has_password": user.has_usable_password(),
         })
 
     # ── Save / update FCM token and notification preferences ──────
@@ -1064,3 +1065,144 @@ class ChangePasswordView(APIView):
         user.set_password(new_password)
         user.save()
         return Response({"message": "Password changed successfully."})
+
+
+# ── Account Deletion (Secure 2-Factor: Password or Gmail OTP) ─────────────────
+class DeleteAccountRequestOTPView(APIView):
+    """
+    Sends a 6-digit confirmation OTP to the authenticated user's registered email
+    to authorize permanent account deletion.
+    """
+    permission_classes = [IsAuthenticated]
+    throttle_classes   = [ScopedRateThrottle]
+    throttle_scope     = 'otp_request'
+
+    def post(self, request):
+        user = request.user
+        email = user.email.strip().lower()
+
+        # Check 60-second cooldown
+        recent_otp = EmailOTP.objects.filter(
+            email=email,
+            purpose=EmailOTP.PURPOSE_DELETE_ACCOUNT,
+            is_used=False,
+        ).order_by('-created_at').first()
+
+        if recent_otp:
+            elapsed = (timezone.now() - recent_otp.created_at).total_seconds()
+            if elapsed < 60:
+                remaining = int(60 - elapsed)
+                return Response(
+                    {"success": False, "error": f"Please wait {remaining} seconds before requesting a new code."},
+                    status=status.HTTP_429_TOO_MANY_REQUESTS
+                )
+
+        otp_obj, plain_otp = EmailOTP.generate_otp(
+            email=email,
+            purpose=EmailOTP.PURPOSE_DELETE_ACCOUNT,
+            expiry_minutes=5,
+        )
+
+        try:
+            send_otp_email(
+                to_email=email,
+                to_name=user.name,
+                otp_code=plain_otp,
+                purpose=EmailOTP.PURPOSE_DELETE_ACCOUNT,
+            )
+        except Exception:
+            logger.exception("Failed to send delete-account OTP email to %s", email)
+            return Response(
+                {"success": False, "error": "Failed to send confirmation email. Please try again later."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        return Response({
+            "success": True,
+            "message": f"A 6-digit confirmation code has been sent to {email}.",
+            "cooldown": 60,
+        })
+
+
+class DeleteAccountConfirmView(APIView):
+    """
+    Permanently deletes the authenticated user's account and all associated data.
+    Requires either:
+    1. 'password' (for accounts with passwords)
+    2. 'otp' (6-digit confirmation code sent to their registered email)
+    """
+    permission_classes = [IsAuthenticated]
+    throttle_classes   = [ScopedRateThrottle]
+    throttle_scope     = 'otp_verify'
+
+    def post(self, request):
+        user = request.user
+        password = request.data.get('password', '').strip()
+        otp = str(request.data.get('otp', '')).strip()
+
+        if not password and not otp:
+            return Response(
+                {"success": False, "error": "Password or email confirmation code is required to delete your account."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Verification via password
+        if password:
+            if not user.has_usable_password():
+                return Response(
+                    {"success": False, "error": "This account does not have a password configured (e.g. Google Sign-In). Please verify using an email confirmation code."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if not user.check_password(password):
+                return Response(
+                    {"success": False, "error": "Incorrect password. Please try again or verify using an email confirmation code."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        # Verification via OTP
+        elif otp:
+            if not re.match(r'^\d{6}$', otp):
+                return Response(
+                    {"success": False, "error": "Confirmation code must be exactly 6 digits."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            otp_obj = EmailOTP.objects.filter(
+                email=user.email.lower(),
+                purpose=EmailOTP.PURPOSE_DELETE_ACCOUNT,
+                is_used=False,
+            ).order_by('-created_at').first()
+
+            if not otp_obj:
+                return Response(
+                    {"success": False, "error": "No active confirmation code found. Please request a new code."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            is_valid, err_msg = otp_obj.verify(otp, max_attempts=5)
+            if not is_valid:
+                return Response(
+                    {"success": False, "error": err_msg},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        # Identity confirmed — proceed with irreversible deletion
+        user_id = user.pk
+        user_email = user.email
+        user_role = user.role
+
+        logger.warning(
+            "PERMANENT ACCOUNT DELETION: User ID=%s, email=%s, role=%s permanently deleted.",
+            user_id, user_email, user_role
+        )
+
+        # Clean up any OTP records for this email
+        EmailOTP.objects.filter(email=user_email.lower()).delete()
+
+        # Delete user (cascades to UserProfile / ProfessionalProfile / Bookings / etc.)
+        user.delete()
+
+        return Response({
+            "success": True,
+            "message": "Your ProFinder account and associated data have been permanently deleted.",
+        })

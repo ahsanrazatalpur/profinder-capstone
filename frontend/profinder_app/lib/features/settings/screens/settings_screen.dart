@@ -19,6 +19,8 @@ import '../../../shared/widgets/universal_app_bar.dart';
 import '../../notifications/services/push_notification_service.dart';
 import '../../support/screens/new_ticket_screen.dart';
 import '../../support/screens/privacy_policy_screen.dart';
+import '../../../app/routes/app_routes.dart';
+import '../widgets/delete_account_dialog.dart';
 import 'language_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -33,6 +35,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late final ApiService _api = widget.api ?? ApiService();
   bool _pushEnabled = true;
   bool _emailEnabled = true;
+  bool _hasPassword = true;
+  String _userEmail = '';
 
   @override
   void initState() {
@@ -59,10 +63,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         final data = res.data as Map;
         final push = data['push_notifications'] as bool? ?? true;
         final email = data['email_notifications'] as bool? ?? true;
+        final hasPassword = data['has_password'] as bool? ?? true;
+        final userEmail = (data['email'] as String? ?? '').trim();
 
         setState(() {
           _pushEnabled = push;
           _emailEnabled = email;
+          _hasPassword = hasPassword;
+          _userEmail = userEmail;
         });
 
         final prefs = await SharedPreferences.getInstance();
@@ -424,25 +432,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ── Delete Account Confirmation ────────────────────────
-  void _confirmDelete(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    UniversalDialog.showConfirmation(
+  void _confirmDelete(BuildContext context) async {
+    final deleted = await showDialog<bool>(
       context: context,
-      title: t.deleteAccountDialogTitle,
-      message: t.deleteAccountDialogContent,
-      confirmLabel: t.deleteAccountContactSupportCta,
-      cancelLabel: t.okCta,
-      type: UniversalDialogType.danger,
-      icon: Icons.delete_outline_rounded,
-    ).then((confirmed) {
-      if (confirmed == true && context.mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const NewTicketScreen(initialCategory: 'privacy'),
-          ),
-        );
-      }
-    });
+      barrierDismissible: false,
+      builder: (_) => DeleteAccountDialog(
+        hasPassword: _hasPassword,
+        userEmail: _userEmail,
+      ),
+    );
+
+    if (deleted == true && context.mounted) {
+      AppHelpers.showSuccess(
+        context,
+        'Your account has been deleted successfully.',
+      );
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoutes.login,
+        (route) => false,
+      );
+    }
   }
 }

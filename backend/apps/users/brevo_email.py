@@ -70,6 +70,15 @@ def send_otp_email(to_email, to_name, otp_code, purpose="signup"):
             "We received a request to reset the password for your ProFinder account. "
             "Enter the six-digit verification code below directly in the ProFinder app to continue."
         )
+    elif purpose == "delete_account":
+        subject = f"Confirm Account Deletion - Code: {otp_code}"
+        purpose_title = "Confirm Account Deletion"
+        purpose_tag = "Security & Privacy"
+        purpose_message = (
+            "We received a request to permanently delete your ProFinder account. "
+            "To confirm this action and delete your account, enter the six-digit verification code below in the ProFinder app. "
+            "WARNING: This action is permanent and cannot be undone."
+        )
     else:
         subject = f"Verify your ProFinder Account - Code: {otp_code}"
         purpose_title = "Verify Your Email Address"

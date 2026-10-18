@@ -226,6 +226,45 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<Map<String, dynamic>> requestDeleteAccountOtp() async {
+    _setLoading(true);
+    _errorMessage = null;
+    final result = await _authService.requestDeleteAccountOtp();
+    _setLoading(false);
+    if (!result['success']) {
+      _errorMessage = result['message'];
+      notifyListeners();
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> confirmDeleteAccount({
+    String? password,
+    String? otp,
+  }) async {
+    _setLoading(true);
+    _errorMessage = null;
+    final result = await _authService.confirmDeleteAccount(
+      password: password,
+      otp: otp,
+    );
+    _setLoading(false);
+    if (result['success']) {
+      _isLoggedIn = false;
+      _isGuest = false;
+      _role = null;
+      _errorMessage = null;
+      _errorStatusCode = null;
+      _requiresVerification = false;
+      _unverifiedEmail = null;
+      notifyListeners();
+      return result;
+    }
+    _errorMessage = result['message'];
+    notifyListeners();
+    return result;
+  }
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();

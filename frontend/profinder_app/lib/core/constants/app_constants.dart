@@ -26,6 +26,8 @@ class AppConstants {
   static const String cities = '/users/cities/';
   static const String changePassword = '/users/change-password/';
   static const String updateLanguage = '/users/language/';
+  static const String deleteAccountRequestOtp = '/users/delete-account/request-otp/';
+  static const String deleteAccountConfirm = '/users/delete-account/confirm/';
 
   // ─── Profiles ────────────────────────────────────────────
   static const String userProfile = '/profiles/user/';

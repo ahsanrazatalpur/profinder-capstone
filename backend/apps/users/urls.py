@@ -7,6 +7,7 @@ from apps.users.views import (
     ForgotPasswordView, ResetPasswordView, ChangePasswordView,
     AdminUserListView, CheckEmailView, PublicCountriesView, PublicCitiesView,
     UpdateLanguageView, SendOTPView, VerifyOTPView, ResetPasswordWithOTPView,
+    DeleteAccountRequestOTPView, DeleteAccountConfirmView,
 )
 
 urlpatterns = [
@@ -26,5 +27,7 @@ urlpatterns = [
     path('reset-password-otp/',                     ResetPasswordWithOTPView.as_view(),  name='reset_password_otp'),
     path('reset-password/<str:uidb64>/<str:token>/',ResetPasswordView.as_view(),         name='reset_password'),
     path('change-password/',                        ChangePasswordView.as_view(),        name='change_password'),
+    path('delete-account/request-otp/',             DeleteAccountRequestOTPView.as_view(), name='delete_account_request_otp'),
+    path('delete-account/confirm/',                 DeleteAccountConfirmView.as_view(),    name='delete_account_confirm'),
     path('',                                        AdminUserListView.as_view(),         name='admin_user_list'), 
 ]
