@@ -1,8 +1,8 @@
-# PATH: backend/apps/bookings/views.py
 # apps/bookings/views.py
 
 import logging
 from datetime import date
+from django.db import transaction
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
@@ -14,6 +14,12 @@ from apps.bookings.serializers import BookingSerializer
 from apps.users.models import User
 from apps.notifications.utils import notify_user
 from apps.subscriptions.utils import check_booking_limit, get_booking_limit, get_bookings_this_month
+# ✅ Trust & Safety Part 9 (security pass) — same gap as messaging (see the
+# matching comment in apps/messaging/views.py): enforcement.py existed and
+# was unit-tested since Part 3, but a booking restriction / suspension was
+# never actually checked when a booking gets created, only in the Flutter
+# UI. `can_create_bookings` re-derives the answer from the DB on every call.
+from apps.admin_panel.enforcement import can_create_bookings
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +31,11 @@ def _notify(user, title, message, notif_type='general'):
 def _booking_detail(booking):
     time_str = booking.time.strftime('%I:%M %p') if booking.time else ''
     date_str = booking.date.strftime('%d %B %Y') if booking.date else ''
-    return f"Booking #{booking.id} | {date_str} at {time_str}"
+    if date_str and time_str:
+        return f"Scheduled for {date_str} at {time_str}"
+    elif date_str:
+        return f"Scheduled for {date_str}"
+    return "Scheduled service"
 
 
 # ─── Customer Booking View ────────────────────────────────────────────────────
@@ -59,6 +69,15 @@ class BookingView(APIView):
             return Response({'error': 'You cannot book yourself.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        # ✅ Trust & Safety Part 9 — server-side enforcement (see import
+        # comment above). A booking restriction or any active suspension on
+        # the CUSTOMER blocks creating a NEW booking; existing bookings are
+        # untouched.
+        if not can_create_bookings(request.user):
+            return Response(
+                {'error': 'Your ability to create bookings has been restricted.', 'code': 'booking_restricted'},
+                status=status.HTTP_403_FORBIDDEN)
+
         if Booking.objects.filter(
             customer=request.user,
             professional=professional,
@@ -87,11 +106,55 @@ class BookingView(APIView):
         # ── Booking create ────────────────────────────────────────────────
         serializer = BookingSerializer(data=request.data)
         if serializer.is_valid():
-            booking = serializer.save(
-                customer=request.user,
-                professional=professional,
-                status='pending'
-            )
+            # Server-side authoritative pricing snapshot from professional's rate
+            from apps.profiles.models import ProfessionalProfile
+            hourly_rate = 0.00
+            try:
+                prof_profile = ProfessionalProfile.objects.get(user=professional)
+                if not getattr(prof_profile, 'is_available', True):
+                    return Response(
+                        {'error': 'This professional is currently marked as unavailable for new bookings.'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                if prof_profile.hourly_rate:
+                    hourly_rate = prof_profile.hourly_rate
+            except ProfessionalProfile.DoesNotExist:
+                pass
+
+            target_date = serializer.validated_data.get('date')
+            target_time = serializer.validated_data.get('time')
+
+            with transaction.atomic():
+                # Prevent overlapping/double bookings for the exact same professional time slot
+                slot_conflict = Booking.objects.filter(
+                    professional=professional,
+                    date=target_date,
+                    time=target_time,
+                    status__in=['pending', 'accepted']
+                ).exists()
+
+                if slot_conflict:
+                    return Response(
+                        {'error': 'This time slot is already reserved or pending with the professional. Please choose a different time.'},
+                        status=status.HTTP_409_CONFLICT
+                    )
+
+                from apps.payments.exchange import resolve_currency_for_user
+                up = getattr(professional, 'userprofile', None)
+                curr, _ = resolve_currency_for_user(
+                    country=getattr(up, 'country', None),
+                    city=getattr(up, 'city', None)
+                )
+
+                booking = serializer.save(
+                    customer=request.user,
+                    professional=professional,
+                    status='pending',
+                    total_price=hourly_rate,
+                    currency=curr,
+                    payment_status='unpaid',
+                )
+
             _notify(
                 user=professional,
                 title='New Booking Request 📅',
@@ -161,6 +224,11 @@ class ProfessionalDashboardView(APIView):
             hourly_rate = float(profile.hourly_rate or 0)
             is_verified = profile.is_verified
             photo_url   = profile.photo_url.url if profile.photo_url else None
+            if not photo_url and hasattr(user, 'userprofile') and user.userprofile.photo_url:
+                try:
+                    photo_url = user.userprofile.photo_url.url
+                except Exception:
+                    pass
             avg_rating  = float(profile.average_rating or 0)
         except ProfessionalProfile.DoesNotExist:
             hourly_rate = 0
@@ -201,6 +269,13 @@ class ProfessionalDashboardView(APIView):
         # ── Recent bookings (dashboard preview ke liye, max 5) ─────────
         recent = bookings.order_by('-created_at')[:5]
 
+        from apps.payments.exchange import resolve_currency_for_user
+        up = getattr(user, 'userprofile', None)
+        curr, sym = resolve_currency_for_user(
+            country=getattr(up, 'country', None),
+            city=getattr(up, 'city', None)
+        )
+
         return Response({
             'header': {
                 'name':        user.name,
@@ -208,6 +283,8 @@ class ProfessionalDashboardView(APIView):
                 'is_verified': is_verified,
             },
             'unread_notifications': unread_notifications,
+            'currency': curr,
+            'currency_symbol': sym,
             'earnings': {
                 'today': today_earnings,
                 'month': month_earnings,
@@ -309,6 +386,23 @@ class ProfessionalBookingView(APIView):
                     f'{booking.professional.name} has rejected your booking.\n{detail}{reason_line}')
 
         elif new_status == 'completed':
+            # Ledger: If booking was paid, credit professional's wallet ledger
+            if booking.payment_status == 'paid' and booking.total_price > 0:
+                try:
+                    from apps.payments.models import WalletTransaction
+                    if not WalletTransaction.objects.filter(booking=booking, transaction_type='credit').exists():
+                        WalletTransaction.objects.create(
+                            user=booking.professional,
+                            transaction_type='credit',
+                            amount=booking.total_price,
+                            currency=booking.currency,
+                            status='completed',
+                            booking=booking,
+                            description=f"Earnings for completed service with {booking.customer.name}"
+                        )
+                except Exception as ex:
+                    logger.error("Failed to credit wallet on booking completion: %s", ex)
+
             _notify(booking.customer, 'Service Completed! 🎉',
                     f'{booking.professional.name} has marked the service as completed.\n'
                     f'{detail}\nPlease leave a review!',

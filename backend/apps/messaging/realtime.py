@@ -5,46 +5,65 @@
 # WebSocket text frame can't carry) call these so every code path that
 # creates/updates a message ends up notifying connected clients the same way.
 
+import logging
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from apps.messaging.push import notify_new_message  # ✅ RESTORED — was never applied in the live project
+
+logger = logging.getLogger(__name__)
 
 
 def _group_name(conversation_id):
     return f'chat_{conversation_id}'
 
 
+def _safe_group_send(group_name, payload):
+    """
+    ✅ FIX: channel_layer.group_send() talks to Redis. If Redis isn't
+    running/reachable (e.g. no Redis add-on set up on the host), this used
+    to raise straight out of the view and turn an already-successful DB
+    write (message sent, status updated, etc.) into a 500 for the client.
+    Real-time delivery is a nice-to-have on top of the REST API — losing it
+    should never fail the underlying request. Clients still get the message
+    next time they fetch/poll the conversation.
+    """
+    channel_layer = get_channel_layer()
+    if channel_layer is None:
+        return
+    try:
+        async_to_sync(channel_layer.group_send)(group_name, payload)
+    except Exception:
+        pass
+
+
 def broadcast_new_message(message):
     """Call after a Message (+ optional Attachment) has been saved."""
     from apps.messaging.serializers import MessageSerializer  # local import avoids circulars
 
-    channel_layer = get_channel_layer()
-    if channel_layer is not None:
-        data = MessageSerializer(message).data
-        async_to_sync(channel_layer.group_send)(
-            _group_name(message.conversation_id),
-            {'type': 'chat.message', 'message': data},
-        )
+    data = MessageSerializer(message).data
+    _safe_group_send(
+        _group_name(message.conversation_id),
+        {'type': 'chat.message', 'message': data},
+    )
 
     # Push notification to the receiver (covers background/terminated app
     # states that WebSocket alone can't reach). Mute/block checks happen
     # inside notify_new_message() itself.
     try:
-        notify_new_message(message)
+        ok = notify_new_message(message)
+        logger.info('[FCM] chat push for message %s -> %s', message.id, ok)
     except Exception:
-        pass  # push failures must never break the message-send request
+        # push failures must never break the message-send request, but DO log them
+        logger.exception('[FCM] chat push crashed for message %s', message.id)
 
 
 # ✅ NEW — Reactions
 def broadcast_reaction(message):
     from apps.messaging.serializers import MessageSerializer
 
-    channel_layer = get_channel_layer()
-    if channel_layer is None:
-        return
-
     data = MessageSerializer(message).data
-    async_to_sync(channel_layer.group_send)(
+    _safe_group_send(
         _group_name(message.conversation_id),
         {'type': 'chat.reaction', 'message': data},
     )
@@ -56,11 +75,7 @@ def broadcast_status_update(conversation_id, event, message_ids, actor_user_id):
     Tells the SENDER's client (still connected in the room) that their
     messages just changed status, so it can update the little ticks live.
     """
-    channel_layer = get_channel_layer()
-    if channel_layer is None:
-        return
-
-    async_to_sync(channel_layer.group_send)(
+    _safe_group_send(
         _group_name(conversation_id),
         {
             'type': 'chat.status',
@@ -72,22 +87,14 @@ def broadcast_status_update(conversation_id, event, message_ids, actor_user_id):
 
 
 def broadcast_typing(conversation_id, user_id, is_typing):
-    channel_layer = get_channel_layer()
-    if channel_layer is None:
-        return
-
-    async_to_sync(channel_layer.group_send)(
+    _safe_group_send(
         _group_name(conversation_id),
         {'type': 'chat.typing', 'user_id': user_id, 'is_typing': is_typing},
     )
 
 
 def broadcast_presence(conversation_id, user_id, is_online, last_seen):
-    channel_layer = get_channel_layer()
-    if channel_layer is None:
-        return
-
-    async_to_sync(channel_layer.group_send)(
+    _safe_group_send(
         _group_name(conversation_id),
         {
             'type': 'chat.presence',

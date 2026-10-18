@@ -12,7 +12,7 @@ from apps.messaging.views import (
     ConversationStateView,    # ✅ NEW — pin/archive/mute/draft
     MediaGalleryView,         # ✅ NEW
     BlockUserView,            # ✅ NEW
-    ReportUserView,           # ✅ NEW
+    # ReportUserView intentionally NOT imported anymore — see urls.py.
 )
 
 urlpatterns = [
@@ -31,5 +31,16 @@ urlpatterns = [
 
     path('blocked-users/',                                        BlockUserView.as_view(),          name='blocked_users'),       # ✅ NEW — GET list, POST block
     path('blocked-users/<int:user_id>/',                          BlockUserView.as_view(),          name='unblock_user'),        # ✅ NEW — DELETE unblock
-    path('reports/',                                              ReportUserView.as_view(),         name='report_user'),         # ✅ NEW
+    # 🐛 Trust & Safety Part 10 (final audit) — REMOVED: `path('reports/',
+    # ReportUserView.as_view(), ...)`. This routed to apps.messaging's OWN
+    # ReportUserView/UserReport model, completely separate from the active
+    # apps.admin_panel report system every admin screen, notification, and
+    # the Part 8 "My Reports" screen actually reads from. A report submitted
+    # here got a success response but was never seen by any admin — a
+    # silent data-integrity hole, not a feature. Nothing in this backend or
+    # the current Flutter app calls it (the app was already fixed to POST to
+    # /api/admin-panel/reports/create/ — see AppConstants.reportUser).
+    # The view class, serializer, and UserReport model are left untouched
+    # (no data deleted, easy to re-route instead of re-write if ever
+    # needed) — only the dead/dangerous URL is removed.
 ]

@@ -1,14 +1,27 @@
 # PATH: backend/apps/messaging/consumers.py
 
 import json
+import time
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 
-from apps.messaging.models import Conversation, Message, UserPresence
+from apps.messaging.models import Conversation, Message, UserPresence, BlockedUser
 from apps.messaging.serializers import MessageSerializer
+from apps.messaging.push import notify_new_message
+import logging
+
+logger = logging.getLogger(__name__)
+# ✅ Trust & Safety Part 9 (security pass) — see the matching import comment
+# in apps/messaging/views.py: enforcement.py was written and unit-tested in
+# Part 3 but never actually wired into a message-creation path. This
+# WebSocket consumer is a SECOND, independent way to create a Message row
+# (parallel to MessageListView.post) and had neither the block check nor any
+# moderation check — a blocked or messaging-restricted user could bypass
+# both simply by sending over the socket instead of the REST endpoint.
+from apps.admin_panel.enforcement import can_send_messages
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -86,6 +99,14 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json({'error': 'text is required for send_message over WebSocket. Use the REST endpoint for images.'})
             return
 
+        # ✅ Trust & Safety Part 9 — same two checks MessageListView.post
+        # already performs over REST, now also enforced on this socket path
+        # (see import comment above).
+        blocked_or_restricted = await self._blocked_or_restricted()
+        if blocked_or_restricted:
+            await self.send_json(blocked_or_restricted)
+            return
+
         message = await self._create_message(text, reply_to_id)
         data = await self._serialize_message(message)
         if temp_id is not None:
@@ -96,7 +117,22 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             'message': data,
         })
 
+        # Push to the receiver's phone (app closed / background). The REST path
+        # already did this via broadcast_new_message(); the socket path never did.
+        await self._push_new_message(message)
+
     async def _handle_typing(self, content):
+        # Prevent blocked or restricted users from emitting typing broadcasts
+        if await self._blocked_or_restricted():
+            return
+
+        now = time.time()
+        last = getattr(self, '_last_typing_time', 0.0)
+        # Throttle typing broadcast to at most once per second per connection
+        if now - last < 1.0:
+            return
+        self._last_typing_time = now
+
         is_typing = bool(content.get('is_typing', True))
         await self.channel_layer.group_send(self.group_name, {
             'type': 'chat.typing',
@@ -164,6 +200,27 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         ).exists()
 
     @database_sync_to_async
+    def _blocked_or_restricted(self):
+        """
+        Fresh, server-side check on every send — never trusted from the
+        client, never cached. Returns an error payload to send back (and
+        skip creating the message) or None to proceed.
+        """
+        conv = Conversation.objects.filter(id=self.conversation_id).first()
+        if conv is None:
+            return {'error': 'Conversation not found.', 'code': 'not_found'}
+        other_id = conv.professional_id if self.user.id == conv.customer_id else conv.customer_id
+        is_blocked = BlockedUser.objects.filter(
+            Q(blocker_id=self.user.id, blocked_id=other_id) |
+            Q(blocker_id=other_id, blocked_id=self.user.id)
+        ).exists()
+        if is_blocked:
+            return {'error': 'You cannot message this user.', 'code': 'blocked'}
+        if not can_send_messages(self.user):
+            return {'error': 'Your messaging ability has been restricted.', 'code': 'messaging_restricted'}
+        return None
+
+    @database_sync_to_async
     def _create_message(self, text, reply_to_id):
         reply_to = None
         if reply_to_id:
@@ -177,6 +234,14 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         )
         Conversation.objects.filter(id=self.conversation_id).update(updated_at=timezone.now())
         return message
+
+    @database_sync_to_async
+    def _push_new_message(self, message):
+        try:
+            message = Message.objects.select_related('sender', 'conversation').prefetch_related('attachments').get(id=message.id)
+            notify_new_message(message)
+        except Exception:
+            logger.exception('[FCM] chat push failed (websocket path)')
 
     @database_sync_to_async
     def _serialize_message(self, message):

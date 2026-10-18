@@ -6,6 +6,7 @@ from apps.about_page.models import (
     AboutSection, AboutSectionItem,
     AboutSectionTranslation, AboutSectionItemTranslation,
     AboutPageSEO, AboutPageStatus, AboutPageVersion,
+    COLLECTION_SECTION_TYPES,
 )
 from apps.about_page.utils import optimized_url
 
@@ -45,6 +46,16 @@ class AboutSectionItemAdminSerializer(serializers.ModelSerializer):
         return optimized_url(obj.image)
 
 
+# Section types that must never have more than one row at a time — they
+# represent a single fixed block on the page (one hero, one contact card,
+# one social row), not a repeatable collection. 'custom' is deliberately
+# excluded: an admin may legitimately want several custom sections.
+SINGLETON_SECTION_TYPES = {
+    t for t, _ in AboutSection._meta.get_field('section_type').choices
+    if t != 'custom' and t not in COLLECTION_SECTION_TYPES
+}
+
+
 class AboutSectionAdminSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     items = AboutSectionItemAdminSerializer(many=True, read_only=True)
@@ -68,6 +79,25 @@ class AboutSectionAdminSerializer(serializers.ModelSerializer):
 
     def get_is_collection_type(self, obj):
         return obj.is_collection_type()
+
+    # ✅ NEW: blocks creating (or re-typing) a second section of a
+    # singleton type — e.g. a second "Contact Information" or "Social
+    # Media Links" block. Collection types (Team Members, Awards, ...)
+    # and 'custom' are unaffected; the "Duplicate" button in the admin
+    # app will now surface this as a save error for singleton types
+    # instead of silently creating a second live copy.
+    def validate_section_type(self, value):
+        if value in SINGLETON_SECTION_TYPES:
+            existing = AboutSection.objects.filter(section_type=value)
+            if self.instance is not None:
+                existing = existing.exclude(pk=self.instance.pk)
+            if existing.exists():
+                label = dict(AboutSection._meta.get_field('section_type').choices).get(value, value)
+                raise serializers.ValidationError(
+                    f'A "{label}" section already exists (id={existing.first().pk}). '
+                    f'Only one is allowed — edit or delete the existing one instead of creating another.'
+                )
+        return value
 
 
 class AboutPageSEOSerializer(serializers.ModelSerializer):

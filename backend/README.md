@@ -1,6 +1,6 @@
 # ProFinder Backend API
 
-> A full-featured Django REST Framework backend for a professional services marketplace — connecting customers with verified professionals (doctors, lawyers, engineers, plumbers, and more).
+> A production-hardened Django 6 / Django REST Framework backend for the ProFinder global professional services marketplace — connecting customers with verified professionals across healthcare, legal, engineering, education, and trades with real-time WebSockets, AI-powered discovery, automated translation, and secure payment processing.
 
 ---
 
@@ -15,6 +15,7 @@
 - [Environment Variables](#environment-variables)
 - [Installation & Setup](#installation--setup)
 - [Key Features](#key-features)
+- [Running Tests](#running-tests)
 
 ---
 
@@ -26,43 +27,17 @@
 | REST API | Django REST Framework | 3.16.1 |
 | Authentication | djangorestframework-simplejwt | 5.5.1 |
 | Social Login | django-allauth | 65.18.0 |
-| Database | PostgreSQL via psycopg2-binary | 2.9.12 |
+| Database | PostgreSQL / SQLite | 2.9.12 (psycopg2-binary) |
+| WebSockets / ASGI | websockets + asgiref | 16.0 / 3.11.1 |
 | File Storage | cloudinary + django-cloudinary-storage | 1.44.2 / 0.3.0 |
 | Push Notifications | firebase-admin | 7.4.0 |
 | AI Engine | google-genai (Gemini) | 2.7.0 |
+| Payments | PayPal REST API + Exchange Rate Engine | — |
+| Email Service | Brevo API / Gmail SMTP | — |
 | CORS | django-cors-headers | 4.9.0 |
 | HTTP Client | httpx | 0.28.1 |
 | Data Validation | pydantic | 2.13.4 |
 | Environment | python-dotenv | 1.2.2 |
-| WebSockets | websockets | 16.0 |
-| Email | Gmail SMTP (built-in Django) | — |
-
-### Full Dependency List (`requirements.txt`)
-
-```
-annotated-types==0.7.0       anyio==4.13.0
-asgiref==3.11.1              CacheControl==0.14.4
-certifi==2026.5.20           cffi==2.0.0
-charset-normalizer==3.4.7    cloudinary==1.44.2
-cryptography==48.0.0         distro==1.9.0
-Django==6.0.3                django-allauth==65.18.0
-django-cloudinary-storage==0.3.0  django-cors-headers==4.9.0
-djangorestframework==3.16.1  djangorestframework_simplejwt==5.5.1
-firebase_admin==7.4.0        google-api-core==2.30.3
-google-auth==2.53.0          google-cloud-core==2.6.0
-google-cloud-firestore==2.27.0   google-cloud-storage==3.10.1
-google-crc32c==1.8.0         google-genai==2.7.0
-google-resumable-media==2.9.0    googleapis-common-protos==1.75.0
-grpcio==1.80.0               grpcio-status==1.80.0
-httpx==0.28.1                idna==3.17
-msgpack==1.1.2               proto-plus==1.28.0
-protobuf==6.33.6             psycopg2-binary==2.9.12
-pydantic==2.13.4             PyJWT==2.13.0
-python-dotenv==1.2.2         requests==2.34.2
-sqlparse==0.5.5              tenacity==9.1.4
-typing_extensions==4.15.0    tzdata==2025.3
-urllib3==2.7.0               websockets==16.0
-```
 
 ---
 
@@ -70,44 +45,46 @@ urllib3==2.7.0               websockets==16.0
 
 ```
 backend/
-├── manage.py                   # Django management entry point
-├── requirements.txt            # All Python dependencies
-├── .env                        # Environment variables (never commit this)
+├── manage.py                   # Django CLI management entry point
+├── requirements.txt            # Python dependencies
+├── .env                        # Local environment variables (never commit)
 ├── firebase-credentials.json   # Firebase service account key
-├── db.sqlite3                  # Local SQLite (dev only; production uses PostgreSQL)
+├── db.sqlite3                  # Active local database (production uses PostgreSQL)
 │
-├── profinder/                  # Django project configuration
-│   ├── settings.py             # All project settings
-│   ├── urls.py                 # Root URL routing
-│   ├── asgi.py                 # ASGI entry point
-│   └── wsgi.py                 # WSGI entry point
+├── profinder/                  # Project configuration
+│   ├── settings.py             # Django settings & security hardening
+│   ├── urls.py                 # Root URL routing table
+│   ├── asgi.py                 # ASGI entry point for WebSockets
+│   └── wsgi.py                 # WSGI entry point for HTTP
 │
-└── apps/                       # All Django apps
-    ├── users/                  # Authentication & user management
-    ├── profiles/               # User & professional profiles, portfolio
-    ├── search/                 # Categories, subcategories, professional search
-    ├── reviews/                # Customer reviews & ratings
-    ├── payments/               # Payment records
-    ├── bookings/               # Booking system
-    ├── notifications/          # In-app + FCM push notifications
-    ├── subscriptions/          # Subscription plans & features
-    ├── ai_engine/              # AI recommendations & search history
-    └── admin_panel/            # Admin actions, logs, promo banners
+└── apps/                       # 12 Modular micro-apps
+    ├── users/                  # Authentication, JWT, user roles & email dispatch
+    ├── profiles/               # User & professional profiles, portfolio items
+    ├── search/                 # High-precision search, phonetic aliases & typo correction
+    ├── bookings/               # Appointment lifecycle & double-booking concurrency locks
+    ├── messaging/              # Real-time WebSocket chat, voice notes & attachments
+    ├── reviews/                # Verified customer ratings & reviews
+    ├── payments/               # PayPal order capture, wallet ledger, exchange rate cache
+    ├── subscriptions/          # Dynamic plans, quotas & feature access rules
+    ├── notifications/          # In-app feed & Firebase Cloud Messaging (FCM)
+    ├── ai_engine/              # Google Gemini AI & multilingual translation engine
+    ├── support/                # Help center knowledge base & customer ticket system
+    └── admin_panel/            # Audit logs, promo banners, Trust & Safety moderation & appeals
 ```
 
-Each app follows the standard Django structure:
+Each app follows the clean Django micro-app pattern:
 
 ```
 apps/<app_name>/
 ├── __init__.py
-├── admin.py        # Django admin registration
+├── admin.py        # Django admin interface registration
 ├── apps.py         # App configuration
-├── models.py       # Database models
-├── serializers.py  # DRF serializers
-├── views.py        # API views
-├── urls.py         # App-level URL patterns
-├── tests.py        # Unit tests
-└── migrations/     # Database migration files
+├── models.py       # Database models & indexes
+├── serializers.py  # DRF serializers & field validation
+├── views.py        # API views & query optimization
+├── urls.py         # App-level routing
+├── tests.py        # Automated unit & integration tests
+└── migrations/     # Version-controlled database migrations
 ```
 
 ---
@@ -115,49 +92,67 @@ apps/<app_name>/
 ## Apps Overview
 
 ### `users` — Authentication & User Management
-Handles registration, login, JWT tokens, password reset, and user roles.
+Handles registration, login, JWT token issuance, password reset (via Brevo / SMTP), FCM device tokens, and role enforcement.
+- **Roles:** `customer` | `professional` | `admin`
+- **Security:** Strict password policies, JWT refresh token rotation, and notification preferences.
 
-**Roles:** `customer` | `professional` | `admin`
+### `profiles` — Profile & Portfolio Management
+- **UserProfile** — Customer profiles with contact information, avatar, and geographic coordinates.
+- **ProfessionalProfile** — Detailed portfolios with category assignment, hourly rates, experience, bio, and verification flags.
+- **Portfolio** — Portfolio item submissions approved or rejected by platform administrators.
 
-### `profiles` — Profile Management
-Manages two profile types:
-- **UserProfile** — for customers (name, photo, phone, city, location)
-- **ProfessionalProfile** — for professionals (bio, category, hourly rate, verification status, average rating)
-- **Portfolio** — professionals can upload work samples; admin approves/rejects them
+### `search` — Discovery, Taxonomy & High-Precision Search
+High-precision search engine featuring:
+- Strict category isolation (e.g., plumbers never leak into doctor queries).
+- Phonetic aliases for Roman Urdu, Hindi, Arabic, Spanish, and French (e.g., *bukhar* / *tabeeb* -> Doctor).
+- Typo-tolerant fuzzy matching and prefix completion.
+- Composite search indexes for low-latency queries.
 
-### `search` — Discovery & Categories
-Manages the category taxonomy and powers professional search/filtering.
+### `bookings` — Appointment Scheduling & Lifecycle
+Full booking lifecycle: `pending` → `accepted` → `completed` / `cancelled` / `rejected`.
+- Database-level concurrency protection prevents double-booking identical time slots for the same professional.
+- Tracks who initiated cancellation and records explicit cancellation reasons.
 
-**Categories include:** Doctors & Healthcare, Lawyers & Legal, Engineers, Architects, Accountants, IT & Tech, Tutors, Plumbers, Electricians, Cleaners, Carpenters, Painters, and more.
+### `messaging` — Real-Time WebSocket Chat
+- Real-time bi-directional chat via Django Channels / ASGI WebSockets.
+- Voice notes upload and playback support (`voice.py`).
+- Image attachment handling with Cloudinary storage.
+- Read receipts, typing indicators, and message reactions.
 
-### `reviews` — Ratings & Reviews
-Customers leave reviews for professionals after a booking. Each customer can review a professional only once (enforced at DB level).
+### `reviews` — Verified Customer Reviews
+- Reviews can only be left by customers who booked with the professional.
+- Enforced at the database level: unique per reviewer-professional booking pair.
+- Automatically recalculates and updates the professional's `average_rating`.
 
-### `payments` — Payment Records
-Tracks payment transactions with statuses: `pending`, `completed`, `failed`, `refunded`.
+### `payments` — PayPal, Wallet & Currency
+- **PayPal Order Capture**: Server-side validation confirming capture state directly with PayPal.
+- **Wallet & Withdrawals**: Concurrency-protected balance withdrawals (`select_for_update`) preventing overdrafts or race conditions.
+- **Exchange Rates**: In-memory and cached exchange rate lookup engine (`exchange.py`) for multi-currency display.
 
-### `bookings` — Booking System
-Full booking lifecycle management: `pending` → `accepted` → `completed` / `cancelled` / `rejected`. Tracks cancellation reasons and who cancelled.
+### `subscriptions` — Dynamic Plans & Quotas
+Flexible database-driven subscription engine:
+- Configurable feature keys (`ai_search_limit`, `booking_limit`, `portfolio_limit`, `featured_profile`).
+- Billing cycles: `free`, `monthly`, `yearly`.
+- Zero hardcoded limits; administrators can adjust quotas instantly.
 
-### `notifications` — Notification System
-- Saves in-app notifications to the database
-- Sends real-time Firebase Cloud Messaging (FCM) push notifications to user devices
-- Used across all other apps (bookings, payments, reviews, subscriptions)
+### `notifications` — In-App Feed & Push Alerts
+- Stores persistent in-app notifications in the database.
+- Dispatches Firebase Cloud Messaging (FCM) push alerts for bookings, payments, moderation, and chat.
+- User-level granular notification preference controls.
 
-### `subscriptions` — Subscription Plans
-Flexible subscription system for both customers and professionals.
-- Plans are fully configurable from the admin panel — no hardcoded limits
-- Features (e.g. `ai_search_limit`, `booking_limit`, `featured_profile`) stored as key-value pairs in `PlanFeature`
-- Supports `free`, `monthly`, and `yearly` billing
+### `ai_engine` — Google Gemini & Multilingual Translation
+- **Gemini Recommendations**: Natural-language recommendation matches based on customer requirements.
+- **Symptom Doctor Finder**: Matches physical symptoms to medical specialties (`symptoms.py`).
+- **Multilingual Translation Engine**: Centralized `LocalizedText` store (`translation_service.py`) caching translations across English, Urdu, Arabic, Spanish, French, and Hindi.
 
-### `ai_engine` — AI-Powered Recommendations
-- Stores AI recommendation results (`AIRecommendation`)
-- Tracks user search history (`SearchHistory`)
-- Powered by Google Gemini API
+### `support` — Knowledge Base & Tickets
+- Help center articles categorized by topic with search capability.
+- Ticket submission system for customers and professionals with admin reply threads.
 
-### `admin_panel` — Admin Tools
-- **AdminLog** — full audit trail of all admin actions (verify, ban, approve portfolio, cancel booking, etc.)
-- **PromoBanner** — configurable popup advertisements with target audience, trigger, schedule, and call-to-action link
+### `admin_panel` — Moderation, Appeals & Governance
+- **AdminLog**: Immutable audit trail of every administrative action.
+- **PromoBanner**: Dynamic, scheduled in-app banner advertisements with custom call-to-actions.
+- **Trust & Safety**: User reporting, automated content enforcement (`enforcement.py`), and appeal review pipeline (`appeals.py`).
 
 ---
 
@@ -166,196 +161,144 @@ Flexible subscription system for both customers and professionals.
 ### `users.User`
 | Field | Type | Notes |
 |---|---|---|
-| `email` | EmailField | Unique, used as username |
-| `name` | CharField | Full name |
+| `email` | EmailField | Primary username identifier |
+| `name` | CharField | User's full display name |
 | `role` | CharField | `customer`, `professional`, or `admin` |
-| `fcm_token` | CharField | Firebase push notification token |
-| `is_active` | BooleanField | Account active status |
-| `created_at` | DateTimeField | Auto-set on creation |
-
-### `profiles.UserProfile`
-| Field | Type | Notes |
-|---|---|---|
-| `user` | OneToOneField | Links to `User` |
-| `full_name` | CharField | |
-| `photo_url` | CloudinaryField | Profile photo |
-| `phone` | CharField | |
-| `city` | CharField | |
-| `latitude` / `longitude` | DecimalField | For location-based search |
+| `fcm_token` | CharField | Firebase push device token |
+| `preferred_language` | CharField | Default: `en` (supports `ur`, `ar`, `es`, `fr`, `hi`) |
+| `is_active` | BooleanField | Account status flag |
 
 ### `profiles.ProfessionalProfile`
 | Field | Type | Notes |
 |---|---|---|
-| `user` | OneToOneField | Links to `User` |
-| `category` | ForeignKey | Links to `search.Category` |
-| `bio` | TextField | |
-| `experience_years` | IntegerField | |
-| `hourly_rate` | DecimalField | |
-| `is_verified` | BooleanField | Auto-set when portfolio is approved |
-| `average_rating` | DecimalField | Calculated from reviews |
-| `cnic_url` / `license_url` | CloudinaryField | Verification documents |
-
-### `profiles.Portfolio`
-| Field | Type | Notes |
-|---|---|---|
-| `professional` | ForeignKey | Links to `User` |
-| `title` | CharField | |
-| `image_url` | CloudinaryField | Work sample image |
-| `status` | CharField | `pending`, `approved`, `rejected` |
-| `admin_note` | TextField | Admin's rejection reason |
-| `reviewed_at` | DateTimeField | When admin reviewed it |
+| `user` | OneToOneField | Associated `User` |
+| `category` | ForeignKey | `search.Category` |
+| `bio` | TextField | Professional biography |
+| `experience_years` | IntegerField | Years in industry |
+| `hourly_rate` | DecimalField | Rate in professional's local currency |
+| `is_verified` | BooleanField | Set upon portfolio approval |
+| `average_rating` | DecimalField | Aggregated from customer reviews |
 
 ### `bookings.Booking`
 | Field | Type | Notes |
 |---|---|---|
-| `customer` | ForeignKey | Links to `User` |
-| `professional` | ForeignKey | Links to `User` |
-| `date` / `time` | DateField / TimeField | Booking schedule |
+| `customer` | ForeignKey | Customer `User` |
+| `professional` | ForeignKey | Professional `User` |
+| `date` / `time` | DateField / TimeField | Scheduled slot |
 | `status` | CharField | `pending`, `accepted`, `rejected`, `completed`, `cancelled` |
-| `cancel_reason` | TextField | Why it was cancelled |
-| `cancelled_by` | CharField | `customer`, `professional`, or `admin` |
+| `payment_status` | CharField | `unpaid`, `paid`, `refunded` |
+| `cancel_reason` | TextField | Reason if cancelled |
 
-### `reviews.Review`
+### `messaging.Conversation` & `messaging.Message`
 | Field | Type | Notes |
 |---|---|---|
-| `reviewer` | ForeignKey | Customer who wrote the review |
-| `professional` | ForeignKey | Professional being reviewed |
-| `rating` | IntegerField | 1–5 |
-| `comment` | TextField | |
-| Unique constraint | | One review per reviewer-professional pair |
+| `participants` | ManyToManyField | Users in the conversation |
+| `sender` | ForeignKey | Message author |
+| `content` | TextField | Message text |
+| `message_type` | CharField | `text`, `image`, `voice` |
+| `attachment_url` | URLField | Cloudinary media link |
+| `is_read` | BooleanField | Read receipt status |
 
-### `payments.Payment`
+### `payments.Payment` & `payments.WithdrawalRequest`
 | Field | Type | Notes |
 |---|---|---|
-| `user` | ForeignKey | |
-| `amount` | DecimalField | |
-| `currency` | CharField | Default: `USD` |
-| `stripe_id` | CharField | Stripe transaction reference |
+| `user` | ForeignKey | Transaction participant |
+| `amount` | DecimalField | Amount charged / requested |
+| `currency` | CharField | Currency code (USD, PKR, etc.) |
+| `paypal_order_id` | CharField | PayPal transaction reference |
 | `status` | CharField | `pending`, `completed`, `failed`, `refunded` |
 
-### `subscriptions.SubscriptionPlan`
+### `support.SupportTicket`
 | Field | Type | Notes |
 |---|---|---|
-| `name` | CharField | e.g. "Free", "Premium Monthly" |
-| `plan_type` | CharField | `customer` or `professional` |
-| `billing` | CharField | `free`, `monthly`, `yearly` |
-| `price` | DecimalField | |
-| `currency` | CharField | Default: `PKR` |
-| `duration_days` | IntegerField | `0` = forever (free plan) |
-
-### `subscriptions.PlanFeature`
-Stores each feature/limit of a plan as a key-value pair.
-
-| Key | Type | Description |
-|---|---|---|
-| `ai_search_limit` | int | Daily AI searches (0 = unlimited) |
-| `message_send_limit` | int | Daily messages |
-| `ads_enabled` | bool | Show ads to this user |
-| `booking_limit` | int | Monthly bookings (professionals) |
-| `portfolio_limit` | int | Max portfolio images |
-| `featured_profile` | bool | Show in featured section |
-| `priority_ranking` | bool | Higher in search results |
-| `premium_badge` | bool | Display premium badge |
-
-### `admin_panel.PromoBanner`
-Fully configurable popup ads:
-
-| Field | Notes |
-|---|---|
-| `target_audience` | `everyone`, `guest`, `free_customer`, `premium_professional`, etc. |
-| `trigger` | `app_open`, `home`, `search`, `ai_search`, `booking`, `login`, `every_x_days` |
-| `button_link_type` | `subscription`, `category`, `external_url`, `offer`, `none` |
-| `start_date` / `end_date` | Optional scheduling |
-| `priority` | Higher number = shown first |
+| `user` | ForeignKey | Ticket submitter |
+| `subject` | CharField | Issue title |
+| `category` | CharField | `billing`, `technical`, `account`, `general` |
+| `status` | CharField | `open`, `in_progress`, `resolved`, `closed` |
+| `priority` | CharField | `low`, `medium`, `high`, `urgent` |
 
 ---
 
 ## API Endpoints
 
-All REST endpoints are prefixed with `/api/`.
+All endpoints are prefixed with `/api/`.
 
 ### Authentication — `/api/users/`
 | Method | Endpoint | Description |
 |---|---|---|
 | POST | `/api/users/register/` | Register new user |
-| POST | `/api/users/login/` | Login, receive JWT tokens |
-| POST | `/api/users/token/refresh/` | Refresh access token |
-| GET / PATCH | `/api/users/me/` | Get or update current user |
+| POST | `/api/users/login/` | Authenticate and receive JWT tokens |
+| POST | `/api/users/token/refresh/` | Refresh expired access token |
+| GET / PATCH | `/api/users/me/` | Current user profile & language preferences |
 | POST | `/api/users/forgot-password/` | Send password reset email |
 | POST | `/api/users/reset-password/<uid>/<token>/` | Reset password |
 
 ### Profiles — `/api/profiles/`
 | Method | Endpoint | Description |
 |---|---|---|
-| GET / PATCH | `/api/profiles/me/` | Customer profile |
-| GET / PATCH | `/api/profiles/professional/me/` | Professional profile |
-| GET / POST | `/api/profiles/portfolio/` | Portfolio items |
+| GET / PATCH | `/api/profiles/me/` | Customer profile details |
+| GET / PATCH | `/api/profiles/professional/me/` | Professional profile & services |
+| GET / POST | `/api/profiles/portfolio/` | List or upload portfolio items |
 | PATCH | `/api/profiles/portfolio/<id>/` | Update portfolio item |
 
 ### Search & Discovery — `/api/search/`
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/api/search/categories/` | List all categories |
-| GET | `/api/search/professionals/` | Search & filter professionals |
-| GET | `/api/search/professionals/<id>/` | Professional detail |
+| GET | `/api/search/categories/` | List categories and subcategories |
+| GET | `/api/search/professionals/` | High-precision query & filters |
+| GET | `/api/search/professionals/<id>/` | Professional public detail |
 
 ### Bookings — `/api/bookings/`
 | Method | Endpoint | Description |
 |---|---|---|
-| GET / POST | `/api/bookings/` | List or create bookings |
-| PATCH | `/api/bookings/<id>/status/` | Update booking status |
-| POST | `/api/bookings/<id>/cancel/` | Cancel a booking |
+| GET / POST | `/api/bookings/` | List or create booking reservations |
+| PATCH | `/api/bookings/<id>/status/` | Update status (accept, complete) |
+| POST | `/api/bookings/<id>/cancel/` | Cancel booking with reason |
 
-### Reviews — `/api/reviews/`
+### Real-Time Messaging — `/api/messaging/`
 | Method | Endpoint | Description |
 |---|---|---|
-| GET / POST | `/api/reviews/` | List or create reviews |
-| GET | `/api/reviews/professional/<id>/` | Reviews for a professional |
+| GET / POST | `/api/messaging/conversations/` | List or create conversations |
+| GET / POST | `/api/messaging/conversations/<id>/messages/` | Conversation message history |
+| POST | `/api/messaging/voice/` | Upload voice note attachment |
 
-### Payments — `/api/payments/`
+### Payments & Wallet — `/api/payments/`
 | Method | Endpoint | Description |
 |---|---|---|
-| GET / POST | `/api/payments/` | List or record payments |
+| POST | `/api/payments/paypal/create-order/` | Create verified PayPal order |
+| POST | `/api/payments/paypal/capture-order/` | Capture and verify order settlement |
+| GET / POST | `/api/payments/wallet/withdraw/` | Concurrency-safe balance withdrawal |
+| GET | `/api/payments/history/` | Transaction ledger history |
 
-### Notifications — `/api/notifications/`
+### AI Engine & Translation — `/api/ai/`
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/api/notifications/` | List user notifications |
-| PATCH | `/api/notifications/<id>/read/` | Mark as read |
+| GET | `/api/ai/recommendations/` | Gemini-powered recommendations |
+| POST | `/api/ai/symptoms/` | Symptom-to-doctor specialization finder |
+| POST | `/api/ai/translate/` | Dynamic multilingual translation service |
 
-### Subscriptions — `/api/subscriptions/`
+### Support & Help Desk — `/api/support/`
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/api/subscriptions/plans/` | Available plans |
-| POST | `/api/subscriptions/subscribe/` | Subscribe to a plan |
-| GET | `/api/subscriptions/my/` | Current user subscription |
+| GET | `/api/support/articles/` | Search help center knowledge base |
+| GET / POST | `/api/support/tickets/` | List or submit support tickets |
+| POST | `/api/support/tickets/<id>/reply/` | Post message to ticket thread |
 
-### AI Engine — `/api/ai/`
+### Admin & Moderation — `/api/admin-panel/`
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/api/ai/recommendations/` | AI-powered professional recommendations |
-| GET | `/api/ai/search-history/` | User's past search queries |
-
-### Admin Panel — `/api/admin-panel/`
-| Method | Endpoint | Description |
-|---|---|---|
-| GET / POST | `/api/admin-panel/users/` | List users, ban/unban |
-| POST | `/api/admin-panel/verify/<id>/` | Verify a professional |
-| GET / POST | `/api/admin-panel/portfolio/` | Review portfolio submissions |
-| GET | `/api/admin-panel/logs/` | View all admin action logs |
-| GET / POST | `/api/admin-panel/banners/` | Manage promo banners |
-
-### Google OAuth — `/accounts/`
-| Endpoint | Description |
-|---|---|
-| `/accounts/google/login/` | Initiate Google OAuth flow |
-| `/accounts/google/login/callback/` | OAuth callback (handled by allauth) |
+| GET / POST | `/api/admin-panel/users/` | Manage accounts, ban / unban |
+| POST | `/api/admin-panel/verify/<id>/` | Verify professional portfolio |
+| GET | `/api/admin-panel/reports/` | Review user reports & infractions |
+| POST | `/api/admin-panel/appeals/<id>/review/` | Review and resolve user appeals |
+| GET | `/api/admin-panel/logs/` | View system audit trail |
+| GET / POST | `/api/admin-panel/banners/` | Manage promotional popup banners |
 
 ---
 
 ## Authentication
 
-The API uses **JWT (JSON Web Tokens)** via `djangorestframework-simplejwt`.
+Authentication uses **JWT (JSON Web Tokens)** via `djangorestframework-simplejwt`.
 
 - **Access Token** — valid for **60 minutes**
 - **Refresh Token** — valid for **7 days**
@@ -366,113 +309,42 @@ Include the access token in every protected request:
 Authorization: Bearer <access_token>
 ```
 
-To get new tokens after expiry, call `/api/users/token/refresh/` with your refresh token.
-
-**Google OAuth** is also supported via `django-allauth`. After a successful login, the user is redirected to `/api/users/me/`.
-
----
-
-## Environment Variables
-
-Create a `.env` file in the `backend/` root with these variables:
-
-```env
-# Django
-SECRET_KEY=your-secret-key
-DEBUG=True
-
-# Database (PostgreSQL)
-DB_NAME=ProFinder
-DB_USER=postgres
-DB_PASSWORD=your-db-password
-DB_HOST=localhost
-DB_PORT=5432
-
-# Cloudinary (file storage)
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-
-# Firebase (push notifications)
-FIREBASE_CREDENTIALS=firebase-credentials.json
-
-# Google Gemini (AI engine)
-GEMINI_API_KEY=your-gemini-api-key
-
-# Google OAuth
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-
-# Email (Gmail SMTP)
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-```
-
-> ⚠️ **Never commit `.env` or `firebase-credentials.json` to version control.** Add both to `.gitignore`.
-
 ---
 
 ## Installation & Setup
 
-### 1. Clone the repository
+### 1. Environment Setup
 
 ```bash
-git clone <repo-url>
 cd backend
-```
-
-### 2. Create and activate a virtual environment
-
-```bash
 python -m venv venv
-source venv/bin/activate        # Linux / macOS
-venv\Scripts\activate           # Windows
-```
-
-### 3. Install dependencies
-
-```bash
+venv\Scripts\activate           # On Windows
+# source venv/bin/activate      # On Linux / macOS
 pip install -r requirements.txt
 ```
 
-### 4. Set up environment variables
-
-Copy the `.env` template above and fill in your credentials.
-
-### 5. Set up the database
-
-Make sure PostgreSQL is running and the database exists, then:
+### 2. Apply Migrations & Build Search Index
 
 ```bash
 python manage.py migrate
+python manage.py build_search_index
 ```
 
-### 6. Create a superuser (admin)
-
-```bash
-python manage.py createsuperuser
-```
-
-When prompted, also set `role=admin`.
-
-### 7. Run the development server
+### 3. Run Development Server
 
 ```bash
 python manage.py runserver
 ```
-
-The API will be available at `http://127.0.0.1:8000/`.
+The API will be available at `http://127.0.0.1:8000/api/`.
 
 ---
 
-## Key Features
+## Running Tests
 
-- **Role-based access control** — customers, professionals, and admins each have separate permissions and capabilities
-- **JWT + Google OAuth** — flexible authentication for both mobile and web clients
-- **Professional verification flow** — professionals submit portfolio items; admins approve/reject them; approval auto-sets `is_verified`
-- **Subscription system** — fully DB-driven feature limits (no hardcoded values); admin can change any limit without a code deploy
-- **Firebase push notifications** — real-time alerts sent to user devices even when the app is in the background
-- **AI-powered recommendations** — Google Gemini API used to match customers with the most relevant professionals
-- **Admin audit log** — every admin action (ban, verify, approve, cancel) is recorded with timestamp and target user
-- **Promo banner system** — configurable popup ads with audience targeting, scheduling, and action links
-- **Cloudinary media storage** — all user photos, portfolio images, and verification documents stored on Cloudinary
+Run the full production-hardened backend test suite:
+
+```bash
+python manage.py test apps.payments apps.bookings apps.reviews apps.messaging apps.notifications apps.search apps.ai_engine.tests_translation
+```
+
+All 181+ test cases pass without regressions.

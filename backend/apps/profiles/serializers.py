@@ -4,6 +4,20 @@ from rest_framework import serializers
 from apps.profiles.models import UserProfile, ProfessionalProfile, Portfolio, Certificate, GalleryImage
 
 
+def _resolve_photo_url(val):
+    if not val:
+        return None
+    if hasattr(val, 'url'):
+        try:
+            return val.url
+        except Exception:
+            pass
+    s = str(val).strip()
+    if s and ('http://' in s or 'https://' in s or '/' in s):
+        return s
+    return None
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     # GET ke liye full URL
     photo_url = serializers.SerializerMethodField()
@@ -12,11 +26,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = UserProfile
-        fields = ['id', 'full_name', 'photo_url', 'photo', 'phone', 'gender', 'city', 'latitude', 'longitude']
+        fields = ['id', 'full_name', 'photo_url', 'photo', 'phone', 'gender', 'city', 'country', 'latitude', 'longitude']
 
     def get_photo_url(self, obj):
         if obj.photo_url:
-            return obj.photo_url.url
+            url = _resolve_photo_url(obj.photo_url)
+            if url:
+                return url
+        pp = getattr(obj.user, 'professionalprofile', None)
+        if pp and pp.photo_url:
+            url = _resolve_photo_url(pp.photo_url)
+            if url:
+                return url
         return None
 
     def update(self, instance, validated_data):
@@ -69,7 +90,16 @@ class ProfessionalProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ['is_verified', 'average_rating']
 
     def get_photo_url(self, obj):
-        return obj.photo_url.url if obj.photo_url else None
+        if obj.photo_url:
+            url = _resolve_photo_url(obj.photo_url)
+            if url:
+                return url
+        up = getattr(obj.user, 'userprofile', None)
+        if up and up.photo_url:
+            url = _resolve_photo_url(up.photo_url)
+            if url:
+                return url
+        return None
 
     def get_cnic_url(self, obj):
         return obj.cnic_url.url if obj.cnic_url else None

@@ -223,6 +223,11 @@ class UserReport(models.Model):
     message      = models.ForeignKey(Message, on_delete=models.SET_NULL, null=True, blank=True, related_name='reports')
     created_at   = models.DateTimeField(auto_now_add=True)
     is_reviewed  = models.BooleanField(default=False)  # admin marks true once handled
+    action_taken = models.BooleanField(
+        default=False,
+        help_text="Tick only if a real violation was found — this triggers a "
+                   "warning notification to the reported user. Leave unticked "
+                   "for reports that were reviewed but dismissed.")
 
     def __str__(self):
         return f"{self.reporter.email} reported {self.reported.email} ({self.reason})"

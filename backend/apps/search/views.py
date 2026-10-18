@@ -1,5 +1,6 @@
 # apps/search/views.py
 
+import math
 import re
 import unicodedata
 import logging
@@ -12,11 +13,68 @@ from rest_framework.views    import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from apps.users.models  import User
 from apps.search.models import Category, Favorite
+from apps.search.aliases import (
+    alias_lookup as _alias_lookup,
+    translate_phrases as _alias_phrases,
+    translate_cities as _translate_cities,
+)
+from apps.search.alias_seed import CITY_ALIASES
+from apps.search.fuzzy import (
+    query_tokens as _fz_tokens,
+    fuzzy_filter_q as _fz_q,
+    fuzzy_bonus as _fuzzy_bonus,
+)
+from apps.payments.exchange import resolve_currency_for_user
 
 logger = logging.getLogger(__name__)
 
 EARTH_RADIUS_KM  = 6371.0
 DISTANCE_BUCKETS = [5, 15, 30, 60, 120]
+
+# ── City Centroid Coordinates (Normalized English Lowercase) ───────────────────
+_CITY_CENTROIDS = {
+    'karachi': (24.8607, 67.0011), 'hyderabad': (25.3960, 68.3578),
+    'thatta': (24.7461, 67.9243), 'jamshoro': (25.4300, 68.2800),
+    'sukkur': (27.7052, 68.8574), 'larkana': (27.5590, 68.2120),
+    'nawabshah': (26.2442, 68.4100), 'mirpurkhas': (25.5270, 69.0110),
+    'lahore': (31.5204, 74.3587), 'islamabad': (33.6844, 73.0479),
+    'rawalpindi': (33.5651, 73.0169), 'peshawar': (34.0151, 71.5249),
+    'quetta': (30.1798, 66.9750), 'multan': (30.1575, 71.5249),
+    'faisalabad': (31.4504, 73.1350), 'gujranwala': (32.1877, 74.1945),
+    'sialkot': (32.4945, 74.5229), 'bahawalpur': (29.3956, 71.6836),
+    'sargodha': (32.0836, 72.6711), 'abbottabad': (34.1463, 73.2117),
+    'mardan': (34.1986, 72.0404), 'gwadar': (25.1264, 62.3225),
+    'badin': (24.6560, 68.8390), 'dadu': (26.7300, 67.7750),
+    'umerkot': (25.3606, 69.7361), 'tando allahyar': (25.4600, 68.7180),
+    'tando muhammad khan': (25.1233, 68.5367), 'shikarpur': (27.9558, 68.6386),
+    'khairpur': (27.5295, 68.7592), 'ghotki': (28.0075, 69.3150),
+    'jacobabad': (28.2769, 68.4514), 'matiari': (25.5989, 68.4514),
+    'sanghar': (26.0464, 68.9481), 'kashmore': (28.4331, 69.5814),
+}
+
+_CITY_RADIUS_KM = {
+    'karachi': 55, 'lahore': 45, 'islamabad': 35, 'rawalpindi': 30,
+    'faisalabad': 30, 'peshawar': 25, 'multan': 25, 'quetta': 25,
+    'gujranwala': 20, 'hyderabad': 20,
+}
+_DEFAULT_CITY_RADIUS_KM = 15
+
+def _levenshtein_distance(s1: str, s2: str) -> int:
+    """Exact Levenshtein edit distance without external dependencies."""
+    if len(s1) < len(s2):
+        return _levenshtein_distance(s2, s1)
+    if len(s2) == 0:
+        return len(s1)
+    previous_row = range(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1
+            deletions = current_row[j] + 1
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+    return previous_row[-1]
 
 # ── Typo correction vocabulary ────────────────────────────────────────────────
 # difflib.get_close_matches will correct "docter"→"doctor", "lawer"→"lawyer"
@@ -82,6 +140,93 @@ ABBREVIATIONS = {
     'cs':    'developer',
     'it':    'developer',
 }
+
+# ── Canonical Profession to Category Pattern Mapping ──────────────────────────
+# Used for strict category isolation. When a user searches for any profession,
+# abbreviation, alias, or foreign term, it resolves to a canonical profession word,
+# which then maps strictly to the corresponding database Category name patterns.
+CANONICAL_TO_CATEGORY_PATTERNS = {
+    # Healthcare & Doctors
+    'doctor': ['doctor', 'healthcare', 'medical'],
+    'physician': ['doctor', 'healthcare', 'medical'],
+    'surgeon': ['doctor', 'healthcare', 'medical'],
+    'dentist': ['doctor', 'healthcare', 'medical', 'dentist'],
+    'nurse': ['doctor', 'healthcare', 'medical', 'nurse'],
+    'pharmacist': ['doctor', 'healthcare', 'medical', 'pharm'],
+    'physiotherapist': ['doctor', 'healthcare', 'medical', 'physio'],
+    'psychologist': ['doctor', 'healthcare', 'medical', 'psych'],
+    'cardiologist': ['doctor', 'healthcare', 'medical'],
+    'dermatologist': ['doctor', 'healthcare', 'medical'],
+    'pediatrician': ['doctor', 'healthcare', 'medical'],
+    'gynecologist': ['doctor', 'healthcare', 'medical'],
+    'ophthalmologist': ['doctor', 'healthcare', 'medical'],
+    'neurologist': ['doctor', 'healthcare', 'medical'],
+    'general practitioner': ['doctor', 'healthcare', 'medical'],
+    'gp': ['doctor', 'healthcare', 'medical'],
+    'veterinarian': ['doctor', 'healthcare', 'medical', 'vet'],
+
+    # Legal
+    'lawyer': ['lawyer', 'legal'],
+    'attorney': ['lawyer', 'legal'],
+    'advocate': ['lawyer', 'legal'],
+    'solicitor': ['lawyer', 'legal'],
+    'barrister': ['lawyer', 'legal'],
+    'counsel': ['lawyer', 'legal'],
+
+    # Engineering
+    'engineer': ['engineer'],
+    'civil engineer': ['engineer'],
+    'mechanical engineer': ['engineer'],
+    'chemical engineer': ['engineer'],
+    'electrical engineer': ['engineer', 'electrician'],
+
+    # IT & Tech
+    'developer': ['it', 'tech'],
+    'programmer': ['it', 'tech'],
+    'coder': ['it', 'tech'],
+    'software engineer': ['it', 'tech', 'engineer'],
+    'web developer': ['it', 'tech'],
+    'designer': ['it', 'tech'],
+    'graphic designer': ['it', 'tech'],
+    'it': ['it', 'tech'],
+    'tech': ['it', 'tech'],
+
+    # Tutors & Education
+    'tutor': ['tutor', 'education', 'teacher'],
+    'teacher': ['tutor', 'education', 'teacher'],
+    'instructor': ['tutor', 'education', 'teacher'],
+    'professor': ['tutor', 'education', 'teacher'],
+    'educator': ['tutor', 'education', 'teacher'],
+    'lecturer': ['tutor', 'education', 'teacher'],
+
+    # Trades
+    'plumber': ['plumber'],
+    'plumbing': ['plumber'],
+    'pipe fitter': ['plumber'],
+    'pipe repair': ['plumber'],
+    'electrician': ['electrician'],
+    'electrical technician': ['electrician'],
+    'wiring expert': ['electrician'],
+    'architect': ['architect'],
+    'architecture': ['architect'],
+    'carpenter': ['carpenter'],
+    'woodworker': ['carpenter'],
+    'painter': ['painter'],
+    'wall painter': ['painter'],
+    'cleaner': ['cleaner'],
+    'accountant': ['accountant', 'finance'],
+    'auditor': ['accountant', 'finance'],
+    'bookkeeper': ['accountant', 'finance'],
+    'finance': ['accountant', 'finance'],
+    'mechanic': ['mechanic'],
+    'barber': ['barber'],
+    'tailor': ['tailor'],
+    'chef': ['chef', 'cook'],
+    'photographer': ['photographer', 'photo'],
+    'driver': ['driver'],
+    'mason': ['mason'],
+}
+
 
 # ── Synonym groups ────────────────────────────────────────────────────────────
 # Every word in a group maps to ALL other words in that group.
@@ -238,36 +383,120 @@ PROBLEM_PROFESSION_MAP = {
 # untranslated English words just pass through unchanged.
 _MULTILINGUAL_MAP = {
     # ── Professions — Roman Urdu ──
-    'wakeel':   'lawyer',   'vakeel':  'lawyer',
-    'ustaad':   'teacher',  'ustad':   'teacher',  'maulvi': 'teacher',
+    'wakeel':   'lawyer',   'vakeel':  'lawyer',   'wakil':   'lawyer',   'vakil':  'lawyer',
+    'ustaad':   'teacher',  'ustad':   'teacher',  'maulvi':  'teacher',  'shikshak': 'teacher',
     'daant':    'dentist',  'dant':    'dentist',
     'mistri':   'mechanic', 'mistari': 'mechanic',
     'nai':      'barber',   'hajam':   'barber',
     'darzi':    'tailor',
-    'bijli':    'electrician',
-    'nalka':    'plumber',  'nalki':   'plumber',
-    'rangsaz':  'painter',
+    'bijli wala': 'electrician', 'bijli mistri': 'electrician', 'bijli': 'electrician',
+    'nalka wala': 'plumber',     'nalka': 'plumber', 'nalki': 'plumber',
+    'rangsaz':  'painter',      'rang saz': 'painter',
+    'daktar':   'doctor',       'daactar': 'doctor',
+
     # ── Professions — Urdu script ──
     'ڈاکٹر': 'doctor', 'وکیل': 'lawyer', 'استاد': 'teacher', 'ٹیوٹر': 'tutor',
     'دانتوں': 'dentist', 'انجینئر': 'engineer', 'الیکٹریشن': 'electrician',
     'پلمبر': 'plumber', 'درزی': 'tailor', 'مکینک': 'mechanic', 'نائی': 'barber',
+    'بڑھئی': 'carpenter', 'رنگ ساز': 'painter', 'صفائی والا': 'cleaner',
+
+    # ── Professions — Hindi Devanagari script ──
+    'डॉक्टर': 'doctor', 'डाक्टर': 'doctor', 'चिकित्सक': 'doctor', 'डाकटर': 'doctor',
+    'प्लंबर': 'plumber', 'प्लम्बर': 'plumber', 'नलसाज': 'plumber', 'नलसाज़': 'plumber', 'पलबर': 'plumber',
+    'बिजली मिस्त्री': 'electrician', 'बिजलीमिस्त्री': 'electrician', 'बिजली वाला': 'electrician',
+    'बिजलीवाला': 'electrician', 'इलेक्ट्रीशियन': 'electrician',
+    'वकील': 'lawyer', 'अधिवक्ता': 'lawyer',
+    'इंजीनियर': 'engineer', 'अभियंता': 'engineer',
+    'शिक्षक': 'teacher', 'अध्यापक': 'teacher', 'अध्यापिका': 'teacher', 'टीचर': 'teacher',
+    'ट्यूटर': 'tutor',
+    'दंत चिकित्सक': 'dentist', 'दंतवैद्य': 'dentist', 'डेंटिस्ट': 'dentist',
+    'दर्जी': 'tailor', 'दर्ज़ी': 'tailor',
+    'नाई': 'barber', 'हज्जाम': 'barber',
+    'मैकेनिक': 'mechanic', 'मिस्त्री': 'mechanic',
+    'बढ़ई': 'carpenter',
+    'पेंटर': 'painter', 'रंगसाज': 'painter',
+    'अकाउंटेंट': 'accountant', 'मुंशी': 'accountant',
+    'सफाईकर्मी': 'cleaner', 'सफाईवाला': 'cleaner', 'क्लीनर': 'cleaner',
+    'ड्राइवर': 'driver', 'चालक': 'driver',
+    'शेफ': 'chef', 'रसोइया': 'chef',
+
     # ── Filler / connector words — safe to drop or map to English glue ──
     'chahiye':  '', 'chahye': '', 'chaiye': '', 'chaheye': '',
-    'mujhe':    '', 'mujhay': '', 'مجھے': '', 'چاہیے': '',
-    'mein':     'in', 'me': 'in', 'main': 'in', 'میں': 'in',
-    'ka': '', 'ki': '', 'ke': '', 'کا': '', 'کی': '', 'کے': '',
-    # ── Price ──
+    'mujhe':    '', 'mujhay': '',
+    'mein':     'in', 'me': 'in', 'main': 'in', 'mn': 'in',
+    'ka': '', 'ki': '', 'ke': '', 'kay': '', 'k': '', 'ko': '', 'se': '', 'say': '', 'sy': '',
+
+    # Urdu filler
+    'مجھے': '', 'چاہیے': '', 'میں': 'in',
+    'کا': '', 'کی': '', 'کے': '', 'کو': '', 'سے': '',
+
+    # Hindi filler
+    'मुझे': '', 'मुझको': '', 'मझ': '',
+    'चाहिए': '', 'चाहीये': '', 'चाहिये': '',
+    'में': 'in', 'म': 'in', 'पे': 'at', 'पर': 'at',
+    'का': '', 'की': '', 'के': '', 'क': '', 'को': '', 'से': '', 'स': '',
+    'पास': 'near', 'नजदीक': 'near', 'मेरे पास': 'near me',
+
+    # ── Budget / Price phrases ──
+    # Roman Urdu
+    'ke andar': 'under', 'ke ander': 'under', 'kay andar': 'under', 'kay ander': 'under',
+    'k andar': 'under', 'k ander': 'under',
+    'ander': 'under', 'andar': 'under',
+    'se kam': 'under', 'say kam': 'under', 'sy kam': 'under',
+    'se zyada': 'over', 'se ziada': 'over', 'say zyada': 'over', 'say ziada': 'over', 'se upar': 'over',
+    'rupay': 'rs', 'rupaye': 'rs', 'rupees': 'rs', 'rupee': 'rs',
     'sasta': 'cheap', 'saste': 'cheap', 'sasti': 'cheap', 'arzan': 'cheap',
     'mehnga': 'expensive', 'mehngay': 'expensive', 'mehngi': 'expensive',
+
+    # Urdu script
+    'کے اندر': 'under', 'اندر': 'under', 'سے کم': 'under',
+    'سے زیادہ': 'over', 'سے اوپر': 'over',
+    'روپے': 'rs', 'روپیہ': 'rs',
     'سستا': 'cheap', 'مہنگا': 'expensive',
+
+    # Hindi Devanagari script
+    'के अंदर': 'under', 'के अन्दर': 'under', 'क अदर': 'under',
+    'अंदर': 'under', 'अन्दर': 'under', 'अदर': 'under',
+    'से कम': 'under', 'स कम': 'under',
+    'से ज्यादा': 'over', 'से अधिक': 'over', 'से ऊपर': 'over',
+    'रुपये': 'rs', 'रुपए': 'rs', 'रुपया': 'rs', 'रु': 'rs',
+    'सस्ता': 'cheap', 'सस्ते': 'cheap', 'sasti': 'cheap',
+    'महंगा': 'expensive', 'महंगे': 'expensive', 'महंगी': 'expensive',
+
     # ── Gender ──
     'aurat': 'female', 'khatoon': 'female', 'larki': 'female', 'ladki': 'female',
     'mard': 'male', 'aadmi': 'male', 'larka': 'male', 'ladka': 'male',
     'عورت': 'female', 'خاتون': 'female', 'مرد': 'male',
+    'महिला': 'female', 'औरत': 'female', 'लड़की': 'female',
+    'पुरुष': 'male', 'आदमी': 'male', 'लड़का': 'male',
+
     # ── Urgency ──
     'abhi': 'now', 'foran': 'immediately', 'jaldi': 'urgent',
     'ابھی': 'now', 'فوراً': 'immediately',
-    'aaj': 'today', 'آج': 'today',
+    'अभी': 'now', 'तुरंत': 'immediately', 'जल्दी': 'urgent',
+    'aaj': 'today', 'آج': 'today', 'आज': 'today',
+}
+
+# ── Query filler words ────────────────────────────────────────────────────────
+_QUERY_FILLER_WORDS = {
+    'wala', 'wali', 'wale', 'walay', 'walon',
+    'in', 'at', 'near', 'nearby', 'me', 'my', 'i', 'a', 'an', 'the', 'for', 'to',
+    'of', 'and', 'or', 'with', 'who', 'is', 'are', 'am', 'need', 'needs', 'want',
+    'wants', 'looking', 'look', 'find', 'show', 'get', 'give', 'please', 'plz',
+    'someone', 'somebody', 'any', 'best', 'top', 'good', 'great', 'cheap',
+    'expensive', 'affordable', 'speaking', 'speaker', 'available', 'professional',
+    'professionals', 'rs', 'pkr', 'usd', 'rupees', 'dollar', 'dollars', 'k',
+    # Roman Urdu filler & glue
+    'chahiye', 'chahye', 'chaiye', 'chaheye', 'mujhe', 'mujhay',
+    'ka', 'ki', 'ke', 'kay', 'k', 'ko', 'se', 'say', 'sy', 'mein', 'main', 'mn',
+    'ander', 'andar', 'kam', 'rupay', 'rupaye', 'rupe', 'tak',
+    # Hindi filler & glue
+    'मुझे', 'चाहिए', 'चाहीये', 'चाहिये', 'की', 'के', 'का', 'को', 'में', 'से', 'पर',
+    'वाला', 'वाली', 'वाले', 'अंदर', 'अन्दर', 'अदर', 'रुपये', 'रुपए', 'तक', 'कम',
+    'मझ', 'क', 'स', 'म', 'पे',
+    # Urdu filler & glue
+    'چاہیے', 'مجھے', 'کی', 'کے', 'کا', 'کو', 'میں', 'سے', 'پر', 'والا', 'والی', 'والے',
+    'اندر', 'روپے', 'تک',
 }
 
 
@@ -276,11 +505,19 @@ def _translate_multilingual(text: str) -> str:
     if not text:
         return text
     result = text
+    # 0. Translate city names across scripts (Urdu, Hindi, Arabic, etc.)
+    result = _translate_cities(result)
     # Longer phrases first so multi-word keys aren't shadowed by single-word ones
     for src in sorted(_MULTILINGUAL_MAP, key=len, reverse=True):
         dst = _MULTILINGUAL_MAP[src]
-        result = re.sub(r'\b' + re.escape(src) + r'\b', dst, result, flags=re.IGNORECASE)
-    return result
+        result = re.sub(r'(?<!\S)' + re.escape(src) + r'(?!\S)', dst, result, flags=re.IGNORECASE)
+
+    # Language-independent pass (apps/search/aliases.py): multi-word aliases,
+    # then any remaining word whose phonetic key matches a known profession
+    # alias in ANY script/spelling (wakeel / vakeel / wkil / وکیل / वकील -> lawyer).
+    result = _alias_phrases(result)
+    known = set(SEARCH_VOCABULARY) | set(_QUERY_FILLER_WORDS) | set(_CITY_CENTROIDS)
+    return ' '.join(_alias_lookup(tok, known) or tok for tok in result.split())
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -329,28 +566,39 @@ NEARBY_PHRASE_RADIUS_KM = {
 
 # ── Numeric price phrases ─────────────────────────────────────────────────
 # "under 100", "under $100", "below 200", "less than 500", "max 1000",
-# "upto 300", "up to 300", "within 100" → a MAX price ceiling.
-# "above 500", "over 1000", "more than 200", "min 100", "at least 300" →
-# a MIN price floor. Numbers can have "$", "rs", "pkr" attached in any order
-# and optional "k" shorthand (e.g. "under 2k" → 2000).
-_PRICE_NUMBER = r'(?:rs\.?|pkr|\$)?\s*([\d,]+)\s*(k)?\s*(?:rs\.?|pkr|\$)?'
+# "upto 300", "up to 300", "within 100", "500 under", "500 ke ander",
+# "500 ke andar", "500 se kam", "500 rupay ke andar", "500 के अंदर" → a MAX price ceiling.
+# "above 500", "over 1000", "more than 200", "min 100", "at least 300",
+# "500 se zyada", "500 से ज्यादा" → a MIN price floor.
+_CURRENCY = r'(?:rs\.?|pkr|\$|rupaye?|rupees?|rupe|روپے|روپئے|रुपये|रुपए|रु)'
+_PRICE_NUMBER = rf'(?:{_CURRENCY}\s*)?([\d,]+)\s*(k)?(?:\s*{_CURRENCY})?'
 
 _MAX_PRICE_PATTERNS = [
-    r'\bunder\s*' + _PRICE_NUMBER,
-    r'\bbelow\s*' + _PRICE_NUMBER,
-    r'\bless than\s*' + _PRICE_NUMBER,
-    r'\bmax(?:imum)?\s*' + _PRICE_NUMBER,
-    r'\bup ?to\s*' + _PRICE_NUMBER,
-    r'\bwithin\s*' + _PRICE_NUMBER,
-    r'\bcheaper than\s*' + _PRICE_NUMBER,
+    # Prefix: keyword before price
+    r'\b(?:under|below|less than|max(?:imum)?|up ?to|within|cheaper than)\s*' + _PRICE_NUMBER,
+    r'\b(?:ke\s*and[ae]r|kay\s*and[ae]r|k\s*and[ae]r|and[ae]r|se\s*kam|say\s*kam|sy\s*kam)\s*' + _PRICE_NUMBER,
+    r'(?:के\s*अं?द[रा]|के\s*अन्दर|अं?द[रा]|अन्दर|से\s*कम|क\s*अदर|अदर|स\s*कम)\s*' + _PRICE_NUMBER,
+    r'(?:کے\s*اندر|اندر|سے\s*کم)\s*' + _PRICE_NUMBER,
+
+    # Suffix: price before keyword
+    _PRICE_NUMBER + r'\s*(?:under|below|less than|max(?:imum)?|or less|and under)\b',
+    _PRICE_NUMBER + r'\s*(?:ke\s*and[ae]r|kay\s*and[ae]r|k\s*and[ae]r|and[ae]r|se\s*kam|say\s*kam|sy\s*kam|tak)\b',
+    _PRICE_NUMBER + r'\s*(?:के\s*अं?द[रा]|के\s*अन्दर|अं?द[रा]|अन्दर|से\s*कम|तक|क\s*अदर|अदर|स\s*कम)\b',
+    _PRICE_NUMBER + r'\s*(?:کے\s*اندر|اندر|سے\s*کم|تک)\b',
 ]
 
 _MIN_PRICE_PATTERNS = [
-    r'\babove\s*' + _PRICE_NUMBER,
-    r'\bover\s*' + _PRICE_NUMBER,
-    r'\bmore than\s*' + _PRICE_NUMBER,
-    r'\bmin(?:imum)?\s*' + _PRICE_NUMBER,
-    r'\bat least\s*' + _PRICE_NUMBER,
+    # Prefix: keyword before price
+    r'\b(?:above|over|more than|min(?:imum)?|at least|starting from)\s*' + _PRICE_NUMBER,
+    r'\b(?:se\s*z[iy]ada|say\s*z[iy]ada|sy\s*z[iy]ada|se\s*upar|say\s*upar)\s*' + _PRICE_NUMBER,
+    r'(?:से\s*ज्यादा|से\s*अधिक|से\s*ऊपर|स\s*ज्यादा)\s*' + _PRICE_NUMBER,
+    r'(?:سے\s*زیادہ|سے\s*اوپر)\s*' + _PRICE_NUMBER,
+
+    # Suffix: price before keyword
+    _PRICE_NUMBER + r'\s*(?:above|over|min(?:imum)?|or more|and above|plus|\+)\b',
+    _PRICE_NUMBER + r'\s*(?:se\s*z[iy]ada|say\s*z[iy]ada|sy\s*z[iy]ada|se\s*upar|say\s*upar|se\s*barh\s*kar)\b',
+    _PRICE_NUMBER + r'\s*(?:से\s*ज्यादा|से\s*अधिक|से\s*ऊपर)\b',
+    _PRICE_NUMBER + r'\s*(?:سے\s*زیادہ|سے\s*اوپر)\b',
 ]
 
 
@@ -367,21 +615,22 @@ def _extract_price_filter(term: str) -> dict:
     Returns only the keys actually detected: {'max_price': ...} and/or
     {'min_price': ...} — missing keys mean "not specified".
 
-    "dr under 100$"  → {'max_price': 100.0}
-    "plumber over 2k" → {'min_price': 2000.0}
+    "dr under 100$"         → {'max_price': 100.0}
+    "500 ke ander doctor"   → {'max_price': 500.0}
+    "plumber over 2k"       → {'min_price': 2000.0}
     """
     if not term:
         return {}
 
     intent = {}
     for pattern in _MAX_PRICE_PATTERNS:
-        m = re.search(pattern, term)
+        m = re.search(pattern, term, flags=re.IGNORECASE)
         if m:
             intent['max_price'] = _parse_price_number(m)
             break
 
     for pattern in _MIN_PRICE_PATTERNS:
-        m = re.search(pattern, term)
+        m = re.search(pattern, term, flags=re.IGNORECASE)
         if m:
             intent['min_price'] = _parse_price_number(m)
             break
@@ -398,13 +647,42 @@ def _extract_price_filter(term: str) -> dict:
 # in the country slip through. Longest names checked first so multi-word
 # cities ("tando allahyar") aren't shadowed by a shorter city sharing a
 # prefix.
-def _extract_city_from_text(term: str) -> str:
+def _find_city_in_text(term: str) -> tuple:
+    """
+    Returns (city, matched_tokens). Exact match first (longest name wins), then
+    a fuzzy pass so a typo'd city ("lahor", "karchi", "hyderbad") still narrows
+    to that city instead of being silently ignored.
+    """
     if not term:
-        return ''
+        return '', set()
+
+    # 1. Multi-script city aliases (e.g. کراچی, करांची, etc.)
+    for alias, canon in sorted(CITY_ALIASES.items(), key=lambda x: len(x[0]), reverse=True):
+        if re.search(r'(?<!\S)' + re.escape(alias) + r'(?!\S)', term, flags=re.IGNORECASE):
+            return canon, set(alias.split())
+
+    # 2. Canonical centroid names
     for city in sorted(_CITY_CENTROIDS, key=len, reverse=True):
-        if re.search(r'\b' + re.escape(city) + r'\b', term):
-            return city
-    return ''
+        if re.search(r'(?<!\S)' + re.escape(city) + r'(?!\S)', term, flags=re.IGNORECASE):
+            return city, set(city.split())
+
+    # Fuzzy pass — single-word cities only, and never on words that are
+    # already known profession words / typos of them ("plumer" is not a city).
+    known = set(SEARCH_VOCABULARY) | set(SYNONYM_MAP) | set(ABBREVIATIONS) | _QUERY_FILLER_WORDS
+    single_word_cities = [c for c in _CITY_CENTROIDS if ' ' not in c]
+    for w in term.split():
+        if len(w) < 4 or w in known or w.isdigit():
+            continue
+        if get_close_matches(w, SEARCH_VOCABULARY, n=1, cutoff=0.72):
+            continue
+        m = get_close_matches(w, single_word_cities, n=1, cutoff=0.8)
+        if m:
+            return m[0], {w}
+    return '', set()
+
+
+def _extract_city_from_text(term: str) -> str:
+    return _find_city_in_text(term)[0]
 
 
 def _extract_intent_filters(normalized_term: str) -> dict:
@@ -459,34 +737,304 @@ def _extract_intent_filters(normalized_term: str) -> dict:
 def _normalize(text: str) -> str:
     text = unicodedata.normalize('NFD', text)
     text = ''.join(c for c in text if unicodedata.category(c) != 'Mn')
-    text = re.sub(r'[^\w\s]', ' ', text.lower())
+    # keep letters, digits and spacing marks (Devanagari matras); `\w` would
+    # wrongly split Hindi words at every vowel sign
+    text = ''.join(c if unicodedata.category(c)[0] in 'LNM' else ' ' for c in text.lower())
     return ' '.join(text.split())
 
 
-# ── Typo corrector ────────────────────────────────────────────────────────────
-# Corrects each word in the query independently.
-# "docter lahore" → ("doctor lahore", True)
-# "plumer"        → ("plumber", True)
-# "doctor"        → ("doctor", False)   ← no change
-#
-# cutoff=0.72 — catches 1-2 char mistakes (docotr, lawer) without
-# over-correcting short city names (ali → ? — ignored if < 4 chars).
-def _correct_typo(term: str) -> tuple:
+# ── Core query extraction ────────────────────────────────────────────────────
+# ROOT-CAUSE FIX: a sentence like "female doctor", "doctor lahore", "bijli wala"
+# or "cheap plumber near me" used to be searched as ONE literal phrase (plus
+# synonyms of the individual words) — the bare word "doctor" was never added to
+# the search terms, so multi-word queries returned 0 results even though the
+# same profession worked fine as a single word. Here we strip everything that is
+# already handled as a FILTER (city, gender, price, urgency, language, distance,
+# service-mode, experience) or is just sentence filler, so only the actual
+# profession/skill words are text-matched.
+def _resolve_category_ids(term: str, categories_cache=None) -> tuple:
+    """
+    Given a query word or phrase, checks if it corresponds to an unambiguous
+    profession or category.
+    Returns (canonical_profession_or_none, list_of_category_ids).
+    """
+    if not term:
+        return None, []
+
+    term_norm = _normalize(term).strip()
+    if not term_norm:
+        return None, []
+
+    # 1. Abbreviation check ('dr' -> 'doctor', 'eng' -> 'engineer', 'ca' -> 'accountant', etc.)
+    canon = ABBREVIATIONS.get(term_norm)
+
+    # 2. Multi-word phrase translation ('nalka wala' -> 'plumber', etc.)
+    if not canon:
+        translated_phrase = _alias_phrases(term)
+        if translated_phrase != term:
+            canon = _normalize(translated_phrase)
+
+    # 3. Multilingual alias lookup ('wakeel' -> 'lawyer', 'daktar' -> 'doctor', etc.)
+    if not canon:
+        canon = _alias_lookup(term)
+
+    # 4. Canonical category pattern direct lookup
+    if not canon and term_norm in CANONICAL_TO_CATEGORY_PATTERNS:
+        canon = term_norm
+
+    # 5. Semantic problem/symptom map ('heart pain' -> 'cardiologist' -> doctor)
+    if not canon and term_norm in PROBLEM_PROFESSION_MAP:
+        canon = PROBLEM_PROFESSION_MAP[term_norm]
+
+    # 6. Check if term directly matches a Category in DB
+    if categories_cache is None:
+        try:
+            categories_cache = list(Category.objects.all().values('id', 'name'))
+        except Exception:
+            categories_cache = []
+
+    matched_ids = []
+    # If term directly matches category name (e.g. "Doctors & Healthcare", "Plumbers")
+    for cat in categories_cache:
+        c_name_norm = _normalize(cat['name'])
+        if term_norm == c_name_norm or term_norm in c_name_norm.split():
+            matched_ids.append(cat['id'])
+            if not canon:
+                canon = term_norm
+
+    # If canonical was found, match patterns against Category names in DB
+    if canon:
+        patterns = CANONICAL_TO_CATEGORY_PATTERNS.get(canon, [canon])
+        for cat in categories_cache:
+            c_name_norm = _normalize(cat['name'])
+            if any(p in c_name_norm for p in patterns):
+                if cat['id'] not in matched_ids:
+                    matched_ids.append(cat['id'])
+
+    return canon, matched_ids
+
+
+def _classify_search_query(term: str, raw_query: str = '', city_param: str = '', category_id_param=None) -> dict:
+    """
+    Comprehensive query disambiguation engine.
+    Differentiates between:
+    - category_only (e.g. 'doctor', 'plumber', 'dr', 'wakeel')
+    - name_only (e.g. 'Amber', 'Ali', 'Faisal Shaikh')
+    - combined_category_name (e.g. 'Amber doctor', 'Amber tutor')
+    - combined_category_city (e.g. 'doctor in Badin', 'plumber Karachi')
+    - combined_name_city (e.g. 'Amber in Islamabad')
+    - city_only (e.g. 'Badin')
+    - general (specialization, skills, etc.)
+    """
+    categories_cache = []
+    try:
+        categories_cache = list(Category.objects.all().values('id', 'name'))
+    except Exception:
+        pass
+
+    target_category_ids = []
+    canonical_profession = None
+    if category_id_param:
+        try:
+            target_category_ids = [int(category_id_param)]
+        except (ValueError, TypeError):
+            pass
+
+    # Detect city
+    detected_city = city_param or _extract_city_from_text(term) or _extract_city_from_text(raw_query)
+
+    # Core query without city tokens
+    _city_found, _city_tokens = _find_city_in_text(term) if term else ('', set())
+    core_text, ignored_words = _core_query(term, _city_tokens) if term else ('', set())
+
+    # Pre-clean filler
+    filler = set(_QUERY_FILLER_WORDS) | {'chahiye', 'need', 'want', 'wala', 'wali', 'walay', 'expert', 'services'}
+    words = [w for w in core_text.split() if w not in filler and not w.isdigit()]
+
+    # 1. Check if the whole core_text is an unambiguous category/profession
+    if core_text:
+        c_canon, c_ids = _resolve_category_ids(core_text, categories_cache)
+        if c_ids:
+            if not target_category_ids:
+                target_category_ids = c_ids
+            canonical_profession = c_canon
+            q_type = 'combined_category_city' if detected_city else 'category_only'
+            return {
+                'query_type': q_type,
+                'canonical_profession': canonical_profession,
+                'strict_category_ids': target_category_ids,
+                'name_query': None,
+                'detected_city': detected_city,
+                'is_category_search': True,
+                'is_name_search': False,
+                'core_text': core_text,
+            }
+
+    # 2. Check if query is a combination of Category + Name / Other words
+    prof_words = []
+    other_words = []
+    for w in words:
+        w_canon, w_ids = _resolve_category_ids(w, categories_cache)
+        if w_ids:
+            prof_words.append((w, w_canon, w_ids))
+        else:
+            other_words.append(w)
+
+    if prof_words:
+        canonical_profession = prof_words[0][1]
+        if not target_category_ids:
+            target_category_ids = prof_words[0][2]
+
+        if other_words:
+            name_query = ' '.join(other_words)
+            q_type = 'combined_category_name'
+            return {
+                'query_type': q_type,
+                'canonical_profession': canonical_profession,
+                'strict_category_ids': target_category_ids,
+                'name_query': name_query,
+                'detected_city': detected_city,
+                'is_category_search': True,
+                'is_name_search': True,
+                'core_text': core_text,
+            }
+        else:
+            q_type = 'combined_category_city' if detected_city else 'category_only'
+            return {
+                'query_type': q_type,
+                'canonical_profession': canonical_profession,
+                'strict_category_ids': target_category_ids,
+                'name_query': None,
+                'detected_city': detected_city,
+                'is_category_search': True,
+                'is_name_search': False,
+                'core_text': core_text,
+            }
+
+    # 3. No category word detected: Is it a Name query or City only?
+    if not words and detected_city:
+        return {
+            'query_type': 'city_only',
+            'canonical_profession': None,
+            'strict_category_ids': target_category_ids,
+            'name_query': None,
+            'detected_city': detected_city,
+            'is_category_search': bool(target_category_ids),
+            'is_name_search': False,
+            'core_text': '',
+        }
+
+    # Check if words match professional names in DB
+    name_query = ' '.join(words) if words else core_text
+    is_name = False
+    if name_query:
+        try:
+            from django.db.models import Q as DQ
+            if User.objects.filter(role='professional').filter(DQ(name__icontains=name_query) | DQ(name__istartswith=name_query)).exists():
+                is_name = True
+            else:
+                known_names = cache.get('search_known_name_tokens')
+                if known_names:
+                    for w in words:
+                        if len(w) >= 4 and get_close_matches(w, known_names, n=1, cutoff=0.80):
+                            is_name = True
+                            break
+        except Exception:
+            pass
+
+    q_type = 'combined_name_city' if (is_name and detected_city) else ('name_only' if is_name else 'general')
+    return {
+        'query_type': q_type,
+        'canonical_profession': None,
+        'strict_category_ids': target_category_ids,
+        'name_query': name_query if is_name else None,
+        'detected_city': detected_city,
+        'is_category_search': bool(target_category_ids),
+        'is_name_search': is_name,
+        'core_text': core_text,
+    }
+
+
+def _core_query(term: str, city_tokens=None) -> tuple:
+    """
+    "female doctor in lahore under 2000" → ("doctor", {"female","in","lahore","under","2000"})
+    Returns (core_term, ignored_words). If stripping would leave nothing
+    (e.g. the query IS just "lahore" or "female"), the original term is
+    returned so single-word searches keep working exactly as before.
+    """
+    if not term:
+        return term, set()
+
+    text = f' {term} '
+    for pattern in _MAX_PRICE_PATTERNS + _MIN_PRICE_PATTERNS:
+        text = re.sub(pattern, ' ', text, flags=re.IGNORECASE)
+
+    phrases = list(NEARBY_PHRASE_RADIUS_KM)
+    for phrase_set in SERVICE_MODE_KEYWORDS.values():
+        phrases.extend(phrase_set)
+    for phrase in sorted(phrases, key=len, reverse=True):
+        text = text.replace(f' {phrase} ', ' ')
+
+    drop = set(_QUERY_FILLER_WORDS) | set(city_tokens or ())
+    for words in GENDER_INTENT_WORDS.values():
+        drop |= words
+    drop |= URGENCY_INTENT_WORDS
+    drop |= LANGUAGE_INTENT_WORDS
+    if not any(k in term for k in _MULTI_WORD_SYNONYM_KEYS):
+        drop |= set(EXPERIENCE_INTENT_WORDS)
+
+    kept = [w for w in text.split() if w not in drop and not w.isdigit()]
+    ignored = set(term.split()) - set(kept)
+    if not kept:
+        filter_words = ignored - _QUERY_FILLER_WORDS
+        return ('', ignored) if filter_words else (term, set())
+    return ' '.join(kept), ignored
+
+
+# ── Typo corrector (Conservative & Length-Aware) ──────────────────────────────
+# 1. Length < 4: NEVER corrected (leaves short names, abbreviations intact).
+# 2. Length 4-5: cutoff=0.80, max Levenshtein edit distance = 1.
+# 3. Length 6+: cutoff=0.75, max Levenshtein edit distance = 2.
+# 4. Exact matches on names or professions ALWAYS take precedence.
+def _correct_typo(term: str, skip_words=None, extra_vocab=None) -> tuple:
+    skip_words = set(skip_words or ())
     words = term.split()
     corrected = []
     any_fixed = False
 
+    vocab = SEARCH_VOCABULARY
+    if extra_vocab:
+        vocab = sorted(set(vocab) | {w.lower() for w in extra_vocab if w})
+
     for word in words:
-        if len(word) < 4:          # short words / abbreviations — leave as-is
+        w_low = word.lower()
+        if len(w_low) < 4 or w_low in skip_words or w_low in ABBREVIATIONS:
             corrected.append(word)
             continue
 
-        matches = get_close_matches(word, SEARCH_VOCABULARY, n=1, cutoff=0.72)
-        if matches and matches[0] != word:
-            corrected.append(matches[0])
-            any_fixed = True
-        else:
+        if w_low in vocab:
             corrected.append(word)
+            continue
+
+        cutoff = 0.80 if len(w_low) <= 5 else 0.75
+        max_dist = 1 if len(w_low) <= 6 else 2
+
+        matches = get_close_matches(w_low, vocab, n=6, cutoff=cutoff)
+        valid_matches = []
+        for m in matches:
+            dist = _levenshtein_distance(w_low, m)
+            if dist <= max_dist:
+                valid_matches.append((dist, abs(len(w_low) - len(m)), m))
+
+        if valid_matches:
+            valid_matches.sort(key=lambda x: (x[0], x[1]))
+            best_match = valid_matches[0][2]
+            if best_match != w_low:
+                corrected.append(best_match)
+                any_fixed = True
+                continue
+
+        corrected.append(word)
 
     return ' '.join(corrected), any_fixed
 
@@ -499,7 +1047,7 @@ def _correct_typo(term: str) -> tuple:
 # "tutor"   → ["tutor", "teacher", "instructor", "educator", ...]
 # "plumer"  → corrected to "plumber" → ["plumber", "pipe repair", ...]
 # "ca"      → ["ca", "accountant", "auditor", "bookkeeper", ...]
-def _expand_query(term: str) -> list:
+def _expand_query(term: str, split_words: bool = True) -> list:
     expanded = {term}
 
     # 0. Problem/symptom → profession (semantic meaning, not literal keywords)
@@ -531,6 +1079,15 @@ def _expand_query(term: str) -> list:
     if term in SYNONYM_MAP:
         expanded.update(SYNONYM_MAP[term])
 
+    # 3. Each meaningful word on its own. Without this a multi-word query like
+    #    "python developer" only searched the literal phrase, so "developer"
+    #    (or "doctor" in "doctor lahore") was never matched by itself.
+    words = term.split()
+    if split_words and len(words) > 1:
+        for w in words:
+            if len(w) >= 3 and w not in _QUERY_FILLER_WORDS:
+                expanded.add(w)
+
     return list(expanded)
 
 
@@ -541,24 +1098,57 @@ def _expand_query(term: str) -> list:
 #   "yer"    → icontains matches "lawyer" (suffix ✅)
 #   "plumb"  → icontains matches "plumber" (partial ✅)
 #   "doctor" → icontains matches "doctor" (exact ✅)
-def _multi_field_qs(qs, terms: list):
+def _multi_field_qs(qs, terms: list, fuzzy_tokens=None, is_name_search: bool = False, is_category_search: bool = False):
     from django.db.models import Q
+
+    if is_name_search:
+        name_q = Q()
+        for t in terms:
+            t = str(t).strip()
+            if not t:
+                continue
+            if len(t) <= 2:
+                name_q |= (
+                    Q(name__istartswith=t) |
+                    Q(name__icontains=f' {t}')
+                )
+            else:
+                name_q |= (
+                    Q(name__iexact=t) |
+                    Q(name__istartswith=t) |
+                    Q(name__icontains=t)
+                )
+        if fuzzy_tokens and any(len(lat) >= 3 for lat, _ in fuzzy_tokens):
+            name_q |= _fz_q(fuzzy_tokens)
+        return qs.filter(name_q).distinct()
 
     combined = Q()
     for t in terms:
-        combined |= (
-            Q(name__icontains=t)                                       |
-            Q(professionalprofile__category__name__icontains=t)        |
-            Q(professionalprofile__specialization__icontains=t)        |
-            Q(professionalprofile__skills__icontains=t)                |
-            Q(professionalprofile__company_name__icontains=t)          |
-            Q(professionalprofile__bio__icontains=t)                   |
-            Q(professionalprofile__services__icontains=t)              |
-            Q(professionalprofile__tags__icontains=t)                  |
-            Q(userprofile__city__icontains=t)                          |
-            Q(userprofile__area__icontains=t)                          |
-            Q(userprofile__country__icontains=t)
-        )
+        t = str(t).strip()
+        if not t:
+            continue
+        if len(t) <= 2:
+            combined |= (
+                Q(name__istartswith=t) |
+                Q(name__icontains=f' {t}') |
+                Q(professionalprofile__category__name__istartswith=t)
+            )
+        else:
+            combined |= (
+                Q(name__icontains=t)                                       |
+                Q(professionalprofile__category__name__icontains=t)        |
+                Q(professionalprofile__specialization__icontains=t)        |
+                Q(professionalprofile__skills__icontains=t)                |
+                Q(professionalprofile__company_name__icontains=t)          |
+                Q(professionalprofile__bio__icontains=t)                   |
+                Q(professionalprofile__services__icontains=t)              |
+                Q(professionalprofile__tags__icontains=t)                  |
+                Q(userprofile__city__icontains=t)                          |
+                Q(userprofile__area__icontains=t)                          |
+                Q(userprofile__country__icontains=t)
+            )
+    if fuzzy_tokens and any(len(lat) >= 3 for lat, _ in fuzzy_tokens):
+        combined |= _fz_q(fuzzy_tokens)
     return qs.filter(combined).distinct()
 
 
@@ -592,134 +1182,196 @@ def _profile_completeness(user) -> float:
         return 0.0
 
 
-def _relevance_score(user, terms, customer_lat=None, customer_lng=None) -> float:
+def _relevance_score(user, terms, customer_lat=None, customer_lng=None, fuzzy_tokens=None, is_premium=None, target_category_ids=None, is_name_search=False) -> float:
     """
-    10-signal ranking score — weights follow the required priority order:
-
-    P1  Exact Name          200 / 160 / 120 pts
-    P2  Exact Profession    180 / 140 / 100 pts
-    P3  Specialization      160 / 120 /  80 pts
-    P4  Verified                            +50 pts
-    P5  Highest Rating                    0-40 pts
-    P6  Nearest Location                  0-30 pts
-    P7  Availability                        +20 pts
-    P8  Completed Jobs                    0-19 pts
-    P9  Profile Completeness              0-15 pts
-    P10 Response Time                     0-10 pts
-    ── secondary fields (below ranking signals) ──
-        Skills / Services / Tags / City / Bio    lower weights
-
-    `terms` is the FULL abbreviation/synonym-expanded term list (e.g. "dr"
-    expands to ["dr", "doctor", "physician", "surgeon", ...]) — each field
-    is scored against every term and the BEST match wins. This is what
-    makes "dr" or "tutor" correctly score a full Profession-match against
-    a professional whose category is literally "Doctor" or "Teacher".
+    Transparent, maintainable relevance scoring:
+    1. Strict category isolation: if target_category_ids is provided, professionals
+       outside that category receive 0.0 immediately.
+    2. Strict name isolation: if is_name_search is True, professionals whose names
+       do not match receive 0.0 immediately.
+    3. Exact full-name match (200 pts)
+    4. Exact normalized name or alias match (180 pts)
+    5. Strong prefix and partial-name match (140-160 pts)
+    6. Profession/category match (130-150 pts)
+    7. Specialization match (110-130 pts)
+    8. Strong fuzzy name match (70-130 pts)
+    9. City/location match (50-70 pts)
+    10. Secondary fields: skills, services, tags, company, bio (15-40 pts)
+    
+    CRITICAL INVARIANT:
+    Secondary factors (rating, availability, distance, verification) are strictly
+    bounded tie-breakers (max ~25 pts total) and are ONLY awarded when
+    there is a legitimate match (text_match_score > 0). If text_match_score == 0,
+    the score is 0.0 (irrelevant results cannot receive bonuses).
     """
-    score = 0.0
-
     try:
         prof = user.professionalprofile
         up   = user.userprofile
     except Exception:
         return 0.0
 
-    # ── Normalize all searchable text ─────────────────────────────────────
-    name   = _normalize(user.name or '')
-    cat    = _normalize(prof.category.name if prof.category else '')
-    spec   = _normalize(prof.specialization or '')
-    skills = _normalize(prof.skills or '')
-    co     = _normalize(prof.company_name or '')
-    bio    = _normalize(prof.bio or '')
-    svc    = _normalize(prof.services or '')
-    tags   = _normalize(prof.tags or '')
-    city   = _normalize(up.city    or '')
-    area   = _normalize(up.area    or '')
-    country= _normalize(up.country or '')
+    # 1. Strict Category Isolation: If search has target categories,
+    # any professional outside those categories is strictly 0.0!
+    if target_category_ids:
+        prof_cat_id = getattr(prof, 'category_id', None)
+        if prof_cat_id not in target_category_ids:
+            return 0.0
 
-    # Accept either a single term (backwards-compat) or a list of
-    # abbreviation/synonym-expanded terms.
+    name    = _normalize(user.name or '')
+    cat     = _normalize(prof.category.name if prof.category else '')
+    spec    = _normalize(prof.specialization or '')
+    skills  = _normalize(prof.skills or '')
+    co      = _normalize(prof.company_name or '')
+    bio     = _normalize(prof.bio or '')
+    svc     = _normalize(prof.services or '')
+    tags    = _normalize(prof.tags or '')
+    city    = _normalize(up.city or '')
+    area    = _normalize(up.area or '')
+    country = _normalize(up.country or '')
+
     term_list = [terms] if isinstance(terms, str) else list(terms or [])
     term_list = [t for t in term_list if t]
+    if not term_list and not fuzzy_tokens:
+        return 50.0  # browsing fallback when no search terms provided
 
-    def _match(field: str, exact: float, starts: float, contains: float) -> float:
-        if not field or not term_list: return 0.0
+    def _match(field: str, exact: float, starts: float, contains: float, min_len: int = 1) -> float:
+        if not field or not term_list:
+            return 0.0
         best = 0.0
         for t in term_list:
+            if len(t) < min_len:
+                continue
             if field == t:
-                best = max(best, exact); continue
+                best = max(best, exact)
+                continue
             if field.startswith(t):
-                best = max(best, starts); continue
-            if t in field:
-                best = max(best, contains); continue
+                best = max(best, starts)
+                continue
             words = field.split()
-            if any(w == t          for w in words):    best = max(best, exact   * 0.8); continue
-            if any(w.startswith(t) for w in words):    best = max(best, starts  * 0.7); continue
-            if any(t in w          for w in words):    best = max(best, contains* 0.6); continue
+            if any(w == t for w in words):
+                best = max(best, exact * 0.85)
+                continue
+            if any(w.startswith(t) for w in words):
+                best = max(best, starts * 0.75)
+                continue
+            if ' ' in field and f' {t}' in f' {field}':
+                best = max(best, contains)
+                continue
+            if len(t) >= 4 and any(w.startswith(t) or (len(w) >= len(t) + 4 and t in w) for w in words):
+                best = max(best, contains * 0.5)
+                continue
         return best
 
-    # ── P1: Exact Name ────────────────────────────────────────────────────
-    score += _match(name,   exact=200, starts=160, contains=120)
+    # 1. Exact Name & Prefix Name
+    name_score = _match(name, exact=200, starts=160, contains=120)
 
-    # ── P2: Exact Profession / Category ──────────────────────────────────
-    score += _match(cat,    exact=180, starts=140, contains=100)
+    # 2. Strong fuzzy name match (only fills gaps the exact matcher left)
+    fuzzy_name_score = 0.0
+    fuzzy_other_score = 0.0
+    if fuzzy_tokens:
+        try:
+            _nb, _ob = _fuzzy_bonus(getattr(user, 'search_index', None), fuzzy_tokens)
+            fuzzy_name_score = _nb
+            fuzzy_other_score = _ob
+        except Exception:
+            fuzzy_name_score = 0.0
+            fuzzy_other_score = 0.0
 
-    # ── P3: Specialization ────────────────────────────────────────────────
-    score += _match(spec,   exact=160, starts=120, contains=80)
+    effective_name_score = name_score
+    if fuzzy_name_score > 0:
+        effective_name_score = max(name_score, fuzzy_name_score)
 
-    # ── Secondary keyword fields (below the main 3) ───────────────────────
-    score += _match(skills, exact=70,  starts=55,  contains=35)
-    score += _match(svc,    exact=65,  starts=50,  contains=30)
-    score += _match(co,     exact=55,  starts=42,  contains=25)
-    score += _match(tags,   exact=45,  starts=34,  contains=20)
-    score += _match(city,   exact=50,  starts=38,  contains=22)
-    score += _match(area,   exact=40,  starts=30,  contains=18)
-    score += _match(country,exact=25,  starts=18,  contains=10)
-    score += _match(bio,    exact=25,  starts=18,  contains=10)
+    # Strict Name Isolation: If this is a Name search, professional MUST match the name!
+    if is_name_search and effective_name_score <= 0.0:
+        return 0.0
 
-    # ── P4: Verified ──────────────────────────────────────────────────────
+    # 3. Profession / Category match
+    cat_score = _match(cat, exact=150, starts=125, contains=95, min_len=2)
+
+    # 4. Specialization match
+    spec_score = _match(spec, exact=125, starts=105, contains=80, min_len=2)
+
+    # 5. City / Location match
+    city_score = _match(city, exact=70, starts=55, contains=35, min_len=2)
+    area_score = _match(area, exact=50, starts=40, contains=25, min_len=2)
+    country_score = _match(country, exact=30, starts=20, contains=15, min_len=3)
+
+    # 6. Secondary fields (skills, services, company, tags, bio)
+    skills_score = _match(skills, exact=40, starts=30, contains=20, min_len=3)
+    svc_score = _match(svc, exact=35, starts=25, contains=15, min_len=3)
+    co_score = _match(co, exact=30, starts=20, contains=15, min_len=3)
+    tags_score = _match(tags, exact=25, starts=18, contains=10, min_len=3)
+    bio_score = _match(bio, exact=20, starts=15, contains=10, min_len=3)
+
+    text_match_score = (
+        effective_name_score +
+        cat_score +
+        spec_score +
+        city_score +
+        area_score +
+        country_score +
+        skills_score +
+        svc_score +
+        co_score +
+        tags_score +
+        bio_score +
+        (fuzzy_other_score if effective_name_score == 0 else 0.0)
+    )
+
+    # Invariant: If there is no textual/relevance match, the professional gets 0.0!
+    # Non-relevance bonuses (verified, rating, etc.) must NEVER manufacture relevance out of thin air.
+    if text_match_score <= 0.0:
+        return 0.0
+
+    score = text_match_score
+
+    # ── Secondary Quality & Location Signals (Strictly bounded: max ~25 pts total) ──
+    # Verified (max 3 pts)
     if prof.is_verified:
-        score += 50
+        score += 3.0
 
-    # ── P5: Highest Rating (0–40 pts, 5★ = 40) ───────────────────────────
-    score += float(prof.average_rating) * 8
+    # Rating (0-5 pts, 5★ = 5.0)
+    try:
+        score += min(5.0, float(prof.average_rating))
+    except (TypeError, ValueError):
+        pass
 
-    # ── P6: Nearest Location (0–30 pts) ──────────────────────────────────
+    # Location proximity (0-5 pts, closer = more pts)
     if customer_lat and customer_lng:
         try:
             prof_lat = float(up.latitude)
             prof_lng = float(up.longitude)
             dist = _haversine_km(customer_lat, customer_lng, prof_lat, prof_lng)
-            score += max(0.0, 30.0 - dist * 0.3)   # 30 at 0km → 0 at 100km+
+            score += max(0.0, 5.0 - dist * 0.05)  # 5 at 0km -> 0 at 100km+
         except Exception:
             pass
 
-    # ── P7: Availability (+20) ────────────────────────────────────────────
+    # Availability (+3 pts)
     if getattr(prof, 'is_available', True):
-        score += 20
+        score += 3.0
 
-    # ── P8: Completed Jobs (0–19 pts, caps at ~48 jobs) ───────────────────
-    # Uses annotated count from queryset — no extra DB query
-    # Capped just below P7's flat 20 so Availability always outranks any
-    # number of completed jobs, preserving strict priority order.
+    # Completed Jobs (0-3 pts)
     completed = getattr(user, 'completed_jobs_count', 0) or 0
-    score += min(completed * 0.4, 19.0)
+    score += min(3.0, completed * 0.1)
 
-    # ── P9: Profile Completeness (0–15 pts) ──────────────────────────────
-    score += _profile_completeness(user) * 15
+    # Profile Completeness (0-2 pts)
+    score += _profile_completeness(user) * 2.0
 
-    # ── P10: Response Time (0–10 pts, lower hours = more pts) ────────────
+    # Response Time (0-2 pts)
     resp_hrs = getattr(prof, 'response_time_hrs', 24.0) or 24.0
-    score += max(0.0, 10.0 - resp_hrs * 0.4)   # <1hr≈10pts, 24hr=0pts
+    score += max(0.0, 2.0 - resp_hrs * 0.08)
 
-    # ── Premium boost ─────────────────────────────────────────────────────
-    if _is_premium_professional(user):
-        score += 12
+    # Premium boost (+2 pts)
+    prem = is_premium if is_premium is not None else _is_premium_professional(user)
+    if prem:
+        score += 2.0
 
     return score
 
 
 # ── Minimum relevance threshold ───────────────────────────────────────────────
-MIN_RELEVANCE_SCORE = 12.0
+# Raised from 12.0 to 30.0 so non-matching noise is strictly eliminated.
+MIN_RELEVANCE_SCORE = 30.0
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -758,51 +1410,9 @@ def _distance_bucket(distance_km):
 # Otherwise results pass through exactly as before.
 # ══════════════════════════════════════════════════════════════════════════
 
-# Nearest-centroid lookup used ONLY to name the customer's own city from
-# GPS (we have no reverse-geocoding API configured). Actual "nearby vs
-# other" ranking uses each professional's real GPS distance — already
-# computed above — not this list, so accuracy doesn't depend on it being
-# exhaustive.
-_CITY_CENTROIDS = {
-    'karachi': (24.8607, 67.0011), 'hyderabad': (25.3960, 68.3578),
-    'thatta': (24.7461, 67.9243), 'jamshoro': (25.4300, 68.2800),
-    'sukkur': (27.7052, 68.8574), 'larkana': (27.5590, 68.2120),
-    'nawabshah': (26.2442, 68.4100), 'mirpurkhas': (25.5270, 69.0110),
-    'lahore': (31.5204, 74.3587), 'islamabad': (33.6844, 73.0479),
-    'rawalpindi': (33.5651, 73.0169), 'peshawar': (34.0151, 71.5249),
-    'quetta': (30.1798, 66.9750), 'multan': (30.1575, 71.5249),
-    'faisalabad': (31.4504, 73.1350), 'gujranwala': (32.1877, 74.1945),
-    'sialkot': (32.4945, 74.5229), 'bahawalpur': (29.3956, 71.6836),
-    'sargodha': (32.0836, 72.6711), 'abbottabad': (34.1463, 73.2117),
-    'mardan': (34.1986, 72.0404), 'gwadar': (25.1264, 62.3225),
-    # ✅ ADDED — previously-missing cities. Their absence used to matter a
-    # lot: a customer physically in Badin (not in this table at all) would
-    # get nearest-centroid-matched to Thatta, and since city NAME matching
-    # was previously the actual search key, they'd see Thatta's
-    # professionals instead of their own. Matching is now 100% GPS-radius
-    # based (see _apply_location_priority) so this table is display-label
-    # only — but keeping it accurate still matters for what the UI tells
-    # the user their detected location is.
-    'badin': (24.6560, 68.8390), 'dadu': (26.7300, 67.7750),
-    'umerkot': (25.3606, 69.7361), 'tando allahyar': (25.4600, 68.7180),
-    'tando muhammad khan': (25.1233, 68.5367), 'shikarpur': (27.9558, 68.6386),
-    'khairpur': (27.5295, 68.7592), 'ghotki': (28.0075, 69.3150),
-    'jacobabad': (28.2769, 68.4514), 'matiari': (25.5989, 68.4514),
-    'sanghar': (26.0464, 68.9481), 'kashmore': (28.4331, 69.5814),
-}
+# Note: _CITY_CENTROIDS, _CITY_RADIUS_KM, and _DEFAULT_CITY_RADIUS_KM are
+# defined near the top of the module for global availability across all functions.
 
-
-# Effective "radius" (km) each metro sprawls to — a customer anywhere inside
-# this radius of the centroid is that city, even if a smaller town's
-# centroid happens to be nominally closer in raw straight-line distance.
-# Karachi/Lahore/Islamabad are big enough that this matters a lot; small
-# towns default to a modest radius.
-_CITY_RADIUS_KM = {
-    'karachi': 55, 'lahore': 45, 'islamabad': 35, 'rawalpindi': 30,
-    'faisalabad': 30, 'peshawar': 25, 'multan': 25, 'quetta': 25,
-    'gujranwala': 20, 'hyderabad': 20,
-}
-_DEFAULT_CITY_RADIUS_KM = 15
 
 
 def _reverse_geocode_city(lat, lng):
@@ -1137,7 +1747,7 @@ def _validate_professional_coords(lat, lng, city):
     return True, None
 
 
-def _build_professional_data(user, customer_lat=None, customer_lng=None, relevance=None):
+def _build_professional_data(user, customer_lat=None, customer_lng=None, relevance=None, is_premium=None):
     try:
         prof = user.professionalprofile
         up   = user.userprofile
@@ -1151,12 +1761,6 @@ def _build_professional_data(user, customer_lat=None, customer_lng=None, relevan
             prof_lat, prof_lng = prof_lat_raw, prof_lng_raw
             distance_is_precise = True
         else:
-            # 🐛 FIX: previously ANY non-null lat/lng was trusted blindly,
-            # even if it was corrupted, swapped with another profile, or
-            # simply didn't match the professional's own declared city.
-            # That is precisely how "Faisalabad, 140.7km away" could ever
-            # be shown when Karachi↔Faisalabad is genuinely ~990km apart —
-            # the stored coordinates were wrong, not the distance formula.
             if prof_lat_raw is not None or prof_lng_raw is not None:
                 logger.warning(
                     '[geo] INVALID coordinates for professional user_id=%s city=%s lat=%s lng=%s reason=%s — '
@@ -1168,10 +1772,6 @@ def _build_professional_data(user, customer_lat=None, customer_lng=None, relevan
             prof_lat, prof_lng = None, None
             distance_is_precise = False
 
-        # Professionals with no precise (or no valid) GPS still get an
-        # approximate distance via their city's centroid, so they're never
-        # silently dropped from distance-based ranking just because their
-        # exact coordinates weren't captured correctly.
         if not distance_is_precise and up.city:
             centroid = _CITY_CENTROIDS.get(_normalize(up.city))
             if centroid:
@@ -1189,18 +1789,23 @@ def _build_professional_data(user, customer_lat=None, customer_lng=None, relevan
                 photo_url = prof.photo_url.url
             except Exception:
                 pass
+        if not photo_url and hasattr(user, 'userprofile') and user.userprofile.photo_url:
+            try:
+                photo_url = user.userprofile.photo_url.url
+            except Exception:
+                pass
 
-        # ✅ Real-time presence (chat WebSocket), NOT the manual
-        # "available for bookings" toggle — used for the actual green
-        # Online/Offline dot on the professional's profile & cards.
+        # Real-time presence (chat WebSocket)
         presence = getattr(user, 'presence', None)
         is_online = bool(presence.is_online) if presence else False
         last_seen = presence.last_seen.isoformat() if presence and presence.last_seen else None
 
+        prem = is_premium if is_premium is not None else _is_premium_professional(user)
+        currency, currency_symbol = resolve_currency_for_user(country=up.country, city=up.city)
+
         return {
             'id':                str(user.id),
             'name':              user.name,
-            'email':             user.email,
             'photo_url':         photo_url,
             'bio':               prof.bio,
             'specialization':    prof.specialization,
@@ -1209,18 +1814,17 @@ def _build_professional_data(user, customer_lat=None, customer_lng=None, relevan
             'services':          prof.services,
             'tags':              prof.tags,
             'hourly_rate':       float(prof.hourly_rate),
+            'currency':          currency,
+            'currency_symbol':   currency_symbol,
             'average_rating':    float(prof.average_rating),
             'experience_years':  prof.experience_years,
             'is_verified':       prof.is_verified,
-            'is_premium':        _is_premium_professional(user),
+            'is_premium':        prem,
             'is_available':      getattr(prof, 'is_available', True),
             'is_online':         is_online,
             'last_seen':         last_seen,
             'completed_jobs':    getattr(user, 'completed_jobs_count', 0) or 0,
             'reviews_count':     getattr(user, 'reviews_count', 0) or 0,
-            # ── Home-feed signals (only populated when the caller's
-            # queryset annotates them — HomeFeedView does; other callers
-            # simply get 0 via getattr's default, so this is backward safe) ──
             'profile_views_count':  getattr(user, 'profile_views_count', 0) or 0,
             'favorites_count':      getattr(user, 'favorites_count', 0) or 0,
             'bookings_this_week':   getattr(user, 'bookings_this_week', 0) or 0,
@@ -1246,13 +1850,6 @@ def _build_professional_data(user, customer_lat=None, customer_lng=None, relevan
             'created_at':        user.created_at.isoformat() if getattr(user, 'created_at', None) else None,
         }
     except Exception:
-        # 🐛 FIX: this used to be a silent `except: return None` — if it
-        # throws for EVERY professional (e.g. a DB column referenced here
-        # doesn't exist yet because a migration hasn't been applied on
-        # this environment), the ENTIRE home feed goes empty with zero
-        # trace of why in the logs. Now the real error is always logged,
-        # so "all sections suddenly empty" is diagnosable instead of a
-        # silent dead end.
         logger.exception('[home] _build_professional_data failed for user_id=%s — dropping this professional', getattr(user, 'id', None))
         return None
 
@@ -1264,20 +1861,7 @@ def _sort_professionals(results):
     Tie-breakers (same score, e.g. category browse with no keyword) follow
     the EXACT required priority order:
       Verified → Highest Rating → Nearest → Availability →
-      Completed Jobs → Profile Completeness → Response Time
-
-    🐛 FIX (Nearby Professionals sorting): the "Nearest" tie-break used to
-    key on `_distance_bucket()` — a 5/15/30/60/120km bucket index — instead
-    of the real distance. Two professionals at 95km and 102km (or 165km and
-    178km) landed in the SAME bucket, so this key couldn't tell them apart;
-    the sort then fell through to the next tie-breakers (availability,
-    completed jobs, response time, ...), which have nothing to do with
-    distance — producing exactly the "farther professional shown before a
-    nearer one" bug. Using the real `distance_km` directly makes this
-    strictly ascending by actual Haversine distance, with no bucketing and
-    no grouping by city. Professionals with no computable distance
-    (`None`) are pushed to the end rather than sorted as if they were at
-    0km.
+      Completed Jobs → Profile Completeness → Response Time → Deterministic ID
     """
     return sorted(
         results,
@@ -1291,8 +1875,28 @@ def _sort_professionals(results):
             -x.get('profile_complete',  0),
             x.get('response_time_hrs',  24),
             not x.get('is_premium',     False),
+            str(x.get('id', '')),
         )
     )
+
+
+def _float_param(request, name, default):
+    """
+    Optional numeric query param. Missing, empty, malformed, non-finite
+    (nan/inf) or negative values are IGNORED (the default is used) — same
+    lenient convention as lat/lng and max_distance here — so bad input can
+    never raise and turn into an HTTP 500.
+    """
+    raw = request.query_params.get(name)
+    if raw is None or not str(raw).strip():
+        return default
+    try:
+        value = float(str(raw).strip())
+    except (TypeError, ValueError):
+        return default
+    if not math.isfinite(value) or value < 0:
+        return default
+    return value
 
 
 def _get_customer_location(request):
@@ -1344,7 +1948,9 @@ def _build_empty_state(term='', customer_lat=None, customer_lng=None) -> dict:
     # ── 1. Similar professionals (synonym-expanded search) ────────────────
     similar = []
     if term:
-        expanded = _expand_query(term)
+        # The term itself first — _expand_query() returns an unordered set, so
+        # [:4] could previously skip the actual profession word entirely.
+        expanded = [term] + [e for e in _expand_query(term) if e != term]
         # Use up to 3 expanded synonyms for similar search
         sim_qs = base_qs.none()
         for syn in expanded[:4]:
@@ -1434,6 +2040,15 @@ class AutoSuggestView(APIView):
 
         raw = request.query_params.get('q', '').strip()
         term = _normalize(raw)
+        # Any-language typing: Urdu/Hindi/Arabic/Roman-spelling profession words
+        # are mapped to their English profession (aliases.py), then a one-word
+        # typo is repaired, so every section below also works for Urdu script,
+        # "vakil", "dentst" ... exactly like it does for English.
+        search_term = _normalize(_translate_multilingual(raw)) if raw else ''
+        search_term = search_term or term
+        if search_term and ' ' not in search_term and len(search_term) >= 4:
+            search_term = _correct_typo(search_term)[0] or search_term
+        fz_tokens = _fz_tokens(raw) if raw else []
 
         # ── No query — show popular only ─────────────────────────────────
         if not term:
@@ -1446,47 +2061,80 @@ class AutoSuggestView(APIView):
 
         # ── Matching professions from vocabulary ──────────────────────────
         # startswith gets highest priority, then contains
-        starts   = [w.title() for w in SEARCH_VOCABULARY if w.startswith(term)]
-        contains = [w.title() for w in SEARCH_VOCABULARY if term in w and not w.startswith(term)]
+        starts   = [w.title() for w in SEARCH_VOCABULARY if w.startswith(search_term)]
+        contains = [w.title() for w in SEARCH_VOCABULARY if search_term in w and not w.startswith(search_term)]
         matching_professions = list(dict.fromkeys(starts + contains))[:6]
 
         # ── Matching categories from DB ───────────────────────────────────
         cats = list(
             Category.objects
-            .filter(name__icontains=raw)
+            .filter(DQ(name__icontains=raw) | DQ(name__icontains=search_term))
             .values('id', 'name')
             .order_by('name')[:5]
         )
 
         # ── Matching professionals (name / specialization / category) ─────
+        # If query matches a known profession or category, suggest professionals from that category only!
+        _, suggest_cat_ids = _resolve_category_ids(search_term) if search_term else (None, [])
+        if not suggest_cat_ids and raw:
+            _, suggest_cat_ids = _resolve_category_ids(raw)
+
+        if suggest_cat_ids:
+            pro_match = DQ(professionalprofile__category_id__in=suggest_cat_ids)
+        else:
+            pro_match = (
+                DQ(name__icontains=raw) |
+                DQ(name__icontains=search_term)
+            )
+            if len(search_term) >= 3:
+                pro_match |= (
+                    DQ(professionalprofile__specialization__icontains=raw) |
+                    DQ(professionalprofile__category__name__icontains=raw) |
+                    DQ(professionalprofile__specialization__icontains=search_term) |
+                    DQ(professionalprofile__category__name__icontains=search_term)
+                )
+            if fz_tokens:                       # cross-script / misspelt names
+                pro_match |= _fz_q(fz_tokens)
         pro_qs = (
             User.objects
             .filter(role='professional')
-            .filter(
-                DQ(name__icontains=raw) |
-                DQ(professionalprofile__specialization__icontains=raw) |
-                DQ(professionalprofile__category__name__icontains=raw)
-            )
+            .filter(pro_match)
             .select_related('professionalprofile', 'professionalprofile__category', 'userprofile', 'presence')
             .distinct()[:6]
         )
         pros = []
         for p in pro_qs:
             try:
+                pp = getattr(p, 'professionalprofile', None)
+                up = getattr(p, 'userprofile', None)
+                photo_url = None
+                if pp and pp.photo_url:
+                    try:
+                        photo_url = pp.photo_url.url
+                    except Exception:
+                        s = str(pp.photo_url).strip()
+                        if 'http://' in s or 'https://' in s or '/' in s:
+                            photo_url = s
+                if not photo_url and up and up.photo_url:
+                    try:
+                        photo_url = up.photo_url.url
+                    except Exception:
+                        s = str(up.photo_url).strip()
+                        if 'http://' in s or 'https://' in s or '/' in s:
+                            photo_url = s
+
                 pros.append({
                     'id':       str(p.id),
                     'name':     p.name,
-                    'category': p.professionalprofile.category.name
-                                if p.professionalprofile.category else '',
-                    'city':     p.userprofile.city or '',
-                    'photo_url': (p.professionalprofile.photo_url.url
-                                  if p.professionalprofile.photo_url else None),
+                    'category': pp.category.name if pp and pp.category else '',
+                    'city':     (up.city if up else '') or '',
+                    'photo_url': photo_url,
                 })
             except Exception:
                 pass
 
         # ── Popular — filter by query, fallback to all ────────────────────
-        popular = [p for p in self.POPULAR_SEARCHES if term in p.lower()]
+        popular = [p for p in self.POPULAR_SEARCHES if search_term in p.lower()]
         if not popular:
             popular = self.POPULAR_SEARCHES[:6]
 
@@ -1500,6 +2148,22 @@ class AutoSuggestView(APIView):
             'matching_categories':    cats,
             'matching_professionals': pros,
         })
+
+
+def _localize_names(label, rows, request):
+    """
+    Categories/subcategories ko ?lang= ke mutabiq 'localized_name' lagata hai
+    (`name` untouched — search matching aur purane clients English par chalte
+    hain). Kabhi raise nahi karta: koi bhi error ho to localized_name = name,
+    taake Home ke sections is wajah se kabhi khali na hon.
+    """
+    try:
+        from apps.admin_panel.models import ContentTranslation
+        return ContentTranslation.localize_rows(
+            label, rows, request.query_params.get('lang'), prefix='localized_')
+    except Exception:
+        logger.exception('[i18n] %s localization failed — serving base names', label)
+        return [{**dict(r), 'localized_name': r.get('name', '')} for r in rows]
 
 
 class CategoryView(APIView):
@@ -1517,7 +2181,8 @@ class CategoryView(APIView):
         # degrade to empty on its own failure, never throw.
         try:
             cats = Category.objects.all().order_by('order', 'name')
-            return Response(CategorySerializer(cats, many=True).data)
+            return Response(_localize_names(
+                'category', CategorySerializer(cats, many=True).data, request))
         except Exception:
             logger.exception('[home] CategoryView failed — returning empty list')
             return Response([])
@@ -1577,7 +2242,8 @@ class FeaturedCategoriesView(APIView):
             if featured:
                 return Response({
                     'source':     'featured',
-                    'categories': CategorySerializer(featured, many=True).data,
+                    'categories': _localize_names(
+                        'category', CategorySerializer(featured, many=True).data, request),
                 })
         except Exception:
             logger.exception('[home] Featured-categories query failed — falling back to popular')
@@ -1586,7 +2252,8 @@ class FeaturedCategoriesView(APIView):
         fallback = self._popular_categories_fallback()
         return Response({
             'source':     'popular_fallback',
-            'categories': CategorySerializer(fallback, many=True).data,
+            'categories': _localize_names(
+                'category', CategorySerializer(fallback, many=True).data, request),
         })
 
     def _popular_categories_fallback(self):
@@ -1662,7 +2329,8 @@ class SubCategoryView(APIView):
         from apps.search.serializers import SubCategorySerializer
         from apps.search.models import SubCategory
         subs = SubCategory.objects.filter(category_id=category_id)
-        return Response(SubCategorySerializer(subs, many=True).data)
+        return Response(_localize_names(
+            'subcategory', SubCategorySerializer(subs, many=True).data, request))
 
 
 class NearbyProfessionalsView(APIView):
@@ -1678,19 +2346,20 @@ class NearbyProfessionalsView(APIView):
         'professionalprofile__category',
         'userprofile',
         'presence',
+        'search_index',
     )
 
     def get(self, request):
+        q_param_provided = 'q' in request.query_params
         raw_query    = request.query_params.get('q', '').strip()
         city_param   = request.query_params.get('city', '').strip()
         category_id  = request.query_params.get('category_id', '')
-        min_price    = float(request.query_params.get('min_price',  0))
-        max_price    = float(request.query_params.get('max_price',  999999))
-        min_rating   = float(request.query_params.get('min_rating', 0))
+        min_price    = _float_param(request, 'min_price',  0)
+        max_price    = _float_param(request, 'max_price',  999999)
+        min_rating   = _float_param(request, 'min_rating', 0)
         verified_only = request.query_params.get('verified_only', 'false').lower() == 'true'
 
         # ── Explicit smart filters (gender / experience / availability / language) ──
-        # Explicit query params always win over anything auto-detected from `q`.
         gender_param      = request.query_params.get('gender', '').strip().lower()
         min_exp_param_raw = request.query_params.get('min_experience', '')
         available_only_param = request.query_params.get('available_only', 'false').lower() == 'true'
@@ -1708,13 +2377,70 @@ class NearbyProfessionalsView(APIView):
 
         customer_lat, customer_lng = _get_customer_location(request)
 
+        # ── Phase 5 Empty/Whitespace Query Guard ────────────────────────────
+        # Empty or whitespace-only searches must not return the entire professional
+        # directory by default. When 'q' was sent but is empty/whitespace, and no
+        # other filter or location coordinate was specified, return empty state immediately.
+        has_any_filter = bool(
+            category_id or city_param or min_price > 0 or max_price < 999999 or
+            min_rating > 0 or verified_only or gender_param or (min_exp_param is not None) or
+            available_only_param or language_param or service_mode_param or
+            (max_distance_param is not None) or (customer_lat and customer_lng)
+        )
+        if q_param_provided and not raw_query and not has_any_filter:
+            empty_data = _build_empty_state(customer_lat=customer_lat, customer_lng=customer_lng)
+            return Response(_build_response(
+                [],
+                meta={
+                    'is_fallback':         False,
+                    'fallback_message':    '',
+                    'city_searched':       '',
+                    'total':               0,
+                    'spelling_corrected':  False,
+                    'corrected_query':     '',
+                    'is_empty':            True,
+                    'detected_gender':          None,
+                    'detected_urgent':          False,
+                    'detected_language':        None,
+                    'detected_min_experience':  None,
+                    'detected_service_mode':    None,
+                    'detected_max_distance':    None,
+                    'distance_filter_applied':  False,
+                    'personalization_applied':  False,
+                    **empty_data,
+                }
+            ))
+
         # ── Base queryset — 1 DB round-trip for all relations + job count ──
         from django.db.models import Count
         from django.db.models import Q as DQ
+        from django.utils import timezone
+
+        # ── Exclude suspended or banned professionals ───────────────────────
+        suspended_ids = set()
+        try:
+            from apps.admin_panel.models import ModerationAction
+            now = timezone.now()
+            suspended_ids = set(
+                ModerationAction.objects
+                .filter(
+                    is_active=True,
+                    starts_at__lte=now,
+                    action_type__in=[
+                        ModerationAction.ACTION_SUSPEND_PERMANENT,
+                        ModerationAction.ACTION_SUSPEND_TEMPORARY,
+                    ]
+                )
+                .filter(DQ(expires_at__isnull=True) | DQ(expires_at__gt=now))
+                .values_list('target_user_id', flat=True)
+            )
+        except Exception as exc:
+            logger.warning("Failed to fetch suspended user IDs for search: %s", exc)
 
         qs = (
             User.objects
-            .filter(role='professional')
+            .filter(role='professional', is_active=True)
+            .exclude(id__in=suspended_ids)
             .select_related(*self._BASE_SELECT)
             .annotate(
                 # Real completed job count from Booking model
@@ -1723,8 +2449,6 @@ class NearbyProfessionalsView(APIView):
                     filter=DQ(bookings_received__status='completed'),
                     distinct=True,
                 ),
-                # ✅ Real review count — needed so "Trending/Popular" can be
-                # sorted by most-reviewed-first instead of a relevance proxy.
                 reviews_count=Count(
                     'received_reviews',
                     distinct=True,
@@ -1732,31 +2456,118 @@ class NearbyProfessionalsView(APIView):
             )
         )
 
+        # ── Pre-fetch active premium professional IDs (avoids N+1 queries) ──
+        try:
+            from apps.subscriptions.models import Subscription
+            active_premium_user_ids = set(
+                Subscription.objects.filter(status='active')
+                .exclude(plan__billing='free')
+                .values_list('user_id', flat=True)
+            )
+        except Exception:
+            active_premium_user_ids = set()
+
         # ── Filters ───────────────────────────────────────────────────────
-        # (price filter itself is applied further below, after free-text
-        # price phrases like "under 100" have had a chance to narrow it)
         if min_rating   > 0:   qs = qs.filter(professionalprofile__average_rating__gte=min_rating)
         if verified_only:       qs = qs.filter(professionalprofile__is_verified=True)
         if category_id:         qs = qs.filter(professionalprofile__category_id=category_id)
 
         # ── Keyword search: multilingual translation → normalize → typo-fix ──
-        # `_translate_multilingual` runs FIRST on the raw text so Roman Urdu /
-        # Urdu-script tokens ("khatoon", "خاتون", "bijli") become their English
-        # equivalents before anything else touches the query — otherwise they'd
-        # never match the (English) DB fields at all.
         translated_query = _translate_multilingual(raw_query) if raw_query else ''
         term = _normalize(translated_query) if translated_query else ''
         corrected_term = term
         spelling_corrected = False
         search_terms = []
+        core_term = ''
+        fuzzy_tokens = []
+
+        # ── Query Classification & Disambiguation ──
+        classification = _classify_search_query(term, raw_query, city_param, category_id)
+        strict_category_ids = classification.get('strict_category_ids') or []
+        is_category_search = classification.get('is_category_search', False)
+        is_name_search = classification.get('is_name_search', False)
+        name_query = classification.get('name_query')
+        canonical_profession = classification.get('canonical_profession')
+
+        # ── 1. Strict Category Isolation ──────────────────────────────────
+        # Critical rule: When user searches for a profession or category, results
+        # MUST belong strictly to that requested category. Never include a different
+        # profession just because its name, rating, availability, or fuzzy score is similar.
+        if strict_category_ids:
+            qs = qs.filter(professionalprofile__category_id__in=strict_category_ids)
 
         if term:
-            corrected_term, spelling_corrected = _correct_typo(term)
+            _city_found, _city_tokens = _find_city_in_text(term)
+            core_term, ignored_words = _core_query(term, _city_tokens)
+            
+            # Efficient single-query check for words that match a professional's name
+            words_for_name = [w for w in term.split() if len(w) >= 3]
+            name_words = set()
+            if words_for_name:
+                name_q = DQ()
+                for w in words_for_name:
+                    name_q |= DQ(name__icontains=w)
+                matching_names = list(
+                    User.objects.filter(role='professional').filter(name_q).values_list('name', flat=True)[:30]
+                )
+                name_words = {w for w in words_for_name if any(w in n.lower() for n in matching_names)}
+
+            # Known professional name parts for typo correction (e.g. 'umber' -> 'amber')
+            known_name_tokens = cache.get('search_known_name_tokens')
+            if known_name_tokens is None:
+                known_name_tokens = set()
+                for n in User.objects.filter(role='professional').values_list('name', flat=True)[:200]:
+                    if n:
+                        for part in n.lower().split():
+                            if len(part) >= 3:
+                                known_name_tokens.add(part)
+                cache.set('search_known_name_tokens', known_name_tokens, timeout=300)
+
+            # Skip typo correction if user typed an exact name that exists in DB
+            skip_typo = set(ignored_words) | name_words
+            if is_name_search and name_query:
+                try:
+                    if User.objects.filter(role='professional').filter(DQ(name__icontains=name_query) | DQ(name__istartswith=name_query)).exists():
+                        skip_typo.add(name_query.lower())
+                except Exception:
+                    pass
+
+            corrected_term, spelling_corrected = _correct_typo(
+                term, skip_words=skip_typo, extra_vocab=known_name_tokens
+            )
+            # A typo'd city ("lahor") is fixed in the banner too.
+            if _city_found and ' ' not in _city_found:
+                for _t in _city_tokens:
+                    if _t != _city_found:
+                        corrected_term = re.sub(r'\b' + re.escape(_t) + r'\b', _city_found, corrected_term)
+                        spelling_corrected = True
+            core_corrected, _ = _core_query(
+                corrected_term, _city_tokens | set(_city_found.split()) if _city_found else _city_tokens
+            )
+
+            # If typo corrected a name (e.g. 'umber' -> 'amber'), update name_query
+            if is_name_search and name_query and spelling_corrected:
+                for orig_w, fixed_w in zip(term.split(), corrected_term.split()):
+                    if orig_w.lower() == name_query.lower() and fixed_w.lower() != orig_w.lower():
+                        name_query = fixed_w
+
             # Expand: abbreviations + synonyms + original + corrected
-            search_terms = list(dict.fromkeys(
-                _expand_query(term) + _expand_query(corrected_term)
-            ))
-            qs = _multi_field_qs(qs, search_terms)
+            search_terms = [t for t in dict.fromkeys(
+                _expand_query(core_term) + _expand_query(core_corrected)
+            ) if t]
+            fuzzy_tokens = _fz_tokens(f'{core_term} {core_corrected}')
+
+            # ── 2. Accurate Name Matching / Multi-field Execution ─────────
+            if is_name_search and name_query:
+                # Name searches query strictly on name fields to avoid noise from bio/tags
+                name_search_terms = [name_query]
+                if name_query != core_term:
+                    name_search_terms.append(core_term)
+                if spelling_corrected and core_corrected:
+                    name_search_terms.append(core_corrected)
+                qs = _multi_field_qs(qs, name_search_terms, fuzzy_tokens, is_name_search=True)
+            elif search_terms:
+                qs = _multi_field_qs(qs, search_terms, fuzzy_tokens, is_category_search=is_category_search)
 
         # Use corrected_term for scoring (best signal)
         score_term = corrected_term if corrected_term else term
@@ -1764,10 +2575,13 @@ class NearbyProfessionalsView(APIView):
         scoring_terms = search_terms if term else []
 
         # ── Numeric price detected in free text ("dr under 100$", "over 2k") ──
-        # Text is always the MORE restrictive signal — it narrows whatever
-        # the price slider/param says, it never widens it, since a typed
-        # budget is a deliberate, specific ask.
         price_intent = _extract_price_filter(term) if term else {}
+        if raw_query:
+            raw_price = _extract_price_filter(raw_query)
+            if 'max_price' not in price_intent and 'max_price' in raw_price:
+                price_intent['max_price'] = raw_price['max_price']
+            if 'min_price' not in price_intent and 'min_price' in raw_price:
+                price_intent['min_price'] = raw_price['min_price']
         if 'max_price' in price_intent:
             max_price = min(max_price, price_intent['max_price'])
         if 'min_price' in price_intent:
@@ -1778,9 +2592,6 @@ class NearbyProfessionalsView(APIView):
         )
 
         # ── Intent-detected smart filters (Gender / Availability / Language / Experience) ──
-        # Detected from the free-text query itself ("female dentist", "urdu
-        # speaking lawyer", "need someone urgent") — explicit query params
-        # above always take priority over what's auto-detected here.
         detected_intent = _extract_intent_filters(term) if term else {}
 
         effective_gender      = gender_param or detected_intent.get('gender', '')
@@ -1807,12 +2618,10 @@ class NearbyProfessionalsView(APIView):
                 mode_q |= DQ(professionalprofile__services__icontains=phrase)
             qs = qs.filter(mode_q)
 
-        # ── City filter ───────────────────────────────────────────────────
-        # An explicit `city` query param always wins; otherwise fall back to
-        # a city name detected inside the free-text `q` itself.
+        # ── City filter & Category-Preserved Fallback ─────────────────────
         is_fallback = False
         fallback_message = ''
-        effective_city = city_param or _extract_city_from_text(term)
+        effective_city = city_param or classification.get('detected_city') or _extract_city_from_text(term)
 
         if effective_city:
             city_qs = qs.filter(userprofile__city__icontains=effective_city)
@@ -1820,19 +2629,28 @@ class NearbyProfessionalsView(APIView):
                 qs = city_qs
             else:
                 is_fallback = True
-                label = term.title() if term else 'Professionals'
+                label = (canonical_profession or core_term or 'Professionals').title()
                 fallback_message = (
                     f'No {label} found in {effective_city.title()}. '
                     f'Showing professionals from other cities.'
                 )
 
-        # ── Score + filter ────────────────────────────────────────────────
+        # ── Score + filter with Strict Category & Name Constraints ────────
         results = []
         for user in qs:
-            score = _relevance_score(user, scoring_terms, customer_lat, customer_lng) if score_term else 50.0
+            user_is_premium = (user.id in active_premium_user_ids)
+            score = _relevance_score(
+                user, scoring_terms, customer_lat, customer_lng, fuzzy_tokens,
+                is_premium=user_is_premium,
+                target_category_ids=strict_category_ids if strict_category_ids else None,
+                is_name_search=is_name_search,
+            ) if score_term else 50.0
             if score < MIN_RELEVANCE_SCORE:
                 continue
-            data = _build_professional_data(user, customer_lat, customer_lng, relevance=score)
+            data = _build_professional_data(
+                user, customer_lat, customer_lng, relevance=score,
+                is_premium=user_is_premium
+            )
             if data:
                 results.append(data)
 
@@ -1885,7 +2703,12 @@ class NearbyProfessionalsView(APIView):
             bool(getattr(request, 'user', None) and request.user.is_authenticated),
             len(sorted_results),
         )
-        if not effective_city and sorted_results:
+        # A real text search (name / profession / skill, e.g. "amber") must
+        # return EVERY match — the 300km "nearby" radius cut is only for
+        # browsing without a text query. Distance still helps ranking via
+        # the relevance score / sort tie-breakers above.
+        has_text_query = bool(search_terms)
+        if not effective_city and sorted_results and not has_text_query:
             sorted_results, location_meta = _apply_location_priority(
                 sorted_results, customer_lat, customer_lng, score_term,
                 saved_city=saved_city,
@@ -1895,7 +2718,7 @@ class NearbyProfessionalsView(APIView):
         empty_data = {}
         if not sorted_results:
             empty_data = _build_empty_state(
-                term          = score_term,
+                term          = core_term or score_term,   # profession words only (not 'female'/'karachi')
                 customer_lat  = customer_lat,
                 customer_lng  = customer_lng,
             )
@@ -1935,17 +2758,41 @@ class PriceRangeSearchView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        min_price = float(request.query_params.get('min_price', 0))
-        max_price = float(request.query_params.get('max_price', 999999))
+        min_price = _float_param(request, 'min_price', 0)
+        max_price = _float_param(request, 'max_price', 999999)
         customer_lat, customer_lng = _get_customer_location(request)
+
+        # Exclude suspended professionals
+        suspended_ids = set()
+        try:
+            from apps.admin_panel.models import ModerationAction
+            from django.utils import timezone
+            now = timezone.now()
+            suspended_ids = set(
+                ModerationAction.objects
+                .filter(
+                    is_active=True,
+                    starts_at__lte=now,
+                    action_type__in=[
+                        ModerationAction.ACTION_SUSPEND_PERMANENT,
+                        ModerationAction.ACTION_SUSPEND_TEMPORARY,
+                    ]
+                )
+                .filter(Q(expires_at__isnull=True) | Q(expires_at__gt=now))
+                .values_list('target_user_id', flat=True)
+            )
+        except Exception:
+            suspended_ids = set()
 
         qs = (
             User.objects
             .filter(
                 role='professional',
+                is_active=True,
                 professionalprofile__hourly_rate__gte=min_price,
                 professionalprofile__hourly_rate__lte=max_price,
             )
+            .exclude(id__in=suspended_ids)
             .select_related('professionalprofile', 'professionalprofile__category', 'userprofile', 'presence')
         )
 

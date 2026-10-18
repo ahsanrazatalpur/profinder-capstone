@@ -14,6 +14,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.mail import EmailMultiAlternatives
+from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
@@ -22,6 +23,8 @@ from django.conf import settings
 from apps.users.serializers import RegisterSerializer, UpdateLanguageSerializer
 from apps.users.models import User
 from apps.profiles.models import UserProfile, ProfessionalProfile
+from apps.notifications.utils import notify_admins
+from apps.users.brevo_email import send_brevo_email
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +37,19 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+            # ✅ NEW — a new professional needs admin review/verification,
+            # so admins should hear about it on their notification bell
+            # instead of only finding out next time someone opens the
+            # Verification Requests tab. Customer signups stay silent —
+            # noisier, lower admin-action-value.
+            if user.role == 'professional':
+                notify_admins(
+                    title='New Professional Signup',
+                    message=f'{user.name} ({user.email}) registered as a professional.',
+                    notif_type='general',
+                    data={'user_id': user.id, 'event': 'professional_signup'},
+                )
             return Response(
                 {"message": "User created successfully"},
                 status=status.HTTP_201_CREATED
@@ -105,26 +120,173 @@ class LoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        user = authenticate(request, username=email, password=password)
-        if user:
-            if not user.is_active:
-                return Response(
-                    {"error": "Your account has been banned."},
-                    status=status.HTTP_403_FORBIDDEN
+        # NOTE: we intentionally do NOT use django.contrib.auth.authenticate()
+        # here. Django's default ModelBackend silently returns None for any
+        # user with is_active=False (i.e. banned users), which meant a
+        # banned user always fell through to "Invalid email or password"
+        # and never saw the "banned" message below. Checking the password
+        # manually lets us tell the two cases apart.
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "Invalid email or password."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        if not user.check_password(password):
+            return Response(
+                {"error": "Invalid email or password."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        if not user.is_active:
+            return Response(
+                {"error": "Your account has been banned."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "access":  str(refresh.access_token),
+            "refresh": str(refresh),
+            "role":    user.role,
+            # ✅ i18n — null means the app should upload its locally
+            # selected language instead of overriding it.
+            "preferred_language": user.preferred_language,
+        })
+
+
+# ── Google Sign-In ───────────────────────────────────────────────────────
+# POST /api/users/google/
+# Body: { "id_token": "<token from google_sign_in on the Flutter side>",
+#         "role": "customer" | "professional"  (only used the first time —
+#                  i.e. when this Google account doesn't have a User yet) }
+#
+# Flow: verify the id_token directly with Google (no session/cookie dance,
+# so this works the same for a mobile app hitting a stateless DRF API).
+# If a User with that email already exists we just log them in; otherwise
+# we create one on the spot, matching what RegisterView would have done.
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        # 🐛 FIX: on web, google_sign_in never returns an idToken, only an
+        # accessToken — so we accept either one now. id_token is verified
+        # locally (JWT signature check); access_token has no signature to
+        # check, so we ask Google's tokeninfo endpoint to vouch for it and
+        # confirm its audience is still our own GOOGLE_CLIENT_ID.
+        id_token_str = request.data.get('id_token')
+        access_token_str = request.data.get('access_token')
+        if not id_token_str and not access_token_str:
+            return Response(
+                {"error": "id_token or access_token is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if id_token_str:
+            try:
+                from google.oauth2 import id_token as google_id_token
+                from google.auth.transport import requests as google_requests
+
+                idinfo = google_id_token.verify_oauth2_token(
+                    id_token_str,
+                    google_requests.Request(),
+                    settings.GOOGLE_CLIENT_ID,
                 )
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                "access":  str(refresh.access_token),
-                "refresh": str(refresh),
-                "role":    user.role,
-                # ✅ i18n — null means the app should upload its locally
-                # selected language instead of overriding it.
-                "preferred_language": user.preferred_language,
-            })
-        return Response(
-            {"error": "Invalid email or password."},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
+            except ValueError:
+                # Token is malformed, expired, or its audience doesn't match
+                # our GOOGLE_CLIENT_ID.
+                return Response(
+                    {"error": "Invalid or expired Google token."},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+            except Exception:
+                logger.exception("Google token verification failed unexpectedly.")
+                return Response(
+                    {"error": "Could not verify Google token."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            import requests as http_requests
+
+            try:
+                resp = http_requests.get(
+                    'https://oauth2.googleapis.com/tokeninfo',
+                    params={'access_token': access_token_str},
+                    timeout=5,
+                )
+            except http_requests.RequestException:
+                logger.exception("Google tokeninfo request failed unexpectedly.")
+                return Response(
+                    {"error": "Could not verify Google token."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if resp.status_code != 200:
+                # Expired, revoked, or otherwise invalid access_token.
+                return Response(
+                    {"error": "Invalid or expired Google token."},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
+            idinfo = resp.json()
+            # tokeninfo doesn't reject a mismatched audience by itself —
+            # we must check it ourselves, or any Google access_token from
+            # any app could be used to log in as one of our users.
+            token_aud = idinfo.get('aud')
+            if token_aud != settings.GOOGLE_CLIENT_ID:
+                return Response(
+                    {"error": "Invalid or expired Google token."},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
+        email = (idinfo.get('email') or '').strip().lower()
+        if not email:
+            return Response(
+                {"error": "Google account has no email."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        # Google's tokeninfo endpoint returns "true"/"false" as strings,
+        # while the id_token JWT payload uses real booleans — normalize both.
+        email_verified = idinfo.get('email_verified', False)
+        if isinstance(email_verified, str):
+            email_verified = email_verified.lower() == 'true'
+        if not email_verified:
+            return Response(
+                {"error": "Google email is not verified."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        name = idinfo.get('name') or email.split('@')[0]
+
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            role = request.data.get('role', 'customer')
+            if role not in ('customer', 'professional'):
+                role = 'customer'
+            # Social sign-in accounts don't have a usable password — lock
+            # the password field so it can never be guessed/brute-forced,
+            # while set_unusable_password() still lets Django treat it as
+            # a normal active user everywhere else.
+            user = User(email=email, name=name, role=role)
+            user.set_unusable_password()
+            user.save()
+
+        if not user.is_active:
+            return Response(
+                {"error": "Your account has been banned."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "access":  str(refresh.access_token),
+            "refresh": str(refresh),
+            "role":    user.role,
+            "preferred_language": user.preferred_language,
+        })
 
 
 class UserView(APIView):
@@ -138,20 +300,59 @@ class UserView(APIView):
             "name":  user.name,
             "role":  user.role,
             "preferred_language": user.preferred_language,  # ✅ i18n
+            "push_notifications": getattr(user, 'push_notifications', True),
+            "email_notifications": getattr(user, 'email_notifications', True),
         })
 
-    # ── Save / update this device's FCM token ──────────────────────
+    # ── Save / update FCM token and notification preferences ──────
     def patch(self, request):
-        fcm_token = request.data.get('fcm_token')
-        if fcm_token is None:
-            return Response(
-                {"error": "fcm_token is required."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
         user = request.user
-        user.fcm_token = fcm_token
-        user.save(update_fields=['fcm_token'])
-        return Response({"message": "FCM token saved."})
+        update_fields = []
+
+        if 'push_notifications' in request.data:
+            val = request.data.get('push_notifications')
+            if isinstance(val, bool):
+                user.push_notifications = val
+            elif str(val).lower() in ('true', '1'):
+                user.push_notifications = True
+            elif str(val).lower() in ('false', '0'):
+                user.push_notifications = False
+            update_fields.append('push_notifications')
+
+        if 'email_notifications' in request.data:
+            val = request.data.get('email_notifications')
+            if isinstance(val, bool):
+                user.email_notifications = val
+            elif str(val).lower() in ('true', '1'):
+                user.email_notifications = True
+            elif str(val).lower() in ('false', '0'):
+                user.email_notifications = False
+            update_fields.append('email_notifications')
+
+        if 'fcm_token' in request.data:
+            fcm_token = (request.data.get('fcm_token') or '').strip()
+            if fcm_token:
+                # One physical device = one account. If someone else was logged in on this
+                # phone earlier, detach the token from them so they stop receiving this
+                # user's notifications (and vice-versa).
+                User.objects.filter(fcm_token=fcm_token).exclude(pk=user.pk).update(fcm_token=None)
+            # Empty string = logout → clear token so this account stops getting pushes on this device
+            user.fcm_token = fcm_token or None
+            update_fields.append('fcm_token')
+
+        if update_fields:
+            user.save(update_fields=update_fields)
+            return Response({
+                "message": "User settings updated successfully.",
+                "push_notifications": getattr(user, 'push_notifications', True),
+                "email_notifications": getattr(user, 'email_notifications', True),
+                "fcm_token": user.fcm_token,
+            })
+
+        return Response(
+            {"error": "No valid fields provided to update (expected push_notifications, email_notifications, or fcm_token)."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 # ✅ i18n — PATCH /api/users/language/
@@ -227,7 +428,11 @@ class AdminUserListView(APIView):
             # customer photo + city
             try:
                 up = UserProfile.objects.get(user=u)
-                item['photo_url'] = up.photo_url.url if up.photo_url else ''
+                if up.photo_url:
+                    try:
+                        item['photo_url'] = up.photo_url.url
+                    except Exception:
+                        item['photo_url'] = str(up.photo_url)
                 item['city']      = up.city or ''
             except UserProfile.DoesNotExist:
                 pass
@@ -239,7 +444,11 @@ class AdminUserListView(APIView):
                     item['is_verified']   = pp.is_verified
                     item['category_name'] = pp.category.name if pp.category else ''
                     item['hourly_rate']   = str(pp.hourly_rate) if pp.hourly_rate else '0'
-                    item['photo_url']     = pp.photo_url.url if pp.photo_url else item['photo_url']
+                    if pp.photo_url:
+                        try:
+                            item['photo_url'] = pp.photo_url.url
+                        except Exception:
+                            item['photo_url'] = str(pp.photo_url)
                     # ✅ NEW — average_rating (used for Professionals screen
                     # rating badge + "Sort by Rating").
                     item['average_rating'] = str(pp.average_rating) if pp.average_rating else '0.0'
@@ -324,20 +533,33 @@ class ForgotPasswordView(APIView):
             "support_email": settings.SUPPORT_EMAIL,
         }
 
-        text_body = render_to_string("emails/password_reset.txt", context)
-        html_body = render_to_string("emails/password_reset.html", context)
+        text_body = render_to_string("password_reset.txt", context)
+        html_body = render_to_string("password_reset.html", context)
+        subject   = "Reset your ProFinder password"
 
-        message = EmailMultiAlternatives(
-            subject="Reset your ProFinder password",
-            body=text_body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[user.email],
-        )
-        message.attach_alternative(html_body, "text/html")
-        # fail_silently=False so failures are raised here and caught (and
-        # logged) by the caller — we still never let them reach the client.
-        message.send(fail_silently=False)
-        logger.info("Password reset email sent to user_id=%s", user.pk)
+        if getattr(settings, "BREVO_API_KEY", None):
+            # PythonAnywhere free par SMTP blocked hai — Brevo HTTP API use hoti hai.
+            # Failure yahan raise hota hai, caller log karta hai, client ko kabhi nahi dikhta.
+            message_id = send_brevo_email(
+                to_email=user.email,
+                to_name=context["user_name"],
+                subject=subject,
+                html_body=html_body,
+                text_body=text_body,
+            )
+            logger.info("Password reset email sent via Brevo API to user_id=%s (messageId=%s)",
+                        user.pk, message_id)
+        else:
+            # Local development fallback (SMTP / console backend)
+            message = EmailMultiAlternatives(
+                subject=subject,
+                body=text_body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[user.email],
+            )
+            message.attach_alternative(html_body, "text/html")
+            message.send(fail_silently=False)
+            logger.info("Password reset email sent via SMTP to user_id=%s", user.pk)
 
 
 class ResetPasswordView(APIView):
@@ -357,6 +579,24 @@ class ResetPasswordView(APIView):
     throttle_scope     = 'reset_password'
 
     INVALID_LINK_MESSAGE = "This reset link is invalid or has expired. Please request a new one."
+
+    def get(self, request, uidb64, token):
+        """Email ka link browser mein kholne par password-reset form dikhata hai.
+
+        Token yahan sirf check hota hai (use nahi hota) — asli reset POST par hota hai.
+        """
+        valid = False
+        try:
+            uid   = force_str(urlsafe_base64_decode(uidb64))
+            user  = User.objects.get(pk=uid)
+            valid = default_token_generator.check_token(user, token)
+        except Exception:
+            valid = False
+
+        response = render(request, "reset_password_page.html", {"valid": valid})
+        response["Referrer-Policy"] = "no-referrer"   # token URL kahin leak na ho
+        response["Cache-Control"]   = "no-store"
+        return response
 
     def post(self, request, uidb64, token):
         try:

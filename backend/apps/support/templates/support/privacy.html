@@ -1,0 +1,62 @@
+<!doctype html>
+{% comment %}Public Privacy Policy page. Self-contained: no external fonts/scripts.{% endcomment %}
+<html lang="{% if available %}{{ policy.language }}{% else %}en{% endif %}"{% if available and policy.is_rtl %} dir="rtl"{% endif %}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if available %}{{ policy.title }}{% else %}Privacy Policy{% endif %} · ProFinder</title>
+  <style>
+    :root { --bg:#f7f8fa; --card:#fff; --text:#1c2430; --muted:#5b6675; --line:#e3e7ed; --accent:#1a73e8; --note:#fff7e0; --note-text:#6b4e00; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg:#0f141a; --card:#171e27; --text:#e8edf3; --muted:#9aa6b5; --line:#2a3441; --accent:#7ab4ff; --note:#2b2410; --note-text:#f1d98a; }
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Naskh Arabic","Noto Nastaliq Urdu","Noto Sans Devanagari",sans-serif; }
+    .wrap { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+    .brand { font-weight:700; color:var(--accent); letter-spacing:.3px; margin-bottom:12px; }
+    .langs { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px; padding:0; list-style:none; }
+    .langs a { display:inline-block; padding:6px 12px; border:1px solid var(--line); border-radius:999px; color:var(--text); text-decoration:none; font-size:14px; background:var(--card); }
+    .langs a[aria-current="true"] { background:var(--accent); border-color:var(--accent); color:#fff; }
+    article { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px 22px; }
+    h1 { font-size:1.7rem; line-height:1.3; margin:0 0 6px; }
+    h2 { font-size:1.2rem; margin:28px 0 8px; }
+    .meta { color:var(--muted); font-size:14px; margin:0 0 18px; }
+    .note { background:var(--note); color:var(--note-text); border-radius:10px; padding:10px 14px; font-size:14px; margin:0 0 18px; }
+    p { margin:0 0 12px; } ul { margin:0 0 12px; padding-inline-start:22px; } li { margin-bottom:6px; }
+    footer { color:var(--muted); font-size:13px; text-align:center; margin-top:20px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">ProFinder</div>
+    <ul class="langs" aria-label="Language">
+      {% for code, name in languages %}
+        <li><a href="?lang={{ code }}" hreflang="{{ code }}"{% if code == active_lang %} aria-current="true"{% endif %}>{{ name }}</a></li>
+      {% endfor %}
+    </ul>
+
+    {% if available %}
+      <article>
+        <h1>{{ policy.title }}</h1>
+        <p class="meta">
+          Version {{ policy.version }}{% if policy.effective_date %} · Effective {{ policy.effective_date }}{% endif %}
+        </p>
+        {% if policy.is_fallback %}
+          <p class="note" dir="ltr" lang="en">This policy is shown in English because a reviewed translation in the selected language is not available yet.</p>
+        {% endif %}
+        {% for s in sections %}
+          {% if s.type == 'heading' %}<h2>{{ s.text }}</h2>
+          {% elif s.type == 'list' %}<ul>{% for item in s.items %}<li>{{ item }}</li>{% endfor %}</ul>
+          {% else %}<p>{{ s.text }}</p>{% endif %}
+        {% endfor %}
+      </article>
+    {% else %}
+      <article>
+        <h1>Privacy Policy</h1>
+        <p>The privacy policy has not been published yet. Please check back soon.</p>
+      </article>
+    {% endif %}
+    <footer>&copy; ProFinder</footer>
+  </div>
+</body>
+</html>

@@ -1,5 +1,6 @@
 # apps/about_page/views.py
 
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
@@ -30,6 +31,38 @@ def _is_admin(user):
 ADMIN_ONLY = Response({'error': 'Admin only.'}, status=403)
 
 
+# ─── Default placement for new sections ───────────────────────────────────────
+#
+# Top-to-bottom layout of the public About page. A newly created section is
+# slotted in according to its type (e.g. "Contact Information" lands above
+# "Social Media Links", not at the very bottom), so admins don't have to drag
+# every new section into place. 'custom' (and any future type) sits just above
+# the footer-style blocks. Admins can still reorder freely afterwards.
+
+SECTION_LAYOUT_ORDER = [
+    'hero_banner', 'company_story', 'mission', 'vision', 'why_choose_us',
+    'how_it_works', 'statistics', 'core_values', 'team_members',
+    'investors_partners', 'certifications', 'awards', 'contact_info',
+    'social_media', 'app_info', 'legal_links',
+]
+
+
+def _layout_rank(section_type):
+    if section_type in SECTION_LAYOUT_ORDER:
+        return float(SECTION_LAYOUT_ORDER.index(section_type))
+    return SECTION_LAYOUT_ORDER.index('contact_info') - 0.5
+
+
+def _default_insert_index(section_type, existing):
+    """Index right after the last existing section that belongs above the new one."""
+    rank = _layout_rank(section_type)
+    position = 0
+    for i, sec in enumerate(existing):
+        if _layout_rank(sec.section_type) <= rank:
+            position = i + 1
+    return position
+
+
 # ─── Sections (admin) ──────────────────────────────────────────────────────────
 
 class AboutSectionAdminListCreateView(APIView):
@@ -51,12 +84,28 @@ class AboutSectionAdminListCreateView(APIView):
             return ADMIN_ONLY
         serializer = AboutSectionAdminSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # New sections default to the end of the order
-        max_order = AboutSection.objects.order_by('-order').values_list('order', flat=True).first() or 0
-        serializer.save(
-            created_by=request.user, updated_by=request.user,
-            order=request.data.get('order', max_order + 1))
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        with transaction.atomic():
+            existing = list(AboutSection.objects.order_by('order', 'id'))
+            # An explicit "order" from the client is treated as the desired
+            # position; otherwise place by section type (see above).
+            try:
+                position = max(0, min(int(request.data.get('order')), len(existing)))
+            except (TypeError, ValueError):
+                position = _default_insert_index(
+                    serializer.validated_data.get('section_type', 'custom'), existing)
+
+            section = serializer.save(
+                created_by=request.user, updated_by=request.user, order=position)
+
+            # Re-number everything 0..n so orders stay unique and gap-free.
+            existing.insert(position, section)
+            for i, sec in enumerate(existing):
+                sec.order = i
+            AboutSection.objects.bulk_update(existing, ['order'])
+
+        return Response(AboutSectionAdminSerializer(section).data,
+                        status=status.HTTP_201_CREATED)
 
 
 class AboutSectionAdminDetailView(APIView):
@@ -252,14 +301,13 @@ class AboutImageUploadView(APIView):
     """
     POST /api/about-page/admin/upload-image/
     Body: multipart/form-data, key = 'image'
-    Response: { 'url': '<optimized delivery url>' }
+    Response: { 'url': '<absolute delivery url>' }
 
-    The returned URL already has Cloudinary's f_auto/q_auto transform
-    baked in (WebP where the browser supports it, auto compression),
-    covering "automatic compression and WebP optimization" without any
-    separate image-processing step. Attach the URL to a section/item's
-    `image` field on the next PATCH to replace it; upload again with a
-    new file to swap the preview before saving.
+    ✅ CHANGED: images now save to local disk (MEDIA_ROOT/about_page/)
+    instead of Cloudinary — see apps/about_page/utils.py for why. The
+    returned URL is already absolute (includes the host), so it can be
+    attached straight to a section/item's `image` field on the next PATCH.
+    Upload again with a new file to replace an existing image.
     """
     permission_classes = [IsAuthenticated]
 
@@ -270,8 +318,8 @@ class AboutImageUploadView(APIView):
         if not image:
             return Response({'error': 'No image file provided.'}, status=400)
         try:
-            public_id, url = upload_about_image(image)
-            return Response({'url': url, 'public_id': public_id})
+            filename, url = upload_about_image(image, request=request)
+            return Response({'url': url, 'filename': filename})
         except Exception as e:
             return Response({'error': f'Upload failed: {str(e)}'}, status=500)
 

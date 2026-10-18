@@ -5,6 +5,20 @@ from apps.bookings.models import Booking
 from apps.users.models import User
 
 
+def _resolve_photo_url(val):
+    if not val:
+        return None
+    if hasattr(val, 'url'):
+        try:
+            return val.url
+        except Exception:
+            pass
+    s = str(val).strip()
+    if s and ('http://' in s or 'https://' in s or '/' in s):
+        return s
+    return None
+
+
 class BookingSerializer(serializers.ModelSerializer):
     professional_name = serializers.SerializerMethodField(read_only=True)
     customer_name     = serializers.SerializerMethodField(read_only=True)
@@ -17,21 +31,27 @@ class BookingSerializer(serializers.ModelSerializer):
     professional_reviews = serializers.SerializerMethodField(read_only=True)
     location          = serializers.SerializerMethodField(read_only=True)
     professional_verified = serializers.SerializerMethodField(read_only=True)
+    professional_photo = serializers.SerializerMethodField(read_only=True)
+    customer_photo     = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model  = Booking
         fields = ['id', 'customer', 'professional', 'professional_name',
                   'customer_name', 'date', 'time', 'note', 'status',
+                  'total_price', 'currency', 'payment_status',
                   'cancel_reason', 'cancelled_by', 'created_at',
                   'profession', 'professional_rating', 'professional_reviews',
-                  'location', 'professional_verified']
+                  'location', 'professional_verified',
+                  'professional_photo', 'customer_photo']
         # FIX: professional bhi read_only — view already handle karta hai isko
         read_only_fields = ['customer', 'professional', 'status', 'created_at',
+                            'total_price', 'currency', 'payment_status',
                             'professional_name', 'customer_name',
                             'cancel_reason', 'cancelled_by',
                             'profession', 'professional_rating',
                             'professional_reviews', 'location',
-                            'professional_verified']
+                            'professional_verified',
+                            'professional_photo', 'customer_photo']
 
     def get_professional_name(self, obj):
         return obj.professional.name if obj.professional else ''
@@ -75,6 +95,36 @@ class BookingSerializer(serializers.ModelSerializer):
             return False
         profile = getattr(obj.professional, 'professionalprofile', None)
         return bool(profile.is_verified) if profile else False
+
+    def get_professional_photo(self, obj):
+        if not obj.professional:
+            return None
+        prof = getattr(obj.professional, 'professionalprofile', None)
+        if prof and prof.photo_url:
+            url = _resolve_photo_url(prof.photo_url)
+            if url:
+                return url
+        up = getattr(obj.professional, 'userprofile', None)
+        if up and up.photo_url:
+            url = _resolve_photo_url(up.photo_url)
+            if url:
+                return url
+        return None
+
+    def get_customer_photo(self, obj):
+        if not obj.customer:
+            return None
+        up = getattr(obj.customer, 'userprofile', None)
+        if up and up.photo_url:
+            url = _resolve_photo_url(up.photo_url)
+            if url:
+                return url
+        prof = getattr(obj.customer, 'professionalprofile', None)
+        if prof and prof.photo_url:
+            url = _resolve_photo_url(prof.photo_url)
+            if url:
+                return url
+        return None
 
     def validate_time(self, value):
         # Accept both "08:00 AM" and "08:00:00" formats

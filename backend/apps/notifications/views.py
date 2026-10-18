@@ -46,3 +46,12 @@ class SendNotificationView(APIView):
             send_fcm_push(fcm_token, title, body)
 
         return Response({"message": "Notification sent"}, status=status.HTTP_201_CREATED)
+
+
+class NotificationClearView(APIView):
+    """DELETE /api/notifications/clear/ — removes ALL of the caller's notifications."""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        deleted, _ = Notification.objects.filter(user=request.user).delete()
+        return Response({"deleted": deleted})

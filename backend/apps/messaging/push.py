@@ -90,7 +90,7 @@ def notify_new_message(message):
 
     return send_fcm_push(
         fcm_token=fcm_token,
-        title=sender.name,
+        title=f"💬 {sender.name}",   # 💬 = kisi user ka chat message
         body=_preview_text(message),
         data={
             'type':             'chat_message',

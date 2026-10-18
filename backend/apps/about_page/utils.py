@@ -1,16 +1,24 @@
 # apps/about_page/utils.py
 """
 Snapshot / restore for the publish-and-version-history workflow, plus the
-Cloudinary upload helper that gives us "automatic compression and WebP
-optimization" without a Pillow processing pipeline: Cloudinary already
-stores the original and can transform+cache a WebP/auto-quality derivative
-on request, so we (a) ask it to eagerly generate one on upload, and (b)
-always hand the frontend a transformed delivery URL, never the raw one.
+image upload helper for the About Page CMS.
+
+✅ CHANGED: images now save to LOCAL DISK (MEDIA_ROOT/about_page/) instead
+of Cloudinary. Cloudinary needs an outbound HTTPS call to api.cloudinary.com
+on every upload — PythonAnywhere's Free plan blocks all outbound internet
+access except a small whitelist, so every upload was failing with
+"Connection refused". Local storage needs zero external network access —
+same approach already used for chat attachments — so it works on Free
+plan too. Trade-off: no automatic WebP/auto-quality transform anymore
+(that was a Cloudinary feature); files are served as-is.
 """
 
-from django.db import transaction
+import os
+import uuid
 
-import cloudinary.uploader
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.db import transaction
 
 from apps.admin_panel.models import Language
 from apps.about_page.models import (
@@ -19,34 +27,40 @@ from apps.about_page.models import (
     AboutPageSEO,
 )
 
-# Cloudinary transformation applied to every About-page image on delivery:
-# f_auto → best format for the requesting browser (WebP/AVIF where supported)
-# q_auto → automatic perceptual-quality compression
-OPTIMIZED_TRANSFORM = {'fetch_format': 'auto', 'quality': 'auto'}
+ABOUT_IMAGE_SUBDIR = 'about_page'
+_storage = FileSystemStorage(
+    location=os.path.join(settings.MEDIA_ROOT, ABOUT_IMAGE_SUBDIR),
+    base_url=settings.MEDIA_URL + ABOUT_IMAGE_SUBDIR + '/',
+)
 
 
-def upload_about_image(file, folder='about_page'):
+def upload_about_image(file, request=None):
     """
-    Uploads an image for the About Page CMS. Returns (public_id, secure_url)
-    where secure_url already has the auto-format/auto-quality transform
-    baked in, so every consumer (public API, admin preview) gets an
-    optimized delivery URL for free.
+    Saves an uploaded image to local disk (MEDIA_ROOT/about_page/) and
+    returns (filename, url). `url` is an ABSOLUTE URL (built from the
+    current request) because AboutSection.image / AboutSectionItem.image
+    are URLField — DRF's URLField rejects relative paths like
+    "/media/about_page/x.jpg" as invalid, so we must return a full
+    "https://host/media/about_page/x.jpg" here.
     """
-    result = cloudinary.uploader.upload(
-        file, folder=folder, eager=[OPTIMIZED_TRANSFORM])
-    if result.get('eager'):
-        url = result['eager'][0]['secure_url']
+    ext = os.path.splitext(file.name)[1].lower() or '.jpg'
+    filename = f'{uuid.uuid4().hex}{ext}'
+    saved_name = _storage.save(filename, file)
+    relative_url = _storage.url(saved_name)  # e.g. /media/about_page/abcd1234.jpg
+
+    if request is not None:
+        url = request.build_absolute_uri(relative_url)
     else:
-        url = result['secure_url']
-    return result['public_id'], url
+        url = relative_url
+    return saved_name, url
 
 
 def optimized_url(value):
     """
-    Images are stored as plain URL strings that already came out of
-    upload_about_image() (so they already carry the f_auto/q_auto
-    transform) — this just guards against None/empty consistently
-    wherever a model's `image` field is read.
+    Images are stored as plain URL strings. Kept as a passthrough (name
+    unchanged) so callers/serializers don't need to change — previously
+    this assumed a Cloudinary URL that already carried transforms; now
+    it's just whatever upload_about_image() returned.
     """
     return value or ''
 

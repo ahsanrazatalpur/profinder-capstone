@@ -123,16 +123,24 @@ class ReviewView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Enforce legitimate booking history with the professional
+        has_booking = Booking.objects.filter(
+            customer=request.user, professional=professional,
+            status__in=['accepted', 'completed'],
+        ).exists()
+
+        if not has_booking:
+            return Response(
+                {"error": "You can only review professionals with whom you have booked a service."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         serializer = ReviewSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            # ✅ Verified Service badge — true if there was a completed
-            # booking between this customer and this professional.
-            # ⚠️ TEMP TESTING: also counts 'accepted' bookings, since
-            # payment (and the usual completion trigger) isn't wired up
-            # yet. Remove 'accepted' from status__in once payment is live.
+            # Verified Service badge — true if there was a completed booking
             is_verified = Booking.objects.filter(
                 customer=request.user, professional=professional,
-                status__in=['accepted', 'completed'],
+                status='completed',
             ).exists()
 
             review = serializer.save(

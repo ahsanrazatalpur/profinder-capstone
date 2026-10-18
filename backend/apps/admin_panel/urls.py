@@ -14,6 +14,7 @@ from apps.admin_panel.views import (
     AdminBookingView,
     AdminCancelBookingView,
     PromoBannerAdminView,
+    ContentTranslationAdminView,
     PromoBannerImageUploadView,
     ActivePromoBannerView,
     AdminSubscriptionPlanView,
@@ -21,8 +22,20 @@ from apps.admin_panel.views import (
     AdminDashboardView,
     AdminAnalyticsView,
     ReportUserView,
+    MyReportsView,
     AdminReportedUsersView,
     AdminReportActionView,
+    AdminModerationActionCreateView,
+    AdminModerationActionReverseView,
+    AdminUserModerationHistoryView,
+    MyModerationStatusView,
+    AdminReportModerationActionsView,
+    AppealCreateView,
+    MyAppealsView,
+    AdminAppealListView,
+    AdminAppealDetailView,
+    AdminAppealApproveView,
+    AdminAppealRejectView,
     AdminCategoryView,
     AdminSubCategoryView,
     AdminPaymentView,
@@ -48,6 +61,7 @@ from apps.admin_panel.views import (
     AdminCityMergeView,
     AdminAnnouncementView,
     AdminAnnouncementDetailView,
+    ActiveAnnouncementView,
 )
 
 urlpatterns = [
@@ -90,7 +104,30 @@ urlpatterns = [
     # POST → any authenticated user submits a report (ReportUserView).
     path('reports/',                                       AdminReportedUsersView.as_view(),     name='admin_reports_list'),
     path('reports/create/',                                ReportUserView.as_view(),             name='report_user'),
+    # User-facing (Trust & Safety Part 8): reports the CURRENT user submitted,
+    # never anyone else's. Must come before '<int:report_id>/' so 'mine/'
+    # isn't swallowed by that pattern.
+    path('reports/mine/',                                  MyReportsView.as_view(),              name='my_reports'),
     path('reports/<int:report_id>/',                       AdminReportActionView.as_view(),      name='admin_report_action'),
+    path('reports/<int:report_id>/moderation-actions/',    AdminReportModerationActionsView.as_view(), name='admin_report_moderation_actions'),
+
+    # ── Moderation Actions (Trust & Safety Part 4) ──────────────────────────────
+    path('moderation-actions/',                            AdminModerationActionCreateView.as_view(),  name='admin_moderation_action_create'),
+    path('moderation-actions/<int:action_id>/reverse/',    AdminModerationActionReverseView.as_view(), name='admin_moderation_action_reverse'),
+    path('users/<int:user_id>/moderation-actions/',        AdminUserModerationHistoryView.as_view(),   name='admin_user_moderation_actions'),
+    # User-facing (Trust & Safety Part 8): the CURRENT user's own live status,
+    # always re-derived server-side — see MyModerationStatusView docstring.
+    path('moderation-status/mine/',                        MyModerationStatusView.as_view(),           name='my_moderation_status'),
+
+    # ── Appeals (Trust & Safety Part 6) ─────────────────────────────────────────
+    # User-facing (own appeals only):
+    path('appeals/create/',                                AppealCreateView.as_view(),                 name='appeal_create'),
+    path('appeals/mine/',                                  MyAppealsView.as_view(),                    name='appeal_mine'),
+    # Admin-only review:
+    path('appeals/',                                       AdminAppealListView.as_view(),              name='admin_appeal_list'),
+    path('appeals/<int:appeal_id>/',                       AdminAppealDetailView.as_view(),            name='admin_appeal_detail'),
+    path('appeals/<int:appeal_id>/approve/',               AdminAppealApproveView.as_view(),           name='admin_appeal_approve'),
+    path('appeals/<int:appeal_id>/reject/',                AdminAppealRejectView.as_view(),            name='admin_appeal_reject'),
 
     # ── Business Management: Categories & Subcategories ─────────────────────────
     path('categories/',                                    AdminCategoryView.as_view(),          name='admin_categories'),
@@ -142,5 +179,14 @@ urlpatterns = [
 
     # ── Content Management: Announcements ────────────────────────────────────────
     path('announcements/',                                 AdminAnnouncementView.as_view(),       name='admin_announcements'),
+    # ✅ NEW: public, no-auth — Flutter Guest/Customer/Professional home screens
+    # call this to know which announcements to show right now. Must come
+    # BEFORE the <int:announcement_id> pattern below so 'active/' doesn't
+    # get swallowed by it in some Django versions' matching order.
+    path('announcements/active/',                          ActiveAnnouncementView.as_view(),      name='active_announcements'),
     path('announcements/<int:announcement_id>/',           AdminAnnouncementDetailView.as_view(), name='admin_announcement_detail'),
+
+    # ── Content translations (generic: announcement, promobanner, ...) ───────────
+    path('translations/<str:label>/<int:object_id>/<int:language_id>/',
+         ContentTranslationAdminView.as_view(),                                  name='admin_content_translation'),
 ]

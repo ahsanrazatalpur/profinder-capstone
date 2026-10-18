@@ -1,12 +1,41 @@
-﻿backend/.env
-backend/db.sqlite3
-backend/firebase-credentials.json
-**/__pycache__/
-*.pyc
-backend.zip
-lib.zip
+# Secrets & Credentials
+.env
+.env.*
+firebase-credentials.json
+*-credentials.json
+*serviceAccount*.json
 
-# ProFinder generated/archive files
+# Local / live data & Backups
+db.sqlite3
+*.sqlite3
+*.bak
+*.hardening_backup*
+data_backup.json
+backups/
 *.zip
-**/__pycache__/
 
+# Python & Django
+__pycache__/
+*.py[cod]
+*.log
+staticfiles/
+media/
+chat_attachments/
+
+# Virtual envs
+venv/
+env/
+.venv/
+profinder-env/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

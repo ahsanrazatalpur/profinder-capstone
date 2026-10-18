@@ -66,3 +66,48 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.customer.email} ♥ {self.professional.email}"
+
+
+# Cross-script / typo-tolerant search index (one row per professional).
+# Built by apps.search.indexing from name, category, specialization, skills,
+# company, services, tags, city, area, country. Three searchable forms:
+#   native_text   - unicode-normalised original script
+#   latin_text    - transliterated to Latin (any script -> ascii)
+#   phonetic_text - consonant skeleton, space-padded (" wkl md ") so a whole
+#                   token can be matched with a trigram-indexed icontains
+# name_latin / name_phonetic keep the NAME alone so ranking can boost it.
+# (Trigram GIN indexes are created in migration 0005 on PostgreSQL only, so
+#  the app keeps working on SQLite for local dev.)
+class SearchIndex(models.Model):
+    user          = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='search_index')
+    native_text   = models.TextField(blank=True, default='')
+    latin_text    = models.TextField(blank=True, default='')
+    phonetic_text = models.TextField(blank=True, default='')
+    name_latin    = models.CharField(max_length=300, blank=True, default='')
+    name_phonetic = models.CharField(max_length=300, blank=True, default='')
+    updated_at    = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"SearchIndex<{self.user_id}>"
+
+
+# Admin-editable extra aliases: "what people type" -> canonical English
+# profession word. Spelling variants of an alias are matched phonetically, so
+# add ONE spelling per language/script. Built-in seed lives in alias_seed.py.
+class SearchAlias(models.Model):
+    alias      = models.CharField(max_length=100)
+    canonical  = models.CharField(max_length=100, help_text='English profession word, e.g. lawyer')
+    language   = models.CharField(max_length=10, blank=True, default='')
+    source     = models.CharField(max_length=20, blank=True, default='manual')  # manual / gemini
+    is_active  = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [('alias', 'canonical')]
+        indexes = [
+            models.Index(fields=['is_active'], name='search_alias_active_idx'),
+        ]
+
+    def __str__(self):
+        return f"{self.alias} -> {self.canonical}"

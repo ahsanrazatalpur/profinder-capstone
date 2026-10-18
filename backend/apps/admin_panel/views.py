@@ -1,7 +1,11 @@
 # apps/admin_panel/views.py
 
+import logging
+import threading
+
 from django.utils import timezone
-from django.db import models
+from django.db import models, transaction, close_old_connections
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,18 +15,32 @@ import cloudinary.uploader
 from apps.admin_panel.models import (
     AdminLog, PromoBanner, UserReport, Complaint, NotificationBroadcast,
     Language, TranslationKey, TranslationString,
-    Country, City, Announcement,
+    Country, City, Announcement, ModerationAction, Appeal,
+    ContentTranslation, TRANSLATABLE_FIELDS, normalize_lang,
 )
+from apps.admin_panel import moderation_notifications
+from apps.admin_panel.appeals import submit_appeal, approve_appeal, reject_appeal
+from apps.admin_panel.moderation import (
+    ModerationError, STATUS_CHOICES as MODERATION_STATUS_CHOICES,
+    create_moderation_action, reverse_moderation_action,
+    record_legacy_report_ban, sync_moderation_after_legacy_unban,
+)
+from apps.admin_panel import enforcement
 from apps.admin_panel.serializers import (
     AdminLogSerializer, PromoBannerSerializer,
-    UserReportSerializer, CreateUserReportSerializer,
+    UserReportSerializer, CreateUserReportSerializer, MyUserReportSerializer,
     ComplaintSerializer, NotificationBroadcastSerializer,
     LanguageSerializer, CountrySerializer, CitySerializer, AnnouncementSerializer,
+    ModerationActionSerializer, CreateModerationActionSerializer,
+    MyModerationActionSerializer,
+    ReverseModerationActionSerializer,
+    AppealSubmitSerializer, MyAppealSerializer, AdminAppealSerializer,
+    AppealApproveSerializer, AppealRejectSerializer,
 )
 from apps.users.models import User
 from apps.bookings.models import Booking
 from apps.bookings.serializers import BookingSerializer
-from apps.notifications.utils import notify_user
+from apps.notifications.utils import notify_user, send_fcm_push, style_push_title
 from apps.subscriptions.models import SubscriptionPlan, PlanFeature, Subscription
 from apps.subscriptions.serializers import SubscriptionPlanSerializer
 
@@ -164,6 +182,11 @@ class BanUserView(APIView):
 
         user.is_active = not user.is_active
         user.save()
+        if user.is_active:
+            # Legacy unban must also lift any ModerationAction that the legacy
+            # report-ban flow recorded, or Part 3 enforcement would keep
+            # treating an explicitly-unbanned user as suspended.
+            sync_moderation_after_legacy_unban(user=user, admin=request.user)
         action = 'unban' if user.is_active else 'ban'
         AdminLog.objects.create(admin=request.user, action=action, target_user=user,
                                 note=request.data.get('note', ''))
@@ -190,6 +213,8 @@ class BanUserView(APIView):
 
         user.is_active = (action == 'unban')
         user.save()
+        if user.is_active:
+            sync_moderation_after_legacy_unban(user=user, admin=request.user)
         AdminLog.objects.create(admin=request.user, action=action, target_user=user,
                                 note=request.data.get('note', ''))
         return Response({'message': 'User banned.' if action == 'ban' else 'User unbanned.',
@@ -260,13 +285,24 @@ class AdminBlockedUsersView(APIView):
         if not _is_admin(request.user):
             return Response({'error': 'Admin only.'}, status=403)
 
-        blocked = User.objects.filter(is_active=False).order_by('-id')
+        blocked = list(User.objects.filter(is_active=False).order_by('-id'))
+        if not blocked:
+            return Response([])
+
+        blocked_ids = [u.id for u in blocked]
+        ban_logs = (
+            AdminLog.objects.filter(target_user_id__in=blocked_ids, action='ban')
+            .select_related('admin')
+            .order_by('target_user_id', '-created_at')
+        )
+        latest_ban_map = {}
+        for log in ban_logs:
+            if log.target_user_id not in latest_ban_map:
+                latest_ban_map[log.target_user_id] = log
+
         data = []
         for user in blocked:
-            last_ban_log = (
-                AdminLog.objects.filter(target_user=user, action='ban')
-                .select_related('admin').order_by('-created_at').first()
-            )
+            last_ban_log = latest_ban_map.get(user.id)
             data.append({
                 'id': user.id,
                 'name': user.name,
@@ -365,6 +401,22 @@ class AdminBookingView(APIView):
         if not _is_admin(request.user):
             return Response({'error': 'Admin only.'}, status=403)
         bookings = Booking.objects.select_related('customer', 'professional').all().order_by('-created_at')
+
+        # ✅ NEW — ?search= support, used by the admin panel's global
+        # search (header search icon). Matches booking id, or the
+        # customer's/professional's name or email.
+        search = request.query_params.get('search', '').strip()
+        if search:
+            from django.db.models import Q
+            booking_id = int(search) if search.isdigit() else None
+            bookings = bookings.filter(
+                Q(id=booking_id) |
+                Q(customer__name__icontains=search) |
+                Q(customer__email__icontains=search) |
+                Q(professional__name__icontains=search) |
+                Q(professional__email__icontains=search)
+            )
+
         return Response(BookingSerializer(bookings, many=True).data)
 
 
@@ -388,8 +440,10 @@ class AdminCancelBookingView(APIView):
         booking.cancelled_by  = 'admin'
         booking.save()
 
-        notify_user(booking.customer,     'Booking Cancelled by Admin ❌', f'Reason: {reason}')
-        notify_user(booking.professional, 'Booking Cancelled by Admin ❌', f'Reason: {reason}')
+        prof_name = getattr(booking.professional, 'name', 'the professional')
+        cust_name = getattr(booking.customer, 'name', 'the customer')
+        notify_user(booking.customer,     'Booking Cancelled by Admin ❌', f'Your booking with {prof_name} was cancelled by admin.\nReason: {reason}')
+        notify_user(booking.professional, 'Booking Cancelled by Admin ❌', f'Your booking with {cust_name} was cancelled by admin.\nReason: {reason}')
 
         AdminLog.objects.create(admin=request.user, action='cancel_booking',
                                 target_user=booking.customer, note=reason)
@@ -438,7 +492,8 @@ class PromoBannerAdminView(APIView):
         if not _is_admin(request.user):
             return Response({'error': 'Admin only.'}, status=403)
         banners = PromoBanner.objects.all()
-        return Response(PromoBannerSerializer(banners, many=True).data)
+        return Response(ContentTranslation.attach_rows(
+            'promobanner', PromoBannerSerializer(banners, many=True).data))
 
     def post(self, request):
         if not _is_admin(request.user):
@@ -535,7 +590,9 @@ class ActivePromoBannerView(APIView):
 
         return Response({
             'active':  True,
-            'banners': PromoBannerSerializer(banners, many=True).data,
+            'banners': ContentTranslation.localize_rows(
+                'promobanner', PromoBannerSerializer(banners, many=True).data,
+                request.query_params.get('lang')),
         })
 
 
@@ -632,6 +689,58 @@ class AdminPlanFeatureView(APIView):
         return Response(PlanFeatureSerializer(feature).data)
 
 
+def _notify_report_resolution(report, was_banned, status_changed=True):
+    """
+    Report resolve hone ke baad parties ko notify karta hai — bilkul
+    Instagram/Facebook/etc. jese bade apps ke pattern par:
+
+    - Reporter: sirf ek GENERIC outcome milta hai — kabhi exact punishment,
+      suspension duration, admin notes ya reported user ki koi private info
+      nahi (privacy). Sirf tab jab status waqai change hua ho (baar baar
+      PATCH par duplicate notification nahi).
+    - Reported user: reporter ki identity aur report id KABHI expose nahi hoti.
+        * Ban / restriction / warning jo ModerationAction ke through lagi hai,
+          uski notification (reason ke saath) moderation service khud bhejti
+          hai (apps.admin_panel.moderation_notifications) — yahan dobara
+          nahi bheji jati, warna duplicate hoti.
+        * Sirf legacy case: status 'action_taken' ho aur is report se koi
+          ModerationAction linked na ho, tab purani generic warning jati hai.
+        * 'dismissed' / 'reviewed' par reported user ko kuch nahi bataya jata.
+    """
+    if status_changed and report.status != 'pending':
+        target_name = getattr(report.reported_user, 'name', 'the user') if report.reported_user else 'the reported user'
+        reason_display = report.get_reason_display() if hasattr(report, 'get_reason_display') else 'your report'
+        reporter_msg = {
+            'action_taken': f"Your report regarding {target_name} ({reason_display}) has been reviewed and appropriate action has been taken.",
+            'dismissed':    f"We've reviewed your report regarding {target_name} ({reason_display}) and didn't find a violation of our guidelines this time. Thanks for flagging it.",
+            'reviewed':     f"We've reviewed your report regarding {target_name} ({reason_display}). Thanks for helping keep the community safe.",
+        }.get(report.status, f"We've reviewed your report regarding {target_name}. Thanks for helping keep the community safe.")
+
+        notify_user(
+            report.reporter,
+            title='Your Report Was Reviewed',
+            message=reporter_msg,
+            notif_type='report',
+            data={'report_id': report.id, 'event': 'report_resolved', 'status': report.status},
+        )
+
+    if was_banned:
+        # Reported user already got the "Account Permanently Suspended"
+        # notification from the ModerationAction that recorded this ban.
+        return
+
+    if (status_changed and report.status == 'action_taken'
+            and not report.moderation_actions.exists()):
+        notify_user(
+            report.reported_user,
+            title='Community Guidelines Warning',
+            message="Your account has received a warning for violating our community guidelines. Repeated violations may lead to suspension.",
+            notif_type='report',
+            data={'event': 'warning_issued'},   # no report_id: internal, never shown to the reported user
+        )
+    # 'reviewed' or 'dismissed' with no ban -> reported user is NOT notified.
+
+
 # ─── User Reports (Trust & Safety) ────────────────────────────────────────────
 
 class ReportUserView(APIView):
@@ -642,14 +751,69 @@ class ReportUserView(APIView):
     Body: { "reported_user": <id>, "reason": "spam", "description": "..." }
     """
     permission_classes = [IsAuthenticated]
+    # ✅ Trust & Safety Part 9 (security pass) — see the matching
+    # DEFAULT_THROTTLE_RATES comment in settings.py. Per-user, not global.
+    throttle_scope = 'user_report_create'
 
     def post(self, request):
         serializer = CreateUserReportSerializer(
             data=request.data, context={'request': request})
         if serializer.is_valid():
             report = serializer.save(reporter=request.user)
+
+            # Reporter ko turant confirmation — jaise Instagram/Facebook karte
+            # hain: "we got it, it's under review". Reported user ko is stage
+            # par kuch nahi bataya jata (reporter ki privacy/safety ke liye) —
+            # unhe sirf tab pata chalta hai jab admin action leta hai (neeche
+            # AdminReportActionView mein).
+            target_name = getattr(report.reported_user, 'name', None) if report.reported_user else None
+            about_target = f" regarding {target_name}" if target_name else ""
+            notify_user(
+                request.user,
+                title='Report Submitted',
+                message=f"Thanks — we've received your report{about_target} and our team will review it shortly.",
+                notif_type='report',
+                data={'report_id': report.id, 'event': 'report_submitted'},
+            )
+
+            # Admins get their own alert (this flow previously only notified
+            # the reporter). After-commit + failure-isolated: a notification
+            # problem can never fail the report submission itself.
+            transaction.on_commit(
+                lambda rid=report.id: moderation_notifications.notify_admins_of_new_report(rid))
+
             return Response(UserReportSerializer(report).data, status=201)
         return Response(serializer.errors, status=400)
+
+
+class MyReportsView(APIView):
+    """
+    Trust & Safety Part 8: the reporting user's own "My Reports" screen —
+    reports THEY submitted, newest first. Never another user's reports
+    (filtered strictly by `reporter=request.user`), and never a report
+    submitted against the current user by someone else.
+
+    Uses `MyUserReportSerializer`, a deliberately narrow view — see that
+    serializer's docstring for exactly what is (and is never) exposed.
+
+    GET /api/admin-panel/reports/mine/
+        ?status=pending|reviewed|action_taken|dismissed   (optional)
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        reports = UserReport.objects.filter(reporter=request.user)
+
+        status_filter = request.query_params.get('status')
+        if status_filter:
+            valid_statuses = dict(UserReport.STATUS_CHOICES)
+            if status_filter not in valid_statuses:
+                return Response(
+                    {'error': f"status must be one of: {', '.join(valid_statuses)}."},
+                    status=400)
+            reports = reports.filter(status=status_filter)
+
+        return Response(MyUserReportSerializer(reports, many=True).data)
 
 
 class AdminReportedUsersView(APIView):
@@ -665,7 +829,10 @@ class AdminReportedUsersView(APIView):
             return Response({'error': 'Admin only.'}, status=403)
 
         reports = UserReport.objects.select_related(
-            'reporter', 'reported_user', 'reviewed_by').all()
+            'reporter', 'reported_user', 'reviewed_by',
+            'related_booking__customer', 'related_booking__professional',
+            'related_message__sender',
+        ).prefetch_related('related_message__attachments').all()
 
         status_filter = request.query_params.get('status')
         if status_filter:
@@ -700,26 +867,401 @@ class AdminReportActionView(APIView):
         if new_status not in valid_statuses:
             return Response({'error': 'Invalid status.'}, status=400)
 
+        status_changed     = new_status != report.status
         report.status      = new_status
         report.admin_note   = request.data.get('admin_note', report.admin_note)
         report.reviewed_by  = request.user
         report.reviewed_at  = timezone.now()
         report.save()
 
+        was_banned = False
         # Optional one-tap enforcement: ban the reported user right here.
+        # Behaviour is unchanged (User.is_active=False + the 'ban' AdminLog),
+        # but the ban is now ALSO recorded as a permanent-suspension
+        # ModerationAction linked to this report, so the user has one
+        # moderation history instead of a bare flag. All-or-nothing.
         if request.data.get('ban_user') and report.reported_user.is_active:
-            report.reported_user.is_active = False
-            report.reported_user.save()
-            AdminLog.objects.create(
-                admin=request.user, action='ban', target_user=report.reported_user,
-                note=f'Banned due to report #{report.id} ({report.get_reason_display()})')
+            with transaction.atomic():
+                report.reported_user.is_active = False
+                report.reported_user.save()
+                record_legacy_report_ban(
+                    admin=request.user, report=report, note=report.admin_note)
+                AdminLog.objects.create(
+                    admin=request.user, action='ban', target_user=report.reported_user,
+                    note=f'Banned due to report #{report.id} ({report.get_reason_display()})')
+            was_banned = True
 
         log_action = 'report_dismissed' if new_status == 'dismissed' else 'report_reviewed'
         AdminLog.objects.create(
             admin=request.user, action=log_action, target_user=report.reported_user,
             note=f'Report #{report.id} marked "{valid_statuses[new_status]}"')
 
+        _notify_report_resolution(report, was_banned, status_changed=status_changed)
+
         return Response(UserReportSerializer(report).data)
+
+
+# ─── Moderation Actions (Trust & Safety Part 4) ───────────────────────────────
+
+def _apply_moderation_filters(qs, params):
+    """
+    Optional ?status=<active|scheduled|expired|reversed> and
+    ?action_type=<warning|restrict_messaging|...> filters shared by the
+    history endpoints. Returns (queryset, error_response_or_None).
+    """
+    now = timezone.now()
+
+    status_filter = params.get('status')
+    if status_filter:
+        if status_filter not in MODERATION_STATUS_CHOICES:
+            return qs, Response(
+                {'error': f"status must be one of: {', '.join(MODERATION_STATUS_CHOICES)}."},
+                status=400)
+        if status_filter == 'reversed':
+            qs = qs.filter(is_active=False)
+        elif status_filter == 'scheduled':
+            qs = qs.filter(is_active=True, starts_at__gt=now)
+        elif status_filter == 'expired':
+            qs = qs.filter(is_active=True, starts_at__lte=now, expires_at__lte=now)
+        else:  # 'active' — mirrors enforcement._is_effectively_active
+            qs = qs.filter(is_active=True, starts_at__lte=now).filter(
+                Q(expires_at__isnull=True) | Q(expires_at__gt=now))
+
+    type_filter = params.get('action_type')
+    if type_filter:
+        if type_filter not in dict(ModerationAction.ACTION_CHOICES):
+            return qs, Response({'error': 'Invalid action_type.'}, status=400)
+        qs = qs.filter(action_type=type_filter)
+
+    return qs, None
+
+
+def _moderation_queryset():
+    return ModerationAction.objects.select_related(
+        'target_user', 'performed_by', 'reversed_by', 'report')
+
+
+class AdminModerationActionCreateView(APIView):
+    """
+    Admin: take a moderation action against a user.
+    POST /api/admin-panel/moderation-actions/
+    Body: {
+        "target_user": <user id>,
+        "action_type": "warning" | "restrict_messaging" | "restrict_booking"
+                       | "suspend_temporary" | "suspend_permanent",
+        "reason": "required text",
+        "admin_note": "optional internal note",
+        "report": <report id>,             // optional; must be about target_user
+        "expires_at": "2026-10-01T12:00:00Z" // required for suspend_temporary,
+                                              // forbidden for suspend_permanent
+    }
+    The acting admin, active state, start time and creation time are always
+    set by the server; anything the client sends for them is ignored.
+    This records the action only — enforcement is read from it by
+    apps.admin_panel.enforcement; this endpoint changes no account flags.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if not _is_admin(request.user):
+            return Response({'error': 'Admin only.'}, status=403)
+
+        serializer = CreateModerationActionSerializer(
+            data=request.data, context={'request': request})
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+        data = serializer.validated_data
+
+        try:
+            action = create_moderation_action(
+                admin=request.user,
+                target_user=data['target_user'],
+                action_type=data['action_type'],
+                reason=data['reason'],
+                admin_note=data.get('admin_note', ''),
+                report=data.get('report'),
+                expires_at=data.get('expires_at'),
+            )
+        except ModerationError as e:
+            return Response({'error': e.message}, status=e.status_code)
+
+        action = _moderation_queryset().get(pk=action.pk)
+        return Response(ModerationActionSerializer(action).data, status=201)
+
+
+class AdminUserModerationHistoryView(APIView):
+    """
+    Admin: full moderation history for one user, newest first — includes
+    active, expired and reversed actions (nothing is ever deleted).
+    GET /api/admin-panel/users/<user_id>/moderation-actions/
+        ?status=active|scheduled|expired|reversed   (optional)
+        &action_type=warning|restrict_messaging|... (optional)
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        if not _is_admin(request.user):
+            return Response({'error': 'Admin only.'}, status=403)
+        if not User.objects.filter(id=user_id).exists():
+            return Response({'error': 'User not found.'}, status=404)
+
+        qs = _moderation_queryset().filter(target_user_id=user_id)
+        qs, error = _apply_moderation_filters(qs, request.query_params)
+        if error:
+            return error
+        return Response(ModerationActionSerializer(qs, many=True).data)
+
+
+class MyModerationStatusView(APIView):
+    """
+    Trust & Safety Part 8: the CURRENT user's own account-moderation status,
+    for the "Account Moderation Status" screen. Always derived fresh from
+    the database via `apps.admin_panel.enforcement` (the same read layer
+    that governs actual enforcement) — never trusted from client-cached
+    state, and never accepts any input.
+
+    Only actions currently in force are listed (nothing reversed, expired,
+    or not-yet-started) — this endpoint answers "what applies to me right
+    now", not full history. `can_appeal` is precomputed per action from the
+    user's own pending appeals, so the client never has to guess before
+    submitting one.
+
+    GET /api/admin-panel/moderation-status/mine/
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        snapshot = enforcement.get_moderation_status(request.user)
+        actions = snapshot.active_actions
+
+        pending_appeal_action_ids = set(
+            Appeal.objects.filter(
+                user=request.user, status=Appeal.STATUS_PENDING,
+                moderation_action__in=[a.pk for a in actions],
+            ).values_list('moderation_action_id', flat=True)
+        )
+
+        serialized = MyModerationActionSerializer(
+            actions, many=True,
+            context={'pending_appeal_action_ids': pending_appeal_action_ids},
+        ).data
+
+        return Response({
+            'is_suspended':               snapshot.is_suspended,
+            'is_permanently_suspended':   snapshot.is_permanently_suspended,
+            'is_temporarily_suspended':   snapshot.is_temporarily_suspended,
+            'messaging_restricted':       snapshot.messaging_restricted,
+            'booking_restricted':         snapshot.booking_restricted,
+            'has_active_warning':         snapshot.has_active_warning,
+            'actions':                    serialized,
+        })
+
+
+class AdminReportModerationActionsView(APIView):
+    """
+    Admin: every moderation action that was taken in response to one report.
+    GET /api/admin-panel/reports/<report_id>/moderation-actions/
+        ?status=...&action_type=...   (same optional filters as user history)
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, report_id):
+        if not _is_admin(request.user):
+            return Response({'error': 'Admin only.'}, status=403)
+        if not UserReport.objects.filter(id=report_id).exists():
+            return Response({'error': 'Report not found.'}, status=404)
+
+        qs = _moderation_queryset().filter(report_id=report_id)
+        qs, error = _apply_moderation_filters(qs, request.query_params)
+        if error:
+            return error
+        return Response(ModerationActionSerializer(qs, many=True).data)
+
+
+class AdminModerationActionReverseView(APIView):
+    """
+    Admin: reverse (deactivate) an action without deleting it — the record,
+    its history, and who reversed it and why are all preserved.
+    POST /api/admin-panel/moderation-actions/<action_id>/reverse/
+    Body: { "reason": "required text" }
+    404 if it doesn't exist; 409 if it was already reversed; 400 if it has
+    already expired on its own (nothing left to reverse).
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, action_id):
+        if not _is_admin(request.user):
+            return Response({'error': 'Admin only.'}, status=403)
+
+        serializer = ReverseModerationActionSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+
+        try:
+            action = reverse_moderation_action(
+                admin=request.user, action_id=action_id,
+                reason=serializer.validated_data['reason'])
+        except ModerationError as e:
+            return Response({'error': e.message}, status=e.status_code)
+
+        action = _moderation_queryset().get(pk=action.pk)
+        return Response(ModerationActionSerializer(action).data)
+
+
+# ─── Appeals (Trust & Safety Part 6) ──────────────────────────────────────────
+
+_APPEAL_STATUSES = [c[0] for c in Appeal.STATUS_CHOICES]
+
+
+def _appeal_status_filter(qs, params):
+    """Optional ?status=pending|approved|rejected. Returns (qs, error_response|None)."""
+    status_filter = params.get('status')
+    if status_filter:
+        if status_filter not in _APPEAL_STATUSES:
+            return qs, Response(
+                {'error': f"status must be one of: {', '.join(_APPEAL_STATUSES)}."}, status=400)
+        qs = qs.filter(status=status_filter)
+    return qs, None
+
+
+def _admin_appeal_queryset():
+    return Appeal.objects.select_related(
+        'user', 'reviewed_by', 'report',
+        'moderation_action', 'moderation_action__target_user',
+        'moderation_action__performed_by', 'moderation_action__reversed_by',
+        'moderation_action__report')
+
+
+class AppealCreateView(APIView):
+    """
+    Affected user: appeal one of THEIR OWN moderation actions.
+    POST /api/admin-panel/appeals/create/
+    Body: {
+        "moderation_action": <action id>,
+        "reason": "required explanation",
+        "evidence_url": "https://..."   // optional
+    }
+    Only those three fields are read. Status, reviewer, decision note,
+    timestamps and the linked report are set by the server. An action that
+    isn't yours and one that doesn't exist both return the same 400.
+    409 if the action is no longer in force or already has a pending appeal.
+    Submitting changes nothing about the action; only an admin decision does.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = AppealSubmitSerializer(data=request.data, context={'request': request})
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+        data = serializer.validated_data
+
+        try:
+            appeal = submit_appeal(
+                user=request.user,
+                moderation_action_id=data['moderation_action'].pk,
+                reason=data['reason'],
+                evidence_url=data.get('evidence_url', ''),
+            )
+        except ModerationError as e:
+            return Response({'error': e.message}, status=e.status_code)
+
+        appeal = Appeal.objects.select_related('moderation_action').get(pk=appeal.pk)
+        return Response(MyAppealSerializer(appeal).data, status=201)
+
+
+class MyAppealsView(APIView):
+    """
+    Affected user: list THEIR OWN appeals, newest first. Never includes anyone
+    else's, and never the internal decision note, reviewing admin, or report.
+    GET /api/admin-panel/appeals/mine/?status=pending|approved|rejected (optional)
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        qs = Appeal.objects.filter(user=request.user).select_related('moderation_action')
+        qs, error = _appeal_status_filter(qs, request.query_params)
+        if error:
+            return error
+        return Response(MyAppealSerializer(qs, many=True).data)
+
+
+class AdminAppealListView(APIView):
+    """
+    Admin: appeals review queue.
+    GET /api/admin-panel/appeals/?status=pending|approved|rejected (optional)
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if not _is_admin(request.user):
+            return Response({'error': 'Admin only.'}, status=403)
+        qs, error = _appeal_status_filter(_admin_appeal_queryset(), request.query_params)
+        if error:
+            return error
+        return Response(AdminAppealSerializer(qs, many=True).data)
+
+
+class AdminAppealDetailView(APIView):
+    """Admin: one appeal in full, with the appealed action's details."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, appeal_id):
+        if not _is_admin(request.user):
+            return Response({'error': 'Admin only.'}, status=403)
+        try:
+            appeal = _admin_appeal_queryset().get(pk=appeal_id)
+        except Appeal.DoesNotExist:
+            return Response({'error': 'Appeal not found.'}, status=404)
+        return Response(AdminAppealSerializer(appeal).data)
+
+
+class AdminAppealApproveView(APIView):
+    """
+    Admin: approve a pending appeal. This reverses the appealed moderation
+    action through the existing reversal logic (history is kept).
+    POST /api/admin-panel/appeals/<appeal_id>/approve/
+    Body: { "decision_note": "optional internal note" }
+    404 unknown appeal; 409 if it was already decided.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, appeal_id):
+        if not _is_admin(request.user):
+            return Response({'error': 'Admin only.'}, status=403)
+        serializer = AppealApproveSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+        try:
+            appeal = approve_appeal(
+                admin=request.user, appeal_id=appeal_id,
+                decision_note=serializer.validated_data.get('decision_note', ''))
+        except ModerationError as e:
+            return Response({'error': e.message}, status=e.status_code)
+        return Response(AdminAppealSerializer(_admin_appeal_queryset().get(pk=appeal.pk)).data)
+
+
+class AdminAppealRejectView(APIView):
+    """
+    Admin: reject a pending appeal. The moderation action is left untouched.
+    POST /api/admin-panel/appeals/<appeal_id>/reject/
+    Body: { "decision_note": "required internal note" }
+    404 unknown appeal; 409 if it was already decided.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, appeal_id):
+        if not _is_admin(request.user):
+            return Response({'error': 'Admin only.'}, status=403)
+        serializer = AppealRejectSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+        try:
+            appeal = reject_appeal(
+                admin=request.user, appeal_id=appeal_id,
+                decision_note=serializer.validated_data['decision_note'])
+        except ModerationError as e:
+            return Response({'error': e.message}, status=e.status_code)
+        return Response(AdminAppealSerializer(_admin_appeal_queryset().get(pk=appeal.pk)).data)
 
 
 # ─── Admin Dashboard Stats ────────────────────────────────────────────────────
@@ -1049,7 +1591,7 @@ class AdminCategoryView(APIView):
                 'booking_count': booking_count,
                 'subcategory_count': SubCategory.objects.filter(category=c).count(),
             })
-        return Response(data)
+        return Response(ContentTranslation.attach_rows('category', data))
 
     def post(self, request):
         if not _is_admin(request.user):
@@ -1123,11 +1665,11 @@ class AdminSubCategoryView(APIView):
         if category_id:
             subs = subs.filter(category_id=category_id)
 
-        return Response([
+        return Response(ContentTranslation.attach_rows('subcategory', [
             {'id': s.id, 'name': s.name, 'category_id': s.category_id,
              'category_name': s.category.name}
             for s in subs
-        ])
+        ]))
 
     def post(self, request):
         if not _is_admin(request.user):
@@ -1228,8 +1770,38 @@ class AdminPaymentRefundView(APIView):
         if not reason:
             return Response({'error': 'A reason is required to process a refund.'}, status=400)
 
+        # Trigger gateway refund if captured via PayPal
+        if payment.paypal_capture_id:
+            try:
+                from apps.payments.paypal import refund_capture
+                refund_capture(payment.paypal_capture_id, payment.amount, payment.currency, note=reason)
+            except Exception as exc:
+                logger.warning("PayPal gateway refund warning: %s", exc)
+
         payment.status = 'refunded'
         payment.save()
+
+        # Update booking payment status and reverse ledger if applicable
+        if payment.booking:
+            payment.booking.payment_status = 'refunded'
+            payment.booking.save(update_fields=['payment_status'])
+
+            try:
+                from apps.payments.models import WalletTransaction
+                if WalletTransaction.objects.filter(booking=payment.booking, transaction_type='credit').exists():
+                    WalletTransaction.objects.create(
+                        user=payment.booking.professional,
+                        transaction_type='refund',
+                        amount=payment.booking.total_price,
+                        currency=payment.booking.currency,
+                        status='completed',
+                        payment=payment,
+                        booking=payment.booking,
+                        description=f"Refund adjustment for booking #{payment.booking.id}: {reason}"
+                    )
+            except Exception as exc:
+                logger.warning("Failed to record refund transaction on ledger: %s", exc)
+
         AdminLog.objects.create(admin=request.user, action='reject', target_user=payment.user,
                                 note=f'Refunded payment #{payment.id}: {reason}')
         return Response({'message': 'Payment refunded.', 'status': payment.status})
@@ -1585,7 +2157,8 @@ class AdminNotificationView(APIView):
         status_filter = request.query_params.get('status')
         if status_filter:
             broadcasts = broadcasts.filter(status=status_filter)
-        return Response(NotificationBroadcastSerializer(broadcasts, many=True).data)
+        return Response(ContentTranslation.attach_rows(
+            'notificationbroadcast', NotificationBroadcastSerializer(broadcasts, many=True).data))
 
     def post(self, request):
         if not _is_admin(request.user):
@@ -1614,6 +2187,11 @@ class AdminNotificationView(APIView):
             scheduled_at=scheduled_at_raw or None,
             status='scheduled' if scheduled_at_raw else 'scheduled',
         )
+
+        # Translations create ke saath hi (optional): "Send Now" turant dispatch hota
+        # hai, to baad mein PUT karne tak intezar nahi ho sakta.
+        _apply_inline_translations(
+            'notificationbroadcast', broadcast.id, request.data.get('translations'))
 
         if not scheduled_at_raw:
             # "Send Now" — dispatch immediately, no cron needed.
@@ -1657,10 +2235,15 @@ def _dispatch_broadcast(broadcast):
         broadcast.audience,
         broadcast.specific_user_id if broadcast.audience == 'specific' else None)
 
+    translations = ContentTranslation.for_object('notificationbroadcast', broadcast.id)
+
     count = 0
     for user in users:
         try:
-            notify_user(user, broadcast.title, broadcast.message, notif_type='general')
+            tr = translations.get(normalize_lang(user.preferred_language) or '', {})
+            notify_user(user, tr.get('title') or broadcast.title,
+                        tr.get('message') or broadcast.message,
+                        notif_type='general', push_kind='admin')
             count += 1
         except Exception:
             pass  # one bad user shouldn't fail the whole broadcast
@@ -2013,7 +2596,64 @@ class AdminCityMergeView(APIView):
         return Response({'message': f'{updated} profile(s) normalized to "{city.name}".'})
 
 
+def _apply_inline_translations(label, object_id, payload):
+    """
+    Create-time translations, language *code* se keyed:
+      { "ur": {"title": "..", "message": ".."}, "ar": {...} }
+    Anjaan code / galat shape / khali text chupchap skip hota hai — main create
+    kabhi isi wajah se fail nahi hota.
+    """
+    if not isinstance(payload, dict):
+        return
+    fields = TRANSLATABLE_FIELDS.get(label, ())
+    languages = {l.code.lower(): l for l in Language.objects.all()}
+    for code, values in payload.items():
+        language = languages.get(normalize_lang(code) or '')
+        if language is None or not isinstance(values, dict):
+            continue
+        for f in fields:
+            text = str(values.get(f) or '').strip()
+            if text:
+                ContentTranslation.objects.update_or_create(
+                    model_label=label, object_id=object_id,
+                    language=language, field=f, defaults={'text': text})
+
+
 # ─── Content Management: Announcements ─────────────────────────────────────────
+
+def _push_announcement(announcement):
+    """
+    Announcement ki audience ko real FCM push bhejta hai.
+    Background thread mein chalta hai taake admin ki request 94+ FCM calls
+    ka intezar na kare. Sirf unhe jati hai jinka fcm_token DB mein hai.
+    """
+    log = logging.getLogger(__name__)
+    try:
+        qs = User.objects.exclude(role='admin').filter(
+            is_active=True, fcm_token__isnull=False).exclude(fcm_token='')
+        if announcement.audience == 'customers':
+            qs = qs.filter(role='customer')
+        elif announcement.audience == 'professionals':
+            qs = qs.filter(role='professional')
+
+        tokens = list(qs.values_list('fcm_token', 'preferred_language'))
+        translations = ContentTranslation.for_object('announcement', announcement.id)
+        ok = 0
+        for token, pref_lang in tokens:
+            lang = normalize_lang(pref_lang) or 'en'
+            tr = translations.get(lang, {})
+            title = tr.get('title') or announcement.title
+            body = tr.get('message') or announcement.message
+            if send_fcm_push(token, style_push_title('announcement', title, lang),
+                             body, data={'type': 'announcement'}):
+                ok += 1
+        log.info('[FCM] announcement %s push: %s/%s sent',
+                 announcement.id, ok, len(tokens))
+    except Exception:
+        log.exception('[FCM] announcement push failed')
+    finally:
+        close_old_connections()
+
 
 class AdminAnnouncementView(APIView):
     """
@@ -2030,7 +2670,8 @@ class AdminAnnouncementView(APIView):
         active_only = request.query_params.get('active')
         if active_only == 'true':
             announcements = announcements.filter(is_active=True)
-        return Response(AnnouncementSerializer(announcements, many=True).data)
+        return Response(ContentTranslation.attach_rows(
+            'announcement', AnnouncementSerializer(announcements, many=True).data))
 
     def post(self, request):
         if not _is_admin(request.user):
@@ -2050,6 +2691,20 @@ class AdminAnnouncementView(APIView):
             end_date=request.data.get('end_date') or None,
             created_by=request.user,
         )
+
+        # Optional create-time translations: {"ur": {"title": .., "message": ..}, ...}
+        # (push thread start hone se pehle save — taake push bhi receiver ki zabaan mein jaye)
+        _apply_inline_translations(
+            'announcement', announcement.id, request.data.get('translations'))
+
+        # Push sirf tab jab announcement abhi se live ho (future start_date ho to skip)
+        now = timezone.now()
+        if announcement.is_active and (
+                announcement.start_date is None or announcement.start_date <= now):
+            threading.Thread(
+                target=_push_announcement, args=(announcement,), daemon=True
+            ).start()
+
         return Response(AnnouncementSerializer(announcement).data, status=201)
 
 
@@ -2083,3 +2738,112 @@ class AdminAnnouncementDetailView(APIView):
             return Response({'error': 'Announcement not found.'}, status=404)
         announcement.delete()
         return Response({'message': 'Announcement deleted.'})
+
+
+class ActiveAnnouncementView(APIView):
+    """
+    Public, no-auth endpoint the Flutter app calls from Guest/Customer/
+    Professional home screens to fetch the announcements that should be
+    showing right now — mirrors the exact same pattern as
+    ActivePromoBannerView (audience + schedule window filtering), just for
+    Announcement instead of PromoBanner.
+    GET /api/admin-panel/announcements/active/?audience=customer
+    audience: 'guest' (default) | 'customer' | 'professional'
+      - 'guest'        → only audience='all' announcements
+      - 'customer'     → audience in {'all', 'customers'}
+      - 'professional' → audience in {'all', 'professionals'}
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        audience = request.query_params.get('audience', 'guest')
+        now = timezone.now()
+
+        allowed_audiences = {'all'}
+        if audience == 'customer':
+            allowed_audiences.add('customers')
+        elif audience == 'professional':
+            allowed_audiences.add('professionals')
+        # 'guest' (or anything unrecognized) → stays {'all'} only
+
+        announcements = Announcement.objects.filter(
+            is_active=True,
+            audience__in=list(allowed_audiences),
+        ).filter(
+            models.Q(start_date__isnull=True) | models.Q(start_date__lte=now)
+        ).filter(
+            models.Q(end_date__isnull=True) | models.Q(end_date__gte=now)
+        ).order_by('-created_at')
+
+        return Response({
+            'active': announcements.exists(),
+            'announcements': ContentTranslation.localize_rows(
+                'announcement', AnnouncementSerializer(announcements, many=True).data,
+                request.query_params.get('lang')),
+        })
+
+
+# ─── Content translations (generic admin endpoint) ───────────────────────────
+
+def _translatable_model(label):
+    """label → parent model class (search app lazy import — cycle se bachne ke liye)."""
+    if label in ('category', 'subcategory'):
+        from apps.search.models import Category, SubCategory
+        return {'category': Category, 'subcategory': SubCategory}[label]
+    return {'announcement': Announcement, 'promobanner': PromoBanner,
+            'notificationbroadcast': NotificationBroadcast}.get(label)
+
+
+class ContentTranslationAdminView(APIView):
+    """
+    PUT    /api/admin-panel/translations/<label>/<object_id>/<language_id>/
+           { "title": "...", "message": "..." }
+           Sirf bheje gaye fields touch hote hain; khali string us field ki
+           translation hata deti hai (base text wapas dikhega).
+    DELETE same URL → us language ki poori translation hat jati hai.
+    label: 'announcement' | 'promobanner' | 'category' | 'subcategory' | 'notificationbroadcast'
+    """
+    permission_classes = [IsAuthenticated]
+
+    def _resolve(self, request, label, object_id, language_id):
+        if not _is_admin(request.user):
+            return None, Response({'error': 'Admin only.'}, status=403)
+        model = _translatable_model(label)
+        if model is None or label not in TRANSLATABLE_FIELDS:
+            return None, Response({'error': f'"{label}" is not translatable.'}, status=400)
+        if not model.objects.filter(pk=object_id).exists():
+            return None, Response({'error': 'Item not found.'}, status=404)
+        try:
+            return Language.objects.get(pk=language_id), None
+        except Language.DoesNotExist:
+            return None, Response({'error': 'Language not found.'}, status=404)
+
+    def put(self, request, label, object_id, language_id):
+        language, err = self._resolve(request, label, object_id, language_id)
+        if err:
+            return err
+        with transaction.atomic():
+            for f in TRANSLATABLE_FIELDS[label]:
+                if f not in request.data:
+                    continue
+                text = str(request.data.get(f) or '').strip()
+                lookup = dict(model_label=label, object_id=object_id,
+                              language=language, field=f)
+                if text:
+                    ContentTranslation.objects.update_or_create(
+                        defaults={'text': text}, **lookup)
+                else:
+                    ContentTranslation.objects.filter(**lookup).delete()
+        row = ContentTranslation.attach_rows(label, [{'id': object_id}])[0]
+        current = next(
+            (t for t in row['translations'] if t['language'] == language.id),
+            {'language': language.id, 'language_code': language.code})
+        return Response(current)
+
+    def delete(self, request, label, object_id, language_id):
+        language, err = self._resolve(request, label, object_id, language_id)
+        if err:
+            return err
+        ContentTranslation.objects.filter(
+            model_label=label, object_id=object_id, language=language).delete()
+        return Response({'message': 'Translation removed — base text will show instead.'})

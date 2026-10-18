@@ -17,6 +17,20 @@ class ReviewPhotoSerializer(serializers.ModelSerializer):
             return None
 
 
+def _resolve_photo_url(val):
+    if not val:
+        return None
+    if hasattr(val, 'url'):
+        try:
+            return val.url
+        except Exception:
+            pass
+    s = str(val).strip()
+    if s and ('http://' in s or 'https://' in s or '/' in s):
+        return s
+    return None
+
+
 class ReviewReplySerializer(serializers.ModelSerializer):
     professional_name  = serializers.CharField(source='review.professional.name', read_only=True)
     professional_photo = serializers.SerializerMethodField()
@@ -27,10 +41,20 @@ class ReviewReplySerializer(serializers.ModelSerializer):
 
     def get_professional_photo(self, obj):
         try:
-            prof = obj.review.professional.professionalprofile
-            return prof.photo_url.url if prof.photo_url else None
+            pro = obj.review.professional
+            prof = getattr(pro, 'professionalprofile', None)
+            if prof and prof.photo_url:
+                url = _resolve_photo_url(prof.photo_url)
+                if url:
+                    return url
+            up = getattr(pro, 'userprofile', None)
+            if up and up.photo_url:
+                url = _resolve_photo_url(up.photo_url)
+                if url:
+                    return url
         except Exception:
-            return None
+            pass
+        return None
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -62,17 +86,35 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def get_reviewer_photo(self, obj):
         try:
-            profile = obj.reviewer.userprofile
-            return profile.photo_url.url if profile.photo_url else None
+            up = getattr(obj.reviewer, 'userprofile', None)
+            if up and up.photo_url:
+                url = _resolve_photo_url(up.photo_url)
+                if url:
+                    return url
+            pp = getattr(obj.reviewer, 'professionalprofile', None)
+            if pp and pp.photo_url:
+                url = _resolve_photo_url(pp.photo_url)
+                if url:
+                    return url
         except Exception:
-            return None
+            pass
+        return None
 
     def get_professional_photo(self, obj):
         try:
-            prof = obj.professional.professionalprofile
-            return prof.photo_url.url if prof.photo_url else None
+            prof = getattr(obj.professional, 'professionalprofile', None)
+            if prof and prof.photo_url:
+                url = _resolve_photo_url(prof.photo_url)
+                if url:
+                    return url
+            up = getattr(obj.professional, 'userprofile', None)
+            if up and up.photo_url:
+                url = _resolve_photo_url(up.photo_url)
+                if url:
+                    return url
         except Exception:
-            return None
+            pass
+        return None
 
     def get_helpful_count(self, obj):
         # Prefer the annotated value (set by the list view) to avoid N+1 queries

@@ -7,6 +7,20 @@ from apps.messaging.models import (
 )
 
 
+def _resolve_photo_url(val):
+    if not val:
+        return None
+    if hasattr(val, 'url'):
+        try:
+            return val.url
+        except Exception:
+            pass
+    s = str(val).strip()
+    if s and ('http://' in s or 'https://' in s or '/' in s):
+        return s
+    return None
+
+
 class AttachmentSerializer(serializers.ModelSerializer):
     file_url = serializers.SerializerMethodField()
 
@@ -108,13 +122,22 @@ class ConversationSerializer(serializers.ModelSerializer):
     is_muted     = serializers.SerializerMethodField()
     draft_text   = serializers.SerializerMethodField()
 
+    # ✅ NEW — Block visibility. `is_blocked_by_me` is safe to reveal (it's
+    # the requesting user's own action) and drives the "You blocked X" /
+    # Unblock UI. `can_message` covers BOTH directions but deliberately
+    # never reveals *who* blocked whom — if the other user blocked me, I
+    # only learn messaging is unavailable, same as Instagram/most apps.
+    is_blocked_by_me = serializers.SerializerMethodField()
+    can_message      = serializers.SerializerMethodField()
+
     class Meta:
         model  = Conversation
         fields = ['id', 'other_user_id', 'other_user_name', 'other_user_photo',
                   'other_user_online', 'other_user_last_seen',
                   'last_message', 'last_message_at', 'last_message_status',
                   'unread_count', 'updated_at',
-                  'is_pinned', 'is_archived', 'is_muted', 'draft_text']
+                  'is_pinned', 'is_archived', 'is_muted', 'draft_text',
+                  'is_blocked_by_me', 'can_message']
 
     def _other_user(self, obj):
         request_user = self.context['request'].user
@@ -142,10 +165,16 @@ class ConversationSerializer(serializers.ModelSerializer):
     def get_other_user_photo(self, obj):
         other = self._other_user(obj)
         try:
-            if hasattr(other, 'professionalprofile') and other.professionalprofile.photo_url:
-                return other.professionalprofile.photo_url.url
-            if hasattr(other, 'userprofile') and other.userprofile.photo_url:
-                return other.userprofile.photo_url.url
+            pp = getattr(other, 'professionalprofile', None)
+            if pp and pp.photo_url:
+                url = _resolve_photo_url(pp.photo_url)
+                if url:
+                    return url
+            up = getattr(other, 'userprofile', None)
+            if up and up.photo_url:
+                url = _resolve_photo_url(up.photo_url)
+                if url:
+                    return url
         except Exception:
             pass
         return None
@@ -198,6 +227,25 @@ class ConversationSerializer(serializers.ModelSerializer):
     def get_draft_text(self, obj):
         state = self._my_state(obj)
         return state.draft_text if state else ''
+
+    def _block_flags(self, obj):
+        # Cached per-object so both getters below share one lookup
+        # (and the view can prefetch into `_block_flags_cache` — see
+        # ConversationListView.get — to avoid an N+1 on the list endpoint).
+        if hasattr(obj, '_block_flags_cache'):
+            return obj._block_flags_cache
+        request_user = self.context['request'].user
+        other = self._other_user(obj)
+        by_me    = BlockedUser.objects.filter(blocker=request_user, blocked=other).exists()
+        by_other = BlockedUser.objects.filter(blocker=other, blocked=request_user).exists()
+        return {'by_me': by_me, 'by_other': by_other}
+
+    def get_is_blocked_by_me(self, obj):
+        return self._block_flags(obj)['by_me']
+
+    def get_can_message(self, obj):
+        flags = self._block_flags(obj)
+        return not (flags['by_me'] or flags['by_other'])
 
 
 class UserPresenceSerializer(serializers.ModelSerializer):

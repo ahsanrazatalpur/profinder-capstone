@@ -36,7 +36,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     role       = models.CharField(max_length=20, choices=ROLE_CHOICES)
     is_active  = models.BooleanField(default=True)
     is_staff   = models.BooleanField(default=False)
-    fcm_token  = models.CharField(max_length=255, blank=True, null=True)  # ✅ NEW — for push notifications
+    fcm_token          = models.CharField(max_length=255, blank=True, null=True)  # ✅ NEW — for push notifications
+    push_notifications  = models.BooleanField(default=True)
+    email_notifications = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     # ✅ i18n — synced with the Flutter app's language selection.

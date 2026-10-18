@@ -30,6 +30,13 @@ class UserProfileView(APIView):
         if photo:
             profile.photo_url = photo
             profile.save(update_fields=['photo_url'])
+            pp = getattr(profile.user, 'professionalprofile', None)
+            if pp:
+                try:
+                    pp.photo_url = photo
+                    pp.save(update_fields=['photo_url'])
+                except Exception:
+                    pass
         serializer = UserProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -56,11 +63,22 @@ class ProfessionalProfileView(APIView):
                 data['name']          = profile.user.name
                 data['email']         = profile.user.email
                 data['category_name'] = profile.category.name if profile.category else ''
-                data['user_id']       = profile.user.id   # ✅ FIX: User.id explicitly bhejo
+                up = None
                 try:
-                    data['city'] = profile.user.userprofile.city
+                    up = profile.user.userprofile
+                    data['city'] = up.city
+                    data['country'] = up.country
                 except Exception:
                     data['city'] = ''
+                    data['country'] = ''
+
+                from apps.payments.exchange import resolve_currency_for_user
+                curr, sym = resolve_currency_for_user(
+                    country=getattr(up, 'country', None),
+                    city=getattr(up, 'city', None)
+                )
+                data['currency'] = curr
+                data['currency_symbol'] = sym
 
                 # ✅ NEW — log this view for Analytics (skip if professional
                 # is viewing their own profile via this route)
@@ -76,6 +94,17 @@ class ProfessionalProfileView(APIView):
         data = ProfessionalProfileSerializer(profile).data
         data['category_name'] = profile.category.name if profile.category else ''
         data['user_id']       = profile.user.id   # ✅ FIX: apne profile mein bhi
+        up = getattr(profile.user, 'userprofile', None)
+        if up:
+            data['city'] = up.city
+            data['country'] = up.country
+        from apps.payments.exchange import resolve_currency_for_user
+        curr, sym = resolve_currency_for_user(
+            country=getattr(up, 'country', None),
+            city=getattr(up, 'city', None)
+        )
+        data['currency'] = curr
+        data['currency_symbol'] = sym
         return Response(data)
 
     def patch(self, request, user_id=None):
@@ -84,6 +113,13 @@ class ProfessionalProfileView(APIView):
         if photo:
             profile.photo_url = photo
             profile.save(update_fields=['photo_url'])
+            up = getattr(profile.user, 'userprofile', None)
+            if up:
+                try:
+                    up.photo_url = photo
+                    up.save(update_fields=['photo_url'])
+                except Exception:
+                    pass
         serializer = ProfessionalProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()

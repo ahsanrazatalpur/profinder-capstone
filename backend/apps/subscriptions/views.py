@@ -118,6 +118,16 @@ class SubscriptionView(APIView):
                 'error': f'This plan is for {plan.plan_type}s only.'
             }, status=400)
 
+        # Free plans activate immediately; paid plans require payment checkout
+        if plan.billing != 'free' and plan.price > 0:
+            return Response({
+                'error': 'payment_required',
+                'message': 'Paid plans require payment verification. Please initiate checkout.',
+                'plan_id': plan.id,
+                'price': str(plan.price),
+                'currency': plan.currency,
+            }, status=status.HTTP_402_PAYMENT_REQUIRED)
+
         # Pehle wala active subscription cancel karo
         Subscription.objects.filter(
             user=request.user, status='active'

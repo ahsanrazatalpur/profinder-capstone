@@ -4,3 +4,6 @@ class SearchConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.search'
     label = 'search'
+
+    def ready(self):
+        from apps.search import signals  # noqa: F401  (registers receivers)

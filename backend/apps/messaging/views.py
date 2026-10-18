@@ -1,5 +1,6 @@
 # PATH: backend/apps/messaging/views.py
 
+from django.db import transaction
 from django.utils import timezone
 from django.db.models import Q, Prefetch
 from rest_framework import status
@@ -17,7 +18,10 @@ from apps.messaging.serializers import (
     BlockedUserSerializer, UserReportSerializer, AttachmentSerializer,
 )
 from apps.messaging.realtime import broadcast_new_message, broadcast_status_update, broadcast_reaction
+from apps.messaging.voice import validate_voice_note, clean_duration
+from apps.notifications.utils import notify_user, notify_admins
 from apps.users.models import User
+from apps.admin_panel.enforcement import can_send_messages
 
 
 def _is_blocked_either_way(user_a_id, user_b_id):
@@ -52,6 +56,12 @@ class ConversationListView(APIView):
         search = request.query_params.get('search', '').strip()
         want_archived = request.query_params.get('archived', '').lower() == 'true'
 
+        # ✅ NEW — one query for every block relationship touching this user
+        # (either direction), instead of 2 extra queries per conversation.
+        my_blocks = BlockedUser.objects.filter(Q(blocker=user) | Q(blocked=user)).values_list('blocker_id', 'blocked_id')
+        blocked_by_me_ids = {blocked_id for blocker_id, blocked_id in my_blocks if blocker_id == user.id}
+        blocked_me_ids    = {blocker_id for blocker_id, blocked_id in my_blocks if blocked_id == user.id}
+
         results = []
         for conv in conversations:
             msgs = list(conv.messages.all())
@@ -59,6 +69,10 @@ class ConversationListView(APIView):
             conv._my_state_cache = conv._my_states[0] if conv._my_states else None
 
             other = conv.professional if user.id == conv.customer_id else conv.customer
+            conv._block_flags_cache = {
+                'by_me':    other.id in blocked_by_me_ids,
+                'by_other': other.id in blocked_me_ids,
+            }
             if search and search.lower() not in (other.name or '').lower():
                 continue
 
@@ -150,6 +164,18 @@ class MessageListView(APIView):
             limit = 30
         limit = max(1, min(limit, 100))
 
+        after_id = request.query_params.get('after_id') or request.query_params.get('since_id')
+        if after_id:
+            try:
+                after_id = int(after_id)
+                new_messages = qs.filter(id__gt=after_id).order_by('created_at')[:limit]
+                return Response({
+                    'results': MessageSerializer(new_messages, many=True, context={'request': request}).data,
+                    'has_more': False,
+                })
+            except (TypeError, ValueError):
+                return Response({'error': 'after_id must be an integer.'}, status=status.HTTP_400_BAD_REQUEST)
+
         before_id = request.query_params.get('before_id')
         if before_id:
             try:
@@ -175,10 +201,20 @@ class MessageListView(APIView):
 
         other_id = conv.professional_id if request.user.id == conv.customer_id else conv.customer_id
 
+        # Check moderation restriction or active suspension
+        if not can_send_messages(request.user):
+            return Response(
+                {'error': 'Your messaging privileges have been restricted.', 'code': 'messaging_restricted'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         # ✅ NEW — Block check. Either side blocking the other stops new
         # messages (existing history stays visible).
         if _is_blocked_either_way(request.user.id, other_id):
-            return Response({'error': 'You cannot message this user.'}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {'error': 'You cannot message this user.', 'code': 'blocked'},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         text  = (request.data.get('text') or '').strip()
         image = request.FILES.get('image')
@@ -188,31 +224,42 @@ class MessageListView(APIView):
         if not text and not image and not audio:
             return Response({'error': 'Message must have text, an image, or a voice note.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # 🐛 FIX: validate the voice note BEFORE touching the database. A bad
+        # upload used to fail after the Message row was created, leaving an
+        # empty ghost message in the thread (and a 500 for the sender).
+        duration = None
+        if audio:
+            audio_error, audio_status = validate_voice_note(audio)
+            if audio_error:
+                return Response({'error': audio_error}, status=audio_status)
+            duration = clean_duration(request.data.get('duration_seconds'))
+
         reply_to = None
         if reply_to_id:
             reply_to = Message.objects.filter(id=reply_to_id, conversation=conv).first()
             if reply_to is None:
                 return Response({'error': 'reply_to message not found in this conversation.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        message = Message.objects.create(
-            conversation=conv,
-            sender=request.user,
-            text=text,
-            reply_to=reply_to,
-            status=Message.STATUS_SENT,
-        )
+        # Message + attachment are saved together: if storing the file fails,
+        # the message row is rolled back too (no empty ghost bubble).
+        with transaction.atomic():
+            message = Message.objects.create(
+                conversation=conv,
+                sender=request.user,
+                text=text,
+                reply_to=reply_to,
+                status=Message.STATUS_SENT,
+            )
 
-        if image:
-            Attachment.objects.create(message=message, file=image, file_type=Attachment.FILE_TYPE_IMAGE)
-        elif audio:
-            duration = request.data.get('duration_seconds')
-            try:
-                duration = int(duration) if duration is not None else None
-            except (TypeError, ValueError):
-                duration = None
-            Attachment.objects.create(message=message, file=audio, file_type=Attachment.FILE_TYPE_AUDIO, duration_seconds=duration)
+            if image:
+                Attachment.objects.create(message=message, file=image, file_type=Attachment.FILE_TYPE_IMAGE)
+            elif audio:
+                Attachment.objects.create(
+                    message=message, file=audio,
+                    file_type=Attachment.FILE_TYPE_AUDIO, duration_seconds=duration,
+                )
 
-        conv.save(update_fields=['updated_at'])
+            conv.save(update_fields=['updated_at'])
 
         # ✅ NEW — sending a message clears any saved draft for this user
         ConversationUserState.objects.filter(conversation=conv, user=request.user).update(draft_text='')
@@ -392,7 +439,25 @@ class ReportUserView(APIView):
 
         serializer = UserReportSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(reporter=request.user)
+            report = serializer.save(reporter=request.user)
+            target_name = getattr(report.reported, 'name', None) if getattr(report, 'reported', None) else None
+            about_target = f" regarding {target_name}" if target_name else ""
+            notify_user(
+                request.user,
+                title='Report Submitted',
+                message=f"Thanks — we've received your report{about_target} and our team will review it shortly.",
+                notif_type='report',
+                data={'report_id': report.id, 'event': 'report_submitted'},
+            )
+            # ✅ NEW — admin panel notification bell was always empty
+            # because nothing ever notified admins. A new report needs
+            # admin attention, so every admin gets a Notification row too.
+            notify_admins(
+                title='New Report Submitted',
+                message=f'{request.user.name} filed a report — review required.',
+                notif_type='report',
+                data={'report_id': report.id, 'event': 'report_submitted'},
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
