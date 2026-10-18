@@ -58,10 +58,10 @@ class PolicyDocument {
       title: (json['title'] ?? '').toString(),
       blocks: rawBlocks is List
           ? rawBlocks
-              .whereType<Map>()
-              .map((b) => PolicyBlock.fromJson(Map<String, dynamic>.from(b)))
-              .where((b) => b.text.trim().isNotEmpty)
-              .toList()
+                .whereType<Map>()
+                .map((b) => PolicyBlock.fromJson(Map<String, dynamic>.from(b)))
+                .where((b) => b.text.trim().isNotEmpty)
+                .toList()
           : const [],
       language: (json['language'] ?? 'en').toString(),
       requestedLanguage: (json['requested_language'] ?? 'en').toString(),

@@ -50,9 +50,9 @@ class GuestMainScreenState extends State<GuestMainScreen> {
     // capped harder than most widgets to avoid icons/labels ballooning
     // past what a fixed-width nav item can comfortably hold, while small
     // phones still get a legible floor.
-    final iconSize  = ResponsiveUtils.sp(24, scale, min: 22, max: 30);
+    final iconSize = ResponsiveUtils.sp(24, scale, min: 22, max: 30);
     final labelSize = ResponsiveUtils.sp(11, scale, min: 10, max: 13);
-    final navHeight  = ResponsiveUtils.sp(60, scale, min: 56, max: 74);
+    final navHeight = ResponsiveUtils.sp(60, scale, min: 56, max: 74);
 
     final t = AppLocalizations.of(context);
 
@@ -65,74 +65,93 @@ class GuestMainScreenState extends State<GuestMainScreen> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          GuestHomeScreen(isVisible: _currentIndex == 0),
-          // SearchScreen sits here as a bottom-nav TAB (IndexedStack),
-          // not a pushed route — this screen is also wrapped in
-          // PopScope(canPop: false), so SearchScreen's back arrow found
-          // `Navigator.canPop(context) == false` and fell through to
-          // `onBackWhenEmbedded?.call()`, which was null and did nothing.
-          // Passing this callback makes the back arrow switch to the Home
-          // tab instead of being a dead button.
-          SearchScreen(
-            isLoggedIn: false,
-            userRole: 'guest',
-            onBackWhenEmbedded: () => switchToTab(0),
-          ),
-          MagazineScreen(onBackWhenEmbedded: () => switchToTab(0)),
-          const RegisterScreen(initialRole: 'professional'),
-          const GuestProfileScreen(),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: context.colors.surface,
-          border: Border(top: BorderSide(color: context.colors.divider, width: 1)),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 12, offset: const Offset(0, -4)),
+        body: IndexedStack(
+          index: _currentIndex,
+          children: [
+            GuestHomeScreen(isVisible: _currentIndex == 0),
+            // SearchScreen sits here as a bottom-nav TAB (IndexedStack),
+            // not a pushed route — this screen is also wrapped in
+            // PopScope(canPop: false), so SearchScreen's back arrow found
+            // `Navigator.canPop(context) == false` and fell through to
+            // `onBackWhenEmbedded?.call()`, which was null and did nothing.
+            // Passing this callback makes the back arrow switch to the Home
+            // tab instead of being a dead button.
+            SearchScreen(
+              isLoggedIn: false,
+              userRole: 'guest',
+              onBackWhenEmbedded: () => switchToTab(0),
+            ),
+            MagazineScreen(onBackWhenEmbedded: () => switchToTab(0)),
+            const RegisterScreen(initialRole: 'professional'),
+            const GuestProfileScreen(),
           ],
         ),
-        child: SafeArea(
-          top: false,
-          child: SizedBox(
-            height: navHeight,
-            child: BottomNavigationBar(
-              currentIndex:         _currentIndex,
-              elevation:            0,
-              backgroundColor:      Colors.transparent,
-              selectedItemColor:    context.colors.primary,
-              unselectedItemColor:  context.colors.textSecondary,
-              selectedFontSize:     labelSize,
-              unselectedFontSize:   labelSize,
-              iconSize:             iconSize,
-              selectedLabelStyle:   TextStyle(fontWeight: FontWeight.w600, fontSize: labelSize),
-              unselectedLabelStyle: TextStyle(fontSize: labelSize),
-              type: BottomNavigationBarType.fixed,
-              onTap: (i) => setState(() => _currentIndex = i),
-              items: [
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.home_outlined), activeIcon: const Icon(Icons.home_rounded), label: t.home,
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            border: Border(
+              top: BorderSide(color: context.colors.divider, width: 1),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.25),
+                blurRadius: 12,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              height: navHeight,
+              child: BottomNavigationBar(
+                currentIndex: _currentIndex,
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                selectedItemColor: context.colors.primary,
+                unselectedItemColor: context.colors.textSecondary,
+                selectedFontSize: labelSize,
+                unselectedFontSize: labelSize,
+                iconSize: iconSize,
+                selectedLabelStyle: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: labelSize,
                 ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.search_outlined), activeIcon: const Icon(Icons.search_rounded), label: t.navSearch,
-                ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.menu_book_outlined), activeIcon: const Icon(Icons.menu_book_rounded), label: t.homeMagazineNavLabel,
-                ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.workspace_premium_outlined), activeIcon: const Icon(Icons.workspace_premium_rounded), label: t.homeBecomePro,
-                ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.person_outline_rounded), activeIcon: const Icon(Icons.person_rounded), label: t.profile,
-                ),
-              ],
+                unselectedLabelStyle: TextStyle(fontSize: labelSize),
+                type: BottomNavigationBarType.fixed,
+                onTap: (i) => setState(() => _currentIndex = i),
+                items: [
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.home_outlined),
+                    activeIcon: const Icon(Icons.home_rounded),
+                    label: t.home,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.search_outlined),
+                    activeIcon: const Icon(Icons.search_rounded),
+                    label: t.navSearch,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.menu_book_outlined),
+                    activeIcon: const Icon(Icons.menu_book_rounded),
+                    label: t.homeMagazineNavLabel,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.workspace_premium_outlined),
+                    activeIcon: const Icon(Icons.workspace_premium_rounded),
+                    label: t.homeBecomePro,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.person_outline_rounded),
+                    activeIcon: const Icon(Icons.person_rounded),
+                    label: t.profile,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    ), // Scaffold
+      ), // Scaffold
     );
   }
 }

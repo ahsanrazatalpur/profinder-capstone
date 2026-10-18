@@ -58,7 +58,9 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
     if (!mounted || created == null) return;
     final t = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(t.ticketCreatedMessage(created.summary.reference))),
+      SnackBar(
+        content: Text(t.ticketCreatedMessage(created.summary.reference)),
+      ),
     );
     _load(showSpinner: false);
   }
@@ -67,10 +69,12 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => TicketDetailScreen(ticketId: ticket.id, source: _source),
+        builder: (_) =>
+            TicketDetailScreen(ticketId: ticket.id, source: _source),
       ),
     );
-    if (mounted) _load(showSpinner: false); // status / new reply may have changed
+    if (mounted)
+      _load(showSpinner: false); // status / new reply may have changed
   }
 
   @override
@@ -125,14 +129,15 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             // Bottom space so the floating button never covers the last card.
             padding: const EdgeInsetsDirectional.fromSTEB(
-              AppSizes.md, AppSizes.md, AppSizes.md, 96,
+              AppSizes.md,
+              AppSizes.md,
+              AppSizes.md,
+              96,
             ),
             itemCount: tickets.length,
             separatorBuilder: (_, _) => const SizedBox(height: AppSizes.sm),
-            itemBuilder: (context, i) => _TicketCard(
-              ticket: tickets[i],
-              onTap: () => _open(tickets[i]),
-            ),
+            itemBuilder: (context, i) =>
+                _TicketCard(ticket: tickets[i], onTap: () => _open(tickets[i])),
           ),
         ),
       ),
@@ -151,7 +156,8 @@ class _TicketCard extends StatelessWidget {
     final t = AppLocalizations.of(context);
     final colors = context.colors;
     final styles = context.textStyles;
-    final hasNewReply = ticket.lastMessageIsStaff && ticket.status != TicketStatus.closed;
+    final hasNewReply =
+        ticket.lastMessageIsStaff && ticket.status != TicketStatus.closed;
 
     return Material(
       color: colors.surface,
@@ -173,7 +179,10 @@ class _TicketCard extends StatelessWidget {
                   ticket.subject,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: styles.bodyLarge.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0),
+                  style: styles.bodyLarge.copyWith(
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0,
+                  ),
                 ),
                 const SizedBox(height: AppSizes.xs),
                 Text(

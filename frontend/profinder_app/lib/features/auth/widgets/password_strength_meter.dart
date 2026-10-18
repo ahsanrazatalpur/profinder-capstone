@@ -18,20 +18,25 @@ class PasswordStrengthMeter extends StatelessWidget {
   const PasswordStrengthMeter({super.key, required this.password});
 
   static const Map<PasswordStrengthLevel, Color> _levelColors = {
-    PasswordStrengthLevel.veryWeak:  AppColors.favoriteRed, // 🔴
-    PasswordStrengthLevel.weak:      AppColors.badgeTrending, // 🟠
-    PasswordStrengthLevel.medium:    AppColors.warningAmber, // 🟡
-    PasswordStrengthLevel.strong:    AppColors.onlineGreen, // 🟢
+    PasswordStrengthLevel.veryWeak: AppColors.favoriteRed, // 🔴
+    PasswordStrengthLevel.weak: AppColors.badgeTrending, // 🟠
+    PasswordStrengthLevel.medium: AppColors.warningAmber, // 🟡
+    PasswordStrengthLevel.strong: AppColors.onlineGreen, // 🟢
     PasswordStrengthLevel.excellent: AppColors.walletGradientStart, // 💚
   };
 
   static String _levelLabel(PasswordStrengthLevel level, AppLocalizations t) {
     switch (level) {
-      case PasswordStrengthLevel.veryWeak:  return t.pwStrengthVeryWeak;
-      case PasswordStrengthLevel.weak:      return t.pwStrengthWeak;
-      case PasswordStrengthLevel.medium:    return t.pwStrengthMedium;
-      case PasswordStrengthLevel.strong:    return t.pwStrengthStrong;
-      case PasswordStrengthLevel.excellent: return t.pwStrengthExcellent;
+      case PasswordStrengthLevel.veryWeak:
+        return t.pwStrengthVeryWeak;
+      case PasswordStrengthLevel.weak:
+        return t.pwStrengthWeak;
+      case PasswordStrengthLevel.medium:
+        return t.pwStrengthMedium;
+      case PasswordStrengthLevel.strong:
+        return t.pwStrengthStrong;
+      case PasswordStrengthLevel.excellent:
+        return t.pwStrengthExcellent;
     }
   }
 
@@ -48,10 +53,10 @@ class PasswordStrengthMeter extends StatelessWidget {
   }
 
   Widget _buildMeter(BuildContext context) {
-    final t      = AppLocalizations.of(context);
+    final t = AppLocalizations.of(context);
     final result = AppValidators.passwordStrength(password, t);
-    final color  = _levelColors[result.level]!;
-    final label  = _levelLabel(result.level, t);
+    final color = _levelColors[result.level]!;
+    final label = _levelLabel(result.level, t);
 
     return Padding(
       padding: const EdgeInsets.only(top: AppSizes.sm),
@@ -80,7 +85,7 @@ class PasswordStrengthMeter extends StatelessWidget {
               AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 200),
                 style: AppTextStyles.label.copyWith(
-                  color:      color,
+                  color: color,
                   fontWeight: FontWeight.w700,
                 ),
                 child: Text(label),
@@ -89,18 +94,22 @@ class PasswordStrengthMeter extends StatelessWidget {
           ),
           const SizedBox(height: AppSizes.sm),
           Wrap(
-            spacing:   AppSizes.sm,
+            spacing: AppSizes.sm,
             runSpacing: AppSizes.xs,
             children: result.requirements.map((req) {
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                curve:    Curves.easeOut,
-                padding:  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                curve: Curves.easeOut,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color:        req.met ? context.colors.accentLight : context.colors.background,
+                  color: req.met
+                      ? context.colors.accentLight
+                      : context.colors.background,
                   borderRadius: BorderRadius.circular(AppSizes.radiusFull),
                   border: Border.all(
-                    color: req.met ? context.colors.accent : context.colors.divider,
+                    color: req.met
+                        ? context.colors.accent
+                        : context.colors.divider,
                   ),
                 ),
                 child: Row(
@@ -108,15 +117,21 @@ class PasswordStrengthMeter extends StatelessWidget {
                   children: [
                     Icon(
                       req.met ? Icons.check_circle : Icons.circle_outlined,
-                      size:  14,
-                      color: req.met ? context.colors.accent : context.colors.textDisabled,
+                      size: 14,
+                      color: req.met
+                          ? context.colors.accent
+                          : context.colors.textDisabled,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       req.label,
                       style: AppTextStyles.caption.copyWith(
-                        color: req.met ? context.colors.accent : context.colors.textSecondary,
-                        fontWeight: req.met ? FontWeight.w600 : FontWeight.normal,
+                        color: req.met
+                            ? context.colors.accent
+                            : context.colors.textSecondary,
+                        fontWeight: req.met
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
                     ),
                   ],

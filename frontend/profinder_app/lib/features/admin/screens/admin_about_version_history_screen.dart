@@ -14,10 +14,12 @@ class AdminAboutVersionHistoryScreen extends StatefulWidget {
   const AdminAboutVersionHistoryScreen({super.key});
 
   @override
-  State<AdminAboutVersionHistoryScreen> createState() => _AdminAboutVersionHistoryScreenState();
+  State<AdminAboutVersionHistoryScreen> createState() =>
+      _AdminAboutVersionHistoryScreenState();
 }
 
-class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistoryScreen> {
+class _AdminAboutVersionHistoryScreenState
+    extends State<AdminAboutVersionHistoryScreen> {
   final _service = AboutPageService();
   bool _loading = true;
   List<dynamic> _versions = [];
@@ -34,7 +36,9 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
     if (!mounted) return;
     setState(() {
       _loading = false;
-      _versions = result['success'] == true ? List<dynamic>.from(result['data']) : [];
+      _versions = result['success'] == true
+          ? List<dynamic>.from(result['data'])
+          : [];
     });
   }
 
@@ -42,13 +46,25 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
         icon: Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.1), shape: BoxShape.circle),
-          child: const Icon(Icons.history_rounded, color: AppColors.adminColor, size: 26),
+          decoration: BoxDecoration(
+            color: AppColors.adminColor.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.history_rounded,
+            color: AppColors.adminColor,
+            size: 26,
+          ),
         ),
-        title: Text('Restore Version ${version['version_number']}?', textAlign: TextAlign.center),
+        title: Text(
+          'Restore Version ${version['version_number']}?',
+          textAlign: TextAlign.center,
+        ),
         content: const Text(
           'This replaces your current draft with this version\'s content. '
           'It does NOT publish automatically — review in Preview, then Publish when ready.',
@@ -56,11 +72,16 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.adminColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+              ),
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Restore'),
@@ -75,20 +96,26 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
         backgroundColor: success ? Colors.green.shade600 : null,
         content: Row(
           children: [
             Icon(
-              success ? Icons.check_circle_rounded : Icons.error_outline_rounded,
+              success
+                  ? Icons.check_circle_rounded
+                  : Icons.error_outline_rounded,
               color: Colors.white,
               size: 18,
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(success
-                  ? 'Draft restored. Review in Preview, then Publish.'
-                  : (result['error']?.toString() ?? 'Restore failed.')),
+              child: Text(
+                success
+                    ? 'Draft restored. Review in Preview, then Publish.'
+                    : (result['error']?.toString() ?? 'Restore failed.'),
+              ),
             ),
           ],
         ),
@@ -107,10 +134,13 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 220),
         child: _loading
-            ? const Center(key: ValueKey('loading'), child: CircularProgressIndicator())
+            ? const Center(
+                key: ValueKey('loading'),
+                child: CircularProgressIndicator(),
+              )
             : _versions.isEmpty
-                ? _emptyState(context)
-                : _versionsList(context),
+            ? _emptyState(context)
+            : _versionsList(context),
       ),
     );
   }
@@ -125,14 +155,25 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.08), shape: BoxShape.circle),
-              child: Icon(Icons.history_toggle_off_rounded, size: 36, color: AppColors.adminColor.withValues(alpha: 0.7)),
+              decoration: BoxDecoration(
+                color: AppColors.adminColor.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.history_toggle_off_rounded,
+                size: 36,
+                color: AppColors.adminColor.withValues(alpha: 0.7),
+              ),
             ),
             const SizedBox(height: 16),
             Text(
               'No versions yet — publish the About page to create the first one.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: context.colors.textSecondary, fontSize: AppFontSizes.secondary, height: 1.4),
+              style: TextStyle(
+                color: context.colors.textSecondary,
+                fontSize: AppFontSizes.secondary,
+                height: 1.4,
+              ),
             ),
           ],
         ),
@@ -168,7 +209,9 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
 
   Widget _versionCard(BuildContext context, dynamic v, int index) {
     DateTime? createdAt;
-    try { createdAt = DateTime.parse(v['created_at']); } catch (_) {}
+    try {
+      createdAt = DateTime.parse(v['created_at']);
+    } catch (_) {}
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
@@ -177,7 +220,10 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
       builder: (context, t, child) {
         return Opacity(
           opacity: t,
-          child: Transform.translate(offset: Offset(0, (1 - t) * 8), child: child),
+          child: Transform.translate(
+            offset: Offset(0, (1 - t) * 8),
+            child: child,
+          ),
         );
       },
       child: Container(
@@ -187,41 +233,73 @@ class _AdminAboutVersionHistoryScreenState extends State<AdminAboutVersionHistor
           borderRadius: BorderRadius.circular(AppSizes.radius14),
           border: Border.all(color: context.colors.divider),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 6, offset: const Offset(0, 2)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              width: 40, height: 40,
-              decoration: BoxDecoration(color: AppColors.adminColor.withValues(alpha: 0.1), shape: BoxShape.circle),
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.adminColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
               alignment: Alignment.center,
-              child: Text('v${v['version_number']}',
-                  style: const TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
+              child: Text(
+                'v${v['version_number']}',
+                style: const TextStyle(
+                  fontSize: AppFontSizes.caption,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.adminColor,
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(v['label']?.toString().isNotEmpty == true ? v['label'] : 'No note',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
+                  Text(
+                    v['label']?.toString().isNotEmpty == true
+                        ? v['label']
+                        : 'No note',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: context.colors.textPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 3),
                   Row(
                     children: [
-                      Icon(Icons.schedule_rounded, size: 12, color: context.colors.textSecondary),
+                      Icon(
+                        Icons.schedule_rounded,
+                        size: 12,
+                        color: context.colors.textSecondary,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           [
-                            if (createdAt != null) DateFormat('MMM d, y · h:mm a').format(createdAt),
-                            if (v['created_by_name']?.toString().isNotEmpty == true) 'by ${v['created_by_name']}',
+                            if (createdAt != null)
+                              DateFormat('MMM d, y · h:mm a').format(createdAt),
+                            if (v['created_by_name']?.toString().isNotEmpty ==
+                                true)
+                              'by ${v['created_by_name']}',
                           ].join(' — '),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary),
+                          style: TextStyle(
+                            fontSize: AppFontSizes.caption,
+                            color: context.colors.textSecondary,
+                          ),
                         ),
                       ),
                     ],
@@ -258,7 +336,9 @@ class _RestoreButtonState extends State<_RestoreButton> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 120),
         decoration: BoxDecoration(
-          color: _hovering ? AppColors.adminColor.withValues(alpha: 0.08) : Colors.transparent,
+          color: _hovering
+              ? AppColors.adminColor.withValues(alpha: 0.08)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(AppSizes.radiusSm),
         ),
         child: TextButton.icon(
@@ -268,7 +348,10 @@ class _RestoreButtonState extends State<_RestoreButton> {
             visualDensity: VisualDensity.compact,
           ),
           icon: const Icon(Icons.restore_rounded, size: 16),
-          label: const Text('Restore', style: TextStyle(fontWeight: FontWeight.w600)),
+          label: const Text(
+            'Restore',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
         ),
       ),
     );

@@ -15,7 +15,11 @@ class ConversationTile extends StatelessWidget {
   final ConversationEntity conversation;
   final VoidCallback onTap;
 
-  const ConversationTile({super.key, required this.conversation, required this.onTap});
+  const ConversationTile({
+    super.key,
+    required this.conversation,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +37,18 @@ class ConversationTile extends StatelessWidget {
               avatar: CircleAvatar(
                 radius: 26,
                 backgroundColor: context.colors.primaryLight,
-                backgroundImage:
-                    conversation.otherUserPhoto != null ? CachedNetworkImageProvider(conversation.otherUserPhoto!) : null,
+                backgroundImage: conversation.otherUserPhoto != null
+                    ? CachedNetworkImageProvider(conversation.otherUserPhoto!)
+                    : null,
                 child: conversation.otherUserPhoto == null
-                    ? Text(_initials(conversation.otherUserName),
-                        style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.bold, color: context.colors.primary))
+                    ? Text(
+                        _initials(conversation.otherUserName),
+                        style: TextStyle(
+                          fontSize: AppFontSizes.title,
+                          fontWeight: FontWeight.bold,
+                          color: context.colors.primary,
+                        ),
+                      )
                     : null,
               ),
             ),
@@ -57,7 +68,9 @@ class ConversationTile extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 15.5,
-                                  fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
+                                  fontWeight: hasUnread
+                                      ? FontWeight.w700
+                                      : FontWeight.w600,
                                   color: context.colors.textPrimary,
                                 ),
                               ),
@@ -65,49 +78,82 @@ class ConversationTile extends StatelessWidget {
                             // Visual indicator when notifications for this conversation are muted
                             if (conversation.isMuted) ...[
                               const SizedBox(width: 5),
-                              Icon(Icons.notifications_off_rounded, size: 14, color: context.colors.textSecondary),
+                              Icon(
+                                Icons.notifications_off_rounded,
+                                size: 14,
+                                color: context.colors.textSecondary,
+                              ),
                             ],
                           ],
                         ),
                       ),
                       if (conversation.lastMessageAt != null)
-                        Text(_timeLabel(conversation.lastMessageAt!),
-                            style: TextStyle(
-                              fontSize: AppFontSizes.small,
-                              color: hasUnread ? context.colors.primary : context.colors.textSecondary,
-                              fontWeight: hasUnread ? FontWeight.w700 : FontWeight.normal,
-                            )),
+                        Text(
+                          _timeLabel(conversation.lastMessageAt!),
+                          style: TextStyle(
+                            fontSize: AppFontSizes.small,
+                            color: hasUnread
+                                ? context.colors.primary
+                                : context.colors.textSecondary,
+                            fontWeight: hasUnread
+                                ? FontWeight.w700
+                                : FontWeight.normal,
+                          ),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 3),
                   Row(
                     children: [
-                      if (conversation.lastMessageStatus != null) _buildTickIcon(context, conversation.lastMessageStatus!),
+                      if (conversation.lastMessageStatus != null)
+                        _buildTickIcon(
+                          context,
+                          conversation.lastMessageStatus!,
+                        ),
                       Expanded(
                         child: Text(
-                          conversation.lastMessage.isEmpty ? AppLocalizations.of(context).chatSayHello : conversation.lastMessage,
+                          conversation.lastMessage.isEmpty
+                              ? AppLocalizations.of(context).chatSayHello
+                              : conversation.lastMessage,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: AppFontSizes.body,
-                            color: hasUnread ? context.colors.textPrimary : context.colors.textSecondary,
-                            fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal,
+                            color: hasUnread
+                                ? context.colors.textPrimary
+                                : context.colors.textSecondary,
+                            fontWeight: hasUnread
+                                ? FontWeight.w600
+                                : FontWeight.normal,
                           ),
                         ),
                       ),
                       if (hasUnread) ...[
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             // Muted + unread still shows a count, just not
                             // in the "look at me" primary color.
-                            color: conversation.isMuted ? context.colors.textSecondary : context.colors.primary,
-                            borderRadius: BorderRadius.circular(AppSizes.radius10),
+                            color: conversation.isMuted
+                                ? context.colors.textSecondary
+                                : context.colors.primary,
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radius10,
+                            ),
                           ),
                           child: Text(
-                            conversation.unreadCount > 99 ? '99+' : '${conversation.unreadCount}',
-                            style: const TextStyle(fontSize: AppFontSizes.caption, color: Colors.white, fontWeight: FontWeight.w700),
+                            conversation.unreadCount > 99
+                                ? '99+'
+                                : '${conversation.unreadCount}',
+                            style: const TextStyle(
+                              fontSize: AppFontSizes.caption,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ],
@@ -144,7 +190,8 @@ class ConversationTile extends StatelessWidget {
     final target = DateTime(dt.year, dt.month, dt.day);
     if (target == today) return AppHelpers.formatTime(dt);
     if (today.difference(target).inDays == 1) return 'Yesterday';
-    if (today.difference(target).inDays < 7) return DateFormat('EEEE').format(dt);
+    if (today.difference(target).inDays < 7)
+      return DateFormat('EEEE').format(dt);
     return AppHelpers.formatDate(dt);
   }
 }

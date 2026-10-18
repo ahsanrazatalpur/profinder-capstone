@@ -15,36 +15,56 @@ import '../models/user_ts_models.dart';
 
 String reportCategoryLabel(AppLocalizations t, String code) {
   switch (code) {
-    case ReportCategory.spam: return t.tsCatSpam;
-    case ReportCategory.harassment: return t.tsCatHarassment;
-    case ReportCategory.fraud: return t.tsCatFraud;
-    case ReportCategory.fakeProfile: return t.tsCatFakeProfile;
-    case ReportCategory.inappropriateContent: return t.tsCatInappropriate;
-    case ReportCategory.paymentFraud: return t.tsCatPaymentFraud;
-    case ReportCategory.offPlatformPayment: return t.tsCatOffPlatform;
-    case ReportCategory.threatsSafety: return t.tsCatThreats;
-    case ReportCategory.discrimination: return t.tsCatDiscrimination;
-    case ReportCategory.serviceMisconduct: return t.tsCatMisconduct;
-    default: return t.tsCatOther;
+    case ReportCategory.spam:
+      return t.tsCatSpam;
+    case ReportCategory.harassment:
+      return t.tsCatHarassment;
+    case ReportCategory.fraud:
+      return t.tsCatFraud;
+    case ReportCategory.fakeProfile:
+      return t.tsCatFakeProfile;
+    case ReportCategory.inappropriateContent:
+      return t.tsCatInappropriate;
+    case ReportCategory.paymentFraud:
+      return t.tsCatPaymentFraud;
+    case ReportCategory.offPlatformPayment:
+      return t.tsCatOffPlatform;
+    case ReportCategory.threatsSafety:
+      return t.tsCatThreats;
+    case ReportCategory.discrimination:
+      return t.tsCatDiscrimination;
+    case ReportCategory.serviceMisconduct:
+      return t.tsCatMisconduct;
+    default:
+      return t.tsCatOther;
   }
 }
 
 String reportStatusLabel(AppLocalizations t, String status) {
   switch (status) {
-    case MyReportStatus.pending: return t.tsStatusPending;
-    case MyReportStatus.reviewed: return t.tsStatusReviewed;
-    case MyReportStatus.actionTaken: return t.tsStatusActionTaken;
-    case MyReportStatus.dismissed: return t.tsStatusDismissed;
-    default: return status;
+    case MyReportStatus.pending:
+      return t.tsStatusPending;
+    case MyReportStatus.reviewed:
+      return t.tsStatusReviewed;
+    case MyReportStatus.actionTaken:
+      return t.tsStatusActionTaken;
+    case MyReportStatus.dismissed:
+      return t.tsStatusDismissed;
+    default:
+      return status;
   }
 }
 
 String reportOutcomeLabel(AppLocalizations t, String outcome) {
   switch (outcome) {
-    case MyReportOutcome.reviewedNoAction: return t.myTsOutcomeReviewedNoAction;
-    case MyReportOutcome.actionTaken: return t.myTsOutcomeActionTaken;
-    case MyReportOutcome.dismissed: return t.myTsOutcomeDismissed;
-    default: return t.myTsOutcomePending;
+    case MyReportOutcome.reviewedNoAction:
+      return t.myTsOutcomeReviewedNoAction;
+    case MyReportOutcome.actionTaken:
+      return t.myTsOutcomeActionTaken;
+    case MyReportOutcome.dismissed:
+      return t.myTsOutcomeDismissed;
+    default:
+      return t.myTsOutcomePending;
   }
 }
 
@@ -52,21 +72,34 @@ String reportOutcomeLabel(AppLocalizations t, String outcome) {
 /// so an action type reads identically whether an admin or the affected
 /// user is looking at it — same localization keys, just duplicated here to
 /// avoid a user-facing screen depending on admin-only code.
-String moderationActionTypeLabel(AppLocalizations t, String code, {String? fallback}) {
+String moderationActionTypeLabel(
+  AppLocalizations t,
+  String code, {
+  String? fallback,
+}) {
   switch (code) {
-    case ModerationActionType.warning: return t.tsActWarning;
-    case ModerationActionType.restrictMessaging: return t.tsActRestrictMessaging;
-    case ModerationActionType.restrictBooking: return t.tsActRestrictBooking;
-    case ModerationActionType.suspendTemporary: return t.tsActSuspendTemporary;
-    case ModerationActionType.suspendPermanent: return t.tsActSuspendPermanent;
-    default: return (fallback != null && fallback.isNotEmpty) ? fallback : code;
+    case ModerationActionType.warning:
+      return t.tsActWarning;
+    case ModerationActionType.restrictMessaging:
+      return t.tsActRestrictMessaging;
+    case ModerationActionType.restrictBooking:
+      return t.tsActRestrictBooking;
+    case ModerationActionType.suspendTemporary:
+      return t.tsActSuspendTemporary;
+    case ModerationActionType.suspendPermanent:
+      return t.tsActSuspendPermanent;
+    default:
+      return (fallback != null && fallback.isNotEmpty) ? fallback : code;
   }
 }
 
 String appealStatusLabel(AppLocalizations t, String status) {
   switch (status) {
-    case MyAppealStatus.approved: return t.tsAppealApproved;
-    case MyAppealStatus.rejected: return t.tsAppealRejected;
-    default: return t.tsAppealPending;
+    case MyAppealStatus.approved:
+      return t.tsAppealApproved;
+    case MyAppealStatus.rejected:
+      return t.tsAppealRejected;
+    default:
+      return t.tsAppealPending;
   }
 }

@@ -22,7 +22,8 @@ class RegistrationSuccessDialog extends StatefulWidget {
   const RegistrationSuccessDialog({super.key, required this.onContinue});
 
   @override
-  State<RegistrationSuccessDialog> createState() => _RegistrationSuccessDialogState();
+  State<RegistrationSuccessDialog> createState() =>
+      _RegistrationSuccessDialogState();
 }
 
 class _RegistrationSuccessDialogState extends State<RegistrationSuccessDialog>
@@ -33,11 +34,11 @@ class _RegistrationSuccessDialogState extends State<RegistrationSuccessDialog>
   );
   late final Animation<double> _scale = CurvedAnimation(
     parent: _controller,
-    curve:  Curves.elasticOut,
+    curve: Curves.elasticOut,
   );
   late final Animation<double> _fade = CurvedAnimation(
     parent: _controller,
-    curve:  const Interval(0, 0.4, curve: Curves.easeOut),
+    curve: const Interval(0, 0.4, curve: Curves.easeOut),
   );
 
   @override
@@ -68,7 +69,7 @@ class _RegistrationSuccessDialogState extends State<RegistrationSuccessDialog>
               child: ScaleTransition(
                 scale: _scale,
                 child: Container(
-                  width:  88,
+                  width: 88,
                   height: 88,
                   decoration: BoxDecoration(
                     color: context.colors.accentLight,
@@ -76,7 +77,7 @@ class _RegistrationSuccessDialogState extends State<RegistrationSuccessDialog>
                   ),
                   child: Icon(
                     Icons.check_rounded,
-                    size:  48,
+                    size: 48,
                     color: context.colors.accent,
                   ),
                 ),

@@ -33,9 +33,12 @@ const Map<String, String> kAdminTicketCategoryLabels = {
   'other': 'Other',
 };
 
-String adminTicketStatusLabel(String key) => kAdminTicketStatusLabels[key] ?? key;
-String adminTicketPriorityLabel(String key) => kAdminTicketPriorityLabels[key] ?? key;
-String adminTicketCategoryLabel(String key) => kAdminTicketCategoryLabels[key] ?? key;
+String adminTicketStatusLabel(String key) =>
+    kAdminTicketStatusLabels[key] ?? key;
+String adminTicketPriorityLabel(String key) =>
+    kAdminTicketPriorityLabels[key] ?? key;
+String adminTicketCategoryLabel(String key) =>
+    kAdminTicketCategoryLabels[key] ?? key;
 
 Color adminTicketStatusColor(String status) {
   switch (status) {
@@ -79,7 +82,12 @@ class AdminTicketPill extends StatelessWidget {
   final IconData icon;
   final Color color;
 
-  const AdminTicketPill({super.key, required this.label, required this.icon, required this.color});
+  const AdminTicketPill({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +107,11 @@ class AdminTicketPill extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: color),
+              style: TextStyle(
+                fontSize: AppFontSizes.caption,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
             ),
           ),
         ],

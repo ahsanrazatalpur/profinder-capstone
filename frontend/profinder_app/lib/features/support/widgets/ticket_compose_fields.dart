@@ -17,7 +17,11 @@ class TicketCategoryChips extends StatelessWidget {
   final String selected;
   final ValueChanged<String> onSelected;
 
-  const TicketCategoryChips({super.key, required this.selected, required this.onSelected});
+  const TicketCategoryChips({
+    super.key,
+    required this.selected,
+    required this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +37,12 @@ class TicketCategoryChips extends StatelessWidget {
     );
   }
 
-  Widget _chip(AdaptiveColors colors, AppLocalizations t, String key, bool isSelected) {
+  Widget _chip(
+    AdaptiveColors colors,
+    AppLocalizations t,
+    String key,
+    bool isSelected,
+  ) {
     final Color accent = colors.primary;
     return ChoiceChip(
       showCheckmark: false,
@@ -55,8 +64,13 @@ class TicketCategoryChips extends StatelessWidget {
       backgroundColor: colors.surface,
       selectedColor: colors.primaryLight,
       surfaceTintColor: Colors.transparent,
-      side: BorderSide(color: isSelected ? accent : colors.divider, width: isSelected ? 1.5 : 1),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+      side: BorderSide(
+        color: isSelected ? accent : colors.divider,
+        width: isSelected ? 1.5 : 1,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      ),
     );
   }
 }
@@ -87,9 +101,18 @@ class TicketComposeFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(t.ticketCategoryLabel, style: styles.bodyMedium.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0)),
+        Text(
+          t.ticketCategoryLabel,
+          style: styles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0,
+          ),
+        ),
         const SizedBox(height: AppSizes.sm),
-        TicketCategoryChips(selected: category, onSelected: enabled ? onCategory : (_) {}),
+        TicketCategoryChips(
+          selected: category,
+          onSelected: enabled ? onCategory : (_) {},
+        ),
         const SizedBox(height: AppSizes.md),
         TextFormField(
           controller: subject,
@@ -97,7 +120,10 @@ class TicketComposeFields extends StatelessWidget {
           maxLength: kTicketSubjectMax,
           textInputAction: TextInputAction.next,
           style: styles.inputText.copyWith(letterSpacing: 0),
-          decoration: InputDecoration(labelText: t.ticketSubjectLabel, hintText: t.ticketSubjectHint),
+          decoration: InputDecoration(
+            labelText: t.ticketSubjectLabel,
+            hintText: t.ticketSubjectHint,
+          ),
           validator: (v) => _required(v, t.ticketFieldRequired),
         ),
         const SizedBox(height: AppSizes.sm),
@@ -135,12 +161,19 @@ class TicketFormError extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.error_outline_rounded, size: AppSizes.iconMd - 4, color: colors.danger),
+          Icon(
+            Icons.error_outline_rounded,
+            size: AppSizes.iconMd - 4,
+            color: colors.danger,
+          ),
           const SizedBox(width: AppSizes.sm),
           Expanded(
             child: Text(
               message,
-              style: context.textStyles.bodySmall.copyWith(color: colors.danger, letterSpacing: 0),
+              style: context.textStyles.bodySmall.copyWith(
+                color: colors.danger,
+                letterSpacing: 0,
+              ),
             ),
           ),
         ],

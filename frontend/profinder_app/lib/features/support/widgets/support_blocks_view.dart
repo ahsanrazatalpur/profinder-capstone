@@ -14,7 +14,11 @@ class SupportBlocksView extends StatelessWidget {
   final List<PolicyBlock> blocks;
   final bool isRtl;
 
-  const SupportBlocksView({super.key, required this.blocks, required this.isRtl});
+  const SupportBlocksView({
+    super.key,
+    required this.blocks,
+    required this.isRtl,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +38,10 @@ class SupportBlocksView extends StatelessWidget {
       case PolicyBlockType.heading:
         return SupportSectionHeading(
           text: block.text,
-          padding: const EdgeInsetsDirectional.only(top: AppSizes.md, bottom: AppSizes.sm),
+          padding: const EdgeInsetsDirectional.only(
+            top: AppSizes.md,
+            bottom: AppSizes.sm,
+          ),
         );
       case PolicyBlockType.bullet:
         return Padding(
@@ -43,11 +50,20 @@ class SupportBlocksView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsetsDirectional.only(top: 9, end: AppSizes.sm + 4),
+                padding: const EdgeInsetsDirectional.only(
+                  top: 9,
+                  end: AppSizes.sm + 4,
+                ),
                 child: Icon(Icons.circle, size: 6, color: colors.textSecondary),
               ),
               Expanded(
-                child: Text(block.text, style: styles.bodyLarge.copyWith(height: 1.55, letterSpacing: 0)),
+                child: Text(
+                  block.text,
+                  style: styles.bodyLarge.copyWith(
+                    height: 1.55,
+                    letterSpacing: 0,
+                  ),
+                ),
               ),
             ],
           ),
@@ -55,7 +71,10 @@ class SupportBlocksView extends StatelessWidget {
       case PolicyBlockType.paragraph:
         return Padding(
           padding: const EdgeInsetsDirectional.only(bottom: AppSizes.sm + 4),
-          child: Text(block.text, style: styles.bodyLarge.copyWith(height: 1.55, letterSpacing: 0)),
+          child: Text(
+            block.text,
+            style: styles.bodyLarge.copyWith(height: 1.55, letterSpacing: 0),
+          ),
         );
     }
   }

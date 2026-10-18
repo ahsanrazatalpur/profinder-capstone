@@ -70,7 +70,9 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
   }
 
   void _snack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _send() async {
@@ -102,8 +104,14 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
         title: Text(t.ticketCloseConfirmTitle),
         content: Text(t.ticketCloseConfirmMessage),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(t.cancelCta)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(t.ticketCloseCta)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(t.cancelCta),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(t.ticketCloseCta),
+          ),
         ],
       ),
     );
@@ -175,14 +183,21 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                 ],
               ),
             ),
-            if (detail.isClosed) _closedNotice(context, t) else _composer(context, t),
+            if (detail.isClosed)
+              _closedNotice(context, t)
+            else
+              _composer(context, t),
           ],
         ),
       ),
     );
   }
 
-  Widget _header(BuildContext context, AppLocalizations t, SupportTicketDetail detail) {
+  Widget _header(
+    BuildContext context,
+    AppLocalizations t,
+    SupportTicketDetail detail,
+  ) {
     final styles = context.textStyles;
     final s = detail.summary;
     return Column(
@@ -224,7 +239,11 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
       ),
       child: Row(
         children: [
-          Icon(Icons.lock_rounded, size: AppSizes.iconMd - 4, color: colors.textSecondary),
+          Icon(
+            Icons.lock_rounded,
+            size: AppSizes.iconMd - 4,
+            color: colors.textSecondary,
+          ),
           const SizedBox(width: AppSizes.sm),
           Expanded(
             child: Text(
@@ -240,7 +259,12 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
   Widget _composer(BuildContext context, AppLocalizations t) {
     final colors = context.colors;
     return Container(
-      padding: const EdgeInsetsDirectional.fromSTEB(AppSizes.md, AppSizes.sm, AppSizes.sm, AppSizes.sm),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSizes.md,
+        AppSizes.sm,
+        AppSizes.sm,
+        AppSizes.sm,
+      ),
       decoration: BoxDecoration(
         color: colors.surface,
         border: Border(top: BorderSide(color: colors.divider)),
@@ -258,7 +282,13 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
               keyboardType: TextInputType.multiline,
               textInputAction: TextInputAction.newline,
               style: context.textStyles.inputText.copyWith(letterSpacing: 0),
-              buildCounter: (_, {required currentLength, required isFocused, maxLength}) => null,
+              buildCounter:
+                  (
+                    _, {
+                    required currentLength,
+                    required isFocused,
+                    maxLength,
+                  }) => null,
               decoration: InputDecoration(hintText: t.ticketReplyHint),
               onChanged: (_) => setState(() {}),
             ),
@@ -292,13 +322,19 @@ class _MessageBubble extends StatelessWidget {
     final colors = context.colors;
     final styles = context.textStyles;
     final fromSupport = message.isStaff;
-    final maxWidth = (MediaQuery.sizeOf(context).width * 0.82).clamp(0.0, 560.0);
-    final bodyDirection = detectTextDirection(message.body) ?? Directionality.of(context);
+    final maxWidth = (MediaQuery.sizeOf(context).width * 0.82).clamp(
+      0.0,
+      560.0,
+    );
+    final bodyDirection =
+        detectTextDirection(message.body) ?? Directionality.of(context);
 
     return Padding(
       padding: const EdgeInsetsDirectional.only(bottom: AppSizes.sm + 4),
       child: Align(
-        alignment: fromSupport ? AlignmentDirectional.centerStart : AlignmentDirectional.centerEnd,
+        alignment: fromSupport
+            ? AlignmentDirectional.centerStart
+            : AlignmentDirectional.centerEnd,
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
           child: Container(
@@ -314,7 +350,10 @@ class _MessageBubble extends StatelessWidget {
               children: [
                 Text(
                   fromSupport ? t.ticketSupportTeamLabel : t.ticketYouLabel,
-                  style: styles.bodySmall.copyWith(fontWeight: FontWeight.w700, letterSpacing: 0),
+                  style: styles.bodySmall.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0,
+                  ),
                 ),
                 const SizedBox(height: AppSizes.xs),
                 // The text follows its own language, not the app locale.
@@ -325,7 +364,10 @@ class _MessageBubble extends StatelessWidget {
                     child: Text(
                       message.body,
                       textAlign: TextAlign.start,
-                      style: styles.bodyMedium.copyWith(height: 1.5, letterSpacing: 0),
+                      style: styles.bodyMedium.copyWith(
+                        height: 1.5,
+                        letterSpacing: 0,
+                      ),
                     ),
                   ),
                 ),

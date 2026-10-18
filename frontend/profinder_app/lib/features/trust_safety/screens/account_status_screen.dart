@@ -69,7 +69,11 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
   }
 
   Future<void> _openAppealSheet(MyModerationAction action, Color accent) async {
-    final submitted = await showAppealFormSheet(context, action: action, accentColor: accent);
+    final submitted = await showAppealFormSheet(
+      context,
+      action: action,
+      accentColor: accent,
+    );
     if (submitted == true) _load();
   }
 
@@ -94,32 +98,32 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
               ),
             )
           : _hasError
-              ? _buildErrorState(context, t)
-              : RefreshIndicator(
-                  color: accent,
-                  onRefresh: _load,
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (_status.isInGoodStanding)
-                          _buildGoodStanding(context, t)
-                        else
-                          ..._status.actions.map(
-                            (a) => ModerationActionCard(
-                              action: a,
-                              accentColor: accent,
-                              onAppealTap: () => _openAppealSheet(a, accent),
-                            ),
-                          ),
-                        const SizedBox(height: 24),
-                        _buildAppealsSection(context, t, accent),
-                      ],
-                    ),
-                  ),
+          ? _buildErrorState(context, t)
+          : RefreshIndicator(
+              color: accent,
+              onRefresh: _load,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_status.isInGoodStanding)
+                      _buildGoodStanding(context, t)
+                    else
+                      ..._status.actions.map(
+                        (a) => ModerationActionCard(
+                          action: a,
+                          accentColor: accent,
+                          onAppealTap: () => _openAppealSheet(a, accent),
+                        ),
+                      ),
+                    const SizedBox(height: 24),
+                    _buildAppealsSection(context, t, accent),
+                  ],
                 ),
+              ),
+            ),
     );
   }
 
@@ -130,12 +134,19 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.cloud_off_rounded, size: 40, color: context.colors.textSecondary),
+            Icon(
+              Icons.cloud_off_rounded,
+              size: 40,
+              color: context.colors.textSecondary,
+            ),
             const SizedBox(height: 12),
             Text(
               t.myTsStatusLoadError,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary),
+              style: TextStyle(
+                fontSize: AppFontSizes.body,
+                color: context.colors.textSecondary,
+              ),
             ),
             const SizedBox(height: 16),
             OutlinedButton(onPressed: _load, child: Text(t.tsRetry)),
@@ -156,7 +167,9 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
         border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.05),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -167,26 +180,44 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
           Container(
             width: 52,
             height: 52,
-            decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.14), shape: BoxShape.circle),
-            child: const Icon(Icons.verified_user_rounded, color: AppColors.success, size: 26),
+            decoration: BoxDecoration(
+              color: AppColors.success.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.verified_user_rounded,
+              color: AppColors.success,
+              size: 26,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
             t.myTsGoodStandingTitle,
-            style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+            style: TextStyle(
+              fontSize: AppFontSizes.input,
+              fontWeight: FontWeight.w700,
+              color: context.colors.textPrimary,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             t.myTsGoodStandingMessage,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+            style: TextStyle(
+              fontSize: AppFontSizes.secondary,
+              color: context.colors.textSecondary,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAppealsSection(BuildContext context, AppLocalizations t, Color accent) {
+  Widget _buildAppealsSection(
+    BuildContext context,
+    AppLocalizations t,
+    Color accent,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -194,7 +225,12 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
           padding: const EdgeInsets.only(left: 4, bottom: 10),
           child: Text(
             t.myTsMyAppealsTitle.toUpperCase(),
-            style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.bold, color: context.colors.textSecondary, letterSpacing: 0.6),
+            style: TextStyle(
+              fontSize: AppFontSizes.caption,
+              fontWeight: FontWeight.bold,
+              color: context.colors.textSecondary,
+              letterSpacing: 0.6,
+            ),
           ),
         ),
         if (_appeals.isEmpty)
@@ -202,7 +238,10 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
               t.myTsMyAppealsEmpty,
-              style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: context.colors.textSecondary,
+              ),
             ),
           )
         else
@@ -211,13 +250,17 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
     );
   }
 
-  Widget _appealTile(BuildContext context, AppLocalizations t, MyAppeal appeal) {
+  Widget _appealTile(
+    BuildContext context,
+    AppLocalizations t,
+    MyAppeal appeal,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final Color statusColor = appeal.isApproved
         ? AppColors.success
         : appeal.isRejected
-            ? AppColors.error
-            : AppColors.warningAmber;
+        ? AppColors.error
+        : AppColors.warningAmber;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -225,7 +268,11 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
       decoration: BoxDecoration(
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppSizes.radius14),
-        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : context.colors.divider,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,21 +282,37 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  moderationActionTypeLabel(t, appeal.actionType, fallback: appeal.actionTypeDisplay),
-                  style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                  moderationActionTypeLabel(
+                    t,
+                    appeal.actionType,
+                    fallback: appeal.actionTypeDisplay,
+                  ),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.body,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   appeal.reason,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.small,
+                    color: context.colors.textSecondary,
+                  ),
                 ),
                 if (appeal.createdAt != null) ...[
                   const SizedBox(height: 6),
                   Text(
                     AppHelpers.formatDate(appeal.createdAt!),
-                    style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary.withValues(alpha: 0.8)),
+                    style: TextStyle(
+                      fontSize: AppFontSizes.caption,
+                      color: context.colors.textSecondary.withValues(
+                        alpha: 0.8,
+                      ),
+                    ),
                   ),
                 ],
               ],
@@ -258,10 +321,17 @@ class _AccountStatusScreenState extends State<AccountStatusScreen> {
           const SizedBox(width: 10),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+            decoration: BoxDecoration(
+              color: statusColor.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+            ),
             child: Text(
               appealStatusLabel(t, appeal.status),
-              style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: statusColor),
+              style: TextStyle(
+                fontSize: AppFontSizes.caption,
+                fontWeight: FontWeight.w700,
+                color: statusColor,
+              ),
             ),
           ),
         ],

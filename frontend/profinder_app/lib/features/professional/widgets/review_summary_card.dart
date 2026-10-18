@@ -10,6 +10,7 @@ import '../../../l10n/generated/app_localizations.dart';
 class ReviewSummaryCard extends StatelessWidget {
   final double averageRating;
   final int totalReviews;
+
   /// Maps '5'..'1' → percentage (0-100)
   final Map<String, int> distributionPercent;
 
@@ -29,7 +30,11 @@ class ReviewSummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(color: context.colors.divider),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 14, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -40,7 +45,11 @@ class ReviewSummaryCard extends StatelessWidget {
             children: [
               Text(
                 averageRating.toStringAsFixed(1),
-                style: TextStyle(fontSize: 42, fontWeight: FontWeight.w800, color: context.colors.textPrimary),
+                style: TextStyle(
+                  fontSize: 42,
+                  fontWeight: FontWeight.w800,
+                  color: context.colors.textPrimary,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -48,16 +57,26 @@ class ReviewSummaryCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      children: List.generate(5, (i) => Icon(
-                            i < averageRating.round() ? Icons.star_rounded : Icons.star_border_rounded,
-                            size: 18,
-                            color: AppColors.warningAmber,
-                          )),
+                      children: List.generate(
+                        5,
+                        (i) => Icon(
+                          i < averageRating.round()
+                              ? Icons.star_rounded
+                              : Icons.star_border_rounded,
+                          size: 18,
+                          color: AppColors.warningAmber,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      AppLocalizations.of(context).reviewCountPlural(totalReviews),
-                      style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+                      AppLocalizations.of(
+                        context,
+                      ).reviewCountPlural(totalReviews),
+                      style: TextStyle(
+                        fontSize: AppFontSizes.secondary,
+                        color: context.colors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -65,10 +84,12 @@ class ReviewSummaryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          ...[5, 4, 3, 2, 1].map((star) => _DistributionRow(
-                star: star,
-                percent: distributionPercent['$star'] ?? 0,
-              )),
+          ...[5, 4, 3, 2, 1].map(
+            (star) => _DistributionRow(
+              star: star,
+              percent: distributionPercent['$star'] ?? 0,
+            ),
+          ),
         ],
       ),
     );
@@ -88,7 +109,13 @@ class _DistributionRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 28,
-            child: Text('$star★', style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary)),
+            child: Text(
+              '$star★',
+              style: TextStyle(
+                fontSize: AppFontSizes.small,
+                color: context.colors.textSecondary,
+              ),
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -116,9 +143,14 @@ class _DistributionRow extends StatelessWidget {
           const SizedBox(width: 8),
           SizedBox(
             width: 34,
-            child: Text('$percent%',
-                textAlign: TextAlign.right,
-                style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
+            child: Text(
+              '$percent%',
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: AppFontSizes.caption,
+                color: context.colors.textSecondary,
+              ),
+            ),
           ),
         ],
       ),

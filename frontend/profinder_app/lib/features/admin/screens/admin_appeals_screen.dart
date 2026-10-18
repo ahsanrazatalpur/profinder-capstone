@@ -96,8 +96,8 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
     final out = _all.where((a) {
       if (!ignoreStatus && _status != null && a.status != _status) return false;
       if (q.isNotEmpty) {
-        final hay =
-            '${a.id} ${a.userName} ${a.userEmail} ${a.reason}'.toLowerCase();
+        final hay = '${a.id} ${a.userName} ${a.userEmail} ${a.reason}'
+            .toLowerCase();
         if (!hay.contains(q)) return false;
       }
       return true;
@@ -143,7 +143,9 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
           AppBarIconButton(
             icon: Icons.refresh_rounded,
             tooltip: l.tsRefresh,
-            onPressed: () { if (!_loading) _load(); },
+            onPressed: () {
+              if (!_loading) _load();
+            },
             onGradient: true,
           ),
         ],
@@ -204,18 +206,29 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
                 child: TextField(
                   controller: _searchCtrl,
                   onChanged: (v) => setState(() => _search = v),
-                  style: const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textPrimary),
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    color: TsColors.textPrimary,
+                  ),
                   decoration: InputDecoration(
                     hintText: l.tsSearchAppealsHint,
-                    hintStyle:
-                        const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textFaint),
-                    prefixIcon: const Icon(Icons.search_rounded,
-                        size: 20, color: TsColors.textFaint),
+                    hintStyle: const TextStyle(
+                      fontSize: AppFontSizes.secondary,
+                      color: TsColors.textFaint,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: TsColors.textFaint,
+                    ),
                     suffixIcon: _search.isEmpty
                         ? null
                         : IconButton(
-                            icon: const Icon(Icons.close_rounded,
-                                size: 18, color: TsColors.textFaint),
+                            icon: const Icon(
+                              Icons.close_rounded,
+                              size: 18,
+                              color: TsColors.textFaint,
+                            ),
                             onPressed: () => setState(() {
                               _search = '';
                               _searchCtrl.clear();
@@ -241,8 +254,12 @@ class _AdminAppealsScreenState extends State<AdminAppealsScreen> {
                   children: [
                     _chip(l.tsAll, null, countFor(null), TsColors.accent),
                     for (final s in AppealStatus.all)
-                      _chip(tsAppealStatusLabel(l, s), s, countFor(s),
-                          tsAppealColor(s)),
+                      _chip(
+                        tsAppealStatusLabel(l, s),
+                        s,
+                        countFor(s),
+                        tsAppealColor(s),
+                      ),
                   ],
                 ),
               ),
@@ -393,7 +410,10 @@ class _AppealCard extends StatelessWidget {
                       a.userEmail,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 11.5, color: TsColors.textMuted),
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: TsColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -401,7 +421,10 @@ class _AppealCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 tsFmtDate(a.createdAt),
-                style: const TextStyle(fontSize: AppFontSizes.caption, color: TsColors.textMuted),
+                style: const TextStyle(
+                  fontSize: AppFontSizes.caption,
+                  color: TsColors.textMuted,
+                ),
               ),
             ],
           ),
@@ -411,13 +434,20 @@ class _AppealCard extends StatelessWidget {
             runSpacing: 6,
             children: [
               TsBadge(
-                label: tsAppealStatusLabel(l, a.status, fallback: a.statusDisplay),
+                label: tsAppealStatusLabel(
+                  l,
+                  a.status,
+                  fallback: a.statusDisplay,
+                ),
                 color: tsAppealColor(a.status),
               ),
               if (act != null) ...[
                 TsBadge(
-                  label: tsActionTypeLabel(l, act.actionType,
-                      fallback: act.actionTypeDisplay),
+                  label: tsActionTypeLabel(
+                    l,
+                    act.actionType,
+                    fallback: act.actionTypeDisplay,
+                  ),
                   color: tsActionColor(act.actionType),
                   icon: tsActionIcon(act.actionType),
                 ),
@@ -445,7 +475,11 @@ class _AppealCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.attach_file_rounded, size: 13, color: TsColors.info),
+                const Icon(
+                  Icons.attach_file_rounded,
+                  size: 13,
+                  color: TsColors.info,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   l.tsIndEvidence,
@@ -628,7 +662,11 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
                   ),
                 ),
                 TsBadge(
-                  label: tsAppealStatusLabel(l, a.status, fallback: a.statusDisplay),
+                  label: tsAppealStatusLabel(
+                    l,
+                    a.status,
+                    fallback: a.statusDisplay,
+                  ),
                   color: tsAppealColor(a.status),
                 ),
               ],
@@ -657,7 +695,10 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
                       ),
                       SelectableText(
                         a.userEmail,
-                        style: const TextStyle(fontSize: AppFontSizes.small, color: TsColors.textMuted),
+                        style: const TextStyle(
+                          fontSize: AppFontSizes.small,
+                          color: TsColors.textMuted,
+                        ),
                       ),
                     ],
                   ),
@@ -678,8 +719,10 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
                       backgroundColor: TsColors.success,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppSizes.radius10),
                       ),
@@ -691,9 +734,13 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
                     label: Text(l.tsAppealReject),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.error,
-                      side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      side: BorderSide(
+                        color: AppColors.error.withValues(alpha: 0.5),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppSizes.radius10),
                       ),
@@ -737,7 +784,10 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
             else
               Text(
                 l.tsNoEvidence,
-                style: const TextStyle(fontSize: 12.5, color: TsColors.textMuted),
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  color: TsColors.textMuted,
+                ),
               ),
           ],
         ),
@@ -750,7 +800,10 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
         child: act == null
             ? Text(
                 '#${a.moderationActionId}',
-                style: const TextStyle(fontSize: 12.5, color: TsColors.textMuted),
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  color: TsColors.textMuted,
+                ),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -760,8 +813,11 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
                     runSpacing: 6,
                     children: [
                       TsBadge(
-                        label: tsActionTypeLabel(l, act.actionType,
-                            fallback: act.actionTypeDisplay),
+                        label: tsActionTypeLabel(
+                          l,
+                          act.actionType,
+                          fallback: act.actionTypeDisplay,
+                        ),
                         color: tsActionColor(act.actionType),
                         icon: tsActionIcon(act.actionType),
                       ),
@@ -830,7 +886,9 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
             children: [
               TsInfoRow(
                 label: l.tsFieldDecidedBy,
-                value: a.reviewedByLabel.isEmpty ? l.tsAdminUnknown : a.reviewedByLabel,
+                value: a.reviewedByLabel.isEmpty
+                    ? l.tsAdminUnknown
+                    : a.reviewedByLabel,
               ),
               if (a.resolvedAt != null)
                 TsInfoRow(
@@ -883,8 +941,11 @@ class _AppealDetailPanelState extends State<_AppealDetailPanel> {
         children: [
           Row(
             children: [
-              const Icon(Icons.lock_outline_rounded,
-                  size: 12, color: AppColors.amber800),
+              const Icon(
+                Icons.lock_outline_rounded,
+                size: 12,
+                color: AppColors.amber800,
+              ),
               const SizedBox(width: 5),
               Expanded(
                 child: Text(

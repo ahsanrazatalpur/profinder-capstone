@@ -7,14 +7,26 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
 // Predefined report categories matching backend UserReport model choice keys.
-const _reasonKeys = ['spam', 'harassment', 'fraud', 'fake_profile', 'inappropriate_content', 'other'];
+const _reasonKeys = [
+  'spam',
+  'harassment',
+  'fraud',
+  'fake_profile',
+  'inappropriate_content',
+  'other',
+];
 
 class ReportUserDialog extends StatefulWidget {
   final int userId;
   final String userName;
   final String? messageId;
 
-  const ReportUserDialog({super.key, required this.userId, required this.userName, this.messageId});
+  const ReportUserDialog({
+    super.key,
+    required this.userId,
+    required this.userName,
+    this.messageId,
+  });
 
   @override
   State<ReportUserDialog> createState() => _ReportUserDialogState();
@@ -36,25 +48,40 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
     final t = AppLocalizations.of(context);
     setState(() => _isSubmitting = true);
     try {
-      await _repo.reportUser(widget.userId, _reason, _detailsController.text.trim(), messageId: widget.messageId);
+      await _repo.reportUser(
+        widget.userId,
+        _reason,
+        _detailsController.text.trim(),
+        messageId: widget.messageId,
+      );
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.chatReportSubmittedThank)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.chatReportSubmittedThank)));
     } catch (_) {
       if (!mounted) return;
       setState(() => _isSubmitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.chatCouldNotSubmitReportTryAgain)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(t.chatCouldNotSubmitReportTryAgain)),
+      );
     }
   }
 
   String _reasonLabel(AppLocalizations t, String key) {
     switch (key) {
-      case 'spam': return t.chatReasonSpam;
-      case 'harassment': return t.chatReasonHarassmentBullying;
-      case 'fraud': return t.chatReasonScamFraud;
-      case 'fake_profile': return t.chatReasonFakeProfile;
-      case 'inappropriate_content': return t.chatReasonInappropriateContent;
-      default: return t.chatReasonOther;
+      case 'spam':
+        return t.chatReasonSpam;
+      case 'harassment':
+        return t.chatReasonHarassmentBullying;
+      case 'fraud':
+        return t.chatReasonScamFraud;
+      case 'fake_profile':
+        return t.chatReasonFakeProfile;
+      case 'inappropriate_content':
+        return t.chatReasonInappropriateContent;
+      default:
+        return t.chatReasonOther;
     }
   }
 
@@ -74,13 +101,18 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: _reasonKeys
-                    .map((key) => RadioListTile<String>(
-                          value: key,
-                          title: Text(_reasonLabel(t, key), style: const TextStyle(fontSize: AppFontSizes.body)),
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          activeColor: context.colors.primary,
-                        ))
+                    .map(
+                      (key) => RadioListTile<String>(
+                        value: key,
+                        title: Text(
+                          _reasonLabel(t, key),
+                          style: const TextStyle(fontSize: AppFontSizes.body),
+                        ),
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        activeColor: context.colors.primary,
+                      ),
+                    )
                     .toList(),
               ),
             ),
@@ -97,12 +129,22 @@ class _ReportUserDialogState extends State<ReportUserDialog> {
         ),
       ),
       actions: [
-        TextButton(onPressed: _isSubmitting ? null : () => Navigator.pop(context), child: Text(t.cancel)),
+        TextButton(
+          onPressed: _isSubmitting ? null : () => Navigator.pop(context),
+          child: Text(t.cancel),
+        ),
         TextButton(
           onPressed: _isSubmitting ? null : _submit,
           child: _isSubmitting
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-              : Text(t.chatSubmit, style: const TextStyle(color: Colors.redAccent)),
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(
+                  t.chatSubmit,
+                  style: const TextStyle(color: Colors.redAccent),
+                ),
         ),
       ],
     );

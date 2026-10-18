@@ -30,7 +30,7 @@ class MyReviewsScreen extends StatefulWidget {
 }
 
 class _MyReviewsScreenState extends State<MyReviewsScreen> {
-  final ApiService     _api        = ApiService();
+  final ApiService _api = ApiService();
   final BookingService _bookingSvc = BookingService();
 
   List<Map<String, dynamic>> _myReviews = [];
@@ -46,11 +46,15 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
     setState(() => _loading = true);
     try {
       final meRes = await _api.get(AppConstants.me);
-      final myId  = (meRes.data as Map<String, dynamic>)['id']?.toString();
-      final res  = await _bookingSvc.getMyBookings();
-      final bookings = res['success'] == true ? List<dynamic>.from(res['data'] ?? []) : [];
+      final myId = (meRes.data as Map<String, dynamic>)['id']?.toString();
+      final res = await _bookingSvc.getMyBookings();
+      final bookings = res['success'] == true
+          ? List<dynamic>.from(res['data'] ?? [])
+          : [];
 
-      final completed = bookings.where((b) => b['status'] == 'completed').toList();
+      final completed = bookings
+          .where((b) => b['status'] == 'completed')
+          .toList();
       final proIds = <String>{};
       for (final b in completed) {
         final pid = b['professional']?.toString();
@@ -61,15 +65,22 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
       // Capped — see file header note on why this is client-side derived.
       for (final pid in proIds.take(15)) {
         try {
-          final r = await _api.get('${AppConstants.reviewsForProfessionalBase}$pid/reviews/');
+          final r = await _api.get(
+            '${AppConstants.reviewsForProfessionalBase}$pid/reviews/',
+          );
           if (!mounted) return;
           final list = r.data is List ? List<dynamic>.from(r.data) : [];
           for (final rv in list) {
             if (rv['reviewer']?.toString() == myId) {
-              final proBooking = completed.firstWhere((b) => b['professional']?.toString() == pid, orElse: () => {});
+              final proBooking = completed.firstWhere(
+                (b) => b['professional']?.toString() == pid,
+                orElse: () => {},
+              );
               reviews.add({
                 ...Map<String, dynamic>.from(rv),
-                'professional_name': proBooking['professional_name'] ?? AppLocalizations.of(context).professionalDefaultName,
+                'professional_name':
+                    proBooking['professional_name'] ??
+                    AppLocalizations.of(context).professionalDefaultName,
               });
             }
           }
@@ -77,7 +88,9 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
           // skip this professional's reviews on error, keep going
         }
       }
-      reviews.sort((a, b) => (b['created_at'] ?? '').compareTo(a['created_at'] ?? ''));
+      reviews.sort(
+        (a, b) => (b['created_at'] ?? '').compareTo(a['created_at'] ?? ''),
+      );
       _myReviews = reviews;
     } catch (_) {
       _myReviews = [];
@@ -110,70 +123,73 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
               ),
             )
           : _myReviews.isEmpty
-              ? _empty(isDark)
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  color: AppColors.customerColor,
-                  child: ListView.separated(
-                    padding: EdgeInsets.all(isTablet ? 20 : 16),
-                    itemCount: _myReviews.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 10),
-                    itemBuilder: (_, i) => _reviewCard(_myReviews[i], isDark, isTablet),
-                  ),
-                ),
+          ? _empty(isDark)
+          : RefreshIndicator(
+              onRefresh: _load,
+              color: AppColors.customerColor,
+              child: ListView.separated(
+                padding: EdgeInsets.all(isTablet ? 20 : 16),
+                itemCount: _myReviews.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
+                itemBuilder: (_, i) =>
+                    _reviewCard(_myReviews[i], isDark, isTablet),
+              ),
+            ),
     );
   }
 
   Widget _empty(bool isDark) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 88,
-              height: 88,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : AppColors.neutral100,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.rate_review_outlined,
-                size: 40,
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.3)
-                    : AppColors.neutral300,
-              ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              AppLocalizations.of(context).myReviewsEmptyTitle,
-              style: TextStyle(
-                fontSize: AppFontSizes.title,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-                letterSpacing: -0.2,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              AppLocalizations.of(context).myReviewsEmptySubtitle,
-              style: TextStyle(
-                fontSize: AppFontSizes.secondary,
-                color: context.colors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 88,
+          height: 88,
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : AppColors.neutral100,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            Icons.rate_review_outlined,
+            size: 40,
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.3)
+                : AppColors.neutral300,
+          ),
         ),
-      );
+        const SizedBox(height: 18),
+        Text(
+          AppLocalizations.of(context).myReviewsEmptyTitle,
+          style: TextStyle(
+            fontSize: AppFontSizes.title,
+            fontWeight: FontWeight.w700,
+            color: context.colors.textPrimary,
+            letterSpacing: -0.2,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          AppLocalizations.of(context).myReviewsEmptySubtitle,
+          style: TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: context.colors.textSecondary,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    ),
+  );
 
   Widget _reviewCard(Map<String, dynamic> rv, bool isDark, bool isTablet) {
-    final rating  = int.tryParse('${rv['rating']}') ?? 0;
+    final rating = int.tryParse('${rv['rating']}') ?? 0;
     final comment = rv['comment']?.toString() ?? '';
-    final name    = rv['professional_name']?.toString() ?? AppLocalizations.of(context).professionalDefaultName;
+    final name =
+        rv['professional_name']?.toString() ??
+        AppLocalizations.of(context).professionalDefaultName;
     final parsedDate = DateTime.tryParse(rv['created_at']?.toString() ?? '');
-    final date    = parsedDate != null ? AppHelpers.formatDate(parsedDate) : '';
+    final date = parsedDate != null ? AppHelpers.formatDate(parsedDate) : '';
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 350),
@@ -224,13 +240,14 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
           ),
           const SizedBox(height: 6),
           Row(
-            children: List.generate(5, (i) => Icon(
-              i < rating
-                  ? Icons.star_rounded
-                  : Icons.star_border_rounded,
-              size: isTablet ? 18 : 16,
-              color: AppColors.warningAmber,
-            )),
+            children: List.generate(
+              5,
+              (i) => Icon(
+                i < rating ? Icons.star_rounded : Icons.star_border_rounded,
+                size: isTablet ? 18 : 16,
+                color: AppColors.warningAmber,
+              ),
+            ),
           ),
           if (comment.isNotEmpty) ...[
             const SizedBox(height: 8),

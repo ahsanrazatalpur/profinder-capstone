@@ -27,7 +27,13 @@ class _Filter {
   final String? assigned;
   final bool needsReply;
 
-  const _Filter(this.key, this.label, {this.status, this.assigned, this.needsReply = false});
+  const _Filter(
+    this.key,
+    this.label, {
+    this.status,
+    this.assigned,
+    this.needsReply = false,
+  });
 }
 
 const List<_Filter> _filters = [
@@ -47,13 +53,15 @@ class AdminSupportTicketsScreen extends StatefulWidget {
   const AdminSupportTicketsScreen({super.key, this.source});
 
   @override
-  State<AdminSupportTicketsScreen> createState() => _AdminSupportTicketsScreenState();
+  State<AdminSupportTicketsScreen> createState() =>
+      _AdminSupportTicketsScreenState();
 }
 
 class _AdminSupportTicketsScreenState extends State<AdminSupportTicketsScreen> {
   static const _pageSize = 30;
 
-  late final SupportAdminDataSource _source = widget.source ?? SupportAdminService();
+  late final SupportAdminDataSource _source =
+      widget.source ?? SupportAdminService();
   final _search = TextEditingController();
   Timer? _debounce;
 
@@ -95,7 +103,11 @@ class _AdminSupportTicketsScreenState extends State<AdminSupportTicketsScreen> {
 
   Future<void> _reload({bool spinner = true}) async {
     final id = ++_reqId;
-    if (spinner) setState(() { _loading = true; _failure = null; });
+    if (spinner)
+      setState(() {
+        _loading = true;
+        _failure = null;
+      });
     final countsFuture = _source.getCounts();
     final pageFuture = _fetch(0);
     final counts = await countsFuture;
@@ -137,7 +149,10 @@ class _AdminSupportTicketsScreenState extends State<AdminSupportTicketsScreen> {
   Future<void> _open(AdminTicketSummary t) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => AdminSupportTicketDetailScreen(ticketId: t.id, source: _source)),
+      MaterialPageRoute(
+        builder: (_) =>
+            AdminSupportTicketDetailScreen(ticketId: t.id, source: _source),
+      ),
     );
     if (mounted) _reload(spinner: false); // status / assignee may have changed
   }
@@ -235,7 +250,9 @@ class _AdminSupportTicketsScreenState extends State<AdminSupportTicketsScreen> {
 
   Widget _body() {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.adminColor));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.adminColor),
+      );
     }
     if (_failure != null) {
       return Center(
@@ -244,7 +261,11 @@ class _AdminSupportTicketsScreenState extends State<AdminSupportTicketsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.cloud_off_rounded, size: 40, color: AppColors.neutral400),
+              const Icon(
+                Icons.cloud_off_rounded,
+                size: 40,
+                color: AppColors.neutral400,
+              ),
               const SizedBox(height: 12),
               Text(
                 _failure == SupportFailure.unauthorized
@@ -290,15 +311,22 @@ class _AdminSupportTicketsScreenState extends State<AdminSupportTicketsScreen> {
                   child: _loadingMore
                       ? const Padding(
                           padding: EdgeInsets.all(8),
-                          child: CircularProgressIndicator(color: AppColors.adminColor),
+                          child: CircularProgressIndicator(
+                            color: AppColors.adminColor,
+                          ),
                         )
                       : OutlinedButton(
                           onPressed: _loadMore,
-                          child: Text('Load more (${_total - _tickets.length} left)'),
+                          child: Text(
+                            'Load more (${_total - _tickets.length} left)',
+                          ),
                         ),
                 );
               }
-              return _TicketCard(ticket: _tickets[i], onTap: () => _open(_tickets[i]));
+              return _TicketCard(
+                ticket: _tickets[i],
+                onTap: () => _open(_tickets[i]),
+              );
             },
           ),
         ),
@@ -341,26 +369,46 @@ class _TicketCard extends StatelessWidget {
                 ticket.subject,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray800),
+                style: const TextStyle(
+                  fontSize: AppFontSizes.body,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.gray800,
+                ),
               ),
               const SizedBox(height: 4),
               Row(
                 children: [
-                  Icon(ticket.isGuest ? Icons.person_off_outlined : Icons.person_outline_rounded,
-                      size: 14, color: AppColors.neutral400),
+                  Icon(
+                    ticket.isGuest
+                        ? Icons.person_off_outlined
+                        : Icons.person_outline_rounded,
+                    size: 14,
+                    color: AppColors.neutral400,
+                  ),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      ticket.isGuest ? 'Guest · ${ticket.requesterLabel}' : ticket.requesterLabel,
+                      ticket.isGuest
+                          ? 'Guest · ${ticket.requesterLabel}'
+                          : ticket.requesterLabel,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.grayDeep),
+                      style: const TextStyle(
+                        fontSize: AppFontSizes.small,
+                        color: AppColors.grayDeep,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
-              Text(meta, style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
+              Text(
+                meta,
+                style: const TextStyle(
+                  fontSize: AppFontSizes.caption,
+                  color: AppColors.neutral400,
+                ),
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -379,13 +427,20 @@ class _TicketCard extends StatelessWidget {
                     ),
                   if (ticket.priority != 'normal')
                     AdminTicketPill(
-                      label: '${adminTicketPriorityLabel(ticket.priority)} priority',
-                      icon: ticket.priority == 'high' ? Icons.priority_high_rounded : Icons.arrow_downward_rounded,
-                      color: ticket.priority == 'high' ? AppColors.error : AppColors.slate500,
+                      label:
+                          '${adminTicketPriorityLabel(ticket.priority)} priority',
+                      icon: ticket.priority == 'high'
+                          ? Icons.priority_high_rounded
+                          : Icons.arrow_downward_rounded,
+                      color: ticket.priority == 'high'
+                          ? AppColors.error
+                          : AppColors.slate500,
                     ),
                   if (ticket.assignedTo != null)
                     AdminTicketPill(
-                      label: ticket.assignedTo!.name.isNotEmpty ? ticket.assignedTo!.name : ticket.assignedTo!.email,
+                      label: ticket.assignedTo!.name.isNotEmpty
+                          ? ticket.assignedTo!.name
+                          : ticket.assignedTo!.email,
                       icon: Icons.assignment_ind_outlined,
                       color: AppColors.primary,
                     ),

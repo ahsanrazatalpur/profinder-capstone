@@ -245,7 +245,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       onNotifications: () async {
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => NotificationScreen(onNavigateToAdminTab: widget.onNavigateToTab)),
+          MaterialPageRoute(
+            builder: (_) => NotificationScreen(
+              onNavigateToAdminTab: widget.onNavigateToTab,
+            ),
+          ),
         );
         _refreshUnreadCount();
       },
@@ -279,10 +283,26 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           spacing: 10,
           runSpacing: 10,
           children: [
-            _headerChip(icon: Icons.groups_rounded, label: 'Users', value: '$_totalUsers'),
-            _headerChip(icon: Icons.event_available_rounded, label: 'Today', value: '$_todayBookings'),
-            _headerChip(icon: Icons.payments_rounded, label: 'Revenue', value: 'Rs $_revenueDisplay'),
-            _headerChip(icon: Icons.hourglass_top_rounded, label: 'Pending', value: '$_pendingVerification'),
+            _headerChip(
+              icon: Icons.groups_rounded,
+              label: 'Users',
+              value: '$_totalUsers',
+            ),
+            _headerChip(
+              icon: Icons.event_available_rounded,
+              label: 'Today',
+              value: '$_todayBookings',
+            ),
+            _headerChip(
+              icon: Icons.payments_rounded,
+              label: 'Revenue',
+              value: 'Rs $_revenueDisplay',
+            ),
+            _headerChip(
+              icon: Icons.hourglass_top_rounded,
+              label: 'Pending',
+              value: '$_pendingVerification',
+            ),
           ],
         ),
       ],
@@ -310,11 +330,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           const SizedBox(width: 6),
           Text(
             '$label: ',
-            style: TextStyle(fontSize: AppFontSizes.caption, color: c.textSecondary, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: AppFontSizes.caption,
+              color: c.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           Text(
             value,
-            style: TextStyle(fontSize: 11.5, color: c.textPrimary, fontWeight: FontWeight.w800),
+            style: TextStyle(
+              fontSize: 11.5,
+              color: c.textPrimary,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ],
       ),
@@ -327,7 +355,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
       ),
       builder: (_) => SafeArea(
         child: Padding(
@@ -426,7 +456,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
       ),
       builder: (_) => _AdminSearchSheet(api: _api),
     );
@@ -437,18 +469,42 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   /// Hover state on pointer devices gives a subtle elevation.
   Widget _buildQuickActions() {
     final actions = [
-      _QuickAction('Review Approvals', Icons.fact_check_rounded,
-          () => widget.onNavigateToTab?.call(4), AppColors.warning),
-      _QuickAction('View Bookings', Icons.calendar_month_rounded,
-          () => widget.onNavigateToTab?.call(5), AppColors.sky),
-      _QuickAction('Reported Users', Icons.flag_rounded,
-          () => widget.onNavigateToTab?.call(9), AppColors.error),
-      _QuickAction('Analytics', Icons.insights_rounded,
-          () => widget.onNavigateToTab?.call(10), AppColors.greenDeep),
-      _QuickAction('Manage Banners', Icons.campaign_rounded,
-          () => widget.onNavigateToTab?.call(7), AppColors.accentPurple),
-      _QuickAction('View Logs', Icons.history_rounded,
-          () => widget.onNavigateToTab?.call(6), AppColors.slate500),
+      _QuickAction(
+        'Review Approvals',
+        Icons.fact_check_rounded,
+        () => widget.onNavigateToTab?.call(4),
+        AppColors.warning,
+      ),
+      _QuickAction(
+        'View Bookings',
+        Icons.calendar_month_rounded,
+        () => widget.onNavigateToTab?.call(5),
+        AppColors.sky,
+      ),
+      _QuickAction(
+        'Reported Users',
+        Icons.flag_rounded,
+        () => widget.onNavigateToTab?.call(9),
+        AppColors.error,
+      ),
+      _QuickAction(
+        'Analytics',
+        Icons.insights_rounded,
+        () => widget.onNavigateToTab?.call(10),
+        AppColors.greenDeep,
+      ),
+      _QuickAction(
+        'Manage Banners',
+        Icons.campaign_rounded,
+        () => widget.onNavigateToTab?.call(7),
+        AppColors.accentPurple,
+      ),
+      _QuickAction(
+        'View Logs',
+        Icons.history_rounded,
+        () => widget.onNavigateToTab?.call(6),
+        AppColors.slate500,
+      ),
     ];
 
     return SizedBox(
@@ -576,14 +632,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         final columns = isDesktop
             ? 4
             : isTablet
-                ? 3
-                : 2;
+            ? 3
+            : 2;
         // Aspect ratio tuned per breakpoint to prevent cramped tiles.
         final ratio = isDesktop
             ? 1.55
             : isTablet
-                ? 1.45
-                : 1.30;
+            ? 1.45
+            : 1.30;
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -796,8 +852,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         final roleColor = role == 'professional'
             ? AppColors.accentPurple
             : role == 'admin'
-                ? AppColors.adminColor
-                : context.colors.primary;
+            ? AppColors.adminColor
+            : context.colors.primary;
 
         return _rowCard(
           leadingIcon: Icons.person_rounded,
@@ -1083,8 +1139,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
               label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.adminColor,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
@@ -1281,7 +1339,9 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
     try {
       final results = await Future.wait([
         widget.api.get('/users/?search=${Uri.encodeQueryComponent(q)}'),
-        widget.api.get('/admin-panel/bookings/?search=${Uri.encodeQueryComponent(q)}'),
+        widget.api.get(
+          '/admin-panel/bookings/?search=${Uri.encodeQueryComponent(q)}',
+        ),
       ]);
       if (!mounted) return;
       setState(() {
@@ -1336,7 +1396,10 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
                 const SizedBox(width: 10),
                 const Text(
                   'Search',
-                  style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.title,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
@@ -1399,8 +1462,13 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 40),
         child: Center(
-          child: Text(_error!,
-              style: const TextStyle(color: AppColors.grayDeep, fontSize: AppFontSizes.secondary)),
+          child: Text(
+            _error!,
+            style: const TextStyle(
+              color: AppColors.grayDeep,
+              fontSize: AppFontSizes.secondary,
+            ),
+          ),
         ),
       );
     }
@@ -1410,7 +1478,10 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
         child: Center(
           child: Text(
             'Type at least 2 characters to search',
-            style: TextStyle(color: AppColors.neutral400, fontSize: AppFontSizes.secondary),
+            style: TextStyle(
+              color: AppColors.neutral400,
+              fontSize: AppFontSizes.secondary,
+            ),
           ),
         ),
       );
@@ -1421,7 +1492,10 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
         child: Center(
           child: Text(
             'No matching users or bookings',
-            style: TextStyle(color: AppColors.neutral400, fontSize: AppFontSizes.secondary),
+            style: TextStyle(
+              color: AppColors.neutral400,
+              fontSize: AppFontSizes.secondary,
+            ),
           ),
         ),
       );
@@ -1443,17 +1517,17 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
   }
 
   Widget _sectionLabel(String text) => Padding(
-        padding: const EdgeInsets.fromLTRB(2, 8, 2, 6),
-        child: Text(
-          text.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 10.5,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.4,
-            color: AppColors.neutral400,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.fromLTRB(2, 8, 2, 6),
+    child: Text(
+      text.toUpperCase(),
+      style: const TextStyle(
+        fontSize: 10.5,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.4,
+        color: AppColors.neutral400,
+      ),
+    ),
+  );
 
   Widget _userTile(dynamic u) {
     final name = u['name']?.toString() ?? '';
@@ -1481,8 +1555,11 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
           if (isVerified)
             const Padding(
               padding: EdgeInsets.only(right: 4),
-              child: Icon(Icons.verified_rounded,
-                  size: 15, color: AppColors.emerald),
+              child: Icon(
+                Icons.verified_rounded,
+                size: 15,
+                color: AppColors.emerald,
+              ),
             ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -1493,7 +1570,10 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
             child: Text(
               role,
               style: TextStyle(
-                  fontSize: 10.5, fontWeight: FontWeight.w700, color: roleColor),
+                fontSize: 10.5,
+                fontWeight: FontWeight.w700,
+                color: roleColor,
+              ),
             ),
           ),
         ],
@@ -1535,7 +1615,10 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
         child: Text(
           status,
           style: TextStyle(
-              fontSize: 10.5, fontWeight: FontWeight.w700, color: statusColor),
+            fontSize: 10.5,
+            fontWeight: FontWeight.w700,
+            color: statusColor,
+          ),
         ),
       ),
       onTap: () => _showBookingDetail(b),
@@ -1564,19 +1647,26 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.gray900)),
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.gray900,
+                      ),
+                    ),
                     const SizedBox(height: 2),
-                    Text(subtitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontSize: 11.5, color: AppColors.grayDeep)),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: AppColors.grayDeep,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1604,7 +1694,9 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
       ),
       builder: (_) => Padding(
         padding: const EdgeInsets.all(20),
@@ -1615,9 +1707,13 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
             Row(
               children: [
                 Expanded(
-                  child: Text(name,
-                      style: const TextStyle(
-                          fontSize: AppFontSizes.titleMd, fontWeight: FontWeight.w800)),
+                  child: Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: AppFontSizes.titleMd,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ),
                 if (isBanned)
                   _pill('BANNED', AppColors.favoriteRed)
@@ -1635,8 +1731,10 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
             if (isPro && hourlyRate.isNotEmpty)
               _detailRow(Icons.payments_outlined, 'Rs $hourlyRate/hr'),
             const SizedBox(height: 4),
-            _pill(role.toUpperCase(),
-                isPro ? AppColors.accentPurple : AppColors.sky),
+            _pill(
+              role.toUpperCase(),
+              isPro ? AppColors.accentPurple : AppColors.sky,
+            ),
           ],
         ),
       ),
@@ -1657,7 +1755,9 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
       ),
       builder: (_) => Padding(
         padding: const EdgeInsets.all(20),
@@ -1665,13 +1765,19 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Booking #$id',
-                style: const TextStyle(
-                    fontSize: AppFontSizes.titleMd, fontWeight: FontWeight.w800)),
+            Text(
+              'Booking #$id',
+              style: const TextStyle(
+                fontSize: AppFontSizes.titleMd,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
             const SizedBox(height: 6),
             _detailRow(Icons.person_outline_rounded, 'Customer: $customer'),
-            _detailRow(Icons.badge_outlined,
-                'Professional: $professional${profession.isNotEmpty ? ' ($profession)' : ''}'),
+            _detailRow(
+              Icons.badge_outlined,
+              'Professional: $professional${profession.isNotEmpty ? ' ($profession)' : ''}',
+            ),
             if (date.isNotEmpty || time.isNotEmpty)
               _detailRow(Icons.calendar_today_outlined, '$date  $time'.trim()),
             if (location.isNotEmpty)
@@ -1691,30 +1797,39 @@ class _AdminSearchSheetState extends State<_AdminSearchSheet> {
   }
 
   Widget _detailRow(IconData icon, String text) => Padding(
-        padding: const EdgeInsets.only(top: 6),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, size: 15, color: AppColors.neutral400),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(text,
-                  style: const TextStyle(
-                      fontSize: AppFontSizes.secondary, color: AppColors.gray700)),
+    padding: const EdgeInsets.only(top: 6),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 15, color: AppColors.neutral400),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: AppFontSizes.secondary,
+              color: AppColors.gray700,
             ),
-          ],
+          ),
         ),
-      );
+      ],
+    ),
+  );
 
   Widget _pill(String text, Color color) => Container(
-        margin: const EdgeInsets.only(top: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
-        ),
-        child: Text(text,
-            style: TextStyle(
-                fontSize: 10.5, fontWeight: FontWeight.w800, color: color)),
-      );
+    margin: const EdgeInsets.only(top: 4),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+    ),
+    child: Text(
+      text,
+      style: TextStyle(
+        fontSize: 10.5,
+        fontWeight: FontWeight.w800,
+        color: color,
+      ),
+    ),
+  );
 }

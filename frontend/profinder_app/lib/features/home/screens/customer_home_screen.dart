@@ -29,7 +29,6 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_loader.dart';
-import '../../../core/widgets/coming_soon_screen.dart';
 import '../../../core/utils/app_helpers.dart';
 import '../../../services/home_provider.dart';
 import '../../../services/location_service.dart';
@@ -59,6 +58,8 @@ import '../../profile/screens/saved_professionals_screen.dart';
 import '../../subscription/services/subscription_service.dart';
 import '../../subscription/screens/subscription_screen.dart';
 import '../../subscription/widgets/promo_banner_mixin.dart';
+import '../../chat/data/models/conversation_model.dart';
+import '../../chat/presentation/screens/chat_screen.dart';
 import '../../chat/presentation/screens/conversation_list_entry.dart';
 import '../../chat/presentation/widgets/unread_nav_badge.dart';
 import '../../../core/theme/theme_context_ext.dart';
@@ -516,18 +517,60 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     ).then((_) => _loadSearchHistory());
   }
 
-  void _openComingSoon({String? title, String? message}) {
-    final t = AppLocalizations.of(context);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ComingSoonScreen(
-          title: title ?? t.homeMessagingComingSoonTitle,
-          message: message ?? t.homeMessagingComingSoonMessage,
-          icon: Icons.chat_bubble_outline_rounded,
+  bool _isOpeningBookingChat = false;
+
+  Future<void> _openBookingChat(dynamic booking) async {
+    final proId = booking['professional'];
+    if (proId == null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ConversationListEntry()),
+      );
+      return;
+    }
+    if (_isOpeningBookingChat) return;
+    setState(() => _isOpeningBookingChat = true);
+    try {
+      final results = await Future.wait([
+        _api.post(AppConstants.conversations, {'other_user_id': proId}),
+        _api.get(AppConstants.me),
+      ]);
+      if (!mounted) return;
+      final data = results[0].data as Map<String, dynamic>;
+      final myId = int.parse(
+        (results[1].data as Map<String, dynamic>)['id'].toString(),
+      );
+      final proName =
+          booking['professional_name']?.toString() ??
+          data['other_user_name']?.toString() ??
+          AppLocalizations.of(context).professionalDefaultName;
+      final proPhoto =
+          booking['professional_photo']?.toString() ??
+          data['other_user_photo']?.toString();
+
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            conversationId: data['id'] is int
+                ? data['id'] as int
+                : int.parse(data['id'].toString()),
+            currentUserId: myId,
+            otherUserName: proName,
+            otherUserPhoto: proPhoto,
+            conversationSnapshot: ConversationModel.fromJson(data),
+          ),
         ),
-      ),
-    );
+      );
+    } catch (_) {
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ConversationListEntry()),
+      );
+    } finally {
+      if (mounted) setState(() => _isOpeningBookingChat = false);
+    }
   }
 
   @override
@@ -1782,7 +1825,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                 ),
               ),
               GestureDetector(
-                onTap: () => _openComingSoon(),
+                onTap: () => _openBookingChat(b),
                 child: Icon(
                   Icons.chat_bubble_outline_rounded,
                   size: 16,

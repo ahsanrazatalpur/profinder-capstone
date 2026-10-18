@@ -244,7 +244,11 @@ String tsStateLabel(AppLocalizations l, String state) {
   }
 }
 
-String tsAppealStatusLabel(AppLocalizations l, String status, {String? fallback}) {
+String tsAppealStatusLabel(
+  AppLocalizations l,
+  String status, {
+  String? fallback,
+}) {
   switch (status) {
     case AppealStatus.pending:
       return l.tsAppealPending;
@@ -272,7 +276,8 @@ String tsRoleLabel(AppLocalizations l, String role) {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-String tsFmtDateTime(DateTime? d) => d == null ? '' : AppHelpers.formatDateTime(d);
+String tsFmtDateTime(DateTime? d) =>
+    d == null ? '' : AppHelpers.formatDateTime(d);
 String tsFmtDate(DateTime? d) => d == null ? '' : AppHelpers.formatDate(d);
 
 /// Maps a failed request to the message shown to the admin. The backend's own
@@ -284,7 +289,9 @@ String tsErrorMessage(AppLocalizations l, Object error) {
     if (error.isNetwork) return l.tsErrNetwork;
     final code = error.statusCode;
     final msg = error.message;
-    if (msg != null && msg.isNotEmpty && (code == 400 || code == 404 || code == 409)) {
+    if (msg != null &&
+        msg.isNotEmpty &&
+        (code == 400 || code == 404 || code == 409)) {
       return msg;
     }
   }
@@ -299,11 +306,16 @@ void tsSnack(BuildContext context, String message, {bool error = false}) {
     SnackBar(
       content: Text(
         message,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       backgroundColor: error ? AppColors.error : TsColors.success,
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
+      ),
       duration: const Duration(seconds: 3),
     ),
   );
@@ -357,7 +369,9 @@ class TsBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: filled ? color : color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppSizes.radiusChip),
-        border: Border.all(color: filled ? color : color.withValues(alpha: 0.28)),
+        border: Border.all(
+          color: filled ? color : color.withValues(alpha: 0.28),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -575,7 +589,10 @@ class TsInfoRow extends StatelessWidget {
             width: 104,
             child: Text(
               label,
-              style: const TextStyle(fontSize: AppFontSizes.small, color: TsColors.textMuted),
+              style: const TextStyle(
+                fontSize: AppFontSizes.small,
+                color: TsColors.textMuted,
+              ),
             ),
           ),
           Expanded(
@@ -640,7 +657,11 @@ class TsInlineError extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 16, color: AppColors.error),
+          const Icon(
+            Icons.error_outline_rounded,
+            size: 16,
+            color: AppColors.error,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -704,7 +725,10 @@ class TsEmptyState extends StatelessWidget {
               Text(
                 message!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12.5, color: TsColors.textMuted),
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  color: TsColors.textMuted,
+                ),
               ),
             ],
           ],
@@ -736,8 +760,11 @@ class TsErrorState extends StatelessWidget {
                 color: AppColors.error.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.error_outline_rounded,
-                  size: 38, color: AppColors.error),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                size: 38,
+                color: AppColors.error,
+              ),
             ),
             const SizedBox(height: 14),
             Text(
@@ -758,8 +785,13 @@ class TsErrorState extends StatelessWidget {
                 backgroundColor: TsColors.accent,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
+                ),
               ),
             ),
           ],
@@ -775,7 +807,10 @@ class TsLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: CircularProgressIndicator(color: TsColors.accent, strokeWidth: 2.5),
+      child: CircularProgressIndicator(
+        color: TsColors.accent,
+        strokeWidth: 2.5,
+      ),
     );
   }
 }
@@ -804,19 +839,30 @@ class TsLinkTile extends StatelessWidget {
               url,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: AppFontSizes.small, color: TsColors.info),
+              style: const TextStyle(
+                fontSize: AppFontSizes.small,
+                color: TsColors.info,
+              ),
             ),
           ),
           IconButton(
             tooltip: l.tsCopy,
             visualDensity: VisualDensity.compact,
-            icon: const Icon(Icons.copy_rounded, size: 17, color: TsColors.textMuted),
+            icon: const Icon(
+              Icons.copy_rounded,
+              size: 17,
+              color: TsColors.textMuted,
+            ),
             onPressed: () => tsCopy(context, url),
           ),
           IconButton(
             tooltip: l.tsOpenLink,
             visualDensity: VisualDensity.compact,
-            icon: const Icon(Icons.open_in_new_rounded, size: 17, color: TsColors.textMuted),
+            icon: const Icon(
+              Icons.open_in_new_rounded,
+              size: 17,
+              color: TsColors.textMuted,
+            ),
             onPressed: () => tsOpenUrl(context, url),
           ),
         ],
@@ -894,7 +940,10 @@ class TsScreenHeader extends StatelessWidget {
                     Container(
                       width: 6,
                       height: 6,
-                      decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
+                      decoration: BoxDecoration(
+                        color: dotColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                     const SizedBox(width: 6),
                     Flexible(

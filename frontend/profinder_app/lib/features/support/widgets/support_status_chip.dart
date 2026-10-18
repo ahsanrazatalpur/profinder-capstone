@@ -32,19 +32,29 @@ class SupportStatusChip extends StatelessWidget {
     late final Color border;
     switch (tone) {
       case SupportChipTone.info:
-        bg = c.infoBg; fg = c.infoText; border = c.infoBorder;
+        bg = c.infoBg;
+        fg = c.infoText;
+        border = c.infoBorder;
         break;
       case SupportChipTone.success:
-        bg = c.accentLight; fg = c.successText; border = c.successText.withValues(alpha: 0.35);
+        bg = c.accentLight;
+        fg = c.successText;
+        border = c.successText.withValues(alpha: 0.35);
         break;
       case SupportChipTone.warning:
-        bg = c.warningBg; fg = c.warningText; border = c.warningBorder;
+        bg = c.warningBg;
+        fg = c.warningText;
+        border = c.warningBorder;
         break;
       case SupportChipTone.danger:
-        bg = c.dangerBg; fg = c.dangerText; border = c.dangerBorder;
+        bg = c.dangerBg;
+        fg = c.dangerText;
+        border = c.dangerBorder;
         break;
       case SupportChipTone.neutral:
-        bg = c.divider.withValues(alpha: 0.35); fg = c.textSecondary; border = c.divider;
+        bg = c.divider.withValues(alpha: 0.35);
+        fg = c.textSecondary;
+        border = c.divider;
         break;
     }
 

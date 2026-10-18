@@ -13,8 +13,8 @@ import 'promo_banner_popup.dart';
 
 mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
   final _bannerService = PromoBannerService();
-  final _authService   = AuthService();
-  final _subService    = SubscriptionService();
+  final _authService = AuthService();
+  final _subService = SubscriptionService();
 
   /// Displays an eligible promotional banner for the specified screen trigger.
   /// [trigger]: Screen context ('home', 'search', 'ai_search', 'booking', 'login').
@@ -25,8 +25,8 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
     debugPrint('[Banner] ▶ showBannerForScreen called — trigger: $trigger');
 
     final isLoggedIn = await _authService.isLoggedIn();
-    final role       = await _authService.getSavedRole() ?? 'guest';
-    final prefs      = await SharedPreferences.getInstance();
+    final role = await _authService.getSavedRole() ?? 'guest';
+    final prefs = await SharedPreferences.getInstance();
 
     debugPrint('[Banner] isLoggedIn=$isLoggedIn  role=$role');
 
@@ -43,7 +43,9 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
       }
       await prefs.remove('just_logged_in_banner_flag');
       tryLoginTriggerFirst = true;
-      debugPrint('[Banner] just logged in — will try login trigger first, then fallback to $trigger');
+      debugPrint(
+        '[Banner] just logged in — will try login trigger first, then fallback to $trigger',
+      );
     }
 
     // Unique user cache key based on role and token signature
@@ -56,7 +58,7 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
       bool isPremium = false;
       try {
         final plan = await _subService.getMyPlan();
-        isPremium   = plan?.isPremium ?? false;
+        isPremium = plan?.isPremium ?? false;
       } catch (_) {
         isPremium = false;
       }
@@ -79,23 +81,27 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
     try {
       if (tryLoginTriggerFirst) {
         banners = await _bannerService.getActiveBanners(
-          trigger:  'login',
+          trigger: 'login',
           userType: userType,
         );
-        debugPrint('[Banner] login-trigger fetch returned ${banners.length} banner(s)');
+        debugPrint(
+          '[Banner] login-trigger fetch returned ${banners.length} banner(s)',
+        );
         if (banners.isEmpty) {
           // Fall back to original screen trigger if no login banner is configured
           banners = await _bannerService.getActiveBanners(
-            trigger:  trigger,
+            trigger: trigger,
             userType: userType,
           );
-          debugPrint('[Banner] fallback to "$trigger" returned ${banners.length} banner(s)');
+          debugPrint(
+            '[Banner] fallback to "$trigger" returned ${banners.length} banner(s)',
+          );
         } else {
           trigger = 'login';
         }
       } else {
         banners = await _bannerService.getActiveBanners(
-          trigger:  trigger,
+          trigger: trigger,
           userType: userType,
         );
       }
@@ -106,7 +112,9 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
 
     debugPrint('[Banner] API returned ${banners.length} banner(s)');
     for (final b in banners) {
-      debugPrint('[Banner]   → id=${b.id} trigger=${b.trigger} audience=${b.targetAudience} title="${b.title}"');
+      debugPrint(
+        '[Banner]   → id=${b.id} trigger=${b.trigger} audience=${b.targetAudience} title="${b.title}"',
+      );
     }
 
     if (!mounted || banners.isEmpty) {
@@ -138,7 +146,7 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
 
     final userTappedCta = await PromoBannerPopup.show(
       context,
-      banner:   toShow,
+      banner: toShow,
       userRole: displayRole,
     );
 
@@ -172,14 +180,16 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
   // ── Frequency Capping & Cooldown Checks ────────────────────────────────────
   // Checks whether a banner is in its cooldown window or has reached the 3-dismiss cap.
   Future<bool> _wasShownRecently(String userKey, PromoBanner banner) async {
-    final prefs      = await SharedPreferences.getInstance();
-    final shownKey   = 'banner_${userKey}_${banner.id}';
+    final prefs = await SharedPreferences.getInstance();
+    final shownKey = 'banner_${userKey}_${banner.id}';
     final dismissKey = 'banner_dismiss_${userKey}_${banner.id}';
 
     // Permanently suppress if dismissed 3 or more times
     final dismissCount = prefs.getInt(dismissKey) ?? 0;
     if (dismissCount >= 3) {
-      debugPrint('[Banner] #${banner.id} permanently hidden (dismissed $dismissCount times)');
+      debugPrint(
+        '[Banner] #${banner.id} permanently hidden (dismissed $dismissCount times)',
+      );
       return true;
     }
 
@@ -192,7 +202,7 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
         : 30;
 
     final cooldownMs = cooldownDays * 24 * 60 * 60 * 1000;
-    final elapsedMs  = DateTime.now().millisecondsSinceEpoch - ts;
+    final elapsedMs = DateTime.now().millisecondsSinceEpoch - ts;
 
     final inCooldown = elapsedMs < cooldownMs;
     if (banner.trigger == 'every_x_days') {
@@ -216,29 +226,36 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> _incrementDismissCount(String userKey, int bannerId) async {
-    final prefs      = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     final dismissKey = 'banner_dismiss_${userKey}_$bannerId';
-    final shownKey   = 'banner_${userKey}_$bannerId';
-    final current    = prefs.getInt(dismissKey) ?? 0;
+    final shownKey = 'banner_${userKey}_$bannerId';
+    final current = prefs.getInt(dismissKey) ?? 0;
     await prefs.setInt(dismissKey, current + 1);
     // Reset timestamp for subsequent cooldown calculation
     await prefs.setInt(shownKey, DateTime.now().millisecondsSinceEpoch);
-    debugPrint('[Banner] #$bannerId dismiss count: ${current + 1}/3 for $userKey');
+    debugPrint(
+      '[Banner] #$bannerId dismiss count: ${current + 1}/3 for $userKey',
+    );
   }
 
   /// Clears persisted banner display timestamps and dismissal counts for testing.
   Future<void> clearBannerCache() async {
-    final prefs   = await SharedPreferences.getInstance();
-    final role    = await _authService.getSavedRole() ?? 'guest';
+    final prefs = await SharedPreferences.getInstance();
+    final role = await _authService.getSavedRole() ?? 'guest';
     final userKey = await _getCurrentUserKey(role);
-    final keys    = prefs.getKeys()
-        .where((k) =>
-          k.startsWith('banner_${userKey}_') ||
-          k.startsWith('banner_dismiss_${userKey}_'))
+    final keys = prefs
+        .getKeys()
+        .where(
+          (k) =>
+              k.startsWith('banner_${userKey}_') ||
+              k.startsWith('banner_dismiss_${userKey}_'),
+        )
         .toList();
     for (final k in keys) {
       await prefs.remove(k);
     }
-    debugPrint('[Banner] Cache cleared for $userKey (${keys.length} keys removed)');
+    debugPrint(
+      '[Banner] Cache cleared for $userKey (${keys.length} keys removed)',
+    );
   }
 }

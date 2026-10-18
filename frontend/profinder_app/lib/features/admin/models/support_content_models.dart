@@ -45,7 +45,8 @@ class AdminPolicyVersion {
 
   bool get isDraft => status == 'draft';
 
-  factory AdminPolicyVersion.fromJson(Map<String, dynamic> json) => AdminPolicyVersion(
+  factory AdminPolicyVersion.fromJson(Map<String, dynamic> json) =>
+      AdminPolicyVersion(
         id: (json['id'] as num?)?.toInt() ?? 0,
         version: (json['version'] as num?)?.toInt() ?? 0,
         status: _s(json['status']),
@@ -72,7 +73,8 @@ class AdminHelpCategory {
     required this.audience,
   });
 
-  factory AdminHelpCategory.fromJson(Map<String, dynamic> json) => AdminHelpCategory(
+  factory AdminHelpCategory.fromJson(Map<String, dynamic> json) =>
+      AdminHelpCategory(
         id: (json['id'] as num?)?.toInt() ?? 0,
         slug: _s(json['slug']),
         title: _s(json['title']),
@@ -103,7 +105,8 @@ class AdminHelpArticle {
     required this.body,
   });
 
-  factory AdminHelpArticle.fromJson(Map<String, dynamic> json) => AdminHelpArticle(
+  factory AdminHelpArticle.fromJson(Map<String, dynamic> json) =>
+      AdminHelpArticle(
         id: (json['id'] as num?)?.toInt() ?? 0,
         slug: _s(json['slug']),
         categoryId: (json['category_id'] as num?)?.toInt() ?? 0,

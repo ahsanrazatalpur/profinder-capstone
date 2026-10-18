@@ -29,8 +29,9 @@ class MessageEntity {
   final int senderId;
   final String senderName;
   final String text;
-  final String? imageUrl;      // full URL, already resolved
-  final String? localImagePath; // set only while an optimistic image upload is in flight
+  final String? imageUrl; // full URL, already resolved
+  final String?
+  localImagePath; // set only while an optimistic image upload is in flight
   /// Remote URL, local cache path, and duration for audio voice notes.
   final String? audioUrl;
   final int? audioDurationSeconds;
@@ -75,8 +76,10 @@ class MessageEntity {
     this.tempId,
   });
 
-  bool get hasImage => (imageUrl != null && imageUrl!.isNotEmpty) || localImagePath != null;
-  bool get hasAudio => (audioUrl != null && audioUrl!.isNotEmpty) || localAudioPath != null;
+  bool get hasImage =>
+      (imageUrl != null && imageUrl!.isNotEmpty) || localImagePath != null;
+  bool get hasAudio =>
+      (audioUrl != null && audioUrl!.isNotEmpty) || localAudioPath != null;
   bool get hasReactions => reactions.isNotEmpty;
 
   MessageEntity copyWith({
@@ -93,7 +96,8 @@ class MessageEntity {
     bool? isEdited,
     bool? isDeleted,
     Map<String, int>? reactions,
-    String? Function()? myReaction, // wrapped so we can explicitly set it back to null
+    String? Function()?
+    myReaction, // wrapped so we can explicitly set it back to null
   }) {
     return MessageEntity(
       id: id ?? this.id,

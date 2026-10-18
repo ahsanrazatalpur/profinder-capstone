@@ -36,7 +36,8 @@ const List<String> kTicketCategories = [
 const int kTicketSubjectMax = 150;
 const int kTicketBodyMax = 5000;
 
-DateTime? _date(Object? raw) => raw is String ? DateTime.tryParse(raw)?.toLocal() : null;
+DateTime? _date(Object? raw) =>
+    raw is String ? DateTime.tryParse(raw)?.toLocal() : null;
 
 class SupportTicketSummary {
   final int id;
@@ -61,7 +62,8 @@ class SupportTicketSummary {
     required this.lastMessageIsStaff,
   });
 
-  factory SupportTicketSummary.fromJson(Map<String, dynamic> json) => SupportTicketSummary(
+  factory SupportTicketSummary.fromJson(Map<String, dynamic> json) =>
+      SupportTicketSummary(
         id: (json['id'] as num?)?.toInt() ?? 0,
         reference: (json['reference'] ?? '').toString(),
         subject: (json['subject'] ?? '').toString(),
@@ -86,7 +88,8 @@ class TicketMessageItem {
     required this.createdAt,
   });
 
-  factory TicketMessageItem.fromJson(Map<String, dynamic> json) => TicketMessageItem(
+  factory TicketMessageItem.fromJson(Map<String, dynamic> json) =>
+      TicketMessageItem(
         id: (json['id'] as num?)?.toInt() ?? 0,
         body: (json['body'] ?? '').toString(),
         isStaff: json['is_staff'] == true,
@@ -108,9 +111,12 @@ class SupportTicketDetail {
       summary: SupportTicketSummary.fromJson(json),
       messages: raw is List
           ? raw
-              .whereType<Map>()
-              .map((m) => TicketMessageItem.fromJson(Map<String, dynamic>.from(m)))
-              .toList()
+                .whereType<Map>()
+                .map(
+                  (m) =>
+                      TicketMessageItem.fromJson(Map<String, dynamic>.from(m)),
+                )
+                .toList()
           : const [],
     );
   }

@@ -157,12 +157,16 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
     final epoch = DateTime.fromMillisecondsSinceEpoch(0);
     if (_sort == _Sort.severity) {
       out.sort((a, b) {
-        final c = Severity.rank(b.severity).compareTo(Severity.rank(a.severity));
+        final c = Severity.rank(
+          b.severity,
+        ).compareTo(Severity.rank(a.severity));
         if (c != 0) return c;
         return (b.createdAt ?? epoch).compareTo(a.createdAt ?? epoch);
       });
     } else {
-      out.sort((a, b) => (b.createdAt ?? epoch).compareTo(a.createdAt ?? epoch));
+      out.sort(
+        (a, b) => (b.createdAt ?? epoch).compareTo(a.createdAt ?? epoch),
+      );
     }
     return out;
   }
@@ -242,7 +246,9 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
           AppBarIconButton(
             icon: Icons.refresh_rounded,
             tooltip: l.tsRefresh,
-            onPressed: () { if (!_loading) _load(); },
+            onPressed: () {
+              if (!_loading) _load();
+            },
             onGradient: true,
           ),
         ],
@@ -312,17 +318,29 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
             child: TextField(
               controller: _searchCtrl,
               onChanged: (v) => setState(() => _search = v),
-              style: const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textPrimary),
+              style: const TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: TsColors.textPrimary,
+              ),
               decoration: InputDecoration(
                 hintText: l.tsSearchReportsHint,
-                hintStyle: const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textFaint),
-                prefixIcon: const Icon(Icons.search_rounded,
-                    size: 20, color: TsColors.textFaint),
+                hintStyle: const TextStyle(
+                  fontSize: AppFontSizes.secondary,
+                  color: TsColors.textFaint,
+                ),
+                prefixIcon: const Icon(
+                  Icons.search_rounded,
+                  size: 20,
+                  color: TsColors.textFaint,
+                ),
                 suffixIcon: _search.isEmpty
                     ? null
                     : IconButton(
-                        icon: const Icon(Icons.close_rounded,
-                            size: 18, color: TsColors.textFaint),
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          size: 18,
+                          color: TsColors.textFaint,
+                        ),
                         onPressed: () => setState(() {
                           _search = '';
                           _searchCtrl.clear();
@@ -348,7 +366,12 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
               children: [
                 _statusChip(l.tsAll, null, countFor(null), TsColors.accent),
                 for (final s in ReportStatus.all)
-                  _statusChip(tsStatusLabel(l, s), s, countFor(s), tsStatusColor(s)),
+                  _statusChip(
+                    tsStatusLabel(l, s),
+                    s,
+                    countFor(s),
+                    tsStatusColor(s),
+                  ),
               ],
             ),
           ),
@@ -368,7 +391,9 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
                     onPressed: _clearFilters,
                     icon: const Icon(Icons.filter_alt_off_outlined, size: 16),
                     label: Text(l.tsClearFilters),
-                    style: TextButton.styleFrom(foregroundColor: TsColors.accent),
+                    style: TextButton.styleFrom(
+                      foregroundColor: TsColors.accent,
+                    ),
                   ),
               ],
             ),
@@ -435,7 +460,11 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
           SizedBox(
             width: 22,
             child: selected
-                ? const Icon(Icons.check_rounded, size: 17, color: TsColors.accent)
+                ? const Icon(
+                    Icons.check_rounded,
+                    size: 17,
+                    color: TsColors.accent,
+                  )
                 : null,
           ),
           Expanded(
@@ -466,14 +495,18 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
         offset: const Offset(0, 38),
         color: Colors.white,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        ),
         itemBuilder: itemBuilder,
         onSelected: onSelected,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: active ? TsColors.accent.withValues(alpha: 0.1) : TsColors.bg,
+            color: active
+                ? TsColors.accent.withValues(alpha: 0.1)
+                : TsColors.bg,
             borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(
               color: active ? TsColors.accent : TsColors.border,
@@ -482,7 +515,11 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 14, color: active ? TsColors.accent : TsColors.textMuted),
+              Icon(
+                icon,
+                size: 14,
+                color: active ? TsColors.accent : TsColors.textMuted,
+              ),
               const SizedBox(width: 6),
               Text(
                 label,
@@ -506,12 +543,15 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
 
   Widget _severityMenu(AppLocalizations l) {
     return _menuButton(
-      label: _severity == null ? l.tsFilterSeverity : tsSeverityLabel(l, _severity),
+      label: _severity == null
+          ? l.tsFilterSeverity
+          : tsSeverityLabel(l, _severity),
       icon: Icons.priority_high_rounded,
       active: _severity != null,
       itemBuilder: (_) => [
         _item(_allKey, l.tsAll, _severity == null),
-        for (final s in Severity.all) _item(s, tsSeverityLabel(l, s), _severity == s),
+        for (final s in Severity.all)
+          _item(s, tsSeverityLabel(l, s), _severity == s),
       ],
       onSelected: (v) => setState(() => _severity = v == _allKey ? null : v),
     );
@@ -519,7 +559,9 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
 
   Widget _categoryMenu(AppLocalizations l) {
     return _menuButton(
-      label: _category == null ? l.tsFilterCategory : tsCategoryLabel(l, _category!),
+      label: _category == null
+          ? l.tsFilterCategory
+          : tsCategoryLabel(l, _category!),
       icon: Icons.flag_outlined,
       active: _category != null,
       itemBuilder: (_) => [
@@ -591,8 +633,9 @@ class _AdminReportedUsersScreenState extends State<AdminReportedUsersScreen> {
         _item('newest', l.tsSortNewest, _sort == _Sort.newest),
         _item('severity', l.tsSortSeverity, _sort == _Sort.severity),
       ],
-      onSelected: (v) =>
-          setState(() => _sort = v == 'severity' ? _Sort.severity : _Sort.newest),
+      onSelected: (v) => setState(
+        () => _sort = v == 'severity' ? _Sort.severity : _Sort.newest,
+      ),
     );
   }
 
@@ -682,7 +725,9 @@ class _ReportCard extends StatelessWidget {
 
     return TsCard(
       selected: selected,
-      accentBorder: urgent ? TsColors.sevCritical.withValues(alpha: 0.45) : null,
+      accentBorder: urgent
+          ? TsColors.sevCritical.withValues(alpha: 0.45)
+          : null,
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -708,7 +753,10 @@ class _ReportCard extends StatelessWidget {
                     ),
                     Text(
                       tsRoleLabel(l, r.reportedUserRole),
-                      style: const TextStyle(fontSize: 11.5, color: TsColors.textMuted),
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: TsColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -716,7 +764,10 @@ class _ReportCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 tsFmtDate(r.createdAt),
-                style: const TextStyle(fontSize: AppFontSizes.caption, color: TsColors.textMuted),
+                style: const TextStyle(
+                  fontSize: AppFontSizes.caption,
+                  color: TsColors.textMuted,
+                ),
               ),
             ],
           ),
@@ -726,7 +777,11 @@ class _ReportCard extends StatelessWidget {
             runSpacing: 6,
             children: [
               TsBadge(
-                label: tsCategoryLabel(l, r.category, fallback: r.categoryDisplay),
+                label: tsCategoryLabel(
+                  l,
+                  r.category,
+                  fallback: r.categoryDisplay,
+                ),
                 color: TsColors.textBody,
                 icon: Icons.flag_outlined,
               ),
@@ -762,14 +817,20 @@ class _ReportCard extends StatelessWidget {
                   runSpacing: 4,
                   children: [
                     if (r.hasBooking)
-                      _Indicator(icon: Icons.calendar_month_rounded, label: l.tsIndBooking),
+                      _Indicator(
+                        icon: Icons.calendar_month_rounded,
+                        label: l.tsIndBooking,
+                      ),
                     if (r.hasMessage)
                       _Indicator(
                         icon: Icons.chat_bubble_outline_rounded,
                         label: l.tsIndMessage,
                       ),
                     if (r.hasEvidence)
-                      _Indicator(icon: Icons.attach_file_rounded, label: l.tsIndEvidence),
+                      _Indicator(
+                        icon: Icons.attach_file_rounded,
+                        label: l.tsIndEvidence,
+                      ),
                   ],
                 ),
               ),
@@ -779,7 +840,10 @@ class _ReportCard extends StatelessWidget {
                   l.tsReportedBy(r.reporterName.isEmpty ? '—' : r.reporterName),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: AppFontSizes.caption, color: TsColors.textFaint),
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.caption,
+                    color: TsColors.textFaint,
+                  ),
                 ),
               ),
             ],

@@ -10,17 +10,29 @@ import 'local_image.dart';
 
 class FullscreenImageViewer extends StatefulWidget {
   final String heroTag;
-  final String? imageUrl;   // a message image already on the server
-  final String? localPath;  // an optimistic image not yet uploaded
+  final String? imageUrl; // a message image already on the server
+  final String? localPath; // an optimistic image not yet uploaded
 
-  const FullscreenImageViewer({super.key, required this.heroTag, this.imageUrl, this.localPath})
-      : assert(imageUrl != null || localPath != null);
+  const FullscreenImageViewer({
+    super.key,
+    required this.heroTag,
+    this.imageUrl,
+    this.localPath,
+  }) : assert(imageUrl != null || localPath != null);
 
-  static Route<void> route({required String heroTag, String? imageUrl, String? localPath}) {
+  static Route<void> route({
+    required String heroTag,
+    String? imageUrl,
+    String? localPath,
+  }) {
     return PageRouteBuilder(
       opaque: false,
       barrierColor: Colors.black,
-      pageBuilder: (_, _, _) => FullscreenImageViewer(heroTag: heroTag, imageUrl: imageUrl, localPath: localPath),
+      pageBuilder: (_, _, _) => FullscreenImageViewer(
+        heroTag: heroTag,
+        imageUrl: imageUrl,
+        localPath: localPath,
+      ),
     );
   }
 
@@ -64,15 +76,23 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
                     minScale: 1,
                     maxScale: 4,
                     child: widget.localPath != null
-                        ? LocalImagePreview(path: widget.localPath!, fit: BoxFit.contain)
+                        ? LocalImagePreview(
+                            path: widget.localPath!,
+                            fit: BoxFit.contain,
+                          )
                         : CachedNetworkImage(
                             imageUrl: widget.imageUrl!,
                             fit: BoxFit.contain,
                             placeholder: (_, _) => const Center(
-                              child: CircularProgressIndicator(color: Colors.white70),
+                              child: CircularProgressIndicator(
+                                color: Colors.white70,
+                              ),
                             ),
-                            errorWidget: (_, _, _) =>
-                                const Icon(Icons.broken_image, color: Colors.white54, size: 48),
+                            errorWidget: (_, _, _) => const Icon(
+                              Icons.broken_image,
+                              color: Colors.white54,
+                              size: 48,
+                            ),
                           ),
                   ),
                 ),

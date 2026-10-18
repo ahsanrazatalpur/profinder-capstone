@@ -11,18 +11,28 @@ class ReplyPreviewBar extends StatelessWidget {
   final MessageEntity replyingTo;
   final VoidCallback onCancel;
 
-  const ReplyPreviewBar({super.key, required this.replyingTo, required this.onCancel});
+  const ReplyPreviewBar({
+    super.key,
+    required this.replyingTo,
+    required this.onCancel,
+  });
 
   @override
   Widget build(BuildContext context) {
     final preview = replyingTo.isDeleted
         ? AppLocalizations.of(context).chatMessageWasDeleted
-        : (replyingTo.text.isNotEmpty ? replyingTo.text : (replyingTo.hasImage ? AppLocalizations.of(context).chatPhotoPreview : ''));
+        : (replyingTo.text.isNotEmpty
+              ? replyingTo.text
+              : (replyingTo.hasImage
+                    ? AppLocalizations.of(context).chatPhotoPreview
+                    : ''));
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark ? context.colors.background : AppColors.slate100,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? context.colors.background
+            : AppColors.slate100,
         border: Border(bottom: BorderSide(color: context.colors.divider)),
       ),
       child: Row(
@@ -34,17 +44,32 @@ class ReplyPreviewBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(replyingTo.senderName,
-                    style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700, color: context.colors.primary)),
-                Text(preview,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary)),
+                Text(
+                  replyingTo.senderName,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.primary,
+                  ),
+                ),
+                Text(
+                  preview,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    color: context.colors.textSecondary,
+                  ),
+                ),
               ],
             ),
           ),
           IconButton(
-            icon: Icon(Icons.close, size: 18, color: context.colors.textSecondary),
+            icon: Icon(
+              Icons.close,
+              size: 18,
+              color: context.colors.textSecondary,
+            ),
             onPressed: onCancel,
             splashRadius: 18,
           ),

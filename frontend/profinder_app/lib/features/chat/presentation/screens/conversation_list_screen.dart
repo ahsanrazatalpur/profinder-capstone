@@ -21,7 +21,11 @@ class ConversationListScreen extends StatefulWidget {
   /// Used to pause or resume background polling when switching tabs.
   final bool isVisible;
 
-  const ConversationListScreen({super.key, required this.currentUserId, this.isVisible = true});
+  const ConversationListScreen({
+    super.key,
+    required this.currentUserId,
+    this.isVisible = true,
+  });
 
   @override
   State<ConversationListScreen> createState() => _ConversationListScreenState();
@@ -140,15 +144,17 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
                 return ConversationTile(
                   conversation: conv,
                   onTap: () async {
-                    await Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ChatScreen(
-                        conversationId: conv.id,
-                        currentUserId: widget.currentUserId,
-                        otherUserName: conv.otherUserName,
-                        otherUserPhoto: conv.otherUserPhoto,
-                        conversationSnapshot: conv,
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ChatScreen(
+                          conversationId: conv.id,
+                          currentUserId: widget.currentUserId,
+                          otherUserName: conv.otherUserName,
+                          otherUserPhoto: conv.otherUserPhoto,
+                          conversationSnapshot: conv,
+                        ),
                       ),
-                    ));
+                    );
                     if (context.mounted) provider.refresh();
                   },
                 );
@@ -256,7 +262,10 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.customerColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 14,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),

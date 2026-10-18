@@ -46,7 +46,8 @@ class TranslationLanguage {
     required this.isRtl,
   });
 
-  factory TranslationLanguage.fromJson(Map<String, dynamic> j) => TranslationLanguage(
+  factory TranslationLanguage.fromJson(Map<String, dynamic> j) =>
+      TranslationLanguage(
         id: (j['id'] as num).toInt(),
         code: (j['code']?.toString() ?? '').trim().toLowerCase(),
         name: j['name']?.toString() ?? '',
@@ -58,14 +59,21 @@ class TranslationLanguage {
 class TranslationLanguages {
   static List<TranslationLanguage>? _cache;
 
-  static Future<List<TranslationLanguage>> load(ApiService api, {bool force = false}) async {
+  static Future<List<TranslationLanguage>> load(
+    ApiService api, {
+    bool force = false,
+  }) async {
     if (!force && _cache != null) return _cache!;
     final r = await api.get('/admin-panel/languages/');
-    final raw = r.data is List ? List<dynamic>.from(r.data as List) : <dynamic>[];
+    final raw = r.data is List
+        ? List<dynamic>.from(r.data as List)
+        : <dynamic>[];
     final out = <TranslationLanguage>[];
     for (final item in raw) {
       if (item is! Map) continue;
-      final lang = TranslationLanguage.fromJson(Map<String, dynamic>.from(item));
+      final lang = TranslationLanguage.fromJson(
+        Map<String, dynamic>.from(item),
+      );
       final base = lang.code.split(RegExp(r'[-_]')).first;
       if (lang.code.isEmpty || base == 'en') continue;
       out.add(lang);
@@ -146,7 +154,8 @@ class ContentTranslationsEditor extends StatefulWidget {
   });
 
   @override
-  State<ContentTranslationsEditor> createState() => _ContentTranslationsEditorState();
+  State<ContentTranslationsEditor> createState() =>
+      _ContentTranslationsEditorState();
 }
 
 class _ContentTranslationsEditorState extends State<ContentTranslationsEditor> {
@@ -167,27 +176,28 @@ class _ContentTranslationsEditorState extends State<ContentTranslationsEditor> {
     super.dispose();
   }
 
-  bool _filled(String code) =>
-      widget.fields.any((f) => widget.controller.get(code, f.key).trim().isNotEmpty);
+  bool _filled(String code) => widget.fields.any(
+    (f) => widget.controller.get(code, f.key).trim().isNotEmpty,
+  );
 
   InputDecoration _decoration(String label) => InputDecoration(
-        labelText: label,
-        filled: true,
-        fillColor: AppColors.lightScaffold,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.neutral200),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.neutral200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.adminColor, width: 1.4),
-        ),
-      );
+    labelText: label,
+    filled: true,
+    fillColor: AppColors.lightScaffold,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: AppColors.neutral200),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: AppColors.neutral200),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: AppColors.adminColor, width: 1.4),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -216,9 +226,13 @@ class _ContentTranslationsEditorState extends State<ContentTranslationsEditor> {
                 selected: i == _selected,
                 showCheckmark: false,
                 avatar: _filled(widget.languages[i].code)
-                    ? Icon(Icons.check_circle_rounded,
+                    ? Icon(
+                        Icons.check_circle_rounded,
                         size: 16,
-                        color: i == _selected ? Colors.white : AppColors.success)
+                        color: i == _selected
+                            ? Colors.white
+                            : AppColors.success,
+                      )
                     : null,
                 label: Text(widget.languages[i].name),
                 labelStyle: TextStyle(
@@ -255,7 +269,10 @@ class _ContentTranslationsEditorState extends State<ContentTranslationsEditor> {
                 'English: ${widget.baseValues![f.key]}',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 11, color: AppColors.neutral400),
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.neutral400,
+                ),
               ),
             ),
           const SizedBox(height: 10),
@@ -383,7 +400,8 @@ class _TranslationsSheetState extends State<_TranslationsSheet> {
     final failed = <String>[];
     for (final lang in _languages) {
       final now = _controller.fieldsFor(lang.code, widget.fields);
-      final before = _initial[lang.code] ?? {for (final f in widget.fields) f.key: ''};
+      final before =
+          _initial[lang.code] ?? {for (final f in widget.fields) f.key: ''};
       if (_sameFields(now, before)) continue;
       try {
         await _api.put(
@@ -424,20 +442,34 @@ class _TranslationsSheetState extends State<_TranslationsSheet> {
                   color: AppColors.adminColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.translate_rounded, color: AppColors.adminColor, size: 18),
+                child: const Icon(
+                  Icons.translate_rounded,
+                  color: AppColors.adminColor,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Translations',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.gray900)),
-                    Text(widget.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12, color: AppColors.grayDeep)),
+                    const Text(
+                      'Translations',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.gray900,
+                      ),
+                    ),
+                    Text(
+                      widget.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.grayDeep,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -456,45 +488,63 @@ class _TranslationsSheetState extends State<_TranslationsSheet> {
                       child: Center(child: CircularProgressIndicator()),
                     )
                   : (_languages.isEmpty && _error != null)
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(_error!, style: const TextStyle(color: AppColors.error)),
-                            TextButton(onPressed: _loadLanguages, child: const Text('Retry')),
-                          ],
-                        )
-                      : ContentTranslationsEditor(
-                          languages: _languages,
-                          fields: widget.fields,
-                          controller: _controller,
-                          baseValues: widget.baseValues,
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _error!,
+                          style: const TextStyle(color: AppColors.error),
                         ),
+                        TextButton(
+                          onPressed: _loadLanguages,
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    )
+                  : ContentTranslationsEditor(
+                      languages: _languages,
+                      fields: widget.fields,
+                      controller: _controller,
+                      baseValues: widget.baseValues,
+                    ),
             ),
           ),
           if (_error != null && _languages.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(_error!, style: const TextStyle(fontSize: 12, color: AppColors.error)),
+            Text(
+              _error!,
+              style: const TextStyle(fontSize: 12, color: AppColors.error),
+            ),
           ],
           const SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: (_loading || _saving || _languages.isEmpty) ? null : _save,
+              onPressed: (_loading || _saving || _languages.isEmpty)
+                  ? null
+                  : _save,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.adminColor,
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               child: _saving
                   ? const SizedBox(
                       width: 18,
                       height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
-                  : const Text('Save translations',
-                      style: TextStyle(fontWeight: FontWeight.w700)),
+                  : const Text(
+                      'Save translations',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
             ),
           ),
         ],
@@ -518,10 +568,12 @@ class ContentTranslationsSection extends StatefulWidget {
   });
 
   @override
-  State<ContentTranslationsSection> createState() => _ContentTranslationsSectionState();
+  State<ContentTranslationsSection> createState() =>
+      _ContentTranslationsSectionState();
 }
 
-class _ContentTranslationsSectionState extends State<ContentTranslationsSection> {
+class _ContentTranslationsSectionState
+    extends State<ContentTranslationsSection> {
   final _api = ApiService();
   List<TranslationLanguage>? _languages;
   bool _loading = false;
@@ -557,9 +609,19 @@ class _ContentTranslationsSectionState extends State<ContentTranslationsSection>
         tilePadding: EdgeInsets.zero,
         childrenPadding: const EdgeInsets.only(bottom: 4),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        leading: const Icon(Icons.translate_rounded, size: 18, color: AppColors.adminColor),
-        title: const Text('Translations (optional)',
-            style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.gray900)),
+        leading: const Icon(
+          Icons.translate_rounded,
+          size: 18,
+          color: AppColors.adminColor,
+        ),
+        title: const Text(
+          'Translations (optional)',
+          style: TextStyle(
+            fontSize: 13.5,
+            fontWeight: FontWeight.w700,
+            color: AppColors.gray900,
+          ),
+        ),
         subtitle: Text(
           widget.helper ?? 'Add other languages now, or later from the list.',
           style: const TextStyle(fontSize: 11.5, color: AppColors.grayDeep),
@@ -576,7 +638,13 @@ class _ContentTranslationsSectionState extends State<ContentTranslationsSection>
           else if (_error != null)
             Row(
               children: [
-                Text(_error!, style: const TextStyle(color: AppColors.error, fontSize: 12.5)),
+                Text(
+                  _error!,
+                  style: const TextStyle(
+                    color: AppColors.error,
+                    fontSize: 12.5,
+                  ),
+                ),
                 TextButton(onPressed: _load, child: const Text('Retry')),
               ],
             )
@@ -597,7 +665,11 @@ class _ContentTranslationsSectionState extends State<ContentTranslationsSection>
 class TranslationsButton extends StatelessWidget {
   final int count;
   final VoidCallback onPressed;
-  const TranslationsButton({super.key, required this.count, required this.onPressed});
+  const TranslationsButton({
+    super.key,
+    required this.count,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -606,8 +678,10 @@ class TranslationsButton extends StatelessWidget {
       child: TextButton.icon(
         onPressed: onPressed,
         icon: const Icon(Icons.translate_rounded, size: 16),
-        label: Text(count > 0 ? 'Translations ($count)' : 'Translations',
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+        label: Text(
+          count > 0 ? 'Translations ($count)' : 'Translations',
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+        ),
         style: TextButton.styleFrom(
           foregroundColor: AppColors.adminColor,
           visualDensity: VisualDensity.compact,

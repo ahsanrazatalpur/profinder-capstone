@@ -218,9 +218,15 @@ class CategoryStyles {
     final n = name.toLowerCase().trim();
 
     // Healthcare & Medical
-    if (n.contains('doctor') || n.contains('health') || n.contains('medical') || 
-        n.contains('dentist') || n.contains('clinic') || n.contains('hospital') ||
-        n.contains('physician') || n.contains('nurse') || n.contains('pharma')) {
+    if (n.contains('doctor') ||
+        n.contains('health') ||
+        n.contains('medical') ||
+        n.contains('dentist') ||
+        n.contains('clinic') ||
+        n.contains('hospital') ||
+        n.contains('physician') ||
+        n.contains('nurse') ||
+        n.contains('pharma')) {
       return const CategoryStyle(
         icon: Icons.medical_services_outlined,
         color: Color(0xFF3B82F6),
@@ -235,9 +241,14 @@ class CategoryStyles {
     }
 
     // Legal & Law
-    if (n.contains('lawyer') || n.contains('legal') || n.contains('attorney') || 
-        n.contains('law') || n.contains('justice') || n.contains('advocate') ||
-        n.contains('notary') || n.contains('paralegal')) {
+    if (n.contains('lawyer') ||
+        n.contains('legal') ||
+        n.contains('attorney') ||
+        n.contains('law') ||
+        n.contains('justice') ||
+        n.contains('advocate') ||
+        n.contains('notary') ||
+        n.contains('paralegal')) {
       return const CategoryStyle(
         icon: Icons.gavel_outlined,
         color: Color(0xFF8B5CF6),
@@ -252,9 +263,13 @@ class CategoryStyles {
     }
 
     // Engineering
-    if (n.contains('engineer') || n.contains('mechanical') || n.contains('civil') ||
-        n.contains('structural') || n.contains('electrical engineer') || 
-        n.contains('mechatronics') || n.contains('petroleum')) {
+    if (n.contains('engineer') ||
+        n.contains('mechanical') ||
+        n.contains('civil') ||
+        n.contains('structural') ||
+        n.contains('electrical engineer') ||
+        n.contains('mechatronics') ||
+        n.contains('petroleum')) {
       return const CategoryStyle(
         icon: Icons.engineering_outlined,
         color: Color(0xFF3B82F6),
@@ -269,10 +284,16 @@ class CategoryStyles {
     }
 
     // Technology & IT
-    if (n.contains('tech') || n.contains('software') ||
-        n.contains('developer') || n.contains('programmer') || n.contains('coding') ||
-        n.contains('web') || n.contains('app') || n.contains('ai') || 
-        n.contains('machine learning') || n.contains('data')) {
+    if (n.contains('tech') ||
+        n.contains('software') ||
+        n.contains('developer') ||
+        n.contains('programmer') ||
+        n.contains('coding') ||
+        n.contains('web') ||
+        n.contains('app') ||
+        n.contains('ai') ||
+        n.contains('machine learning') ||
+        n.contains('data')) {
       return const CategoryStyle(
         icon: Icons.computer_outlined,
         color: Color(0xFF10B981),
@@ -287,9 +308,15 @@ class CategoryStyles {
     }
 
     // Education & Tutoring
-    if (n.contains('tutor') || n.contains('educat') || n.contains('teach') ||
-        n.contains('trainer') || n.contains('instructor') || n.contains('mentor') ||
-        n.contains('professor') || n.contains('teacher') || n.contains('coach')) {
+    if (n.contains('tutor') ||
+        n.contains('educat') ||
+        n.contains('teach') ||
+        n.contains('trainer') ||
+        n.contains('instructor') ||
+        n.contains('mentor') ||
+        n.contains('professor') ||
+        n.contains('teacher') ||
+        n.contains('coach')) {
       return const CategoryStyle(
         icon: Icons.school_outlined,
         color: Color(0xFFEC4899),
@@ -304,8 +331,12 @@ class CategoryStyles {
     }
 
     // Plumbing
-    if (n.contains('plumb') || n.contains('pipe') || n.contains('drain') ||
-        n.contains('faucet') || n.contains('water') || n.contains('pump')) {
+    if (n.contains('plumb') ||
+        n.contains('pipe') ||
+        n.contains('drain') ||
+        n.contains('faucet') ||
+        n.contains('water') ||
+        n.contains('pump')) {
       return const CategoryStyle(
         icon: Icons.plumbing_outlined,
         color: Color(0xFF6366F1),
@@ -320,8 +351,12 @@ class CategoryStyles {
     }
 
     // Electrical
-    if (n.contains('electric') || n.contains('wire') || n.contains('circuit') ||
-        n.contains('power') || n.contains('lighting') || n.contains('solar')) {
+    if (n.contains('electric') ||
+        n.contains('wire') ||
+        n.contains('circuit') ||
+        n.contains('power') ||
+        n.contains('lighting') ||
+        n.contains('solar')) {
       return const CategoryStyle(
         icon: Icons.electrical_services,
         color: Color(0xFFF97316),
@@ -336,8 +371,12 @@ class CategoryStyles {
     }
 
     // Architecture & Design
-    if (n.contains('architect') || n.contains('design') || n.contains('interior') ||
-        n.contains('draft') || n.contains('render') || n.contains('blueprint')) {
+    if (n.contains('architect') ||
+        n.contains('design') ||
+        n.contains('interior') ||
+        n.contains('draft') ||
+        n.contains('render') ||
+        n.contains('blueprint')) {
       return const CategoryStyle(
         icon: Icons.architecture,
         color: Color(0xFF06B6D4),
@@ -352,8 +391,12 @@ class CategoryStyles {
     }
 
     // Cleaning Services
-    if (n.contains('clean') || n.contains('maid') || n.contains('housekeep') ||
-        n.contains('janitor') || n.contains('sanitation') || n.contains('hygiene')) {
+    if (n.contains('clean') ||
+        n.contains('maid') ||
+        n.contains('housekeep') ||
+        n.contains('janitor') ||
+        n.contains('sanitation') ||
+        n.contains('hygiene')) {
       return const CategoryStyle(
         icon: Icons.cleaning_services,
         color: Color(0xFF14B8A6),
@@ -368,8 +411,12 @@ class CategoryStyles {
     }
 
     // Carpentry & Woodwork
-    if (n.contains('carpent') || n.contains('wood') || n.contains('furniture') ||
-        n.contains('cabinet') || n.contains('joinery') || n.contains('woodwork')) {
+    if (n.contains('carpent') ||
+        n.contains('wood') ||
+        n.contains('furniture') ||
+        n.contains('cabinet') ||
+        n.contains('joinery') ||
+        n.contains('woodwork')) {
       return const CategoryStyle(
         icon: Icons.carpenter,
         color: Color(0xFF84CC16),
@@ -384,8 +431,12 @@ class CategoryStyles {
     }
 
     // Painting & Decoration
-    if (n.contains('paint') || n.contains('decor') || n.contains('wall') ||
-        n.contains('finish') || n.contains('coating') || n.contains('color')) {
+    if (n.contains('paint') ||
+        n.contains('decor') ||
+        n.contains('wall') ||
+        n.contains('finish') ||
+        n.contains('coating') ||
+        n.contains('color')) {
       return const CategoryStyle(
         icon: Icons.format_paint_outlined,
         color: Color(0xFFF43F5E),
@@ -400,9 +451,15 @@ class CategoryStyles {
     }
 
     // Finance & Accounting
-    if (n.contains('account') || n.contains('financ') || n.contains('bank') ||
-        n.contains('investment') || n.contains('tax') || n.contains('audit') ||
-        n.contains('bookkeep') || n.contains('payroll') || n.contains('wealth')) {
+    if (n.contains('account') ||
+        n.contains('financ') ||
+        n.contains('bank') ||
+        n.contains('investment') ||
+        n.contains('tax') ||
+        n.contains('audit') ||
+        n.contains('bookkeep') ||
+        n.contains('payroll') ||
+        n.contains('wealth')) {
       return const CategoryStyle(
         icon: Icons.account_balance_outlined,
         color: Color(0xFFF59E0B),
@@ -417,8 +474,12 @@ class CategoryStyles {
     }
 
     // Photography & Media
-    if (n.contains('photo') || n.contains('video') || n.contains('media') ||
-        n.contains('camera') || n.contains('content') || n.contains('creative')) {
+    if (n.contains('photo') ||
+        n.contains('video') ||
+        n.contains('media') ||
+        n.contains('camera') ||
+        n.contains('content') ||
+        n.contains('creative')) {
       return const CategoryStyle(
         icon: Icons.photo_camera_outlined,
         color: Color(0xFF8B5CF6),
@@ -433,9 +494,14 @@ class CategoryStyles {
     }
 
     // Beauty & Wellness
-    if (n.contains('beauty') || n.contains('salon') || n.contains('spa') ||
-        n.contains('makeup') || n.contains('hair') || n.contains('nails') ||
-        n.contains('massage') || n.contains('wellness')) {
+    if (n.contains('beauty') ||
+        n.contains('salon') ||
+        n.contains('spa') ||
+        n.contains('makeup') ||
+        n.contains('hair') ||
+        n.contains('nails') ||
+        n.contains('massage') ||
+        n.contains('wellness')) {
       return const CategoryStyle(
         icon: Icons.spa_outlined,
         color: Color(0xFFEC4899),
@@ -465,7 +531,8 @@ class CategoryStyles {
 
   /// Get random premium gradient
   static List<Color> getRandomPremiumGradient() {
-    return premiumGradients[DateTime.now().millisecondsSinceEpoch % premiumGradients.length];
+    return premiumGradients[DateTime.now().millisecondsSinceEpoch %
+        premiumGradients.length];
   }
 }
 

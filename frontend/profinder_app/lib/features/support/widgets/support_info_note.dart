@@ -25,12 +25,19 @@ class SupportInfoNote extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline_rounded, size: AppSizes.iconMd - 4, color: colors.infoText),
+          Icon(
+            Icons.info_outline_rounded,
+            size: AppSizes.iconMd - 4,
+            color: colors.infoText,
+          ),
           const SizedBox(width: AppSizes.sm),
           Expanded(
             child: Text(
               message,
-              style: context.textStyles.bodySmall.copyWith(color: colors.infoText, letterSpacing: 0),
+              style: context.textStyles.bodySmall.copyWith(
+                color: colors.infoText,
+                letterSpacing: 0,
+              ),
             ),
           ),
         ],

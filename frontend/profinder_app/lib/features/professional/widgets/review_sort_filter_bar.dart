@@ -13,12 +13,18 @@ class SortOption {
   /// Localized label — resolved at build time so it follows the app language.
   String label(AppLocalizations t) {
     switch (value) {
-      case 'newest':  return t.reviewSortNewest;
-      case 'highest': return t.reviewSortHighest;
-      case 'lowest':  return t.reviewSortLowest;
-      case 'helpful': return t.reviewSortHelpful;
-      case 'photos':  return t.reviewSortWithPhotos;
-      default:        return t.reviewSortRelevant;
+      case 'newest':
+        return t.reviewSortNewest;
+      case 'highest':
+        return t.reviewSortHighest;
+      case 'lowest':
+        return t.reviewSortLowest;
+      case 'helpful':
+        return t.reviewSortHelpful;
+      case 'photos':
+        return t.reviewSortWithPhotos;
+      default:
+        return t.reviewSortRelevant;
     }
   }
 }
@@ -49,7 +55,9 @@ class ReviewSortFilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final sortLabel = kReviewSortOptions.firstWhere((o) => o.value == sort).label(t);
+    final sortLabel = kReviewSortOptions
+        .firstWhere((o) => o.value == sort)
+        .label(t);
     final filters = ['all', '5', '4', '3', '2', '1'];
 
     return Column(
@@ -69,13 +77,26 @@ class ReviewSortFilterBar extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.swap_vert_rounded, size: 16, color: context.colors.textSecondary),
+                Icon(
+                  Icons.swap_vert_rounded,
+                  size: 16,
+                  color: context.colors.textSecondary,
+                ),
                 const SizedBox(width: 6),
-                Text(sortLabel,
-                    style: TextStyle(
-                        fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
+                Text(
+                  sortLabel,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    fontWeight: FontWeight.w600,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
                 const SizedBox(width: 4),
-                Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: context.colors.textSecondary),
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 16,
+                  color: context.colors.textSecondary,
+                ),
               ],
             ),
           ),
@@ -107,8 +128,14 @@ class ReviewSortFilterBar extends StatelessWidget {
                   ),
                   selectedColor: context.colors.primary,
                   backgroundColor: context.colors.surface,
-                  side: BorderSide(color: selected ? context.colors.primary : context.colors.divider),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+                  side: BorderSide(
+                    color: selected
+                        ? context.colors.primary
+                        : context.colors.divider,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                  ),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
               );
@@ -124,7 +151,9 @@ class ReviewSortFilterBar extends StatelessWidget {
       context: context,
       backgroundColor: context.colors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
       ),
       builder: (sheetContext) {
         return SafeArea(
@@ -133,30 +162,52 @@ class ReviewSortFilterBar extends StatelessWidget {
             children: [
               const SizedBox(height: 12),
               Container(
-                width: 36, height: 4,
+                width: 36,
+                height: 4,
                 decoration: BoxDecoration(
-                  color: sheetContext.colors.divider, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
+                  color: sheetContext.colors.divider,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusXs),
+                ),
               ),
               const SizedBox(height: 8),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(AppLocalizations.of(sheetContext).reviewSortBy,
-                      style: TextStyle(
-                          fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: sheetContext.colors.textPrimary)),
+                  child: Text(
+                    AppLocalizations.of(sheetContext).reviewSortBy,
+                    style: TextStyle(
+                      fontSize: AppFontSizes.body,
+                      fontWeight: FontWeight.w700,
+                      color: sheetContext.colors.textPrimary,
+                    ),
+                  ),
                 ),
               ),
-              ...kReviewSortOptions.map((opt) => ListTile(
-                    title: Text(opt.label(AppLocalizations.of(sheetContext)), style: TextStyle(fontSize: AppFontSizes.body, color: sheetContext.colors.textPrimary)),
-                    trailing: opt.value == sort
-                        ? Icon(Icons.check_rounded, color: sheetContext.colors.primary)
-                        : null,
-                    onTap: () {
-                      onSortChanged(opt.value);
-                      Navigator.pop(sheetContext);
-                    },
-                  )),
+              ...kReviewSortOptions.map(
+                (opt) => ListTile(
+                  title: Text(
+                    opt.label(AppLocalizations.of(sheetContext)),
+                    style: TextStyle(
+                      fontSize: AppFontSizes.body,
+                      color: sheetContext.colors.textPrimary,
+                    ),
+                  ),
+                  trailing: opt.value == sort
+                      ? Icon(
+                          Icons.check_rounded,
+                          color: sheetContext.colors.primary,
+                        )
+                      : null,
+                  onTap: () {
+                    onSortChanged(opt.value);
+                    Navigator.pop(sheetContext);
+                  },
+                ),
+              ),
               const SizedBox(height: 8),
             ],
           ),

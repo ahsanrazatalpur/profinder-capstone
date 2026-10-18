@@ -357,13 +357,13 @@ class ModerationAction {
 
   String get performedByLabel =>
       (performedByName != null && performedByName!.isNotEmpty)
-          ? performedByName!
-          : (performedByEmail ?? '');
+      ? performedByName!
+      : (performedByEmail ?? '');
 
   String get reversedByLabel =>
       (reversedByName != null && reversedByName!.isNotEmpty)
-          ? reversedByName!
-          : (reversedByEmail ?? '');
+      ? reversedByName!
+      : (reversedByEmail ?? '');
 
   factory ModerationAction.fromJson(Map<String, dynamic> j) {
     return ModerationAction(
@@ -435,8 +435,8 @@ class TsAppeal {
 
   String get reviewedByLabel =>
       (reviewedByName != null && reviewedByName!.isNotEmpty)
-          ? reviewedByName!
-          : (reviewedByEmail ?? '');
+      ? reviewedByName!
+      : (reviewedByEmail ?? '');
 
   factory TsAppeal.fromJson(Map<String, dynamic> j) {
     final actionJson = _map(j['moderation_action_detail']);

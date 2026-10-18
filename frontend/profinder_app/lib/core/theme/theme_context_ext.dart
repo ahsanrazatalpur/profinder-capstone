@@ -16,38 +16,59 @@ class AdaptiveColors {
 
   bool get _dark => brightness == Brightness.dark;
 
-  Color get background     => _dark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
-  Color get surface        => _dark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF);
-  Color get divider        => _dark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
-  Color get textPrimary    => _dark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A);
-  Color get textSecondary  => _dark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
-  Color get textDisabled   => _dark ? const Color(0xFF64748B) : const Color(0xFFCBD5E1);
-  Color get primary        => _dark ? const Color(0xFF3B82F6) : const Color(0xFF2563EB);
-  Color get primaryDark    => _dark ? const Color(0xFF60A5FA) : const Color(0xFF1D4ED8);
-  Color get primaryLight   => _dark ? const Color(0xFF1E3A5F) : const Color(0xFFDBEAFE);
-  Color get accent         => _dark ? const Color(0xFF34D399) : const Color(0xFF10B981);
-  Color get accentLight    => _dark ? const Color(0xFF064E3B) : const Color(0xFFD1FAE5);
+  Color get background =>
+      _dark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+  Color get surface =>
+      _dark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF);
+  Color get divider =>
+      _dark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+  Color get textPrimary =>
+      _dark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A);
+  Color get textSecondary =>
+      _dark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+  Color get textDisabled =>
+      _dark ? const Color(0xFF64748B) : const Color(0xFFCBD5E1);
+  Color get primary =>
+      _dark ? const Color(0xFF3B82F6) : const Color(0xFF2563EB);
+  Color get primaryDark =>
+      _dark ? const Color(0xFF60A5FA) : const Color(0xFF1D4ED8);
+  Color get primaryLight =>
+      _dark ? const Color(0xFF1E3A5F) : const Color(0xFFDBEAFE);
+  Color get accent => _dark ? const Color(0xFF34D399) : const Color(0xFF10B981);
+  Color get accentLight =>
+      _dark ? const Color(0xFF064E3B) : const Color(0xFFD1FAE5);
 
   // Warning / info box (e.g. "daily limit reached") — adaptive amber tones.
-  Color get warningBg      => _dark ? const Color(0xFF451A03) : const Color(0xFFFFFBEB);
-  Color get warningBorder  => _dark ? const Color(0xFF78350F) : const Color(0xFFFDE68A);
-  Color get warningText    => _dark ? const Color(0xFFFDE68A) : const Color(0xFF92400E);
-  Color get warningIcon    => _dark ? const Color(0xFFFBBF24) : const Color(0xFFD97706);
-  Color get warningSoft    => _dark ? const Color(0xFF451A03) : const Color(0xFFFEF3C7);
+  Color get warningBg =>
+      _dark ? const Color(0xFF451A03) : const Color(0xFFFFFBEB);
+  Color get warningBorder =>
+      _dark ? const Color(0xFF78350F) : const Color(0xFFFDE68A);
+  Color get warningText =>
+      _dark ? const Color(0xFFFDE68A) : const Color(0xFF92400E);
+  Color get warningIcon =>
+      _dark ? const Color(0xFFFBBF24) : const Color(0xFFD97706);
+  Color get warningSoft =>
+      _dark ? const Color(0xFF451A03) : const Color(0xFFFEF3C7);
 
   // Info box (blue)
-  Color get infoBg         => _dark ? const Color(0xFF172554) : const Color(0xFFEFF6FF);
-  Color get infoBorder     => _dark ? const Color(0xFF1E40AF) : const Color(0xFFBFDBFE);
-  Color get infoText       => _dark ? const Color(0xFF93C5FD) : const Color(0xFF1E40AF);
+  Color get infoBg => _dark ? const Color(0xFF172554) : const Color(0xFFEFF6FF);
+  Color get infoBorder =>
+      _dark ? const Color(0xFF1E40AF) : const Color(0xFFBFDBFE);
+  Color get infoText =>
+      _dark ? const Color(0xFF93C5FD) : const Color(0xFF1E40AF);
 
   // Danger / error box (red)
-  Color get danger         => _dark ? const Color(0xFFF87171) : const Color(0xFFEF4444);
-  Color get dangerBg       => _dark ? const Color(0xFF450A0A) : const Color(0xFFFEF2F2);
-  Color get dangerBorder   => _dark ? const Color(0xFF7F1D1D) : const Color(0xFFFCA5A5);
-  Color get dangerText     => _dark ? const Color(0xFFFCA5A5) : const Color(0xFF991B1B);
+  Color get danger => _dark ? const Color(0xFFF87171) : const Color(0xFFEF4444);
+  Color get dangerBg =>
+      _dark ? const Color(0xFF450A0A) : const Color(0xFFFEF2F2);
+  Color get dangerBorder =>
+      _dark ? const Color(0xFF7F1D1D) : const Color(0xFFFCA5A5);
+  Color get dangerText =>
+      _dark ? const Color(0xFFFCA5A5) : const Color(0xFF991B1B);
 
   // Success text on light tints (darker green in light mode for contrast)
-  Color get successText    => _dark ? const Color(0xFF34D399) : const Color(0xFF059669);
+  Color get successText =>
+      _dark ? const Color(0xFF34D399) : const Color(0xFF059669);
 
   // Text-on-white pill buttons (social login etc.) — those keep a fixed
   // white background by design, so this is deliberately NOT dark/light
@@ -71,10 +92,14 @@ class AdaptiveTextStyles {
   TextStyle get h1 => AppTextStyles.h1.copyWith(color: colors.textPrimary);
   TextStyle get h2 => AppTextStyles.h2.copyWith(color: colors.textPrimary);
   TextStyle get h3 => AppTextStyles.h3.copyWith(color: colors.textPrimary);
-  TextStyle get bodyLarge => AppTextStyles.bodyLarge.copyWith(color: colors.textPrimary);
-  TextStyle get bodyMedium => AppTextStyles.bodyMedium.copyWith(color: colors.textPrimary);
-  TextStyle get bodySmall => AppTextStyles.bodySmall.copyWith(color: colors.textSecondary);
-  TextStyle get inputText => AppTextStyles.inputText.copyWith(color: colors.textPrimary);
+  TextStyle get bodyLarge =>
+      AppTextStyles.bodyLarge.copyWith(color: colors.textPrimary);
+  TextStyle get bodyMedium =>
+      AppTextStyles.bodyMedium.copyWith(color: colors.textPrimary);
+  TextStyle get bodySmall =>
+      AppTextStyles.bodySmall.copyWith(color: colors.textSecondary);
+  TextStyle get inputText =>
+      AppTextStyles.inputText.copyWith(color: colors.textPrimary);
 }
 
 extension BuildContextTextStyles on BuildContext {

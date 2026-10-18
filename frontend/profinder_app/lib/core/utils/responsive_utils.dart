@@ -36,13 +36,15 @@ class ResponsiveUtils {
   ///   • Above ~1.3 icons/text would look oversized rather than "premium",
   ///     so large tablets rely on [gridColumns] / wider cards / more
   ///     content instead of ever-growing glyphs.
-  static double scaleForWidth(double width) => (width / _baseWidth).clamp(0.86, 1.3);
+  static double scaleForWidth(double width) =>
+      (width / _baseWidth).clamp(0.86, 1.3);
 
   /// Scale factor for the current [context]'s screen width. Prefer
   /// [scaleForWidth] with a `LayoutBuilder`-supplied width when sizing
   /// something that lives inside a narrower parent (a grid cell, a sheet)
   /// than the full screen.
-  static double scaleOf(BuildContext context) => scaleForWidth(MediaQuery.sizeOf(context).width);
+  static double scaleOf(BuildContext context) =>
+      scaleForWidth(MediaQuery.sizeOf(context).width);
 
   /// Scaled pixel value. `min`/`max` guard the legible/tappable floor and
   /// the "still looks intentional, not stretched" ceiling.
@@ -51,7 +53,7 @@ class ResponsiveUtils {
     return value.clamp(min ?? (base * 0.75), max ?? (base * 1.55));
   }
 
-  static bool isTablet(double width)      => width >= 600;
+  static bool isTablet(double width) => width >= 600;
   static bool isLargeTablet(double width) => width >= 900;
 
   /// Grid columns for category-style grids (Popular Categories, All
@@ -61,7 +63,11 @@ class ResponsiveUtils {
   ///
   /// `base` is the phone column count (kept identical to the original
   /// design); columns only ever grow from there, never shrink below it.
-  static int gridColumns(double width, {int base = 4, double targetCellWidth = 88}) {
+  static int gridColumns(
+    double width, {
+    int base = 4,
+    double targetCellWidth = 88,
+  }) {
     final raw = (width / targetCellWidth).floor();
     return raw.clamp(base, base + 4);
   }
@@ -70,7 +76,12 @@ class ResponsiveUtils {
   /// tablets so a single card never sprawls into something out of
   /// proportion with the rest of the UI, while still letting it grow
   /// noticeably past the phone baseline.
-  static double cardWidthFor(double availableWidth, double baseWidth, {double minScale = 0.86, double maxScale = 1.55}) {
+  static double cardWidthFor(
+    double availableWidth,
+    double baseWidth, {
+    double minScale = 0.86,
+    double maxScale = 1.55,
+  }) {
     final scale = (availableWidth / _baseWidth).clamp(minScale, maxScale);
     return baseWidth * scale;
   }
@@ -78,7 +89,8 @@ class ResponsiveUtils {
   /// Horizontal padding for screen-edge content — scales gently so large
   /// tablets get a bit more breathing room without the phone padding
   /// feeling cramped.
-  static double screenPadding(double width, {double base = 20}) => sp(base, scaleForWidth(width), min: base, max: base * 1.6);
+  static double screenPadding(double width, {double base = 20}) =>
+      sp(base, scaleForWidth(width), min: base, max: base * 1.6);
 
   /// Required height for a "category tile" cell (icon box + spacing +
   /// up-to-2-line label) at the given [iconBoxSize]/[fontSize]/[scale].

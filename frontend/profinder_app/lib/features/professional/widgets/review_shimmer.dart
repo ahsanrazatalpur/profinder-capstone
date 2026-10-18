@@ -17,16 +17,21 @@ class _ShimmerBlock extends StatefulWidget {
   const _ShimmerBlock({
     required this.width,
     required this.height,
-    this.borderRadius = const BorderRadius.all(Radius.circular(AppSizes.radiusSm)),
+    this.borderRadius = const BorderRadius.all(
+      Radius.circular(AppSizes.radiusSm),
+    ),
   });
 
   @override
   State<_ShimmerBlock> createState() => _ShimmerBlockState();
 }
 
-class _ShimmerBlockState extends State<_ShimmerBlock> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 1300))..repeat();
+class _ShimmerBlockState extends State<_ShimmerBlock>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1300),
+  )..repeat();
 
   @override
   void dispose() {
@@ -87,20 +92,34 @@ class ReviewSummaryShimmer extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _ShimmerBlock(width: 120, height: 14, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
+                    _ShimmerBlock(
+                      width: 120,
+                      height: 14,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusXs),
+                    ),
                     const SizedBox(height: 8),
-                    _ShimmerBlock(width: 90, height: 12, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
+                    _ShimmerBlock(
+                      width: 90,
+                      height: 12,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusXs),
+                    ),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          ...List.generate(5, (i) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: _ShimmerBlock(
-                    width: double.infinity, height: 10, borderRadius: BorderRadius.circular(AppSizes.radiusBadge)),
-              )),
+          ...List.generate(
+            5,
+            (i) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: _ShimmerBlock(
+                width: double.infinity,
+                height: 10,
+                borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -126,24 +145,45 @@ class ReviewCardShimmer extends StatelessWidget {
           Row(
             children: [
               const _ShimmerBlock(
-                  width: 40, height: 40, borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusChip))),
+                width: 40,
+                height: 40,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(AppSizes.radiusChip),
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _ShimmerBlock(width: 100, height: 12, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
+                    _ShimmerBlock(
+                      width: 100,
+                      height: 12,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusXs),
+                    ),
                     const SizedBox(height: 6),
-                    _ShimmerBlock(width: 70, height: 10, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
+                    _ShimmerBlock(
+                      width: 70,
+                      height: 10,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusXs),
+                    ),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 14),
-          _ShimmerBlock(width: double.infinity, height: 10, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
+          _ShimmerBlock(
+            width: double.infinity,
+            height: 10,
+            borderRadius: BorderRadius.circular(AppSizes.radiusXs),
+          ),
           const SizedBox(height: 6),
-          _ShimmerBlock(width: 200, height: 10, borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
+          _ShimmerBlock(
+            width: 200,
+            height: 10,
+            borderRadius: BorderRadius.circular(AppSizes.radiusXs),
+          ),
         ],
       ),
     );

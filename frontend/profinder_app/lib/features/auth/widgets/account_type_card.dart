@@ -55,7 +55,11 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
 
   // Darken/lighten a color by shifting HSL lightness (and optionally
   // desaturating it a bit) while keeping its hue intact.
-  Color _shade(Color base, {double lightnessDelta = 0, double saturationDelta = 0}) {
+  Color _shade(
+    Color base, {
+    double lightnessDelta = 0,
+    double saturationDelta = 0,
+  }) {
     final hsl = HSLColor.fromColor(base);
     final l = (hsl.lightness + lightnessDelta).clamp(0.0, 1.0);
     final s = (hsl.saturation + saturationDelta).clamp(0.0, 1.0);
@@ -65,7 +69,7 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
   @override
   Widget build(BuildContext context) {
     final selected = widget.isSelected;
-    final color    = widget.accentColor;
+    final color = widget.accentColor;
 
     // Two-tone gradient of the SAME hue — both stops kept bright and
     // light (calibrated against the reference cards' actual sampled
@@ -92,7 +96,7 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
         child: GestureDetector(
           onTap: widget.onTap,
           onTapDown: (_) => setState(() => _pressed = true),
-          onTapUp:   (_) => setState(() => _pressed = false),
+          onTapUp: (_) => setState(() => _pressed = false),
           onTapCancel: () => setState(() => _pressed = false),
           child: AnimatedScale(
             // Press feedback only — selection never changes the card's
@@ -112,7 +116,9 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
                 ),
                 borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                 border: Border.all(
-                  color: selected ? Colors.white.withValues(alpha: 0.55) : Colors.white.withValues(alpha: 0.14),
+                  color: selected
+                      ? Colors.white.withValues(alpha: 0.55)
+                      : Colors.white.withValues(alpha: 0.14),
                   width: selected ? 1.6 : 1,
                 ),
                 boxShadow: [
@@ -141,7 +147,9 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
                             gradient: LinearGradient(
                               colors: [
                                 Colors.white.withValues(alpha: 0),
-                                Colors.white.withValues(alpha: selected ? 0.35 : 0.16),
+                                Colors.white.withValues(
+                                  alpha: selected ? 0.35 : 0.16,
+                                ),
                                 Colors.white.withValues(alpha: 0),
                               ],
                             ),
@@ -209,7 +217,9 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
                       right: 12,
                       child: Icon(
                         widget.icon,
-                        color: Colors.white.withValues(alpha: selected ? 0.55 : 0.40),
+                        color: Colors.white.withValues(
+                          alpha: selected ? 0.55 : 0.40,
+                        ),
                         size: 34,
                       ),
                     ),
@@ -228,7 +238,11 @@ class _AccountTypeCardState extends State<AccountTypeCard> {
                             shape: BoxShape.circle,
                             color: AppColors.white,
                           ),
-                          child: Icon(Icons.check_circle, color: color, size: 18),
+                          child: Icon(
+                            Icons.check_circle,
+                            color: color,
+                            size: 18,
+                          ),
                         ),
                       ),
                     ),

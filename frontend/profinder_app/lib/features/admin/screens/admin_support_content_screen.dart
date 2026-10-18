@@ -92,7 +92,11 @@ class _PolicyTabState extends State<_PolicyTab> {
   }
 
   Future<void> _load({bool spinner = true}) async {
-    if (spinner) setState(() { _loading = true; _error = null; });
+    if (spinner)
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
     final result = await widget.source.listPolicies();
     if (!mounted) return;
     setState(() {
@@ -111,7 +115,10 @@ class _PolicyTabState extends State<_PolicyTab> {
   Future<void> _open(int id) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => AdminPolicyEditorScreen(versionId: id, source: widget.source)),
+      MaterialPageRoute(
+        builder: (_) =>
+            AdminPolicyEditorScreen(versionId: id, source: widget.source),
+      ),
     );
     if (mounted) _load(spinner: false);
   }
@@ -123,7 +130,10 @@ class _PolicyTabState extends State<_PolicyTab> {
     if (!mounted) return;
     setState(() => _creating = false);
     if (!result.isOk) {
-      showContentSnack(context, result.error ?? 'Could not create a new version.');
+      showContentSnack(
+        context,
+        result.error ?? 'Could not create a new version.',
+      );
       return;
     }
     await _open(result.data!.id);
@@ -132,9 +142,12 @@ class _PolicyTabState extends State<_PolicyTab> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.adminColor));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.adminColor),
+      );
     }
-    if (_error != null) return AdminContentError(message: _error!, onRetry: _load);
+    if (_error != null)
+      return AdminContentError(message: _error!, onRetry: _load);
 
     return RefreshIndicator(
       onRefresh: () => _load(spinner: false),
@@ -152,7 +165,11 @@ class _PolicyTabState extends State<_PolicyTab> {
                   child: FilledButton.icon(
                     onPressed: _creating ? null : _createVersion,
                     icon: const Icon(Icons.add_rounded),
-                    label: Text(_versions.isEmpty ? 'Create first draft' : 'Start new version'),
+                    label: Text(
+                      _versions.isEmpty
+                          ? 'Create first draft'
+                          : 'Start new version',
+                    ),
                   ),
                 ),
               if (_versions.isEmpty)
@@ -181,8 +198,16 @@ class _PolicyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color, icon) = switch (version.status) {
-      'published' => ('Published', AppColors.greenDeep, Icons.check_circle_rounded),
-      'archived' => ('Archived', AppColors.neutral400, Icons.inventory_2_rounded),
+      'published' => (
+        'Published',
+        AppColors.greenDeep,
+        Icons.check_circle_rounded,
+      ),
+      'archived' => (
+        'Archived',
+        AppColors.neutral400,
+        Icons.inventory_2_rounded,
+      ),
       _ => ('Draft', AppColors.warningAmber, Icons.edit_rounded),
     };
     final effective = version.effectiveDate == null
@@ -204,17 +229,27 @@ class _PolicyCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Version ${version.version}',
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                   AdminTicketPill(label: label, icon: icon, color: color),
                 ],
               ),
               const SizedBox(height: 4),
-              Text(effective, style: const TextStyle(color: AppColors.slate500)),
+              Text(
+                effective,
+                style: const TextStyle(color: AppColors.slate500),
+              ),
               if (version.changeSummary.isNotEmpty) ...[
                 const SizedBox(height: 4),
-                Text(version.changeSummary, maxLines: 2, overflow: TextOverflow.ellipsis),
+                Text(
+                  version.changeSummary,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
               if (version.isDraft && version.placeholdersLeft > 0) ...[
                 const SizedBox(height: 8),
@@ -268,7 +303,11 @@ class _ArticlesTabState extends State<_ArticlesTab> {
 
   Future<void> _load({bool spinner = true}) async {
     final id = ++_reqId;
-    if (spinner) setState(() { _loading = true; _error = null; });
+    if (spinner)
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
     final result = await widget.source.listArticles(
       query: _search.text,
       published: switch (_filter) {
@@ -297,7 +336,10 @@ class _ArticlesTabState extends State<_ArticlesTab> {
   Future<void> _open({int? id}) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => AdminArticleEditorScreen(articleId: id, source: widget.source)),
+      MaterialPageRoute(
+        builder: (_) =>
+            AdminArticleEditorScreen(articleId: id, source: widget.source),
+      ),
     );
     if (mounted) _load(spinner: false);
   }
@@ -337,7 +379,9 @@ class _ArticlesTabState extends State<_ArticlesTab> {
                           ChoiceChip(
                             label: Text(f.$2),
                             selected: _filter == f.$1,
-                            selectedColor: AppColors.adminColor.withValues(alpha: 0.15),
+                            selectedColor: AppColors.adminColor.withValues(
+                              alpha: 0.15,
+                            ),
                             onSelected: (_) {
                               setState(() => _filter = f.$1);
                               _load();
@@ -363,9 +407,12 @@ class _ArticlesTabState extends State<_ArticlesTab> {
 
   Widget _body() {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.adminColor));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.adminColor),
+      );
     }
-    if (_error != null) return AdminContentError(message: _error!, onRetry: _load);
+    if (_error != null)
+      return AdminContentError(message: _error!, onRetry: _load);
     if (_articles.isEmpty) {
       return RefreshIndicator(
         onRefresh: () => _load(spinner: false),
@@ -432,18 +479,28 @@ class _ArticleCard extends StatelessWidget {
                       article.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                      ),
                     ),
                     const SizedBox(height: 4),
-                    Text(meta, style: const TextStyle(color: AppColors.slate500)),
+                    Text(
+                      meta,
+                      style: const TextStyle(color: AppColors.slate500),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
               AdminTicketPill(
                 label: article.isPublished ? 'Published' : 'Draft',
-                icon: article.isPublished ? Icons.check_circle_rounded : Icons.edit_rounded,
-                color: article.isPublished ? AppColors.greenDeep : AppColors.warningAmber,
+                icon: article.isPublished
+                    ? Icons.check_circle_rounded
+                    : Icons.edit_rounded,
+                color: article.isPublished
+                    ? AppColors.greenDeep
+                    : AppColors.warningAmber,
               ),
             ],
           ),

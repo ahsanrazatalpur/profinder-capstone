@@ -36,7 +36,8 @@ Future<void> showThemeModeSheet(BuildContext context) {
     context: context,
     showDragHandle: true,
     isScrollControlled: true,
-    builder: (sheetContext) => const SafeArea(child: SingleChildScrollView(child: _ThemeModeSheet())),
+    builder: (sheetContext) =>
+        const SafeArea(child: SingleChildScrollView(child: _ThemeModeSheet())),
   );
 }
 
@@ -55,7 +56,9 @@ class _ThemeModeSheet extends StatelessWidget {
         leading: Icon(themeModeIcon(mode)),
         title: Text(themeModeLabel(t, mode)),
         subtitle: subtitle == null ? null : Text(subtitle),
-        trailing: selected ? Icon(Icons.check_rounded, color: scheme.primary) : null,
+        trailing: selected
+            ? Icon(Icons.check_rounded, color: scheme.primary)
+            : null,
         selected: selected,
         onTap: () {
           context.read<ThemeProvider>().setThemeMode(mode);
@@ -72,7 +75,10 @@ class _ThemeModeSheet extends StatelessWidget {
           padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 8),
           child: Semantics(
             header: true,
-            child: Text(t.themeModeTitle, style: Theme.of(context).textTheme.titleMedium),
+            child: Text(
+              t.themeModeTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
         ),
         option(ThemeMode.light),

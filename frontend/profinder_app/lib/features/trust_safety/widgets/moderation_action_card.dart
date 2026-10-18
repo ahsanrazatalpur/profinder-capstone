@@ -59,7 +59,9 @@ class ModerationActionCard extends StatelessWidget {
         border: Border.all(color: severity.withValues(alpha: 0.35)),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.12)
+                : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -73,14 +75,25 @@ class ModerationActionCard extends StatelessWidget {
               Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(color: severity.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                decoration: BoxDecoration(
+                  color: severity.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
+                ),
                 child: Icon(_icon, color: severity, size: 19),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  moderationActionTypeLabel(t, action.actionType, fallback: action.actionTypeDisplay),
-                  style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                  moderationActionTypeLabel(
+                    t,
+                    action.actionType,
+                    fallback: action.actionTypeDisplay,
+                  ),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.input,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
                 ),
               ),
             ],
@@ -92,13 +105,20 @@ class ModerationActionCard extends StatelessWidget {
             _infoRow(
               context,
               t.myTsAffectedFeatureLabel,
-              action.isMessagingRestriction ? t.myTsFeatureMessaging : t.myTsFeatureBooking,
+              action.isMessagingRestriction
+                  ? t.myTsFeatureMessaging
+                  : t.myTsFeatureBooking,
             ),
             const SizedBox(height: 8),
           ],
 
           // ── Reason (always shown — it's this user's own action) ──
-          _infoRow(context, t.tsReasonLabel, action.reason.isEmpty ? '—' : action.reason, multiline: true),
+          _infoRow(
+            context,
+            t.tsReasonLabel,
+            action.reason.isEmpty ? '—' : action.reason,
+            multiline: true,
+          ),
 
           // ── Timing (temporary suspension) ──
           if (action.isTemporarySuspension) ...[
@@ -106,13 +126,17 @@ class ModerationActionCard extends StatelessWidget {
             _infoRow(
               context,
               t.myTsStartTimeLabel,
-              action.startsAt != null ? AppHelpers.formatDateTime(action.startsAt!) : '—',
+              action.startsAt != null
+                  ? AppHelpers.formatDateTime(action.startsAt!)
+                  : '—',
             ),
             const SizedBox(height: 8),
             _infoRow(
               context,
               t.myTsExpirationTimeLabel,
-              action.expiresAt != null ? AppHelpers.formatDateTime(action.expiresAt!) : '—',
+              action.expiresAt != null
+                  ? AppHelpers.formatDateTime(action.expiresAt!)
+                  : '—',
             ),
           ],
 
@@ -121,7 +145,11 @@ class ModerationActionCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               t.myTsWarningInfoNote,
-              style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary, height: 1.4),
+              style: TextStyle(
+                fontSize: AppFontSizes.small,
+                color: context.colors.textSecondary,
+                height: 1.4,
+              ),
             ),
           ],
 
@@ -136,12 +164,17 @@ class ModerationActionCard extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: onAppealTap,
                   icon: const Icon(Icons.gavel_rounded, size: 16),
-                  label: Text(t.myTsAppealButtonLabel, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  label: Text(
+                    t.myTsAppealButtonLabel,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: accentColor,
                     side: BorderSide(color: accentColor.withValues(alpha: 0.5)),
                     padding: const EdgeInsets.symmetric(vertical: 11),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radius10),
+                    ),
                   ),
                 ),
               ),
@@ -161,31 +194,54 @@ class ModerationActionCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.hourglass_top_rounded, size: 15, color: AppColors.primary),
+          const Icon(
+            Icons.hourglass_top_rounded,
+            size: 15,
+            color: AppColors.primary,
+          ),
           const SizedBox(width: 6),
           Text(
             t.myTsAppealPendingNote,
-            style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: AppColors.primary),
+            style: const TextStyle(
+              fontSize: AppFontSizes.small,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _infoRow(BuildContext context, String label, String value, {bool multiline = false}) {
+  Widget _infoRow(
+    BuildContext context,
+    String label,
+    String value, {
+    bool multiline = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: context.colors.textSecondary, letterSpacing: 0.3),
+          style: TextStyle(
+            fontSize: AppFontSizes.caption,
+            fontWeight: FontWeight.w600,
+            color: context.colors.textSecondary,
+            letterSpacing: 0.3,
+          ),
         ),
         const SizedBox(height: 2),
         Text(
           value,
           maxLines: multiline ? 4 : 1,
           overflow: multiline ? TextOverflow.ellipsis : TextOverflow.ellipsis,
-          style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w500, color: context.colors.textPrimary, height: 1.3),
+          style: TextStyle(
+            fontSize: AppFontSizes.body,
+            fontWeight: FontWeight.w500,
+            color: context.colors.textPrimary,
+            height: 1.3,
+          ),
         ),
       ],
     );

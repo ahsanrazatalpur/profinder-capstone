@@ -62,18 +62,25 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
     }
   }
 
-  String _categoryLabel(AppLocalizations t, String code) => reportCategoryLabel(t, code);
+  String _categoryLabel(AppLocalizations t, String code) =>
+      reportCategoryLabel(t, code);
 
-  String _statusLabel(AppLocalizations t, String status) => reportStatusLabel(t, status);
+  String _statusLabel(AppLocalizations t, String status) =>
+      reportStatusLabel(t, status);
 
-  String _outcomeLabel(AppLocalizations t, String outcome) => reportOutcomeLabel(t, outcome);
+  String _outcomeLabel(AppLocalizations t, String outcome) =>
+      reportOutcomeLabel(t, outcome);
 
   Color _statusColor(String status) {
     switch (status) {
-      case MyReportStatus.actionTaken: return AppColors.success;
-      case MyReportStatus.dismissed: return context.colors.textSecondary;
-      case MyReportStatus.reviewed: return AppColors.primary;
-      default: return AppColors.warningAmber; // pending
+      case MyReportStatus.actionTaken:
+        return AppColors.success;
+      case MyReportStatus.dismissed:
+        return context.colors.textSecondary;
+      case MyReportStatus.reviewed:
+        return AppColors.primary;
+      default:
+        return AppColors.warningAmber; // pending
     }
   }
 
@@ -98,35 +105,46 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
               ),
             )
           : _hasError
-              ? _buildErrorState(context, t, accent)
-              : _reports.isEmpty
-                  ? _buildEmptyState(context, t, accent)
-                  : RefreshIndicator(
-                      color: accent,
-                      onRefresh: _load,
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _reports.length,
-                        itemBuilder: (_, i) => _reportCard(context, t, _reports[i]),
-                      ),
-                    ),
+          ? _buildErrorState(context, t, accent)
+          : _reports.isEmpty
+          ? _buildEmptyState(context, t, accent)
+          : RefreshIndicator(
+              color: accent,
+              onRefresh: _load,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                itemCount: _reports.length,
+                itemBuilder: (_, i) => _reportCard(context, t, _reports[i]),
+              ),
+            ),
     );
   }
 
-  Widget _buildErrorState(BuildContext context, AppLocalizations t, Color accent) {
+  Widget _buildErrorState(
+    BuildContext context,
+    AppLocalizations t,
+    Color accent,
+  ) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.cloud_off_rounded, size: 40, color: context.colors.textSecondary),
+            Icon(
+              Icons.cloud_off_rounded,
+              size: 40,
+              color: context.colors.textSecondary,
+            ),
             const SizedBox(height: 12),
             Text(
               t.myTsReportsLoadError,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary),
+              style: TextStyle(
+                fontSize: AppFontSizes.body,
+                color: context.colors.textSecondary,
+              ),
             ),
             const SizedBox(height: 16),
             OutlinedButton(onPressed: _load, child: Text(t.tsRetry)),
@@ -136,7 +154,11 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, AppLocalizations t, Color accent) {
+  Widget _buildEmptyState(
+    BuildContext context,
+    AppLocalizations t,
+    Color accent,
+  ) {
     return RefreshIndicator(
       color: accent,
       onRefresh: _load,
@@ -151,17 +173,30 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.shield_outlined, size: 44, color: context.colors.textSecondary.withValues(alpha: 0.5)),
+                    Icon(
+                      Icons.shield_outlined,
+                      size: 44,
+                      color: context.colors.textSecondary.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
                     const SizedBox(height: 14),
                     Text(
                       t.myTsReportsEmptyTitle,
-                      style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                      style: TextStyle(
+                        fontSize: AppFontSizes.input,
+                        fontWeight: FontWeight.w700,
+                        color: context.colors.textPrimary,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       t.myTsReportsEmptyMessage,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+                      style: TextStyle(
+                        fontSize: AppFontSizes.secondary,
+                        color: context.colors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -173,7 +208,11 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
     );
   }
 
-  Widget _reportCard(BuildContext context, AppLocalizations t, MyReport report) {
+  Widget _reportCard(
+    BuildContext context,
+    AppLocalizations t,
+    MyReport report,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final statusColor = _statusColor(report.status);
 
@@ -183,10 +222,16 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
       decoration: BoxDecoration(
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : context.colors.divider,
+        ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.05),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -200,15 +245,29 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
               Expanded(
                 child: Text(
                   _categoryLabel(t, report.category),
-                  style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.input,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                ),
                 child: Text(
                   _statusLabel(t, report.status),
-                  style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: statusColor),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.caption,
+                    fontWeight: FontWeight.w700,
+                    color: statusColor,
+                  ),
                 ),
               ),
             ],
@@ -217,21 +276,33 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
             const SizedBox(height: 6),
             Text(
               '${t.myTsSubmittedLabel}: ${AppHelpers.formatDate(report.createdAt!)}',
-              style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
+              style: TextStyle(
+                fontSize: AppFontSizes.small,
+                color: context.colors.textSecondary,
+              ),
             ),
           ],
           if (report.description.trim().isNotEmpty) ...[
             const SizedBox(height: 10),
             Text(
               t.myTsYourDescriptionLabel,
-              style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: context.colors.textSecondary, letterSpacing: 0.3),
+              style: TextStyle(
+                fontSize: AppFontSizes.caption,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textSecondary,
+                letterSpacing: 0.3,
+              ),
             ),
             const SizedBox(height: 3),
             Text(
               report.description,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textPrimary, height: 1.35),
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: context.colors.textPrimary,
+                height: 1.35,
+              ),
             ),
           ],
           const SizedBox(height: 10),
@@ -245,12 +316,20 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.info_outline_rounded, size: 15, color: context.colors.textSecondary),
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 15,
+                  color: context.colors.textSecondary,
+                ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     _outcomeLabel(t, report.outcome),
-                    style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary, height: 1.3),
+                    style: TextStyle(
+                      fontSize: AppFontSizes.small,
+                      color: context.colors.textSecondary,
+                      height: 1.3,
+                    ),
                   ),
                 ),
               ],

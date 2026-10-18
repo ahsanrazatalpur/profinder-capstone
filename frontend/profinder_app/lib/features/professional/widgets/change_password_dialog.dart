@@ -49,11 +49,17 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       });
       if (!mounted) return;
       Navigator.pop(context);
-      AppHelpers.showSuccess(context, AppLocalizations.of(context).passwordChangeSuccess);
+      AppHelpers.showSuccess(
+        context,
+        AppLocalizations.of(context).passwordChangeSuccess,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      AppHelpers.showError(context, AppLocalizations.of(context).passwordChangeError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).passwordChangeError,
+      );
     }
   }
 
@@ -80,7 +86,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.professionalColor.withValues(alpha: 0.12),
+                      color: AppColors.professionalColor.withValues(
+                        alpha: 0.12,
+                      ),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -123,8 +131,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 controller: _oldPasswordController,
                 obscure: _obscureOld,
                 onToggle: () => setState(() => _obscureOld = !_obscureOld),
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? AppLocalizations.of(context).passwordRequiredError : null,
+                validator: (v) => (v == null || v.isEmpty)
+                    ? AppLocalizations.of(context).passwordRequiredError
+                    : null,
               ),
               const SizedBox(height: 14),
 
@@ -134,8 +143,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 obscure: _obscureNew,
                 onToggle: () => setState(() => _obscureNew = !_obscureNew),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return AppLocalizations.of(context).passwordRequiredError;
-                  if (v.length < 6) return AppLocalizations.of(context).passwordMinLengthError;
+                  if (v == null || v.isEmpty)
+                    return AppLocalizations.of(context).passwordRequiredError;
+                  if (v.length < 6)
+                    return AppLocalizations.of(context).passwordMinLengthError;
                   return null;
                 },
                 helperText: AppLocalizations.of(context).passwordHelperText,
@@ -146,7 +157,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 label: AppLocalizations.of(context).confirmPasswordLabel,
                 controller: _confirmPasswordController,
                 obscure: _obscureConfirm,
-                onToggle: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                onToggle: () =>
+                    setState(() => _obscureConfirm = !_obscureConfirm),
                 validator: (v) {
                   if (v != _newPasswordController.text) {
                     return AppLocalizations.of(context).passwordMismatchError;
@@ -160,13 +172,17 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _isSaving ? null : () => Navigator.pop(context),
+                      onPressed: _isSaving
+                          ? null
+                          : () => Navigator.pop(context),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: context.colors.textSecondary,
                         side: BorderSide(color: context.colors.divider),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
                         ),
                       ),
                       child: Text(
@@ -188,7 +204,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
                         ),
                         elevation: 0,
                       ),
@@ -284,17 +302,11 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              borderSide: BorderSide(
-                color: AppColors.error,
-                width: 1.5,
-              ),
+              borderSide: BorderSide(color: AppColors.error, width: 1.5),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              borderSide: BorderSide(
-                color: AppColors.error,
-                width: 1.5,
-              ),
+              borderSide: BorderSide(color: AppColors.error, width: 1.5),
             ),
             errorStyle: TextStyle(
               fontSize: AppFontSizes.caption,

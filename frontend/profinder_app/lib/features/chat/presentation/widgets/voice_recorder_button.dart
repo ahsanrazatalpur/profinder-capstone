@@ -49,7 +49,9 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
 
   void _toast(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   /// Picks the best encoder the current platform can actually record with.
@@ -89,7 +91,8 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
       }
 
       final picked = await _pickEncoder();
-      final fileName = 'voice_${DateTime.now().millisecondsSinceEpoch}.${picked.ext}';
+      final fileName =
+          'voice_${DateTime.now().millisecondsSinceEpoch}.${picked.ext}';
 
       // On web there is no file system: the path is ignored by the plugin
       // and stop() returns a blob: URL.
@@ -162,7 +165,8 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
     _ticker?.cancel();
     _stopwatch.stop();
     try {
-      await _recorder.cancel(); // stops AND deletes the temp file (all platforms)
+      await _recorder
+          .cancel(); // stops AND deletes the temp file (all platforms)
     } catch (_) {}
     if (mounted) setState(() => _isRecording = false);
     _busy = false;
@@ -181,8 +185,15 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
         onTap: _start,
         child: Container(
           padding: const EdgeInsets.all(11),
-          decoration: BoxDecoration(color: context.colors.primary, shape: BoxShape.circle),
-          child: const Icon(Icons.mic_none_rounded, size: 18, color: Colors.white),
+          decoration: BoxDecoration(
+            color: context.colors.primary,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.mic_none_rounded,
+            size: 18,
+            color: Colors.white,
+          ),
         ),
       );
     }
@@ -194,24 +205,51 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton> {
           onTap: _cancel,
           child: Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: Theme.of(context).brightness == Brightness.dark ? context.colors.divider : AppColors.slate100, shape: BoxShape.circle),
-            child: Icon(Icons.close_rounded, size: 16, color: context.colors.textSecondary),
+            decoration: BoxDecoration(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? context.colors.divider
+                  : AppColors.slate100,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.close_rounded,
+              size: 16,
+              color: context.colors.textSecondary,
+            ),
           ),
         ),
         const SizedBox(width: 8),
         Container(
-          width: 8, height: 8,
-          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.redAccent),
+          width: 8,
+          height: 8,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.redAccent,
+          ),
         ),
         const SizedBox(width: 6),
-        Text(_fmt(_seconds), style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: context.colors.textPrimary)),
+        Text(
+          _fmt(_seconds),
+          style: TextStyle(
+            fontSize: AppFontSizes.secondary,
+            fontWeight: FontWeight.w600,
+            color: context.colors.textPrimary,
+          ),
+        ),
         const SizedBox(width: 8),
         GestureDetector(
           onTap: _stopAndSend,
           child: Container(
             padding: const EdgeInsets.all(11),
-            decoration: BoxDecoration(color: context.colors.primary, shape: BoxShape.circle),
-            child: const Icon(Icons.send_rounded, size: 18, color: Colors.white),
+            decoration: BoxDecoration(
+              color: context.colors.primary,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.send_rounded,
+              size: 18,
+              color: Colors.white,
+            ),
           ),
         ),
       ],

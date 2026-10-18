@@ -12,29 +12,37 @@ class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource _remote;
   final ChatSocketDataSource _socket;
 
-  ChatRepositoryImpl({ChatRemoteDataSource? remote, ChatSocketDataSource? socket})
-      : _remote = remote ?? ChatRemoteDataSource(),
-        _socket = socket ?? ChatSocketDataSource();
+  ChatRepositoryImpl({
+    ChatRemoteDataSource? remote,
+    ChatSocketDataSource? socket,
+  }) : _remote = remote ?? ChatRemoteDataSource(),
+       _socket = socket ?? ChatSocketDataSource();
 
   @override
-  Future<List<ConversationEntity>> getConversations({String? search, bool archived = false}) =>
-      _remote.getConversations(search: search, archived: archived);
+  Future<List<ConversationEntity>> getConversations({
+    String? search,
+    bool archived = false,
+  }) => _remote.getConversations(search: search, archived: archived);
 
   @override
-  Future<ConversationEntity> startConversation(int otherUserId) => _remote.startConversation(otherUserId);
+  Future<ConversationEntity> startConversation(int otherUserId) =>
+      _remote.startConversation(otherUserId);
 
   @override
-  Future<void> setPinned(int conversationId, bool value) => _remote.setPinned(conversationId, value);
+  Future<void> setPinned(int conversationId, bool value) =>
+      _remote.setPinned(conversationId, value);
 
   @override
-  Future<void> setArchived(int conversationId, bool value) => _remote.setArchived(conversationId, value);
+  Future<void> setArchived(int conversationId, bool value) =>
+      _remote.setArchived(conversationId, value);
 
   @override
   Future<void> setMuted(int conversationId, bool value, {DateTime? until}) =>
       _remote.setMuted(conversationId, value, until: until);
 
   @override
-  Future<void> saveDraft(int conversationId, String text) => _remote.saveDraft(conversationId, text);
+  Future<void> saveDraft(int conversationId, String text) =>
+      _remote.saveDraft(conversationId, text);
 
   @override
   Future<({List<MessageEntity> messages, bool hasMore})> getMessages(
@@ -42,13 +50,27 @@ class ChatRepositoryImpl implements ChatRepository {
     String? beforeId,
     int limit = 30,
   }) async {
-    final page = await _remote.getMessages(conversationId, beforeId: beforeId, limit: limit);
+    final page = await _remote.getMessages(
+      conversationId,
+      beforeId: beforeId,
+      limit: limit,
+    );
     return (messages: page.messages, hasMore: page.hasMore);
   }
 
   @override
-  Future<MessageEntity> sendMessage(int conversationId, {String? text, String? replyToId, File? image}) {
-    return _remote.sendMessage(conversationId, text: text, replyToId: replyToId, image: image);
+  Future<MessageEntity> sendMessage(
+    int conversationId, {
+    String? text,
+    String? replyToId,
+    File? image,
+  }) {
+    return _remote.sendMessage(
+      conversationId,
+      text: text,
+      replyToId: replyToId,
+      image: image,
+    );
   }
 
   @override
@@ -58,34 +80,46 @@ class ChatRepositoryImpl implements ChatRepository {
     required int durationSeconds,
     String? replyToId,
   }) {
-    return _remote.sendVoiceMessage(conversationId, audio: audio, durationSeconds: durationSeconds, replyToId: replyToId);
+    return _remote.sendVoiceMessage(
+      conversationId,
+      audio: audio,
+      durationSeconds: durationSeconds,
+      replyToId: replyToId,
+    );
   }
 
   @override
-  Future<MessageEntity> editMessage(String messageId, String newText) => _remote.editMessage(messageId, newText);
+  Future<MessageEntity> editMessage(String messageId, String newText) =>
+      _remote.editMessage(messageId, newText);
 
   @override
   Future<void> deleteMessage(String messageId, {bool forEveryone = true}) =>
       _remote.deleteMessage(messageId, forEveryone: forEveryone);
 
   @override
-  Future<void> markDelivered(int conversationId) => _remote.markDelivered(conversationId);
+  Future<void> markDelivered(int conversationId) =>
+      _remote.markDelivered(conversationId);
 
   @override
   Future<void> markSeen(int conversationId) => _remote.markSeen(conversationId);
 
   @override
-  Future<MessageEntity> toggleReaction(String messageId, String emoji) => _remote.toggleReaction(messageId, emoji);
+  Future<MessageEntity> toggleReaction(String messageId, String emoji) =>
+      _remote.toggleReaction(messageId, emoji);
 
   @override
-  Future<List<MessageEntity>> searchMessages(int conversationId, String query) =>
-      _remote.searchMessages(conversationId, query);
+  Future<List<MessageEntity>> searchMessages(
+    int conversationId,
+    String query,
+  ) => _remote.searchMessages(conversationId, query);
 
   @override
-  Future<List<MediaAttachmentEntity>> getMedia(int conversationId) => _remote.getMedia(conversationId);
+  Future<List<MediaAttachmentEntity>> getMedia(int conversationId) =>
+      _remote.getMedia(conversationId);
 
   @override
-  Future<List<BlockedUserEntity>> getBlockedUsers() => _remote.getBlockedUsers();
+  Future<List<BlockedUserEntity>> getBlockedUsers() =>
+      _remote.getBlockedUsers();
 
   @override
   Future<void> blockUser(int userId) => _remote.blockUser(userId);
@@ -94,8 +128,19 @@ class ChatRepositoryImpl implements ChatRepository {
   Future<void> unblockUser(int userId) => _remote.unblockUser(userId);
 
   @override
-  Future<void> reportUser(int userId, String reason, String details, {String? messageId, String? evidenceUrl}) =>
-      _remote.reportUser(userId, reason, details, messageId: messageId, evidenceUrl: evidenceUrl);
+  Future<void> reportUser(
+    int userId,
+    String reason,
+    String details, {
+    String? messageId,
+    String? evidenceUrl,
+  }) => _remote.reportUser(
+    userId,
+    reason,
+    details,
+    messageId: messageId,
+    evidenceUrl: evidenceUrl,
+  );
 
   @override
   Stream<ChatSocketEvent> connectSocket(int conversationId) {
@@ -112,7 +157,11 @@ class ChatRepositoryImpl implements ChatRepository {
   void sendTyping(bool isTyping) => _socket.sendTyping(isTyping);
 
   @override
-  void sendSocketMessage({required String text, String? replyToId, required String tempId}) {
+  void sendSocketMessage({
+    required String text,
+    String? replyToId,
+    required String tempId,
+  }) {
     _socket.sendMessage(text: text, replyToId: replyToId, tempId: tempId);
   }
 

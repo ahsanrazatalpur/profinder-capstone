@@ -32,10 +32,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey            = GlobalKey<FormState>();
-  late final _emailController    = TextEditingController(text: widget.initialEmail ?? '');
+  final _formKey = GlobalKey<FormState>();
+  late final _emailController = TextEditingController(
+    text: widget.initialEmail ?? '',
+  );
   final _passwordController = TextEditingController();
-  bool _obscurePassword     = true;
+  bool _obscurePassword = true;
 
   // Login button is disabled only while a required field is empty — no
   // strength/format gating here, that's the job of the validators run on
@@ -51,7 +53,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _updateCanSubmit() {
-    final canSubmit = _emailController.text.trim().isNotEmpty &&
+    final canSubmit =
+        _emailController.text.trim().isNotEmpty &&
         _passwordController.text.isNotEmpty;
     if (canSubmit != _canSubmit) {
       setState(() => _canSubmit = canSubmit);
@@ -73,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final auth = context.read<AuthProvider>();
 
     final success = await auth.login(
-      email:    _emailController.text.trim(),
+      email: _emailController.text.trim(),
       password: _passwordController.text,
     );
 
@@ -104,10 +107,17 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushNamedAndRemoveUntil(context, '/pro', (route) => false);
           break;
         case 'admin':
-          Navigator.pushNamedAndRemoveUntil(context, '/admin', (route) => false);
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/admin',
+            (route) => false,
+          );
           break;
         default:
-          AppHelpers.showError(context, AppLocalizations.of(context).unknownRoleError);
+          AppHelpers.showError(
+            context,
+            AppLocalizations.of(context).unknownRoleError,
+          );
       }
     } else {
       // 401 = bad credentials. Always show the same generic copy here —
@@ -149,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
                 horizontal: ResponsiveUtils.screenPadding(width),
-                vertical:   AppSizes.lg,
+                vertical: AppSizes.lg,
               ),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 400),
@@ -163,8 +173,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // ── Logo — from app_logo.dart ─────────────
                       AppLogo(
-                        size:        logoSize,
-                        showName:    true,
+                        size: logoSize,
+                        showName: true,
                         showTagline: true,
                       ),
 
@@ -174,7 +184,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text(
                         AppLocalizations.of(context).loginTitle,
                         style: AppTextStyles.h2.copyWith(
-                          fontSize: ResponsiveUtils.sp(24, scale, min: 22, max: 29),
+                          fontSize: ResponsiveUtils.sp(
+                            24,
+                            scale,
+                            min: 22,
+                            max: 29,
+                          ),
                           color: context.colors.textPrimary,
                         ),
                       ),
@@ -182,7 +197,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text(
                         AppLocalizations.of(context).loginSubtitle,
                         style: AppTextStyles.bodyMedium.copyWith(
-                          fontSize: ResponsiveUtils.sp(14, scale, min: 13, max: 17),
+                          fontSize: ResponsiveUtils.sp(
+                            14,
+                            scale,
+                            min: 13,
+                            max: 17,
+                          ),
                           color: context.colors.textSecondary,
                         ),
                       ),
@@ -191,37 +211,48 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // ── Email Field ───────────────────────────
                       TextFormField(
-                        controller:   _emailController,
+                        controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        autocorrect:  false,
-                        style:        AppTextStyles.inputText.copyWith(color: context.colors.textPrimary),
+                        autocorrect: false,
+                        style: AppTextStyles.inputText.copyWith(
+                          color: context.colors.textPrimary,
+                        ),
                         decoration: InputDecoration(
-                          labelText:  AppStrings.email,
-                          hintText:   AppLocalizations.of(context).emailHint,
+                          labelText: AppStrings.email,
+                          hintText: AppLocalizations.of(context).emailHint,
                           prefixIcon: Icon(
                             Icons.email_outlined,
                             color: isDark
-                                ? context.colors.textSecondary.withValues(alpha: 0.6)
+                                ? context.colors.textSecondary.withValues(
+                                    alpha: 0.6,
+                                  )
                                 : null,
                           ),
                         ),
-                        validator: (v) => AppValidators.email(v, AppLocalizations.of(context)),
+                        validator: (v) => AppValidators.email(
+                          v,
+                          AppLocalizations.of(context),
+                        ),
                       ),
 
                       const SizedBox(height: AppSizes.md),
 
                       // ── Password Field ────────────────────────
                       TextFormField(
-                        controller:  _passwordController,
+                        controller: _passwordController,
                         obscureText: _obscurePassword,
-                        style:       AppTextStyles.inputText.copyWith(color: context.colors.textPrimary),
+                        style: AppTextStyles.inputText.copyWith(
+                          color: context.colors.textPrimary,
+                        ),
                         decoration: InputDecoration(
-                          labelText:  AppStrings.password,
-                          hintText:   AppLocalizations.of(context).passwordHint,
+                          labelText: AppStrings.password,
+                          hintText: AppLocalizations.of(context).passwordHint,
                           prefixIcon: Icon(
                             Icons.lock_outlined,
                             color: isDark
-                                ? context.colors.textSecondary.withValues(alpha: 0.6)
+                                ? context.colors.textSecondary.withValues(
+                                    alpha: 0.6,
+                                  )
                                 : null,
                           ),
                           suffixIcon: IconButton(
@@ -230,11 +261,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ? Icons.visibility_outlined
                                   : Icons.visibility_off_outlined,
                             ),
-                            onPressed: () =>
-                                setState(() => _obscurePassword = !_obscurePassword),
+                            onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
                           ),
                         ),
-                        validator: (v) => AppValidators.loginPassword(v, AppLocalizations.of(context)),
+                        validator: (v) => AppValidators.loginPassword(
+                          v,
+                          AppLocalizations.of(context),
+                        ),
                       ),
 
                       const SizedBox(height: AppSizes.xs),
@@ -265,11 +300,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: (auth.isLoading || !_canSubmit) ? null : _onLoginPressed,
+                          onPressed: (auth.isLoading || !_canSubmit)
+                              ? null
+                              : _onLoginPressed,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
                             ),
                           ),
                           child: auth.isLoading
@@ -299,7 +338,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   : Colors.grey.withValues(alpha: 0.3),
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
                             ),
                           ),
                           child: Text(

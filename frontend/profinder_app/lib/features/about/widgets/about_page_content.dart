@@ -24,7 +24,11 @@ class AboutPageContent extends StatelessWidget {
   /// can see everything that exists, not just what's live.
   final bool showDisabledBadge;
 
-  const AboutPageContent({super.key, required this.sections, this.showDisabledBadge = false});
+  const AboutPageContent({
+    super.key,
+    required this.sections,
+    this.showDisabledBadge = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +51,15 @@ class AboutPageContent extends StatelessWidget {
         .replaceAll(RegExp(r'&nbsp;|&#160;', caseSensitive: false), '')
         .replaceAll(RegExp(r'<[^>]*>'), '')
         .trim();
-    final hasExtra = s.extraData.values.any((v) =>
-        v != null && (v is String ? v.trim().isNotEmpty : v is Iterable || v is Map ? (v as dynamic).isNotEmpty : true));
+    final hasExtra = s.extraData.values.any(
+      (v) =>
+          v != null &&
+          (v is String
+              ? v.trim().isNotEmpty
+              : v is Iterable || v is Map
+              ? (v as dynamic).isNotEmpty
+              : true),
+    );
     return s.title.trim().isNotEmpty ||
         s.subtitle.trim().isNotEmpty ||
         clean(s.description).isNotEmpty ||
@@ -66,16 +77,26 @@ class AboutPageContent extends StatelessWidget {
   // <queries> block for tel/mailto/https), the tap silently did nothing.
   // This checks canLaunchUrl first and surfaces a SnackBar on failure so
   // it's visible instead of a dead tap.
-  Future<void> _safeLaunch(BuildContext context, Uri uri, {LaunchMode mode = LaunchMode.platformDefault}) async {
+  Future<void> _safeLaunch(
+    BuildContext context,
+    Uri uri, {
+    LaunchMode mode = LaunchMode.platformDefault,
+  }) async {
     try {
       final can = await canLaunchUrl(uri);
       if (!can) {
         if (context.mounted) {
           ScaffoldMessenger.maybeOf(context)?.showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context).aboutLinkNoAppFound(uri.toString())),
+              content: Text(
+                AppLocalizations.of(
+                  context,
+                ).aboutLinkNoAppFound(uri.toString()),
+              ),
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           );
         }
@@ -85,9 +106,15 @@ class AboutPageContent extends StatelessWidget {
       if (!ok && context.mounted) {
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context).aboutLinkCouldNotOpen(uri.toString())),
+            content: Text(
+              AppLocalizations.of(
+                context,
+              ).aboutLinkCouldNotOpen(uri.toString()),
+            ),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -95,9 +122,13 @@ class AboutPageContent extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context).aboutLinkError(e.toString())),
+            content: Text(
+              AppLocalizations.of(context).aboutLinkError(e.toString()),
+            ),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -182,10 +213,8 @@ class AboutPageContent extends StatelessWidget {
 
   // ── Section layouts ─────────────────────────────────────────────────────
 
-  Widget _sectionPadding(Widget child) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 4),
-        child: child,
-      );
+  Widget _sectionPadding(Widget child) =>
+      Padding(padding: const EdgeInsets.fromLTRB(20, 24, 20, 4), child: child);
 
   Widget _heroBanner(BuildContext context, AboutSection s) {
     return Container(
@@ -319,10 +348,7 @@ class AboutPageContent extends StatelessWidget {
             const SizedBox(height: 12),
             RichHtmlText(html: s.description),
           ],
-          if (s.hasCta) ...[
-            const SizedBox(height: 8),
-            _ctaButton(context, s),
-          ],
+          if (s.hasCta) ...[const SizedBox(height: 8), _ctaButton(context, s)],
         ],
       ),
     );
@@ -510,7 +536,10 @@ class AboutPageContent extends StatelessWidget {
               final suffix = item.extraData['suffix']?.toString() ?? '';
               return Container(
                 width: (MediaQuery.of(context).size.width - 20 * 2 - 12) / 2,
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 18,
+                  horizontal: 12,
+                ),
                 decoration: BoxDecoration(
                   color: context.colors.surface,
                   borderRadius: BorderRadius.circular(14),
@@ -569,7 +598,8 @@ class AboutPageContent extends StatelessWidget {
               separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (context, i) {
                 final m = s.items[i];
-                final designation = m.extraData['designation']?.toString() ?? '';
+                final designation =
+                    m.extraData['designation']?.toString() ?? '';
                 return Container(
                   width: 130,
                   padding: const EdgeInsets.all(12),
@@ -591,12 +621,17 @@ class AboutPageContent extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 32,
-                        backgroundColor: context.colors.primary.withValues(alpha: 0.1),
+                        backgroundColor: context.colors.primary.withValues(
+                          alpha: 0.1,
+                        ),
                         backgroundImage: m.imageUrl.isNotEmpty
                             ? CachedNetworkImageProvider(m.imageUrl)
                             : null,
                         child: m.imageUrl.isEmpty
-                            ? Icon(Icons.person_rounded, color: context.colors.primary)
+                            ? Icon(
+                                Icons.person_rounded,
+                                color: context.colors.primary,
+                              )
                             : null,
                       ),
                       const SizedBox(height: 8),
@@ -644,7 +679,11 @@ class AboutPageContent extends StatelessWidget {
             children: s.items.map((item) {
               return GestureDetector(
                 onTap: item.linkUrl.isNotEmpty
-                    ? () => _safeLaunch(context, Uri.parse(item.linkUrl), mode: LaunchMode.externalApplication)
+                    ? () => _safeLaunch(
+                        context,
+                        Uri.parse(item.linkUrl),
+                        mode: LaunchMode.externalApplication,
+                      )
                     : null,
                 child: Container(
                   width: 100,
@@ -696,31 +735,61 @@ class AboutPageContent extends StatelessWidget {
     final rows = <Widget>[];
     void addRow(IconData icon, String? value, {VoidCallback? onTap}) {
       if (value == null || value.trim().isEmpty) return;
-      rows.add(_infoRow(context, icon, value, onTap: onTap, showChevron: onTap != null));
+      rows.add(
+        _infoRow(
+          context,
+          icon,
+          value,
+          onTap: onTap,
+          showChevron: onTap != null,
+        ),
+      );
     }
+
     final phone = e['phone']?.toString();
     final email = e['email']?.toString();
     final address = e['address']?.toString();
 
     // contact rows were plain text before — now tappable, each
     // opening the right app (dialer / mail / maps) instead of doing nothing.
-    addRow(Icons.phone_rounded, phone,
-        onTap: phone != null && phone.trim().isNotEmpty
-            ? () => _safeLaunch(context, Uri(scheme: 'tel', path: phone.trim().replaceAll(RegExp(r'\s+'), '')))
-            : null);
-    addRow(Icons.email_rounded, email,
-        onTap: email != null && email.trim().isNotEmpty
-            ? () => _safeLaunch(context, Uri(scheme: 'mailto', path: email.trim()))
-            : null);
-    addRow(Icons.location_on_rounded, address,
-        onTap: address != null && address.trim().isNotEmpty
-            ? () => _safeLaunch(
-                context,
-                Uri.parse('https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address.trim())}'),
-                mode: LaunchMode.externalApplication,
-              )
-            : null);
-    addRow(Icons.access_time_rounded, e['hours']?.toString()); // not tappable — nothing to open
+    addRow(
+      Icons.phone_rounded,
+      phone,
+      onTap: phone != null && phone.trim().isNotEmpty
+          ? () => _safeLaunch(
+              context,
+              Uri(
+                scheme: 'tel',
+                path: phone.trim().replaceAll(RegExp(r'\s+'), ''),
+              ),
+            )
+          : null,
+    );
+    addRow(
+      Icons.email_rounded,
+      email,
+      onTap: email != null && email.trim().isNotEmpty
+          ? () =>
+                _safeLaunch(context, Uri(scheme: 'mailto', path: email.trim()))
+          : null,
+    );
+    addRow(
+      Icons.location_on_rounded,
+      address,
+      onTap: address != null && address.trim().isNotEmpty
+          ? () => _safeLaunch(
+              context,
+              Uri.parse(
+                'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address.trim())}',
+              ),
+              mode: LaunchMode.externalApplication,
+            )
+          : null,
+    );
+    addRow(
+      Icons.access_time_rounded,
+      e['hours']?.toString(),
+    ); // not tappable — nothing to open
 
     if (rows.isEmpty && s.description.isEmpty) return const SizedBox.shrink();
     return _sectionPadding(
@@ -746,7 +815,9 @@ class AboutPageContent extends StatelessWidget {
     };
     final links = <MapEntry<String, String>>[];
     s.extraData.forEach((key, value) {
-      if (platforms.containsKey(key) && value != null && value.toString().trim().isNotEmpty) {
+      if (platforms.containsKey(key) &&
+          value != null &&
+          value.toString().trim().isNotEmpty) {
         links.add(MapEntry(key, value.toString()));
       }
     });
@@ -763,7 +834,11 @@ class AboutPageContent extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: InkWell(
-                  onTap: () => _safeLaunch(context, Uri.parse(entry.value), mode: LaunchMode.externalApplication),
+                  onTap: () => _safeLaunch(
+                    context,
+                    Uri.parse(entry.value),
+                    mode: LaunchMode.externalApplication,
+                  ),
                   borderRadius: BorderRadius.circular(24),
                   splashColor: context.colors.primary.withValues(alpha: 0.1),
                   child: Container(
@@ -795,22 +870,41 @@ class AboutPageContent extends StatelessWidget {
     final e = s.extraData;
     final playStore = e['play_store_url']?.toString() ?? '';
     final appStore = e['app_store_url']?.toString() ?? '';
-    if (playStore.isEmpty && appStore.isEmpty && s.description.isEmpty) return const SizedBox.shrink();
+    if (playStore.isEmpty && appStore.isEmpty && s.description.isEmpty)
+      return const SizedBox.shrink();
 
     return _sectionPadding(
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _sectionHeading(context, s),
-          if (s.description.isNotEmpty) ...[const SizedBox(height: 8), RichHtmlText(html: s.description)],
+          if (s.description.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            RichHtmlText(html: s.description),
+          ],
           const SizedBox(height: 12),
           Row(
             children: [
               if (playStore.isNotEmpty)
-                Expanded(child: _storeButton(context, AppLocalizations.of(context).aboutGooglePlayLabel, Icons.shop_rounded, playStore)),
-              if (playStore.isNotEmpty && appStore.isNotEmpty) const SizedBox(width: 10),
+                Expanded(
+                  child: _storeButton(
+                    context,
+                    AppLocalizations.of(context).aboutGooglePlayLabel,
+                    Icons.shop_rounded,
+                    playStore,
+                  ),
+                ),
+              if (playStore.isNotEmpty && appStore.isNotEmpty)
+                const SizedBox(width: 10),
               if (appStore.isNotEmpty)
-                Expanded(child: _storeButton(context, AppLocalizations.of(context).aboutAppStoreLabel, Icons.apple_rounded, appStore)),
+                Expanded(
+                  child: _storeButton(
+                    context,
+                    AppLocalizations.of(context).aboutAppStoreLabel,
+                    Icons.apple_rounded,
+                    appStore,
+                  ),
+                ),
             ],
           ),
         ],
@@ -818,9 +912,18 @@ class AboutPageContent extends StatelessWidget {
     );
   }
 
-  Widget _storeButton(BuildContext context, String label, IconData icon, String url) {
+  Widget _storeButton(
+    BuildContext context,
+    String label,
+    IconData icon,
+    String url,
+  ) {
     return OutlinedButton.icon(
-      onPressed: () => _safeLaunch(context, Uri.parse(url), mode: LaunchMode.externalApplication),
+      onPressed: () => _safeLaunch(
+        context,
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      ),
       icon: Icon(icon, size: 18),
       label: Text(
         label,
@@ -837,7 +940,12 @@ class AboutPageContent extends StatelessWidget {
   Widget _legalLinksSection(BuildContext context, AboutSection s) {
     final links = (s.extraData['links'] as List? ?? [])
         .whereType<Map>()
-        .map((m) => MapEntry(m['label']?.toString() ?? '', m['url']?.toString() ?? ''))
+        .map(
+          (m) => MapEntry(
+            m['label']?.toString() ?? '',
+            m['url']?.toString() ?? '',
+          ),
+        )
         .where((e) => e.key.isNotEmpty && e.value.isNotEmpty)
         .toList();
     if (links.isEmpty) return const SizedBox.shrink();
@@ -848,13 +956,19 @@ class AboutPageContent extends StatelessWidget {
         children: [
           _sectionHeading(context, s),
           const SizedBox(height: 8),
-          ...links.map((e) => _infoRow(
+          ...links.map(
+            (e) => _infoRow(
+              context,
+              Icons.description_outlined,
+              e.key,
+              onTap: () => _safeLaunch(
                 context,
-                Icons.description_outlined,
-                e.key,
-                onTap: () => _safeLaunch(context, Uri.parse(e.value), mode: LaunchMode.externalApplication),
-                showChevron: true,
-              )),
+                Uri.parse(e.value),
+                mode: LaunchMode.externalApplication,
+              ),
+              showChevron: true,
+            ),
+          ),
         ],
       ),
     );
@@ -863,7 +977,11 @@ class AboutPageContent extends StatelessWidget {
   // ── Shared small pieces ─────────────────────────────────────────────────
 
   Widget _sectionHeading(BuildContext context, AboutSection s) {
-    if (s.title.isEmpty && s.subtitle.isEmpty && s.imageUrl.isEmpty && s.description.isEmpty && s.icon.isEmpty) {
+    if (s.title.isEmpty &&
+        s.subtitle.isEmpty &&
+        s.imageUrl.isEmpty &&
+        s.description.isEmpty &&
+        s.icon.isEmpty) {
       return const SizedBox.shrink();
     }
     return Column(
@@ -942,7 +1060,13 @@ class AboutPageContent extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(BuildContext context, IconData icon, String text, {VoidCallback? onTap, bool showChevron = false}) {
+  Widget _infoRow(
+    BuildContext context,
+    IconData icon,
+    String text, {
+    VoidCallback? onTap,
+    bool showChevron = false,
+  }) {
     // tappable rows (phone/email/address/legal links) looked like
     // plain black text, so nobody could tell they were clickable. Now
     // anything with an onTap gets the accent color + underline like a link.
@@ -962,10 +1086,16 @@ class AboutPageContent extends StatelessWidget {
                 text,
                 style: TextStyle(
                   fontSize: 13,
-                  color: isLink ? context.colors.primary : context.colors.textPrimary,
+                  color: isLink
+                      ? context.colors.primary
+                      : context.colors.textPrimary,
                   fontWeight: isLink ? FontWeight.w600 : FontWeight.normal,
-                  decoration: isLink ? TextDecoration.underline : TextDecoration.none,
-                  decorationColor: context.colors.primary.withValues(alpha: 0.4),
+                  decoration: isLink
+                      ? TextDecoration.underline
+                      : TextDecoration.none,
+                  decorationColor: context.colors.primary.withValues(
+                    alpha: 0.4,
+                  ),
                 ),
               ),
             ),
@@ -981,12 +1111,20 @@ class AboutPageContent extends StatelessWidget {
     );
   }
 
-  Widget _ctaButton(BuildContext context, AboutSection s, {bool onWhite = false}) {
+  Widget _ctaButton(
+    BuildContext context,
+    AboutSection s, {
+    bool onWhite = false,
+  }) {
     void onPressed() {
       final url = s.ctaUrl.trim();
       if (url.isEmpty) return;
       if (url.startsWith('http')) {
-        _safeLaunch(context, Uri.parse(url), mode: LaunchMode.externalApplication);
+        _safeLaunch(
+          context,
+          Uri.parse(url),
+          mode: LaunchMode.externalApplication,
+        );
       } else {
         Navigator.pushNamed(context, url);
       }
@@ -1008,9 +1146,13 @@ class AboutPageContent extends StatelessWidget {
       return OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: onWhite ? Colors.white : context.colors.primary),
+          side: BorderSide(
+            color: onWhite ? Colors.white : context.colors.primary,
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
         child: Text(
           s.ctaText,

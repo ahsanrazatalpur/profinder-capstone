@@ -13,36 +13,54 @@ import '../../../../services/api_service.dart';
 import '../audio_format.dart';
 import '../models/conversation_model.dart';
 import '../models/message_model.dart';
-import '../../domain/repositories/chat_repository.dart' show MediaAttachmentEntity, BlockedUserEntity;
+import '../../domain/repositories/chat_repository.dart'
+    show MediaAttachmentEntity, BlockedUserEntity;
 
 class ChatRemoteDataSource {
   final ApiService _api;
   ChatRemoteDataSource({ApiService? api}) : _api = api ?? ApiService();
 
-  Future<List<ConversationModel>> getConversations({String? search, bool archived = false}) async {
+  Future<List<ConversationModel>> getConversations({
+    String? search,
+    bool archived = false,
+  }) async {
     final endpoint = search != null && search.isNotEmpty
         ? AppConstants.conversationSearch(search)
-        : (archived ? AppConstants.archivedConversations() : AppConstants.conversations);
+        : (archived
+              ? AppConstants.archivedConversations()
+              : AppConstants.conversations);
     final res = await _api.get(endpoint);
     final list = res.data is List ? res.data as List : <dynamic>[];
-    return list.map((e) => ConversationModel.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => ConversationModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<ConversationModel> startConversation(int otherUserId) async {
-    final res = await _api.post(AppConstants.conversations, {'other_user_id': otherUserId});
+    final res = await _api.post(AppConstants.conversations, {
+      'other_user_id': otherUserId,
+    });
     return ConversationModel.fromJson(res.data as Map<String, dynamic>);
   }
 
   // Updates conversation state (pin, archive, mute, draft) via PATCH endpoint.
   Future<void> setPinned(int conversationId, bool value) async {
-    await _api.patch(AppConstants.conversationState(conversationId), {'is_pinned': value});
+    await _api.patch(AppConstants.conversationState(conversationId), {
+      'is_pinned': value,
+    });
   }
 
   Future<void> setArchived(int conversationId, bool value) async {
-    await _api.patch(AppConstants.conversationState(conversationId), {'is_archived': value});
+    await _api.patch(AppConstants.conversationState(conversationId), {
+      'is_archived': value,
+    });
   }
 
-  Future<void> setMuted(int conversationId, bool value, {DateTime? until}) async {
+  Future<void> setMuted(
+    int conversationId,
+    bool value, {
+    DateTime? until,
+  }) async {
     await _api.patch(AppConstants.conversationState(conversationId), {
       'is_muted': value,
       if (until != null) 'muted_until': until.toUtc().toIso8601String(),
@@ -50,7 +68,9 @@ class ChatRemoteDataSource {
   }
 
   Future<void> saveDraft(int conversationId, String text) async {
-    await _api.patch(AppConstants.conversationState(conversationId), {'draft_text': text});
+    await _api.patch(AppConstants.conversationState(conversationId), {
+      'draft_text': text,
+    });
   }
 
   /// Returns (messages, hasMore) for one page, oldest-to-newest.
@@ -60,7 +80,11 @@ class ChatRemoteDataSource {
     int limit = 30,
   }) async {
     final res = await _api.get(
-      AppConstants.conversationMessagesPage(conversationId, beforeId: beforeId, limit: limit),
+      AppConstants.conversationMessagesPage(
+        conversationId,
+        beforeId: beforeId,
+        limit: limit,
+      ),
     );
     final data = res.data as Map<String, dynamic>;
     final results = (data['results'] as List? ?? [])
@@ -115,17 +139,27 @@ class ChatRemoteDataSource {
         contentType: DioMediaType(fmt.type, fmt.subtype),
       ),
     });
-    final res = await _api.postForm(AppConstants.conversationMessages(conversationId), formData);
+    final res = await _api.postForm(
+      AppConstants.conversationMessages(conversationId),
+      formData,
+    );
     return MessageModel.fromJson(res.data as Map<String, dynamic>);
   }
 
   Future<MessageModel> editMessage(String messageId, String newText) async {
-    final res = await _api.patch(AppConstants.messageDetail(messageId), {'text': newText});
+    final res = await _api.patch(AppConstants.messageDetail(messageId), {
+      'text': newText,
+    });
     return MessageModel.fromJson(res.data as Map<String, dynamic>);
   }
 
-  Future<void> deleteMessage(String messageId, {bool forEveryone = true}) async {
-    final endpoint = forEveryone ? AppConstants.messageDetail(messageId) : AppConstants.deleteForMe(messageId);
+  Future<void> deleteMessage(
+    String messageId, {
+    bool forEveryone = true,
+  }) async {
+    final endpoint = forEveryone
+        ? AppConstants.messageDetail(messageId)
+        : AppConstants.deleteForMe(messageId);
     await _api.delete(endpoint);
   }
 
@@ -139,16 +173,25 @@ class ChatRemoteDataSource {
 
   // Toggles an emoji reaction on a message.
   Future<MessageModel> toggleReaction(String messageId, String emoji) async {
-    final res = await _api.post(AppConstants.messageReactions(messageId), {'emoji': emoji});
+    final res = await _api.post(AppConstants.messageReactions(messageId), {
+      'emoji': emoji,
+    });
     final data = res.data as Map<String, dynamic>;
     return MessageModel.fromJson(data['message'] as Map<String, dynamic>);
   }
 
   // In-conversation text search.
-  Future<List<MessageModel>> searchMessages(int conversationId, String query) async {
-    final res = await _api.get(AppConstants.messageSearch(conversationId, query));
+  Future<List<MessageModel>> searchMessages(
+    int conversationId,
+    String query,
+  ) async {
+    final res = await _api.get(
+      AppConstants.messageSearch(conversationId, query),
+    );
     final data = res.data as Map<String, dynamic>;
-    return (data['results'] as List? ?? []).map((e) => MessageModel.fromJson(e as Map<String, dynamic>)).toList();
+    return (data['results'] as List? ?? [])
+        .map((e) => MessageModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   // Shared media gallery for a conversation.
@@ -175,7 +218,9 @@ class ChatRemoteDataSource {
       final m = e as Map<String, dynamic>;
       return BlockedUserEntity(
         id: m['id'] is int ? m['id'] as int : int.parse(m['id'].toString()),
-        blockedUserId: m['blocked'] is int ? m['blocked'] as int : int.parse(m['blocked'].toString()),
+        blockedUserId: m['blocked'] is int
+            ? m['blocked'] as int
+            : int.parse(m['blocked'].toString()),
         blockedUserName: m['blocked_name']?.toString() ?? '',
         createdAt: DateTime.parse(m['created_at'].toString()).toLocal(),
       );
@@ -190,7 +235,13 @@ class ChatRemoteDataSource {
     await _api.delete(AppConstants.unblockUser(userId));
   }
 
-  Future<void> reportUser(int userId, String reason, String details, {String? messageId, String? evidenceUrl}) async {
+  Future<void> reportUser(
+    int userId,
+    String reason,
+    String details, {
+    String? messageId,
+    String? evidenceUrl,
+  }) async {
     // Payload formatted for backend CreateUserReportSerializer endpoint.
     final body = <String, dynamic>{
       'reported_user': userId,

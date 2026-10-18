@@ -83,7 +83,10 @@ class _GuestContactScreenState extends State<GuestContactScreen> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     return Scaffold(
-      appBar: UniversalAppBar(title: t.guestContactTitle, icon: Icons.support_agent_rounded),
+      appBar: UniversalAppBar(
+        title: t.guestContactTitle,
+        icon: Icons.support_agent_rounded,
+      ),
       body: SafeArea(child: _sent ? _success(context, t) : _form(context, t)),
     );
   }
@@ -100,7 +103,10 @@ class _GuestContactScreenState extends State<GuestContactScreen> {
             padding: const EdgeInsetsDirectional.all(AppSizes.md),
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             children: [
-              Text(t.guestContactIntro, style: styles.bodyMedium.copyWith(letterSpacing: 0)),
+              Text(
+                t.guestContactIntro,
+                style: styles.bodyMedium.copyWith(letterSpacing: 0),
+              ),
               const SizedBox(height: AppSizes.md),
               TextFormField(
                 controller: _email,
@@ -116,7 +122,9 @@ class _GuestContactScreenState extends State<GuestContactScreen> {
                 validator: (v) {
                   final value = (v ?? '').trim();
                   if (value.isEmpty) return t.ticketFieldRequired;
-                  return _emailPattern.hasMatch(value) ? null : t.guestEmailInvalid;
+                  return _emailPattern.hasMatch(value)
+                      ? null
+                      : t.guestEmailInvalid;
                 },
               ),
               const SizedBox(height: AppSizes.md),
@@ -161,7 +169,11 @@ class _GuestContactScreenState extends State<GuestContactScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.check_circle_rounded, size: AppSizes.iconXl, color: colors.accent),
+              Icon(
+                Icons.check_circle_rounded,
+                size: AppSizes.iconXl,
+                color: colors.accent,
+              ),
               const SizedBox(height: AppSizes.md),
               Text(
                 t.guestContactSentTitle,

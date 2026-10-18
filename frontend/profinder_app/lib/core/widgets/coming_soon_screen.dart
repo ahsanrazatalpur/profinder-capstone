@@ -17,19 +17,16 @@ class ComingSoonScreen extends StatelessWidget {
 
   const ComingSoonScreen({
     super.key,
-    this.title   = 'Coming Soon',
+    this.title = 'Coming Soon',
     this.message = "We're working on this feature. Check back soon!",
-    this.icon    = Icons.rocket_launch_outlined,
+    this.icon = Icons.rocket_launch_outlined,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightScaffold,
-      appBar: UniversalAppBar(
-        title: title,
-        icon: icon,
-      ),
+      appBar: UniversalAppBar(title: title, icon: icon),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -37,16 +34,33 @@ class ComingSoonScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 88, height: 88,
-                decoration: BoxDecoration(color: context.colors.primaryLight, shape: BoxShape.circle),
+                width: 88,
+                height: 88,
+                decoration: BoxDecoration(
+                  color: context.colors.primaryLight,
+                  shape: BoxShape.circle,
+                ),
                 child: Icon(icon, color: context.colors.primary, size: 40),
               ),
               const SizedBox(height: 20),
-              Text(title, style: const TextStyle(fontSize: AppFontSizes.title2, fontWeight: FontWeight.bold, color: AppColors.gray900)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: AppFontSizes.title2,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.gray900,
+                ),
+              ),
               const SizedBox(height: 8),
-              Text(message,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary, height: 1.4)),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: AppFontSizes.body,
+                  color: context.colors.textSecondary,
+                  height: 1.4,
+                ),
+              ),
             ],
           ),
         ),

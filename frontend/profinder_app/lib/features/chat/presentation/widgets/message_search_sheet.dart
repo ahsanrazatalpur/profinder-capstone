@@ -42,8 +42,15 @@ class _MessageSearchSheetState extends State<MessageSearchSheet> {
     _debounce = Timer(const Duration(milliseconds: 400), () async {
       setState(() => _isSearching = true);
       try {
-        final results = await _repo.searchMessages(widget.conversationId, query.trim());
-        if (mounted) setState(() { _results = results; _isSearching = false; });
+        final results = await _repo.searchMessages(
+          widget.conversationId,
+          query.trim(),
+        );
+        if (mounted)
+          setState(() {
+            _results = results;
+            _isSearching = false;
+          });
       } catch (_) {
         if (mounted) setState(() => _isSearching = false);
       }
@@ -59,12 +66,21 @@ class _MessageSearchSheetState extends State<MessageSearchSheet> {
       builder: (context, scrollController) => Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppSizes.radiusSheet),
+          ),
         ),
         child: Column(
           children: [
             const SizedBox(height: 10),
-            Container(width: 36, height: 4, decoration: BoxDecoration(color: context.colors.divider, borderRadius: BorderRadius.circular(AppSizes.radiusTiny))),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: context.colors.divider,
+                borderRadius: BorderRadius.circular(AppSizes.radiusTiny),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(14),
               child: TextField(
@@ -75,20 +91,34 @@ class _MessageSearchSheetState extends State<MessageSearchSheet> {
                   hintText: AppLocalizations.of(context).chatSearchMessagesHint,
                   prefixIcon: const Icon(Icons.search_rounded),
                   filled: true,
-                  fillColor: Theme.of(context).brightness == Brightness.dark ? context.colors.background : AppColors.slate100,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd), borderSide: BorderSide.none),
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? context.colors.background
+                      : AppColors.slate100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
             ),
-            if (_isSearching) const Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator(strokeWidth: 2)),
+            if (_isSearching)
+              const Padding(
+                padding: EdgeInsets.all(12),
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
             Expanded(
               child: _results.isEmpty
                   ? Center(
                       child: Text(
                         _controller.text.isEmpty
-                            ? AppLocalizations.of(context).chatTypeToSearchConversation
+                            ? AppLocalizations.of(
+                                context,
+                              ).chatTypeToSearchConversation
                             : AppLocalizations.of(context).chatNoMessagesFound,
-                        style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+                        style: TextStyle(
+                          fontSize: AppFontSizes.secondary,
+                          color: context.colors.textSecondary,
+                        ),
                       ),
                     )
                   : ListView.builder(
@@ -97,9 +127,27 @@ class _MessageSearchSheetState extends State<MessageSearchSheet> {
                       itemBuilder: (_, i) {
                         final m = _results[i];
                         return ListTile(
-                          title: Text(m.senderName, style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700, color: context.colors.primary)),
-                          subtitle: Text(m.text, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: AppFontSizes.body)),
-                          trailing: Text(AppHelpers.formatTime(m.createdAt), style: TextStyle(fontSize: AppFontSizes.caption, color: context.colors.textSecondary)),
+                          title: Text(
+                            m.senderName,
+                            style: TextStyle(
+                              fontSize: AppFontSizes.secondary,
+                              fontWeight: FontWeight.w700,
+                              color: context.colors.primary,
+                            ),
+                          ),
+                          subtitle: Text(
+                            m.text,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: AppFontSizes.body),
+                          ),
+                          trailing: Text(
+                            AppHelpers.formatTime(m.createdAt),
+                            style: TextStyle(
+                              fontSize: AppFontSizes.caption,
+                              color: context.colors.textSecondary,
+                            ),
+                          ),
                         );
                       },
                     ),

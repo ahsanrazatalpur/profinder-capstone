@@ -40,14 +40,21 @@ class AdminSupportTicketDetailScreen extends StatefulWidget {
   /// Overridable for tests; defaults to the real API.
   final SupportAdminDataSource? source;
 
-  const AdminSupportTicketDetailScreen({super.key, required this.ticketId, this.source});
+  const AdminSupportTicketDetailScreen({
+    super.key,
+    required this.ticketId,
+    this.source,
+  });
 
   @override
-  State<AdminSupportTicketDetailScreen> createState() => _AdminSupportTicketDetailScreenState();
+  State<AdminSupportTicketDetailScreen> createState() =>
+      _AdminSupportTicketDetailScreenState();
 }
 
-class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetailScreen> {
-  late final SupportAdminDataSource _source = widget.source ?? SupportAdminService();
+class _AdminSupportTicketDetailScreenState
+    extends State<AdminSupportTicketDetailScreen> {
+  late final SupportAdminDataSource _source =
+      widget.source ?? SupportAdminService();
   final _text = TextEditingController();
   final _scroll = ScrollController();
 
@@ -112,10 +119,19 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
     }
   }
 
-  Future<void> _update({String? status, String? priority, String? assignee}) async {
+  Future<void> _update({
+    String? status,
+    String? priority,
+    String? assignee,
+  }) async {
     if (_updating) return;
     setState(() => _updating = true);
-    final result = await _source.update(widget.ticketId, status: status, priority: priority, assignee: assignee);
+    final result = await _source.update(
+      widget.ticketId,
+      status: status,
+      priority: priority,
+      assignee: assignee,
+    );
     if (!mounted) return;
     setState(() {
       _updating = false;
@@ -130,7 +146,11 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
     if (_sending || body.isEmpty || detail == null) return;
     final internal = _internal || detail.isClosed;
     setState(() => _sending = true);
-    final result = await _source.reply(widget.ticketId, body, internal: internal);
+    final result = await _source.reply(
+      widget.ticketId,
+      body,
+      internal: internal,
+    );
     if (!mounted) return;
     if (result.isOk) {
       _text.clear();
@@ -162,7 +182,9 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
 
   Widget _body() {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.adminColor));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.adminColor),
+      );
     }
     final detail = _detail;
     if (detail == null) {
@@ -173,7 +195,11 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(notFound ? 'This ticket no longer exists.' : 'Failed to load the ticket.'),
+              Text(
+                notFound
+                    ? 'This ticket no longer exists.'
+                    : 'Failed to load the ticket.',
+              ),
               if (!notFound) ...[
                 const SizedBox(height: 12),
                 OutlinedButton(onPressed: _load, child: const Text('Retry')),
@@ -217,35 +243,49 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
   // A Material (not a decorated Container): the Activity section holds an
   // ExpansionTile (ListTile), which must paint on a real Material surface.
   Widget _card({required Widget child}) => Material(
-        color: Colors.white,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: AppColors.neutral200),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: SizedBox(width: double.infinity, child: child),
-        ),
-      );
+    color: Colors.white,
+    clipBehavior: Clip.antiAlias,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(14),
+      side: const BorderSide(color: AppColors.neutral200),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(14),
+      child: SizedBox(width: double.infinity, child: child),
+    ),
+  );
 
   Widget _header(AdminTicketDetail d) {
     final s = d.summary;
     final who = s.isGuest
         ? 'Guest · ${s.contactEmail}'
         : '${s.requesterLabel}${s.requester!.email.isNotEmpty && s.requester!.name.isNotEmpty ? ' · ${s.requester!.email}' : ''}'
-            '${s.role.isNotEmpty ? ' (${s.role})' : ''}';
-    final client = [d.platform, d.appVersion.isEmpty ? '' : 'v${d.appVersion}', d.appLanguage]
-        .where((x) => x.isNotEmpty)
-        .join(' · ');
+              '${s.role.isNotEmpty ? ' (${s.role})' : ''}';
+    final client = [
+      d.platform,
+      d.appVersion.isEmpty ? '' : 'v${d.appVersion}',
+      d.appLanguage,
+    ].where((x) => x.isNotEmpty).join(' · ');
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(s.subject,
-              style: const TextStyle(fontSize: AppFontSizes.title2, fontWeight: FontWeight.w800, color: AppColors.gray800)),
+          Text(
+            s.subject,
+            style: const TextStyle(
+              fontSize: AppFontSizes.title2,
+              fontWeight: FontWeight.w800,
+              color: AppColors.gray800,
+            ),
+          ),
           const SizedBox(height: 6),
-          Text(who, style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.grayDeep)),
+          Text(
+            who,
+            style: const TextStyle(
+              fontSize: AppFontSizes.small,
+              color: AppColors.grayDeep,
+            ),
+          ),
           const SizedBox(height: 2),
           Text(
             [
@@ -254,7 +294,10 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
               if (d.relatedBooking != null) 'Booking #${d.relatedBooking}',
               if (client.isNotEmpty) client,
             ].join(' · '),
-            style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400),
+            style: const TextStyle(
+              fontSize: AppFontSizes.caption,
+              color: AppColors.neutral400,
+            ),
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -269,13 +312,19 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
               if (s.priority != 'normal')
                 AdminTicketPill(
                   label: '${adminTicketPriorityLabel(s.priority)} priority',
-                  icon: s.priority == 'high' ? Icons.priority_high_rounded : Icons.arrow_downward_rounded,
-                  color: s.priority == 'high' ? AppColors.error : AppColors.slate500,
+                  icon: s.priority == 'high'
+                      ? Icons.priority_high_rounded
+                      : Icons.arrow_downward_rounded,
+                  color: s.priority == 'high'
+                      ? AppColors.error
+                      : AppColors.slate500,
                 ),
               AdminTicketPill(
                 label: s.assignedTo == null
                     ? 'Unassigned'
-                    : (s.assignedTo!.name.isNotEmpty ? s.assignedTo!.name : s.assignedTo!.email),
+                    : (s.assignedTo!.name.isNotEmpty
+                          ? s.assignedTo!.name
+                          : s.assignedTo!.email),
                 icon: Icons.assignment_ind_outlined,
                 color: AppColors.primary,
               ),
@@ -298,9 +347,16 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
           onSelected: (v) => _update(status: v),
           itemBuilder: (_) => [
             for (final e in kAdminTicketStatusLabels.entries)
-              PopupMenuItem(value: e.key, enabled: e.key != s.status, child: Text(e.value)),
+              PopupMenuItem(
+                value: e.key,
+                enabled: e.key != s.status,
+                child: Text(e.value),
+              ),
           ],
-          child: _actionChip(Icons.flag_outlined, 'Status: ${adminTicketStatusLabel(s.status)}'),
+          child: _actionChip(
+            Icons.flag_outlined,
+            'Status: ${adminTicketStatusLabel(s.status)}',
+          ),
         ),
         PopupMenuButton<String>(
           tooltip: 'Change priority',
@@ -308,63 +364,98 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
           onSelected: (v) => _update(priority: v),
           itemBuilder: (_) => [
             for (final e in kAdminTicketPriorityLabels.entries)
-              PopupMenuItem(value: e.key, enabled: e.key != s.priority, child: Text(e.value)),
+              PopupMenuItem(
+                value: e.key,
+                enabled: e.key != s.priority,
+                child: Text(e.value),
+              ),
           ],
-          child: _actionChip(Icons.priority_high_rounded, 'Priority: ${adminTicketPriorityLabel(s.priority)}'),
+          child: _actionChip(
+            Icons.priority_high_rounded,
+            'Priority: ${adminTicketPriorityLabel(s.priority)}',
+          ),
         ),
         OutlinedButton.icon(
-          onPressed: _updating ? null : () => _update(assignee: s.assignedTo == null ? 'me' : 'none'),
-          icon: Icon(s.assignedTo == null ? Icons.person_add_alt_1_rounded : Icons.person_remove_alt_1_rounded, size: 18),
+          onPressed: _updating
+              ? null
+              : () => _update(assignee: s.assignedTo == null ? 'me' : 'none'),
+          icon: Icon(
+            s.assignedTo == null
+                ? Icons.person_add_alt_1_rounded
+                : Icons.person_remove_alt_1_rounded,
+            size: 18,
+          ),
           label: Text(s.assignedTo == null ? 'Assign to me' : 'Unassign'),
         ),
         if (_updating)
           const Padding(
             padding: EdgeInsets.all(8),
-            child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
           ),
       ],
     );
   }
 
   Widget _actionChip(IconData icon, String label) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: AppColors.neutral200),
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(100),
+      border: Border.all(color: AppColors.neutral200),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: AppColors.gray700),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: AppFontSizes.small,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 16, color: AppColors.gray700),
-            const SizedBox(width: 6),
-            Text(label, style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600)),
-            const Icon(Icons.arrow_drop_down_rounded, size: 18),
-          ],
-        ),
-      );
+        const Icon(Icons.arrow_drop_down_rounded, size: 18),
+      ],
+    ),
+  );
 
   Widget _bubble(AdminTicketDetail d, AdminTicketMessage m) {
     final internal = m.isInternal;
     final fromStaff = m.isStaff;
-    final accent = internal ? AppColors.warningAmber : (fromStaff ? AppColors.primary : AppColors.slate500);
+    final accent = internal
+        ? AppColors.warningAmber
+        : (fromStaff ? AppColors.primary : AppColors.slate500);
     final label = internal
         ? 'Internal note · ${m.authorName ?? 'admin'}'
         : (fromStaff ? (m.authorName ?? 'Support') : d.summary.requesterLabel);
-    final maxWidth = (MediaQuery.sizeOf(context).width * 0.85).clamp(0.0, 640.0);
+    final maxWidth = (MediaQuery.sizeOf(context).width * 0.85).clamp(
+      0.0,
+      640.0,
+    );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Align(
-        alignment: fromStaff ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
+        alignment: fromStaff
+            ? AlignmentDirectional.centerEnd
+            : AlignmentDirectional.centerStart,
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: internal ? AppColors.warningAmber.withValues(alpha: 0.12) : Colors.white,
+              color: internal
+                  ? AppColors.warningAmber.withValues(alpha: 0.12)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: internal ? AppColors.warningAmber : AppColors.neutral200),
+              border: Border.all(
+                color: internal ? AppColors.warningAmber : AppColors.neutral200,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,19 +469,37 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
                       const SizedBox(width: 4),
                     ],
                     Flexible(
-                      child: Text(label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w800, color: accent)),
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: AppFontSizes.caption,
+                          fontWeight: FontWeight.w800,
+                          color: accent,
+                        ),
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 // Messages may be in any language: let the text pick its own direction.
-                SelectableText(m.body, style: const TextStyle(fontSize: AppFontSizes.body, height: 1.45, color: AppColors.gray800)),
+                SelectableText(
+                  m.body,
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.body,
+                    height: 1.45,
+                    color: AppColors.gray800,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(adminTicketTime(context, m.createdAt),
-                    style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
+                Text(
+                  adminTicketTime(context, m.createdAt),
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.caption,
+                    color: AppColors.neutral400,
+                  ),
+                ),
               ],
             ),
           ),
@@ -409,8 +518,13 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
           child: ExpansionTile(
             tilePadding: EdgeInsets.zero,
             childrenPadding: EdgeInsets.zero,
-            title: Text('Activity (${d.events.length})',
-                style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700)),
+            title: Text(
+              'Activity (${d.events.length})',
+              style: const TextStyle(
+                fontSize: AppFontSizes.small,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             children: [
               for (final e in d.events)
                 Padding(
@@ -424,7 +538,10 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
                         if (e.actorName != null) 'by ${e.actorName}',
                         adminTicketTime(context, e.createdAt),
                       ].where((x) => x.isNotEmpty).join(' · '),
-                      style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.grayDeep),
+                      style: const TextStyle(
+                        fontSize: AppFontSizes.caption,
+                        color: AppColors.grayDeep,
+                      ),
                     ),
                   ),
                 ),
@@ -441,7 +558,9 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
     final s = d.summary;
     final hint = internal
         ? 'Only admins can see this note.'
-        : (s.isGuest ? 'This reply will be emailed to ${s.contactEmail}.' : 'The user will be notified of this reply.');
+        : (s.isGuest
+              ? 'This reply will be emailed to ${s.contactEmail}.'
+              : 'The user will be notified of this reply.');
 
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
@@ -458,11 +577,20 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
               padding: const EdgeInsets.only(bottom: 6),
               child: Row(
                 children: [
-                  const Icon(Icons.lock_rounded, size: 14, color: AppColors.grayDeep),
+                  const Icon(
+                    Icons.lock_rounded,
+                    size: 14,
+                    color: AppColors.grayDeep,
+                  ),
                   const SizedBox(width: 6),
                   const Expanded(
-                    child: Text('Closed. Reopen it to reply to the user; internal notes are still allowed.',
-                        style: TextStyle(fontSize: AppFontSizes.caption, color: AppColors.grayDeep)),
+                    child: Text(
+                      'Closed. Reopen it to reply to the user; internal notes are still allowed.',
+                      style: TextStyle(
+                        fontSize: AppFontSizes.caption,
+                        color: AppColors.grayDeep,
+                      ),
+                    ),
                   ),
                   TextButton(
                     onPressed: _updating ? null : () => _update(status: 'open'),
@@ -480,7 +608,9 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
                 label: const Text('Reply'),
                 selected: !internal,
                 // A closed ticket cannot receive a public reply (reopen it first).
-                onSelected: closed ? null : (_) => setState(() => _internal = false),
+                onSelected: closed
+                    ? null
+                    : (_) => setState(() => _internal = false),
               ),
               ChoiceChip(
                 avatar: const Icon(Icons.lock_outline_rounded, size: 16),
@@ -502,9 +632,17 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
                   maxLines: 6,
                   maxLength: _maxBody,
                   keyboardType: TextInputType.multiline,
-                  buildCounter: (_, {required currentLength, required isFocused, maxLength}) => null,
+                  buildCounter:
+                      (
+                        _, {
+                        required currentLength,
+                        required isFocused,
+                        maxLength,
+                      }) => null,
                   decoration: InputDecoration(
-                    hintText: internal ? 'Write an internal note' : 'Write a reply',
+                    hintText: internal
+                        ? 'Write an internal note'
+                        : 'Write a reply',
                     isDense: true,
                   ),
                   onChanged: (_) => setState(() {}),
@@ -513,16 +651,33 @@ class _AdminSupportTicketDetailScreenState extends State<AdminSupportTicketDetai
               const SizedBox(width: 6),
               IconButton.filled(
                 tooltip: internal ? 'Add note' : 'Send reply',
-                style: IconButton.styleFrom(backgroundColor: AppColors.adminColor),
-                onPressed: (_sending || _text.text.trim().isEmpty) ? null : _send,
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.adminColor,
+                ),
+                onPressed: (_sending || _text.text.trim().isEmpty)
+                    ? null
+                    : _send,
                 icon: _sending
-                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
                     : const Icon(Icons.send_rounded),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text(hint, style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
+          Text(
+            hint,
+            style: const TextStyle(
+              fontSize: AppFontSizes.caption,
+              color: AppColors.neutral400,
+            ),
+          ),
         ],
       ),
     );

@@ -42,7 +42,11 @@ class DateSeparator extends StatelessWidget {
           ),
           child: Text(
             label(date),
-            style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: context.colors.textSecondary),
+            style: TextStyle(
+              fontSize: AppFontSizes.small,
+              fontWeight: FontWeight.w600,
+              color: context.colors.textSecondary,
+            ),
           ),
         ),
       ),

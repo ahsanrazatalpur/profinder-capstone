@@ -23,21 +23,21 @@ import 'app_colors.dart';
 class AppFontSizes {
   AppFontSizes._();
 
-  static const double caption   = 11;
-  static const double small     = 12;
+  static const double caption = 11;
+  static const double small = 12;
   static const double secondary = 13;
-  static const double body      = 14;
-  static const double input     = 15;
-  static const double title     = 16;
-  static const double title2    = 18;
-  static const double h3        = 20;
-  static const double h2        = 24;
-  static const double display   = 28;
-  static const double h1        = 32;
+  static const double body = 14;
+  static const double input = 15;
+  static const double title = 16;
+  static const double title2 = 18;
+  static const double h3 = 20;
+  static const double h2 = 24;
+  static const double display = 28;
+  static const double h1 = 32;
 
   // Extra steps found in legacy screens (added)
-  static const double nano    = 9;
-  static const double micro   = 10;
+  static const double nano = 9;
+  static const double micro = 10;
   static const double titleMd = 17;
 }
 

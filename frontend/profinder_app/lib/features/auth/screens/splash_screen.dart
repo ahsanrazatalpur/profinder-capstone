@@ -19,8 +19,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animController;
-  late Animation<double>   _fadeAnimation;
-  late Animation<double>   _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -31,20 +31,17 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _setupAnimation() {
     _animController = AnimationController(
-      vsync:    this,
+      vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
 
     _fadeAnimation = CurvedAnimation(
       parent: _animController,
-      curve:  Curves.easeIn,
+      curve: Curves.easeIn,
     );
 
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve:  Curves.easeOutBack,
-      ),
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutBack),
     );
 
     _animController.forward();
@@ -75,7 +72,11 @@ class _SplashScreenState extends State<SplashScreen>
           Navigator.pushNamedAndRemoveUntil(context, '/pro', (route) => false);
           break;
         case 'admin':
-          Navigator.pushNamedAndRemoveUntil(context, '/admin', (route) => false);
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/admin',
+            (route) => false,
+          );
           break;
         default:
           // Unknown role indicates corrupted session; clear auth state.
@@ -121,13 +122,12 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-
                 // Logo — change anytime from app_logo.dart
                 AppLogo(
-                  size:        130,
-                  showName:    true,
+                  size: 130,
+                  showName: true,
                   showTagline: true,
-                  inverted:    true,
+                  inverted: true,
                 ),
 
                 SizedBox(height: 48),

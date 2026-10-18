@@ -26,8 +26,14 @@ Future<bool> confirmContentDialog(
       title: Text(title),
       content: Text(message),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(cancelLabel)),
-        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(confirmLabel)),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: Text(cancelLabel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: Text(confirmLabel),
+        ),
       ],
     ),
   );
@@ -38,7 +44,11 @@ class AdminContentError extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
 
-  const AdminContentError({super.key, required this.message, required this.onRetry});
+  const AdminContentError({
+    super.key,
+    required this.message,
+    required this.onRetry,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +58,11 @@ class AdminContentError extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cloud_off_rounded, size: 40, color: AppColors.neutral400),
+            const Icon(
+              Icons.cloud_off_rounded,
+              size: 40,
+              color: AppColors.neutral400,
+            ),
             const SizedBox(height: 12),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 12),
@@ -66,7 +80,12 @@ class AdminContentNote extends StatelessWidget {
   final Color color;
   final String text;
 
-  const AdminContentNote({super.key, required this.icon, required this.color, required this.text});
+  const AdminContentNote({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.text,
+  });
 
   @override
   Widget build(BuildContext context) {

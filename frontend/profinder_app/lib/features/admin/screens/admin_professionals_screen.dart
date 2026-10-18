@@ -22,6 +22,7 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 enum _StatusFilter { all, verified, unverified, banned }
+
 enum _SortOption { ratingHigh, bookingsHigh, nameAsc, dateNew }
 
 class AdminProfessionalsScreen extends StatefulWidget {
@@ -33,17 +34,17 @@ class AdminProfessionalsScreen extends StatefulWidget {
 }
 
 class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
-  final _api        = ApiService();
+  final _api = ApiService();
   final _searchCtrl = TextEditingController();
 
-  bool          _loading  = true;
-  String?       _error;
-  List<dynamic> _all      = [];
+  bool _loading = true;
+  String? _error;
+  List<dynamic> _all = [];
   List<dynamic> _filtered = [];
 
   _StatusFilter _statusFilter = _StatusFilter.all;
-  String        _categoryFilter = 'All';
-  _SortOption   _sortOption   = _SortOption.dateNew;
+  String _categoryFilter = 'All';
+  _SortOption _sortOption = _SortOption.dateNew;
 
   bool _selectionMode = false;
   final Set<dynamic> _selectedIds = {};
@@ -62,16 +63,25 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
 
   // ── Load ──────────────────────────────────────────────────
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final r = await _api.get('/users/?role=professional');
       if (!mounted) return;
       final list = r.data is List ? List<dynamic>.from(r.data) : <dynamic>[];
-      setState(() { _loading = false; _all = list; });
+      setState(() {
+        _loading = false;
+        _all = list;
+      });
       _applyFilters();
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load professionals'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load professionals';
+      });
     }
   }
 
@@ -89,22 +99,24 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
     final q = _searchCtrl.text.trim().toLowerCase();
 
     var result = _all.where((u) {
-      final matchSearch = q.isEmpty ||
-          (u['name']          ?? '').toString().toLowerCase().contains(q) ||
-          (u['email']         ?? '').toString().toLowerCase().contains(q) ||
+      final matchSearch =
+          q.isEmpty ||
+          (u['name'] ?? '').toString().toLowerCase().contains(q) ||
+          (u['email'] ?? '').toString().toLowerCase().contains(q) ||
           (u['category_name'] ?? '').toString().toLowerCase().contains(q);
 
       final isVerified = u['is_verified'] == true;
-      final isBanned   = u['is_active']   == false;
+      final isBanned = u['is_active'] == false;
 
       final matchStatus = switch (_statusFilter) {
-        _StatusFilter.all        => true,
-        _StatusFilter.verified   => isVerified && !isBanned,
+        _StatusFilter.all => true,
+        _StatusFilter.verified => isVerified && !isBanned,
         _StatusFilter.unverified => !isVerified && !isBanned,
-        _StatusFilter.banned     => isBanned,
+        _StatusFilter.banned => isBanned,
       };
 
-      final matchCategory = _categoryFilter == 'All' ||
+      final matchCategory =
+          _categoryFilter == 'All' ||
           (u['category_name']?.toString() ?? '') == _categoryFilter;
 
       return matchSearch && matchStatus && matchCategory;
@@ -113,18 +125,23 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
     result.sort((a, b) {
       switch (_sortOption) {
         case _SortOption.ratingHigh:
-          final ra = double.tryParse(a['average_rating']?.toString() ?? '0') ?? 0;
-          final rb = double.tryParse(b['average_rating']?.toString() ?? '0') ?? 0;
+          final ra =
+              double.tryParse(a['average_rating']?.toString() ?? '0') ?? 0;
+          final rb =
+              double.tryParse(b['average_rating']?.toString() ?? '0') ?? 0;
           return rb.compareTo(ra);
         case _SortOption.bookingsHigh:
           final ba = int.tryParse(a['total_bookings']?.toString() ?? '0') ?? 0;
           final bb = int.tryParse(b['total_bookings']?.toString() ?? '0') ?? 0;
           return bb.compareTo(ba);
         case _SortOption.nameAsc:
-          return (a['name'] ?? '').toString().toLowerCase()
-              .compareTo((b['name'] ?? '').toString().toLowerCase());
+          return (a['name'] ?? '').toString().toLowerCase().compareTo(
+            (b['name'] ?? '').toString().toLowerCase(),
+          );
         case _SortOption.dateNew:
-          return (b['joined'] ?? '').toString().compareTo((a['joined'] ?? '').toString());
+          return (b['joined'] ?? '').toString().compareTo(
+            (a['joined'] ?? '').toString(),
+          );
       }
     });
 
@@ -136,11 +153,11 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
     final name = user['name']?.toString() ?? 'this professional';
 
     final confirmed = await _confirmDialog(
-      title:        'Verify Professional?',
-      message:      '$name will get a verified badge visible to all customers.',
+      title: 'Verify Professional?',
+      message: '$name will get a verified badge visible to all customers.',
       confirmLabel: 'Verify',
       confirmColor: context.colors.accent,
-      icon:         Icons.verified_rounded,
+      icon: Icons.verified_rounded,
     );
     if (!confirmed) return;
 
@@ -161,24 +178,23 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
   // ── Ban / Unban ───────────────────────────────────────────
   Future<void> _toggleBan(dynamic user) async {
     final isBanned = user['is_active'] == false;
-    final name     = user['name']?.toString() ?? 'this professional';
+    final name = user['name']?.toString() ?? 'this professional';
 
     final confirmed = await _confirmDialog(
-      title:        isBanned ? 'Unban Professional?' : 'Ban Professional?',
-      message:      isBanned
+      title: isBanned ? 'Unban Professional?' : 'Ban Professional?',
+      message: isBanned
           ? '$name will be able to login and receive bookings again.'
           : '$name will be blocked from logging in.',
       confirmLabel: isBanned ? 'Unban' : 'Ban',
       confirmColor: isBanned ? context.colors.accent : AppColors.error,
-      icon:         isBanned ? Icons.lock_open_rounded : Icons.block_rounded,
+      icon: isBanned ? Icons.lock_open_rounded : Icons.block_rounded,
     );
     if (!confirmed) return;
 
     try {
-      await _api.patch(
-        '/admin-panel/users/${user['id']}/ban/',
-        {'action': isBanned ? 'unban' : 'ban'},
-      );
+      await _api.patch('/admin-panel/users/${user['id']}/ban/', {
+        'action': isBanned ? 'unban' : 'ban',
+      });
       if (!mounted) return;
       setState(() {
         final idx = _all.indexWhere((u) => u['id'] == user['id']);
@@ -209,11 +225,11 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
   Future<void> _bulkVerify() async {
     if (_selectedIds.isEmpty) return;
     final confirmed = await _confirmDialog(
-      title:        'Verify ${_selectedIds.length} professionals?',
-      message:      'All selected professionals will get a verified badge.',
+      title: 'Verify ${_selectedIds.length} professionals?',
+      message: 'All selected professionals will get a verified badge.',
       confirmLabel: 'Verify All',
       confirmColor: context.colors.accent,
-      icon:         Icons.verified_rounded,
+      icon: Icons.verified_rounded,
     );
     if (!confirmed) return;
 
@@ -229,7 +245,10 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
     }
     if (!mounted) return;
     _applyFilters();
-    setState(() { _selectionMode = false; _selectedIds.clear(); });
+    setState(() {
+      _selectionMode = false;
+      _selectedIds.clear();
+    });
     _showSnack('$success professional(s) verified', context.colors.accent);
   }
 
@@ -261,14 +280,19 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
       if (ban && isBanned) continue;
       if (!ban && !isBanned) continue;
       try {
-        await _api.patch('/admin-panel/users/$id/ban/', {'action': ban ? 'ban' : 'unban'});
+        await _api.patch('/admin-panel/users/$id/ban/', {
+          'action': ban ? 'ban' : 'unban',
+        });
         setState(() => _all[idx]['is_active'] = !ban);
         success++;
       } catch (_) {}
     }
     if (!mounted) return;
     _applyFilters();
-    setState(() { _selectionMode = false; _selectedIds.clear(); });
+    setState(() {
+      _selectionMode = false;
+      _selectedIds.clear();
+    });
     _showSnack(
       '$success professional(s) ${ban ? 'banned' : 'unbanned'}',
       ban ? AppColors.error : context.colors.accent,
@@ -284,7 +308,10 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
         success++;
       } catch (_) {}
     }
-    setState(() { _selectionMode = false; _selectedIds.clear(); });
+    setState(() {
+      _selectionMode = false;
+      _selectedIds.clear();
+    });
     _showSnack('Reminder sent to $success professional(s)', AppColors.info);
   }
 
@@ -302,46 +329,76 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
     final buffer = StringBuffer();
     buffer.writeln('Name,Email,Category,Rating,Bookings,Status,Joined');
     for (final u in rows) {
-      final name     = (u['name'] ?? '').toString().replaceAll(',', ' ');
-      final email    = (u['email'] ?? '').toString();
-      final category = (u['category_name'] ?? '').toString().replaceAll(',', ' ');
-      final rating   = (u['average_rating'] ?? '0.0').toString();
+      final name = (u['name'] ?? '').toString().replaceAll(',', ' ');
+      final email = (u['email'] ?? '').toString();
+      final category = (u['category_name'] ?? '').toString().replaceAll(
+        ',',
+        ' ',
+      );
+      final rating = (u['average_rating'] ?? '0.0').toString();
       final bookings = (u['total_bookings'] ?? '0').toString();
       final isBanned = u['is_active'] == false;
       final isVerified = u['is_verified'] == true;
-      final status   = isBanned ? 'Banned' : (isVerified ? 'Verified' : 'Unverified');
-      final joined   = (u['joined'] ?? '').toString();
-      buffer.writeln('$name,$email,$category,$rating,$bookings,$status,$joined');
+      final status = isBanned
+          ? 'Banned'
+          : (isVerified ? 'Verified' : 'Unverified');
+      final joined = (u['joined'] ?? '').toString();
+      buffer.writeln(
+        '$name,$email,$category,$rating,$bookings,$status,$joined',
+      );
     }
 
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-        title: Text('Export (${rows.length} professionals)',
-            style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
+        title: Text(
+          'Export (${rows.length} professionals)',
+          style: const TextStyle(
+            fontSize: AppFontSizes.title,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         content: SizedBox(
           width: double.maxFinite,
           height: 260,
           child: SingleChildScrollView(
-            child: SelectableText(buffer.toString(),
-                style: const TextStyle(fontSize: AppFontSizes.caption, fontFamily: 'monospace')),
+            child: SelectableText(
+              buffer.toString(),
+              style: const TextStyle(
+                fontSize: AppFontSizes.caption,
+                fontFamily: 'monospace',
+              ),
+            ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close', style: TextStyle(color: AppColors.neutral400)),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: AppColors.neutral400),
+            ),
           ),
           ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.adminColor,
+            ),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: buffer.toString()));
               Navigator.pop(context);
-              _showSnack('CSV copied to clipboard — paste into Excel/Sheets', AppColors.success);
+              _showSnack(
+                'CSV copied to clipboard — paste into Excel/Sheets',
+                AppColors.success,
+              );
             },
             icon: const Icon(Icons.copy_rounded, size: 16, color: Colors.white),
-            label: const Text('Copy to Clipboard', style: TextStyle(color: Colors.white)),
+            label: const Text(
+              'Copy to Clipboard',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -373,17 +430,17 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
       body: _loading
           ? _buildLoader()
           : _error != null
-              ? _buildError()
-              : Column(
-                  children: [
-                    _buildSearchBar(),
-                    _buildStatusChips(),
-                    _buildCategoryDropdown(),
-                    _buildCountBar(),
-                    if (_selectionMode) _buildBulkActionBar(),
-                    Expanded(child: _buildList()),
-                  ],
-                ),
+          ? _buildError()
+          : Column(
+              children: [
+                _buildSearchBar(),
+                _buildStatusChips(),
+                _buildCategoryDropdown(),
+                _buildCountBar(),
+                if (_selectionMode) _buildBulkActionBar(),
+                Expanded(child: _buildList()),
+              ],
+            ),
     );
   }
 
@@ -402,10 +459,22 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
             _applyFilters();
           },
           itemBuilder: (_) => const [
-            PopupMenuItem(value: _SortOption.ratingHigh,   child: Text('Rating (High-Low)')),
-            PopupMenuItem(value: _SortOption.bookingsHigh, child: Text('Most Bookings')),
-            PopupMenuItem(value: _SortOption.nameAsc,      child: Text('Name (A-Z)')),
-            PopupMenuItem(value: _SortOption.dateNew,      child: Text('Newest First')),
+            PopupMenuItem(
+              value: _SortOption.ratingHigh,
+              child: Text('Rating (High-Low)'),
+            ),
+            PopupMenuItem(
+              value: _SortOption.bookingsHigh,
+              child: Text('Most Bookings'),
+            ),
+            PopupMenuItem(
+              value: _SortOption.nameAsc,
+              child: Text('Name (A-Z)'),
+            ),
+            PopupMenuItem(
+              value: _SortOption.dateNew,
+              child: Text('Newest First'),
+            ),
           ],
         ),
         const SizedBox(width: 8),
@@ -416,9 +485,19 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
           onGradient: true,
         ),
         const SizedBox(width: 8),
-        AppBarIconButton(icon: Icons.download_rounded, tooltip: 'Export', onPressed: _exportCsv, onGradient: true),
+        AppBarIconButton(
+          icon: Icons.download_rounded,
+          tooltip: 'Export',
+          onPressed: _exportCsv,
+          onGradient: true,
+        ),
         const SizedBox(width: 8),
-        AppBarIconButton(icon: Icons.refresh_rounded, tooltip: 'Refresh', onPressed: _load, onGradient: true),
+        AppBarIconButton(
+          icon: Icons.refresh_rounded,
+          tooltip: 'Refresh',
+          onPressed: _load,
+          onGradient: true,
+        ),
       ],
     );
   }
@@ -430,26 +509,39 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
       child: TextField(
         controller: _searchCtrl,
-        onChanged:  (_) => _applyFilters(),
+        onChanged: (_) => _applyFilters(),
         style: const TextStyle(fontSize: AppFontSizes.secondary),
         decoration: InputDecoration(
-          hintText:   'Search by name, email, category…',
-          hintStyle:  const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
-          prefixIcon: const Icon(Icons.search, size: 18, color: AppColors.neutral400),
+          hintText: 'Search by name, email, category…',
+          hintStyle: const TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.neutral400,
+          ),
+          prefixIcon: const Icon(
+            Icons.search,
+            size: 18,
+            color: AppColors.neutral400,
+          ),
           suffixIcon: _searchCtrl.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear, size: 16, color: AppColors.neutral400),
+                  icon: const Icon(
+                    Icons.clear,
+                    size: 16,
+                    color: AppColors.neutral400,
+                  ),
                   onPressed: () {
                     _searchCtrl.clear();
                     _applyFilters();
                   },
                 )
               : null,
-          filled:         true,
-          fillColor:      AppColors.neutral100,
+          filled: true,
+          fillColor: AppColors.neutral100,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
+            borderSide: BorderSide.none,
+          ),
         ),
       ),
     );
@@ -458,10 +550,10 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
   // ── Status Filter Chips ───────────────────────────────────
   Widget _buildStatusChips() {
     final filters = [
-      (_StatusFilter.all,        'All',        AppColors.gray700),
-      (_StatusFilter.verified,   'Verified',   context.colors.accent),
+      (_StatusFilter.all, 'All', AppColors.gray700),
+      (_StatusFilter.verified, 'Verified', context.colors.accent),
       (_StatusFilter.unverified, 'Unverified', AppColors.warning),
-      (_StatusFilter.banned,     'Banned',     AppColors.error),
+      (_StatusFilter.banned, 'Banned', AppColors.error),
     ];
 
     return Container(
@@ -480,16 +572,22 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: isActive ? f.$3 : AppColors.neutral100,
                   borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                 ),
-                child: Text(f.$2,
-                    style: TextStyle(
-                        fontSize: AppFontSizes.small,
-                        fontWeight: FontWeight.w600,
-                        color: isActive ? Colors.white : AppColors.grayDeep)),
+                child: Text(
+                  f.$2,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.small,
+                    fontWeight: FontWeight.w600,
+                    color: isActive ? Colors.white : AppColors.grayDeep,
+                  ),
+                ),
               ),
             );
           }).toList(),
@@ -505,17 +603,36 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       child: Row(
         children: [
-          const Icon(Icons.category_outlined, size: 16, color: AppColors.neutral400),
+          const Icon(
+            Icons.category_outlined,
+            size: 16,
+            color: AppColors.neutral400,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                value: _categories.contains(_categoryFilter) ? _categoryFilter : 'All',
+                value: _categories.contains(_categoryFilter)
+                    ? _categoryFilter
+                    : 'All',
                 isExpanded: true,
-                icon: const Icon(Icons.arrow_drop_down_rounded, size: 20, color: AppColors.neutral400),
-                style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.gray700, fontWeight: FontWeight.w600),
+                icon: const Icon(
+                  Icons.arrow_drop_down_rounded,
+                  size: 20,
+                  color: AppColors.neutral400,
+                ),
+                style: const TextStyle(
+                  fontSize: AppFontSizes.small,
+                  color: AppColors.gray700,
+                  fontWeight: FontWeight.w600,
+                ),
                 items: _categories
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c == 'All' ? 'All Categories' : c)))
+                    .map(
+                      (c) => DropdownMenuItem(
+                        value: c,
+                        child: Text(c == 'All' ? 'All Categories' : c),
+                      ),
+                    )
                     .toList(),
                 onChanged: (v) {
                   if (v == null) return;
@@ -532,10 +649,11 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
 
   // ── Count Bar ─────────────────────────────────────────────
   Widget _buildCountBar() {
-    final total      = _all.length;
-    final verified   = _all.where((u) => u['is_verified'] == true).length;
-    final unverified = _all.where((u) =>
-        u['is_verified'] != true && u['is_active'] != false).length;
+    final total = _all.length;
+    final verified = _all.where((u) => u['is_verified'] == true).length;
+    final unverified = _all
+        .where((u) => u['is_verified'] != true && u['is_active'] != false)
+        .length;
     final banned = _all.where((u) => u['is_active'] == false).length;
 
     return Container(
@@ -544,13 +662,13 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            _countPill('$total Total',       AppColors.gray700),
+            _countPill('$total Total', AppColors.gray700),
             const SizedBox(width: 8),
             _countPill('$verified Verified', context.colors.accent),
             const SizedBox(width: 8),
-            _countPill('$unverified Pending',AppColors.warning),
+            _countPill('$unverified Pending', AppColors.warning),
             const SizedBox(width: 8),
-            _countPill('$banned Banned',     AppColors.error),
+            _countPill('$banned Banned', AppColors.error),
           ],
         ),
       ),
@@ -560,8 +678,18 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
   Widget _countPill(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
-      child: Text(label, style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: color)),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: AppFontSizes.caption,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
     );
   }
 
@@ -585,8 +713,14 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
-          Text('${_selectedIds.length} selected',
-              style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
+          Text(
+            '${_selectedIds.length} selected',
+            style: const TextStyle(
+              fontSize: AppFontSizes.small,
+              fontWeight: FontWeight.w700,
+              color: AppColors.adminColor,
+            ),
+          ),
           const SizedBox(width: 4),
           Expanded(
             child: SingleChildScrollView(
@@ -596,30 +730,84 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
                 children: [
                   TextButton.icon(
                     onPressed: _selectedIds.isEmpty ? null : _bulkVerify,
-                    icon: Icon(Icons.verified_rounded, size: 16, color: context.colors.accent),
-                    label: Text('Verify', style: TextStyle(color: context.colors.accent, fontSize: AppFontSizes.small)),
+                    icon: Icon(
+                      Icons.verified_rounded,
+                      size: 16,
+                      color: context.colors.accent,
+                    ),
+                    label: Text(
+                      'Verify',
+                      style: TextStyle(
+                        color: context.colors.accent,
+                        fontSize: AppFontSizes.small,
+                      ),
+                    ),
                   ),
                   TextButton.icon(
                     onPressed: _selectedIds.isEmpty ? null : _bulkRemind,
-                    icon: const Icon(Icons.notifications_active_outlined, size: 16, color: AppColors.info),
-                    label: const Text('Remind', style: TextStyle(color: AppColors.info, fontSize: AppFontSizes.small)),
+                    icon: const Icon(
+                      Icons.notifications_active_outlined,
+                      size: 16,
+                      color: AppColors.info,
+                    ),
+                    label: const Text(
+                      'Remind',
+                      style: TextStyle(
+                        color: AppColors.info,
+                        fontSize: AppFontSizes.small,
+                      ),
+                    ),
                   ),
                   if (anyActive)
                     TextButton.icon(
-                      onPressed: _selectedIds.isEmpty ? null : () => _bulkBan(ban: true),
-                      icon: const Icon(Icons.block_rounded, size: 16, color: AppColors.error),
-                      label: const Text('Ban', style: TextStyle(color: AppColors.error, fontSize: AppFontSizes.small)),
+                      onPressed: _selectedIds.isEmpty
+                          ? null
+                          : () => _bulkBan(ban: true),
+                      icon: const Icon(
+                        Icons.block_rounded,
+                        size: 16,
+                        color: AppColors.error,
+                      ),
+                      label: const Text(
+                        'Ban',
+                        style: TextStyle(
+                          color: AppColors.error,
+                          fontSize: AppFontSizes.small,
+                        ),
+                      ),
                     ),
                   if (anyBanned)
                     TextButton.icon(
-                      onPressed: _selectedIds.isEmpty ? null : () => _bulkBan(ban: false),
-                      icon: Icon(Icons.lock_open_rounded, size: 16, color: context.colors.accent),
-                      label: Text('Unban', style: TextStyle(color: context.colors.accent, fontSize: AppFontSizes.small)),
+                      onPressed: _selectedIds.isEmpty
+                          ? null
+                          : () => _bulkBan(ban: false),
+                      icon: Icon(
+                        Icons.lock_open_rounded,
+                        size: 16,
+                        color: context.colors.accent,
+                      ),
+                      label: Text(
+                        'Unban',
+                        style: TextStyle(
+                          color: context.colors.accent,
+                          fontSize: AppFontSizes.small,
+                        ),
+                      ),
                     ),
                   TextButton.icon(
                     onPressed: _selectedIds.isEmpty ? null : _exportCsv,
-                    icon: const Icon(Icons.download_rounded, size: 16, color: AppColors.grayDeep),
-                    label: const Text('Export', style: TextStyle(color: AppColors.grayDeep, fontSize: AppFontSizes.small)),
+                    icon: const Icon(
+                      Icons.download_rounded,
+                      size: 16,
+                      color: AppColors.grayDeep,
+                    ),
+                    label: const Text(
+                      'Export',
+                      style: TextStyle(
+                        color: AppColors.grayDeep,
+                        fontSize: AppFontSizes.small,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -637,13 +825,21 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.work_outline, size: 60, color: AppColors.neutral300),
+            const Icon(
+              Icons.work_outline,
+              size: 60,
+              color: AppColors.neutral300,
+            ),
             const SizedBox(height: 12),
             Text(
               _searchCtrl.text.isNotEmpty
                   ? 'No results for "${_searchCtrl.text}"'
                   : 'No professionals found',
-              style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w500, color: AppColors.neutral400),
+              style: const TextStyle(
+                fontSize: AppFontSizes.body,
+                fontWeight: FontWeight.w500,
+                color: AppColors.neutral400,
+              ),
             ),
           ],
         ),
@@ -654,8 +850,8 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
       onRefresh: _load,
       color: AppColors.adminColor,
       child: ListView.builder(
-        padding:     const EdgeInsets.all(12),
-        itemCount:   _filtered.length,
+        padding: const EdgeInsets.all(12),
+        itemCount: _filtered.length,
         itemBuilder: (_, i) => _buildProCard(_filtered[i]),
       ),
     );
@@ -663,44 +859,53 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
 
   // ── Professional Card ─────────────────────────────────────
   Widget _buildProCard(dynamic user) {
-    final id           = user['id'];
-    final name         = user['name']?.toString()          ?? 'Professional';
-    final email        = user['email']?.toString()         ?? '';
-    final city         = user['city']?.toString()          ?? '';
-    final joined       = user['joined']?.toString()        ?? '';
-    final category     = user['category_name']?.toString() ?? '';
-    final rate         = user['hourly_rate']?.toString()   ?? '0';
-    final rating       = user['average_rating']?.toString() ?? '0.0';
-    final bookings     = user['total_bookings']?.toString() ?? '0';
-    final photoUrl     = user['photo_url']?.toString()     ?? '';
-    final isVerified   = user['is_verified'] == true;
-    final isBanned     = user['is_active']   == false;
-    final isSelected   = _selectedIds.contains(id);
+    final id = user['id'];
+    final name = user['name']?.toString() ?? 'Professional';
+    final email = user['email']?.toString() ?? '';
+    final city = user['city']?.toString() ?? '';
+    final joined = user['joined']?.toString() ?? '';
+    final category = user['category_name']?.toString() ?? '';
+    final rate = user['hourly_rate']?.toString() ?? '0';
+    final rating = user['average_rating']?.toString() ?? '0.0';
+    final bookings = user['total_bookings']?.toString() ?? '0';
+    final photoUrl = user['photo_url']?.toString() ?? '';
+    final isVerified = user['is_verified'] == true;
+    final isBanned = user['is_active'] == false;
+    final isSelected = _selectedIds.contains(id);
 
     final Color borderColor = isSelected
         ? AppColors.adminColor
         : isBanned
-            ? AppColors.error.withValues(alpha: 0.3)
-            : isVerified
-                ? context.colors.accent.withValues(alpha: 0.3)
-                : AppColors.neutral200;
+        ? AppColors.error.withValues(alpha: 0.3)
+        : isVerified
+        ? context.colors.accent.withValues(alpha: 0.3)
+        : AppColors.neutral200;
 
     return GestureDetector(
       onTap: _selectionMode ? () => _toggleSelect(id) : null,
       onLongPress: () {
         if (!_selectionMode) {
-          setState(() { _selectionMode = true; _selectedIds.add(id); });
+          setState(() {
+            _selectionMode = true;
+            _selectedIds.add(id);
+          });
         }
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color:        isSelected ? AppColors.adminColor.withValues(alpha: 0.06) : Colors.white,
+          color: isSelected
+              ? AppColors.adminColor.withValues(alpha: 0.06)
+              : Colors.white,
           borderRadius: BorderRadius.circular(AppSizes.radius14),
-          border:       Border.all(color: borderColor),
+          border: Border.all(color: borderColor),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 1)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 6,
+              offset: const Offset(0, 1),
+            ),
           ],
         ),
         child: Column(
@@ -719,40 +924,58 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
                 Stack(
                   children: [
                     CircleAvatar(
-                      radius:          26,
+                      radius: 26,
                       backgroundColor: const Color(0xFFEDE9FE),
-                      backgroundImage:
-                          photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null,
+                      backgroundImage: photoUrl.isNotEmpty
+                          ? NetworkImage(photoUrl)
+                          : null,
                       child: photoUrl.isEmpty
-                          ? Text(AppHelpers.getInitials(name),
+                          ? Text(
+                              AppHelpers.getInitials(name),
                               style: const TextStyle(
-                                  color:      AppColors.accentPurple,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: AppFontSizes.body))
+                                color: AppColors.accentPurple,
+                                fontWeight: FontWeight.bold,
+                                fontSize: AppFontSizes.body,
+                              ),
+                            )
                           : null,
                     ),
                     if (isVerified)
                       Positioned(
-                        right: 0, bottom: 0,
+                        right: 0,
+                        bottom: 0,
                         child: Container(
-                          width: 16, height: 16,
+                          width: 16,
+                          height: 16,
                           decoration: BoxDecoration(
-                              color:  context.colors.accent,
-                              shape:  BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2)),
-                          child: const Icon(Icons.check, color: Colors.white, size: 9),
+                            color: context.colors.accent,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 9,
+                          ),
                         ),
                       ),
                     if (isBanned)
                       Positioned(
-                        right: 0, bottom: 0,
+                        right: 0,
+                        bottom: 0,
                         child: Container(
-                          width: 16, height: 16,
+                          width: 16,
+                          height: 16,
                           decoration: BoxDecoration(
-                              color:  AppColors.error,
-                              shape:  BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2)),
-                          child: const Icon(Icons.block, color: Colors.white, size: 9),
+                            color: AppColors.error,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: const Icon(
+                            Icons.block,
+                            color: Colors.white,
+                            size: 9,
+                          ),
                         ),
                       ),
                   ],
@@ -766,13 +989,16 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: Text(name,
-                                style: const TextStyle(
-                                    fontSize: AppFontSizes.body,
-                                    fontWeight: FontWeight.w700,
-                                    color:      AppColors.gray900),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis),
+                            child: Text(
+                              name,
+                              style: const TextStyle(
+                                fontSize: AppFontSizes.body,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.gray900,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           if (isBanned)
                             _badge('BANNED', AppColors.error)
@@ -783,22 +1009,43 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
                         ],
                       ),
                       const SizedBox(height: 2),
-                      Text(email,
-                          style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis),
+                      Text(
+                        email,
+                        style: const TextStyle(
+                          fontSize: AppFontSizes.caption,
+                          color: AppColors.neutral400,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       const SizedBox(height: 4),
                       Wrap(
                         spacing: 8,
                         runSpacing: 4,
                         children: [
-                          _infoChip(Icons.star_rounded, rating, color: AppColors.warningAmber),
-                          _infoChip(Icons.event_available_rounded, '$bookings bookings'),
-                          if (category.isNotEmpty) _infoChip(Icons.category_outlined, category),
-                          if (rate != '0') _infoChip(Icons.attach_money_rounded, 'Rs $rate/hr'),
-                          if (city.isNotEmpty) _infoChip(Icons.location_on_outlined, city),
+                          _infoChip(
+                            Icons.star_rounded,
+                            rating,
+                            color: AppColors.warningAmber,
+                          ),
+                          _infoChip(
+                            Icons.event_available_rounded,
+                            '$bookings bookings',
+                          ),
+                          if (category.isNotEmpty)
+                            _infoChip(Icons.category_outlined, category),
+                          if (rate != '0')
+                            _infoChip(
+                              Icons.attach_money_rounded,
+                              'Rs $rate/hr',
+                            ),
+                          if (city.isNotEmpty)
+                            _infoChip(Icons.location_on_outlined, city),
                           if (joined.isNotEmpty)
-                            _infoChip(Icons.calendar_today_outlined, 'Joined $joined'),
+                            _infoChip(
+                              Icons.calendar_today_outlined,
+                              'Joined $joined',
+                            ),
                         ],
                       ),
                     ],
@@ -819,7 +1066,7 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
                     Expanded(
                       child: _actionBtn(
                         label: 'Verify',
-                        icon:  Icons.verified_rounded,
+                        icon: Icons.verified_rounded,
                         color: context.colors.accent,
                         onTap: () => _verify(user),
                       ),
@@ -827,10 +1074,10 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: _actionBtn(
-                        label:    'Remind',
-                        icon:     Icons.notifications_active_outlined,
-                        color:    AppColors.info,
-                        onTap:    () => _sendReminder(user),
+                        label: 'Remind',
+                        icon: Icons.notifications_active_outlined,
+                        color: AppColors.info,
+                        onTap: () => _sendReminder(user),
                         outlined: true,
                       ),
                     ),
@@ -838,10 +1085,12 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
                   ],
                   Expanded(
                     child: _actionBtn(
-                      label:    isBanned ? 'Unban' : 'Ban',
-                      icon:     isBanned ? Icons.lock_open_rounded : Icons.block_rounded,
-                      color:    isBanned ? context.colors.accent : AppColors.error,
-                      onTap:    () => _toggleBan(user),
+                      label: isBanned ? 'Unban' : 'Ban',
+                      icon: isBanned
+                          ? Icons.lock_open_rounded
+                          : Icons.block_rounded,
+                      color: isBanned ? context.colors.accent : AppColors.error,
+                      onTap: () => _toggleBan(user),
                       outlined: true,
                     ),
                   ),
@@ -858,26 +1107,46 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
     return Container(
       margin: const EdgeInsets.only(left: 6),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
-      child: Text(label, style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w700, color: color)),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppSizes.radiusXs),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: AppFontSizes.nano,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
     );
   }
 
-  Widget _infoChip(IconData icon, String text, {Color color = AppColors.neutral400}) {
+  Widget _infoChip(
+    IconData icon,
+    String text, {
+    Color color = AppColors.neutral400,
+  }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 11, color: color),
         const SizedBox(width: 2),
-        Text(text, style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.grayDeep)),
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: AppFontSizes.caption,
+            color: AppColors.grayDeep,
+          ),
+        ),
       ],
     );
   }
 
   Widget _actionBtn({
-    required String    label,
-    required IconData  icon,
-    required Color     color,
+    required String label,
+    required IconData icon,
+    required Color color,
     required VoidCallback onTap,
     bool outlined = false,
   }) {
@@ -886,7 +1155,7 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color:        outlined ? Colors.transparent : color,
+          color: outlined ? Colors.transparent : color,
           borderRadius: BorderRadius.circular(AppSizes.radius10),
           border: Border.all(color: color, width: outlined ? 1.5 : 0),
         ),
@@ -895,11 +1164,14 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
           children: [
             Icon(icon, size: 14, color: outlined ? color : Colors.white),
             const SizedBox(width: 5),
-            Text(label,
-                style: TextStyle(
-                    fontSize: AppFontSizes.small,
-                    fontWeight: FontWeight.w700,
-                    color:      outlined ? color : Colors.white)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: AppFontSizes.small,
+                fontWeight: FontWeight.w700,
+                color: outlined ? color : Colors.white,
+              ),
+            ),
           ],
         ),
       ),
@@ -907,24 +1179,39 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
   }
 
   Widget _buildLoader() => const Center(
-        child: CircularProgressIndicator(color: AppColors.adminColor, strokeWidth: 2.5),
-      );
+    child: CircularProgressIndicator(
+      color: AppColors.adminColor,
+      strokeWidth: 2.5,
+    ),
+  );
 
   Widget _buildError() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 56, color: AppColors.error),
+          const Icon(
+            Icons.error_outline_rounded,
+            size: 56,
+            color: AppColors.error,
+          ),
           const SizedBox(height: 12),
-          const Text('Failed to load professionals',
-              style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w600, color: AppColors.gray700)),
+          const Text(
+            'Failed to load professionals',
+            style: TextStyle(
+              fontSize: AppFontSizes.input,
+              fontWeight: FontWeight.w600,
+              color: AppColors.gray700,
+            ),
+          ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: _load,
-            icon:  const Icon(Icons.refresh_rounded),
+            icon: const Icon(Icons.refresh_rounded),
             label: const Text('Retry'),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.adminColor,
+            ),
           ),
         ],
       ),
@@ -932,35 +1219,58 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
   }
 
   Future<bool> _confirmDialog({
-    required String   title,
-    required String   message,
-    required String   confirmLabel,
-    required Color    confirmColor,
+    required String title,
+    required String message,
+    required String confirmLabel,
+    required Color confirmColor,
     required IconData icon,
   }) async {
     return await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+            ),
             title: Row(
               children: [
                 Icon(icon, color: confirmColor, size: 20),
                 const SizedBox(width: 8),
-                Text(title, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.title,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ],
             ),
-            content: Text(message, style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
+            content: Text(
+              message,
+              style: const TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: AppColors.grayDeep,
+              ),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel', style: TextStyle(color: AppColors.neutral400)),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: AppColors.neutral400),
+                ),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: confirmColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
+                  backgroundColor: confirmColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  ),
+                ),
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(confirmLabel, style: const TextStyle(color: Colors.white)),
+                child: Text(
+                  confirmLabel,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -971,10 +1281,18 @@ class _AdminProfessionalsScreenState extends State<AdminProfessionalsScreen> {
   void _showSnack(String msg, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-        backgroundColor:  color,
-        behavior:         SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+        content: Text(
+          msg,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
         duration: const Duration(seconds: 2),
       ),
     );

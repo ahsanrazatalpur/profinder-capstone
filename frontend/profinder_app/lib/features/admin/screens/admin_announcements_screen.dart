@@ -23,7 +23,8 @@ class AdminAnnouncementsScreen extends StatefulWidget {
   const AdminAnnouncementsScreen({super.key});
 
   @override
-  State<AdminAnnouncementsScreen> createState() => _AdminAnnouncementsScreenState();
+  State<AdminAnnouncementsScreen> createState() =>
+      _AdminAnnouncementsScreenState();
 }
 
 class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
@@ -43,13 +44,13 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
   static const _textFaint = AppColors.neutral400;
 
   // Responsive breakpoints for the card grid / dialog width.
-  static const double _tabletBreakpoint  = 700;
+  static const double _tabletBreakpoint = 700;
   static const double _desktopBreakpoint = 1100;
-  static const double _maxContentWidth   = 1000;
+  static const double _maxContentWidth = 1000;
 
   static const _typeStyles = {
-    'info':        (AppColors.primary, Icons.info_outline_rounded),
-    'warning':     (AppColors.warningAmber, Icons.warning_amber_rounded),
+    'info': (AppColors.primary, Icons.info_outline_rounded),
+    'warning': (AppColors.warningAmber, Icons.warning_amber_rounded),
     'maintenance': (AppColors.favoriteRed, Icons.build_circle_outlined),
   };
 
@@ -84,7 +85,10 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
   /// Fetches the full announcement list. Always replaces (not merges) local
   /// state, so this is the single source of truth after create/toggle/delete.
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final r = await _api.get('/admin-panel/announcements/');
       if (!mounted) return;
@@ -94,7 +98,10 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load announcements'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load announcements';
+      });
     }
   }
 
@@ -102,11 +109,15 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
   /// authoritative server state (rather than optimistically mutating locally).
   Future<void> _toggleActive(dynamic a) async {
     try {
-      await _api.patch('/admin-panel/announcements/${a['id']}/', {'is_active': !(a['is_active'] == true)});
+      await _api.patch('/admin-panel/announcements/${a['id']}/', {
+        'is_active': !(a['is_active'] == true),
+      });
       _load();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to update.')));
     }
   }
 
@@ -115,15 +126,22 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
         title: const Text('Delete Announcement?'),
         content: Text('Remove "${a['title']}"?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+              ),
             ),
             onPressed: () => Navigator.pop(c, true),
             child: const Text('Delete', style: TextStyle(color: Colors.white)),
@@ -137,13 +155,17 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
       _load();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to delete.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to delete.')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final activeCount = _announcements.where((a) => a['is_active'] == true).length;
+    final activeCount = _announcements
+        .where((a) => a['is_active'] == true)
+        .length;
     return Scaffold(
       backgroundColor: _bgColor,
       appBar: UniversalAppBar(
@@ -171,29 +193,31 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                 // without touching the loading/error/list children at all.
                 layoutBuilder: (currentChild, previousChildren) => Stack(
                   alignment: Alignment.topCenter,
-                  children: [
-                    ...previousChildren,
-                    ?currentChild,
-                  ],
+                  children: [...previousChildren, ?currentChild],
                 ),
                 child: _loading
-                    ? const Center(key: ValueKey('loading'), child: CircularProgressIndicator(color: AppColors.adminColor))
+                    ? const Center(
+                        key: ValueKey('loading'),
+                        child: CircularProgressIndicator(
+                          color: AppColors.adminColor,
+                        ),
+                      )
                     : _error != null
-                        ? _errorState(key: const ValueKey('error'))
-                        : RefreshIndicator(
-                            key: const ValueKey('content'),
-                            onRefresh: _load,
-                            color: AppColors.adminColor,
-                            // AlwaysScrollable so the pull-to-refresh gesture
-                            // works even when the list is empty (which was the
-                            // case that felt unresponsive before).
-                            child: _announcements.isEmpty
-                                ? ListView(
-                                    physics: const AlwaysScrollableScrollPhysics(),
-                                    children: [_emptyState()],
-                                  )
-                                : _announcementList(),
-                          ),
+                    ? _errorState(key: const ValueKey('error'))
+                    : RefreshIndicator(
+                        key: const ValueKey('content'),
+                        onRefresh: _load,
+                        color: AppColors.adminColor,
+                        // AlwaysScrollable so the pull-to-refresh gesture
+                        // works even when the list is empty (which was the
+                        // case that felt unresponsive before).
+                        child: _announcements.isEmpty
+                            ? ListView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                children: [_emptyState()],
+                              )
+                            : _announcementList(),
+                      ),
               ),
             ),
           ],
@@ -228,7 +252,10 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
           backgroundColor: AppColors.adminColor,
           onPressed: _composeDialog,
           icon: const Icon(Icons.add_rounded, color: Colors.white),
-          label: const Text('New Announcement', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+          label: const Text(
+            'New Announcement',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
         );
       },
     );
@@ -249,10 +276,16 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final columns = width >= _desktopBreakpoint ? 3 : (width >= _tabletBreakpoint ? 2 : 1);
-        final contentWidth = width > _maxContentWidth ? _maxContentWidth : width;
+        final columns = width >= _desktopBreakpoint
+            ? 3
+            : (width >= _tabletBreakpoint ? 2 : 1);
+        final contentWidth = width > _maxContentWidth
+            ? _maxContentWidth
+            : width;
         const spacing = 12.0;
-        final cardWidth = columns == 1 ? contentWidth : (contentWidth - spacing * (columns - 1)) / columns;
+        final cardWidth = columns == 1
+            ? contentWidth
+            : (contentWidth - spacing * (columns - 1)) / columns;
 
         return SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -270,7 +303,10 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                 children: List.generate(_announcements.length, (i) {
                   return SizedBox(
                     width: cardWidth,
-                    child: _FadeInUp(index: i, child: _announcementCard(_announcements[i])),
+                    child: _FadeInUp(
+                      index: i,
+                      child: _announcementCard(_announcements[i]),
+                    ),
                   );
                 }),
               ),
@@ -294,9 +330,15 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
         decoration: BoxDecoration(
           color: _cardColor,
           borderRadius: BorderRadius.circular(AppSizes.radius14),
-          border: Border.all(color: isActive ? color.withValues(alpha: 0.3) : _borderColor),
+          border: Border.all(
+            color: isActive ? color.withValues(alpha: 0.3) : _borderColor,
+          ),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
           ],
         ),
         child: Column(
@@ -306,9 +348,13 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 30, height: 30,
+                  width: 30,
+                  height: 30,
                   margin: const EdgeInsets.only(top: 1),
-                  decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(9)),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(9),
+                  ),
                   child: Icon(icon, size: 16, color: color),
                 ),
                 const SizedBox(width: 10),
@@ -317,7 +363,11 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                     padding: const EdgeInsets.only(top: 5),
                     child: Text(
                       a['title']?.toString() ?? '',
-                      style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.gray900),
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.gray900,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -341,7 +391,11 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
             const SizedBox(height: 8),
             Text(
               a['message']?.toString() ?? '',
-              style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.gray700, height: 1.45),
+              style: const TextStyle(
+                fontSize: AppFontSizes.small,
+                color: AppColors.gray700,
+                height: 1.45,
+              ),
               maxLines: 4,
               overflow: TextOverflow.ellipsis,
             ),
@@ -349,11 +403,22 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                  ),
                   child: Text(
                     a['type_display']?.toString() ?? type,
-                    style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w800, color: color, letterSpacing: 0.3),
+                    style: TextStyle(
+                      fontSize: AppFontSizes.nano,
+                      fontWeight: FontWeight.w800,
+                      color: color,
+                      letterSpacing: 0.3,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 6),
@@ -374,10 +439,16 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                 Tooltip(
                   message: 'Delete',
                   child: IconButton(
-                    icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.error),
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      size: 18,
+                      color: AppColors.error,
+                    ),
                     onPressed: () => _delete(a),
                     visualDensity: VisualDensity.compact,
-                    style: IconButton.styleFrom(minimumSize: const Size(36, 36)),
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size(36, 36),
+                    ),
                   ),
                 ),
               ],
@@ -410,14 +481,18 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) {
           final dialogWidth = MediaQuery.sizeOf(dialogContext).width;
-          final maxWidth = dialogWidth >= _tabletBreakpoint ? 480.0 : dialogWidth * 0.92;
+          final maxWidth = dialogWidth >= _tabletBreakpoint
+              ? 480.0
+              : dialogWidth * 0.92;
 
           return Dialog(
             // Force a white surface — this dialog's text/fill colors are
             // hardcoded for a light background, and M3's default surface
             // is near-black in dark mode, which made the form unreadable.
             backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius18)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radius18),
+            ),
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: maxWidth),
               child: Padding(
@@ -432,15 +507,29 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: AppColors.adminColor.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(AppSizes.radius10),
+                              color: AppColors.adminColor.withValues(
+                                alpha: 0.1,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radius10,
+                              ),
                             ),
-                            child: const Icon(Icons.campaign_rounded, color: AppColors.adminColor, size: 18),
+                            child: const Icon(
+                              Icons.campaign_rounded,
+                              color: AppColors.adminColor,
+                              size: 18,
+                            ),
                           ),
                           const SizedBox(width: 10),
                           const Expanded(
-                            child: Text('New Announcement',
-                                style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w800, color: AppColors.gray900)),
+                            child: Text(
+                              'New Announcement',
+                              style: TextStyle(
+                                fontSize: AppFontSizes.title,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.gray900,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -449,7 +538,8 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                         controller: titleCtrl,
                         decoration: _dialogFieldDecoration('Title'),
                         onChanged: (_) {
-                          if (formError != null) setDialogState(() => formError = null);
+                          if (formError != null)
+                            setDialogState(() => formError = null);
                         },
                       ),
                       const SizedBox(height: 12),
@@ -458,11 +548,19 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                         maxLines: 3,
                         decoration: _dialogFieldDecoration('Message'),
                         onChanged: (_) {
-                          if (formError != null) setDialogState(() => formError = null);
+                          if (formError != null)
+                            setDialogState(() => formError = null);
                         },
                       ),
                       const SizedBox(height: 16),
-                      const Text('Type', style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: _textMuted)),
+                      const Text(
+                        'Type',
+                        style: TextStyle(
+                          fontSize: AppFontSizes.caption,
+                          fontWeight: FontWeight.w700,
+                          color: _textMuted,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
@@ -480,31 +578,52 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                         }).toList(),
                       ),
                       const SizedBox(height: 16),
-                      const Text('Audience', style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: _textMuted)),
+                      const Text(
+                        'Audience',
+                        style: TextStyle(
+                          fontSize: AppFontSizes.caption,
+                          fontWeight: FontWeight.w700,
+                          color: _textMuted,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: [('all', 'All'), ('customers', 'Customers'), ('professionals', 'Professionals')].map((e) {
-                          final isActive = audience == e.$1;
-                          return _SelectableChip(
-                            label: e.$2,
-                            color: AppColors.adminColor,
-                            selected: isActive,
-                            onTap: () => setDialogState(() => audience = e.$1),
-                          );
-                        }).toList(),
+                        children:
+                            [
+                              ('all', 'All'),
+                              ('customers', 'Customers'),
+                              ('professionals', 'Professionals'),
+                            ].map((e) {
+                              final isActive = audience == e.$1;
+                              return _SelectableChip(
+                                label: e.$2,
+                                color: AppColors.adminColor,
+                                selected: isActive,
+                                onTap: () =>
+                                    setDialogState(() => audience = e.$1),
+                              );
+                            }).toList(),
                       ),
                       if (formError != null) ...[
                         const SizedBox(height: 14),
                         Row(
                           children: [
-                            const Icon(Icons.error_outline_rounded, size: 15, color: AppColors.error),
+                            const Icon(
+                              Icons.error_outline_rounded,
+                              size: 15,
+                              color: AppColors.error,
+                            ),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
                                 formError!,
-                                style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: AppColors.error),
+                                style: const TextStyle(
+                                  fontSize: AppFontSizes.small,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.error,
+                                ),
                               ),
                             ),
                           ],
@@ -514,7 +633,8 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                       ContentTranslationsSection(
                         controller: translations,
                         fields: _tFields,
-                        helper: 'The push notification also goes out in each user\'s language.',
+                        helper:
+                            'The push notification also goes out in each user\'s language.',
                       ),
                       const SizedBox(height: 22),
                       // FIX: this used to be a Row(mainAxisAlignment: end, ...)
@@ -539,15 +659,27 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                         overflowSpacing: 8,
                         children: [
                           TextButton(
-                            style: TextButton.styleFrom(foregroundColor: _textMuted),
+                            style: TextButton.styleFrom(
+                              foregroundColor: _textMuted,
+                            ),
                             onPressed: () => Navigator.pop(dialogContext),
-                            child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.adminColor,
-                              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 22,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radius10,
+                                ),
+                              ),
                               elevation: 0,
                             ),
                             onPressed: () async {
@@ -556,33 +688,49 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
                               // broken. Now we tell the user exactly what's
                               // missing and keep the dialog open so they can
                               // fix it, instead of silently doing nothing.
-                              final missingTitle = titleCtrl.text.trim().isEmpty;
-                              final missingMessage = messageCtrl.text.trim().isEmpty;
+                              final missingTitle = titleCtrl.text
+                                  .trim()
+                                  .isEmpty;
+                              final missingMessage = messageCtrl.text
+                                  .trim()
+                                  .isEmpty;
                               if (missingTitle || missingMessage) {
                                 setDialogState(() {
                                   formError = missingTitle && missingMessage
                                       ? 'Title and message are required.'
                                       : missingTitle
-                                          ? 'Title is required.'
-                                          : 'Message is required.';
+                                      ? 'Title is required.'
+                                      : 'Message is required.';
                                 });
                                 return;
                               }
                               Navigator.pop(dialogContext);
                               try {
                                 await _api.post('/admin-panel/announcements/', {
-                                  'title': titleCtrl.text.trim(), 'message': messageCtrl.text.trim(),
-                                  'type': type, 'audience': audience,
+                                  'title': titleCtrl.text.trim(),
+                                  'message': messageCtrl.text.trim(),
+                                  'type': type,
+                                  'audience': audience,
                                   if (translations.payload.isNotEmpty)
                                     'translations': translations.payload,
                                 });
                                 _load();
                               } catch (e) {
                                 if (!mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to create.')));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Failed to create.'),
+                                  ),
+                                );
                               }
                             },
-                            child: const Text('Publish', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                            child: const Text(
+                              'Publish',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -598,79 +746,108 @@ class _AdminAnnouncementsScreenState extends State<AdminAnnouncementsScreen> {
   }
 
   InputDecoration _dialogFieldDecoration(String hint) => InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: _bgColor,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radius10),
-          borderSide: const BorderSide(color: _borderColor),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radius10),
-          borderSide: const BorderSide(color: AppColors.adminColor, width: 1.4),
-        ),
-      );
+    hintText: hint,
+    filled: true,
+    fillColor: _bgColor,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(AppSizes.radius10),
+      borderSide: BorderSide.none,
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(AppSizes.radius10),
+      borderSide: const BorderSide(color: _borderColor),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(AppSizes.radius10),
+      borderSide: const BorderSide(color: AppColors.adminColor, width: 1.4),
+    ),
+  );
 
   Widget _emptyState() => Padding(
-        padding: const EdgeInsets.only(top: 80),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(color: AppColors.neutral100, shape: BoxShape.circle),
-                child: Icon(Icons.campaign_outlined, size: 40, color: Colors.grey.shade400),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'No announcements yet',
-                style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600, color: AppColors.gray700),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                'Tap "New Announcement" to get started',
-                style: TextStyle(fontSize: 12.5, color: _textFaint),
-              ),
-            ],
+    padding: const EdgeInsets.only(top: 80),
+    child: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: AppColors.neutral100,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.campaign_outlined,
+              size: 40,
+              color: Colors.grey.shade400,
+            ),
           ),
-        ),
-      );
+          const SizedBox(height: 14),
+          const Text(
+            'No announcements yet',
+            style: TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w600,
+              color: AppColors.gray700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Tap "New Announcement" to get started',
+            style: TextStyle(fontSize: 12.5, color: _textFaint),
+          ),
+        ],
+      ),
+    ),
+  );
 
   Widget _errorState({Key? key}) => Center(
-        key: key,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.08), shape: BoxShape.circle),
-              child: const Icon(Icons.error_outline_rounded, size: 40, color: AppColors.error),
-            ),
-            const SizedBox(height: 14),
-            const Text('Failed to load announcements',
-                style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray900)),
-            const SizedBox(height: 16),
-            _HoverLift(
-              child: ElevatedButton.icon(
-                onPressed: _load,
-                icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: const Text('Retry'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.adminColor,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
-                ),
+    key: key,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: AppColors.error.withValues(alpha: 0.08),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.error_outline_rounded,
+            size: 40,
+            color: AppColors.error,
+          ),
+        ),
+        const SizedBox(height: 14),
+        const Text(
+          'Failed to load announcements',
+          style: TextStyle(
+            fontSize: AppFontSizes.body,
+            fontWeight: FontWeight.w700,
+            color: AppColors.gray900,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _HoverLift(
+          child: ElevatedButton.icon(
+            onPressed: _load,
+            icon: const Icon(Icons.refresh_rounded, size: 18),
+            label: const Text('Retry'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.adminColor,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
               ),
             ),
-          ],
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }
 
 // ── Reusable pill-shaped selectable chip used for Type / Audience choices
@@ -711,7 +888,11 @@ class _SelectableChip extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 13, color: selected ? color : AppColors.grayDeep),
+                Icon(
+                  icon,
+                  size: 13,
+                  color: selected ? color : AppColors.grayDeep,
+                ),
                 const SizedBox(width: 5),
               ],
               Text(
@@ -741,7 +922,8 @@ class _FadeInUp extends StatefulWidget {
   State<_FadeInUp> createState() => _FadeInUpState();
 }
 
-class _FadeInUpState extends State<_FadeInUp> with SingleTickerProviderStateMixin {
+class _FadeInUpState extends State<_FadeInUp>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fade;
   late final Animation<Offset> _slide;
@@ -749,10 +931,15 @@ class _FadeInUpState extends State<_FadeInUp> with SingleTickerProviderStateMixi
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 380));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 380),
+    );
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    _slide = Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.04),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     // Cap the stagger so long lists don't leave later cards waiting too long.
     final delay = Duration(milliseconds: 30 * widget.index.clamp(0, 8));
     Future.delayed(delay, () {
@@ -768,9 +955,9 @@ class _FadeInUpState extends State<_FadeInUp> with SingleTickerProviderStateMixi
 
   @override
   Widget build(BuildContext context) => FadeTransition(
-        opacity: _fade,
-        child: SlideTransition(position: _slide, child: widget.child),
-      );
+    opacity: _fade,
+    child: SlideTransition(position: _slide, child: widget.child),
+  );
 }
 
 // ── Cosmetic-only: subtle hover-lift for desktop/web pointer input.

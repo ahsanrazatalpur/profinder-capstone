@@ -55,5 +55,6 @@ class LanguageSyncService {
   }
 
   /// Call after a logged-in user changes language from Settings.
-  Future<void> uploadLanguage(String languageCode) => _uploadLanguage(languageCode);
+  Future<void> uploadLanguage(String languageCode) =>
+      _uploadLanguage(languageCode);
 }

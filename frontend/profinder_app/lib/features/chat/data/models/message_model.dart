@@ -36,27 +36,39 @@ class MessageModel extends MessageEntity {
     Map<String, dynamic>? audioAttachment;
     for (final a in attachments) {
       final map = a as Map<String, dynamic>;
-      if (map['file_type'] == 'audio' && audioAttachment == null) audioAttachment = map;
-      if (map['file_type'] == 'image' && imageAttachment == null) imageAttachment = map;
+      if (map['file_type'] == 'audio' && audioAttachment == null)
+        audioAttachment = map;
+      if (map['file_type'] == 'image' && imageAttachment == null)
+        imageAttachment = map;
     }
 
     final replyJson = json['reply_to'] as Map<String, dynamic>?;
 
     // reactions: {"❤️": 3, "👍": 1}
     final reactionsRaw = json['reactions'] as Map<String, dynamic>? ?? {};
-    final reactions = reactionsRaw.map((k, v) => MapEntry(k, (v as num).toInt()));
+    final reactions = reactionsRaw.map(
+      (k, v) => MapEntry(k, (v as num).toInt()),
+    );
 
     return MessageModel(
       id: json['id'].toString(),
       conversationId: json['conversation'] is int
           ? json['conversation'] as int
           : int.parse(json['conversation'].toString()),
-      senderId: json['sender'] is int ? json['sender'] as int : int.parse(json['sender'].toString()),
+      senderId: json['sender'] is int
+          ? json['sender'] as int
+          : int.parse(json['sender'].toString()),
       senderName: json['sender_name']?.toString() ?? '',
       text: json['text']?.toString() ?? '',
-      imageUrl: imageAttachment != null ? AppHelpers.getFullImageUrl(imageAttachment['file_url']?.toString()) : null,
-      audioUrl: audioAttachment != null ? AppHelpers.getFullImageUrl(audioAttachment['file_url']?.toString()) : null,
-      audioDurationSeconds: audioAttachment != null ? (audioAttachment['duration_seconds'] as num?)?.toInt() : null,
+      imageUrl: imageAttachment != null
+          ? AppHelpers.getFullImageUrl(imageAttachment['file_url']?.toString())
+          : null,
+      audioUrl: audioAttachment != null
+          ? AppHelpers.getFullImageUrl(audioAttachment['file_url']?.toString())
+          : null,
+      audioDurationSeconds: audioAttachment != null
+          ? (audioAttachment['duration_seconds'] as num?)?.toInt()
+          : null,
       replyTo: replyJson == null
           ? null
           : ReplyPreviewEntity(
@@ -67,8 +79,12 @@ class MessageModel extends MessageEntity {
             ),
       status: MessageStatusX.fromServerString(json['status']?.toString()),
       createdAt: DateTime.parse(json['created_at'].toString()).toLocal(),
-      deliveredAt: json['delivered_at'] != null ? DateTime.parse(json['delivered_at'].toString()).toLocal() : null,
-      readAt: json['read_at'] != null ? DateTime.parse(json['read_at'].toString()).toLocal() : null,
+      deliveredAt: json['delivered_at'] != null
+          ? DateTime.parse(json['delivered_at'].toString()).toLocal()
+          : null,
+      readAt: json['read_at'] != null
+          ? DateTime.parse(json['read_at'].toString()).toLocal()
+          : null,
       isEdited: json['is_edited'] == true,
       isDeleted: json['is_deleted'] == true,
       reactions: reactions,

@@ -65,7 +65,10 @@ class _HelpCategoryScreenState extends State<HelpCategoryScreen> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     return Scaffold(
-      appBar: UniversalAppBar(title: widget.category.title, icon: Icons.help_outline_rounded),
+      appBar: UniversalAppBar(
+        title: widget.category.title,
+        icon: Icons.help_outline_rounded,
+      ),
       body: SafeArea(child: _body(context, t)),
     );
   }
@@ -73,7 +76,8 @@ class _HelpCategoryScreenState extends State<HelpCategoryScreen> {
   Widget _body(BuildContext context, AppLocalizations t) {
     if (_loading) return const SupportLoadingState();
     final result = _result;
-    if (result == null || !result.isOk) return SupportErrorState(onRetry: _load);
+    if (result == null || !result.isOk)
+      return SupportErrorState(onRetry: _load);
     final items = result.data!;
     if (items.isEmpty) {
       return SupportEmptyState(

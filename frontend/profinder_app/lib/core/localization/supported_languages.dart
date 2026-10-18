@@ -34,12 +34,44 @@ class SupportedLanguages {
   SupportedLanguages._();
 
   static const List<AppLanguage> all = [
-    AppLanguage(code: 'en', englishName: 'English', nativeName: 'English', flag: '🇺🇸'),
-    AppLanguage(code: 'ur', englishName: 'Urdu', nativeName: 'اردو', flag: '🇵🇰', isRtl: true),
-    AppLanguage(code: 'hi', englishName: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳'),
-    AppLanguage(code: 'ar', englishName: 'Arabic', nativeName: 'العربية', flag: '🇸🇦', isRtl: true),
-    AppLanguage(code: 'fr', englishName: 'French', nativeName: 'Français', flag: '🇫🇷'),
-    AppLanguage(code: 'es', englishName: 'Spanish', nativeName: 'Español', flag: '🇪🇸'),
+    AppLanguage(
+      code: 'en',
+      englishName: 'English',
+      nativeName: 'English',
+      flag: '🇺🇸',
+    ),
+    AppLanguage(
+      code: 'ur',
+      englishName: 'Urdu',
+      nativeName: 'اردو',
+      flag: '🇵🇰',
+      isRtl: true,
+    ),
+    AppLanguage(
+      code: 'hi',
+      englishName: 'Hindi',
+      nativeName: 'हिन्दी',
+      flag: '🇮🇳',
+    ),
+    AppLanguage(
+      code: 'ar',
+      englishName: 'Arabic',
+      nativeName: 'العربية',
+      flag: '🇸🇦',
+      isRtl: true,
+    ),
+    AppLanguage(
+      code: 'fr',
+      englishName: 'French',
+      nativeName: 'Français',
+      flag: '🇫🇷',
+    ),
+    AppLanguage(
+      code: 'es',
+      englishName: 'Spanish',
+      nativeName: 'Español',
+      flag: '🇪🇸',
+    ),
   ];
 
   static const AppLanguage fallback = AppLanguage(
@@ -52,8 +84,7 @@ class SupportedLanguages {
   static List<Locale> get supportedLocales =>
       all.map((l) => l.locale).toList(growable: false);
 
-  static bool isSupported(String code) =>
-      all.any((l) => l.code == code);
+  static bool isSupported(String code) => all.any((l) => l.code == code);
 
   /// Returns the matching AppLanguage, or English if the code isn't
   /// (yet) supported.

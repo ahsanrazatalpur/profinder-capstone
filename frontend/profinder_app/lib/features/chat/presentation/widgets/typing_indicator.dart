@@ -14,9 +14,12 @@ class TypingIndicatorBubble extends StatefulWidget {
   State<TypingIndicatorBubble> createState() => _TypingIndicatorBubbleState();
 }
 
-class _TypingIndicatorBubbleState extends State<TypingIndicatorBubble> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..repeat();
+class _TypingIndicatorBubbleState extends State<TypingIndicatorBubble>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
 
   @override
   void dispose() {
@@ -43,7 +46,10 @@ class _TypingIndicatorBubbleState extends State<TypingIndicatorBubble> with Sing
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: List.generate(3, (i) => _Dot(controller: _controller, delay: i * 0.2)),
+          children: List.generate(
+            3,
+            (i) => _Dot(controller: _controller, delay: i * 0.2),
+          ),
         ),
       ),
     );
@@ -61,7 +67,9 @@ class _Dot extends StatelessWidget {
       animation: controller,
       builder: (_, _) {
         final t = (controller.value + delay) % 1.0;
-        final scale = 0.6 + 0.4 * (1 - (2 * t - 1).abs()); // triangle wave, 0.6 -> 1.0 -> 0.6
+        final scale =
+            0.6 +
+            0.4 * (1 - (2 * t - 1).abs()); // triangle wave, 0.6 -> 1.0 -> 0.6
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Transform.scale(
@@ -69,7 +77,10 @@ class _Dot extends StatelessWidget {
             child: Container(
               width: 7,
               height: 7,
-              decoration: const BoxDecoration(color: AppColors.slate400, shape: BoxShape.circle),
+              decoration: const BoxDecoration(
+                color: AppColors.slate400,
+                shape: BoxShape.circle,
+              ),
             ),
           ),
         );

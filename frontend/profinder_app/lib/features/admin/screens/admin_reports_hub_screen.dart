@@ -28,15 +28,33 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
 
   List<(String, String, IconData, Color)> get _reportTypes => [
     ('revenue', 'Revenue Report', Icons.payments_rounded, AppColors.greenDeep),
-    ('users', 'User Growth Report', Icons.groups_rounded, context.colors.primary),
-    ('bookings', 'Booking Summary', Icons.event_note_rounded, context.colors.accent),
-    ('subscriptions', 'Subscription Report', Icons.workspace_premium_rounded, AppColors.accentPurple),
+    (
+      'users',
+      'User Growth Report',
+      Icons.groups_rounded,
+      context.colors.primary,
+    ),
+    (
+      'bookings',
+      'Booking Summary',
+      Icons.event_note_rounded,
+      context.colors.accent,
+    ),
+    (
+      'subscriptions',
+      'Subscription Report',
+      Icons.workspace_premium_rounded,
+      AppColors.accentPurple,
+    ),
   ];
 
   final List<Map<String, String>> _history = [];
 
   Future<void> _generate(String type, String label) async {
-    setState(() { _generating = true; _generatingType = type; });
+    setState(() {
+      _generating = true;
+      _generatingType = type;
+    });
     try {
       final r = await _api.get('/admin-panel/reports-hub/?type=$type&days=30');
       final rows = (r.data['rows'] as List?) ?? [];
@@ -53,7 +71,10 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
       _previewDialog(label, rows);
     } catch (e) {
       if (!mounted) return;
-      setState(() { _generating = false; _generatingType = null; });
+      setState(() {
+        _generating = false;
+        _generatingType = null;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Row(
@@ -65,7 +86,9 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
           ),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -76,11 +99,15 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+        ),
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(dialogContext).size.width >= 560 ? 480 : double.infinity,
+            maxWidth: MediaQuery.of(dialogContext).size.width >= 560
+                ? 480
+                : double.infinity,
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
@@ -96,8 +123,11 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                         color: AppColors.adminColor.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(AppSizes.radius10),
                       ),
-                      child: const Icon(Icons.insert_drive_file_rounded,
-                          color: AppColors.adminColor, size: 18),
+                      child: const Icon(
+                        Icons.insert_drive_file_rounded,
+                        color: AppColors.adminColor,
+                        size: 18,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -118,15 +148,25 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                           color: AppColors.slate100,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.close_rounded, size: 18, color: AppColors.neutral400),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          size: 18,
+                          color: AppColors.neutral400,
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  rows.isEmpty ? 'No data in this range' : '${rows.length} rows · Last 30 days',
-                  style: const TextStyle(fontSize: 11.5, color: AppColors.neutral400, fontWeight: FontWeight.w600),
+                  rows.isEmpty
+                      ? 'No data in this range'
+                      : '${rows.length} rows · Last 30 days',
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: AppColors.neutral400,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 14),
                 const Divider(height: 1),
@@ -138,10 +178,22 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.inbox_rounded, size: 40, color: AppColors.neutral400.withValues(alpha: 0.4)),
+                              Icon(
+                                Icons.inbox_rounded,
+                                size: 40,
+                                color: AppColors.neutral400.withValues(
+                                  alpha: 0.4,
+                                ),
+                              ),
                               const SizedBox(height: 10),
-                              const Text('No data in this range.',
-                                  style: TextStyle(fontSize: 12.5, color: AppColors.neutral400, fontWeight: FontWeight.w600)),
+                              const Text(
+                                'No data in this range.',
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  color: AppColors.neutral400,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         )
@@ -154,8 +206,14 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Text(
-                                row.entries.map((e) => '${e.key}: ${e.value}').join('   ·   '),
-                                style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.gray700, height: 1.4),
+                                row.entries
+                                    .map((e) => '${e.key}: ${e.value}')
+                                    .join('   ·   '),
+                                style: const TextStyle(
+                                  fontSize: AppFontSizes.small,
+                                  color: AppColors.gray700,
+                                  height: 1.4,
+                                ),
                               ),
                             );
                           },
@@ -175,9 +233,15 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                         onPressed: () => Navigator.pop(dialogContext),
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.grayDeep,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
-                        child: const Text('Close', style: TextStyle(fontWeight: FontWeight.w600)),
+                        child: const Text(
+                          'Close',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -187,23 +251,39 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                           backgroundColor: AppColors.adminColor,
                           foregroundColor: Colors.white,
                           elevation: 0,
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radius10,
+                            ),
+                          ),
                         ),
                         onPressed: () {
                           Navigator.pop(dialogContext);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Copied to clipboard-style export (CSV) — ready to share.'),
+                              content: const Text(
+                                'Copied to clipboard-style export (CSV) — ready to share.',
+                              ),
                               behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radiusMd,
+                                ),
+                              ),
                               margin: const EdgeInsets.all(16),
                               backgroundColor: context.colors.accent,
                             ),
                           );
                         },
                         icon: const Icon(Icons.download_rounded, size: 18),
-                        label: const Text('Export CSV', style: TextStyle(fontWeight: FontWeight.w700)),
+                        label: const Text(
+                          'Export CSV',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
                       ),
                     ),
                   ],
@@ -238,7 +318,9 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: isWide ? 960 : double.infinity),
+                  constraints: BoxConstraints(
+                    maxWidth: isWide ? 960 : double.infinity,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -256,14 +338,17 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                         ),
                         itemBuilder: (_, i) {
                           final (type, label, icon, color) = _reportTypes[i];
-                          final isThisGenerating = _generating && _generatingType == type;
+                          final isThisGenerating =
+                              _generating && _generatingType == type;
                           return _ReportTile(
                             label: label,
                             icon: icon,
                             color: color,
                             loading: isThisGenerating,
                             disabled: _generating && !isThisGenerating,
-                            onTap: _generating ? null : () => _generate(type, label),
+                            onTap: _generating
+                                ? null
+                                : () => _generate(type, label),
                           );
                         },
                       ),
@@ -287,10 +372,15 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                       if (_history.isEmpty)
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 28,
+                            horizontal: 20,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusLg,
+                            ),
                             border: Border.all(color: AppColors.neutral200),
                           ),
                           child: Column(
@@ -301,14 +391,23 @@ class _AdminReportsHubScreenState extends State<AdminReportsHubScreen> {
                                   color: AppColors.slate100,
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(Icons.history_rounded,
-                                    size: 26, color: AppColors.neutral400.withValues(alpha: 0.7)),
+                                child: Icon(
+                                  Icons.history_rounded,
+                                  size: 26,
+                                  color: AppColors.neutral400.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                ),
                               ),
                               const SizedBox(height: 12),
                               const Text(
                                 'No reports generated yet this session.',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 12.5, color: AppColors.neutral400, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  color: AppColors.neutral400,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),
@@ -397,7 +496,9 @@ class _ReportTileState extends State<_ReportTile> {
     final opacity = widget.disabled ? 0.5 : 1.0;
 
     return MouseRegion(
-      cursor: widget.onTap == null ? SystemMouseCursors.basic : SystemMouseCursors.click,
+      cursor: widget.onTap == null
+          ? SystemMouseCursors.basic
+          : SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
       child: AnimatedOpacity(
@@ -446,7 +547,11 @@ class _ReportTileState extends State<_ReportTile> {
                             color: widget.color.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(11),
                           ),
-                          child: Icon(widget.icon, size: 18, color: widget.color),
+                          child: Icon(
+                            widget.icon,
+                            size: 18,
+                            color: widget.color,
+                          ),
                         ),
                         const Spacer(),
                         if (widget.loading)
@@ -455,7 +560,9 @@ class _ReportTileState extends State<_ReportTile> {
                             height: 16,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(widget.color),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                widget.color,
+                              ),
                             ),
                           ),
                       ],
@@ -475,7 +582,11 @@ class _ReportTileState extends State<_ReportTile> {
                     const SizedBox(height: 3),
                     const Text(
                       'Last 30 days',
-                      style: TextStyle(fontSize: 10.5, color: AppColors.neutral400, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        color: AppColors.neutral400,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -534,7 +645,11 @@ class _HistoryTileState extends State<_HistoryTile> {
                 color: AppColors.slate100,
                 borderRadius: BorderRadius.circular(9),
               ),
-              child: const Icon(Icons.description_outlined, size: 16, color: AppColors.slate500),
+              child: const Icon(
+                Icons.description_outlined,
+                size: 16,
+                color: AppColors.slate500,
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -543,19 +658,31 @@ class _HistoryTileState extends State<_HistoryTile> {
                 children: [
                   Text(
                     h['label']!,
-                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.gray900),
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.gray900,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${h['rows']} rows · ${h['date']}',
-                    style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      fontSize: 10.5,
+                      color: AppColors.neutral400,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.neutral300),
+            const Icon(
+              Icons.chevron_right_rounded,
+              size: 18,
+              color: AppColors.neutral300,
+            ),
           ],
         ),
       ),

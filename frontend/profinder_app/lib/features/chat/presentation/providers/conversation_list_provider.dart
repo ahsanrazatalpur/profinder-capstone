@@ -9,7 +9,8 @@ import '../../../../core/constants/app_strings.dart';
 
 class ConversationListProvider extends ChangeNotifier {
   final ChatRepository _repo;
-  ConversationListProvider({ChatRepository? repo}) : _repo = repo ?? ChatRepositoryImpl();
+  ConversationListProvider({ChatRepository? repo})
+    : _repo = repo ?? ChatRepositoryImpl();
 
   bool _isLoading = false;
   String? _error;
@@ -21,7 +22,8 @@ class ConversationListProvider extends ChangeNotifier {
 
   /// Sum of unread messages across all conversations.
   /// Used for badge rendering on bottom navigation icons without extra API calls.
-  int get totalUnreadCount => _conversations.fold(0, (sum, c) => sum + c.unreadCount);
+  int get totalUnreadCount =>
+      _conversations.fold(0, (sum, c) => sum + c.unreadCount);
 
   Future<void> load() async {
     _isLoading = true;

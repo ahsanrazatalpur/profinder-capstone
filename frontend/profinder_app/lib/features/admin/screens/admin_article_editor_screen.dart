@@ -19,11 +19,13 @@ class AdminArticleEditorScreen extends StatefulWidget {
   const AdminArticleEditorScreen({super.key, this.articleId, this.source});
 
   @override
-  State<AdminArticleEditorScreen> createState() => _AdminArticleEditorScreenState();
+  State<AdminArticleEditorScreen> createState() =>
+      _AdminArticleEditorScreenState();
 }
 
 class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
-  late final SupportContentDataSource _source = widget.source ?? SupportContentService();
+  late final SupportContentDataSource _source =
+      widget.source ?? SupportContentService();
 
   final _title = TextEditingController();
   final _body = TextEditingController();
@@ -56,11 +58,17 @@ class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     final cats = await _source.listCategories();
     if (!mounted) return;
     if (!cats.isOk) {
-      setState(() { _loading = false; _error = cats.error; });
+      setState(() {
+        _loading = false;
+        _error = cats.error;
+      });
       return;
     }
     _categories = cats.data ?? [];
@@ -68,21 +76,29 @@ class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
       final article = await _source.getArticle(_id!);
       if (!mounted) return;
       if (!article.isOk) {
-        setState(() { _loading = false; _error = article.error; });
+        setState(() {
+          _loading = false;
+          _error = article.error;
+        });
         return;
       }
       _apply(article.data!);
     } else if (_categories.isNotEmpty) {
       _categoryId = _categories.first.id;
     }
-    setState(() { _loading = false; _dirty = false; });
+    setState(() {
+      _loading = false;
+      _dirty = false;
+    });
   }
 
   void _apply(AdminHelpArticle a) {
     _id = a.id;
     _title.text = a.title;
     _body.text = a.body;
-    _audience = kAdminAudienceLabels.containsKey(a.audience) ? a.audience : 'all';
+    _audience = kAdminAudienceLabels.containsKey(a.audience)
+        ? a.audience
+        : 'all';
     _published = a.isPublished;
     _wasPublished = a.isPublished;
     _categoryId = _categories.any((c) => c.id == a.categoryId)
@@ -116,7 +132,10 @@ class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
         body: _body.text,
       );
       if (result.isOk && _published) {
-        result = await _source.updateArticle(result.data!.id, isPublished: true);
+        result = await _source.updateArticle(
+          result.data!.id,
+          isPublished: true,
+        );
       }
     } else {
       result = await _source.updateArticle(
@@ -136,7 +155,10 @@ class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
     }
     _apply(result.data!);
     setState(() => _dirty = false);
-    showContentSnack(context, _published ? 'Saved. This article is live.' : 'Saved as a draft.');
+    showContentSnack(
+      context,
+      _published ? 'Saved. This article is live.' : 'Saved as a draft.',
+    );
   }
 
   Future<void> _deleteTapped() async {
@@ -180,7 +202,9 @@ class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
       child: Scaffold(
         backgroundColor: AppColors.lightScaffold,
         appBar: UniversalAppBar(
-          title: widget.articleId == null && _isNew ? 'New article' : 'Edit article',
+          title: widget.articleId == null && _isNew
+              ? 'New article'
+              : 'Edit article',
           icon: Icons.article_rounded,
           color: AppColors.adminColor,
         ),
@@ -191,9 +215,12 @@ class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
 
   Widget _content() {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.adminColor));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.adminColor),
+      );
     }
-    if (_error != null) return AdminContentError(message: _error!, onRetry: _load);
+    if (_error != null)
+      return AdminContentError(message: _error!, onRetry: _load);
 
     return Center(
       child: ConstrainedBox(
@@ -207,7 +234,8 @@ class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
               isExpanded: true,
               decoration: const InputDecoration(labelText: 'Category'),
               items: [
-                for (final c in _categories) DropdownMenuItem(value: c.id, child: Text(c.title)),
+                for (final c in _categories)
+                  DropdownMenuItem(value: c.id, child: Text(c.title)),
               ],
               onChanged: (v) {
                 setState(() => _categoryId = v);
@@ -246,7 +274,8 @@ class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
               decoration: const InputDecoration(
                 labelText: 'Article text',
                 alignLabelWithHint: true,
-                helperText: 'Start a line with "- " for a bullet. '
+                helperText:
+                    'Start a line with "- " for a bullet. '
                     'Leave a blank line between paragraphs.',
                 helperMaxLines: 3,
               ),
@@ -255,9 +284,11 @@ class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: const Text('Published'),
-              subtitle: Text(_published
-                  ? 'Users can read this article.'
-                  : 'Hidden from users until you turn this on.'),
+              subtitle: Text(
+                _published
+                    ? 'Users can read this article.'
+                    : 'Hidden from users until you turn this on.',
+              ),
               value: _published,
               activeThumbColor: AppColors.greenDeep,
               onChanged: (v) {
@@ -276,10 +307,14 @@ class _AdminArticleEditorScreenState extends State<AdminArticleEditorScreen> {
               TextButton.icon(
                 onPressed: _busy || _wasPublished ? null : _deleteTapped,
                 icon: const Icon(Icons.delete_outline_rounded),
-                label: Text(_wasPublished
-                    ? 'Turn off "Published" and save to delete'
-                    : 'Delete article'),
-                style: TextButton.styleFrom(foregroundColor: AppColors.dangerRed),
+                label: Text(
+                  _wasPublished
+                      ? 'Turn off "Published" and save to delete'
+                      : 'Delete article',
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.dangerRed,
+                ),
               ),
             ],
           ],

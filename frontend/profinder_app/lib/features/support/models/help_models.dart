@@ -27,13 +27,13 @@ class HelpCategory {
   });
 
   factory HelpCategory.fromJson(Map<String, dynamic> json) => HelpCategory(
-        slug: (json['slug'] ?? '').toString(),
-        iconKey: (json['icon_key'] ?? '').toString(),
-        title: (json['title'] ?? '').toString(),
-        description: (json['description'] ?? '').toString(),
-        articleCount: (json['article_count'] as num?)?.toInt() ?? 0,
-        isFallback: json['is_fallback'] == true,
-      );
+    slug: (json['slug'] ?? '').toString(),
+    iconKey: (json['icon_key'] ?? '').toString(),
+    title: (json['title'] ?? '').toString(),
+    description: (json['description'] ?? '').toString(),
+    articleCount: (json['article_count'] as num?)?.toInt() ?? 0,
+    isFallback: json['is_fallback'] == true,
+  );
 }
 
 /// List item (search results / category list). No body.
@@ -52,7 +52,8 @@ class HelpArticleSummary {
     required this.isFallback,
   });
 
-  factory HelpArticleSummary.fromJson(Map<String, dynamic> json) => HelpArticleSummary(
+  factory HelpArticleSummary.fromJson(Map<String, dynamic> json) =>
+      HelpArticleSummary(
         slug: (json['slug'] ?? '').toString(),
         categorySlug: (json['category_slug'] ?? '').toString(),
         title: (json['title'] ?? '').toString(),
@@ -89,10 +90,10 @@ class HelpArticle {
       title: (json['title'] ?? '').toString(),
       blocks: raw is List
           ? raw
-              .whereType<Map>()
-              .map((b) => PolicyBlock.fromJson(Map<String, dynamic>.from(b)))
-              .where((b) => b.text.trim().isNotEmpty)
-              .toList()
+                .whereType<Map>()
+                .map((b) => PolicyBlock.fromJson(Map<String, dynamic>.from(b)))
+                .where((b) => b.text.trim().isNotEmpty)
+                .toList()
           : const [],
       isFallback: json['is_fallback'] == true,
       isRtl: json['is_rtl'] == true,

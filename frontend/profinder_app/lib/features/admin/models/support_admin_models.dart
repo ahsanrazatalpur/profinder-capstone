@@ -3,7 +3,8 @@
 // Parsed responses of /api/support/admin/tickets/... (admin only, English).
 // Defensive parsing: a missing field never throws.
 
-DateTime? _date(Object? raw) => raw is String ? DateTime.tryParse(raw)?.toLocal() : null;
+DateTime? _date(Object? raw) =>
+    raw is String ? DateTime.tryParse(raw)?.toLocal() : null;
 
 String _s(Object? v) => (v ?? '').toString();
 
@@ -13,7 +14,12 @@ class AdminPerson {
   final String email;
   final String role;
 
-  const AdminPerson({required this.id, required this.name, required this.email, required this.role});
+  const AdminPerson({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.role,
+  });
 
   static AdminPerson? fromJson(Object? raw) {
     if (raw is! Map) return null;
@@ -39,13 +45,23 @@ class AdminTicketCounts {
     required this.needsReply,
   });
 
-  int get active => (byStatus['open'] ?? 0) + (byStatus['in_progress'] ?? 0) + (byStatus['awaiting_user'] ?? 0);
+  int get active =>
+      (byStatus['open'] ?? 0) +
+      (byStatus['in_progress'] ?? 0) +
+      (byStatus['awaiting_user'] ?? 0);
 
   factory AdminTicketCounts.fromJson(Map<String, dynamic> json) {
     int n(String k) => (json[k] as num?)?.toInt() ?? 0;
     return AdminTicketCounts(
       byStatus: {
-        for (final k in const ['open', 'in_progress', 'awaiting_user', 'resolved', 'closed']) k: n(k),
+        for (final k in const [
+          'open',
+          'in_progress',
+          'awaiting_user',
+          'resolved',
+          'closed',
+        ])
+          k: n(k),
       },
       unassignedActive: n('unassigned_active'),
       mineActive: n('mine_active'),
@@ -94,13 +110,16 @@ class AdminTicketSummary {
     return contactEmail;
   }
 
-  factory AdminTicketSummary.fromJson(Map<String, dynamic> json) => AdminTicketSummary(
+  factory AdminTicketSummary.fromJson(Map<String, dynamic> json) =>
+      AdminTicketSummary(
         id: (json['id'] as num?)?.toInt() ?? 0,
         reference: _s(json['reference']),
         subject: _s(json['subject']),
         category: _s(json['category']),
         status: _s(json['status']).isEmpty ? 'open' : _s(json['status']),
-        priority: _s(json['priority']).isEmpty ? 'normal' : _s(json['priority']),
+        priority: _s(json['priority']).isEmpty
+            ? 'normal'
+            : _s(json['priority']),
         role: _s(json['role']),
         requester: AdminPerson.fromJson(json['requester']),
         contactEmail: _s(json['contact_email']),
@@ -128,7 +147,8 @@ class AdminTicketMessage {
     required this.createdAt,
   });
 
-  factory AdminTicketMessage.fromJson(Map<String, dynamic> json) => AdminTicketMessage(
+  factory AdminTicketMessage.fromJson(Map<String, dynamic> json) =>
+      AdminTicketMessage(
         id: (json['id'] as num?)?.toInt() ?? 0,
         body: _s(json['body']),
         isStaff: json['is_staff'] == true,
@@ -151,7 +171,8 @@ class AdminTicketEvent {
     required this.createdAt,
   });
 
-  factory AdminTicketEvent.fromJson(Map<String, dynamic> json) => AdminTicketEvent(
+  factory AdminTicketEvent.fromJson(Map<String, dynamic> json) =>
+      AdminTicketEvent(
         action: _s(json['action']),
         detail: _s(json['detail']),
         actorName: json['actor_name'] as String?,
@@ -183,8 +204,12 @@ class AdminTicketDetail {
   bool get isClosed => summary.status == 'closed';
 
   factory AdminTicketDetail.fromJson(Map<String, dynamic> json) {
-    List<T> list<T>(Object? raw, T Function(Map<String, dynamic>) f) => raw is List
-        ? raw.whereType<Map>().map((m) => f(Map<String, dynamic>.from(m))).toList()
+    List<T> list<T>(Object? raw, T Function(Map<String, dynamic>) f) =>
+        raw is List
+        ? raw
+              .whereType<Map>()
+              .map((m) => f(Map<String, dynamic>.from(m)))
+              .toList()
         : <T>[];
     return AdminTicketDetail(
       summary: AdminTicketSummary.fromJson(json),
@@ -210,7 +235,13 @@ class AdminTicketPage {
     return AdminTicketPage(
       count: (json['count'] as num?)?.toInt() ?? 0,
       results: raw is List
-          ? raw.whereType<Map>().map((m) => AdminTicketSummary.fromJson(Map<String, dynamic>.from(m))).toList()
+          ? raw
+                .whereType<Map>()
+                .map(
+                  (m) =>
+                      AdminTicketSummary.fromJson(Map<String, dynamic>.from(m)),
+                )
+                .toList()
           : const [],
     );
   }

@@ -22,9 +22,9 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final _formKey         = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  bool _emailSent        = false;
+  bool _emailSent = false;
 
   @override
   void dispose() {
@@ -35,7 +35,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _onSendPressed() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final auth   = context.read<AuthProvider>();
+    final auth = context.read<AuthProvider>();
     final result = await auth.forgotPassword(
       email: _emailController.text.trim(),
     );
@@ -77,12 +77,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
                 horizontal: ResponsiveUtils.screenPadding(width),
-                vertical:   AppSizes.lg,
+                vertical: AppSizes.lg,
               ),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 400),
                 curve: Curves.easeOut,
-                child: _emailSent ? _buildSuccessView(isDark) : _buildFormView(auth, isDark),
+                child: _emailSent
+                    ? _buildSuccessView(isDark)
+                    : _buildFormView(auth, isDark),
               ),
             ),
           ),
@@ -102,7 +104,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
           Center(
             child: Container(
-              width:  80,
+              width: 80,
               height: 80,
               decoration: BoxDecoration(
                 color: isDark
@@ -112,7 +114,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               child: Icon(
                 Icons.lock_reset_outlined,
-                size:  40,
+                size: 40,
                 color: context.colors.primary,
               ),
             ),
@@ -137,15 +139,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const SizedBox(height: AppSizes.xl),
 
           TextFormField(
-            controller:   _emailController,
+            controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            autocorrect:  false,
-            style:        context.textStyles.inputText.copyWith(
+            autocorrect: false,
+            style: context.textStyles.inputText.copyWith(
               color: context.colors.textPrimary,
             ),
             decoration: InputDecoration(
-              labelText:  AppStrings.email,
-              hintText:   AppLocalizations.of(context).emailHint,
+              labelText: AppStrings.email,
+              hintText: AppLocalizations.of(context).emailHint,
               prefixIcon: Icon(
                 Icons.email_outlined,
                 color: isDark
@@ -153,7 +155,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     : null,
               ),
             ),
-            validator: (v) => AppValidators.email(v, AppLocalizations.of(context)),
+            validator: (v) =>
+                AppValidators.email(v, AppLocalizations.of(context)),
           ),
 
           const SizedBox(height: AppSizes.xl),
@@ -171,9 +174,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               child: auth.isLoading
                   ? const SizedBox(
                       height: 22,
-                      width:  22,
-                      child:  CircularProgressIndicator(
-                        color:       AppColors.white,
+                      width: 22,
+                      child: CircularProgressIndicator(
+                        color: AppColors.white,
                         strokeWidth: 2.5,
                       ),
                     )
@@ -199,7 +202,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const SizedBox(height: AppSizes.xxl),
 
         Container(
-          width:  100,
+          width: 100,
           height: 100,
           decoration: BoxDecoration(
             color: isDark
@@ -209,7 +212,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           child: Icon(
             Icons.mark_email_read_outlined,
-            size:  50,
+            size: 50,
             color: context.colors.accent,
           ),
         ),

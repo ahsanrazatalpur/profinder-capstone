@@ -35,10 +35,10 @@ class BookingLimitDialog extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       builder: (_) => BookingLimitDialog(
-        limit:           limit,
-        usedThisMonth:   usedThisMonth,
+        limit: limit,
+        usedThisMonth: usedThisMonth,
         subscriptionEnd: subscriptionEnd,
-        userRole:        userRole,
+        userRole: userRole,
       ),
     );
   }
@@ -47,7 +47,9 @@ class BookingLimitDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+      ),
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -84,7 +86,10 @@ class BookingLimitDialog extends StatelessWidget {
 
             // ── Message ───────────────────────────────────────
             Text(
-              t.subscriptionVeUsedBookingsMonthFreePlan('$usedThisMonth', '$limit'),
+              t.subscriptionVeUsedBookingsMonthFreePlan(
+                '$usedThisMonth',
+                '$limit',
+              ),
               style: TextStyle(
                 fontSize: AppFontSizes.body,
                 color: context.colors.textSecondary,
@@ -141,8 +146,7 @@ class BookingLimitDialog extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          SubscriptionScreen(userRole: userRole),
+                      builder: (_) => SubscriptionScreen(userRole: userRole),
                     ),
                   );
                 },
@@ -159,9 +163,13 @@ class BookingLimitDialog extends StatelessWidget {
                   children: [
                     const Icon(Icons.workspace_premium, size: 18),
                     const SizedBox(width: 8),
-                    Text(t.subscriptionUpgradePremium,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: AppFontSizes.input)),
+                    Text(
+                      t.subscriptionUpgradePremium,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: AppFontSizes.input,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -189,13 +197,21 @@ class BookingLimitDialog extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(t.subscriptionMonthlyBookings,
-                style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary)),
-            Text('$usedThisMonth / $limit',
-                style: const TextStyle(
-                    fontSize: AppFontSizes.small,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.error)),
+            Text(
+              t.subscriptionMonthlyBookings,
+              style: TextStyle(
+                fontSize: AppFontSizes.small,
+                color: context.colors.textSecondary,
+              ),
+            ),
+            Text(
+              '$usedThisMonth / $limit',
+              style: const TextStyle(
+                fontSize: AppFontSizes.small,
+                fontWeight: FontWeight.bold,
+                color: AppColors.error,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 6),
@@ -205,8 +221,7 @@ class BookingLimitDialog extends StatelessWidget {
             value: progress.clamp(0.0, 1.0),
             minHeight: 8,
             backgroundColor: context.colors.divider,
-            valueColor:
-                const AlwaysStoppedAnimation<Color>(AppColors.error),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.error),
           ),
         ),
       ],
@@ -241,30 +256,45 @@ class BookingLimitDialog extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.workspace_premium,
-                  size: 16, color: context.colors.primary),
+              Icon(
+                Icons.workspace_premium,
+                size: 16,
+                color: context.colors.primary,
+              ),
               const SizedBox(width: 6),
-              Text(t.subscriptionPremiumIncludes,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: AppFontSizes.secondary,
-                      color: context.colors.primary)),
+              Text(
+                t.subscriptionPremiumIncludes,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: AppFontSizes.secondary,
+                  color: context.colors.primary,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
-          ...features.map((f) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  children: [
-                    const Icon(Icons.check_circle,
-                        size: 14, color: AppColors.success),
-                    const SizedBox(width: 6),
-                    Text(f,
-                        style: TextStyle(
-                            fontSize: AppFontSizes.secondary, color: context.colors.textPrimary)),
-                  ],
-                ),
-              )),
+          ...features.map(
+            (f) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.check_circle,
+                    size: 14,
+                    color: AppColors.success,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    f,
+                    style: TextStyle(
+                      fontSize: AppFontSizes.secondary,
+                      color: context.colors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

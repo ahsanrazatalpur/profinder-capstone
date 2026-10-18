@@ -23,7 +23,9 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 enum _RoleFilter { all, customer, professional }
+
 enum _StatusFilter { all, active, blocked }
+
 enum _SortOption { nameAsc, nameDesc, dateNew, dateOld }
 
 class AdminUsersScreen extends StatefulWidget {
@@ -34,19 +36,19 @@ class AdminUsersScreen extends StatefulWidget {
 }
 
 class _AdminUsersScreenState extends State<AdminUsersScreen> {
-  final _api        = ApiService();
+  final _api = ApiService();
   final _searchCtrl = TextEditingController();
 
-  bool          _loading  = true;
-  String?       _error;
-  List<dynamic> _all      = [];
+  bool _loading = true;
+  String? _error;
+  List<dynamic> _all = [];
   List<dynamic> _filtered = [];
 
-  _RoleFilter   _roleFilter   = _RoleFilter.all;
+  _RoleFilter _roleFilter = _RoleFilter.all;
   _StatusFilter _statusFilter = _StatusFilter.all;
-  _SortOption   _sortOption   = _SortOption.dateNew;
+  _SortOption _sortOption = _SortOption.dateNew;
 
-  bool          _selectionMode = false;
+  bool _selectionMode = false;
   final Set<dynamic> _selectedIds = {};
 
   @override
@@ -63,16 +65,25 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
 
   // ── Load from backend (all roles, combined) ─────────────────
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final r = await _api.get('/users/');
       if (!mounted) return;
       final list = r.data is List ? List<dynamic>.from(r.data) : <dynamic>[];
-      setState(() { _loading = false; _all = list; });
+      setState(() {
+        _loading = false;
+        _all = list;
+      });
       _applyFilters();
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load users'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load users';
+      });
     }
   }
 
@@ -81,22 +92,23 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     final q = _searchCtrl.text.trim().toLowerCase();
 
     var result = _all.where((u) {
-      final matchSearch = q.isEmpty ||
-          (u['name']  ?? '').toString().toLowerCase().contains(q) ||
+      final matchSearch =
+          q.isEmpty ||
+          (u['name'] ?? '').toString().toLowerCase().contains(q) ||
           (u['email'] ?? '').toString().toLowerCase().contains(q);
 
       final role = u['role']?.toString() ?? '';
       final matchRole = switch (_roleFilter) {
-        _RoleFilter.all          => true,
-        _RoleFilter.customer     => role == 'customer',
+        _RoleFilter.all => true,
+        _RoleFilter.customer => role == 'customer',
         _RoleFilter.professional => role == 'professional',
       };
 
       final isActive = u['is_active'] != false;
       final matchStatus = switch (_statusFilter) {
-        _StatusFilter.all      => true,
-        _StatusFilter.active   => isActive,
-        _StatusFilter.blocked  => !isActive,
+        _StatusFilter.all => true,
+        _StatusFilter.active => isActive,
+        _StatusFilter.blocked => !isActive,
       };
 
       return matchSearch && matchRole && matchStatus;
@@ -105,15 +117,21 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     result.sort((a, b) {
       switch (_sortOption) {
         case _SortOption.nameAsc:
-          return (a['name'] ?? '').toString().toLowerCase()
-              .compareTo((b['name'] ?? '').toString().toLowerCase());
+          return (a['name'] ?? '').toString().toLowerCase().compareTo(
+            (b['name'] ?? '').toString().toLowerCase(),
+          );
         case _SortOption.nameDesc:
-          return (b['name'] ?? '').toString().toLowerCase()
-              .compareTo((a['name'] ?? '').toString().toLowerCase());
+          return (b['name'] ?? '').toString().toLowerCase().compareTo(
+            (a['name'] ?? '').toString().toLowerCase(),
+          );
         case _SortOption.dateNew:
-          return (b['joined'] ?? '').toString().compareTo((a['joined'] ?? '').toString());
+          return (b['joined'] ?? '').toString().compareTo(
+            (a['joined'] ?? '').toString(),
+          );
         case _SortOption.dateOld:
-          return (a['joined'] ?? '').toString().compareTo((b['joined'] ?? '').toString());
+          return (a['joined'] ?? '').toString().compareTo(
+            (b['joined'] ?? '').toString(),
+          );
       }
     });
 
@@ -123,11 +141,11 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   // ── Single Ban / Unban ────────────────────────────────────────
   Future<void> _toggleBan(dynamic user) async {
     final isBanned = user['is_active'] == false;
-    final action   = isBanned ? 'unban' : 'ban';
-    final name     = user['name']?.toString() ?? 'this user';
+    final action = isBanned ? 'unban' : 'ban';
+    final name = user['name']?.toString() ?? 'this user';
 
     final confirmed = await _confirmDialog(
-      title:   isBanned ? 'Unban User?' : 'Block User?',
+      title: isBanned ? 'Unban User?' : 'Block User?',
       message: isBanned
           ? '$name will be able to login again.'
           : '$name will not be able to login until unblocked.',
@@ -137,7 +155,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     if (!confirmed) return;
 
     try {
-      await _api.patch('/admin-panel/users/${user['id']}/ban/', {'action': action});
+      await _api.patch('/admin-panel/users/${user['id']}/ban/', {
+        'action': action,
+      });
       if (!mounted) return;
       setState(() {
         final idx = _all.indexWhere((u) => u['id'] == user['id']);
@@ -158,7 +178,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     if (_selectedIds.isEmpty) return;
 
     final confirmed = await _confirmDialog(
-      title:   block ? 'Block ${_selectedIds.length} users?' : 'Unblock ${_selectedIds.length} users?',
+      title: block
+          ? 'Block ${_selectedIds.length} users?'
+          : 'Unblock ${_selectedIds.length} users?',
       message: block
           ? 'Selected users will not be able to login until unblocked.'
           : 'Selected users will be able to login again.',
@@ -171,14 +193,15 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     for (final id in _selectedIds.toList()) {
       final idx = _all.indexWhere((u) => u['id'] == id);
       if (idx == -1) continue;
-      final user     = _all[idx];
+      final user = _all[idx];
       final isBanned = user['is_active'] == false;
       // skip if already in desired state
       if (block && isBanned) continue;
       if (!block && !isBanned) continue;
       try {
-        await _api.patch('/admin-panel/users/$id/ban/',
-            {'action': block ? 'ban' : 'unban'});
+        await _api.patch('/admin-panel/users/$id/ban/', {
+          'action': block ? 'ban' : 'unban',
+        });
         setState(() => _all[idx]['is_active'] = !block);
         success++;
       } catch (_) {
@@ -212,11 +235,11 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     final buffer = StringBuffer();
     buffer.writeln('Name,Email,Role,Status,City,Joined');
     for (final u in rows) {
-      final name   = (u['name'] ?? '').toString().replaceAll(',', ' ');
-      final email  = (u['email'] ?? '').toString();
-      final role   = (u['role'] ?? '').toString();
+      final name = (u['name'] ?? '').toString().replaceAll(',', ' ');
+      final email = (u['email'] ?? '').toString();
+      final role = (u['role'] ?? '').toString();
       final status = (u['is_active'] != false) ? 'Active' : 'Blocked';
-      final city   = (u['city'] ?? '').toString().replaceAll(',', ' ');
+      final city = (u['city'] ?? '').toString().replaceAll(',', ' ');
       final joined = (u['joined'] ?? '').toString();
       buffer.writeln('$name,$email,$role,$status,$city,$joined');
     }
@@ -224,31 +247,54 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-        title: Text('Export (${rows.length} users)',
-            style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
+        title: Text(
+          'Export (${rows.length} users)',
+          style: const TextStyle(
+            fontSize: AppFontSizes.title,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         content: SizedBox(
           width: double.maxFinite,
           height: 260,
           child: SingleChildScrollView(
-            child: SelectableText(buffer.toString(),
-                style: const TextStyle(fontSize: AppFontSizes.caption, fontFamily: 'monospace')),
+            child: SelectableText(
+              buffer.toString(),
+              style: const TextStyle(
+                fontSize: AppFontSizes.caption,
+                fontFamily: 'monospace',
+              ),
+            ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close', style: TextStyle(color: AppColors.neutral400)),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: AppColors.neutral400),
+            ),
           ),
           ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.adminColor,
+            ),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: buffer.toString()));
               Navigator.pop(context);
-              _showSnack('CSV copied to clipboard — paste into Excel/Sheets', AppColors.success);
+              _showSnack(
+                'CSV copied to clipboard — paste into Excel/Sheets',
+                AppColors.success,
+              );
             },
             icon: const Icon(Icons.copy_rounded, size: 16, color: Colors.white),
-            label: const Text('Copy to Clipboard', style: TextStyle(color: Colors.white)),
+            label: const Text(
+              'Copy to Clipboard',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -281,17 +327,17 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       body: _loading
           ? _buildLoader()
           : _error != null
-              ? _buildError()
-              : Column(
-                  children: [
-                    _buildSearchBar(),
-                    _buildRoleChips(),
-                    _buildStatusChips(),
-                    _buildCountBar(),
-                    if (_selectionMode) _buildBulkActionBar(),
-                    Expanded(child: _buildList()),
-                  ],
-                ),
+          ? _buildError()
+          : Column(
+              children: [
+                _buildSearchBar(),
+                _buildRoleChips(),
+                _buildStatusChips(),
+                _buildCountBar(),
+                if (_selectionMode) _buildBulkActionBar(),
+                Expanded(child: _buildList()),
+              ],
+            ),
     );
   }
 
@@ -310,10 +356,22 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             _applyFilters();
           },
           itemBuilder: (_) => const [
-            PopupMenuItem(value: _SortOption.nameAsc,  child: Text('Name (A-Z)')),
-            PopupMenuItem(value: _SortOption.nameDesc, child: Text('Name (Z-A)')),
-            PopupMenuItem(value: _SortOption.dateNew,  child: Text('Newest First')),
-            PopupMenuItem(value: _SortOption.dateOld,  child: Text('Oldest First')),
+            PopupMenuItem(
+              value: _SortOption.nameAsc,
+              child: Text('Name (A-Z)'),
+            ),
+            PopupMenuItem(
+              value: _SortOption.nameDesc,
+              child: Text('Name (Z-A)'),
+            ),
+            PopupMenuItem(
+              value: _SortOption.dateNew,
+              child: Text('Newest First'),
+            ),
+            PopupMenuItem(
+              value: _SortOption.dateOld,
+              child: Text('Oldest First'),
+            ),
           ],
         ),
         const SizedBox(width: 8),
@@ -324,9 +382,19 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           onGradient: true,
         ),
         const SizedBox(width: 8),
-        AppBarIconButton(icon: Icons.download_rounded, tooltip: 'Export', onPressed: _exportCsv, onGradient: true),
+        AppBarIconButton(
+          icon: Icons.download_rounded,
+          tooltip: 'Export',
+          onPressed: _exportCsv,
+          onGradient: true,
+        ),
         const SizedBox(width: 8),
-        AppBarIconButton(icon: Icons.refresh_rounded, tooltip: 'Refresh', onPressed: _load, onGradient: true),
+        AppBarIconButton(
+          icon: Icons.refresh_rounded,
+          tooltip: 'Refresh',
+          onPressed: _load,
+          onGradient: true,
+        ),
       ],
     );
   }
@@ -341,23 +409,36 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         onChanged: (_) => _applyFilters(),
         style: const TextStyle(fontSize: AppFontSizes.secondary),
         decoration: InputDecoration(
-          hintText:   'Search by name or email…',
-          hintStyle:  const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
-          prefixIcon: const Icon(Icons.search, size: 18, color: AppColors.neutral400),
+          hintText: 'Search by name or email…',
+          hintStyle: const TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.neutral400,
+          ),
+          prefixIcon: const Icon(
+            Icons.search,
+            size: 18,
+            color: AppColors.neutral400,
+          ),
           suffixIcon: _searchCtrl.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear, size: 16, color: AppColors.neutral400),
+                  icon: const Icon(
+                    Icons.clear,
+                    size: 16,
+                    color: AppColors.neutral400,
+                  ),
                   onPressed: () {
                     _searchCtrl.clear();
                     _applyFilters();
                   },
                 )
               : null,
-          filled:         true,
-          fillColor:      AppColors.neutral100,
+          filled: true,
+          fillColor: AppColors.neutral100,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
+            borderSide: BorderSide.none,
+          ),
         ),
       ),
     );
@@ -366,9 +447,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   // ── Role Filter Chips ────────────────────────────────────────
   Widget _buildRoleChips() {
     final filters = [
-      (_RoleFilter.all,          'All Roles',      AppColors.gray700),
-      (_RoleFilter.customer,     'Customers',       context.colors.primary),
-      (_RoleFilter.professional, 'Professionals',   AppColors.accentPurple),
+      (_RoleFilter.all, 'All Roles', AppColors.gray700),
+      (_RoleFilter.customer, 'Customers', context.colors.primary),
+      (_RoleFilter.professional, 'Professionals', AppColors.accentPurple),
     ];
     return Container(
       color: Colors.white,
@@ -385,16 +466,22 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: isActive ? f.$3 : AppColors.neutral100,
                   borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                 ),
-                child: Text(f.$2,
-                    style: TextStyle(
-                        fontSize: AppFontSizes.small,
-                        fontWeight: FontWeight.w600,
-                        color: isActive ? Colors.white : AppColors.grayDeep)),
+                child: Text(
+                  f.$2,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.small,
+                    fontWeight: FontWeight.w600,
+                    color: isActive ? Colors.white : AppColors.grayDeep,
+                  ),
+                ),
               ),
             ),
           );
@@ -406,8 +493,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   // ── Status Filter Chips ──────────────────────────────────────
   Widget _buildStatusChips() {
     final filters = [
-      (_StatusFilter.all,     'All',     AppColors.gray700),
-      (_StatusFilter.active,  'Active',  context.colors.accent),
+      (_StatusFilter.all, 'All', AppColors.gray700),
+      (_StatusFilter.active, 'Active', context.colors.accent),
       (_StatusFilter.blocked, 'Blocked', AppColors.error),
     ];
     return Container(
@@ -425,18 +512,27 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: isActive ? f.$3.withValues(alpha: 0.15) : Colors.transparent,
+                  color: isActive
+                      ? f.$3.withValues(alpha: 0.15)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                   border: Border.all(
-                      color: isActive ? f.$3 : AppColors.neutral200),
+                    color: isActive ? f.$3 : AppColors.neutral200,
+                  ),
                 ),
-                child: Text(f.$2,
-                    style: TextStyle(
-                        fontSize: AppFontSizes.caption,
-                        fontWeight: FontWeight.w600,
-                        color: isActive ? f.$3 : AppColors.neutral400)),
+                child: Text(
+                  f.$2,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.caption,
+                    fontWeight: FontWeight.w600,
+                    color: isActive ? f.$3 : AppColors.neutral400,
+                  ),
+                ),
               ),
             ),
           );
@@ -447,7 +543,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
 
   // ── Count Bar ────────────────────────────────────────────────
   Widget _buildCountBar() {
-    final total  = _all.length;
+    final total = _all.length;
     final active = _all.where((u) => u['is_active'] != false).length;
     final blocked = _all.where((u) => u['is_active'] == false).length;
 
@@ -455,14 +551,19 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Row(
         children: [
-          _countPill('$total Total',   AppColors.gray700),
+          _countPill('$total Total', AppColors.gray700),
           const SizedBox(width: 8),
           _countPill('$active Active', context.colors.accent),
           const SizedBox(width: 8),
           _countPill('$blocked Blocked', AppColors.error),
           const Spacer(),
-          Text('${_filtered.length} shown',
-              style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
+          Text(
+            '${_filtered.length} shown',
+            style: const TextStyle(
+              fontSize: AppFontSizes.caption,
+              color: AppColors.neutral400,
+            ),
+          ),
         ],
       ),
     );
@@ -471,8 +572,18 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Widget _countPill(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
-      child: Text(label, style: TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w600, color: color)),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: AppFontSizes.caption,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
     );
   }
 
@@ -483,23 +594,63 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
-          Text('${_selectedIds.length} selected',
-              style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700, color: AppColors.adminColor)),
+          Text(
+            '${_selectedIds.length} selected',
+            style: const TextStyle(
+              fontSize: AppFontSizes.small,
+              fontWeight: FontWeight.w700,
+              color: AppColors.adminColor,
+            ),
+          ),
           const Spacer(),
           TextButton.icon(
-            onPressed: _selectedIds.isEmpty ? null : () => _bulkSetStatus(block: true),
-            icon: const Icon(Icons.block_rounded, size: 16, color: AppColors.error),
-            label: const Text('Block', style: TextStyle(color: AppColors.error, fontSize: AppFontSizes.small)),
+            onPressed: _selectedIds.isEmpty
+                ? null
+                : () => _bulkSetStatus(block: true),
+            icon: const Icon(
+              Icons.block_rounded,
+              size: 16,
+              color: AppColors.error,
+            ),
+            label: const Text(
+              'Block',
+              style: TextStyle(
+                color: AppColors.error,
+                fontSize: AppFontSizes.small,
+              ),
+            ),
           ),
           TextButton.icon(
-            onPressed: _selectedIds.isEmpty ? null : () => _bulkSetStatus(block: false),
-            icon: Icon(Icons.lock_open_rounded, size: 16, color: context.colors.accent),
-            label: Text('Unblock', style: TextStyle(color: context.colors.accent, fontSize: AppFontSizes.small)),
+            onPressed: _selectedIds.isEmpty
+                ? null
+                : () => _bulkSetStatus(block: false),
+            icon: Icon(
+              Icons.lock_open_rounded,
+              size: 16,
+              color: context.colors.accent,
+            ),
+            label: Text(
+              'Unblock',
+              style: TextStyle(
+                color: context.colors.accent,
+                fontSize: AppFontSizes.small,
+              ),
+            ),
           ),
           TextButton.icon(
             onPressed: _selectedIds.isEmpty ? null : _exportCsv,
-            icon: const Icon(Icons.download_rounded, size: 16, color: AppColors.grayDeep),
-            label: const Text('Export', style: TextStyle(color: AppColors.grayDeep, fontSize: AppFontSizes.small)),
+            icon: const Icon(
+              Icons.download_rounded,
+              size: 16,
+              color: AppColors.grayDeep,
+            ),
+            label: const Text(
+              'Export',
+              style: TextStyle(
+                color: AppColors.grayDeep,
+                fontSize: AppFontSizes.small,
+              ),
+            ),
           ),
         ],
       ),
@@ -513,11 +664,21 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.people_outline, size: 60, color: AppColors.neutral300),
+            const Icon(
+              Icons.people_outline,
+              size: 60,
+              color: AppColors.neutral300,
+            ),
             const SizedBox(height: 12),
             Text(
-              _searchCtrl.text.isNotEmpty ? 'No results for "${_searchCtrl.text}"' : 'No users found',
-              style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w500, color: AppColors.neutral400),
+              _searchCtrl.text.isNotEmpty
+                  ? 'No results for "${_searchCtrl.text}"'
+                  : 'No users found',
+              style: const TextStyle(
+                fontSize: AppFontSizes.body,
+                fontWeight: FontWeight.w500,
+                color: AppColors.neutral400,
+              ),
             ),
           ],
         ),
@@ -528,8 +689,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       onRefresh: _load,
       color: AppColors.adminColor,
       child: ListView.builder(
-        padding:     const EdgeInsets.all(12),
-        itemCount:   _filtered.length,
+        padding: const EdgeInsets.all(12),
+        itemCount: _filtered.length,
         itemBuilder: (_, i) => _buildUserCard(_filtered[i]),
       ),
     );
@@ -537,40 +698,53 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
 
   // ── User Card ─────────────────────────────────────────────────
   Widget _buildUserCard(dynamic user) {
-    final id       = user['id'];
-    final name     = user['name']?.toString()      ?? 'User';
-    final email    = user['email']?.toString()     ?? '';
-    final role     = user['role']?.toString()      ?? '';
-    final city     = user['city']?.toString()      ?? '';
-    final joined   = user['joined']?.toString()    ?? '';
+    final id = user['id'];
+    final name = user['name']?.toString() ?? 'User';
+    final email = user['email']?.toString() ?? '';
+    final role = user['role']?.toString() ?? '';
+    final city = user['city']?.toString() ?? '';
+    final joined = user['joined']?.toString() ?? '';
     final photoUrl = user['photo_url']?.toString() ?? '';
     final isBanned = user['is_active'] == false;
     final isSelected = _selectedIds.contains(id);
 
-    final roleColor = role == 'professional' ? AppColors.accentPurple : context.colors.primary;
+    final roleColor = role == 'professional'
+        ? AppColors.accentPurple
+        : context.colors.primary;
 
     return GestureDetector(
-      onTap: _selectionMode ? () => _toggleSelect(id) : () => _showUserDetails(user),
+      onTap: _selectionMode
+          ? () => _toggleSelect(id)
+          : () => _showUserDetails(user),
       onLongPress: () {
         if (!_selectionMode) {
-          setState(() { _selectionMode = true; _selectedIds.add(id); });
+          setState(() {
+            _selectionMode = true;
+            _selectedIds.add(id);
+          });
         }
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.adminColor.withValues(alpha: 0.06) : Colors.white,
+          color: isSelected
+              ? AppColors.adminColor.withValues(alpha: 0.06)
+              : Colors.white,
           borderRadius: BorderRadius.circular(AppSizes.radius14),
           border: Border.all(
             color: isSelected
                 ? AppColors.adminColor
                 : isBanned
-                    ? AppColors.error.withValues(alpha: 0.3)
-                    : AppColors.neutral200,
+                ? AppColors.error.withValues(alpha: 0.3)
+                : AppColors.neutral200,
           ),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 1)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 6,
+              offset: const Offset(0, 1),
+            ),
           ],
         ),
         child: Row(
@@ -590,23 +764,37 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 CircleAvatar(
                   radius: 24,
                   backgroundColor: context.colors.primaryLight,
-                  backgroundImage: photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null,
+                  backgroundImage: photoUrl.isNotEmpty
+                      ? NetworkImage(photoUrl)
+                      : null,
                   child: photoUrl.isEmpty
-                      ? Text(AppHelpers.getInitials(name),
+                      ? Text(
+                          AppHelpers.getInitials(name),
                           style: TextStyle(
-                              color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: AppFontSizes.secondary))
+                            color: context.colors.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: AppFontSizes.secondary,
+                          ),
+                        )
                       : null,
                 ),
                 if (isBanned)
                   Positioned(
-                    right: 0, bottom: 0,
+                    right: 0,
+                    bottom: 0,
                     child: Container(
-                      width: 14, height: 14,
+                      width: 14,
+                      height: 14,
                       decoration: BoxDecoration(
-                          color: AppColors.error,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 1.5)),
-                      child: const Icon(Icons.block, color: Colors.white, size: 8),
+                        color: AppColors.error,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.5),
+                      ),
+                      child: const Icon(
+                        Icons.block,
+                        color: Colors.white,
+                        size: 8,
+                      ),
                     ),
                   ),
               ],
@@ -621,10 +809,16 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(name,
-                            style: const TextStyle(
-                                fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: AppColors.gray900),
-                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          name,
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.body,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.gray900,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       _statusBadge(role.toUpperCase(), roleColor),
                       const SizedBox(width: 4),
@@ -634,22 +828,48 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     ],
                   ),
                   const SizedBox(height: 2),
-                  Text(email,
-                      style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.grayDeep),
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(
+                    email,
+                    style: const TextStyle(
+                      fontSize: AppFontSizes.small,
+                      color: AppColors.grayDeep,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
                       if (city.isNotEmpty) ...[
-                        const Icon(Icons.location_on_outlined, size: 11, color: AppColors.neutral400),
+                        const Icon(
+                          Icons.location_on_outlined,
+                          size: 11,
+                          color: AppColors.neutral400,
+                        ),
                         const SizedBox(width: 2),
-                        Text(city, style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
+                        Text(
+                          city,
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.caption,
+                            color: AppColors.neutral400,
+                          ),
+                        ),
                         const SizedBox(width: 10),
                       ],
                       if (joined.isNotEmpty) ...[
-                        const Icon(Icons.calendar_today_outlined, size: 11, color: AppColors.neutral400),
+                        const Icon(
+                          Icons.calendar_today_outlined,
+                          size: 11,
+                          color: AppColors.neutral400,
+                        ),
                         const SizedBox(width: 2),
-                        Text('Joined $joined', style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
+                        Text(
+                          'Joined $joined',
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.caption,
+                            color: AppColors.neutral400,
+                          ),
+                        ),
                       ],
                     ],
                   ),
@@ -663,25 +883,44 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               GestureDetector(
                 onTap: () => _toggleBan(user),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: isBanned ? context.colors.accent.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.1),
+                    color: isBanned
+                        ? context.colors.accent.withValues(alpha: 0.1)
+                        : AppColors.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppSizes.radius10),
                     border: Border.all(
-                      color: isBanned ? context.colors.accent.withValues(alpha: 0.3) : AppColors.error.withValues(alpha: 0.3),
+                      color: isBanned
+                          ? context.colors.accent.withValues(alpha: 0.3)
+                          : AppColors.error.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(isBanned ? Icons.lock_open_rounded : Icons.block_rounded,
-                          size: 16, color: isBanned ? context.colors.accent : AppColors.error),
+                      Icon(
+                        isBanned
+                            ? Icons.lock_open_rounded
+                            : Icons.block_rounded,
+                        size: 16,
+                        color: isBanned
+                            ? context.colors.accent
+                            : AppColors.error,
+                      ),
                       const SizedBox(height: 2),
-                      Text(isBanned ? 'Unban' : 'Block',
-                          style: TextStyle(
-                              fontSize: AppFontSizes.nano,
-                              fontWeight: FontWeight.w700,
-                              color: isBanned ? context.colors.accent : AppColors.error)),
+                      Text(
+                        isBanned ? 'Unban' : 'Block',
+                        style: TextStyle(
+                          fontSize: AppFontSizes.nano,
+                          fontWeight: FontWeight.w700,
+                          color: isBanned
+                              ? context.colors.accent
+                              : AppColors.error,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -694,22 +933,26 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
 
   // ── User Details Bottom Sheet ─────────────────────────────────
   void _showUserDetails(dynamic user) {
-    final name       = user['name']?.toString()      ?? 'User';
-    final email      = user['email']?.toString()     ?? '';
-    final role       = user['role']?.toString()      ?? '';
-    final city       = user['city']?.toString()      ?? '';
-    final joined     = user['joined']?.toString()    ?? '';
-    final photoUrl   = user['photo_url']?.toString() ?? '';
-    final isBanned   = user['is_active'] == false;
-    final isPro      = role == 'professional';
-    final category   = user['category_name']?.toString() ?? '';
-    final hourlyRate = user['hourly_rate']?.toString()    ?? '';
+    final name = user['name']?.toString() ?? 'User';
+    final email = user['email']?.toString() ?? '';
+    final role = user['role']?.toString() ?? '';
+    final city = user['city']?.toString() ?? '';
+    final joined = user['joined']?.toString() ?? '';
+    final photoUrl = user['photo_url']?.toString() ?? '';
+    final isBanned = user['is_active'] == false;
+    final isPro = role == 'professional';
+    final category = user['category_name']?.toString() ?? '';
+    final hourlyRate = user['hourly_rate']?.toString() ?? '';
     final isVerified = user['is_verified'] == true;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
+      ),
       builder: (_) => DraggableScrollableSheet(
         initialChildSize: 0.55,
         minChildSize: 0.3,
@@ -723,9 +966,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             children: [
               Center(
                 child: Container(
-                  width: 40, height: 4,
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
-                      color: AppColors.neutral200, borderRadius: BorderRadius.circular(AppSizes.radiusTiny)),
+                    color: AppColors.neutral200,
+                    borderRadius: BorderRadius.circular(AppSizes.radiusTiny),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -734,11 +980,18 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   CircleAvatar(
                     radius: 32,
                     backgroundColor: context.colors.primaryLight,
-                    backgroundImage: photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null,
+                    backgroundImage: photoUrl.isNotEmpty
+                        ? NetworkImage(photoUrl)
+                        : null,
                     child: photoUrl.isEmpty
-                        ? Text(AppHelpers.getInitials(name),
+                        ? Text(
+                            AppHelpers.getInitials(name),
                             style: TextStyle(
-                                color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: AppFontSizes.title2))
+                              color: context.colors.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: AppFontSizes.title2,
+                            ),
+                          )
                         : null,
                   ),
                   const SizedBox(width: 14),
@@ -746,15 +999,30 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name,
-                            style: const TextStyle(fontSize: AppFontSizes.titleMd, fontWeight: FontWeight.w800)),
+                        Text(
+                          name,
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.titleMd,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                         const SizedBox(height: 2),
-                        Text(email, style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
+                        Text(
+                          email,
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.secondary,
+                            color: AppColors.grayDeep,
+                          ),
+                        ),
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            _statusBadge(role.toUpperCase(),
-                                isPro ? AppColors.accentPurple : context.colors.primary),
+                            _statusBadge(
+                              role.toUpperCase(),
+                              isPro
+                                  ? AppColors.accentPurple
+                                  : context.colors.primary,
+                            ),
                             const SizedBox(width: 6),
                             isBanned
                                 ? _statusBadge('BLOCKED', AppColors.error)
@@ -763,7 +1031,10 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                               const SizedBox(width: 6),
                               isVerified
                                   ? _statusBadge('VERIFIED', AppColors.success)
-                                  : _statusBadge('UNVERIFIED', AppColors.warning),
+                                  : _statusBadge(
+                                      'UNVERIFIED',
+                                      AppColors.warning,
+                                    ),
                             ],
                           ],
                         ),
@@ -775,29 +1046,54 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               const SizedBox(height: 20),
               const Divider(height: 1),
               const SizedBox(height: 16),
-              _detailRow(Icons.location_on_outlined, 'City', city.isEmpty ? '—' : city),
-              _detailRow(Icons.calendar_today_outlined, 'Joined', joined.isEmpty ? '—' : joined),
+              _detailRow(
+                Icons.location_on_outlined,
+                'City',
+                city.isEmpty ? '—' : city,
+              ),
+              _detailRow(
+                Icons.calendar_today_outlined,
+                'Joined',
+                joined.isEmpty ? '—' : joined,
+              ),
               if (isPro) ...[
-                _detailRow(Icons.category_outlined, 'Category', category.isEmpty ? '—' : category),
-                _detailRow(Icons.payments_outlined, 'Hourly Rate',
-                    hourlyRate.isEmpty ? '—' : 'Rs $hourlyRate'),
+                _detailRow(
+                  Icons.category_outlined,
+                  'Category',
+                  category.isEmpty ? '—' : category,
+                ),
+                _detailRow(
+                  Icons.payments_outlined,
+                  'Hourly Rate',
+                  hourlyRate.isEmpty ? '—' : 'Rs $hourlyRate',
+                ),
               ],
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isBanned ? context.colors.accent : AppColors.error,
+                    backgroundColor: isBanned
+                        ? context.colors.accent
+                        : AppColors.error,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
                     _toggleBan(user);
                   },
-                  icon: Icon(isBanned ? Icons.lock_open_rounded : Icons.block_rounded,
-                      color: Colors.white, size: 18),
-                  label: Text(isBanned ? 'Unblock User' : 'Block User',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                  icon: Icon(
+                    isBanned ? Icons.lock_open_rounded : Icons.block_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  label: Text(
+                    isBanned ? 'Unblock User' : 'Block User',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -814,10 +1110,22 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         children: [
           Icon(icon, size: 16, color: AppColors.neutral400),
           const SizedBox(width: 10),
-          Text(label, style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: AppFontSizes.secondary,
+              color: AppColors.grayDeep,
+            ),
+          ),
           const Spacer(),
-          Text(value,
-              style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: AppColors.gray900)),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: AppFontSizes.secondary,
+              fontWeight: FontWeight.w600,
+              color: AppColors.gray900,
+            ),
+          ),
         ],
       ),
     );
@@ -827,14 +1135,27 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Widget _statusBadge(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSizes.radiusXs)),
-      child: Text(label, style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w700, color: color)),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppSizes.radiusXs),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: AppFontSizes.nano,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
     );
   }
 
   Widget _buildLoader() {
     return const Center(
-      child: CircularProgressIndicator(color: AppColors.adminColor, strokeWidth: 2.5),
+      child: CircularProgressIndicator(
+        color: AppColors.adminColor,
+        strokeWidth: 2.5,
+      ),
     );
   }
 
@@ -843,16 +1164,28 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 56, color: AppColors.error),
+          const Icon(
+            Icons.error_outline_rounded,
+            size: 56,
+            color: AppColors.error,
+          ),
           const SizedBox(height: 12),
-          const Text('Failed to load users',
-              style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w600, color: AppColors.gray700)),
+          const Text(
+            'Failed to load users',
+            style: TextStyle(
+              fontSize: AppFontSizes.input,
+              fontWeight: FontWeight.w600,
+              color: AppColors.gray700,
+            ),
+          ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: _load,
             icon: const Icon(Icons.refresh_rounded),
             label: const Text('Retry'),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.adminColor,
+            ),
           ),
         ],
       ),
@@ -868,20 +1201,43 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     return await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-            title: Text(title, style: const TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
-            content: Text(message, style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+            ),
+            title: Text(
+              title,
+              style: const TextStyle(
+                fontSize: AppFontSizes.title,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            content: Text(
+              message,
+              style: const TextStyle(
+                fontSize: AppFontSizes.secondary,
+                color: AppColors.grayDeep,
+              ),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel', style: TextStyle(color: AppColors.neutral400)),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: AppColors.neutral400),
+                ),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: confirmColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
+                  backgroundColor: confirmColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  ),
+                ),
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(confirmLabel, style: const TextStyle(color: Colors.white)),
+                child: Text(
+                  confirmLabel,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -892,10 +1248,18 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   void _showSnack(String msg, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        content: Text(
+          msg,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
         duration: const Duration(seconds: 2),
       ),
     );

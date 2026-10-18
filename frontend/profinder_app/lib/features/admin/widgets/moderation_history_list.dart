@@ -52,7 +52,8 @@ class ModerationHistoryList extends StatelessWidget {
           if (i > 0) const SizedBox(height: 10),
           _ActionTile(
             action: actions[i],
-            highlight: highlightReportId != null &&
+            highlight:
+                highlightReportId != null &&
                 actions[i].reportId == highlightReportId,
             onReverse: onReverse,
             busy: busy,
@@ -95,7 +96,8 @@ class _ActionTile extends StatelessWidget {
         ? l.tsAdminUnknown
         : action.performedByLabel;
     final expiry = _expiryLine(l);
-    final dimmed = action.state == ActionState.reversed ||
+    final dimmed =
+        action.state == ActionState.reversed ||
         action.state == ActionState.expired;
 
     return Container(
@@ -104,7 +106,9 @@ class _ActionTile extends StatelessWidget {
         color: dimmed ? TsColors.bg : Colors.white,
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
-          color: highlight ? TsColors.accent.withValues(alpha: 0.5) : TsColors.border,
+          color: highlight
+              ? TsColors.accent.withValues(alpha: 0.5)
+              : TsColors.border,
         ),
       ),
       child: Column(
@@ -120,7 +124,11 @@ class _ActionTile extends StatelessWidget {
                   color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(AppSizes.radius10),
                 ),
-                child: Icon(tsActionIcon(action.actionType), size: 18, color: color),
+                child: Icon(
+                  tsActionIcon(action.actionType),
+                  size: 18,
+                  color: color,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -128,8 +136,11 @@ class _ActionTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      tsActionTypeLabel(l, action.actionType,
-                          fallback: action.actionTypeDisplay),
+                      tsActionTypeLabel(
+                        l,
+                        action.actionType,
+                        fallback: action.actionTypeDisplay,
+                      ),
                       style: const TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w800,
@@ -146,7 +157,10 @@ class _ActionTile extends StatelessWidget {
                           color: tsStateColor(action.state),
                         ),
                         if (highlight)
-                          TsBadge(label: l.tsThisReport, color: TsColors.accent),
+                          TsBadge(
+                            label: l.tsThisReport,
+                            color: TsColors.accent,
+                          ),
                       ],
                     ),
                   ],
@@ -195,7 +209,9 @@ class _ActionTile extends StatelessWidget {
                 onPressed: busy ? null : () => onReverse!(action),
                 icon: const Icon(Icons.undo_rounded, size: 16),
                 label: Text(l.tsReverse),
-                style: TextButton.styleFrom(foregroundColor: TsColors.suspension),
+                style: TextButton.styleFrom(
+                  foregroundColor: TsColors.suspension,
+                ),
               ),
             ),
           ],
@@ -241,7 +257,11 @@ class _ActionTile extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.lock_outline_rounded, size: 12, color: AppColors.amber800),
+              const Icon(
+                Icons.lock_outline_rounded,
+                size: 12,
+                color: AppColors.amber800,
+              ),
               const SizedBox(width: 5),
               Expanded(
                 child: Text(
@@ -258,7 +278,11 @@ class _ActionTile extends StatelessWidget {
           const SizedBox(height: 3),
           SelectableText(
             text.isEmpty ? '—' : text,
-            style: const TextStyle(fontSize: 12.5, color: TsColors.textBody, height: 1.4),
+            style: const TextStyle(
+              fontSize: 12.5,
+              color: TsColors.textBody,
+              height: 1.4,
+            ),
           ),
         ],
       ),

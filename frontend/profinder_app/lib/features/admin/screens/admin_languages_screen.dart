@@ -32,13 +32,13 @@ class AdminLanguagesScreen extends StatefulWidget {
 class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
   final _api = ApiService();
 
-  bool          _loading = true;
-  String?       _error;
+  bool _loading = true;
+  String? _error;
   List<dynamic> _languages = [];
 
   Map<String, Color> get _statusColors => {
-    'active':   context.colors.accent,
-    'beta':     AppColors.warningAmber,
+    'active': context.colors.accent,
+    'beta': AppColors.warningAmber,
     'disabled': AppColors.neutral400,
   };
 
@@ -49,17 +49,23 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final r = await _api.get('/admin-panel/languages/');
       if (!mounted) return;
       setState(() {
-        _loading   = false;
+        _loading = false;
         _languages = r.data is List ? List<dynamic>.from(r.data) : [];
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load languages'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load languages';
+      });
     }
   }
 
@@ -73,15 +79,24 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setSheetState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-          title: const Text('Add Language',
-              style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
+          title: const Text(
+            'Add Language',
+            style: TextStyle(
+              fontSize: AppFontSizes.title,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameCtrl,
-                decoration: const InputDecoration(hintText: 'Language name (e.g. Urdu)'),
+                decoration: const InputDecoration(
+                  hintText: 'Language name (e.g. Urdu)',
+                ),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -94,32 +109,46 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
                 onChanged: (v) => setSheetState(() => isRtl = v ?? false),
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,
-                title: const Text('Right-to-left (RTL)', style: TextStyle(fontSize: AppFontSizes.secondary)),
+                title: const Text(
+                  'Right-to-left (RTL)',
+                  style: TextStyle(fontSize: AppFontSizes.secondary),
+                ),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel', style: TextStyle(color: AppColors.neutral400)),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.neutral400),
+              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.adminColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
+                backgroundColor: AppColors.adminColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                ),
+              ),
               onPressed: () async {
                 final name = nameCtrl.text.trim();
                 final code = codeCtrl.text.trim();
                 if (name.isEmpty || code.isEmpty) return;
                 Navigator.pop(dialogContext);
                 try {
-                  await _api.post('/admin-panel/languages/',
-                      {'name': name, 'code': code, 'is_rtl': isRtl});
+                  await _api.post('/admin-panel/languages/', {
+                    'name': name,
+                    'code': code,
+                    'is_rtl': isRtl,
+                  });
                   _load();
                 } catch (e) {
                   if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Failed to add — code may already exist.')),
+                    const SnackBar(
+                      content: Text('Failed to add — code may already exist.'),
+                    ),
                   );
                 }
               },
@@ -134,19 +163,23 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
   // ── Change status ─────────────────────────────────────────
   Future<void> _changeStatus(dynamic lang, String newStatus) async {
     try {
-      await _api.patch('/admin-panel/languages/${lang['id']}/', {'status': newStatus});
+      await _api.patch('/admin-panel/languages/${lang['id']}/', {
+        'status': newStatus,
+      });
       _load();
     } on DioException catch (e) {
       if (!mounted) return;
-      final serverMsg = e.response?.data is Map ? e.response?.data['error']?.toString() : null;
+      final serverMsg = e.response?.data is Map
+          ? e.response?.data['error']?.toString()
+          : null;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(serverMsg ?? 'Failed to update status.')),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update status.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to update status.')));
     }
   }
 
@@ -154,7 +187,10 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet))),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
+      ),
       builder: (_) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -163,14 +199,25 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
               padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Change status',
-                    style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700)),
+                child: Text(
+                  'Change status',
+                  style: TextStyle(
+                    fontSize: AppFontSizes.input,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ),
             for (final s in ['active', 'beta', 'disabled'])
               ListTile(
                 leading: Icon(Icons.circle, size: 12, color: _statusColors[s]),
-                title: Text(s == 'active' ? 'Active' : s == 'beta' ? 'Beta' : 'Disabled'),
+                title: Text(
+                  s == 'active'
+                      ? 'Active'
+                      : s == 'beta'
+                      ? 'Beta'
+                      : 'Disabled',
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _changeStatus(lang, s);
@@ -188,22 +235,38 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-        title: const Text('Delete language?',
-            style: TextStyle(fontSize: AppFontSizes.title, fontWeight: FontWeight.w700)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
+        title: const Text(
+          'Delete language?',
+          style: TextStyle(
+            fontSize: AppFontSizes.title,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         content: Text(
           'This will permanently remove "${lang['name']}" and all its translations.',
-          style: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.grayDeep),
+          style: const TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: AppColors.grayDeep,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.neutral400)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.neutral400),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm))),
+              backgroundColor: AppColors.error,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+              ),
+            ),
             onPressed: () async {
               Navigator.pop(context);
               try {
@@ -247,8 +310,10 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
         backgroundColor: AppColors.adminColor,
         onPressed: _addDialog,
         icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: const Text('Add Language',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+        label: const Text(
+          'Add Language',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+        ),
       ),
       body: SafeArea(
         top: false,
@@ -258,24 +323,28 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
               child: _loading
                   ? const Center(
                       child: CircularProgressIndicator(
-                          color: AppColors.adminColor, strokeWidth: 2.5))
+                        color: AppColors.adminColor,
+                        strokeWidth: 2.5,
+                      ),
+                    )
                   : _error != null
-                      ? _buildError()
-                      : RefreshIndicator(
-                          onRefresh: _load,
-                          color: AppColors.adminColor,
-                          child: _languages.isEmpty
-                              ? ListView(
-                                  physics: const AlwaysScrollableScrollPhysics(),
-                                  children: [_emptyState()],
-                                )
-                              : ListView.builder(
-                                  physics: const AlwaysScrollableScrollPhysics(),
-                                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
-                                  itemCount: _languages.length,
-                                  itemBuilder: (_, i) => _languageCard(_languages[i]),
-                                ),
-                        ),
+                  ? _buildError()
+                  : RefreshIndicator(
+                      onRefresh: _load,
+                      color: AppColors.adminColor,
+                      child: _languages.isEmpty
+                          ? ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [_emptyState()],
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 90),
+                              itemCount: _languages.length,
+                              itemBuilder: (_, i) =>
+                                  _languageCard(_languages[i]),
+                            ),
+                    ),
             ),
           ],
         ),
@@ -284,12 +353,12 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
   }
 
   Widget _languageCard(dynamic lang) {
-    final status  = (lang['status'] ?? 'beta').toString();
-    final color   = _statusColors[status] ?? AppColors.neutral400;
-    final pct     = (lang['completion_percentage'] is num)
+    final status = (lang['status'] ?? 'beta').toString();
+    final color = _statusColors[status] ?? AppColors.neutral400;
+    final pct = (lang['completion_percentage'] is num)
         ? (lang['completion_percentage'] as num).toDouble()
         : 0.0;
-    final isRtl   = lang['is_rtl'] == true;
+    final isRtl = lang['is_rtl'] == true;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -297,14 +366,20 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(AppSizes.radius14),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppSizes.radius14),
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => AdminTranslationEditorScreen(language: lang)),
+          MaterialPageRoute(
+            builder: (_) => AdminTranslationEditorScreen(language: lang),
+          ),
         ).then((_) => _load()),
         child: Padding(
           padding: const EdgeInsets.all(14),
@@ -316,22 +391,44 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
                   Expanded(
                     child: Row(
                       children: [
-                        Text(lang['name']?.toString() ?? '',
-                            style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700)),
+                        Text(
+                          lang['name']?.toString() ?? '',
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.body,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         const SizedBox(width: 6),
-                        Text('(${lang['code']})',
-                            style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.neutral400)),
+                        Text(
+                          '(${lang['code']})',
+                          style: const TextStyle(
+                            fontSize: AppFontSizes.small,
+                            color: AppColors.neutral400,
+                          ),
+                        ),
                         if (isRtl) ...[
                           const SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppColors.accentPurple.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
                             ),
-                            child: const Text('RTL',
-                                style: TextStyle(fontSize: AppFontSizes.nano, fontWeight: FontWeight.w800,
-                                    color: AppColors.accentPurple)),
+                            decoration: BoxDecoration(
+                              color: AppColors.accentPurple.withValues(
+                                alpha: 0.1,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusBadge,
+                              ),
+                            ),
+                            child: const Text(
+                              'RTL',
+                              style: TextStyle(
+                                fontSize: AppFontSizes.nano,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.accentPurple,
+                              ),
+                            ),
                           ),
                         ],
                       ],
@@ -340,18 +437,33 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
                   GestureDetector(
                     onTap: () => _statusSheet(lang),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: color.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.radiusChip,
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(lang['status_display']?.toString() ?? status,
-                              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: color)),
+                          Text(
+                            lang['status_display']?.toString() ?? status,
+                            style: TextStyle(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w800,
+                              color: color,
+                            ),
+                          ),
                           const SizedBox(width: 2),
-                          Icon(Icons.keyboard_arrow_down_rounded, size: 14, color: color),
+                          Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 14,
+                            color: color,
+                          ),
                         ],
                       ),
                     ),
@@ -368,13 +480,20 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
                         value: (pct / 100).clamp(0.0, 1.0),
                         minHeight: 8,
                         backgroundColor: AppColors.neutral100,
-                        color: pct >= 100 ? context.colors.accent : AppColors.info,
+                        color: pct >= 100
+                            ? context.colors.accent
+                            : AppColors.info,
                       ),
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Text('${pct.toStringAsFixed(0)}%',
-                      style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700)),
+                  Text(
+                    '${pct.toStringAsFixed(0)}%',
+                    style: const TextStyle(
+                      fontSize: AppFontSizes.small,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -385,19 +504,32 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => AdminTranslationEditorScreen(language: lang)),
+                          builder: (_) =>
+                              AdminTranslationEditorScreen(language: lang),
+                        ),
                       ).then((_) => _load()),
                       icon: const Icon(Icons.edit_note_rounded, size: 16),
-                      label: const Text('Edit Translations', style: TextStyle(fontSize: AppFontSizes.small)),
+                      label: const Text(
+                        'Edit Translations',
+                        style: TextStyle(fontSize: AppFontSizes.small),
+                      ),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radius10,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.error),
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      size: 18,
+                      color: AppColors.error,
+                    ),
                     onPressed: () => _confirmDelete(lang),
                   ),
                 ],
@@ -415,10 +547,20 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.translate_rounded, size: 48, color: Colors.grey.shade300),
+            Icon(
+              Icons.translate_rounded,
+              size: 48,
+              color: Colors.grey.shade300,
+            ),
             const SizedBox(height: 10),
-            const Text('No languages added yet',
-                style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600, color: AppColors.neutral400)),
+            const Text(
+              'No languages added yet',
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                fontWeight: FontWeight.w600,
+                color: AppColors.neutral400,
+              ),
+            ),
           ],
         ),
       ),
@@ -430,16 +572,27 @@ class _AdminLanguagesScreenState extends State<AdminLanguagesScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+          const Icon(
+            Icons.error_outline_rounded,
+            size: 48,
+            color: AppColors.error,
+          ),
           const SizedBox(height: 10),
-          const Text('Failed to load languages',
-              style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600)),
+          const Text(
+            'Failed to load languages',
+            style: TextStyle(
+              fontSize: AppFontSizes.body,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 12),
           ElevatedButton.icon(
             onPressed: _load,
             icon: const Icon(Icons.refresh_rounded),
             label: const Text('Retry'),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.adminColor,
+            ),
           ),
         ],
       ),

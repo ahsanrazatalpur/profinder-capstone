@@ -58,7 +58,9 @@ class TakeActionSheet {
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.transparent,
           insetPadding: const EdgeInsets.all(24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusChip)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+          ),
           child: ConstrainedBox(
             constraints: BoxConstraints(
               maxWidth: 620,
@@ -158,7 +160,9 @@ class _TakeActionFormState extends State<_TakeActionForm> {
       return l.tsAlreadyActive;
     }
     if (type == ActionType.suspendTemporary &&
-        active.any((a) => a.actionType == ActionType.suspendPermanent && a.isActive)) {
+        active.any(
+          (a) => a.actionType == ActionType.suspendPermanent && a.isActive,
+        )) {
       return l.tsAlreadyPermanentlySuspended;
     }
     return null;
@@ -193,7 +197,9 @@ class _TakeActionFormState extends State<_TakeActionForm> {
     if (_type == ActionType.suspendPermanent) return l.tsDurationPermanent;
     if (_type == ActionType.warning || _type == null) return null;
     final e = _resolveExpiry();
-    return e == null ? l.tsDurationUntilLifted : l.tsUntilDate(tsFmtDateTime(e));
+    return e == null
+        ? l.tsDurationUntilLifted
+        : l.tsUntilDate(tsFmtDateTime(e));
   }
 
   // ── Actions ───────────────────────────────────────────────────────────────
@@ -225,7 +231,13 @@ class _TakeActionFormState extends State<_TakeActionForm> {
     );
     if (time == null || !mounted) return;
     setState(() {
-      _customExpiry = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+      _customExpiry = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
       _preset = -1;
     });
   }
@@ -292,8 +304,9 @@ class _TakeActionFormState extends State<_TakeActionForm> {
     final radius = widget.asDialog
         ? BorderRadius.circular(AppSizes.radiusChip)
         : const BorderRadius.vertical(top: Radius.circular(AppSizes.radius22));
-    final bottomInset =
-        widget.asDialog ? 0.0 : MediaQuery.viewInsetsOf(context).bottom;
+    final bottomInset = widget.asDialog
+        ? 0.0
+        : MediaQuery.viewInsetsOf(context).bottom;
 
     final content = Container(
       decoration: BoxDecoration(color: Colors.white, borderRadius: radius),
@@ -325,10 +338,7 @@ class _TakeActionFormState extends State<_TakeActionForm> {
       // with it and can produce unbounded-width layout errors on rebuild.
       child: widget.asDialog
           ? content
-          : SizedBox(
-              width: MediaQuery.sizeOf(context).width,
-              child: content,
-            ),
+          : SizedBox(width: MediaQuery.sizeOf(context).width, child: content),
     );
   }
 
@@ -344,7 +354,11 @@ class _TakeActionFormState extends State<_TakeActionForm> {
               color: AppColors.error.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             ),
-            child: const Icon(Icons.gavel_rounded, color: AppColors.error, size: 20),
+            child: const Icon(
+              Icons.gavel_rounded,
+              color: AppColors.error,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -361,7 +375,10 @@ class _TakeActionFormState extends State<_TakeActionForm> {
                 ),
                 Text(
                   l.tsRegardingReport(widget.report.id.toString()),
-                  style: const TextStyle(fontSize: AppFontSizes.small, color: TsColors.textMuted),
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.small,
+                    color: TsColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -408,7 +425,10 @@ class _TakeActionFormState extends State<_TakeActionForm> {
                   ),
                   Text(
                     tsRoleLabel(l, report.reportedUserRole),
-                    style: const TextStyle(fontSize: 11.5, color: TsColors.textMuted),
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      color: TsColors.textMuted,
+                    ),
                   ),
                 ],
               ),
@@ -431,7 +451,10 @@ class _TakeActionFormState extends State<_TakeActionForm> {
           padding: const EdgeInsets.only(top: 2),
           child: Text(
             l.tsChooseActionError,
-            style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.error),
+            style: const TextStyle(
+              fontSize: AppFontSizes.small,
+              color: AppColors.error,
+            ),
           ),
         ),
 
@@ -452,8 +475,12 @@ class _TakeActionFormState extends State<_TakeActionForm> {
               _pill(l.tsDurationDays(d.toString()), _preset == d, () {
                 setState(() => _preset = d);
               }),
-            _pill(l.tsDurationCustom, _preset == -1, _pickCustomDate,
-                icon: Icons.calendar_today_rounded),
+            _pill(
+              l.tsDurationCustom,
+              _preset == -1,
+              _pickCustomDate,
+              icon: Icons.calendar_today_rounded,
+            ),
           ],
         ),
         if (_preset == -1 && _customExpiry != null) ...[
@@ -468,7 +495,10 @@ class _TakeActionFormState extends State<_TakeActionForm> {
           const SizedBox(height: 6),
           Text(
             expiryError,
-            style: const TextStyle(fontSize: AppFontSizes.small, color: AppColors.error),
+            style: const TextStyle(
+              fontSize: AppFontSizes.small,
+              color: AppColors.error,
+            ),
           ),
         ],
       ],
@@ -488,7 +518,10 @@ class _TakeActionFormState extends State<_TakeActionForm> {
         },
       ),
       const SizedBox(height: 4),
-      TsHint(icon: Icons.person_outline_rounded, text: l.tsReasonUserVisibleNote),
+      TsHint(
+        icon: Icons.person_outline_rounded,
+        text: l.tsReasonUserVisibleNote,
+      ),
 
       // Internal note
       const SizedBox(height: 16),
@@ -547,27 +580,40 @@ class _TakeActionFormState extends State<_TakeActionForm> {
           Flexible(
             child: TextButton(
               onPressed: _submitting ? null : () => Navigator.of(context).pop(),
-              child: Text(l.tsCancel, style: const TextStyle(color: TsColors.textMuted)),
+              child: Text(
+                l.tsCancel,
+                style: const TextStyle(color: TsColors.textMuted),
+              ),
             ),
           ),
           const SizedBox(width: 8),
           Flexible(
             child: ElevatedButton(
-              onPressed: (_submitting || widget.report.targetIsAdmin) ? null : _onApply,
+              onPressed: (_submitting || widget.report.targetIsAdmin)
+                  ? null
+                  : _onApply,
               style: ElevatedButton.styleFrom(
                 backgroundColor: color,
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: color.withValues(alpha: 0.5),
                 disabledForegroundColor: Colors.white,
                 elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 13,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radius10),
+                ),
               ),
               child: _submitting
                   ? const SizedBox(
                       width: 18,
                       height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                   : Text(
                       l.tsApplyAction,
@@ -584,13 +630,13 @@ class _TakeActionFormState extends State<_TakeActionForm> {
   // ── Small pieces ──────────────────────────────────────────────────────────
 
   Widget _sectionLabel(String text) => Text(
-        text,
-        style: const TextStyle(
-          fontSize: 12.5,
-          fontWeight: FontWeight.w800,
-          color: TsColors.textBody,
-        ),
-      );
+    text,
+    style: const TextStyle(
+      fontSize: 12.5,
+      fontWeight: FontWeight.w800,
+      color: TsColors.textBody,
+    ),
+  );
 
   Widget _textField({
     required TextEditingController controller,
@@ -606,7 +652,10 @@ class _TakeActionFormState extends State<_TakeActionForm> {
       maxLines: lines + 2,
       maxLength: 2000,
       onChanged: onChanged,
-      style: const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textPrimary),
+      style: const TextStyle(
+        fontSize: AppFontSizes.secondary,
+        color: TsColors.textPrimary,
+      ),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(fontSize: 12.5, color: TsColors.textFaint),
@@ -626,7 +675,12 @@ class _TakeActionFormState extends State<_TakeActionForm> {
     );
   }
 
-  Widget _pill(String label, bool selected, VoidCallback onTap, {IconData? icon}) {
+  Widget _pill(
+    String label,
+    bool selected,
+    VoidCallback onTap, {
+    IconData? icon,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -635,7 +689,9 @@ class _TakeActionFormState extends State<_TakeActionForm> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: selected ? TsColors.accent.withValues(alpha: 0.1) : TsColors.bg,
+            color: selected
+                ? TsColors.accent.withValues(alpha: 0.1)
+                : TsColors.bg,
             borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(
               color: selected ? TsColors.accent : Colors.transparent,
@@ -646,7 +702,11 @@ class _TakeActionFormState extends State<_TakeActionForm> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 13, color: selected ? TsColors.accent : TsColors.textMuted),
+                Icon(
+                  icon,
+                  size: 13,
+                  color: selected ? TsColors.accent : TsColors.textMuted,
+                ),
                 const SizedBox(width: 5),
               ],
               Text(
@@ -774,7 +834,9 @@ class _ConfirmActionDialogState extends State<_ConfirmActionDialog> {
     return AlertDialog(
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+      ),
       titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
       actionsPadding: const EdgeInsets.fromLTRB(12, 12, 16, 14),
@@ -787,7 +849,11 @@ class _ConfirmActionDialogState extends State<_ConfirmActionDialog> {
               color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(AppSizes.radius10),
             ),
-            child: Icon(tsActionIcon(widget.actionType), size: 19, color: color),
+            child: Icon(
+              tsActionIcon(widget.actionType),
+              size: 19,
+              color: color,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -821,7 +887,10 @@ class _ConfirmActionDialogState extends State<_ConfirmActionDialog> {
               TsInfoRow(label: l.tsFieldUser, value: widget.userName),
               TsInfoRow(label: l.tsFieldAction, value: widget.actionLabel),
               if (widget.durationLabel != null)
-                TsInfoRow(label: l.tsFieldDuration, value: widget.durationLabel!),
+                TsInfoRow(
+                  label: l.tsFieldDuration,
+                  value: widget.durationLabel!,
+                ),
               TsInfoRow(label: l.tsFieldReason, value: widget.reason),
               if (_needsAck) ...[
                 const SizedBox(height: 8),
@@ -850,7 +919,10 @@ class _ConfirmActionDialogState extends State<_ConfirmActionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: Text(l.tsCancel, style: const TextStyle(color: TsColors.textMuted)),
+          child: Text(
+            l.tsCancel,
+            style: const TextStyle(color: TsColors.textMuted),
+          ),
         ),
         ElevatedButton(
           onPressed: canConfirm ? () => Navigator.of(context).pop(true) : null,
@@ -861,7 +933,9 @@ class _ConfirmActionDialogState extends State<_ConfirmActionDialog> {
             disabledForegroundColor: Colors.white,
             elevation: 0,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
+            ),
           ),
           child: Text(
             l.tsApplyAction,

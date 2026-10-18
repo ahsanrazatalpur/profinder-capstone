@@ -36,6 +36,8 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../services/api_service.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import 'professional_availability_exception_screen.dart';
+import 'professional_booking_configuration_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Status model
@@ -128,12 +130,15 @@ class _DaySchedule {
   }
 
   Map<String, dynamic> toJson() => {
-        'enabled': enabled,
-        'start': '${start.hour}:${start.minute}',
-        'end': '${end.hour}:${end.minute}',
-      };
+    'enabled': enabled,
+    'start': '${start.hour}:${start.minute}',
+    'end': '${end.hour}:${end.minute}',
+  };
 
-  factory _DaySchedule.fromJson(Map<String, dynamic> json, _DaySchedule fallback) {
+  factory _DaySchedule.fromJson(
+    Map<String, dynamic> json,
+    _DaySchedule fallback,
+  ) {
     TimeOfDay parse(String raw, TimeOfDay fb) {
       final parts = raw.split(':');
       if (parts.length != 2) return fb;
@@ -161,7 +166,15 @@ const List<String> _kDayNames = [
   'Sunday',
 ];
 
-const List<String> _kDayShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const List<String> _kDayShort = [
+  'Mon',
+  'Tue',
+  'Wed',
+  'Thu',
+  'Fri',
+  'Sat',
+  'Sun',
+];
 
 // ─────────────────────────────────────────────────────────────────────────
 // Screen
@@ -176,7 +189,8 @@ class ProfessionalAvailabilityScreen extends StatefulWidget {
 }
 
 class _ProfessionalAvailabilityScreenState
-    extends State<ProfessionalAvailabilityScreen> with SingleTickerProviderStateMixin {
+    extends State<ProfessionalAvailabilityScreen>
+    with SingleTickerProviderStateMixin {
   static const _prefsStatusKey = 'pro_availability_status_v1';
   static const _prefsScheduleKey = 'pro_weekly_schedule_v1';
 
@@ -212,9 +226,11 @@ class _ProfessionalAvailabilityScreenState
       final res = await _api.get(AppConstants.professionalProfile);
       final data = res.data as Map<String, dynamic>;
       final isAvailable = data['is_available'] ?? true;
-      final start = _parseTime(data['working_hours_start']?.toString()) ??
+      final start =
+          _parseTime(data['working_hours_start']?.toString()) ??
           const TimeOfDay(hour: 9, minute: 0);
-      final end = _parseTime(data['working_hours_end']?.toString()) ??
+      final end =
+          _parseTime(data['working_hours_end']?.toString()) ??
           const TimeOfDay(hour: 18, minute: 0);
 
       final prefs = await SharedPreferences.getInstance();
@@ -244,7 +260,9 @@ class _ProfessionalAvailabilityScreenState
       setState(() {
         _status = savedStatusName != null
             ? _AvailabilityStatusX.fromName(savedStatusName)
-            : (isAvailable ? AvailabilityStatus.availableNow : AvailabilityStatus.offline);
+            : (isAvailable
+                  ? AvailabilityStatus.availableNow
+                  : AvailabilityStatus.offline);
         _week = week;
         _weekOriginal = week.map((d) => d.copyWith()).toList();
         _isLoading = false;
@@ -252,7 +270,10 @@ class _ProfessionalAvailabilityScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, AppLocalizations.of(context).availabilityLoadError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).availabilityLoadError,
+      );
     }
   }
 
@@ -281,16 +302,26 @@ class _ProfessionalAvailabilityScreenState
       // Same call the existing toggle used — only is_available is touched.
       await _api.patchForm(
         AppConstants.professionalProfile,
-        FormData.fromMap({'is_available': status.mapsToBackendAvailable.toString()}),
+        FormData.fromMap({
+          'is_available': status.mapsToBackendAvailable.toString(),
+        }),
       );
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_prefsStatusKey, status.name);
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context).availabilityStatusUpdated(status.label(AppLocalizations.of(context))));
+      AppHelpers.showSuccess(
+        context,
+        AppLocalizations.of(
+          context,
+        ).availabilityStatusUpdated(status.label(AppLocalizations.of(context))),
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _status = previous);
-      AppHelpers.showError(context, AppLocalizations.of(context).availabilityStatusUpdateError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).availabilityStatusUpdateError,
+      );
     } finally {
       if (mounted) setState(() => _isSavingStatus = false);
     }
@@ -331,10 +362,16 @@ class _ProfessionalAvailabilityScreenState
       if (enabledDays.isNotEmpty) {
         start = enabledDays
             .map((d) => d.start)
-            .reduce((a, b) => (a.hour * 60 + a.minute) <= (b.hour * 60 + b.minute) ? a : b);
+            .reduce(
+              (a, b) =>
+                  (a.hour * 60 + a.minute) <= (b.hour * 60 + b.minute) ? a : b,
+            );
         end = enabledDays
             .map((d) => d.end)
-            .reduce((a, b) => (a.hour * 60 + a.minute) >= (b.hour * 60 + b.minute) ? a : b);
+            .reduce(
+              (a, b) =>
+                  (a.hour * 60 + a.minute) >= (b.hour * 60 + b.minute) ? a : b,
+            );
       }
 
       await _api.patchForm(
@@ -357,11 +394,17 @@ class _ProfessionalAvailabilityScreenState
         _scheduleDirty = false;
         _isSavingSchedule = false;
       });
-      AppHelpers.showSuccess(context, AppLocalizations.of(context).availabilityScheduleSaved);
+      AppHelpers.showSuccess(
+        context,
+        AppLocalizations.of(context).availabilityScheduleSaved,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSavingSchedule = false);
-      AppHelpers.showError(context, AppLocalizations.of(context).availabilityScheduleSaveError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).availabilityScheduleSaveError,
+      );
     }
   }
 
@@ -377,11 +420,21 @@ class _ProfessionalAvailabilityScreenState
     final groups = <_ScheduleGroup>[];
     for (var i = 0; i < 7; i++) {
       final day = _week[i];
-      final key = day.enabled ? '${day.start.hour}:${day.start.minute}-${day.end.hour}:${day.end.minute}' : 'closed';
+      final key = day.enabled
+          ? '${day.start.hour}:${day.start.minute}-${day.end.hour}:${day.end.minute}'
+          : 'closed';
       if (groups.isNotEmpty && groups.last.key == key) {
         groups.last.dayIndices.add(i);
       } else {
-        groups.add(_ScheduleGroup(key: key, dayIndices: [i], enabled: day.enabled, start: day.start, end: day.end));
+        groups.add(
+          _ScheduleGroup(
+            key: key,
+            dayIndices: [i],
+            enabled: day.enabled,
+            start: day.start,
+            end: day.end,
+          ),
+        );
       }
     }
     return groups;
@@ -408,6 +461,31 @@ class _ProfessionalAvailabilityScreenState
             letterSpacing: -0.3,
           ),
         ),
+        actions: [
+          IconButton(
+            tooltip: AppLocalizations.of(context).exceptionsTitle,
+            icon: const Icon(Icons.event_busy_rounded),
+            color: context.colors.textSecondary,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ProfessionalAvailabilityExceptionScreen(),
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: AppLocalizations.of(context).bufferTimeTitle,
+            icon: const Icon(Icons.tune_rounded),
+            color: context.colors.textSecondary,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ProfessionalBookingConfigurationScreen(),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: _isLoading
           ? Center(
@@ -432,7 +510,9 @@ class _ProfessionalAvailabilityScreenState
                   _sectionHeader(
                     icon: Icons.calendar_view_week_rounded,
                     title: AppLocalizations.of(context).availabilityWeeklyTitle,
-                    subtitle: AppLocalizations.of(context).availabilityWeeklySubtitle,
+                    subtitle: AppLocalizations.of(
+                      context,
+                    ).availabilityWeeklySubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -440,12 +520,27 @@ class _ProfessionalAvailabilityScreenState
                   SizedBox(height: isTablet ? 24 : 20),
                   _sectionHeader(
                     icon: Icons.event_available_rounded,
-                    title: AppLocalizations.of(context).availabilitySummaryTitle,
-                    subtitle: AppLocalizations.of(context).availabilitySummarySubtitle,
+                    title: AppLocalizations.of(
+                      context,
+                    ).availabilitySummaryTitle,
+                    subtitle: AppLocalizations.of(
+                      context,
+                    ).availabilitySummarySubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
                   _buildSummaryCard(isDark, isTablet),
+                  SizedBox(height: isTablet ? 24 : 20),
+                  _sectionHeader(
+                    icon: Icons.tune_rounded,
+                    title: AppLocalizations.of(context).exceptionsTitle,
+                    subtitle: AppLocalizations.of(
+                      context,
+                    ).exceptionsCalendarSubtitle,
+                    isTablet: isTablet,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildAdvancedSettingsCard(context, isDark, isTablet),
                 ],
               ),
             ),
@@ -471,7 +566,11 @@ class _ProfessionalAvailabilityScreenState
             color: AppColors.professionalColor.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
-          child: Icon(icon, size: isTablet ? 20 : 18, color: AppColors.professionalColor),
+          child: Icon(
+            icon,
+            size: isTablet ? 20 : 18,
+            color: AppColors.professionalColor,
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -513,11 +612,15 @@ class _ProfessionalAvailabilityScreenState
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.12)
+                : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -603,7 +706,11 @@ class _ProfessionalAvailabilityScreenState
     );
   }
 
-  Widget _buildStatusChip(AvailabilityStatus status, bool isDark, bool isTablet) {
+  Widget _buildStatusChip(
+    AvailabilityStatus status,
+    bool isDark,
+    bool isTablet,
+  ) {
     final selected = status == _status;
     final color = _statusColor(context, status);
 
@@ -618,17 +725,25 @@ class _ProfessionalAvailabilityScreenState
           decoration: BoxDecoration(
             color: selected
                 ? color.withValues(alpha: isDark ? 0.18 : 0.12)
-                : (isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.05)),
+                : (isDark
+                      ? Colors.white.withValues(alpha: 0.03)
+                      : Colors.grey.withValues(alpha: 0.05)),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
             border: Border.all(
-              color: selected ? color.withValues(alpha: 0.55) : Colors.transparent,
+              color: selected
+                  ? color.withValues(alpha: 0.55)
+                  : Colors.transparent,
               width: 1.2,
             ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(status.icon, size: isTablet ? 18 : 16, color: selected ? color : context.colors.textSecondary),
+              Icon(
+                status.icon,
+                size: isTablet ? 18 : 16,
+                color: selected ? color : context.colors.textSecondary,
+              ),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -656,11 +771,15 @@ class _ProfessionalAvailabilityScreenState
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.12)
+                : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -702,7 +821,9 @@ class _ProfessionalAvailabilityScreenState
               style: TextStyle(
                 fontSize: isTablet ? 15 : 14,
                 fontWeight: FontWeight.w600,
-                color: day.enabled ? context.colors.textPrimary : context.colors.textSecondary,
+                color: day.enabled
+                    ? context.colors.textPrimary
+                    : context.colors.textSecondary,
                 letterSpacing: 0.1,
               ),
             ),
@@ -711,16 +832,32 @@ class _ProfessionalAvailabilityScreenState
             child: day.enabled
                 ? Row(
                     children: [
-                      Expanded(child: _buildTimeChip(index, isStart: true, isDark: isDark, isTablet: isTablet)),
+                      Expanded(
+                        child: _buildTimeChip(
+                          index,
+                          isStart: true,
+                          isDark: isDark,
+                          isTablet: isTablet,
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 6),
                         child: Icon(
                           Icons.arrow_forward_rounded,
                           size: 14,
-                          color: context.colors.textSecondary.withValues(alpha: 0.6),
+                          color: context.colors.textSecondary.withValues(
+                            alpha: 0.6,
+                          ),
                         ),
                       ),
-                      Expanded(child: _buildTimeChip(index, isStart: false, isDark: isDark, isTablet: isTablet)),
+                      Expanded(
+                        child: _buildTimeChip(
+                          index,
+                          isStart: false,
+                          isDark: isDark,
+                          isTablet: isTablet,
+                        ),
+                      ),
                     ],
                   )
                 : Text(
@@ -728,7 +865,9 @@ class _ProfessionalAvailabilityScreenState
                     style: TextStyle(
                       fontSize: isTablet ? 14 : 13,
                       fontWeight: FontWeight.w500,
-                      color: context.colors.textSecondary.withValues(alpha: 0.7),
+                      color: context.colors.textSecondary.withValues(
+                        alpha: 0.7,
+                      ),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -741,7 +880,9 @@ class _ProfessionalAvailabilityScreenState
               onChanged: (v) => _toggleDay(index, v),
               activeThumbColor: context.colors.accent,
               activeTrackColor: context.colors.accent.withValues(alpha: 0.3),
-              inactiveTrackColor: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.3),
+              inactiveTrackColor: isDark
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : Colors.grey.withValues(alpha: 0.3),
             ),
           ),
         ],
@@ -749,24 +890,40 @@ class _ProfessionalAvailabilityScreenState
     );
   }
 
-  Widget _buildTimeChip(int index, {required bool isStart, required bool isDark, required bool isTablet}) {
+  Widget _buildTimeChip(
+    int index, {
+    required bool isStart,
+    required bool isDark,
+    required bool isTablet,
+  }) {
     final day = _week[index];
     final time = isStart ? day.start : day.end;
     return GestureDetector(
       onTap: () => _pickTime(index, isStart: isStart),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: isTablet ? 12 : 10, vertical: isTablet ? 9 : 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: isTablet ? 12 : 10,
+          vertical: isTablet ? 9 : 8,
+        ),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.04) : context.colors.background,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.04)
+              : context.colors.background,
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           border: Border.all(
-            color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider,
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : context.colors.divider,
           ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.access_time_rounded, size: isTablet ? 15 : 14, color: context.colors.textSecondary),
+            Icon(
+              Icons.access_time_rounded,
+              size: isTablet ? 15 : 14,
+              color: context.colors.textSecondary,
+            ),
             const SizedBox(width: 6),
             Flexible(
               child: Text(
@@ -796,11 +953,15 @@ class _ProfessionalAvailabilityScreenState
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.12)
+                : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -823,14 +984,21 @@ class _ProfessionalAvailabilityScreenState
                   width: 34,
                   height: 34,
                   decoration: BoxDecoration(
-                    color: (g.enabled ? context.colors.accent : context.colors.textSecondary)
-                        .withValues(alpha: 0.12),
+                    color:
+                        (g.enabled
+                                ? context.colors.accent
+                                : context.colors.textSecondary)
+                            .withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                   ),
                   child: Icon(
-                    g.enabled ? Icons.event_available_rounded : Icons.event_busy_rounded,
+                    g.enabled
+                        ? Icons.event_available_rounded
+                        : Icons.event_busy_rounded,
                     size: 17,
-                    color: g.enabled ? context.colors.accent : context.colors.textSecondary,
+                    color: g.enabled
+                        ? context.colors.accent
+                        : context.colors.textSecondary,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -846,11 +1014,15 @@ class _ProfessionalAvailabilityScreenState
                   ),
                 ),
                 Text(
-                  g.enabled ? '${g.start.format(context)} – ${g.end.format(context)}' : AppLocalizations.of(context).availabilityClosedLabel,
+                  g.enabled
+                      ? '${g.start.format(context)} – ${g.end.format(context)}'
+                      : AppLocalizations.of(context).availabilityClosedLabel,
                   style: TextStyle(
                     fontSize: isTablet ? 13.5 : 12.5,
                     fontWeight: FontWeight.w500,
-                    color: g.enabled ? context.colors.textPrimary : context.colors.textSecondary,
+                    color: g.enabled
+                        ? context.colors.textPrimary
+                        : context.colors.textSecondary,
                     letterSpacing: 0.1,
                   ),
                 ),
@@ -858,6 +1030,121 @@ class _ProfessionalAvailabilityScreenState
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+
+  // ── Advanced Settings (Exceptions & Booking Rules) ─────
+  Widget _buildAdvancedSettingsCard(
+    BuildContext context,
+    bool isDark,
+    bool isTablet,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.12)
+                : Colors.grey.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            leading: Container(
+              width: isTablet ? 42 : 38,
+              height: isTablet ? 42 : 38,
+              decoration: BoxDecoration(
+                color: AppColors.rose.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+              ),
+              child: const Icon(
+                Icons.event_busy_rounded,
+                color: AppColors.rose,
+                size: 20,
+              ),
+            ),
+            title: Text(
+              AppLocalizations.of(context).exceptionsTitle,
+              style: TextStyle(
+                fontSize: isTablet ? 15 : 14,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textPrimary,
+              ),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(context).exceptionsCalendarSubtitle,
+              style: TextStyle(
+                fontSize: isTablet ? 13 : 12,
+                color: context.colors.textSecondary,
+              ),
+            ),
+            trailing: Icon(
+              Icons.chevron_right_rounded,
+              color: context.colors.textSecondary,
+              size: 20,
+            ),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ProfessionalAvailabilityExceptionScreen(),
+              ),
+            ),
+          ),
+          Divider(height: 1, indent: 56, color: context.colors.divider),
+          ListTile(
+            leading: Container(
+              width: isTablet ? 42 : 38,
+              height: isTablet ? 42 : 38,
+              decoration: BoxDecoration(
+                color: AppColors.professionalColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+              ),
+              child: const Icon(
+                Icons.tune_rounded,
+                color: AppColors.professionalColor,
+                size: 20,
+              ),
+            ),
+            title: Text(
+              AppLocalizations.of(context).bufferTimeTitle,
+              style: TextStyle(
+                fontSize: isTablet ? 15 : 14,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textPrimary,
+              ),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(context).bufferTimeSubtitle,
+              style: TextStyle(
+                fontSize: isTablet ? 13 : 12,
+                color: context.colors.textSecondary,
+              ),
+            ),
+            trailing: Icon(
+              Icons.chevron_right_rounded,
+              color: context.colors.textSecondary,
+              size: 20,
+            ),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ProfessionalBookingConfigurationScreen(),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -890,11 +1177,16 @@ class _ProfessionalAvailabilityScreenState
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: BorderSide(color: context.colors.divider),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  ),
                 ),
                 child: Text(
                   AppLocalizations.of(context).discardCta,
-                  style: TextStyle(fontWeight: FontWeight.w600, color: context.colors.textSecondary),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: context.colors.textSecondary,
+                  ),
                 ),
               ),
             ),
@@ -908,13 +1200,18 @@ class _ProfessionalAvailabilityScreenState
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  ),
                 ),
                 child: _isSavingSchedule
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2.2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.2,
+                          color: Colors.white,
+                        ),
                       )
                     : Text(
                         AppLocalizations.of(context).saveScheduleCta,

@@ -20,14 +20,20 @@ class AdminPolicyEditorScreen extends StatefulWidget {
   final int versionId;
   final SupportContentDataSource? source;
 
-  const AdminPolicyEditorScreen({super.key, required this.versionId, this.source});
+  const AdminPolicyEditorScreen({
+    super.key,
+    required this.versionId,
+    this.source,
+  });
 
   @override
-  State<AdminPolicyEditorScreen> createState() => _AdminPolicyEditorScreenState();
+  State<AdminPolicyEditorScreen> createState() =>
+      _AdminPolicyEditorScreenState();
 }
 
 class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
-  late final SupportContentDataSource _source = widget.source ?? SupportContentService();
+  late final SupportContentDataSource _source =
+      widget.source ?? SupportContentService();
 
   final _title = TextEditingController();
   final _summary = TextEditingController();
@@ -60,21 +66,33 @@ class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
 
   bool get _editable => _version != null && !_version!.isLocked;
 
-  List<String> get _markers =>
-      kPlaceholderPattern.allMatches(_body.text).map((m) => m.group(0)!).toSet().toList();
+  List<String> get _markers => kPlaceholderPattern
+      .allMatches(_body.text)
+      .map((m) => m.group(0)!)
+      .toSet()
+      .toList();
 
   int get _markerCount => kPlaceholderPattern.allMatches(_body.text).length;
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     final result = await _source.getPolicy(widget.versionId);
     if (!mounted) return;
     if (!result.isOk) {
-      setState(() { _loading = false; _error = result.error; });
+      setState(() {
+        _loading = false;
+        _error = result.error;
+      });
       return;
     }
     _fill(result.data!);
-    setState(() { _loading = false; _dirty = false; });
+    setState(() {
+      _loading = false;
+      _dirty = false;
+    });
   }
 
   void _fill(AdminPolicyVersion v) {
@@ -124,7 +142,10 @@ class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
     }
     _body.text = text;
     // Drop fields for markers that no longer exist.
-    final left = kPlaceholderPattern.allMatches(text).map((m) => m.group(0)!).toSet();
+    final left = kPlaceholderPattern
+        .allMatches(text)
+        .map((m) => m.group(0)!)
+        .toSet();
     final gone = _blanks.keys.where((k) => !left.contains(k)).toList();
     for (final k in gone) {
       _blanks.remove(k)?.dispose();
@@ -168,7 +189,8 @@ class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
     final ok = await confirmContentDialog(
       context,
       title: 'Publish version ${v.version}?',
-      message: 'It becomes visible to all users right away and can no longer be edited. '
+      message:
+          'It becomes visible to all users right away and can no longer be edited. '
           'To change it later you will have to start a new version.',
       confirmLabel: 'Publish',
     );
@@ -224,9 +246,12 @@ class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
 
   Widget _content() {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.adminColor));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.adminColor),
+      );
     }
-    if (_error != null) return AdminContentError(message: _error!, onRetry: _load);
+    if (_error != null)
+      return AdminContentError(message: _error!, onRetry: _load);
     final v = _version!;
     final editable = _editable;
     final markers = _markers;
@@ -244,21 +269,23 @@ class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
                 color: AppColors.slate500,
                 text: v.status == 'published'
                     ? 'This version is published and cannot be edited. '
-                        'To change the policy, go back and start a new version.'
+                          'To change the policy, go back and start a new version.'
                     : 'This version is archived and cannot be edited.',
               )
             else if (_markerCount > 0)
               AdminContentNote(
                 icon: Icons.warning_amber_rounded,
                 color: AppColors.warningAmber,
-                text: '$_markerCount blank(s) still need a real value. '
+                text:
+                    '$_markerCount blank(s) still need a real value. '
                     'You cannot publish until they are filled in.',
               )
             else
               const AdminContentNote(
                 icon: Icons.check_circle_rounded,
                 color: AppColors.greenDeep,
-                text: 'No blanks left. Read the whole text once more, then publish.',
+                text:
+                    'No blanks left. Read the whole text once more, then publish.',
               ),
             const SizedBox(height: 16),
             if (editable && markers.isNotEmpty) ...[
@@ -283,7 +310,9 @@ class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
                 child: Text(
                   _effective == null
                       ? 'Not set (today is used when you publish)'
-                      : MaterialLocalizations.of(context).formatMediumDate(_effective!),
+                      : MaterialLocalizations.of(
+                          context,
+                        ).formatMediumDate(_effective!),
                 ),
               ),
             ),
@@ -309,7 +338,8 @@ class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
               decoration: const InputDecoration(
                 labelText: 'Policy text',
                 alignLabelWithHint: true,
-                helperText: 'Start a line with "# " for a heading and "- " for a bullet. '
+                helperText:
+                    'Start a line with "# " for a heading and "- " for a bullet. '
                     'Leave a blank line between paragraphs.',
                 helperMaxLines: 3,
               ),
@@ -328,7 +358,9 @@ class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: FilledButton.icon(
-                      onPressed: _busy || _markerCount > 0 ? null : _publishTapped,
+                      onPressed: _busy || _markerCount > 0
+                          ? null
+                          : _publishTapped,
                       icon: const Icon(Icons.publish_rounded),
                       label: const Text('Publish'),
                     ),
@@ -354,7 +386,10 @@ class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Fill in the blanks', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+            const Text(
+              'Fill in the blanks',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+            ),
             const SizedBox(height: 4),
             const Text(
               'Each value replaces every place that blank appears in the text.',
@@ -365,13 +400,19 @@ class _AdminPolicyEditorScreenState extends State<AdminPolicyEditorScreen> {
               TextField(
                 key: ValueKey(m),
                 controller: _blanks[m],
-                decoration: InputDecoration(labelText: placeholderLabel(m), isDense: true),
+                decoration: InputDecoration(
+                  labelText: placeholderLabel(m),
+                  isDense: true,
+                ),
               ),
               const SizedBox(height: 10),
             ],
             Align(
               alignment: Alignment.centerRight,
-              child: FilledButton.tonal(onPressed: _applyBlanks, child: const Text('Apply to text')),
+              child: FilledButton.tonal(
+                onPressed: _applyBlanks,
+                child: const Text('Apply to text'),
+              ),
             ),
           ],
         ),

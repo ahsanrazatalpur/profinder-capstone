@@ -94,8 +94,10 @@ class ModerationActionType {
   static const suspendTemporary = 'suspend_temporary';
   static const suspendPermanent = 'suspend_permanent';
 
-  static bool isSuspension(String t) => t == suspendTemporary || t == suspendPermanent;
-  static bool isRestriction(String t) => t == restrictMessaging || t == restrictBooking;
+  static bool isSuspension(String t) =>
+      t == suspendTemporary || t == suspendPermanent;
+  static bool isRestriction(String t) =>
+      t == restrictMessaging || t == restrictBooking;
 }
 
 class MyAppealStatus {
@@ -134,7 +136,9 @@ class MyReport {
   });
 
   bool get isPending => status == MyReportStatus.pending;
-  bool get isResolved => status == MyReportStatus.actionTaken || status == MyReportStatus.dismissed;
+  bool get isResolved =>
+      status == MyReportStatus.actionTaken ||
+      status == MyReportStatus.dismissed;
 
   factory MyReport.fromJson(Map<String, dynamic> j) {
     return MyReport(
@@ -180,10 +184,14 @@ class MyModerationAction {
   bool get isWarning => actionType == ModerationActionType.warning;
   bool get isSuspension => ModerationActionType.isSuspension(actionType);
   bool get isRestriction => ModerationActionType.isRestriction(actionType);
-  bool get isTemporarySuspension => actionType == ModerationActionType.suspendTemporary;
-  bool get isPermanentSuspension => actionType == ModerationActionType.suspendPermanent;
-  bool get isMessagingRestriction => actionType == ModerationActionType.restrictMessaging;
-  bool get isBookingRestriction => actionType == ModerationActionType.restrictBooking;
+  bool get isTemporarySuspension =>
+      actionType == ModerationActionType.suspendTemporary;
+  bool get isPermanentSuspension =>
+      actionType == ModerationActionType.suspendPermanent;
+  bool get isMessagingRestriction =>
+      actionType == ModerationActionType.restrictMessaging;
+  bool get isBookingRestriction =>
+      actionType == ModerationActionType.restrictBooking;
 
   factory MyModerationAction.fromJson(Map<String, dynamic> j) {
     return MyModerationAction(
@@ -228,7 +236,9 @@ class MyModerationStatus {
   const MyModerationStatus.empty() : this();
 
   factory MyModerationStatus.fromJson(Map<String, dynamic> j) {
-    final list = j['actions'] is List ? List<dynamic>.from(j['actions']) : const [];
+    final list = j['actions'] is List
+        ? List<dynamic>.from(j['actions'])
+        : const [];
     return MyModerationStatus(
       isSuspended: _bool(j['is_suspended']),
       isPermanentlySuspended: _bool(j['is_permanently_suspended']),

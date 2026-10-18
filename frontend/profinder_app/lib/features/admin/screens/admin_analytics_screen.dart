@@ -131,7 +131,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
             child: AppBarIconButton(
               icon: Icons.refresh_rounded,
               tooltip: 'Refresh analytics',
-              onPressed: () { if (!_refreshing) _load(); },
+              onPressed: () {
+                if (!_refreshing) _load();
+              },
               onGradient: true,
             ),
           ),
@@ -149,152 +151,147 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
               child: _loading
                   ? _buildSkeleton(key: const ValueKey('skeleton'))
                   : _error != null
-                      ? _buildError(key: const ValueKey('error'))
-                      : RefreshIndicator(
-                          key: const ValueKey('content'),
-                          onRefresh: _load,
-                          color: AppColors.adminColor,
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: EdgeInsets.fromLTRB(
-                              width >= _tabletBreakpoint ? 28 : 20,
-                              16,
-                              width >= _tabletBreakpoint ? 28 : 20,
-                              32,
+                  ? _buildError(key: const ValueKey('error'))
+                  : RefreshIndicator(
+                      key: const ValueKey('content'),
+                      onRefresh: _load,
+                      color: AppColors.adminColor,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.fromLTRB(
+                          width >= _tabletBreakpoint ? 28 : 20,
+                          16,
+                          width >= _tabletBreakpoint ? 28 : 20,
+                          32,
+                        ),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: _maxContentWidth,
                             ),
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                    maxWidth: _maxContentWidth),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    _fadeStep(1, _rangeSelector()),
-                                    const SizedBox(height: 24),
-                                    _fadeStep(2, _kpiGrid(width)),
-                                    const SizedBox(height: 26),
-                                    _fadeStep(3, _sectionTitle('Revenue')),
-                                    const SizedBox(height: 12),
-                                    _fadeStep(3, _revenueHeroCard()),
-                                    const SizedBox(height: 26),
-                                    _fadeStep(
-                                        4, _sectionTitle('User Growth')),
-                                    const SizedBox(height: 12),
-                                    _fadeStep(4, _userGrowthCard()),
-                                    const SizedBox(height: 26),
-                                    _fadeStep(
-                                        5, _sectionTitle('Booking Trend')),
-                                    const SizedBox(height: 12),
-                                    _fadeStep(5, _bookingTrendRow(width)),
-                                    const SizedBox(height: 26),
-                                    _fadeStep(
-                                        6, _sectionTitle('Booking Health')),
-                                    const SizedBox(height: 12),
-                                    _fadeStep(6, _bookingHealthCard()),
-                                    const SizedBox(height: 26),
-                                    _fadeStep(7, _sectionTitle('Breakdown')),
-                                    const SizedBox(height: 12),
-                                    _fadeStep(
-                                      7,
-                                      _rankedCard(
-                                        title: 'Countries',
-                                        icon: Icons.public_rounded,
-                                        color: AppColors.info,
-                                        items: (_data[
-                                                    'countries_distribution']
-                                                as List? ??
-                                                [])
-                                            .map((c) => _RankItem(
-                                                  label: c['country']
-                                                          ?.toString() ??
-                                                      'Unknown',
-                                                  count: (c['count']
-                                                              as num?)
-                                                          ?.toInt() ??
-                                                      0,
-                                                  suffix:
-                                                      '${c['percentage']}%',
-                                                  avatar: _flagAvatar(c[
-                                                              'country']
-                                                          ?.toString() ??
-                                                      ''),
-                                                ))
-                                            .toList(),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 14),
-                                    _fadeStep(
-                                      8,
-                                      _rankedCard(
-                                        title: 'Top Cities',
-                                        icon:
-                                            Icons.location_city_rounded,
-                                        color: AppColors.accentPurple,
-                                        items: (_data['top_cities']
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _fadeStep(1, _rangeSelector()),
+                                const SizedBox(height: 24),
+                                _fadeStep(2, _kpiGrid(width)),
+                                const SizedBox(height: 26),
+                                _fadeStep(3, _sectionTitle('Revenue')),
+                                const SizedBox(height: 12),
+                                _fadeStep(3, _revenueHeroCard()),
+                                const SizedBox(height: 26),
+                                _fadeStep(4, _sectionTitle('User Growth')),
+                                const SizedBox(height: 12),
+                                _fadeStep(4, _userGrowthCard()),
+                                const SizedBox(height: 26),
+                                _fadeStep(5, _sectionTitle('Booking Trend')),
+                                const SizedBox(height: 12),
+                                _fadeStep(5, _bookingTrendRow(width)),
+                                const SizedBox(height: 26),
+                                _fadeStep(6, _sectionTitle('Booking Health')),
+                                const SizedBox(height: 12),
+                                _fadeStep(6, _bookingHealthCard()),
+                                const SizedBox(height: 26),
+                                _fadeStep(7, _sectionTitle('Breakdown')),
+                                const SizedBox(height: 12),
+                                _fadeStep(
+                                  7,
+                                  _rankedCard(
+                                    title: 'Countries',
+                                    icon: Icons.public_rounded,
+                                    color: AppColors.info,
+                                    items:
+                                        (_data['countries_distribution']
                                                     as List? ??
                                                 [])
-                                            .map((c) => _RankItem(
-                                                  label: c['city']
-                                                          ?.toString() ??
-                                                      'Unknown',
-                                                  count: (c['count']
-                                                              as num?)
-                                                          ?.toInt() ??
-                                                      0,
-                                                  avatar: _iconAvatar(
-                                                      Icons
-                                                          .location_on_rounded,
-                                                      const Color(
-                                                          0xFF7C3AED)),
-                                                ))
+                                            .map(
+                                              (c) => _RankItem(
+                                                label:
+                                                    c['country']?.toString() ??
+                                                    'Unknown',
+                                                count:
+                                                    (c['count'] as num?)
+                                                        ?.toInt() ??
+                                                    0,
+                                                suffix: '${c['percentage']}%',
+                                                avatar: _flagAvatar(
+                                                  c['country']?.toString() ??
+                                                      '',
+                                                ),
+                                              ),
+                                            )
                                             .toList(),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 14),
-                                    _fadeStep(
-                                      8,
-                                      _rankedCard(
-                                        title: 'Top Categories',
-                                        icon: Icons.category_rounded,
-                                        color: context.colors.accent,
-                                        items: (_data['top_categories']
-                                                    as List? ??
-                                                [])
-                                            .map((c) => _RankItem(
-                                                  label: c['category']
-                                                          ?.toString() ??
-                                                      'Uncategorized',
-                                                  count: (c['count']
-                                                              as num?)
-                                                          ?.toInt() ??
-                                                      0,
-                                                  avatar: _iconAvatar(
-                                                      Icons
-                                                          .category_rounded,
-                                                      context.colors
-                                                          .accent),
-                                                ))
-                                            .toList(),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 26),
-                                    _fadeStep(
-                                        9, _sectionTitle('AI Analytics')),
-                                    const SizedBox(height: 12),
-                                    _fadeStep(9, _aiAnalyticsCard()),
-                                    const SizedBox(height: 26),
-                                    _fadeStep(10,
-                                        _sectionTitle('Platform Statistics')),
-                                    const SizedBox(height: 12),
-                                    _fadeStep(
-                                        10, _platformStatsCard(width)),
-                                  ],
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(height: 14),
+                                _fadeStep(
+                                  8,
+                                  _rankedCard(
+                                    title: 'Top Cities',
+                                    icon: Icons.location_city_rounded,
+                                    color: AppColors.accentPurple,
+                                    items: (_data['top_cities'] as List? ?? [])
+                                        .map(
+                                          (c) => _RankItem(
+                                            label:
+                                                c['city']?.toString() ??
+                                                'Unknown',
+                                            count:
+                                                (c['count'] as num?)?.toInt() ??
+                                                0,
+                                            avatar: _iconAvatar(
+                                              Icons.location_on_rounded,
+                                              const Color(0xFF7C3AED),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                                _fadeStep(
+                                  8,
+                                  _rankedCard(
+                                    title: 'Top Categories',
+                                    icon: Icons.category_rounded,
+                                    color: context.colors.accent,
+                                    items:
+                                        (_data['top_categories'] as List? ?? [])
+                                            .map(
+                                              (c) => _RankItem(
+                                                label:
+                                                    c['category']?.toString() ??
+                                                    'Uncategorized',
+                                                count:
+                                                    (c['count'] as num?)
+                                                        ?.toInt() ??
+                                                    0,
+                                                avatar: _iconAvatar(
+                                                  Icons.category_rounded,
+                                                  context.colors.accent,
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                  ),
+                                ),
+                                const SizedBox(height: 26),
+                                _fadeStep(9, _sectionTitle('AI Analytics')),
+                                const SizedBox(height: 12),
+                                _fadeStep(9, _aiAnalyticsCard()),
+                                const SizedBox(height: 26),
+                                _fadeStep(
+                                  10,
+                                  _sectionTitle('Platform Statistics'),
+                                ),
+                                const SizedBox(height: 12),
+                                _fadeStep(10, _platformStatsCard(width)),
+                              ],
                             ),
                           ),
                         ),
+                      ),
+                    ),
             );
           },
         ),
@@ -345,8 +342,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                       boxShadow: isActive
                           ? [
                               BoxShadow(
-                                color: AppColors.adminColor
-                                    .withValues(alpha: 0.3),
+                                color: AppColors.adminColor.withValues(
+                                  alpha: 0.3,
+                                ),
                                 blurRadius: 10,
                                 offset: const Offset(0, 3),
                               ),
@@ -375,30 +373,30 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
 
   /// Section heading with a small accent bar for stronger hierarchy.
   Widget _sectionTitle(String title) => Padding(
-        padding: const EdgeInsets.only(left: 2),
-        child: Row(
-          children: [
-            Container(
-              width: 3,
-              height: 18,
-              decoration: BoxDecoration(
-                color: AppColors.adminColor,
-                borderRadius: BorderRadius.circular(3),
-              ),
-            ),
-            const SizedBox(width: 9),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: AppFontSizes.title2,
-                fontWeight: FontWeight.w800,
-                color: context.colors.textPrimary,
-                letterSpacing: -0.2,
-              ),
-            ),
-          ],
+    padding: const EdgeInsets.only(left: 2),
+    child: Row(
+      children: [
+        Container(
+          width: 3,
+          height: 18,
+          decoration: BoxDecoration(
+            color: AppColors.adminColor,
+            borderRadius: BorderRadius.circular(3),
+          ),
         ),
-      );
+        const SizedBox(width: 9),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: AppFontSizes.title2,
+            fontWeight: FontWeight.w800,
+            color: context.colors.textPrimary,
+            letterSpacing: -0.2,
+          ),
+        ),
+      ],
+    ),
+  );
 
   /// Standard card shell used by most sections. Adds a soft hover-lift on
   /// pointer devices.
@@ -582,7 +580,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                         height: 34,
                         decoration: BoxDecoration(
                           color: color.withValues(alpha: 0.13),
-                          borderRadius: BorderRadius.circular(AppSizes.radius10),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radius10,
+                          ),
                         ),
                         child: Icon(icon, size: 16, color: color),
                       ),
@@ -638,13 +638,19 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(up ? Icons.trending_up_rounded : Icons.trending_down_rounded,
-              size: 12, color: color),
+          Icon(
+            up ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+            size: 12,
+            color: color,
+          ),
           const SizedBox(width: 2),
           Text(
             '${pct.abs().toStringAsFixed(0)}%',
             style: TextStyle(
-                fontSize: 10.5, fontWeight: FontWeight.w800, color: color),
+              fontSize: 10.5,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
           ),
         ],
       ),
@@ -697,8 +703,11 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                   color: AppColors.greenDeep.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
-                child: const Icon(Icons.payments_rounded,
-                    color: AppColors.greenDeep, size: 20),
+                child: const Icon(
+                  Icons.payments_rounded,
+                  color: AppColors.greenDeep,
+                  size: 20,
+                ),
               ),
             ],
           ),
@@ -726,8 +735,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
               children: [
                 Text(labels.first, style: _axisLabelStyle()),
                 if (labels.length > 2)
-                  Text(labels[labels.length ~/ 2],
-                      style: _axisLabelStyle()),
+                  Text(labels[labels.length ~/ 2], style: _axisLabelStyle()),
                 Text(labels.last, style: _axisLabelStyle()),
               ],
             ),
@@ -738,10 +746,10 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
   }
 
   TextStyle _axisLabelStyle() => TextStyle(
-        fontSize: AppFontSizes.caption,
-        fontWeight: FontWeight.w600,
-        color: context.colors.textSecondary.withValues(alpha: 0.7),
-      );
+    fontSize: AppFontSizes.caption,
+    fontWeight: FontWeight.w600,
+    color: context.colors.textSecondary.withValues(alpha: 0.7),
+  );
 
   /// Formats period strings from the API into short axis labels.
   /// Supports `YYYY-MM` (monthly) and ISO dates (daily).
@@ -752,9 +760,11 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
       if (raw == null) continue;
       try {
         final d = DateTime.parse(raw.length == 7 ? '$raw-01' : raw);
-        out.add(raw.length == 7
-            ? DateFormat('MMM yy').format(d)
-            : DateFormat('MMM d').format(d));
+        out.add(
+          raw.length == 7
+              ? DateFormat('MMM yy').format(d)
+              : DateFormat('MMM d').format(d),
+        );
       } catch (_) {
         out.add(raw);
       }
@@ -769,9 +779,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
     final customers = _seriesFrom('user_growth', 'customers');
     final professionals = _seriesFrom('user_growth', 'professionals');
     final labels = _dateLabelsFrom(rows, 'period');
-    final empty = (customers.isEmpty && professionals.isEmpty) ||
-        (customers.every((v) => v == 0) &&
-            professionals.every((v) => v == 0));
+    final empty =
+        (customers.isEmpty && professionals.isEmpty) ||
+        (customers.every((v) => v == 0) && professionals.every((v) => v == 0));
 
     return _cardShell(
       child: Column(
@@ -803,10 +813,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                 : CustomPaint(
                     painter: _LineChartPainter(
                       series: [customers, professionals],
-                      colors: [
-                        context.colors.primary,
-                        AppColors.accentPurple,
-                      ],
+                      colors: [context.colors.primary, AppColors.accentPurple],
                       showGrid: true,
                     ),
                   ),
@@ -828,24 +835,24 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
 
   /// Small colored dot + label, used for chart legends.
   Widget _legendDot(String label, Color color) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 9,
-            height: 9,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12.5,
-              color: context.colors.textSecondary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      );
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Container(
+        width: 9,
+        height: 9,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      ),
+      const SizedBox(width: 6),
+      Text(
+        label,
+        style: TextStyle(
+          fontSize: 12.5,
+          color: context.colors.textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ],
+  );
 
   // ── Booking Trend row — stacks on very narrow screens so nothing clips ──
   Widget _bookingTrendRow(double width) {
@@ -950,7 +957,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                 ? _noData(height: 64)
                 : CustomPaint(
                     painter: _BarChartPainter(
-                        values: values, color: AppColors.sky),
+                      values: values,
+                      color: AppColors.sky,
+                    ),
                   ),
           ),
         ],
@@ -961,12 +970,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
   // ── Booking Health (donut: completed / cancelled / in-progress) ──
   Widget _bookingHealthCard() {
     final stats = (_data['platform_statistics'] as Map?) ?? {};
-    final total =
-        ((stats['total_bookings_all_time'] as num?) ?? 0).toDouble();
-    final completed =
-        ((stats['completed_bookings'] as num?) ?? 0).toDouble();
-    final cancelled =
-        ((stats['cancelled_bookings'] as num?) ?? 0).toDouble();
+    final total = ((stats['total_bookings_all_time'] as num?) ?? 0).toDouble();
+    final completed = ((stats['completed_bookings'] as num?) ?? 0).toDouble();
+    final cancelled = ((stats['cancelled_bookings'] as num?) ?? 0).toDouble();
     final other = (total - completed - cancelled).clamp(0, double.infinity);
     final completedPct = total > 0 ? (completed / total * 100) : 0.0;
 
@@ -1026,14 +1032,11 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _legendRow(
-                    'Completed', completed.toInt(), AppColors.greenDeep),
+                _legendRow('Completed', completed.toInt(), AppColors.greenDeep),
                 const SizedBox(height: 8),
-                _legendRow(
-                    'Cancelled', cancelled.toInt(), AppColors.red600),
+                _legendRow('Cancelled', cancelled.toInt(), AppColors.red600),
                 const SizedBox(height: 8),
-                _legendRow('In progress', other.toInt(),
-                    AppColors.neutral400),
+                _legendRow('In progress', other.toInt(), AppColors.neutral400),
               ],
             ),
           ),
@@ -1044,30 +1047,33 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
 
   /// Legend row: colored dot + label + numeric value.
   Widget _legendRow(String label, int value, Color color) => Row(
-        children: [
-          Container(
-            width: 9,
-            height: 9,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    children: [
+      Container(
+        width: 9,
+        height: 9,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      ),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12.5,
+            color: context.colors.textSecondary,
+            fontWeight: FontWeight.w600,
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 12.5,
-                color: context.colors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Text(
-            '$value',
-            style: TextStyle(
-                fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w800, color: color),
-          ),
-        ],
-      );
+        ),
+      ),
+      Text(
+        '$value',
+        style: TextStyle(
+          fontSize: AppFontSizes.secondary,
+          fontWeight: FontWeight.w800,
+          color: color,
+        ),
+      ),
+    ],
+  );
 
   // ── Ranked breakdown card (Countries / Cities / Categories) ────────────
   /// Displays a ranked list with medals for the top 3, animated progress
@@ -1081,14 +1087,14 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
     final maxCount = items.isEmpty
         ? 1
         : items
-            .map((e) => e.count)
-            .reduce((a, b) => a > b ? a : b)
-            .clamp(1, 1 << 30);
+              .map((e) => e.count)
+              .reduce((a, b) => a > b ? a : b)
+              .clamp(1, 1 << 30);
 
     const medalColors = [
       AppColors.warningAmber,
       AppColors.neutral400,
-      AppColors.amberDarkest
+      AppColors.amberDarkest,
     ];
 
     return _cardShell(
@@ -1178,7 +1184,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                           const SizedBox(height: 6),
                           TweenAnimationBuilder<double>(
                             tween: Tween(
-                                begin: 0, end: ratio.toDouble().clamp(0, 1)),
+                              begin: 0,
+                              end: ratio.toDouble().clamp(0, 1),
+                            ),
                             duration: const Duration(milliseconds: 800),
                             curve: Curves.easeOutCubic,
                             builder: (context, t, _) => ClipRRect(
@@ -1205,14 +1213,14 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
 
   /// Icon avatar used for city/category rank items.
   Widget _iconAvatar(IconData icon, Color color) => Container(
-        width: 26,
-        height: 26,
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.13),
-          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-        ),
-        child: Icon(icon, size: 13, color: color),
-      );
+    width: 26,
+    height: 26,
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.13),
+      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+    ),
+    child: Icon(icon, size: 13, color: color),
+  );
 
   /// Country name → flag emoji. Retained intentionally: emoji here is a
   /// data visualization (country identifier), not decoration, and Flutter's
@@ -1279,17 +1287,20 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
           color: AppColors.info.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(AppSizes.radiusSm),
         ),
-        child: Text(flag, style: const TextStyle(fontSize: AppFontSizes.secondary)),
+        child: Text(
+          flag,
+          style: const TextStyle(fontSize: AppFontSizes.secondary),
+        ),
       );
     }
     final initials = country.isEmpty
         ? '?'
         : country
-            .trim()
-            .split(RegExp(r'\s+'))
-            .take(2)
-            .map((w) => w[0].toUpperCase())
-            .join();
+              .trim()
+              .split(RegExp(r'\s+'))
+              .take(2)
+              .map((w) => w[0].toUpperCase())
+              .join();
     return Container(
       width: 26,
       height: 26,
@@ -1301,7 +1312,10 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
       child: Text(
         initials,
         style: const TextStyle(
-            fontSize: 9.5, fontWeight: FontWeight.w800, color: AppColors.info),
+          fontSize: 9.5,
+          fontWeight: FontWeight.w800,
+          color: AppColors.info,
+        ),
       ),
     );
   }
@@ -1374,7 +1388,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                 final count = q['count'] ?? 0;
                 return Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 7),
+                    horizontal: 12,
+                    vertical: 7,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.info.withValues(alpha: 0.09),
                     borderRadius: BorderRadius.circular(AppSizes.radiusChip),
@@ -1382,9 +1398,10 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                   child: Text(
                     '$query · $count',
                     style: const TextStyle(
-                        fontSize: AppFontSizes.small,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.info),
+                      fontSize: AppFontSizes.small,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.info,
+                    ),
                   ),
                 );
               }).toList(),
@@ -1396,8 +1413,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
   }
 
   /// Mini statistic used inside the AI analytics card (label + value).
-  Widget _miniStat(
-      String label, String value, Color color, IconData icon) {
+  Widget _miniStat(String label, String value, Color color, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1442,55 +1458,55 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         'Total Bookings',
         stats['total_bookings_all_time'],
         Icons.event_note_rounded,
-        AppColors.customerColor
+        AppColors.customerColor,
       ),
       (
         'Completed',
         stats['completed_bookings'],
         Icons.check_circle_rounded,
-        AppColors.greenDeep
+        AppColors.greenDeep,
       ),
       (
         'Cancelled',
         stats['cancelled_bookings'],
         Icons.cancel_rounded,
-        AppColors.red600
+        AppColors.red600,
       ),
       (
         'Total Searches',
         stats['total_searches_all_time'],
         Icons.travel_explore_rounded,
-        AppColors.warningAmber
+        AppColors.warningAmber,
       ),
       (
         'Active Subs',
         stats['active_subscriptions'],
         Icons.workspace_premium_rounded,
-        AppColors.accentPurple
+        AppColors.accentPurple,
       ),
       (
         'Active Ads',
         stats['active_popup_ads'],
         Icons.campaign_rounded,
-        AppColors.badgePopular
+        AppColors.badgePopular,
       ),
       (
         'Categories',
         stats['total_categories'],
         Icons.category_rounded,
-        AppColors.sky
+        AppColors.sky,
       ),
       (
         'Portfolio Items',
         stats['total_portfolio_items'],
         Icons.photo_library_rounded,
-        AppColors.teal
+        AppColors.teal,
       ),
       (
         'Total Reviews',
         stats['total_reviews'],
         Icons.star_rounded,
-        AppColors.warningAmber
+        AppColors.warningAmber,
       ),
     ];
 
@@ -1538,8 +1554,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                     children: [
                       TweenAnimationBuilder<double>(
                         tween: Tween(
-                            begin: 0,
-                            end: ((value as num?) ?? 0).toDouble()),
+                          begin: 0,
+                          end: ((value as num?) ?? 0).toDouble(),
+                        ),
                         duration: const Duration(milliseconds: 800),
                         curve: Curves.easeOutCubic,
                         builder: (context, val, _) => Text(
@@ -1574,38 +1591,38 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
 
   /// Standard "no data" placeholder used inside empty charts/tables.
   Widget _noData({double height = 60}) => SizedBox(
-        height: height,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.bar_chart_rounded,
-                size: 18,
-                color: context.colors.textSecondary.withValues(alpha: 0.4),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'No data yet',
-                style: TextStyle(
-                  fontSize: AppFontSizes.small,
-                  color: context.colors.textSecondary.withValues(alpha: 0.7),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+    height: height,
+    child: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.bar_chart_rounded,
+            size: 18,
+            color: context.colors.textSecondary.withValues(alpha: 0.4),
           ),
-        ),
-      );
+          const SizedBox(height: 4),
+          Text(
+            'No data yet',
+            style: TextStyle(
+              fontSize: AppFontSizes.small,
+              color: context.colors.textSecondary.withValues(alpha: 0.7),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 
   // ── Loading skeleton ─────────────────────────────────────────────────
   /// Placeholder layout shown during the initial load. Uses shimmer blocks
   /// with the same corner radius as the real cards so cross-fade is smooth.
   Widget _buildSkeleton({Key? key}) {
     Widget block({double height = 90, double? width}) => Padding(
-          padding: const EdgeInsets.only(bottom: 14),
-          child: _ShimmerBox(height: height, width: width),
-        );
+      padding: const EdgeInsets.only(bottom: 14),
+      child: _ShimmerBox(height: height, width: width),
+    );
     return SingleChildScrollView(
       key: key,
       physics: const NeverScrollableScrollPhysics(),
@@ -1621,8 +1638,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
             mainAxisSpacing: 14,
             crossAxisSpacing: 14,
             childAspectRatio: 1.22,
-            children:
-                List.generate(6, (_) => const _ShimmerBox(height: 110)),
+            children: List.generate(6, (_) => const _ShimmerBox(height: 110)),
           ),
           const SizedBox(height: 10),
           block(height: 220),
@@ -1648,8 +1664,11 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                 color: AppColors.error.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.error_outline_rounded,
-                  size: 34, color: AppColors.error),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                size: 34,
+                color: AppColors.error,
+              ),
             ),
             const SizedBox(height: 14),
             Text(
@@ -1680,7 +1699,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                   backgroundColor: AppColors.adminColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 12),
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   minimumSize: const Size(0, 44),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -1730,12 +1751,14 @@ class _FadeInUpState extends State<_FadeInUp>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 420));
+      vsync: this,
+      duration: const Duration(milliseconds: 420),
+    );
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
     _slide = Tween<Offset>(
-            begin: const Offset(0, 0.035), end: Offset.zero)
-        .animate(CurvedAnimation(
-            parent: _controller, curve: Curves.easeOutCubic));
+      begin: const Offset(0, 0.035),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     final delay = Duration(milliseconds: 35 * widget.index.clamp(0, 10));
     Future.delayed(delay, () {
       if (mounted) _controller.forward();
@@ -1750,9 +1773,9 @@ class _FadeInUpState extends State<_FadeInUp>
 
   @override
   Widget build(BuildContext context) => FadeTransition(
-        opacity: _fade,
-        child: SlideTransition(position: _slide, child: widget.child),
-      );
+    opacity: _fade,
+    child: SlideTransition(position: _slide, child: widget.child),
+  );
 }
 
 // ── Cosmetic: subtle hover-lift for desktop/web pointer input ───────────
@@ -1907,7 +1930,10 @@ class _LineChartPainter extends CustomPainter {
           ..shader = LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [color.withValues(alpha: 0.24), color.withValues(alpha: 0.0)],
+            colors: [
+              color.withValues(alpha: 0.24),
+              color.withValues(alpha: 0.0),
+            ],
           ).createShader(Rect.fromLTWH(0, 0, size.width, chartHeight));
         canvas.drawPath(fillPath, fillPaint);
       }
@@ -1924,7 +1950,10 @@ class _LineChartPainter extends CustomPainter {
       final lastX = dx * (values.length - 1);
       final lastY = chartHeight - (values.last / safeMax) * chartHeight;
       canvas.drawCircle(
-          Offset(lastX, lastY), 3.6, Paint()..color = Colors.white);
+        Offset(lastX, lastY),
+        3.6,
+        Paint()..color = Colors.white,
+      );
       canvas.drawCircle(
         Offset(lastX, lastY),
         3.6,
@@ -1940,7 +1969,10 @@ class _LineChartPainter extends CustomPainter {
           text: TextSpan(
             text: lastLabel,
             style: TextStyle(
-                fontSize: 10.5, fontWeight: FontWeight.w800, color: color),
+              fontSize: 10.5,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
           ),
           textDirection: TextDirection.ltr,
         )..layout();
@@ -1982,8 +2014,12 @@ class _BarChartPainter extends CustomPainter {
         values[i] > 0 ? 2.0 : 0.0,
       );
       final x = i * (barWidth + gap);
-      final rect =
-          Rect.fromLTWH(x, size.height - barHeight, barWidth, barHeight);
+      final rect = Rect.fromLTWH(
+        x,
+        size.height - barHeight,
+        barWidth,
+        barHeight,
+      );
       final isLast = highlightLast && i == values.length - 1;
       final paint = Paint()
         ..shader = LinearGradient(
@@ -2028,7 +2064,7 @@ class _DonutPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius =
         (size.width < size.height ? size.width : size.height) / 2 -
-            strokeWidth / 2;
+        strokeWidth / 2;
 
     final trackPaint = Paint()
       ..color = trackColor
@@ -2062,6 +2098,5 @@ class _DonutPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _DonutPainter oldDelegate) =>
-      oldDelegate.values != values ||
-      oldDelegate.trackColor != trackColor;
+      oldDelegate.values != values || oldDelegate.trackColor != trackColor;
 }

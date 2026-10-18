@@ -10,11 +10,11 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 class SocialAuthButton extends StatefulWidget {
-  final Widget       logo;
-  final String       label;
-  final Color        background;
-  final Color        textColor;
-  final Color?       borderColor;
+  final Widget logo;
+  final String label;
+  final Color background;
+  final Color textColor;
+  final Color? borderColor;
   final VoidCallback onTap;
 
   const SocialAuthButton({
@@ -33,7 +33,7 @@ class SocialAuthButton extends StatefulWidget {
 
 class _SocialAuthButtonState extends State<SocialAuthButton> {
   bool _hovering = false;
-  bool _pressed  = false;
+  bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +43,9 @@ class _SocialAuthButtonState extends State<SocialAuthButton> {
     );
 
     return MouseRegion(
-      cursor:  SystemMouseCursors.click,
+      cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovering = true),
-      onExit:  (_) => setState(() => _hovering = false),
+      onExit: (_) => setState(() => _hovering = false),
       child: AnimatedScale(
         scale: _pressed ? 0.97 : 1.0,
         duration: const Duration(milliseconds: 120),
@@ -56,9 +56,7 @@ class _SocialAuthButtonState extends State<SocialAuthButton> {
           decoration: BoxDecoration(
             color: _hovering ? hoverTint : widget.background,
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            border: Border.all(
-              color: widget.borderColor ?? Colors.transparent,
-            ),
+            border: Border.all(color: widget.borderColor ?? Colors.transparent),
             boxShadow: _hovering
                 ? [
                     BoxShadow(
@@ -92,7 +90,7 @@ class _SocialAuthButtonState extends State<SocialAuthButton> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color:      widget.textColor,
+                          color: widget.textColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

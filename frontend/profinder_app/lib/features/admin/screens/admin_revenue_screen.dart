@@ -37,7 +37,10 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final r = await _api.get('/admin-panel/revenue/?days=$_rangeDays');
       if (!mounted) return;
@@ -47,7 +50,10 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load revenue data'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load revenue data';
+      });
     }
   }
 
@@ -63,65 +69,84 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
       body: SafeArea(
         top: false,
         child: _loading
-            ? const Center(child: CircularProgressIndicator(color: AppColors.adminColor))
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.adminColor),
+              )
             : _error != null
-                ? _errorState()
-                : RefreshIndicator(
-                    onRefresh: _load,
-                    color: AppColors.adminColor,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _rangeSelector(),
-                          const SizedBox(height: 16),
-                          _summaryCard(),
-                          const SizedBox(height: 16),
-                          const Text('Revenue by Category',
-                              style: TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700)),
-                          const SizedBox(height: 10),
-                          _categoryBreakdown(),
-                        ],
+            ? _errorState()
+            : RefreshIndicator(
+                onRefresh: _load,
+                color: AppColors.adminColor,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _rangeSelector(),
+                      const SizedBox(height: 16),
+                      _summaryCard(),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Revenue by Category',
+                        style: TextStyle(
+                          fontSize: AppFontSizes.input,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 10),
+                      _categoryBreakdown(),
+                    ],
                   ),
+                ),
+              ),
       ),
     );
   }
 
   Widget _rangeSelector() => Align(
-        alignment: Alignment.centerRight,
-        child: Container(
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            color: AppColors.adminColor.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(AppSizes.radius10),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: _ranges.map((d) {
-              final isActive = _rangeDays == d;
-              return GestureDetector(
-                onTap: () { if (_rangeDays != d) { setState(() => _rangeDays = d); _load(); } },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                  decoration: BoxDecoration(
-                    color: isActive ? AppColors.adminColor : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                  ),
-                  child: Text('${d}D', style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w700,
-                      color: isActive ? Colors.white : AppColors.adminColor)),
+    alignment: Alignment.centerRight,
+    child: Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: AppColors.adminColor.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppSizes.radius10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: _ranges.map((d) {
+          final isActive = _rangeDays == d;
+          return GestureDetector(
+            onTap: () {
+              if (_rangeDays != d) {
+                setState(() => _rangeDays = d);
+                _load();
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                color: isActive ? AppColors.adminColor : Colors.transparent,
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+              ),
+              child: Text(
+                '${d}D',
+                style: TextStyle(
+                  fontSize: AppFontSizes.small,
+                  fontWeight: FontWeight.w700,
+                  color: isActive ? Colors.white : AppColors.adminColor,
                 ),
-              );
-            }).toList(),
-          ),
-        ),
-      );
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    ),
+  );
 
   Widget _summaryCard() {
-    final total = double.tryParse(_data['total_revenue']?.toString() ?? '0') ?? 0;
+    final total =
+        double.tryParse(_data['total_revenue']?.toString() ?? '0') ?? 0;
     final change = (_data['change_percentage'] as num?)?.toDouble() ?? 0;
     final avgTxn = _data['avg_transaction']?.toString() ?? '0';
     final isUp = change >= 0;
@@ -129,21 +154,40 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radius14),
-          border: Border.all(color: AppColors.neutral200)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
+        border: Border.all(color: AppColors.neutral200),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Rs ${total.toStringAsFixed(0)}',
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.greenDeep)),
+          Text(
+            'Rs ${total.toStringAsFixed(0)}',
+            style: const TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              color: AppColors.greenDeep,
+            ),
+          ),
           const SizedBox(height: 4),
           Row(
             children: [
-              Icon(isUp ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
-                  size: 14, color: isUp ? AppColors.greenDeep : AppColors.error),
-              Text('${change.abs()}% vs previous $_rangeDays days',
-                  style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600,
-                      color: isUp ? AppColors.greenDeep : AppColors.error)),
+              Icon(
+                isUp
+                    ? Icons.arrow_upward_rounded
+                    : Icons.arrow_downward_rounded,
+                size: 14,
+                color: isUp ? AppColors.greenDeep : AppColors.error,
+              ),
+              Text(
+                '${change.abs()}% vs previous $_rangeDays days',
+                style: TextStyle(
+                  fontSize: AppFontSizes.small,
+                  fontWeight: FontWeight.w600,
+                  color: isUp ? AppColors.greenDeep : AppColors.error,
+                ),
+              ),
             ],
           ),
           const Divider(height: 24),
@@ -160,21 +204,41 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
   }
 
   Widget _stat(String label, String value) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(value, style: const TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700)),
-          Text(label, style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400)),
-        ],
-      );
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        value,
+        style: const TextStyle(
+          fontSize: AppFontSizes.body,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      Text(
+        label,
+        style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400),
+      ),
+    ],
+  );
 
   Widget _categoryBreakdown() {
     final rows = (_data['by_category'] as List?) ?? [];
     if (rows.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radius14),
-            border: Border.all(color: AppColors.neutral200)),
-        child: const Center(child: Text('No category data yet', style: TextStyle(color: AppColors.neutral400, fontSize: AppFontSizes.small))),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppSizes.radius14),
+          border: Border.all(color: AppColors.neutral200),
+        ),
+        child: const Center(
+          child: Text(
+            'No category data yet',
+            style: TextStyle(
+              color: AppColors.neutral400,
+              fontSize: AppFontSizes.small,
+            ),
+          ),
+        ),
       );
     }
     final maxTotal = rows
@@ -183,8 +247,11 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
 
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radius14),
-          border: Border.all(color: AppColors.neutral200)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
+        border: Border.all(color: AppColors.neutral200),
+      ),
       child: Column(
         children: rows.map((r) {
           final total = double.tryParse(r['total']?.toString() ?? '0') ?? 0;
@@ -196,18 +263,36 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
               children: [
                 Row(
                   children: [
-                    Expanded(child: Text(r['category']?.toString() ?? '',
-                        style: const TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600))),
-                    Text('Rs $total (${r['count']})',
-                        style: const TextStyle(fontSize: AppFontSizes.caption, fontWeight: FontWeight.w700, color: AppColors.greenDeep)),
+                    Expanded(
+                      child: Text(
+                        r['category']?.toString() ?? '',
+                        style: const TextStyle(
+                          fontSize: AppFontSizes.small,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Rs $total (${r['count']})',
+                      style: const TextStyle(
+                        fontSize: AppFontSizes.caption,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.greenDeep,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(AppSizes.radiusXs),
-                  child: LinearProgressIndicator(value: ratio, minHeight: 6,
-                      backgroundColor: AppColors.slate100,
-                      valueColor: const AlwaysStoppedAnimation(AppColors.greenDeep)),
+                  child: LinearProgressIndicator(
+                    value: ratio,
+                    minHeight: 6,
+                    backgroundColor: AppColors.slate100,
+                    valueColor: const AlwaysStoppedAnimation(
+                      AppColors.greenDeep,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -218,18 +303,32 @@ class _AdminRevenueScreenState extends State<AdminRevenueScreen> {
   }
 
   Widget _errorState() => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
-            const SizedBox(height: 10),
-            const Text('Failed to load revenue data', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 12),
-            ElevatedButton.icon(
-              onPressed: _load, icon: const Icon(Icons.refresh_rounded), label: const Text('Retry'),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
-            ),
-          ],
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(
+          Icons.error_outline_rounded,
+          size: 48,
+          color: AppColors.error,
         ),
-      );
+        const SizedBox(height: 10),
+        const Text(
+          'Failed to load revenue data',
+          style: TextStyle(
+            fontSize: AppFontSizes.body,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ElevatedButton.icon(
+          onPressed: _load,
+          icon: const Icon(Icons.refresh_rounded),
+          label: const Text('Retry'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.adminColor,
+          ),
+        ),
+      ],
+    ),
+  );
 }

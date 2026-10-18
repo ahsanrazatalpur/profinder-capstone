@@ -1,11 +1,11 @@
 // lib/features/magazine/models/article_model.dart
 
 class ArticleCategory {
-  final int    id;
+  final int id;
   final String name;
   final String icon;
   final String color;
-  final int    articlesCount;
+  final int articlesCount;
 
   ArticleCategory({
     required this.id,
@@ -17,30 +17,31 @@ class ArticleCategory {
 
   factory ArticleCategory.fromJson(Map<String, dynamic> json) {
     return ArticleCategory(
-      id:            json['id']             ?? 0,
-      name:          json['name']           ?? '',
-      icon:          json['icon']           ?? 'article',
-      color:         json['color']          ?? '#2563EB',
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      icon: json['icon'] ?? 'article',
+      color: json['color'] ?? '#2563EB',
       articlesCount: json['articles_count'] ?? 0,
     );
   }
 }
 
 class Article {
-  final int     id;
-  final String  title;
-  final String  slug;
-  final String  summary;
-  final String  content;
-  final String  coverImage;
-  final int?    categoryId;
-  final String  categoryName;
-  final String  categoryColor;
-  final String  editorialLabel; // Editorial byline (e.g. "ProFinder Health Desk")
-  final int     readTime;
-  final int     viewsCount;
-  final bool    isPublished;
-  final String  publishedAt;
+  final int id;
+  final String title;
+  final String slug;
+  final String summary;
+  final String content;
+  final String coverImage;
+  final int? categoryId;
+  final String categoryName;
+  final String categoryColor;
+  final String
+  editorialLabel; // Editorial byline (e.g. "ProFinder Health Desk")
+  final int readTime;
+  final int viewsCount;
+  final bool isPublished;
+  final String publishedAt;
 
   Article({
     required this.id,
@@ -61,20 +62,20 @@ class Article {
 
   factory Article.fromJson(Map<String, dynamic> json) {
     return Article(
-      id:             json['id']              ?? 0,
-      title:          json['title']           ?? '',
-      slug:           json['slug']            ?? '',
-      summary:        json['summary']         ?? '',
-      content:        json['content']         ?? '',
-      coverImage:     json['cover_image']     ?? '',
-      categoryId:     json['category'],
-      categoryName:   json['category_name']   ?? '',
-      categoryColor:  json['category_color']  ?? '#2563EB',
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      slug: json['slug'] ?? '',
+      summary: json['summary'] ?? '',
+      content: json['content'] ?? '',
+      coverImage: json['cover_image'] ?? '',
+      categoryId: json['category'],
+      categoryName: json['category_name'] ?? '',
+      categoryColor: json['category_color'] ?? '#2563EB',
       editorialLabel: json['editorial_label'] ?? 'ProFinder Editorial',
-      readTime:       json['read_time']       ?? 1,
-      viewsCount:     json['views_count']     ?? 0,
-      isPublished:    json['is_published']    ?? false,
-      publishedAt:    json['published_at']    ?? '',
+      readTime: json['read_time'] ?? 1,
+      viewsCount: json['views_count'] ?? 0,
+      isPublished: json['is_published'] ?? false,
+      publishedAt: json['published_at'] ?? '',
     );
   }
 }
@@ -82,16 +83,16 @@ class Article {
 // ── Admin Analytics Models ────────────────────────────────────────────────────
 
 class ArticleAnalytics {
-  final int    id;
+  final int id;
   final String title;
   final String slug;
   final String coverImage;
   final String categoryName;
   final String categoryColor;
   final String editorialLabel;
-  final bool   isPublished;
-  final int    viewsCount;
-  final int    uniqueViewers;
+  final bool isPublished;
+  final int viewsCount;
+  final int uniqueViewers;
   final String publishedAt;
   final List<ViewLog> recentViews;
 
@@ -115,18 +116,18 @@ class ArticleAnalytics {
         .map((v) => ViewLog.fromJson(v))
         .toList();
     return ArticleAnalytics(
-      id:             json['id']              ?? 0,
-      title:          json['title']           ?? '',
-      slug:           json['slug']            ?? '',
-      coverImage:     json['cover_image']     ?? '',
-      categoryName:   json['category_name']   ?? '',
-      categoryColor:  json['category_color']  ?? '#2563EB',
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      slug: json['slug'] ?? '',
+      coverImage: json['cover_image'] ?? '',
+      categoryName: json['category_name'] ?? '',
+      categoryColor: json['category_color'] ?? '#2563EB',
       editorialLabel: json['editorial_label'] ?? '',
-      isPublished:    json['is_published']    ?? false,
-      viewsCount:     json['views_count']     ?? 0,
-      uniqueViewers:  json['unique_viewers']  ?? 0,
-      publishedAt:    json['published_at']    ?? '',
-      recentViews:    logs,
+      isPublished: json['is_published'] ?? false,
+      viewsCount: json['views_count'] ?? 0,
+      uniqueViewers: json['unique_viewers'] ?? 0,
+      publishedAt: json['published_at'] ?? '',
+      recentViews: logs,
     );
   }
 }
@@ -146,10 +147,10 @@ class ViewLog {
 
   factory ViewLog.fromJson(Map<String, dynamic> json) {
     return ViewLog(
-      userName:  json['user_name']  ?? 'Guest',
+      userName: json['user_name'] ?? 'Guest',
       userEmail: json['user_email'] ?? '',
-      userRole:  json['user_role']  ?? '',
-      viewedAt:  json['viewed_at']  ?? '',
+      userRole: json['user_role'] ?? '',
+      viewedAt: json['viewed_at'] ?? '',
     );
   }
 }
@@ -161,7 +162,7 @@ class MagazineAnalyticsSummary {
   final int uniqueReaders;
   final int totalArticles;
   final List<CategoryBreakdown> categoryBreakdown;
-  final List<ArticleAnalytics>  articles;
+  final List<ArticleAnalytics> articles;
 
   MagazineAnalyticsSummary({
     required this.totalViews,
@@ -174,7 +175,7 @@ class MagazineAnalyticsSummary {
   });
 
   factory MagazineAnalyticsSummary.fromJson(Map<String, dynamic> json) {
-    final s   = json['summary'] ?? {};
+    final s = json['summary'] ?? {};
     final cats = (json['category_breakdown'] as List? ?? [])
         .map((c) => CategoryBreakdown.fromJson(c))
         .toList();
@@ -182,13 +183,13 @@ class MagazineAnalyticsSummary {
         .map((a) => ArticleAnalytics.fromJson(a))
         .toList();
     return MagazineAnalyticsSummary(
-      totalViews:       s['total_views']     ?? 0,
-      viewsToday:       s['views_today']     ?? 0,
-      viewsThisWeek:    s['views_this_week'] ?? 0,
-      uniqueReaders:    s['unique_readers']  ?? 0,
-      totalArticles:    s['total_articles']  ?? 0,
+      totalViews: s['total_views'] ?? 0,
+      viewsToday: s['views_today'] ?? 0,
+      viewsThisWeek: s['views_this_week'] ?? 0,
+      uniqueReaders: s['unique_readers'] ?? 0,
+      totalArticles: s['total_articles'] ?? 0,
       categoryBreakdown: cats,
-      articles:          arts,
+      articles: arts,
     );
   }
 }
@@ -196,7 +197,7 @@ class MagazineAnalyticsSummary {
 class CategoryBreakdown {
   final String categoryName;
   final String categoryColor;
-  final int    totalViews;
+  final int totalViews;
 
   CategoryBreakdown({
     required this.categoryName,
@@ -206,9 +207,9 @@ class CategoryBreakdown {
 
   factory CategoryBreakdown.fromJson(Map<String, dynamic> json) {
     return CategoryBreakdown(
-      categoryName:  json['article__category__name']  ?? 'Uncategorized',
+      categoryName: json['article__category__name'] ?? 'Uncategorized',
       categoryColor: json['article__category__color'] ?? '#6B7280',
-      totalViews:    json['total_views']              ?? 0,
+      totalViews: json['total_views'] ?? 0,
     );
   }
 }

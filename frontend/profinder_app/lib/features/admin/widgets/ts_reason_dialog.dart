@@ -89,8 +89,9 @@ class _TsReasonDialog<T> extends StatefulWidget {
 }
 
 class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
-  late final TextEditingController _ctrl =
-      TextEditingController(text: widget.initialText);
+  late final TextEditingController _ctrl = TextEditingController(
+    text: widget.initialText,
+  );
   bool _submitting = false;
   bool _touched = false;
   String? _error;
@@ -136,7 +137,9 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
       child: AlertDialog(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
         titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
         actionsPadding: const EdgeInsets.fromLTRB(12, 12, 16, 14),
@@ -205,10 +208,16 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
                   onChanged: (_) {
                     if (_touched) setState(() {});
                   },
-                  style: const TextStyle(fontSize: AppFontSizes.secondary, color: TsColors.textPrimary),
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    color: TsColors.textPrimary,
+                  ),
                   decoration: InputDecoration(
                     hintText: widget.fieldHint,
-                    hintStyle: const TextStyle(fontSize: 12.5, color: TsColors.textFaint),
+                    hintStyle: const TextStyle(
+                      fontSize: 12.5,
+                      color: TsColors.textFaint,
+                    ),
                     filled: true,
                     fillColor: TsColors.bg,
                     contentPadding: const EdgeInsets.all(12),
@@ -227,7 +236,10 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
                 ),
                 if (widget.audienceNote != null) ...[
                   const SizedBox(height: 4),
-                  TsHint(icon: Icons.lock_outline_rounded, text: widget.audienceNote!),
+                  TsHint(
+                    icon: Icons.lock_outline_rounded,
+                    text: widget.audienceNote!,
+                  ),
                 ],
                 if (_error != null) ...[
                   const SizedBox(height: 12),
@@ -254,7 +266,9 @@ class _TsReasonDialogState<T> extends State<_TsReasonDialog<T>> {
               disabledBackgroundColor: widget.color.withValues(alpha: 0.6),
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radius10),
+              ),
             ),
             child: _submitting
                 ? const SizedBox(

@@ -26,11 +26,11 @@ class WalletScreen extends StatefulWidget {
 class _WalletScreenState extends State<WalletScreen> {
   final ApiService _api = ApiService();
 
-  bool   _loading    = true;
+  bool _loading = true;
   double _totalSpent = 0;
-  int    _txCount    = 0;
-  bool   _isPremium  = false;
-  String _planName   = 'Free';
+  int _txCount = 0;
+  bool _isPremium = false;
+  String _planName = 'Free';
 
   @override
   void initState() {
@@ -45,13 +45,20 @@ class _WalletScreenState extends State<WalletScreen> {
         _api.get('/payments/'),
         _api.get('${AppConstants.subscriptions}my-plan/'),
       ]);
-      final payments = results[0].data is List ? List<dynamic>.from(results[0].data) : [];
-      final completed = payments.where((p) => p['status'] == 'completed').toList();
-      _totalSpent = completed.fold(0.0, (sum, p) => sum + (double.tryParse('${p['amount']}') ?? 0));
-      _txCount    = payments.length;
-      final plan  = results[1].data as Map<String, dynamic>;
-      _isPremium  = plan['is_premium'] == true;
-      _planName   = plan['plan_name']?.toString() ?? 'Free';
+      final payments = results[0].data is List
+          ? List<dynamic>.from(results[0].data)
+          : [];
+      final completed = payments
+          .where((p) => p['status'] == 'completed')
+          .toList();
+      _totalSpent = completed.fold(
+        0.0,
+        (sum, p) => sum + (double.tryParse('${p['amount']}') ?? 0),
+      );
+      _txCount = payments.length;
+      final plan = results[1].data as Map<String, dynamic>;
+      _isPremium = plan['is_premium'] == true;
+      _planName = plan['plan_name']?.toString() ?? 'Free';
     } catch (_) {
       // keep zeros — screen still renders usefully
     }
@@ -102,7 +109,10 @@ class _WalletScreenState extends State<WalletScreen> {
                         gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [AppColors.walletGradientStart, AppColors.walletGradientEnd],
+                          colors: [
+                            AppColors.walletGradientStart,
+                            AppColors.walletGradientEnd,
+                          ],
                         ),
                       ),
                       child: Stack(
@@ -177,13 +187,19 @@ class _WalletScreenState extends State<WalletScreen> {
                                 children: [
                                   Icon(
                                     Icons.workspace_premium_rounded,
-                                    color: _isPremium ? Colors.white : Colors.white38,
+                                    color: _isPremium
+                                        ? Colors.white
+                                        : Colors.white38,
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      t.homePlan(_planName.isEmpty ? t.homeDefaultPlanFree : _planName),
+                                      t.homePlan(
+                                        _planName.isEmpty
+                                            ? t.homeDefaultPlanFree
+                                            : _planName,
+                                      ),
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: AppFontSizes.secondary,
@@ -195,11 +211,16 @@ class _WalletScreenState extends State<WalletScreen> {
                                     onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => const SubscriptionScreen(userRole: 'customer'),
+                                        builder: (_) =>
+                                            const SubscriptionScreen(
+                                              userRole: 'customer',
+                                            ),
                                       ),
                                     ),
                                     child: Text(
-                                      _isPremium ? t.homeManageButton : t.homeUpgradeButton,
+                                      _isPremium
+                                          ? t.homeManageButton
+                                          : t.homeUpgradeButton,
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: AppFontSizes.small,
@@ -225,7 +246,9 @@ class _WalletScreenState extends State<WalletScreen> {
                       borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusLg,
+                          ),
                           border: Border.all(
                             color: isDark
                                 ? Colors.white.withValues(alpha: 0.08)
@@ -246,8 +269,12 @@ class _WalletScreenState extends State<WalletScreen> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: AppColors.customerColor.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                              color: AppColors.customerColor.withValues(
+                                alpha: 0.12,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
                             ),
                             child: Icon(
                               Icons.receipt_long_rounded,
@@ -278,7 +305,9 @@ class _WalletScreenState extends State<WalletScreen> {
                           ),
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const PaymentsScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const PaymentsScreen(),
+                            ),
                           ),
                         ),
                       ),

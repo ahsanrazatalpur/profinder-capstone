@@ -19,7 +19,14 @@ import '../../../core/theme/app_text_styles.dart';
 
 /// Which dashboard section opened this screen. Each value gets its own
 /// filter-chip set from [_optionsFor] instead of one shared filter bar.
-enum ProSection { recommended, nearby, topRated, trending, recentlyAdded, category }
+enum ProSection {
+  recommended,
+  nearby,
+  topRated,
+  trending,
+  recentlyAdded,
+  category,
+}
 
 /// A single filter/sort chip: a display [label] plus a pure function
 /// that turns the original list into the filtered/reordered view.
@@ -39,28 +46,30 @@ double _rating(Map p) => _num(p['average_rating']);
 double _distanceKm(Map p) => _num(p['distance_km']);
 double _price(Map p) => _num(p['hourly_rate']);
 double _experience(Map p) => _num(p['experience_years']);
-int _reviewsCount(Map p) => int.tryParse(p['reviews_count']?.toString() ?? '') ?? 0;
-int _completedJobs(Map p) => int.tryParse(p['completed_jobs']?.toString() ?? '') ?? 0;
-double _responseHrs(Map p) => double.tryParse(p['response_time_hrs']?.toString() ?? '24') ?? 24.0;
-DateTime? _createdAt(Map p) => DateTime.tryParse(p['created_at']?.toString() ?? '');
+int _reviewsCount(Map p) =>
+    int.tryParse(p['reviews_count']?.toString() ?? '') ?? 0;
+int _completedJobs(Map p) =>
+    int.tryParse(p['completed_jobs']?.toString() ?? '') ?? 0;
+double _responseHrs(Map p) =>
+    double.tryParse(p['response_time_hrs']?.toString() ?? '24') ?? 24.0;
+DateTime? _createdAt(Map p) =>
+    DateTime.tryParse(p['created_at']?.toString() ?? '');
 
 // ── Small list helpers used to build each filter's `apply` function.
 List<dynamic> _where(List<dynamic> src, bool Function(Map) test) =>
     src.where((p) => p is Map && test(p)).toList();
 List<dynamic> _sortDesc(List<dynamic> src, num Function(Map) key) =>
-    (List<dynamic>.from(src)
-      ..sort((a, b) {
-        final ma = a is Map ? a : const {};
-        final mb = b is Map ? b : const {};
-        return key(mb).compareTo(key(ma));
-      }));
+    (List<dynamic>.from(src)..sort((a, b) {
+      final ma = a is Map ? a : const {};
+      final mb = b is Map ? b : const {};
+      return key(mb).compareTo(key(ma));
+    }));
 List<dynamic> _sortAsc(List<dynamic> src, num Function(Map) key) =>
-    (List<dynamic>.from(src)
-      ..sort((a, b) {
-        final ma = a is Map ? a : const {};
-        final mb = b is Map ? b : const {};
-        return key(ma).compareTo(key(mb));
-      }));
+    (List<dynamic>.from(src)..sort((a, b) {
+      final ma = a is Map ? a : const {};
+      final mb = b is Map ? b : const {};
+      return key(ma).compareTo(key(mb));
+    }));
 
 /// Builds the filter-chip set for a given [section]. Each section only
 /// exposes filters that make sense for it — nothing is shared across
@@ -71,30 +80,66 @@ List<_FilterOption> _optionsFor(ProSection section, AppLocalizations t) {
     case ProSection.recommended:
       return [
         all,
-        _FilterOption(t.homeFilterAvailableNow, (src) => _where(src, _availNow)),
+        _FilterOption(
+          t.homeFilterAvailableNow,
+          (src) => _where(src, _availNow),
+        ),
         _FilterOption(t.homeFilterTopRated, (src) => _sortDesc(src, _rating)),
         _FilterOption(t.homeFilterVerified, (src) => _where(src, _verified)),
-        _FilterOption(t.homeFilterFastResponse, (src) => _where(src, (p) => _responseHrs(p) <= 1)),
+        _FilterOption(
+          t.homeFilterFastResponse,
+          (src) => _where(src, (p) => _responseHrs(p) <= 1),
+        ),
         _FilterOption(t.homeFilterLowestPrice, (src) => _sortAsc(src, _price)),
       ];
     case ProSection.nearby:
       return [
         all,
-        _FilterOption(t.homeFilterWithin2Km, (src) => _where(src, (p) => _distanceKm(p) <= 2)),
-        _FilterOption(t.homeFilterWithin5Km, (src) => _where(src, (p) => _distanceKm(p) <= 5)),
-        _FilterOption(t.homeFilterWithin10Km, (src) => _where(src, (p) => _distanceKm(p) <= 10)),
-        _FilterOption(t.homeFilterAvailableNow, (src) => _where(src, _availNow)),
+        _FilterOption(
+          t.homeFilterWithin2Km,
+          (src) => _where(src, (p) => _distanceKm(p) <= 2),
+        ),
+        _FilterOption(
+          t.homeFilterWithin5Km,
+          (src) => _where(src, (p) => _distanceKm(p) <= 5),
+        ),
+        _FilterOption(
+          t.homeFilterWithin10Km,
+          (src) => _where(src, (p) => _distanceKm(p) <= 10),
+        ),
+        _FilterOption(
+          t.homeFilterAvailableNow,
+          (src) => _where(src, _availNow),
+        ),
         _FilterOption(t.homeFilterVerified, (src) => _where(src, _verified)),
       ];
     case ProSection.topRated:
       return [
         all,
-        _FilterOption(t.homeFilterRating5Plus, (src) => _where(src, (p) => _rating(p) >= 5)),
-        _FilterOption(t.homeFilterRating4Plus, (src) => _where(src, (p) => _rating(p) >= 4)),
-        _FilterOption(t.homeFilterRating3Plus, (src) => _where(src, (p) => _rating(p) >= 3)),
-        _FilterOption(t.homeFilterRating2Plus, (src) => _where(src, (p) => _rating(p) >= 2)),
-        _FilterOption(t.homeFilterRating1Plus, (src) => _where(src, (p) => _rating(p) >= 1)),
-        _FilterOption(t.homeFilterMostReviews, (src) => _sortDesc(src, _reviewsCount)),
+        _FilterOption(
+          t.homeFilterRating5Plus,
+          (src) => _where(src, (p) => _rating(p) >= 5),
+        ),
+        _FilterOption(
+          t.homeFilterRating4Plus,
+          (src) => _where(src, (p) => _rating(p) >= 4),
+        ),
+        _FilterOption(
+          t.homeFilterRating3Plus,
+          (src) => _where(src, (p) => _rating(p) >= 3),
+        ),
+        _FilterOption(
+          t.homeFilterRating2Plus,
+          (src) => _where(src, (p) => _rating(p) >= 2),
+        ),
+        _FilterOption(
+          t.homeFilterRating1Plus,
+          (src) => _where(src, (p) => _rating(p) >= 1),
+        ),
+        _FilterOption(
+          t.homeFilterMostReviews,
+          (src) => _sortDesc(src, _reviewsCount),
+        ),
         _FilterOption(t.homeFilterVerified, (src) => _where(src, _verified)),
       ];
     case ProSection.trending:
@@ -103,28 +148,64 @@ List<_FilterOption> _optionsFor(ProSection section, AppLocalizations t) {
       // faked on top of an unrelated field.
       return [
         all,
-        _FilterOption(t.homeFilterMostBooked, (src) => _sortDesc(src, _completedJobs)),
-        _FilterOption(t.homeFilterAvailableNow, (src) => _where(src, _availNow)),
+        _FilterOption(
+          t.homeFilterMostBooked,
+          (src) => _sortDesc(src, _completedJobs),
+        ),
+        _FilterOption(
+          t.homeFilterAvailableNow,
+          (src) => _where(src, _availNow),
+        ),
         _FilterOption(t.homeFilterVerified, (src) => _where(src, _verified)),
       ];
     case ProSection.recentlyAdded:
       final now = DateTime.now();
       return [
         all,
-        _FilterOption(t.homeFilterToday, (src) => _where(src, (p) { final d = _createdAt(p); return d != null && now.difference(d).inHours < 24; })),
-        _FilterOption(t.homeFilterThisWeek, (src) => _where(src, (p) { final d = _createdAt(p); return d != null && now.difference(d).inDays < 7; })),
-        _FilterOption(t.homeFilterThisMonth, (src) => _where(src, (p) { final d = _createdAt(p); return d != null && now.difference(d).inDays < 30; })),
-        _FilterOption(t.homeFilterAvailableNow, (src) => _where(src, _availNow)),
+        _FilterOption(
+          t.homeFilterToday,
+          (src) => _where(src, (p) {
+            final d = _createdAt(p);
+            return d != null && now.difference(d).inHours < 24;
+          }),
+        ),
+        _FilterOption(
+          t.homeFilterThisWeek,
+          (src) => _where(src, (p) {
+            final d = _createdAt(p);
+            return d != null && now.difference(d).inDays < 7;
+          }),
+        ),
+        _FilterOption(
+          t.homeFilterThisMonth,
+          (src) => _where(src, (p) {
+            final d = _createdAt(p);
+            return d != null && now.difference(d).inDays < 30;
+          }),
+        ),
+        _FilterOption(
+          t.homeFilterAvailableNow,
+          (src) => _where(src, _availNow),
+        ),
       ];
     case ProSection.category:
       return [
         all,
-        _FilterOption(t.homeFilterAvailableNow, (src) => _where(src, _availNow)),
+        _FilterOption(
+          t.homeFilterAvailableNow,
+          (src) => _where(src, _availNow),
+        ),
         _FilterOption(t.homeFilterTopRated, (src) => _sortDesc(src, _rating)),
         _FilterOption(t.homeFilterVerified, (src) => _where(src, _verified)),
         _FilterOption(t.homeFilterLowestPrice, (src) => _sortAsc(src, _price)),
-        _FilterOption(t.homeFilterHighestPrice, (src) => _sortDesc(src, _price)),
-        _FilterOption(t.homeFilterMostExperienced, (src) => _sortDesc(src, _experience)),
+        _FilterOption(
+          t.homeFilterHighestPrice,
+          (src) => _sortDesc(src, _price),
+        ),
+        _FilterOption(
+          t.homeFilterMostExperienced,
+          (src) => _sortDesc(src, _experience),
+        ),
       ];
   }
 }
@@ -184,7 +265,8 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
   @override
   void didUpdateWidget(AllProfessionalsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.professionals != widget.professionals || oldWidget.section != widget.section) {
+    if (oldWidget.professionals != widget.professionals ||
+        oldWidget.section != widget.section) {
       if (_options.isNotEmpty && _selectedIndex < _options.length) {
         _list = _options[_selectedIndex].apply(widget.professionals);
       } else {
@@ -226,10 +308,7 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: UniversalAppBar(
-        title: widget.title,
-        icon: Icons.groups_rounded,
-      ),
+      appBar: UniversalAppBar(title: widget.title, icon: Icons.groups_rounded),
       body: Column(
         children: [
           _buildSortBar(),
@@ -240,7 +319,9 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
                 // form, matching every other full-list place in the app.
                 : RefreshIndicator(
                     color: context.colors.primary,
-                    onRefresh: widget.onRefresh != null ? _handleRefresh : () async {},
+                    onRefresh: widget.onRefresh != null
+                        ? _handleRefresh
+                        : () async {},
                     child: ListView.separated(
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                       itemCount: _list.length,
@@ -278,18 +359,32 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
                 duration: const Duration(milliseconds: 180),
                 curve: Curves.easeOut,
                 child: ChoiceChip(
-                  label: Text(_options[i].label,
-                      style: TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w600,
-                          color: selected ? Colors.white : context.colors.textPrimary)),
+                  label: Text(
+                    _options[i].label,
+                    style: TextStyle(
+                      fontSize: AppFontSizes.secondary,
+                      fontWeight: FontWeight.w600,
+                      color: selected
+                          ? Colors.white
+                          : context.colors.textPrimary,
+                    ),
+                  ),
                   selected: selected,
                   onSelected: (_) => _applyFilter(i),
                   selectedColor: context.colors.primary,
                   backgroundColor: context.colors.background,
                   showCheckmark: false,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(999),
-                    side: BorderSide(color: selected ? context.colors.primary : context.colors.divider),
+                    side: BorderSide(
+                      color: selected
+                          ? context.colors.primary
+                          : context.colors.divider,
+                    ),
                   ),
                 ),
               ),
@@ -316,10 +411,21 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
               _favCache.remove(id);
               if (mounted) setState(() {});
             },
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => ProfessionalDetailScreen(professional: Map<String, dynamic>.from(pro)))),
-            onBookNow: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => BookingScreen(professional: Map<String, dynamic>.from(pro)))),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProfessionalDetailScreen(
+                  professional: Map<String, dynamic>.from(pro),
+                ),
+              ),
+            ),
+            onBookNow: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    BookingScreen(professional: Map<String, dynamic>.from(pro)),
+              ),
+            ),
           );
         },
       ),
@@ -336,26 +442,56 @@ class _AllProfessionalsScreenState extends State<AllProfessionalsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 84, height: 84,
-              decoration: BoxDecoration(color: context.colors.primaryLight, shape: BoxShape.circle),
-              child: Icon(Icons.person_search_rounded, size: 40, color: context.colors.primary),
+              width: 84,
+              height: 84,
+              decoration: BoxDecoration(
+                color: context.colors.primaryLight,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.person_search_rounded,
+                size: 40,
+                color: context.colors.primary,
+              ),
             ),
             const SizedBox(height: 20),
-            Text(t.homeNoProfessionalsFound,
-                style: TextStyle(fontSize: AppFontSizes.titleMd, fontWeight: FontWeight.w700, color: context.colors.textPrimary)),
+            Text(
+              t.homeNoProfessionalsFound,
+              style: TextStyle(
+                fontSize: AppFontSizes.titleMd,
+                fontWeight: FontWeight.w700,
+                color: context.colors.textPrimary,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(t.homeNoProfessionalsFoundHint,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary)),
+            Text(
+              t.homeNoProfessionalsFoundHint,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: AppFontSizes.body,
+                color: context.colors.textSecondary,
+              ),
+            ),
             const SizedBox(height: 24),
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                ),
                 side: BorderSide(color: context.colors.primary),
               ),
-              child: Text(t.homeGoBack, style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.w600)),
+              child: Text(
+                t.homeGoBack,
+                style: TextStyle(
+                  color: context.colors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),

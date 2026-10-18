@@ -12,10 +12,10 @@ import '../network/api_service.dart';
 import 'locale_provider.dart';
 
 class LocKind {
-  static const name     = 'name';
-  static const city     = 'city';
+  static const name = 'name';
+  static const city = 'city';
   static const category = 'category';
-  static const text     = 'text';
+  static const text = 'text';
 }
 
 class ContentLocalizer extends ChangeNotifier {
@@ -23,32 +23,37 @@ class ContentLocalizer extends ChangeNotifier {
   static final ContentLocalizer instance = ContentLocalizer._();
 
   static const _maxPersisted = 1500;
-  static const _batchSize    = 50;
+  static const _batchSize = 50;
 
   final ApiService _api = ApiService();
 
   final Map<String, String> _mem = {};
-  final Set<String> _queued   = {};
+  final Set<String> _queued = {};
   final Set<String> _inflight = {};
-  final Set<String> _misses   = {};
+  final Set<String> _misses = {};
   final Set<String> _loadedLangs = {};
   DateTime? _backoffUntil;
   Timer? _flushTimer;
   Timer? _persistTimer;
   Completer<void>? _flushDone;
 
-  static String _k(String lang, String kind, String text) => '$lang|$kind|$text';
+  static String _k(String lang, String kind, String text) =>
+      '$lang|$kind|$text';
   static String get _lang => LocaleProvider.currentCode;
   static final RegExp _arabicScript = RegExp(r'[\u0600-\u06FF]');
-  static final RegExp _devanagari   = RegExp(r'[\u0900-\u097F]');
+  static final RegExp _devanagari = RegExp(r'[\u0900-\u097F]');
 
   static bool _alreadyTargetScript(String lang, String text) {
-    final re = (lang == 'ur' || lang == 'ar') ? _arabicScript : (lang == 'hi' ? _devanagari : null);
+    final re = (lang == 'ur' || lang == 'ar')
+        ? _arabicScript
+        : (lang == 'hi' ? _devanagari : null);
     return re != null && re.hasMatch(text);
   }
 
   static bool _needsWork(String lang, String text) =>
-      lang != 'en' && text.trim().isNotEmpty && !_alreadyTargetScript(lang, text);
+      lang != 'en' &&
+      text.trim().isNotEmpty &&
+      !_alreadyTargetScript(lang, text);
 
   // ── Public API ────────────────────────────────────────────────────
 
@@ -76,7 +81,10 @@ class ContentLocalizer extends ChangeNotifier {
     var any = false;
     for (final t in texts) {
       final v = t?.trim() ?? '';
-      if (v.isEmpty || !_needsWork(lang, v) || _mem.containsKey(_k(lang, kind, v))) continue;
+      if (v.isEmpty ||
+          !_needsWork(lang, v) ||
+          _mem.containsKey(_k(lang, kind, v)))
+        continue;
       _enqueue(lang, kind, v, schedule: false);
       any = true;
     }
@@ -99,7 +107,10 @@ class ContentLocalizer extends ChangeNotifier {
 
   void _enqueue(String lang, String kind, String text, {bool schedule = true}) {
     final key = _k(lang, kind, text);
-    if (_mem.containsKey(key) || _inflight.contains(key) || _misses.contains(key)) return;
+    if (_mem.containsKey(key) ||
+        _inflight.contains(key) ||
+        _misses.contains(key))
+      return;
     if (text.length > 300) return;
     _queued.add(key);
     if (schedule) {
@@ -141,14 +152,21 @@ class ContentLocalizer extends ChangeNotifier {
       final lang = entry.key;
       final parsed = entry.value.map((k) {
         final p = k.split('|');
-        return (key: k, kind: p[1], text: k.substring(p[0].length + p[1].length + 2));
+        return (
+          key: k,
+          kind: p[1],
+          text: k.substring(p[0].length + p[1].length + 2),
+        );
       }).toList();
       try {
         final res = await _api.post(AppConstants.aiLocalize, {
           'lang': lang,
-          'items': [for (final p in parsed) {'text': p.text, 'kind': p.kind}],
+          'items': [
+            for (final p in parsed) {'text': p.text, 'kind': p.kind},
+          ],
         });
-        final tr = (res.data is Map ? res.data['translations'] : null) as Map? ?? {};
+        final tr =
+            (res.data is Map ? res.data['translations'] : null) as Map? ?? {};
         var changed = false;
         for (final p in parsed) {
           final out = (tr[p.kind] as Map?)?[p.text]?.toString().trim() ?? '';
@@ -174,12 +192,17 @@ class ContentLocalizer extends ChangeNotifier {
     _persistTimer = Timer(const Duration(seconds: 2), () async {
       try {
         final prefix = '$lang|';
-        final entries = _mem.entries.where((e) => e.key.startsWith(prefix)).toList();
+        final entries = _mem.entries
+            .where((e) => e.key.startsWith(prefix))
+            .toList();
         final trimmed = entries.length > _maxPersisted
             ? entries.sublist(entries.length - _maxPersisted)
             : entries;
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('content_l10n_$lang', jsonEncode({for (final e in trimmed) e.key: e.value}));
+        await prefs.setString(
+          'content_l10n_$lang',
+          jsonEncode({for (final e in trimmed) e.key: e.value}),
+        );
       } catch (_) {}
     });
   }

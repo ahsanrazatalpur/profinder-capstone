@@ -49,7 +49,10 @@ class SupportCategoryTile extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: 64),
             child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSizes.md, AppSizes.sm + 4, AppSizes.sm + 4, AppSizes.sm + 4,
+                AppSizes.md,
+                AppSizes.sm + 4,
+                AppSizes.sm + 4,
+                AppSizes.sm + 4,
               ),
               child: Row(
                 children: [
@@ -60,7 +63,11 @@ class SupportCategoryTile extends StatelessWidget {
                       color: colors.primaryLight,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(icon, size: AppSizes.iconMd - 2, color: colors.primary),
+                    child: Icon(
+                      icon,
+                      size: AppSizes.iconMd - 2,
+                      color: colors.primary,
+                    ),
                   ),
                   const SizedBox(width: AppSizes.md),
                   Expanded(
@@ -93,7 +100,10 @@ class SupportCategoryTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: AppSizes.sm),
-                  Icon(Icons.chevron_right_rounded, color: colors.textSecondary),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: colors.textSecondary,
+                  ),
                 ],
               ),
             ),

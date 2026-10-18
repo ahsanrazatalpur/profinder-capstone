@@ -6,10 +6,12 @@
 
 import '../../../core/constants/app_sizes.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../support/screens/my_tickets_screen.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -180,13 +182,10 @@ class HelpSupportScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          ...faqs.map((faq) => _buildFaqTile(
-                context,
-                faq['q']!,
-                faq['a']!,
-                isDark,
-                isTablet,
-              )),
+          ...faqs.map(
+            (faq) =>
+                _buildFaqTile(context, faq['q']!, faq['a']!, isDark, isTablet),
+          ),
         ],
       ),
     );
@@ -201,12 +200,16 @@ class HelpSupportScreen extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusSheet),
+        ),
       ),
       builder: (_) => Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppSizes.radiusSheet),
+          ),
           boxShadow: [
             BoxShadow(
               color: isDark
@@ -253,7 +256,9 @@ class HelpSupportScreen extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.professionalColor.withValues(alpha: 0.12),
+                      color: AppColors.professionalColor.withValues(
+                        alpha: 0.12,
+                      ),
                       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                     child: const Icon(
@@ -282,14 +287,16 @@ class HelpSupportScreen extends StatelessWidget {
                     color: context.colors.textSecondary,
                     size: 20,
                   ),
-                  onTap: () {}, // ⚠️ Wire up url_launcher's launchUrl(Uri(scheme: 'mailto', ...)) here
+                  onTap: () => _contactByEmail(context),
                 ),
                 ListTile(
                   leading: Container(
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.professionalColor.withValues(alpha: 0.12),
+                      color: AppColors.professionalColor.withValues(
+                        alpha: 0.12,
+                      ),
                       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
                     child: const Icon(
@@ -318,7 +325,10 @@ class HelpSupportScreen extends StatelessWidget {
                     color: context.colors.textSecondary,
                     size: 20,
                   ),
-                  onTap: () {}, // ⚠️ Hook up to your support chat provider (Intercom, Zendesk, etc.)
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const MyTicketsScreen()),
+                  ),
                 ),
                 const SizedBox(height: 10),
               ],
@@ -327,6 +337,29 @@ class HelpSupportScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _contactByEmail(BuildContext context) async {
+    final uri = Uri(
+      scheme: 'mailto',
+      path: 'support@profinder.com',
+      queryParameters: {'subject': 'ProFinder Professional Support'},
+    );
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Support email: support@profinder.com')),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Support email: support@profinder.com')),
+        );
+      }
+    }
   }
 
   Widget _buildFaqTile(
@@ -359,9 +392,7 @@ class HelpSupportScreen extends StatelessWidget {
         ],
       ),
       child: Theme(
-        data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent,
-        ),
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           title: Text(
             question,

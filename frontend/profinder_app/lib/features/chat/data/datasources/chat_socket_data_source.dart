@@ -32,7 +32,9 @@ class ChatSocketDataSource {
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(AppConstants.accessTokenKey);
-    final uri = Uri.parse('${AppConstants.wsBaseUrl}${AppConstants.wsChat(conversationId)}?token=$token');
+    final uri = Uri.parse(
+      '${AppConstants.wsBaseUrl}${AppConstants.wsChat(conversationId)}?token=$token',
+    );
 
     _controller = StreamController<ChatSocketEvent>.broadcast();
     _channel = WebSocketChannel.connect(uri);
@@ -63,49 +65,66 @@ class ChatSocketDataSource {
     switch (data['type']) {
       case 'new_message':
         final msgJson = data['message'] as Map<String, dynamic>;
-        _controller!.add(NewMessageSocketEvent(
-          MessageModel.fromJson(msgJson),
-          tempId: msgJson['temp_id']?.toString(),
-        ));
+        _controller!.add(
+          NewMessageSocketEvent(
+            MessageModel.fromJson(msgJson),
+            tempId: msgJson['temp_id']?.toString(),
+          ),
+        );
         break;
       case 'typing':
-        _controller!.add(TypingSocketEvent(
-          int.parse(data['user_id'].toString()),
-          data['is_typing'] == true,
-        ));
+        _controller!.add(
+          TypingSocketEvent(
+            int.parse(data['user_id'].toString()),
+            data['is_typing'] == true,
+          ),
+        );
         break;
       case 'status_update':
-        _controller!.add(StatusUpdateSocketEvent(
-          data['event'].toString(),
-          (data['message_ids'] as List).map((e) => e.toString()).toList(),
-          int.parse(data['actor_user_id'].toString()),
-        ));
+        _controller!.add(
+          StatusUpdateSocketEvent(
+            data['event'].toString(),
+            (data['message_ids'] as List).map((e) => e.toString()).toList(),
+            int.parse(data['actor_user_id'].toString()),
+          ),
+        );
         break;
       case 'presence':
-        _controller!.add(PresenceSocketEvent(
-          int.parse(data['user_id'].toString()),
-          data['is_online'] == true,
-          data['last_seen'] != null ? DateTime.parse(data['last_seen'].toString()).toLocal() : null,
-        ));
+        _controller!.add(
+          PresenceSocketEvent(
+            int.parse(data['user_id'].toString()),
+            data['is_online'] == true,
+            data['last_seen'] != null
+                ? DateTime.parse(data['last_seen'].toString()).toLocal()
+                : null,
+          ),
+        );
         break;
       case 'reaction_update':
         final msgJson = data['message'] as Map<String, dynamic>;
         _controller!.add(ReactionSocketEvent(MessageModel.fromJson(msgJson)));
         break;
       case null:
-        if (data['error'] != null) _controller!.add(SocketErrorEvent(data['error'].toString()));
+        if (data['error'] != null)
+          _controller!.add(SocketErrorEvent(data['error'].toString()));
         break;
     }
   }
 
   void _sendJson(Map<String, dynamic> payload) {
-    if (_channel == null) return; // socket down -> caller already fell back to REST
+    if (_channel == null)
+      return; // socket down -> caller already fell back to REST
     _channel!.sink.add(jsonEncode(payload));
   }
 
-  void sendTyping(bool isTyping) => _sendJson({'action': 'typing', 'is_typing': isTyping});
+  void sendTyping(bool isTyping) =>
+      _sendJson({'action': 'typing', 'is_typing': isTyping});
 
-  void sendMessage({required String text, String? replyToId, required String tempId}) {
+  void sendMessage({
+    required String text,
+    String? replyToId,
+    required String tempId,
+  }) {
     _sendJson({
       'action': 'send_message',
       'text': text,

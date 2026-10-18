@@ -48,19 +48,40 @@ class NotificationScreen extends StatefulWidget {
     String text = input;
 
     // "Your payment of 50 USD for Booking #31 was successful." -> "... for your booking was successful."
-    text = text.replaceAll(RegExp(r'\bfor\s+Booking\s*#\d+\b', caseSensitive: false), 'for your booking');
+    text = text.replaceAll(
+      RegExp(r'\bfor\s+Booking\s*#\d+\b', caseSensitive: false),
+      'for your booking',
+    );
 
     // "Booking #31 | 12 May 2026 at 10:00 AM" -> "Scheduled for 12 May 2026 at 10:00 AM"
-    text = text.replaceAll(RegExp(r'\bBooking\s*#\d+\s*\|\s*', caseSensitive: false), 'Scheduled for ');
+    text = text.replaceAll(
+      RegExp(r'\bBooking\s*#\d+\s*\|\s*', caseSensitive: false),
+      'Scheduled for ',
+    );
 
     // Standalone "Booking #31" -> "your booking"
-    text = text.replaceAll(RegExp(r'\bBooking\s*#\d+\b', caseSensitive: false), 'your booking');
+    text = text.replaceAll(
+      RegExp(r'\bBooking\s*#\d+\b', caseSensitive: false),
+      'your booking',
+    );
 
     // Legacy ticket & report references: "PF-2026-0001: new reply" -> "Support: new reply"
-    text = text.replaceAll(RegExp(r'\bPF-\d{4}-\d+:\s*', caseSensitive: false), 'Support: ');
-    text = text.replaceAll(RegExp(r'\bPF-\d{4}-\d+\b', caseSensitive: false), 'your support request');
-    text = text.replaceAll(RegExp(r'\bReport\s*#\d+\b', caseSensitive: false), 'your report');
-    text = text.replaceAll(RegExp(r'\bTicket\s*#\d+\b', caseSensitive: false), 'your ticket');
+    text = text.replaceAll(
+      RegExp(r'\bPF-\d{4}-\d+:\s*', caseSensitive: false),
+      'Support: ',
+    );
+    text = text.replaceAll(
+      RegExp(r'\bPF-\d{4}-\d+\b', caseSensitive: false),
+      'your support request',
+    );
+    text = text.replaceAll(
+      RegExp(r'\bReport\s*#\d+\b', caseSensitive: false),
+      'your report',
+    );
+    text = text.replaceAll(
+      RegExp(r'\bTicket\s*#\d+\b', caseSensitive: false),
+      'your ticket',
+    );
 
     return text.trim();
   }
@@ -72,8 +93,8 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
   final _api = ApiService();
 
-  bool          _loading       = true;
-  String?       _error;
+  bool _loading = true;
+  String? _error;
   List<dynamic> _notifications = [];
 
   @override
@@ -83,7 +104,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final r = await _api.get('/notifications/');
       if (!mounted) return;
@@ -94,10 +118,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
         final bDate = DateTime.tryParse(b['created_at'] ?? '') ?? DateTime(0);
         return bDate.compareTo(aDate);
       });
-      setState(() { _loading = false; _notifications = list; });
+      setState(() {
+        _loading = false;
+        _notifications = list;
+      });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = AppLocalizations.of(context).notificationsLoadError; });
+      setState(() {
+        _loading = false;
+        _error = AppLocalizations.of(context).notificationsLoadError;
+      });
     }
   }
 
@@ -124,29 +154,30 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   void _openTarget(dynamic notif) {
-    final role   = context.read<AuthProvider>().role;
-    final target = (notif['target_type'] ?? notif['type'] ?? 'general').toString();
-    final nav    = Navigator.of(context);
+    final role = context.read<AuthProvider>().role;
+    final target = (notif['target_type'] ?? notif['type'] ?? 'general')
+        .toString();
+    final nav = Navigator.of(context);
     Widget? page;
 
     if (role == 'customer') {
       page = switch (target) {
         // 'review' for a customer = "Service completed, please review" -> bookings
         'booking' || 'review' => const MyBookingsScreen(),
-        'payment'             => const PaymentsScreen(),
-        'subscription'        => const SubscriptionScreen(userRole: 'customer'),
-        'support'             => const MyTicketsScreen(),
-        _                     => null,
+        'payment' => const PaymentsScreen(),
+        'subscription' => const SubscriptionScreen(userRole: 'customer'),
+        'support' => const MyTicketsScreen(),
+        _ => null,
       };
     } else if (role == 'admin') {
       // Tab numbers of the admin shell (admin_main_screen.dart).
       final tab = switch (target) {
         'professional_signup' => 12, // Verify
-        'report'              => 9,  // Reports
-        'appeal'              => 26, // Appeals
-        'booking'             => 5,  // Bookings
-        'support'             => 27, // Support
-        _                     => null,
+        'report' => 9, // Reports
+        'appeal' => 26, // Appeals
+        'booking' => 5, // Bookings
+        'support' => 27, // Support
+        _ => null,
       };
       final goTo = widget.onNavigateToAdminTab;
       if (tab != null && goTo != null) {
@@ -162,11 +193,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
         return;
       }
       page = switch (target) {
-        'review'       => const ProfessionalReviewsScreen(),
-        'payment'      => const ProfessionalWalletScreen(),
+        'review' => const ProfessionalReviewsScreen(),
+        'payment' => const ProfessionalWalletScreen(),
         'subscription' => const SubscriptionScreen(userRole: 'professional'),
-        'support'      => const MyTicketsScreen(),
-        _              => null,
+        'support' => const MyTicketsScreen(),
+        _ => null,
       };
     }
     // Plain announcements: nothing to open, the tap only marks it read.
@@ -243,10 +274,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
         child: _loading
             ? _buildLoader()
             : _error != null
-                ? _buildError()
-                : _notifications.isEmpty
-                    ? _buildEmpty()
-                    : _buildList(),
+            ? _buildError()
+            : _notifications.isEmpty
+            ? _buildEmpty()
+            : _buildList(),
       ),
     );
   }
@@ -255,10 +286,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget _buildList() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final width      = constraints.maxWidth;
-        final isTablet    = width >= 700;
+        final width = constraints.maxWidth;
+        final isTablet = width >= 700;
         final maxContentW = isTablet ? 640.0 : width;
-        final hPad        = isTablet ? 0.0 : 16.0;
+        final hPad = isTablet ? 0.0 : 16.0;
 
         final sections = _groupByDate(_notifications);
 
@@ -345,16 +376,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   // ── Notification Row (flat, native-app style) ─────────────
   Widget _buildTile(dynamic notif) {
-    final rawTitle   = notif['title']?.toString()   ?? '';
+    final rawTitle = notif['title']?.toString() ?? '';
     final rawMessage = notif['message']?.toString() ?? '';
-    final title      = _stripEmoji(rawTitle);
-    final message    = NotificationScreen.humanizeMessage(_stripEmoji(rawMessage));
-    final type       = notif['type']?.toString()    ?? 'general';
-    final isRead     = notif['is_read'] == true;
-    final createdAt  = notif['created_at']?.toString() ?? '';
+    final title = _stripEmoji(rawTitle);
+    final message = NotificationScreen.humanizeMessage(_stripEmoji(rawMessage));
+    final type = notif['type']?.toString() ?? 'general';
+    final isRead = notif['is_read'] == true;
+    final createdAt = notif['created_at']?.toString() ?? '';
 
     final color = _typeColor(type);
-    final icon  = _typeIcon(type);
+    final icon = _typeIcon(type);
 
     return Material(
       color: isRead
@@ -421,7 +452,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       _formatDate(createdAt),
                       style: TextStyle(
                         fontSize: AppFontSizes.caption,
-                        color: context.colors.textSecondary.withValues(alpha: 0.6),
+                        color: context.colors.textSecondary.withValues(
+                          alpha: 0.6,
+                        ),
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.2,
                       ),
@@ -484,7 +517,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ],
         AppBarIconButton(
           icon: Icons.refresh_rounded,
-          tooltip: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
+          tooltip: MaterialLocalizations.of(
+            context,
+          ).refreshIndicatorSemanticLabel,
           onGradient: true,
           onPressed: _load,
         ),
@@ -499,7 +534,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
     for (final n in items) {
       final raw = n['created_at']?.toString() ?? '';
-      final dt  = DateTime.tryParse(raw)?.toLocal();
+      final dt = DateTime.tryParse(raw)?.toLocal();
       final label = dt == null ? 'Earlier' : _sectionLabel(dt);
       if (!buckets.containsKey(label)) {
         buckets[label] = [];
@@ -508,22 +543,26 @@ class _NotificationScreenState extends State<NotificationScreen> {
       buckets[label]!.add(n);
     }
 
-    return [
-      for (final label in order) _NotifSection(label, buckets[label]!),
-    ];
+    return [for (final label in order) _NotifSection(label, buckets[label]!)];
   }
 
   String _sectionLabel(DateTime dt) {
-    final now   = DateTime.now();
+    final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final that  = DateTime(dt.year, dt.month, dt.day);
-    final diff  = today.difference(that).inDays;
+    final that = DateTime(dt.year, dt.month, dt.day);
+    final diff = today.difference(that).inDays;
 
-    if (diff == 0) return AppLocalizations.of(context).notificationsSectionToday;
-    if (diff == 1) return AppLocalizations.of(context).notificationsSectionYesterday;
-    if (diff < 7)  return AppLocalizations.of(context).notificationsSectionThisWeek;
-    if (today.year == dt.year && today.month == dt.month) return AppLocalizations.of(context).notificationsSectionThisMonth;
-    return DateFormat.yMMMM(Localizations.localeOf(context).toString()).format(dt);
+    if (diff == 0)
+      return AppLocalizations.of(context).notificationsSectionToday;
+    if (diff == 1)
+      return AppLocalizations.of(context).notificationsSectionYesterday;
+    if (diff < 7)
+      return AppLocalizations.of(context).notificationsSectionThisWeek;
+    if (today.year == dt.year && today.month == dt.month)
+      return AppLocalizations.of(context).notificationsSectionThisMonth;
+    return DateFormat.yMMMM(
+      Localizations.localeOf(context).toString(),
+    ).format(dt);
   }
 
   // ── Helpers ───────────────────────────────────────────────
@@ -547,68 +586,76 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Color _typeColor(String type) {
     return switch (type) {
-      'review'       => AppColors.warningAmber,
-      'payment'      => AppColors.emerald,
+      'review' => AppColors.warningAmber,
+      'payment' => AppColors.emerald,
       'subscription' => AppColors.violet,
-      'booking'      => AppColors.customerColor,
-      'report'       => AppColors.favoriteRed,
-      _              => AppColors.customerColor,
+      'booking' => AppColors.customerColor,
+      'report' => AppColors.favoriteRed,
+      _ => AppColors.customerColor,
     };
   }
 
   IconData _typeIcon(String type) {
     return switch (type) {
-      'review'       => Icons.star_rounded,
-      'payment'      => Icons.payments_outlined,
+      'review' => Icons.star_rounded,
+      'payment' => Icons.payments_outlined,
       'subscription' => Icons.workspace_premium_rounded,
-      'booking'      => Icons.event_available_rounded,
-      'report'       => Icons.shield_outlined,
-      _              => Icons.notifications_outlined,
+      'booking' => Icons.event_available_rounded,
+      'report' => Icons.shield_outlined,
+      _ => Icons.notifications_outlined,
     };
   }
 
   String _formatDate(String raw) {
     try {
-      final dt   = DateTime.parse(raw).toLocal();
-      final now  = DateTime.now();
+      final dt = DateTime.parse(raw).toLocal();
+      final now = DateTime.now();
       final diff = now.difference(dt);
 
-      if (diff.inMinutes < 1)  return AppLocalizations.of(context).notificationsJustNow;
-      if (diff.inMinutes < 60) return AppLocalizations.of(context).notificationsMinutesAgo(diff.inMinutes);
-      if (diff.inHours < 24)   return AppLocalizations.of(context).notificationsHoursAgo(diff.inHours);
-      if (diff.inDays < 7)     return AppLocalizations.of(context).notificationsDaysAgo(diff.inDays);
+      if (diff.inMinutes < 1)
+        return AppLocalizations.of(context).notificationsJustNow;
+      if (diff.inMinutes < 60)
+        return AppLocalizations.of(
+          context,
+        ).notificationsMinutesAgo(diff.inMinutes);
+      if (diff.inHours < 24)
+        return AppLocalizations.of(context).notificationsHoursAgo(diff.inHours);
+      if (diff.inDays < 7)
+        return AppLocalizations.of(context).notificationsDaysAgo(diff.inDays);
 
-      return DateFormat.yMd(Localizations.localeOf(context).toString()).format(dt);
+      return DateFormat.yMd(
+        Localizations.localeOf(context).toString(),
+      ).format(dt);
     } catch (_) {
       return '';
     }
   }
 
   Widget _buildLoader() => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: CircularProgressIndicator(
-                color: AppColors.customerColor,
-                strokeWidth: 3,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              AppLocalizations.of(context).notificationsLoadingText,
-              style: TextStyle(
-                fontSize: AppFontSizes.body,
-                color: context.colors.textSecondary,
-                fontWeight: FontWeight.w400,
-                letterSpacing: 0.2,
-              ),
-            ),
-          ],
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 40,
+          height: 40,
+          child: CircularProgressIndicator(
+            color: AppColors.customerColor,
+            strokeWidth: 3,
+          ),
         ),
-      );
+        const SizedBox(height: 16),
+        Text(
+          AppLocalizations.of(context).notificationsLoadingText,
+          style: TextStyle(
+            fontSize: AppFontSizes.body,
+            color: context.colors.textSecondary,
+            fontWeight: FontWeight.w400,
+            letterSpacing: 0.2,
+          ),
+        ),
+      ],
+    ),
+  );
 
   Widget _buildError() {
     return Center(
@@ -665,7 +712,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.customerColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 14,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
@@ -738,9 +788,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             letterSpacing: 0.3,
           ),
         ),
-        backgroundColor: isDark
-            ? AppColors.surface
-            : context.colors.accent,
+        backgroundColor: isDark ? AppColors.surface : context.colors.accent,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.radius10),

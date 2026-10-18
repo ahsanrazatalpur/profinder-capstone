@@ -15,6 +15,7 @@ import 'professional_main_screen.dart';
 import 'professional_portfolio_screen.dart';
 import 'professional_wallet_screen.dart';
 import 'professional_reviews_screen.dart';
+import 'professional_availability_screen.dart';
 import '../../chat/presentation/screens/chat_screen.dart';
 import '../../chat/data/models/conversation_model.dart';
 import '../../subscription/widgets/promo_banner_mixin.dart';
@@ -1549,17 +1550,38 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               ),
               Row(
                 children: [
-                  Text(
-                    isAvailable
-                        ? AppLocalizations.of(context).availableLabel
-                        : AppLocalizations.of(context).unavailableLabel,
-                    style: TextStyle(
-                      fontSize: AppFontSizes.small,
-                      fontWeight: FontWeight.w600,
-                      color: isAvailable
-                          ? context.colors.accent
-                          : context.colors.textSecondary,
-                      letterSpacing: 0.2,
+                  GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ProfessionalAvailabilityScreen(),
+                      ),
+                    ).then((_) => _loadData()),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          isAvailable
+                              ? AppLocalizations.of(context).availableLabel
+                              : AppLocalizations.of(context).unavailableLabel,
+                          style: TextStyle(
+                            fontSize: AppFontSizes.small,
+                            fontWeight: FontWeight.w600,
+                            color: isAvailable
+                                ? context.colors.accent
+                                : context.colors.textSecondary,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          size: 14,
+                          color: isAvailable
+                              ? context.colors.accent
+                              : context.colors.textSecondary,
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 6),

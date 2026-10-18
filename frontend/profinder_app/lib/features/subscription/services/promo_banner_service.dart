@@ -13,7 +13,7 @@ class PromoBannerService {
   /// [trigger]: Navigation trigger ('home', 'search', 'ai_search', 'booking', 'login').
   /// [userType]: Audience role segment ('guest', 'free_customer', 'premium_customer', etc.).
   Future<List<PromoBanner>> getActiveBanners({
-    String trigger  = 'home',
+    String trigger = 'home',
     String userType = 'guest',
   }) async {
     try {

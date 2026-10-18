@@ -59,10 +59,16 @@ class _ChatInputBarState extends State<ChatInputBar> {
   }
 
   Future<void> _pickImage() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (picked == null) return;
     final caption = _controller.text.trim();
-    widget.onSendImage(File(picked.path), caption: caption.isEmpty ? null : caption);
+    widget.onSendImage(
+      File(picked.path),
+      caption: caption.isEmpty ? null : caption,
+    );
     _controller.clear();
     setState(() => _hasText = false);
   }
@@ -80,7 +86,9 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
   void _onEmojiSelected(Emoji emoji) {
     _controller.text += emoji.emoji;
-    _controller.selection = TextSelection.fromPosition(TextPosition(offset: _controller.text.length));
+    _controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: _controller.text.length),
+    );
     widget.onChanged(_controller.text);
     if (!_hasText) setState(() => _hasText = true);
   }
@@ -91,7 +99,12 @@ class _ChatInputBarState extends State<ChatInputBar> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          padding: EdgeInsets.only(left: 8, right: 12, top: 8, bottom: MediaQuery.of(context).padding.bottom + 8),
+          padding: EdgeInsets.only(
+            left: 8,
+            right: 12,
+            top: 8,
+            bottom: MediaQuery.of(context).padding.bottom + 8,
+          ),
           decoration: BoxDecoration(
             color: context.colors.surface,
             border: Border(top: BorderSide(color: context.colors.divider)),
@@ -100,13 +113,20 @@ class _ChatInputBarState extends State<ChatInputBar> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               IconButton(
-                icon: Icon(_showEmojiPicker ? Icons.keyboard_alt_outlined : Icons.emoji_emotions_outlined,
-                    color: context.colors.textSecondary),
+                icon: Icon(
+                  _showEmojiPicker
+                      ? Icons.keyboard_alt_outlined
+                      : Icons.emoji_emotions_outlined,
+                  color: context.colors.textSecondary,
+                ),
                 onPressed: _toggleEmojiPicker,
                 tooltip: AppLocalizations.of(context).chatEmoji,
               ),
               IconButton(
-                icon: Icon(Icons.image_outlined, color: context.colors.textSecondary),
+                icon: Icon(
+                  Icons.image_outlined,
+                  color: context.colors.textSecondary,
+                ),
                 onPressed: _pickImage,
                 tooltip: AppLocalizations.of(context).chatSendPhoto,
               ),
@@ -124,20 +144,28 @@ class _ChatInputBarState extends State<ChatInputBar> {
                     minLines: 1,
                     maxLines: 5,
                     textCapitalization: TextCapitalization.sentences,
-                    style: TextStyle(fontSize: AppFontSizes.input, color: context.colors.textPrimary),
+                    style: TextStyle(
+                      fontSize: AppFontSizes.input,
+                      color: context.colors.textPrimary,
+                    ),
                     decoration: InputDecoration(
                       hintText: AppLocalizations.of(context).chatMessageHint,
-                      hintStyle: TextStyle(fontSize: AppFontSizes.input, color: context.colors.textSecondary),
+                      hintStyle: TextStyle(
+                        fontSize: AppFontSizes.input,
+                        color: context.colors.textSecondary,
+                      ),
                       border: InputBorder.none,
                       isCollapsed: true,
                     ),
                     onTap: () {
-                      if (_showEmojiPicker) setState(() => _showEmojiPicker = false);
+                      if (_showEmojiPicker)
+                        setState(() => _showEmojiPicker = false);
                     },
                     onChanged: (text) {
                       widget.onChanged(text);
                       final hasText = text.trim().isNotEmpty;
-                      if (hasText != _hasText) setState(() => _hasText = hasText);
+                      if (hasText != _hasText)
+                        setState(() => _hasText = hasText);
                     },
                     onSubmitted: (_) => _send(),
                   ),
@@ -150,8 +178,15 @@ class _ChatInputBarState extends State<ChatInputBar> {
                       onTap: _send,
                       child: Container(
                         padding: const EdgeInsets.all(11),
-                        decoration: BoxDecoration(color: context.colors.primary, shape: BoxShape.circle),
-                        child: const Icon(Icons.send_rounded, size: 18, color: Colors.white),
+                        decoration: BoxDecoration(
+                          color: context.colors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.send_rounded,
+                          size: 18,
+                          color: Colors.white,
+                        ),
                       ),
                     )
                   : VoiceRecorderButton(onRecorded: widget.onSendVoice),

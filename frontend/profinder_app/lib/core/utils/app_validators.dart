@@ -1,14 +1,16 @@
 // lib/core/utils/app_validators.dart
 
 import '../../l10n/generated/app_localizations.dart';
+
 class AppValidators {
   AppValidators._();
 
   // Special characters treated as "special" for password rules everywhere
   // in this file (validator + live strength meter) — kept in one place so
   // the two never drift apart.
-  static final RegExp _specialCharPattern =
-      RegExp(r'''[!@#$%^&*()_+\-=\[\]{};:'",.<>/?\\|`~]''');
+  static final RegExp _specialCharPattern = RegExp(
+    r'''[!@#$%^&*()_+\-=\[\]{};:'",.<>/?\\|`~]''',
+  );
 
   // ─── Email ──────────────────────────────────────────────
   static String? email(String? value, [AppLocalizations? t]) {
@@ -33,7 +35,8 @@ class AppValidators {
       return t?.valPasswordRequired ?? 'Password is required';
     }
     if (value.length < 8) {
-      return t?.valPasswordMinLength ?? 'Password must be at least 8 characters';
+      return t?.valPasswordMinLength ??
+          'Password must be at least 8 characters';
     }
     if (!RegExp(r'[A-Z]').hasMatch(value)) {
       return t?.valPasswordUpper ?? 'Add at least one uppercase letter';
@@ -64,7 +67,11 @@ class AppValidators {
   }
 
   // ─── Confirm Password ───────────────────────────────────
-  static String? confirmPassword(String? value, String original, [AppLocalizations? t]) {
+  static String? confirmPassword(
+    String? value,
+    String original, [
+    AppLocalizations? t,
+  ]) {
     if (value == null || value.isEmpty) {
       return t?.valConfirmPassword ?? 'Please confirm your password';
     }
@@ -119,9 +126,14 @@ class AppValidators {
   }
 
   // ─── Required field (generic) ───────────────────────────
-  static String? required(String? value, {String? fieldName, AppLocalizations? t}) {
+  static String? required(
+    String? value, {
+    String? fieldName,
+    AppLocalizations? t,
+  }) {
     if (value == null || value.trim().isEmpty) {
-      if (fieldName == null) return t?.valFieldRequired ?? 'This field is required';
+      if (fieldName == null)
+        return t?.valFieldRequired ?? 'This field is required';
       return t?.valFieldNamedRequired(fieldName) ?? '$fieldName is required';
     }
     return null;
@@ -131,15 +143,21 @@ class AppValidators {
   // Distinct from `password()` above: that's pass/fail for form submission,
   // this is graduated (0–1 score + per-requirement checklist) for realtime
   // feedback while the user is still typing.
-  static PasswordStrengthResult passwordStrength(String value, [AppLocalizations? t]) {
+  static PasswordStrengthResult passwordStrength(
+    String value, [
+    AppLocalizations? t,
+  ]) {
     final hasMinLength = value.length >= 8;
-    final hasUpper     = RegExp(r'[A-Z]').hasMatch(value);
-    final hasLower     = RegExp(r'[a-z]').hasMatch(value);
-    final hasNumber    = RegExp(r'[0-9]').hasMatch(value);
-    final hasSpecial   = _specialCharPattern.hasMatch(value);
+    final hasUpper = RegExp(r'[A-Z]').hasMatch(value);
+    final hasLower = RegExp(r'[a-z]').hasMatch(value);
+    final hasNumber = RegExp(r'[0-9]').hasMatch(value);
+    final hasSpecial = _specialCharPattern.hasMatch(value);
 
     final requirements = <PasswordRequirement>[
-      PasswordRequirement(t?.pwReqMinLength ?? 'Minimum 8 characters', hasMinLength),
+      PasswordRequirement(
+        t?.pwReqMinLength ?? 'Minimum 8 characters',
+        hasMinLength,
+      ),
       PasswordRequirement(t?.pwReqUppercase ?? 'Uppercase letter', hasUpper),
       PasswordRequirement(t?.pwReqLowercase ?? 'Lowercase letter', hasLower),
       PasswordRequirement(t?.pwReqNumber ?? 'Number', hasNumber),
@@ -160,7 +178,7 @@ class AppValidators {
     // reads as "Strong", not "Excellent".
     final lengthBonus = value.length >= 12 ? 1 : 0;
 
-    final rawScore   = metCount + lengthBonus; // out of 6
+    final rawScore = metCount + lengthBonus; // out of 6
     final normalized = (rawScore / 6).clamp(0.0, 1.0);
 
     PasswordStrengthLevel level;

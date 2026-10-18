@@ -14,7 +14,8 @@ class AdminAboutPreviewScreen extends StatefulWidget {
   const AdminAboutPreviewScreen({super.key});
 
   @override
-  State<AdminAboutPreviewScreen> createState() => _AdminAboutPreviewScreenState();
+  State<AdminAboutPreviewScreen> createState() =>
+      _AdminAboutPreviewScreenState();
 }
 
 class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
@@ -58,9 +59,20 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.visibility_outlined, size: 15, color: Colors.white70),
+                const Icon(
+                  Icons.visibility_outlined,
+                  size: 15,
+                  color: Colors.white70,
+                ),
                 const SizedBox(width: 6),
-                const Text('Show disabled', style: TextStyle(fontSize: 11.5, color: Colors.white, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Show disabled',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 Transform.scale(
                   scale: 0.85,
                   child: Switch(
@@ -68,7 +80,10 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
                     activeThumbColor: Colors.white,
                     activeTrackColor: Colors.white.withValues(alpha: 0.35),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    onChanged: (v) { setState(() => _includeDisabled = v); _load(); },
+                    onChanged: (v) {
+                      setState(() => _includeDisabled = v);
+                      _load();
+                    },
                   ),
                 ),
               ],
@@ -89,7 +104,10 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
     if (_loading) {
       return const Center(
         key: ValueKey('loading'),
-        child: CircularProgressIndicator(color: AppColors.adminColor, strokeWidth: 2.5),
+        child: CircularProgressIndicator(
+          color: AppColors.adminColor,
+          strokeWidth: 2.5,
+        ),
       );
     }
 
@@ -101,17 +119,30 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline_rounded, size: 44, color: context.colors.textSecondary.withValues(alpha: 0.5)),
+              Icon(
+                Icons.error_outline_rounded,
+                size: 44,
+                color: context.colors.textSecondary.withValues(alpha: 0.5),
+              ),
               const SizedBox(height: 12),
-              Text(_error!, textAlign: TextAlign.center, style: TextStyle(color: context.colors.textSecondary)),
+              Text(
+                _error!,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: context.colors.textSecondary),
+              ),
               const SizedBox(height: 14),
               OutlinedButton.icon(
                 onPressed: _load,
                 icon: const Icon(Icons.refresh_rounded, size: 18),
                 label: const Text('Try Again'),
                 style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radius10),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                 ),
               ),
             ],
@@ -134,13 +165,21 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
                   color: AppColors.adminColor.withValues(alpha: 0.06),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.visibility_off_outlined, size: 40, color: context.colors.textSecondary.withValues(alpha: 0.6)),
+                child: Icon(
+                  Icons.visibility_off_outlined,
+                  size: 40,
+                  color: context.colors.textSecondary.withValues(alpha: 0.6),
+                ),
               ),
               const SizedBox(height: 16),
               Text(
                 'Nothing to preview yet — add a section first.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: context.colors.textSecondary),
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: context.colors.textSecondary,
+                ),
               ),
             ],
           ),
@@ -168,7 +207,12 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
                 child: Text(
                   'This is a draft preview — not visible to the public until you Publish.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: bannerFg, height: 1.3),
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: bannerFg,
+                    height: 1.3,
+                  ),
                 ),
               ),
             ],
@@ -180,8 +224,13 @@ class _AdminAboutPreviewScreenState extends State<AdminAboutPreviewScreen> {
               final isWide = constraints.maxWidth >= 900;
               return Center(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: isWide ? 900 : double.infinity),
-                  child: AboutPageContent(sections: _data!.sections, showDisabledBadge: _includeDisabled),
+                  constraints: BoxConstraints(
+                    maxWidth: isWide ? 900 : double.infinity,
+                  ),
+                  child: AboutPageContent(
+                    sections: _data!.sections,
+                    showDisabledBadge: _includeDisabled,
+                  ),
                 ),
               );
             },

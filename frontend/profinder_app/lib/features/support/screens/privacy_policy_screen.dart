@@ -18,7 +18,8 @@ import '../models/policy_document.dart';
 import '../widgets/support_section_heading.dart';
 import '../widgets/support_state_views.dart';
 
-typedef PolicyLoader = Future<SupportResult<PolicyDocument>> Function(String lang);
+typedef PolicyLoader =
+    Future<SupportResult<PolicyDocument>> Function(String lang);
 
 class PrivacyPolicyScreen extends StatefulWidget {
   /// Overridable for tests; defaults to the real API.
@@ -37,7 +38,9 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   int _requestId = 0;
 
   Future<SupportResult<PolicyDocument>> _fetch(String lang) =>
-      (widget.loader ?? (l) => SupportService().getPrivacyPolicy(lang: l))(lang);
+      (widget.loader ?? (l) => SupportService().getPrivacyPolicy(lang: l))(
+        lang,
+      );
 
   @override
   void didChangeDependencies() {
@@ -53,7 +56,8 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     final id = ++_requestId;
     setState(() => _loading = true);
     final result = await _fetch(lang);
-    if (!mounted || id != _requestId) return; // a newer request superseded this one
+    if (!mounted || id != _requestId)
+      return; // a newer request superseded this one
     setState(() {
       _result = result;
       _loading = false;
@@ -64,7 +68,10 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     return Scaffold(
-      appBar: UniversalAppBar(title: t.profilePrivacyPolicy, icon: Icons.privacy_tip_rounded),
+      appBar: UniversalAppBar(
+        title: t.profilePrivacyPolicy,
+        icon: Icons.privacy_tip_rounded,
+      ),
       body: SafeArea(child: _body(context, t)),
     );
   }
@@ -86,12 +93,17 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     return SupportErrorState(onRetry: () => _load(_loadedLang ?? 'en'));
   }
 
-  Widget _content(BuildContext context, AppLocalizations t, PolicyDocument doc) {
+  Widget _content(
+    BuildContext context,
+    AppLocalizations t,
+    PolicyDocument doc,
+  ) {
     final colors = context.colors;
     final styles = context.textStyles;
     final meta = [
       t.privacyVersionLabel(doc.version),
-      if (doc.effectiveDate != null) t.privacyEffectiveLabel(doc.effectiveDate!),
+      if (doc.effectiveDate != null)
+        t.privacyEffectiveLabel(doc.effectiveDate!),
     ].join(' · ');
 
     return Align(
@@ -112,12 +124,19 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.info_outline_rounded, size: AppSizes.iconMd - 4, color: colors.infoText),
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: AppSizes.iconMd - 4,
+                      color: colors.infoText,
+                    ),
                     const SizedBox(width: AppSizes.sm),
                     Expanded(
                       child: Text(
                         t.privacyShownInEnglish,
-                        style: styles.bodySmall.copyWith(color: colors.infoText, letterSpacing: 0),
+                        style: styles.bodySmall.copyWith(
+                          color: colors.infoText,
+                          letterSpacing: 0,
+                        ),
                       ),
                     ),
                   ],
@@ -133,10 +152,16 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                 children: [
                   Semantics(
                     header: true,
-                    child: Text(doc.title, style: styles.h2.copyWith(letterSpacing: 0)),
+                    child: Text(
+                      doc.title,
+                      style: styles.h2.copyWith(letterSpacing: 0),
+                    ),
                   ),
                   const SizedBox(height: AppSizes.xs),
-                  Text(meta, style: styles.bodySmall.copyWith(letterSpacing: 0)),
+                  Text(
+                    meta,
+                    style: styles.bodySmall.copyWith(letterSpacing: 0),
+                  ),
                   const SizedBox(height: AppSizes.sm),
                   for (final block in doc.blocks) _block(context, block),
                   const SizedBox(height: AppSizes.lg),
@@ -156,7 +181,10 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       case PolicyBlockType.heading:
         return SupportSectionHeading(
           text: block.text,
-          padding: const EdgeInsetsDirectional.only(top: AppSizes.lg - 4, bottom: AppSizes.sm),
+          padding: const EdgeInsetsDirectional.only(
+            top: AppSizes.lg - 4,
+            bottom: AppSizes.sm,
+          ),
         );
       case PolicyBlockType.bullet:
         return Padding(
@@ -165,13 +193,19 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsetsDirectional.only(top: 9, end: AppSizes.sm + 4),
+                padding: const EdgeInsetsDirectional.only(
+                  top: 9,
+                  end: AppSizes.sm + 4,
+                ),
                 child: Icon(Icons.circle, size: 6, color: colors.textSecondary),
               ),
               Expanded(
                 child: Text(
                   block.text,
-                  style: styles.bodyLarge.copyWith(height: 1.55, letterSpacing: 0),
+                  style: styles.bodyLarge.copyWith(
+                    height: 1.55,
+                    letterSpacing: 0,
+                  ),
                 ),
               ),
             ],

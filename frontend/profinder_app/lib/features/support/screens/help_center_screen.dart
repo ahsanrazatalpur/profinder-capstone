@@ -93,7 +93,10 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
   Future<void> _loadCategories() async {
     final id = ++_categoriesReq;
     setState(() => _loading = true);
-    final result = await _source.getHelpCategories(lang: _lang ?? 'en', audience: widget.audience);
+    final result = await _source.getHelpCategories(
+      lang: _lang ?? 'en',
+      audience: widget.audience,
+    );
     if (!mounted || id != _categoriesReq) return;
     setState(() {
       _categories = result;
@@ -145,11 +148,15 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
     // Nothing published yet, or the list couldn't be loaded: old static screen.
     if (!_loading && fallback != null) {
       final cats = _categories;
-      if (cats == null || !cats.isOk || cats.data!.isEmpty) return fallback(context);
+      if (cats == null || !cats.isOk || cats.data!.isEmpty)
+        return fallback(context);
     }
 
     return Scaffold(
-      appBar: UniversalAppBar(title: t.homeHelpCenter, icon: Icons.help_outline_rounded),
+      appBar: UniversalAppBar(
+        title: t.homeHelpCenter,
+        icon: Icons.help_outline_rounded,
+      ),
       body: SafeArea(child: _body(context, t)),
     );
   }
@@ -186,7 +193,12 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(AppSizes.md, AppSizes.md, AppSizes.md, AppSizes.sm),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSizes.md,
+                AppSizes.md,
+                AppSizes.md,
+                AppSizes.sm,
+              ),
               child: SupportSearchField(
                 controller: _controller,
                 hintText: t.helpSearchHint,
@@ -196,7 +208,9 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
               ),
             ),
             Expanded(
-              child: _query.isEmpty ? _topics(context, t, cats.data!) : _results(context, t),
+              child: _query.isEmpty
+                  ? _topics(context, t, cats.data!)
+                  : _results(context, t),
             ),
           ],
         ),
@@ -204,21 +218,35 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
     );
   }
 
-  Widget _topics(BuildContext context, AppLocalizations t, List<HelpCategory> cats) {
+  Widget _topics(
+    BuildContext context,
+    AppLocalizations t,
+    List<HelpCategory> cats,
+  ) {
     final anyFallback = cats.any((c) => c.isFallback);
     return ListView(
-      padding: const EdgeInsetsDirectional.fromSTEB(AppSizes.md, 0, AppSizes.md, AppSizes.lg),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSizes.md,
+        0,
+        AppSizes.md,
+        AppSizes.lg,
+      ),
       children: [
         if (anyFallback) ...[
           const SizedBox(height: AppSizes.sm),
           SupportInfoNote(message: t.helpShownInEnglish),
         ],
-        SupportSectionHeading(text: t.helpBrowseTopics, icon: Icons.help_outline_rounded),
+        SupportSectionHeading(
+          text: t.helpBrowseTopics,
+          icon: Icons.help_outline_rounded,
+        ),
         for (final c in cats) ...[
           SupportCategoryTile(
             icon: resolveSupportIcon(c.iconKey),
             title: c.title,
-            subtitle: c.description.trim().isNotEmpty ? c.description : t.helpArticleCount(c.articleCount),
+            subtitle: c.description.trim().isNotEmpty
+                ? c.description
+                : t.helpArticleCount(c.articleCount),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -287,13 +315,21 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
       );
     }
     return ListView(
-      padding: const EdgeInsetsDirectional.fromSTEB(AppSizes.md, 0, AppSizes.md, AppSizes.lg),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSizes.md,
+        0,
+        AppSizes.md,
+        AppSizes.lg,
+      ),
       children: [
         if (items.any((a) => a.isFallback)) ...[
           const SizedBox(height: AppSizes.sm),
           SupportInfoNote(message: t.helpShownInEnglish),
         ],
-        SupportSectionHeading(text: t.helpSearchResultsHeading, icon: Icons.search_rounded),
+        SupportSectionHeading(
+          text: t.helpSearchResultsHeading,
+          icon: Icons.search_rounded,
+        ),
         for (final a in items) ...[
           SupportCategoryTile(
             icon: Icons.article_rounded,

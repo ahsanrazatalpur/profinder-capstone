@@ -8,17 +8,17 @@ import '../constants/app_sizes.dart';
 import '../theme/theme_context_ext.dart';
 
 class AppLogo extends StatelessWidget {
-  final double size;        // Controls overall size
-  final bool   showName;    // Show "ProFinder" text or not
-  final bool   showTagline; // Show tagline or not
-  final bool   inverted;    // White logo on dark background (splash screen)
+  final double size; // Controls overall size
+  final bool showName; // Show "ProFinder" text or not
+  final bool showTagline; // Show tagline or not
+  final bool inverted; // White logo on dark background (splash screen)
 
   const AppLogo({
     super.key,
-    this.size       = 90,
-    this.showName   = true,
+    this.size = 90,
+    this.showName = true,
     this.showTagline = false,
-    this.inverted   = false,
+    this.inverted = false,
   });
 
   @override
@@ -55,8 +55,8 @@ class AppLogo extends StatelessWidget {
                       : context.colors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
-                maxLines:  2,
-                overflow:  TextOverflow.ellipsis,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -71,14 +71,14 @@ class AppLogo extends StatelessWidget {
 /// (guest/customer/professional/admin) all render this exact widget.
 class AppLogoMark extends StatelessWidget {
   final double size;
-  final bool   inverted;
+  final bool inverted;
 
   const AppLogoMark({super.key, this.size = 90, this.inverted = false});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:  size,
+      width: size,
       height: size,
       decoration: BoxDecoration(
         color: inverted
@@ -89,7 +89,7 @@ class AppLogoMark extends StatelessWidget {
       child: Center(
         // Inner circle with PF initials
         child: Container(
-          width:  size * 0.72,
+          width: size * 0.72,
           height: size * 0.72,
           decoration: BoxDecoration(
             color: inverted ? AppColors.white : context.colors.primary,
@@ -102,9 +102,9 @@ class AppLogoMark extends StatelessWidget {
                   TextSpan(
                     text: 'P',
                     style: TextStyle(
-                      fontSize:   size * 0.28,
+                      fontSize: size * 0.28,
                       fontWeight: FontWeight.bold,
-                      color:      inverted
+                      color: inverted
                           ? context.colors.primary
                           : AppColors.white,
                       height: 1,
@@ -113,10 +113,10 @@ class AppLogoMark extends StatelessWidget {
                   TextSpan(
                     text: 'F',
                     style: TextStyle(
-                      fontSize:   size * 0.28,
+                      fontSize: size * 0.28,
                       fontWeight: FontWeight.bold,
-                      color:      context.colors.accent,
-                      height:     1,
+                      color: context.colors.accent,
+                      height: 1,
                     ),
                   ),
                 ],

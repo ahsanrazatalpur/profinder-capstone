@@ -34,77 +34,78 @@ class SearchablePickerField<T> extends FormField<T> {
     required ValueChanged<T?> onChanged,
     super.validator,
   }) : super(
-          initialValue: value,
-          builder: (state) {
-            final t = AppLocalizations.of(state.context);
-            Future<void> openPicker() async {
-              if (!enabled || loading) return;
-              final selected = await _showPicker<T>(
-                context:     state.context,
-                items:       items,
-                itemLabel:   itemLabel,
-                itemLeading: itemLeading,
-                title:       label,
-                searchHint:  searchHint ?? t.pickerSearchHint,
-                emptyMessage: emptyMessage ?? t.pickerNoResults,
-              );
-              if (selected != null) {
-                state.didChange(selected);
-                onChanged(selected);
-              }
-            }
+         initialValue: value,
+         builder: (state) {
+           final t = AppLocalizations.of(state.context);
+           Future<void> openPicker() async {
+             if (!enabled || loading) return;
+             final selected = await _showPicker<T>(
+               context: state.context,
+               items: items,
+               itemLabel: itemLabel,
+               itemLeading: itemLeading,
+               title: label,
+               searchHint: searchHint ?? t.pickerSearchHint,
+               emptyMessage: emptyMessage ?? t.pickerNoResults,
+             );
+             if (selected != null) {
+               state.didChange(selected);
+               onChanged(selected);
+             }
+           }
 
-            final hasValue = state.value != null;
+           final hasValue = state.value != null;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 4, bottom: 6),
-                  child: Text(label, style: AppTextStyles.label),
-                ),
-                InkWell(
-                  onTap: openPicker,
-                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      hintText:   !enabled
-                          ? (disabledHint ?? t.pickerSelectAboveFirst)
-                          : (hint ?? t.pickerTapToSelect),
-                      prefixIcon: Icon(prefixIcon),
-                      errorText:  state.errorText,
-                      suffixIcon: loading
-                          ? const Padding(
-                              padding: EdgeInsets.all(14),
-                              child: SizedBox(
-                                width: 16, height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                            )
-                          : const Icon(Icons.expand_more_rounded),
-                      enabled: enabled,
-                    ),
-                    child: Row(
-                      children: [
-                        if (hasValue && itemLeading != null) ...[
-                          itemLeading(state.value as T),
-                          const SizedBox(width: AppSizes.sm),
-                        ],
-                        Expanded(
-                          child: Text(
-                            hasValue ? itemLabel(state.value as T) : '',
-                            style: state.context.textStyles.inputText,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
+           return Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               Padding(
+                 padding: const EdgeInsets.only(left: 4, bottom: 6),
+                 child: Text(label, style: AppTextStyles.label),
+               ),
+               InkWell(
+                 onTap: openPicker,
+                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                 child: InputDecorator(
+                   decoration: InputDecoration(
+                     hintText: !enabled
+                         ? (disabledHint ?? t.pickerSelectAboveFirst)
+                         : (hint ?? t.pickerTapToSelect),
+                     prefixIcon: Icon(prefixIcon),
+                     errorText: state.errorText,
+                     suffixIcon: loading
+                         ? const Padding(
+                             padding: EdgeInsets.all(14),
+                             child: SizedBox(
+                               width: 16,
+                               height: 16,
+                               child: CircularProgressIndicator(strokeWidth: 2),
+                             ),
+                           )
+                         : const Icon(Icons.expand_more_rounded),
+                     enabled: enabled,
+                   ),
+                   child: Row(
+                     children: [
+                       if (hasValue && itemLeading != null) ...[
+                         itemLeading(state.value as T),
+                         const SizedBox(width: AppSizes.sm),
+                       ],
+                       Expanded(
+                         child: Text(
+                           hasValue ? itemLabel(state.value as T) : '',
+                           style: state.context.textStyles.inputText,
+                           overflow: TextOverflow.ellipsis,
+                         ),
+                       ),
+                     ],
+                   ),
+                 ),
+               ),
+             ],
+           );
+         },
+       );
 
   static Future<T?> _showPicker<T>({
     required BuildContext context,
@@ -117,11 +118,11 @@ class SearchablePickerField<T> extends FormField<T> {
   }) {
     final isWide = MediaQuery.of(context).size.width > 700;
     final content = _PickerSheet<T>(
-      items:        items,
-      itemLabel:    itemLabel,
-      itemLeading:  itemLeading,
-      title:        title,
-      searchHint:   searchHint,
+      items: items,
+      itemLabel: itemLabel,
+      itemLeading: itemLeading,
+      title: title,
+      searchHint: searchHint,
       emptyMessage: emptyMessage,
     );
 
@@ -138,10 +139,12 @@ class SearchablePickerField<T> extends FormField<T> {
     }
 
     return showModalBottomSheet<T>(
-      context:        context,
+      context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusXl)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusXl),
+        ),
       ),
       builder: (_) => SizedBox(
         height: MediaQuery.of(context).size.height * 0.75,
@@ -182,8 +185,10 @@ class _PickerSheetState<T> extends State<_PickerSheet<T>> {
       _filtered = q.isEmpty
           ? widget.items
           : widget.items
-              .where((item) => widget.itemLabel(item).toLowerCase().contains(q))
-              .toList();
+                .where(
+                  (item) => widget.itemLabel(item).toLowerCase().contains(q),
+                )
+                .toList();
     });
   }
 
@@ -199,7 +204,8 @@ class _PickerSheetState<T> extends State<_PickerSheet<T>> {
       children: [
         const SizedBox(height: AppSizes.sm),
         Container(
-          width: 40, height: 4,
+          width: 40,
+          height: 4,
           decoration: BoxDecoration(
             color: context.colors.divider,
             borderRadius: BorderRadius.circular(AppSizes.radiusFull),
@@ -214,12 +220,12 @@ class _PickerSheetState<T> extends State<_PickerSheet<T>> {
               const SizedBox(height: AppSizes.sm),
               TextField(
                 controller: _searchController,
-                autofocus:  true,
-                onChanged:  _onSearchChanged,
+                autofocus: true,
+                onChanged: _onSearchChanged,
                 decoration: InputDecoration(
-                  hintText:   widget.searchHint,
+                  hintText: widget.searchHint,
                   prefixIcon: const Icon(Icons.search),
-                  isDense:    true,
+                  isDense: true,
                 ),
               ),
             ],
@@ -229,7 +235,10 @@ class _PickerSheetState<T> extends State<_PickerSheet<T>> {
         Expanded(
           child: _filtered.isEmpty
               ? Center(
-                  child: Text(widget.emptyMessage, style: context.textStyles.bodyMedium),
+                  child: Text(
+                    widget.emptyMessage,
+                    style: context.textStyles.bodyMedium,
+                  ),
                 )
               : ListView.builder(
                   itemCount: _filtered.length,
@@ -237,8 +246,8 @@ class _PickerSheetState<T> extends State<_PickerSheet<T>> {
                     final item = _filtered[index];
                     return ListTile(
                       leading: widget.itemLeading?.call(item),
-                      title:   Text(widget.itemLabel(item)),
-                      onTap:   () => Navigator.pop(context, item),
+                      title: Text(widget.itemLabel(item)),
+                      onTap: () => Navigator.pop(context, item),
                     );
                   },
                 ),

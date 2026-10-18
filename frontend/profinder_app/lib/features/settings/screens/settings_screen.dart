@@ -95,10 +95,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await prefs.setBool('pref_push_notifications', !value);
 
       messenger.showSnackBar(
-        SnackBar(
-          content: Text(errorMsg),
-          behavior: SnackBarBehavior.floating,
-        ),
+        SnackBar(content: Text(errorMsg), behavior: SnackBarBehavior.floating),
       );
     }
   }
@@ -122,10 +119,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await prefs.setBool('pref_email_notifications', !value);
 
       messenger.showSnackBar(
-        SnackBar(
-          content: Text(errorMsg),
-          behavior: SnackBarBehavior.floating,
-        ),
+        SnackBar(content: Text(errorMsg), behavior: SnackBarBehavior.floating),
       );
     }
   }

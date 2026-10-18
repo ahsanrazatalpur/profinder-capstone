@@ -27,11 +27,16 @@ AudioFormat sniffAudioFormat(Uint8List b) {
     return true;
   }
 
-  if (at(0, 'RIFF') && at(8, 'WAVE')) return const AudioFormat('wav', 'audio/wav');
+  if (at(0, 'RIFF') && at(8, 'WAVE'))
+    return const AudioFormat('wav', 'audio/wav');
   if (at(0, 'OggS')) return const AudioFormat('ogg', 'audio/ogg');
   if (at(0, 'fLaC')) return const AudioFormat('flac', 'audio/flac');
   // Matroska / WebM (EBML header)
-  if (b.length >= 4 && b[0] == 0x1A && b[1] == 0x45 && b[2] == 0xDF && b[3] == 0xA3) {
+  if (b.length >= 4 &&
+      b[0] == 0x1A &&
+      b[1] == 0x45 &&
+      b[2] == 0xDF &&
+      b[3] == 0xA3) {
     return const AudioFormat('webm', 'audio/webm');
   }
   // MP4 / M4A ("....ftyp")
@@ -42,7 +47,10 @@ AudioFormat sniffAudioFormat(Uint8List b) {
   }
   // MP3 — ID3 tag, or MPEG frame sync with a non-zero layer
   if (at(0, 'ID3') ||
-      (b.length >= 2 && b[0] == 0xFF && (b[1] & 0xE0) == 0xE0 && (b[1] & 0x06) != 0)) {
+      (b.length >= 2 &&
+          b[0] == 0xFF &&
+          (b[1] & 0xE0) == 0xE0 &&
+          (b[1] & 0x06) != 0)) {
     return const AudioFormat('mp3', 'audio/mpeg');
   }
   // Unknown: keep the old behaviour (AAC in an m4a container).

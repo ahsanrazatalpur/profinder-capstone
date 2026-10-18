@@ -1,7 +1,7 @@
 // lib/features/about/models/about_page_model.dart
 
 class AboutSectionItem {
-  final int    id;
+  final int id;
   final String title;
   final String subtitle;
   final String description;
@@ -10,8 +10,8 @@ class AboutSectionItem {
   final String value;
   final String linkUrl;
   final Map<String, dynamic> extraData;
-  final int    order;
-  final bool   isEnabled;
+  final int order;
+  final bool isEnabled;
 
   AboutSectionItem({
     required this.id,
@@ -29,24 +29,31 @@ class AboutSectionItem {
 
   factory AboutSectionItem.fromJson(Map<String, dynamic> json) {
     return AboutSectionItem(
-      id:          json['id']          ?? 0,
-      title:       json['title']       ?? '',
-      subtitle:    json['subtitle']    ?? '',
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      subtitle: json['subtitle'] ?? '',
       description: json['description'] ?? '',
-      icon:        json['icon']        ?? '',
-      imageUrl:    json['image_url']   ?? '',
-      value:       json['value']       ?? '',
-      linkUrl:     json['link_url']    ?? '',
-      extraData:   Map<String, dynamic>.from(json['extra_data'] ?? {}),
-      order:       json['order']       ?? 0,
-      isEnabled:   json['is_enabled']  ?? true,
+      icon: json['icon'] ?? '',
+      imageUrl: json['image_url'] ?? '',
+      value: json['value'] ?? '',
+      linkUrl: json['link_url'] ?? '',
+      extraData: Map<String, dynamic>.from(json['extra_data'] ?? {}),
+      order: json['order'] ?? 0,
+      isEnabled: json['is_enabled'] ?? true,
     );
   }
 
   AboutSectionItem copyWith({
-    String? title, String? subtitle, String? description, String? icon,
-    String? imageUrl, String? value, String? linkUrl,
-    Map<String, dynamic>? extraData, int? order, bool? isEnabled,
+    String? title,
+    String? subtitle,
+    String? description,
+    String? icon,
+    String? imageUrl,
+    String? value,
+    String? linkUrl,
+    Map<String, dynamic>? extraData,
+    int? order,
+    bool? isEnabled,
   }) {
     return AboutSectionItem(
       id: id,
@@ -65,7 +72,7 @@ class AboutSectionItem {
 }
 
 class AboutSection {
-  final int    id;
+  final int id;
   final String sectionType;
   final String sectionKey;
   final String title;
@@ -77,8 +84,8 @@ class AboutSection {
   final String ctaUrl;
   final String ctaStyle;
   final Map<String, dynamic> extraData;
-  final int    order;
-  final bool   isEnabled;
+  final int order;
+  final bool isEnabled;
   final List<AboutSectionItem> items;
 
   AboutSection({
@@ -102,29 +109,35 @@ class AboutSection {
   factory AboutSection.fromJson(Map<String, dynamic> json) {
     final itemsJson = (json['items'] as List? ?? []);
     return AboutSection(
-      id:          json['id']           ?? 0,
+      id: json['id'] ?? 0,
       sectionType: json['section_type'] ?? 'custom',
-      sectionKey:  json['section_key']  ?? '',
-      title:       json['title']        ?? '',
-      subtitle:    json['subtitle']     ?? '',
-      description: json['description']  ?? '',
-      icon:        json['icon']         ?? '',
-      imageUrl:    json['image_url']    ?? '',
-      ctaText:     json['cta_text']     ?? '',
-      ctaUrl:      json['cta_url']      ?? '',
-      ctaStyle:    json['cta_style']    ?? 'primary',
-      extraData:   Map<String, dynamic>.from(json['extra_data'] ?? {}),
-      order:       json['order']        ?? 0,
-      isEnabled:   json['is_enabled']   ?? true,
-      items:       itemsJson.map((i) => AboutSectionItem.fromJson(i)).toList(),
+      sectionKey: json['section_key'] ?? '',
+      title: json['title'] ?? '',
+      subtitle: json['subtitle'] ?? '',
+      description: json['description'] ?? '',
+      icon: json['icon'] ?? '',
+      imageUrl: json['image_url'] ?? '',
+      ctaText: json['cta_text'] ?? '',
+      ctaUrl: json['cta_url'] ?? '',
+      ctaStyle: json['cta_style'] ?? 'primary',
+      extraData: Map<String, dynamic>.from(json['extra_data'] ?? {}),
+      order: json['order'] ?? 0,
+      isEnabled: json['is_enabled'] ?? true,
+      items: itemsJson.map((i) => AboutSectionItem.fromJson(i)).toList(),
     );
   }
 
   bool get hasCta => ctaText.trim().isNotEmpty && ctaUrl.trim().isNotEmpty;
 
   static const Set<String> collectionTypes = {
-    'why_choose_us', 'how_it_works', 'statistics', 'core_values',
-    'team_members', 'investors_partners', 'certifications', 'awards',
+    'why_choose_us',
+    'how_it_works',
+    'statistics',
+    'core_values',
+    'team_members',
+    'investors_partners',
+    'certifications',
+    'awards',
   };
 
   bool get isCollectionType => collectionTypes.contains(sectionType);
@@ -166,18 +179,18 @@ class AboutPageSeo {
 
   factory AboutPageSeo.fromJson(Map<String, dynamic> json) {
     return AboutPageSeo(
-      metaTitle:       json['meta_title']       ?? '',
+      metaTitle: json['meta_title'] ?? '',
       metaDescription: json['meta_description'] ?? '',
-      metaKeywords:    json['meta_keywords']    ?? '',
-      ogImageUrl:      json['og_image_url'] ?? json['og_image'] ?? '',
+      metaKeywords: json['meta_keywords'] ?? '',
+      ogImageUrl: json['og_image_url'] ?? json['og_image'] ?? '',
     );
   }
 }
 
 class AboutPageData {
   final List<AboutSection> sections;
-  final AboutPageSeo       seo;
-  final int?               version;
+  final AboutPageSeo seo;
+  final int? version;
 
   AboutPageData({
     required this.sections,
@@ -189,8 +202,8 @@ class AboutPageData {
     final sectionsJson = (json['sections'] as List? ?? []);
     return AboutPageData(
       sections: sectionsJson.map((s) => AboutSection.fromJson(s)).toList(),
-      seo:      AboutPageSeo.fromJson(Map<String, dynamic>.from(json['seo'] ?? {})),
-      version:  json['version'],
+      seo: AboutPageSeo.fromJson(Map<String, dynamic>.from(json['seo'] ?? {})),
+      version: json['version'],
     );
   }
 

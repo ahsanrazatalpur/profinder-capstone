@@ -90,7 +90,8 @@ class _ChatScreenBody extends StatefulWidget {
   State<_ChatScreenBody> createState() => _ChatScreenBodyState();
 }
 
-class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObserver {
+class _ChatScreenBodyState extends State<_ChatScreenBody>
+    with WidgetsBindingObserver {
   final _scrollController = ScrollController();
   int _lastMessageCount = 0;
 
@@ -132,7 +133,10 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
         provider.loadMoreHistory().then((_) {
           if (!mounted || !_scrollController.hasClients) return;
           final newMaxExtent = _scrollController.position.maxScrollExtent;
-          _scrollController.jumpTo(_scrollController.position.pixels + (newMaxExtent - previousMaxExtent));
+          _scrollController.jumpTo(
+            _scrollController.position.pixels +
+                (newMaxExtent - previousMaxExtent),
+          );
         });
       }
     }
@@ -144,7 +148,11 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
       if (!_scrollController.hasClients) return;
       final target = _scrollController.position.maxScrollExtent;
       if (animated) {
-        _scrollController.animateTo(target, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+        _scrollController.animateTo(
+          target,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
       } else {
         _scrollController.jumpTo(target);
       }
@@ -153,14 +161,17 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
 
   bool _isNearBottom() {
     if (!_scrollController.hasClients) return true;
-    return _scrollController.position.maxScrollExtent - _scrollController.position.pixels < 150;
+    return _scrollController.position.maxScrollExtent -
+            _scrollController.position.pixels <
+        150;
   }
 
   List<_ChatListItem> _buildItems(List<MessageEntity> messages) {
     final items = <_ChatListItem>[];
     DateTime? lastDate;
     for (final m in messages) {
-      if (lastDate == null || DateSeparator.isDifferentDay(lastDate, m.createdAt)) {
+      if (lastDate == null ||
+          DateSeparator.isDifferentDay(lastDate, m.createdAt)) {
         items.add(_SeparatorItem(m.createdAt));
         lastDate = m.createdAt;
       }
@@ -178,7 +189,10 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
     final listProvider = context.watch<ConversationListProvider>();
     ConversationEntity? currentConv;
     for (final c in listProvider.conversations) {
-      if (c.id == widget.conversationId) { currentConv = c; break; }
+      if (c.id == widget.conversationId) {
+        currentConv = c;
+        break;
+      }
     }
     final isMutedNow = currentConv?.isMuted == true;
 
@@ -195,10 +209,18 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
                 avatar: CircleAvatar(
                   radius: 18,
                   backgroundColor: Colors.white.withValues(alpha: 0.25),
-                  backgroundImage: widget.otherUserPhoto != null ? CachedNetworkImageProvider(widget.otherUserPhoto!) : null,
+                  backgroundImage: widget.otherUserPhoto != null
+                      ? CachedNetworkImageProvider(widget.otherUserPhoto!)
+                      : null,
                   child: widget.otherUserPhoto == null
-                      ? Text(AppHelpers.getInitials(widget.otherUserName),
-                          style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.bold, color: Colors.white))
+                      ? Text(
+                          AppHelpers.getInitials(widget.otherUserName),
+                          style: TextStyle(
+                            fontSize: AppFontSizes.small,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        )
                       : null,
                 ),
               ),
@@ -208,14 +230,22 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.otherUserName,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700, color: Colors.white)),
+                    Text(
+                      widget.otherUserName,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: AppFontSizes.input,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
                     Text(
                       _statusSubtitle(context, provider),
                       style: TextStyle(
                         fontSize: AppFontSizes.small,
-                        color: Colors.white.withValues(alpha: provider.otherUserTyping ? 1 : 0.8),
+                        color: Colors.white.withValues(
+                          alpha: provider.otherUserTyping ? 1 : 0.8,
+                        ),
                       ),
                     ),
                   ],
@@ -232,27 +262,38 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
             onPressed: () => showModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              builder: (_) => MessageSearchSheet(conversationId: widget.conversationId),
+              builder: (_) =>
+                  MessageSearchSheet(conversationId: widget.conversationId),
             ),
           ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
             onSelected: (value) => _onMenuSelected(context, value),
             itemBuilder: (menuContext) => [
-              PopupMenuItem(value: 'media', child: Text(AppLocalizations.of(menuContext).chatSharedMedia2)),
+              PopupMenuItem(
+                value: 'media',
+                child: Text(AppLocalizations.of(menuContext).chatSharedMedia2),
+              ),
               PopupMenuItem(
                 value: 'mute',
-                child: Text(isMutedNow
-                    ? AppLocalizations.of(menuContext).chatUnmuteConversation
-                    : AppLocalizations.of(menuContext).chatMuteConversation),
+                child: Text(
+                  isMutedNow
+                      ? AppLocalizations.of(menuContext).chatUnmuteConversation
+                      : AppLocalizations.of(menuContext).chatMuteConversation,
+                ),
               ),
               PopupMenuItem(
                 value: 'block',
-                child: Text(chatProvider.isBlockedByMe
-                    ? AppLocalizations.of(menuContext).chatUnblockUser
-                    : AppLocalizations.of(menuContext).chatBlockUser),
+                child: Text(
+                  chatProvider.isBlockedByMe
+                      ? AppLocalizations.of(menuContext).chatUnblockUser
+                      : AppLocalizations.of(menuContext).chatBlockUser,
+                ),
               ),
-              PopupMenuItem(value: 'report', child: Text(AppLocalizations.of(menuContext).chatReportUser)),
+              PopupMenuItem(
+                value: 'report',
+                child: Text(AppLocalizations.of(menuContext).chatReportUser),
+              ),
             ],
           ),
         ],
@@ -266,7 +307,9 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
             final grew = provider.messages.length > _lastMessageCount;
             final wasNearBottom = _isNearBottom();
             _lastMessageCount = provider.messages.length;
-            if (grew && (wasNearBottom || _lastMessageCount == provider.messages.length)) {
+            if (grew &&
+                (wasNearBottom ||
+                    _lastMessageCount == provider.messages.length)) {
               _scrollToBottom(animated: _lastMessageCount > 1);
             }
           }
@@ -277,10 +320,16 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
               if (provider.otherUserTyping)
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-                  child: Align(alignment: Alignment.centerLeft, child: TypingIndicatorBubble()),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TypingIndicatorBubble(),
+                  ),
                 ),
               if (provider.replyingTo != null)
-                ReplyPreviewBar(replyingTo: provider.replyingTo!, onCancel: provider.clearReply),
+                ReplyPreviewBar(
+                  replyingTo: provider.replyingTo!,
+                  onCancel: provider.clearReply,
+                ),
               if (!provider.canMessage)
                 _buildBlockedBanner(context, provider)
               else
@@ -310,13 +359,22 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
   void _onMenuSelected(BuildContext context, String value) {
     switch (value) {
       case 'media':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => MediaGalleryScreen(conversationId: widget.conversationId)));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                MediaGalleryScreen(conversationId: widget.conversationId),
+          ),
+        );
         break;
       case 'mute':
         final listProvider = context.read<ConversationListProvider>();
         ConversationEntity? conv;
         for (final c in listProvider.conversations) {
-          if (c.id == widget.conversationId) { conv = c; break; }
+          if (c.id == widget.conversationId) {
+            conv = c;
+            break;
+          }
         }
         if (conv != null) {
           final willBeMuted = !conv.isMuted;
@@ -324,7 +382,11 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
           final t = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(willBeMuted ? t.chatConversationMuted : t.chatConversationUnmuted),
+              content: Text(
+                willBeMuted
+                    ? t.chatConversationMuted
+                    : t.chatConversationUnmuted,
+              ),
               duration: const Duration(seconds: 2),
             ),
           );
@@ -338,7 +400,13 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
         }
         break;
       case 'report':
-        showDialog(context: context, builder: (_) => ReportUserDialog(userId: widget.otherUserId, userName: widget.otherUserName));
+        showDialog(
+          context: context,
+          builder: (_) => ReportUserDialog(
+            userId: widget.otherUserId,
+            userName: widget.otherUserName,
+          ),
+        );
         break;
     }
   }
@@ -351,7 +419,10 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
         title: Text(t.chatBlock(widget.otherUserName)),
         content: Text(t.chatTheyNoLongerAbleSendMessages),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(t.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(t.cancel),
+          ),
           TextButton(
             onPressed: () async {
               Navigator.pop(dialogContext);
@@ -360,7 +431,10 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
               // rather than kicking the user out of the conversation.
               await context.read<ChatProvider>().blockOtherUser();
             },
-            child: Text(t.adminBlock, style: const TextStyle(color: Colors.redAccent)),
+            child: Text(
+              t.adminBlock,
+              style: const TextStyle(color: Colors.redAccent),
+            ),
           ),
         ],
       ),
@@ -374,7 +448,12 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
     final t = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(16, 14, 16, MediaQuery.of(context).padding.bottom + 14),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        14,
+        16,
+        MediaQuery.of(context).padding.bottom + 14,
+      ),
       decoration: BoxDecoration(
         color: context.colors.surface,
         border: Border(top: BorderSide(color: context.colors.divider)),
@@ -389,19 +468,27 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
                     children: [
                       Text(
                         t.chatYouBlockedUser(widget.otherUserName),
-                        style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+                        style: TextStyle(
+                          fontSize: AppFontSizes.body,
+                          fontWeight: FontWeight.w700,
+                          color: context.colors.textPrimary,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         t.chatBlockedBannerSubtitle,
-                        style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
+                        style: TextStyle(
+                          fontSize: AppFontSizes.small,
+                          color: context.colors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 10),
                 TextButton(
-                  onPressed: () => context.read<ChatProvider>().unblockOtherUser(),
+                  onPressed: () =>
+                      context.read<ChatProvider>().unblockOtherUser(),
                   child: Text(t.chatUnblockAction),
                 ),
               ],
@@ -409,11 +496,18 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
           : Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.block_rounded, size: 16, color: context.colors.textSecondary),
+                Icon(
+                  Icons.block_rounded,
+                  size: 16,
+                  color: context.colors.textSecondary,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   t.chatMessageUnavailable,
-                  style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    color: context.colors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -440,15 +534,29 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(provider.loadError!, style: const TextStyle(color: AppColors.error)),
+            Text(
+              provider.loadError!,
+              style: const TextStyle(color: AppColors.error),
+            ),
             const SizedBox(height: 8),
-            TextButton(onPressed: provider.loadInitialMessages, child: Text(t.retry)),
+            TextButton(
+              onPressed: provider.loadInitialMessages,
+              child: Text(t.retry),
+            ),
           ],
         ),
       );
     }
     if (provider.messages.isEmpty) {
-      return Center(child: Text(t.chatSayHello, style: TextStyle(fontSize: AppFontSizes.body, color: context.colors.textSecondary)));
+      return Center(
+        child: Text(
+          t.chatSayHello,
+          style: TextStyle(
+            fontSize: AppFontSizes.body,
+            color: context.colors.textSecondary,
+          ),
+        ),
+      );
     }
 
     final items = _buildItems(provider.messages);
@@ -461,7 +569,13 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
         if (provider.isLoadingMore && index == 0) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
-            child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
+            child: Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
           );
         }
         final item = items[index - (provider.isLoadingMore ? 1 : 0)];
@@ -475,7 +589,8 @@ class _ChatScreenBodyState extends State<_ChatScreenBody> with WidgetsBindingObs
           onReply: () => provider.setReplyTo(message),
           onEdit: (newText) => provider.editMessage(message.id, newText),
           onDelete: () => provider.deleteMessage(message.id, forEveryone: true),
-          onDeleteForMe: () => provider.deleteMessage(message.id, forEveryone: false),
+          onDeleteForMe: () =>
+              provider.deleteMessage(message.id, forEveryone: false),
           onReact: (emoji) => provider.toggleReaction(message.id, emoji),
           onRetry: () => provider.retry(message),
         );

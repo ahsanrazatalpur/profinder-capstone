@@ -124,7 +124,9 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
   }
 
   List<ModerationAction> get _activeActions =>
-      (_history ?? const <ModerationAction>[]).where((a) => a.isActive).toList();
+      (_history ?? const <ModerationAction>[])
+          .where((a) => a.isActive)
+          .toList();
 
   // ── Flows ─────────────────────────────────────────────────────────────────
 
@@ -150,8 +152,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      final updated = await widget.service
-          .updateReport(_report.id, status: ReportStatus.actionTaken);
+      final updated = await widget.service.updateReport(
+        _report.id,
+        status: ReportStatus.actionTaken,
+      );
       if (!mounted) return;
       setState(() => _report = updated);
       widget.onReportChanged(updated);
@@ -194,8 +198,11 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
       initialText: _report.adminNote,
       confirmLabel: dismiss ? l.tsDismissConfirm : l.tsReviewConfirm,
       notes: [l.tsResolveReporterNote],
-      onSubmit: (text) =>
-          widget.service.updateReport(_report.id, status: status, adminNote: text),
+      onSubmit: (text) => widget.service.updateReport(
+        _report.id,
+        status: status,
+        adminNote: text,
+      ),
     );
     if (updated == null || !mounted) return;
     setState(() => _report = updated);
@@ -205,8 +212,11 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
 
   Future<void> _reverse(ModerationAction action) async {
     final l = AppLocalizations.of(context);
-    final label = tsActionTypeLabel(l, action.actionType,
-        fallback: action.actionTypeDisplay);
+    final label = tsActionTypeLabel(
+      l,
+      action.actionType,
+      fallback: action.actionTypeDisplay,
+    );
     final notes = <String>[l.tsReverseAuditNote];
     if (action.actionType != ActionType.warning) {
       notes.add(l.tsReverseNotifyNote);
@@ -280,7 +290,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
       if (i > 0) out.add(const SizedBox(height: 14));
       out.add(children[i]);
     }
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: out);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: out,
+    );
   }
 
   // ── Sections ──────────────────────────────────────────────────────────────
@@ -311,7 +324,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
               ),
               Text(
                 l.tsSubmittedOn(tsFmtDateTime(r.createdAt)),
-                style: const TextStyle(fontSize: 11.5, color: TsColors.textMuted),
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  color: TsColors.textMuted,
+                ),
               ),
             ],
           ),
@@ -321,7 +337,11 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
             runSpacing: 6,
             children: [
               TsBadge(
-                label: tsCategoryLabel(l, r.category, fallback: r.categoryDisplay),
+                label: tsCategoryLabel(
+                  l,
+                  r.category,
+                  fallback: r.categoryDisplay,
+                ),
                 color: TsColors.textBody,
                 icon: Icons.flag_outlined,
               ),
@@ -352,7 +372,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
                       '${tsRoleLabel(l, r.reportedUserRole)} · ${r.reportedUserEmail}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: AppFontSizes.small, color: TsColors.textMuted),
+                      style: const TextStyle(
+                        fontSize: AppFontSizes.small,
+                        color: TsColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -378,35 +401,58 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TsColors.accent,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: TsColors.accent.withValues(alpha: 0.4),
+                    disabledBackgroundColor: TsColors.accent.withValues(
+                      alpha: 0.4,
+                    ),
                     disabledForegroundColor: Colors.white,
                     elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radius10),
+                    ),
                   ),
                 ),
               if (canReview)
                 OutlinedButton.icon(
-                  onPressed: _busy ? null : () => _resolve(ReportStatus.reviewed),
+                  onPressed: _busy
+                      ? null
+                      : () => _resolve(ReportStatus.reviewed),
                   icon: const Icon(Icons.visibility_outlined, size: 17),
                   label: Text(l.tsMarkReviewed),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: TsColors.reviewed,
-                    side: BorderSide(color: TsColors.reviewed.withValues(alpha: 0.5)),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                    side: BorderSide(
+                      color: TsColors.reviewed.withValues(alpha: 0.5),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radius10),
+                    ),
                   ),
                 ),
               if (canDismiss)
                 OutlinedButton.icon(
-                  onPressed: _busy ? null : () => _resolve(ReportStatus.dismissed),
+                  onPressed: _busy
+                      ? null
+                      : () => _resolve(ReportStatus.dismissed),
                   icon: const Icon(Icons.close_rounded, size: 17),
                   label: Text(l.tsDismiss),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: TsColors.textMuted,
                     side: const BorderSide(color: TsColors.border),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radius10),
+                    ),
                   ),
                 ),
               if (_busy)
@@ -437,7 +483,9 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SelectableText(
-            _report.description.isEmpty ? l.tsNoDescription : _report.description,
+            _report.description.isEmpty
+                ? l.tsNoDescription
+                : _report.description,
             style: TextStyle(
               fontSize: 13.5,
               height: 1.5,
@@ -461,8 +509,11 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.lock_outline_rounded,
-                          size: 12, color: AppColors.amber800),
+                      const Icon(
+                        Icons.lock_outline_rounded,
+                        size: 12,
+                        color: AppColors.amber800,
+                      ),
                       const SizedBox(width: 5),
                       Text(
                         l.tsInternalNoteLabel,
@@ -524,19 +575,19 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
   }
 
   Widget _miniLabel(String text) => Text(
-        text,
-        style: const TextStyle(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w700,
-          color: TsColors.textFaint,
-          letterSpacing: 0.3,
-        ),
-      );
+    text,
+    style: const TextStyle(
+      fontSize: 10.5,
+      fontWeight: FontWeight.w700,
+      color: TsColors.textFaint,
+      letterSpacing: 0.3,
+    ),
+  );
 
   Widget _noneText(String text) => Text(
-        text,
-        style: const TextStyle(fontSize: 12.5, color: TsColors.textMuted),
-      );
+    text,
+    style: const TextStyle(fontSize: 12.5, color: TsColors.textMuted),
+  );
 
   Widget _bookingCard(AppLocalizations l, TsReport r) {
     final b = r.relatedBooking;
@@ -553,7 +604,11 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
         children: [
           Row(
             children: [
-              const Icon(Icons.calendar_month_rounded, size: 16, color: TsColors.info),
+              const Icon(
+                Icons.calendar_month_rounded,
+                size: 16,
+                color: TsColors.info,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -605,8 +660,11 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
         children: [
           Row(
             children: [
-              const Icon(Icons.chat_bubble_outline_rounded,
-                  size: 16, color: TsColors.info),
+              const Icon(
+                Icons.chat_bubble_outline_rounded,
+                size: 16,
+                color: TsColors.info,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -625,10 +683,16 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
             if (m.senderName != null)
               TsInfoRow(label: l.tsFieldSender, value: m.senderName!),
             if (m.createdAt != null)
-              TsInfoRow(label: l.tsFieldWhen, value: tsFmtDateTime(m.createdAt)),
+              TsInfoRow(
+                label: l.tsFieldWhen,
+                value: tsFmtDateTime(m.createdAt),
+              ),
             const SizedBox(height: 6),
             if (m.isDeleted)
-              TsHint(icon: Icons.visibility_off_outlined, text: l.tsMessageDeleted)
+              TsHint(
+                icon: Icons.visibility_off_outlined,
+                text: l.tsMessageDeleted,
+              )
             else
               Container(
                 width: double.infinity,
@@ -689,7 +753,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
               ),
               SelectableText(
                 email,
-                style: const TextStyle(fontSize: AppFontSizes.small, color: TsColors.textMuted),
+                style: const TextStyle(
+                  fontSize: AppFontSizes.small,
+                  color: TsColors.textMuted,
+                ),
               ),
               if (sub != null) ...[
                 const SizedBox(height: 4),
@@ -750,7 +817,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
           child: SizedBox(
             width: 22,
             height: 22,
-            child: CircularProgressIndicator(strokeWidth: 2, color: TsColors.accent),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: TsColors.accent,
+            ),
           ),
         ),
       );
@@ -827,7 +897,11 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  tsActionTypeLabel(l, a.actionType, fallback: a.actionTypeDisplay),
+                  tsActionTypeLabel(
+                    l,
+                    a.actionType,
+                    fallback: a.actionTypeDisplay,
+                  ),
                   style: const TextStyle(
                     fontSize: AppFontSizes.secondary,
                     fontWeight: FontWeight.w700,
@@ -836,7 +910,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
                 ),
                 Text(
                   when,
-                  style: const TextStyle(fontSize: 11.5, color: TsColors.textMuted),
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: TsColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -866,13 +943,19 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
             tsStatusLabel(l, r.status, fallback: r.statusDisplay),
             r.reviewedByEmail ?? l.tsAdminUnknown,
           ),
-          subtitle: r.adminNote.isEmpty ? null : l.tsTlInternalNote(r.adminNote),
+          subtitle: r.adminNote.isEmpty
+              ? null
+              : l.tsTlInternalNote(r.adminNote),
         ),
       );
     }
     for (final a in (_history ?? const <ModerationAction>[])) {
       if (a.reportId != r.id) continue;
-      final label = tsActionTypeLabel(l, a.actionType, fallback: a.actionTypeDisplay);
+      final label = tsActionTypeLabel(
+        l,
+        a.actionType,
+        fallback: a.actionTypeDisplay,
+      );
       events.add(
         _TimelineEvent(
           at: a.createdAt,
@@ -946,9 +1029,7 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
                   child: Icon(e.icon, size: 13, color: e.color),
                 ),
                 if (!isLast)
-                  Expanded(
-                    child: Container(width: 2, color: TsColors.border),
-                  ),
+                  Expanded(child: Container(width: 2, color: TsColors.border)),
               ],
             ),
           ),
@@ -969,7 +1050,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
                   if (e.at != null)
                     Text(
                       tsFmtDateTime(e.at),
-                      style: const TextStyle(fontSize: AppFontSizes.caption, color: TsColors.textMuted),
+                      style: const TextStyle(
+                        fontSize: AppFontSizes.caption,
+                        color: TsColors.textMuted,
+                      ),
                     ),
                   if (e.subtitle != null) ...[
                     const SizedBox(height: 3),
@@ -1000,7 +1084,11 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
         tooltip: l.tsRetry,
         visualDensity: VisualDensity.compact,
         onPressed: _historyLoading ? null : _loadHistory,
-        icon: const Icon(Icons.refresh_rounded, size: 18, color: TsColors.textMuted),
+        icon: const Icon(
+          Icons.refresh_rounded,
+          size: 18,
+          color: TsColors.textMuted,
+        ),
       ),
       child: _historyState(
         context,
@@ -1017,7 +1105,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
   List<Widget> _otherReportsSection(BuildContext context) {
     final l = AppLocalizations.of(context);
     final others = widget.allReports
-        .where((x) => x.reportedUserId == _report.reportedUserId && x.id != _report.id)
+        .where(
+          (x) =>
+              x.reportedUserId == _report.reportedUserId && x.id != _report.id,
+        )
         .toList();
     if (others.isEmpty) return const [];
     final shown = others.take(5).toList();
@@ -1026,7 +1117,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
       TsSection(
         icon: Icons.flag_outlined,
         title: l.tsSecOtherReports,
-        trailing: TsBadge(label: others.length.toString(), color: TsColors.textBody),
+        trailing: TsBadge(
+          label: others.length.toString(),
+          color: TsColors.textBody,
+        ),
         child: Column(
           children: [
             for (final o in shown)
@@ -1034,7 +1128,10 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
                 borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 onTap: () => widget.onOpenReport(o),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 4,
+                  ),
                   child: Row(
                     children: [
                       Expanded(
@@ -1063,8 +1160,11 @@ class _ReportDetailPanelState extends State<ReportDetailPanel> {
                       ),
                       const SizedBox(width: 8),
                       TsStatusBadge(status: o.status, display: o.statusDisplay),
-                      const Icon(Icons.chevron_right_rounded,
-                          size: 18, color: TsColors.textFaint),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        size: 18,
+                        color: TsColors.textFaint,
+                      ),
                     ],
                   ),
                 ),

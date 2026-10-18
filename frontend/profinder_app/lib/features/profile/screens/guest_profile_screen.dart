@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../auth/screens/login_screen.dart';
@@ -54,8 +55,14 @@ class GuestProfileScreen extends StatelessWidget {
                 ProfileHeaderCard(
                   accentColor: AppColors.customerColor,
                   accentColorSecondary: AppColors.heroGradientLight2,
-                  heroGradientLight: const [AppColors.heroGradientLight1, AppColors.heroGradientLight2],
-                  heroGradientDark: const [AppColors.heroGradientLight1, AppColors.heroGradientLight2],
+                  heroGradientLight: const [
+                    AppColors.heroGradientLight1,
+                    AppColors.heroGradientLight2,
+                  ],
+                  heroGradientDark: const [
+                    AppColors.heroGradientLight1,
+                    AppColors.heroGradientLight2,
+                  ],
                   statusText: t.profileBrowsingAsGuest,
                   statusIcon: Icons.person_outline_rounded,
                   description: t.profileLoginBookSaveManageRequests,
@@ -67,7 +74,9 @@ class GuestProfileScreen extends StatelessWidget {
                       primary: true,
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const RegisterScreen(),
+                        ),
                       ),
                     ),
                     ProfileHeaderAction(
@@ -84,39 +93,48 @@ class GuestProfileScreen extends StatelessWidget {
                 SizedBox(height: sectionGap),
 
                 // ── Quick Actions (locked placeholders prompting guests to sign in) ──
-                Row(children: [
-                  Expanded(
-                    child: ProfileQuickActionCard(
-                      icon: Icons.calendar_today_rounded,
-                      label: t.bookings,
-                      isLocked: true,
+                Row(
+                  children: [
+                    Expanded(
+                      child: ProfileQuickActionCard(
+                        icon: Icons.calendar_today_rounded,
+                        label: t.bookings,
+                        isLocked: true,
+                        onTap: () => _promptSignIn(context, t.bookings),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ProfileQuickActionCard(
-                      icon: Icons.account_balance_wallet_rounded,
-                      label: t.profileWalletLabel,
-                      isLocked: true,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ProfileQuickActionCard(
+                        icon: Icons.account_balance_wallet_rounded,
+                        label: t.profileWalletLabel,
+                        isLocked: true,
+                        onTap: () =>
+                            _promptSignIn(context, t.profileWalletLabel),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ProfileQuickActionCard(
-                      icon: Icons.favorite_rounded,
-                      label: t.profileSavedLabel,
-                      isLocked: true,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ProfileQuickActionCard(
+                        icon: Icons.favorite_rounded,
+                        label: t.profileSavedLabel,
+                        isLocked: true,
+                        onTap: () =>
+                            _promptSignIn(context, t.profileSavedLabel),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ProfileQuickActionCard(
-                      icon: Icons.rate_review_rounded,
-                      label: t.profileReviewsLabel,
-                      isLocked: true,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ProfileQuickActionCard(
+                        icon: Icons.rate_review_rounded,
+                        label: t.profileReviewsLabel,
+                        isLocked: true,
+                        onTap: () =>
+                            _promptSignIn(context, t.profileReviewsLabel),
+                      ),
                     ),
-                  ),
-                ]),
+                  ],
+                ),
 
                 SizedBox(height: sectionGap),
 
@@ -142,7 +160,10 @@ class GuestProfileScreen extends StatelessWidget {
                   title: t.login,
                   subtitle: t.profileAccessBookingsProfile,
                   scale: scale,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen())),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  ),
                 ),
                 ProfileMenuTile(
                   icon: Icons.person_add_rounded,
@@ -150,7 +171,10 @@ class GuestProfileScreen extends StatelessWidget {
                   title: t.register,
                   subtitle: t.profileCreateFreeCustomerAccount,
                   scale: scale,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen())),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                  ),
                 ),
                 ProfileMenuTile(
                   icon: Icons.workspace_premium_rounded,
@@ -160,7 +184,10 @@ class GuestProfileScreen extends StatelessWidget {
                   scale: scale,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const RegisterScreen(initialRole: 'professional')),
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          const RegisterScreen(initialRole: 'professional'),
+                    ),
                   ),
                 ),
 
@@ -182,33 +209,39 @@ class GuestProfileScreen extends StatelessWidget {
                   scale: scale,
                   trailing: const SizedBox.shrink(),
                 ),
-                Builder(builder: (context) {
-                  final currentLang = SupportedLanguages.byCode(
-                    context.watch<LocaleProvider>().locale.languageCode,
-                  );
-                  return ProfileMenuTile(
-                    icon: Icons.language_rounded,
-                    iconColor: AppColors.cyan,
-                    title: t.languageLabel,
-                    subtitle: currentLang.nativeName,
-                    scale: scale,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LanguageSettingsScreen()),
-                    ),
-                  );
-                }),
-                Builder(builder: (context) {
-                  final mode = context.watch<ThemeProvider>().themeMode;
-                  return ProfileMenuTile(
-                    icon: themeModeIcon(mode),
-                    iconColor: AppColors.indigoDeep,
-                    title: t.themeModeTitle,
-                    subtitle: themeModeLabel(t, mode),
-                    scale: scale,
-                    onTap: () => showThemeModeSheet(context),
-                  );
-                }),
+                Builder(
+                  builder: (context) {
+                    final currentLang = SupportedLanguages.byCode(
+                      context.watch<LocaleProvider>().locale.languageCode,
+                    );
+                    return ProfileMenuTile(
+                      icon: Icons.language_rounded,
+                      iconColor: AppColors.cyan,
+                      title: t.languageLabel,
+                      subtitle: currentLang.nativeName,
+                      scale: scale,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LanguageSettingsScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                Builder(
+                  builder: (context) {
+                    final mode = context.watch<ThemeProvider>().themeMode;
+                    return ProfileMenuTile(
+                      icon: themeModeIcon(mode),
+                      iconColor: AppColors.indigoDeep,
+                      title: t.themeModeTitle,
+                      subtitle: themeModeLabel(t, mode),
+                      scale: scale,
+                      onTap: () => showThemeModeSheet(context),
+                    );
+                  },
+                ),
                 ProfileMenuTile(
                   icon: Icons.security_rounded,
                   iconColor: AppColors.greenDeep,
@@ -245,7 +278,9 @@ class GuestProfileScreen extends StatelessWidget {
                   scale: scale,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const PrivacyPolicyScreen(),
+                    ),
                   ),
                 ),
                 ProfileMenuTile(
@@ -254,7 +289,9 @@ class GuestProfileScreen extends StatelessWidget {
                   title: t.profileAboutProfinder,
                   scale: scale,
                   onTap: () => Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => const AboutScreen())),
+                    context,
+                    MaterialPageRoute(builder: (_) => const AboutScreen()),
+                  ),
                 ),
 
                 SizedBox(height: sectionGap * 1.5),
@@ -263,15 +300,24 @@ class GuestProfileScreen extends StatelessWidget {
                 Center(
                   child: Column(
                     children: [
-                      AppLogo(size: ResponsiveUtils.sp(32, scale, min: 30, max: 40)),
+                      AppLogo(
+                        size: ResponsiveUtils.sp(32, scale, min: 30, max: 40),
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         t.profileProfinderV100,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(12, scale, min: 11, max: 14),
+                          fontSize: ResponsiveUtils.sp(
+                            12,
+                            scale,
+                            min: 11,
+                            max: 14,
+                          ),
                           fontWeight: FontWeight.w400,
                           letterSpacing: 0.5,
-                          color: context.colors.textSecondary.withValues(alpha: 0.6),
+                          color: context.colors.textSecondary.withValues(
+                            alpha: 0.6,
+                          ),
                         ),
                       ),
                     ],
@@ -285,4 +331,38 @@ class GuestProfileScreen extends StatelessWidget {
       ),
     );
   }
-}
+
+  void _promptSignIn(BuildContext context, String feature) {
+    final t = AppLocalizations.of(context);
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
+        title: Text(t.searchLoginRequired),
+        content: Text('${t.profileLoginBookSaveManageRequests} ($feature)'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(t.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(0, 40),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+            ),
+            child: Text(t.login),
+          ),
+        ],
+      ),
+    );
+  }
+}

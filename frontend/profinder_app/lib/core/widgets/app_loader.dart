@@ -9,10 +9,7 @@ import '../theme/theme_context_ext.dart';
 class AppSplashLoader extends StatelessWidget {
   final bool inverted; // White dots on dark background
 
-  const AppSplashLoader({
-    super.key,
-    this.inverted = true,
-  });
+  const AppSplashLoader({super.key, this.inverted = true});
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +18,14 @@ class AppSplashLoader extends StatelessWidget {
       children: List.generate(3, (index) {
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 4),
-          width:  index == 1 ? 20 : 8, // Middle dot wider
+          width: index == 1 ? 20 : 8, // Middle dot wider
           height: 8,
           decoration: BoxDecoration(
             color: inverted
                 ? AppColors.white.withValues(alpha: index == 1 ? 1.0 : 0.4)
-                : context.colors.primary.withValues(alpha: index == 1 ? 1.0 : 0.4),
+                : context.colors.primary.withValues(
+                    alpha: index == 1 ? 1.0 : 0.4,
+                  ),
             borderRadius: BorderRadius.circular(AppSizes.radiusFull),
           ),
         );
@@ -43,9 +42,9 @@ class AppButtonLoader extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SizedBox(
       height: 22,
-      width:  22,
-      child:  CircularProgressIndicator(
-        color:       AppColors.white,
+      width: 22,
+      child: CircularProgressIndicator(
+        color: AppColors.white,
         strokeWidth: 2.5,
       ),
     );
@@ -67,7 +66,10 @@ class AppFullLoader extends StatelessWidget {
           CircularProgressIndicator(color: context.colors.primary),
           if (message != null) ...[
             const SizedBox(height: AppSizes.md),
-            Text(message!, style: TextStyle(color: context.colors.textSecondary)),
+            Text(
+              message!,
+              style: TextStyle(color: context.colors.textSecondary),
+            ),
           ],
         ],
       ),

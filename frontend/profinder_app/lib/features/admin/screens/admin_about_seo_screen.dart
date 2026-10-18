@@ -17,7 +17,8 @@ class AdminAboutSeoScreen extends StatefulWidget {
   State<AdminAboutSeoScreen> createState() => _AdminAboutSeoScreenState();
 }
 
-class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTickerProviderStateMixin {
+class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen>
+    with SingleTickerProviderStateMixin {
   final _service = AboutPageService();
   final _titleCtrl = TextEditingController();
   final _descriptionCtrl = TextEditingController();
@@ -33,8 +34,14 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
   @override
   void initState() {
     super.initState();
-    _entranceController = AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
-    _fadeIn = CurvedAnimation(parent: _entranceController, curve: Curves.easeOut);
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 350),
+    );
+    _fadeIn = CurvedAnimation(
+      parent: _entranceController,
+      curve: Curves.easeOut,
+    );
     _load();
   }
 
@@ -64,7 +71,10 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
   }
 
   Future<void> _save() async {
-    setState(() { _saving = true; _error = null; });
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
     final result = await _service.updateSeo({
       'meta_title': _titleCtrl.text.trim(),
       'meta_description': _descriptionCtrl.text.trim(),
@@ -76,7 +86,9 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radius10),
+          ),
           backgroundColor: Colors.green.shade600,
           content: const Row(
             children: [
@@ -120,7 +132,10 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
                     child: SizedBox(
                       width: contentWidth,
                       child: ListView(
-                        padding: EdgeInsets.symmetric(horizontal: isWide ? 0 : 16, vertical: 18),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isWide ? 0 : 16,
+                          vertical: 18,
+                        ),
                         children: [
                           AnimatedSwitcher(
                             duration: const Duration(milliseconds: 220),
@@ -128,26 +143,48 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
                                 ? Container(
                                     key: ValueKey(_error),
                                     width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 12,
+                                    ),
                                     margin: const EdgeInsets.only(bottom: 16),
                                     decoration: BoxDecoration(
                                       color: Colors.red.withValues(alpha: 0.08),
-                                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                                      border: Border.all(color: Colors.red.withValues(alpha: 0.25)),
+                                      borderRadius: BorderRadius.circular(
+                                        AppSizes.radiusMd,
+                                      ),
+                                      border: Border.all(
+                                        color: Colors.red.withValues(
+                                          alpha: 0.25,
+                                        ),
+                                      ),
                                     ),
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        const Icon(Icons.error_outline_rounded, color: Colors.red, size: 18),
+                                        const Icon(
+                                          Icons.error_outline_rounded,
+                                          color: Colors.red,
+                                          size: 18,
+                                        ),
                                         const SizedBox(width: 10),
                                         Expanded(
-                                          child: Text(_error!,
-                                              style: const TextStyle(color: Colors.red, fontSize: 12.5, height: 1.3)),
+                                          child: Text(
+                                            _error!,
+                                            style: const TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 12.5,
+                                              height: 1.3,
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
                                   )
-                                : const SizedBox.shrink(key: ValueKey('no-error')),
+                                : const SizedBox.shrink(
+                                    key: ValueKey('no-error'),
+                                  ),
                           ),
 
                           _SectionCard(
@@ -214,7 +251,9 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
           decoration: InputDecoration(
             labelText: label,
             isDense: true,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radius10),
+            ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppSizes.radius10),
               borderSide: BorderSide(color: AppColors.adminColor, width: 1.6),
@@ -224,7 +263,9 @@ class _AdminAboutSeoScreenState extends State<AdminAboutSeoScreen> with SingleTi
                 : null,
             helperStyle: TextStyle(
               fontSize: AppFontSizes.caption,
-              color: overRecommended ? Colors.orange.shade700 : context.colors.textSecondary,
+              color: overRecommended
+                  ? Colors.orange.shade700
+                  : context.colors.textSecondary,
             ),
           ),
         );
@@ -237,7 +278,11 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<Widget> children;
-  const _SectionCard({required this.title, required this.icon, required this.children});
+  const _SectionCard({
+    required this.title,
+    required this.icon,
+    required this.children,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -249,7 +294,11 @@ class _SectionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.radius14),
         border: Border.all(color: context.colors.divider),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -259,7 +308,13 @@ class _SectionCard extends StatelessWidget {
             children: [
               Icon(icon, size: 16, color: AppColors.adminColor),
               const SizedBox(width: 8),
-              Text(title, style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: AppFontSizes.secondary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -286,7 +341,10 @@ class _SaveButton extends StatelessWidget {
               height: 20,
               child: Padding(
                 padding: EdgeInsets.all(2),
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
               ),
             )
           : TextButton.icon(
@@ -296,8 +354,18 @@ class _SaveButton extends StatelessWidget {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
               ),
-              icon: const Icon(Icons.save_outlined, size: 17, color: Colors.white),
-              label: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+              icon: const Icon(
+                Icons.save_outlined,
+                size: 17,
+                color: Colors.white,
+              ),
+              label: const Text(
+                'Save',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
     );
   }

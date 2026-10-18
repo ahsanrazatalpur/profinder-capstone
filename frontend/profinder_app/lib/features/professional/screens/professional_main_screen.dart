@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
-import '../../magazine/screens/magazine_screen.dart'; 
+import '../../magazine/screens/magazine_screen.dart';
 import '../../chat/presentation/screens/conversation_list_entry.dart';
 import '../../chat/presentation/providers/conversation_list_provider.dart';
 import '../../chat/presentation/widgets/unread_nav_badge.dart';
@@ -74,9 +74,9 @@ class ProfessionalMainScreenState extends State<ProfessionalMainScreen> {
             // simple REST-polling chat. Now uses the premium WebSocket-based
             // chat feature (typing, ticks, images, reply, pagination).
             ConversationListEntry(isVisible: _currentIndex == 2),
-            const MagazineScreen(),        
+            const MagazineScreen(),
             const ProfessionalAnalyticsScreen(),
-            ProfessionalProfileScreen(),  
+            ProfessionalProfileScreen(),
           ],
         ),
         bottomNavigationBar: Container(

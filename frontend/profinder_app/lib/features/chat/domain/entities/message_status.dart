@@ -5,11 +5,11 @@
 // fails and never reaches the server at all.
 
 enum MessageStatus {
-  sending,   // optimistic — sitting only in this device's memory
-  sent,      // saved on the server
+  sending, // optimistic — sitting only in this device's memory
+  sent, // saved on the server
   delivered, // recipient's device has fetched it
-  seen,      // recipient opened the conversation and read it
-  failed,    // client-only — optimistic send failed, show retry
+  seen, // recipient opened the conversation and read it
+  failed, // client-only — optimistic send failed, show retry
 }
 
 extension MessageStatusX on MessageStatus {

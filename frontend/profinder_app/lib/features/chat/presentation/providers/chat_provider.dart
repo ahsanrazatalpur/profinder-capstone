@@ -74,7 +74,9 @@ class ChatProvider extends ChangeNotifier {
   /// Intercepts blocked send failures to immediately disable the input bar.
   void _handleBlockedError(Object error) {
     final msg = error.toString();
-    if (msg.contains('"code":"blocked"') || msg.contains("'code': 'blocked'") || msg.contains('code: blocked')) {
+    if (msg.contains('"code":"blocked"') ||
+        msg.contains("'code': 'blocked'") ||
+        msg.contains('code: blocked')) {
       canMessage = false;
       notifyListeners();
     }
@@ -161,7 +163,11 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final page = await _repo.getMessages(conversationId, beforeId: oldest.id, limit: 30);
+      final page = await _repo.getMessages(
+        conversationId,
+        beforeId: oldest.id,
+        limit: 30,
+      );
       _messages.insertAll(0, page.messages);
       hasMoreHistory = page.hasMore;
     } catch (_) {
@@ -204,8 +210,15 @@ class ChatProvider extends ChangeNotifier {
     // same group_send) — but only for text; fall back to REST if the
     // socket isn't connected, or if it doesn't ack in time.
     if (_socketSub != null) {
-      _repo.sendSocketMessage(text: trimmed, replyToId: replyToId, tempId: tempId);
-      _scheduleAckTimeout(tempId, () => _sendViaRest(tempId, trimmed, replyToId));
+      _repo.sendSocketMessage(
+        text: trimmed,
+        replyToId: replyToId,
+        tempId: tempId,
+      );
+      _scheduleAckTimeout(
+        tempId,
+        () => _sendViaRest(tempId, trimmed, replyToId),
+      );
     } else {
       await _sendViaRest(tempId, trimmed, replyToId);
     }
@@ -229,7 +242,12 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final sent = await _repo.sendMessage(conversationId, text: caption, replyToId: replyToId, image: image);
+      final sent = await _repo.sendMessage(
+        conversationId,
+        text: caption,
+        replyToId: replyToId,
+        image: image,
+      );
       _replaceOptimistic(tempId, sent);
     } catch (e) {
       _markFailed(tempId);
@@ -270,9 +288,17 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> _sendViaRest(String tempId, String text, String? replyToId) async {
+  Future<void> _sendViaRest(
+    String tempId,
+    String text,
+    String? replyToId,
+  ) async {
     try {
-      final sent = await _repo.sendMessage(conversationId, text: text, replyToId: replyToId);
+      final sent = await _repo.sendMessage(
+        conversationId,
+        text: text,
+        replyToId: replyToId,
+      );
       _replaceOptimistic(tempId, sent);
     } catch (e) {
       _markFailed(tempId);
@@ -285,7 +311,9 @@ class ChatProvider extends ChangeNotifier {
   /// rather than leaving the bubble stuck on "sending" forever.
   void _scheduleAckTimeout(String tempId, Future<void> Function() fallback) {
     Timer(const Duration(seconds: 6), () {
-      final stillPending = _messages.any((m) => m.tempId == tempId && m.status == MessageStatus.sending);
+      final stillPending = _messages.any(
+        (m) => m.tempId == tempId && m.status == MessageStatus.sending,
+      );
       if (stillPending) fallback();
     });
   }
@@ -322,12 +350,18 @@ class ChatProvider extends ChangeNotifier {
         _markFailed(failedMessage.id);
       }
     } else {
-      await _sendViaRest(failedMessage.id, failedMessage.text, failedMessage.replyTo?.id);
+      await _sendViaRest(
+        failedMessage.id,
+        failedMessage.text,
+        failedMessage.replyTo?.id,
+      );
     }
   }
 
   void _replaceOptimistic(String tempId, MessageEntity real) {
-    final idx = _messages.indexWhere((m) => m.id == tempId || m.tempId == tempId);
+    final idx = _messages.indexWhere(
+      (m) => m.id == tempId || m.tempId == tempId,
+    );
     if (idx == -1) {
       _messages.add(real);
     } else {
@@ -337,7 +371,9 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void _markFailed(String tempId) {
-    final idx = _messages.indexWhere((m) => m.id == tempId || m.tempId == tempId);
+    final idx = _messages.indexWhere(
+      (m) => m.id == tempId || m.tempId == tempId,
+    );
     if (idx == -1) return;
     _messages[idx] = _messages[idx].copyWith(status: MessageStatus.failed);
     notifyListeners();
@@ -370,7 +406,10 @@ class ChatProvider extends ChangeNotifier {
   /// Deletes a message.
   /// When [forEveryone] is true, soft-deletes the message for both participants.
   /// When [forEveryone] is false, hides the message solely for the current user.
-  Future<void> deleteMessage(String messageId, {bool forEveryone = true}) async {
+  Future<void> deleteMessage(
+    String messageId, {
+    bool forEveryone = true,
+  }) async {
     final idx = _messages.indexWhere((m) => m.id == messageId);
     if (idx == -1) return;
     try {
@@ -509,7 +548,9 @@ class ChatProvider extends ChangeNotifier {
       }
       notifyListeners();
     } else if (event is StatusUpdateSocketEvent) {
-      final newStatus = event.event == 'seen' ? MessageStatus.seen : MessageStatus.delivered;
+      final newStatus = event.event == 'seen'
+          ? MessageStatus.seen
+          : MessageStatus.delivered;
       for (var i = 0; i < _messages.length; i++) {
         final m = _messages[i];
         if (event.messageIds.contains(m.id) && newStatus.rank > m.status.rank) {
@@ -541,7 +582,11 @@ class ChatProvider extends ChangeNotifier {
     final last = _messages.last;
     final preview = last.isDeleted
         ? AppStrings.chatMessageWasDeleted
-        : (last.text.isNotEmpty ? last.text : (last.hasAudio ? AppStrings.chatVoiceMessagePreview : (last.hasImage ? AppStrings.chatPhotoPreview : '')));
+        : (last.text.isNotEmpty
+              ? last.text
+              : (last.hasAudio
+                    ? AppStrings.chatVoiceMessagePreview
+                    : (last.hasImage ? AppStrings.chatPhotoPreview : '')));
     return base.copyWith(
       lastMessage: preview,
       lastMessageAt: last.createdAt,

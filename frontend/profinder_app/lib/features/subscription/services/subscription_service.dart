@@ -36,10 +36,16 @@ class SubscriptionService {
 
   // ── Subscribe ───────────────────────────────────────────────────────────────
   /// Subscribes to a plan (free plans activate immediately, paid plans create checkout order)
-  Future<Map<String, dynamic>> subscribe(int planId, {bool isFree = false, String? currency}) async {
+  Future<Map<String, dynamic>> subscribe(
+    int planId, {
+    bool isFree = false,
+    String? currency,
+  }) async {
     if (isFree) {
       try {
-        final res = await _api.post(AppConstants.subscriptions, {'plan': planId});
+        final res = await _api.post(AppConstants.subscriptions, {
+          'plan': planId,
+        });
         return {'success': true, 'data': res.data};
       } catch (e) {
         final msg = _extractError(e);
@@ -79,8 +85,7 @@ class SubscriptionService {
   /// POST /subscriptions/cancel/
   Future<Map<String, dynamic>> cancelSubscription() async {
     try {
-      final res = await _api.post(
-        '${AppConstants.subscriptions}cancel/', {});
+      final res = await _api.post('${AppConstants.subscriptions}cancel/', {});
       return {'success': true, 'data': res.data};
     } catch (e) {
       final msg = _extractError(e);
@@ -92,7 +97,10 @@ class SubscriptionService {
   String _extractError(dynamic e) {
     try {
       final data = (e as dynamic).response?.data;
-      if (data is Map) return data['error'] ?? data['detail'] ?? AppStrings.errSomethingWentWrong;
+      if (data is Map)
+        return data['error'] ??
+            data['detail'] ??
+            AppStrings.errSomethingWentWrong;
     } catch (_) {}
     return AppStrings.errSomethingWentWrong;
   }

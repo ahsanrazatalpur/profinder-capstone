@@ -27,7 +27,10 @@ class UnreadNavBadge extends StatelessWidget {
               right: -6,
               top: -4,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1.5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 4,
+                  vertical: 1.5,
+                ),
                 constraints: const BoxConstraints(minWidth: 16),
                 decoration: BoxDecoration(
                   color: AppColors.favoriteRed,
@@ -37,7 +40,12 @@ class UnreadNavBadge extends StatelessWidget {
                 child: Text(
                   count > 9 ? '9+' : '$count',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: AppFontSizes.micro, fontWeight: FontWeight.w700, color: Colors.white, height: 1.2),
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.micro,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    height: 1.2,
+                  ),
                 ),
               ),
             ),

@@ -16,7 +16,8 @@ abstract class ChatSocketEvent {
 
 class NewMessageSocketEvent extends ChatSocketEvent {
   final MessageEntity message;
-  final String? tempId; // present when this is the echo of our own optimistic send
+  final String?
+  tempId; // present when this is the echo of our own optimistic send
   const NewMessageSocketEvent(this.message, {this.tempId});
 }
 
@@ -42,7 +43,8 @@ class PresenceSocketEvent extends ChatSocketEvent {
 
 /// Dispatched when a reaction is added, modified, or removed on a message.
 class ReactionSocketEvent extends ChatSocketEvent {
-  final MessageEntity message; // full updated message, including new reactions map
+  final MessageEntity
+  message; // full updated message, including new reactions map
   const ReactionSocketEvent(this.message);
 }
 
@@ -82,7 +84,10 @@ class BlockedUserEntity {
 
 abstract class ChatRepository {
   // ── Conversations ───────────────────────────────────────────────────
-  Future<List<ConversationEntity>> getConversations({String? search, bool archived = false});
+  Future<List<ConversationEntity>> getConversations({
+    String? search,
+    bool archived = false,
+  });
   Future<ConversationEntity> startConversation(int otherUserId);
 
   // Conversation state management (pin, archive, mute notifications, save drafts).
@@ -138,11 +143,21 @@ abstract class ChatRepository {
   Future<List<BlockedUserEntity>> getBlockedUsers();
   Future<void> blockUser(int userId);
   Future<void> unblockUser(int userId);
-  Future<void> reportUser(int userId, String reason, String details, {String? messageId, String? evidenceUrl});
+  Future<void> reportUser(
+    int userId,
+    String reason,
+    String details, {
+    String? messageId,
+    String? evidenceUrl,
+  });
 
   // ── Realtime (WebSocket) ─────────────────────────────────────────────
   Stream<ChatSocketEvent> connectSocket(int conversationId);
   void sendTyping(bool isTyping);
-  void sendSocketMessage({required String text, String? replyToId, required String tempId});
+  void sendSocketMessage({
+    required String text,
+    String? replyToId,
+    required String tempId,
+  });
   void disconnectSocket();
 }

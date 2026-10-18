@@ -77,7 +77,11 @@ class TicketStatusChip extends StatelessWidget {
         tone = SupportChipTone.neutral;
         break;
     }
-    return SupportStatusChip(label: ticketStatusLabel(t, status), icon: icon, tone: tone);
+    return SupportStatusChip(
+      label: ticketStatusLabel(t, status),
+      icon: icon,
+      tone: tone,
+    );
   }
 }
 

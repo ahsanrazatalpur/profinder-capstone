@@ -53,7 +53,10 @@ class LocaleProvider extends ChangeNotifier {
   /// Called from the first-launch language selection screen (Continue)
   /// and from Settings → Language. Persists immediately and rebuilds the
   /// whole app via notifyListeners().
-  Future<void> setLocale(String languageCode, {bool markAsChosen = true}) async {
+  Future<void> setLocale(
+    String languageCode, {
+    bool markAsChosen = true,
+  }) async {
     if (!SupportedLanguages.isSupported(languageCode)) return;
 
     _locale = Locale(languageCode);

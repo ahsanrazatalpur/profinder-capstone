@@ -50,12 +50,15 @@ class UserTsApiException implements Exception {
       data.forEach((k, v) {
         final key = k.toString();
         if (key == 'error' || key == 'detail' || key == 'message') return;
-        fields[key] = v is List ? v.map((x) => x.toString()).join(' ') : v.toString();
+        fields[key] = v is List
+            ? v.map((x) => x.toString()).join(' ')
+            : v.toString();
       });
       if (msg == null && fields.isNotEmpty) msg = fields.values.first;
     }
 
-    final network = e.response == null &&
+    final network =
+        e.response == null &&
         (e.type == DioExceptionType.connectionError ||
             e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.sendTimeout ||
@@ -88,7 +91,10 @@ class UserTrustSafetyService {
 
   List<Map<String, dynamic>> _rows(dynamic data) {
     if (data is! List) return const [];
-    return data.whereType<Map>().map((m) => Map<String, dynamic>.from(m)).toList();
+    return data
+        .whereType<Map>()
+        .map((m) => Map<String, dynamic>.from(m))
+        .toList();
   }
 
   // ── My Reports ──────────────────────────────────────────────────────────
@@ -96,26 +102,28 @@ class UserTrustSafetyService {
   /// Reports the CURRENT user submitted, newest first. Never another
   /// user's reports, and never a report submitted against them.
   Future<List<MyReport>> fetchMyReports({String? status}) => _guard(() async {
-        final qs = (status != null && status.isNotEmpty) ? '?status=$status' : '';
-        final r = await _api.get('${AppConstants.myReports}$qs');
-        return _rows(r.data).map(MyReport.fromJson).toList();
-      });
+    final qs = (status != null && status.isNotEmpty) ? '?status=$status' : '';
+    final r = await _api.get('${AppConstants.myReports}$qs');
+    return _rows(r.data).map(MyReport.fromJson).toList();
+  });
 
   // ── My Account Moderation Status ────────────────────────────────────────
 
   /// Always a fresh server read — never derived from cached/local state.
   Future<MyModerationStatus> fetchMyModerationStatus() => _guard(() async {
-        final r = await _api.get(AppConstants.myModerationStatus);
-        return MyModerationStatus.fromJson(Map<String, dynamic>.from(r.data as Map));
-      });
+    final r = await _api.get(AppConstants.myModerationStatus);
+    return MyModerationStatus.fromJson(
+      Map<String, dynamic>.from(r.data as Map),
+    );
+  });
 
   // ── My Appeals ───────────────────────────────────────────────────────────
 
   Future<List<MyAppeal>> fetchMyAppeals({String? status}) => _guard(() async {
-        final qs = (status != null && status.isNotEmpty) ? '?status=$status' : '';
-        final r = await _api.get('${AppConstants.myAppeals}$qs');
-        return _rows(r.data).map(MyAppeal.fromJson).toList();
-      });
+    final qs = (status != null && status.isNotEmpty) ? '?status=$status' : '';
+    final r = await _api.get('${AppConstants.myAppeals}$qs');
+    return _rows(r.data).map(MyAppeal.fromJson).toList();
+  });
 
   /// Appeal one of the CURRENT user's own moderation actions. The server
   /// itself rejects (409) an action that isn't theirs, isn't currently in
@@ -125,15 +133,14 @@ class UserTrustSafetyService {
     required int moderationActionId,
     required String reason,
     String? evidenceUrl,
-  }) =>
-      _guard(() async {
-        final body = <String, dynamic>{
-          'moderation_action': moderationActionId,
-          'reason': reason.trim(),
-        };
-        final ev = evidenceUrl?.trim() ?? '';
-        if (ev.isNotEmpty) body['evidence_url'] = ev;
-        final r = await _api.post(AppConstants.appealCreate, body);
-        return MyAppeal.fromJson(Map<String, dynamic>.from(r.data as Map));
-      });
+  }) => _guard(() async {
+    final body = <String, dynamic>{
+      'moderation_action': moderationActionId,
+      'reason': reason.trim(),
+    };
+    final ev = evidenceUrl?.trim() ?? '';
+    if (ev.isNotEmpty) body['evidence_url'] = ev;
+    final r = await _api.post(AppConstants.appealCreate, body);
+    return MyAppeal.fromJson(Map<String, dynamic>.from(r.data as Map));
+  });
 }

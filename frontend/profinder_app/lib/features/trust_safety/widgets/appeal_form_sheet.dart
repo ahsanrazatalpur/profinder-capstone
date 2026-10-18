@@ -80,7 +80,10 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
       if (!mounted) return;
       Navigator.pop(context, true);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t.myTsAppealSubmitSuccess), backgroundColor: AppColors.success),
+        SnackBar(
+          content: Text(t.myTsAppealSubmitSuccess),
+          backgroundColor: AppColors.success,
+        ),
       );
     } on UserTsApiException catch (e) {
       if (!mounted) return;
@@ -88,8 +91,8 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
       final message = e.isConflict
           ? (e.message ?? t.myTsAppealAlreadyPending)
           : e.isBadRequest
-              ? (e.message ?? t.myTsAppealNotEligible)
-              : t.myTsAppealSubmitError;
+          ? (e.message ?? t.myTsAppealNotEligible)
+          : t.myTsAppealSubmitError;
       AppHelpers.showError(context, message);
     } catch (_) {
       if (!mounted) return;
@@ -108,7 +111,9 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
       child: Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusSheet)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppSizes.radiusSheet),
+          ),
         ),
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
         child: SingleChildScrollView(
@@ -140,8 +145,15 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  moderationActionTypeLabel(t, widget.action.actionType, fallback: widget.action.actionTypeDisplay),
-                  style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+                  moderationActionTypeLabel(
+                    t,
+                    widget.action.actionType,
+                    fallback: widget.action.actionTypeDisplay,
+                  ),
+                  style: TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    color: context.colors.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: 18),
                 Text(
@@ -164,7 +176,9 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
                     filled: true,
                     fillColor: context.colors.background,
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? t.myTsAppealReasonRequired : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? t.myTsAppealReasonRequired
+                      : null,
                 ),
                 const SizedBox(height: 14),
                 Text(
@@ -203,18 +217,26 @@ class _AppealFormSheetState extends State<_AppealFormSheet> {
                       backgroundColor: widget.accentColor,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
                       elevation: 0,
                     ),
                     child: _isSubmitting
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.white,
+                            ),
                           )
                         : Text(
                             t.myTsAppealSubmitCta,
-                            style: const TextStyle(fontSize: AppFontSizes.input, fontWeight: FontWeight.w700),
+                            style: const TextStyle(
+                              fontSize: AppFontSizes.input,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                   ),
                 ),

@@ -43,8 +43,9 @@ class ReviewPhotoViewer extends StatefulWidget {
 }
 
 class _ReviewPhotoViewerState extends State<ReviewPhotoViewer> {
-  late final PageController _pageController =
-      PageController(initialPage: widget.initialIndex);
+  late final PageController _pageController = PageController(
+    initialPage: widget.initialIndex,
+  );
   late int _currentIndex = widget.initialIndex;
 
   double _dragOffset = 0;
@@ -97,10 +98,15 @@ class _ReviewPhotoViewerState extends State<ReviewPhotoViewer> {
                           imageUrl: url,
                           fit: BoxFit.contain,
                           placeholder: (_, _) => const Center(
-                            child: CircularProgressIndicator(color: Colors.white70),
+                            child: CircularProgressIndicator(
+                              color: Colors.white70,
+                            ),
                           ),
                           errorWidget: (_, _, _) => const Icon(
-                              Icons.broken_image, color: Colors.white54, size: 48),
+                            Icons.broken_image,
+                            color: Colors.white54,
+                            size: 48,
+                          ),
                         ),
                       ),
                     ),
@@ -115,7 +121,11 @@ class _ReviewPhotoViewerState extends State<ReviewPhotoViewer> {
               right: 12,
               child: SafeArea(
                 child: IconButton(
-                  icon: const Icon(Icons.close_rounded, color: Colors.white, size: 26),
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    color: Colors.white,
+                    size: 26,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
@@ -129,7 +139,10 @@ class _ReviewPhotoViewerState extends State<ReviewPhotoViewer> {
                 right: 0,
                 child: Center(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.45),
                       borderRadius: BorderRadius.circular(AppSizes.radiusChip),
@@ -137,7 +150,10 @@ class _ReviewPhotoViewerState extends State<ReviewPhotoViewer> {
                     child: Text(
                       '${_currentIndex + 1} / ${widget.imageUrls.length}',
                       style: const TextStyle(
-                          color: Colors.white, fontSize: AppFontSizes.small, fontWeight: FontWeight.w600),
+                        color: Colors.white,
+                        fontSize: AppFontSizes.small,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),

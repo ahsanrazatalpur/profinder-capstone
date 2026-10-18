@@ -32,8 +32,9 @@ class _NewTicketScreenState extends State<NewTicketScreen> {
   final _body = TextEditingController();
   late final TicketDataSource _source = widget.source ?? SupportService();
 
-  late String _category =
-      kTicketCategories.contains(widget.initialCategory) ? widget.initialCategory! : 'other';
+  late String _category = kTicketCategories.contains(widget.initialCategory)
+      ? widget.initialCategory!
+      : 'other';
   bool _sending = false;
   String? _error;
 
@@ -75,7 +76,10 @@ class _NewTicketScreenState extends State<NewTicketScreen> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     return Scaffold(
-      appBar: UniversalAppBar(title: t.ticketNewTitle, icon: Icons.edit_note_rounded),
+      appBar: UniversalAppBar(
+        title: t.ticketNewTitle,
+        icon: Icons.edit_note_rounded,
+      ),
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,
@@ -85,7 +89,8 @@ class _NewTicketScreenState extends State<NewTicketScreen> {
               key: _formKey,
               child: ListView(
                 padding: const EdgeInsetsDirectional.all(AppSizes.md),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 children: [
                   TicketComposeFields(
                     subject: _subject,

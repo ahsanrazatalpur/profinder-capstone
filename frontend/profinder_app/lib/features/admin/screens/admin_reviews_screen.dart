@@ -38,7 +38,10 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final query = _ratingFilter != null ? '?rating=$_ratingFilter' : '';
       final r = await _api.get('/admin-panel/reviews/$query');
@@ -50,7 +53,10 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
       _applySearch();
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = 'Failed to load reviews'; });
+      setState(() {
+        _loading = false;
+        _error = 'Failed to load reviews';
+      });
     }
   }
 
@@ -59,9 +65,19 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
     setState(() {
       _filtered = q.isEmpty
           ? _all
-          : _all.where((r) =>
-              (r['professional_name'] ?? '').toString().toLowerCase().contains(q) ||
-              (r['reviewer_name'] ?? '').toString().toLowerCase().contains(q)).toList();
+          : _all
+                .where(
+                  (r) =>
+                      (r['professional_name'] ?? '')
+                          .toString()
+                          .toLowerCase()
+                          .contains(q) ||
+                      (r['reviewer_name'] ?? '')
+                          .toString()
+                          .toLowerCase()
+                          .contains(q),
+                )
+                .toList();
     });
   }
 
@@ -76,14 +92,20 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final avgRating = _all.isEmpty ? 0.0 :
-        _all.fold<double>(0, (a, r) => a + ((r['rating'] as num?)?.toDouble() ?? 0)) / _all.length;
+    final avgRating = _all.isEmpty
+        ? 0.0
+        : _all.fold<double>(
+                0,
+                (a, r) => a + ((r['rating'] as num?)?.toDouble() ?? 0),
+              ) /
+              _all.length;
 
     return Scaffold(
       backgroundColor: AppColors.lightScaffold,
       appBar: UniversalAppBar(
         title: 'Reviews',
-        subtitle: 'Avg rating: ${avgRating.toStringAsFixed(1)} ★ · ${_all.length} total',
+        subtitle:
+            'Avg rating: ${avgRating.toStringAsFixed(1)} ★ · ${_all.length} total',
         icon: Icons.star_rounded,
         showBack: false,
       ),
@@ -101,11 +123,20 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
                     onChanged: (_) => _applySearch(),
                     decoration: InputDecoration(
                       hintText: 'Search by professional or reviewer…',
-                      hintStyle: const TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400),
+                      hintStyle: const TextStyle(
+                        fontSize: AppFontSizes.secondary,
+                        color: AppColors.neutral400,
+                      ),
                       prefixIcon: const Icon(Icons.search_rounded, size: 20),
-                      filled: true, fillColor: AppColors.lightScaffold,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSizes.radius10), borderSide: BorderSide.none),
+                      filled: true,
+                      fillColor: AppColors.lightScaffold,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radius10),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -128,20 +159,24 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
             ),
             Expanded(
               child: _loading
-                  ? const Center(child: CircularProgressIndicator(color: AppColors.adminColor))
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.adminColor,
+                      ),
+                    )
                   : _error != null
-                      ? _errorState()
-                      : RefreshIndicator(
-                          onRefresh: _load,
-                          color: AppColors.adminColor,
-                          child: _filtered.isEmpty
-                              ? ListView(children: [_emptyState()])
-                              : ListView.builder(
-                                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
-                                  itemCount: _filtered.length,
-                                  itemBuilder: (_, i) => _reviewCard(_filtered[i]),
-                                ),
-                        ),
+                  ? _errorState()
+                  : RefreshIndicator(
+                      onRefresh: _load,
+                      color: AppColors.adminColor,
+                      child: _filtered.isEmpty
+                          ? ListView(children: [_emptyState()])
+                          : ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+                              itemCount: _filtered.length,
+                              itemBuilder: (_, i) => _reviewCard(_filtered[i]),
+                            ),
+                    ),
             ),
           ],
         ),
@@ -152,18 +187,30 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
   Widget _ratingChip(int? rating, String label) {
     final isActive = _ratingFilter == rating;
     return GestureDetector(
-      onTap: () { setState(() => _ratingFilter = rating); _load(); },
+      onTap: () {
+        setState(() => _ratingFilter = rating);
+        _load();
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.warningAmber.withValues(alpha: 0.12) : AppColors.lightScaffold,
+          color: isActive
+              ? AppColors.warningAmber.withValues(alpha: 0.12)
+              : AppColors.lightScaffold,
           borderRadius: BorderRadius.circular(AppSizes.radiusChip),
-          border: Border.all(color: isActive ? AppColors.warningAmber : Colors.transparent),
+          border: Border.all(
+            color: isActive ? AppColors.warningAmber : Colors.transparent,
+          ),
         ),
         alignment: Alignment.center,
-        child: Text(label, style: TextStyle(fontSize: AppFontSizes.small,
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: AppFontSizes.small,
             fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-            color: isActive ? AppColors.warningAmber : AppColors.grayDeep)),
+            color: isActive ? AppColors.warningAmber : AppColors.grayDeep,
+          ),
+        ),
       ),
     );
   }
@@ -173,40 +220,82 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppSizes.radius14),
-          border: Border.all(color: AppColors.neutral200)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppSizes.radius14),
+        border: Border.all(color: AppColors.neutral200),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Expanded(
-                child: Text(r['professional_name']?.toString() ?? '',
-                    style: const TextStyle(fontSize: AppFontSizes.secondary, fontWeight: FontWeight.w700)),
+                child: Text(
+                  r['professional_name']?.toString() ?? '',
+                  style: const TextStyle(
+                    fontSize: AppFontSizes.secondary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
               Row(
-                children: List.generate(5, (i) => Icon(
+                children: List.generate(
+                  5,
+                  (i) => Icon(
                     i < rating ? Icons.star_rounded : Icons.star_border_rounded,
-                    size: 14, color: AppColors.warningAmber)),
+                    size: 14,
+                    color: AppColors.warningAmber,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text('by ${r['reviewer_name'] ?? 'Unknown'}', style: const TextStyle(fontSize: AppFontSizes.caption, color: AppColors.neutral400)),
+          Text(
+            'by ${r['reviewer_name'] ?? 'Unknown'}',
+            style: const TextStyle(
+              fontSize: AppFontSizes.caption,
+              color: AppColors.neutral400,
+            ),
+          ),
           if ((r['comment'] ?? '').toString().isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(r['comment'].toString(), style: const TextStyle(fontSize: 12.5, color: AppColors.gray700)),
+            Text(
+              r['comment'].toString(),
+              style: const TextStyle(fontSize: 12.5, color: AppColors.gray700),
+            ),
           ],
           const SizedBox(height: 8),
           Row(
             children: [
-              Text(r['created_at']?.toString() ?? '', style: const TextStyle(fontSize: 10.5, color: AppColors.neutral400)),
+              Text(
+                r['created_at']?.toString() ?? '',
+                style: const TextStyle(
+                  fontSize: 10.5,
+                  color: AppColors.neutral400,
+                ),
+              ),
               const Spacer(),
               TextButton.icon(
                 onPressed: () => _deleteDialog(r),
-                icon: const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.error),
-                label: const Text('Delete', style: TextStyle(fontSize: AppFontSizes.small, color: AppColors.error)),
-                style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                icon: const Icon(
+                  Icons.delete_outline_rounded,
+                  size: 16,
+                  color: AppColors.error,
+                ),
+                label: const Text(
+                  'Delete',
+                  style: TextStyle(
+                    fontSize: AppFontSizes.small,
+                    color: AppColors.error,
+                  ),
+                ),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
               ),
             ],
           ),
@@ -241,7 +330,10 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
               setDialogState(() => validationError = 'Reason is required.');
               return;
             }
-            setDialogState(() { submitting = true; validationError = null; });
+            setDialogState(() {
+              submitting = true;
+              validationError = null;
+            });
             try {
               await _api.deleteWithBody(
                 '/admin-panel/reviews/${review['id']}/',
@@ -266,8 +358,10 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('This permanently removes the review. Provide a reason for the audit log.',
-                    style: TextStyle(fontSize: 12.5)),
+                const Text(
+                  'This permanently removes the review. Provide a reason for the audit log.',
+                  style: TextStyle(fontSize: 12.5),
+                ),
                 const SizedBox(height: 10),
                 TextField(
                   controller: reasonCtrl,
@@ -286,19 +380,29 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: submitting ? null : () => Navigator.pop(dialogContext),
+                onPressed: submitting
+                    ? null
+                    : () => Navigator.pop(dialogContext),
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                ),
                 onPressed: submitting ? null : handleDelete,
                 child: submitting
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
-                    : const Text('Delete', style: TextStyle(color: Colors.white)),
+                    : const Text(
+                        'Delete',
+                        style: TextStyle(color: Colors.white),
+                      ),
               ),
             ],
           );
@@ -308,29 +412,55 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
   }
 
   Widget _emptyState() => Padding(
-        padding: const EdgeInsets.only(top: 80),
-        child: Center(
-          child: Column(children: [
-            Icon(Icons.star_border_rounded, size: 48, color: Colors.grey.shade300),
-            const SizedBox(height: 10),
-            const Text('No reviews found', style: TextStyle(fontSize: AppFontSizes.secondary, color: AppColors.neutral400)),
-          ]),
-        ),
-      );
+    padding: const EdgeInsets.only(top: 80),
+    child: Center(
+      child: Column(
+        children: [
+          Icon(
+            Icons.star_border_rounded,
+            size: 48,
+            color: Colors.grey.shade300,
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'No reviews found',
+            style: TextStyle(
+              fontSize: AppFontSizes.secondary,
+              color: AppColors.neutral400,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 
   Widget _errorState() => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
-            const SizedBox(height: 10),
-            const Text('Failed to load reviews', style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 12),
-            ElevatedButton.icon(
-              onPressed: _load, icon: const Icon(Icons.refresh_rounded), label: const Text('Retry'),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.adminColor),
-            ),
-          ],
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(
+          Icons.error_outline_rounded,
+          size: 48,
+          color: AppColors.error,
         ),
-      );
+        const SizedBox(height: 10),
+        const Text(
+          'Failed to load reviews',
+          style: TextStyle(
+            fontSize: AppFontSizes.body,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ElevatedButton.icon(
+          onPressed: _load,
+          icon: const Icon(Icons.refresh_rounded),
+          label: const Text('Retry'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.adminColor,
+          ),
+        ),
+      ],
+    ),
+  );
 }

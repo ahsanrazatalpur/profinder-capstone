@@ -57,14 +57,17 @@ class _TimeRange {
       _TimeRange(start: start ?? this.start, end: end ?? this.end);
 
   Map<String, dynamic> toJson() => {
-        'start': '${start.hour}:${start.minute}',
-        'end': '${end.hour}:${end.minute}',
-      };
+    'start': '${start.hour}:${start.minute}',
+    'end': '${end.hour}:${end.minute}',
+  };
 
   factory _TimeRange.fromJson(Map<String, dynamic> j) => _TimeRange(
-        start: _parseTOD(j['start']?.toString()) ?? const TimeOfDay(hour: 9, minute: 0),
-        end: _parseTOD(j['end']?.toString()) ?? const TimeOfDay(hour: 17, minute: 0),
-      );
+    start:
+        _parseTOD(j['start']?.toString()) ??
+        const TimeOfDay(hour: 9, minute: 0),
+    end:
+        _parseTOD(j['end']?.toString()) ?? const TimeOfDay(hour: 17, minute: 0),
+  );
 }
 
 enum _OverrideType { unavailable, customHours }
@@ -76,27 +79,37 @@ class _DateOverride {
 
   _DateOverride({required this.date, required this.type, required this.ranges});
 
-  _DateOverride copyWith({_OverrideType? type, List<_TimeRange>? ranges}) => _DateOverride(
+  _DateOverride copyWith({_OverrideType? type, List<_TimeRange>? ranges}) =>
+      _DateOverride(
         date: date,
         type: type ?? this.type,
         ranges: ranges ?? this.ranges,
       );
 
   Map<String, dynamic> toJson() => {
-        'date': DateFormat('yyyy-MM-dd').format(date),
-        'type': type.name,
-        'ranges': ranges.map((r) => r.toJson()).toList(),
-      };
+    'date': DateFormat('yyyy-MM-dd').format(date),
+    'type': type.name,
+    'ranges': ranges.map((r) => r.toJson()).toList(),
+  };
 
   factory _DateOverride.fromJson(Map<String, dynamic> j) {
     final d = DateTime.tryParse(j['date']?.toString() ?? '') ?? DateTime.now();
     final rawRanges = (j['ranges'] as List?) ?? const [];
     return _DateOverride(
       date: DateTime(d.year, d.month, d.day),
-      type: j['type'] == 'customHours' ? _OverrideType.customHours : _OverrideType.unavailable,
+      type: j['type'] == 'customHours'
+          ? _OverrideType.customHours
+          : _OverrideType.unavailable,
       ranges: rawRanges.isEmpty
-          ? [_TimeRange(start: const TimeOfDay(hour: 9, minute: 0), end: const TimeOfDay(hour: 17, minute: 0))]
-          : rawRanges.map((r) => _TimeRange.fromJson(r as Map<String, dynamic>)).toList(),
+          ? [
+              _TimeRange(
+                start: const TimeOfDay(hour: 9, minute: 0),
+                end: const TimeOfDay(hour: 17, minute: 0),
+              ),
+            ]
+          : rawRanges
+                .map((r) => _TimeRange.fromJson(r as Map<String, dynamic>))
+                .toList(),
     );
   }
 }
@@ -108,10 +121,10 @@ class _VacationPeriod {
   _VacationPeriod({required this.start, required this.end, this.reason = ''});
 
   Map<String, dynamic> toJson() => {
-        'start': DateFormat('yyyy-MM-dd').format(start),
-        'end': DateFormat('yyyy-MM-dd').format(end),
-        'reason': reason,
-      };
+    'start': DateFormat('yyyy-MM-dd').format(start),
+    'end': DateFormat('yyyy-MM-dd').format(end),
+    'reason': reason,
+  };
 
   factory _VacationPeriod.fromJson(Map<String, dynamic> j) {
     final s = DateTime.tryParse(j['start']?.toString() ?? '') ?? DateTime.now();
@@ -129,7 +142,15 @@ class _VacationPeriod {
   }
 }
 
-const List<String> _kWeekdayShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const List<String> _kWeekdayShort = [
+  'Mon',
+  'Tue',
+  'Wed',
+  'Thu',
+  'Fri',
+  'Sat',
+  'Sun',
+];
 
 // ─────────────────────────────────────────────────────────────────────────
 // Screen
@@ -151,7 +172,11 @@ class _ProfessionalAvailabilityExceptionScreenState
   static const _prefsWeeklyScheduleKey = 'pro_weekly_schedule_v1';
 
   bool _isLoading = true;
-  DateTime _visibleMonth = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  DateTime _visibleMonth = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    1,
+  );
   DateTime get _today {
     final n = DateTime.now();
     return DateTime(n.year, n.month, n.day);
@@ -159,7 +184,15 @@ class _ProfessionalAvailabilityExceptionScreenState
 
   final Map<String, _DateOverride> _overrides = {}; // key = yyyy-MM-dd
   _VacationPeriod? _vacation;
-  List<bool> _weeklyEnabled = [true, true, true, true, true, false, false]; // Mon..Sun
+  List<bool> _weeklyEnabled = [
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+  ]; // Mon..Sun
 
   DateTime? _vacationStart;
   DateTime? _vacationEnd;
@@ -227,7 +260,10 @@ class _ProfessionalAvailabilityExceptionScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      AppHelpers.showError(context, AppLocalizations.of(context).exceptionsLoadError);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).exceptionsLoadError,
+      );
     }
   }
 
@@ -259,30 +295,38 @@ class _ProfessionalAvailabilityExceptionScreenState
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => _OverrideEditorSheet(
-        date: date,
-        existing: _overrides[key],
-      ),
+      builder: (ctx) =>
+          _OverrideEditorSheet(date: date, existing: _overrides[key]),
     );
     if (result == null) return;
     if (result == 'DELETE') {
       setState(() => _overrides.remove(key));
       await _persist();
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context).overrideRemoved);
+      AppHelpers.showSuccess(
+        context,
+        AppLocalizations.of(context).overrideRemoved,
+      );
       return;
     }
     if (result is _DateOverride) {
       setState(() => _overrides[key] = result);
       await _persist();
       if (!mounted) return;
-      AppHelpers.showSuccess(context, AppLocalizations.of(context).overrideSaved(DateFormat('d MMMM').format(date)));
+      AppHelpers.showSuccess(
+        context,
+        AppLocalizations.of(
+          context,
+        ).overrideSaved(DateFormat('d MMMM').format(date)),
+      );
     }
   }
 
   // ── Vacation mode ───────────────────────────────────────
   Future<void> _pickVacationDate({required bool isStart}) async {
-    final initial = isStart ? (_vacationStart ?? _today) : (_vacationEnd ?? (_vacationStart ?? _today));
+    final initial = isStart
+        ? (_vacationStart ?? _today)
+        : (_vacationEnd ?? (_vacationStart ?? _today));
     final picked = await showDatePicker(
       context: context,
       initialDate: initial,
@@ -304,7 +348,10 @@ class _ProfessionalAvailabilityExceptionScreenState
 
   Future<void> _saveVacation() async {
     if (_vacationStart == null || _vacationEnd == null) {
-      AppHelpers.showError(context, AppLocalizations.of(context).vacationDateRequired);
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).vacationDateRequired,
+      );
       return;
     }
     setState(() {
@@ -328,12 +375,19 @@ class _ProfessionalAvailabilityExceptionScreenState
     });
     await _persist();
     if (!mounted) return;
-    AppHelpers.showSuccess(context, AppLocalizations.of(context).vacationCleared);
+    AppHelpers.showSuccess(
+      context,
+      AppLocalizations.of(context).vacationCleared,
+    );
   }
 
   void _changeMonth(int delta) {
     setState(() {
-      _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month + delta, 1);
+      _visibleMonth = DateTime(
+        _visibleMonth.year,
+        _visibleMonth.month + delta,
+        1,
+      );
     });
   }
 
@@ -383,7 +437,9 @@ class _ProfessionalAvailabilityExceptionScreenState
                   _sectionHeader(
                     icon: Icons.calendar_month_rounded,
                     title: AppLocalizations.of(context).exceptionsCalendarTitle,
-                    subtitle: AppLocalizations.of(context).exceptionsCalendarSubtitle,
+                    subtitle: AppLocalizations.of(
+                      context,
+                    ).exceptionsCalendarSubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -392,7 +448,9 @@ class _ProfessionalAvailabilityExceptionScreenState
                   _sectionHeader(
                     icon: Icons.flight_takeoff_rounded,
                     title: AppLocalizations.of(context).exceptionsVacationTitle,
-                    subtitle: AppLocalizations.of(context).exceptionsVacationSubtitle,
+                    subtitle: AppLocalizations.of(
+                      context,
+                    ).exceptionsVacationSubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -400,8 +458,12 @@ class _ProfessionalAvailabilityExceptionScreenState
                   SizedBox(height: isTablet ? 24 : 20),
                   _sectionHeader(
                     icon: Icons.event_note_rounded,
-                    title: AppLocalizations.of(context).exceptionsOverridesTitle,
-                    subtitle: AppLocalizations.of(context).exceptionsOverridesSubtitle,
+                    title: AppLocalizations.of(
+                      context,
+                    ).exceptionsOverridesTitle,
+                    subtitle: AppLocalizations.of(
+                      context,
+                    ).exceptionsOverridesSubtitle,
                     isTablet: isTablet,
                   ),
                   const SizedBox(height: 12),
@@ -417,14 +479,22 @@ class _ProfessionalAvailabilityExceptionScreenState
     return Container(
       padding: EdgeInsets.all(isTablet ? 18 : 14),
       decoration: BoxDecoration(
-        color: AppColors.professionalColor.withValues(alpha: isDark ? 0.14 : 0.08),
+        color: AppColors.professionalColor.withValues(
+          alpha: isDark ? 0.14 : 0.08,
+        ),
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        border: Border.all(color: AppColors.professionalColor.withValues(alpha: 0.25)),
+        border: Border.all(
+          color: AppColors.professionalColor.withValues(alpha: 0.25),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline_rounded, size: isTablet ? 20 : 18, color: AppColors.professionalColor),
+          Icon(
+            Icons.info_outline_rounded,
+            size: isTablet ? 20 : 18,
+            color: AppColors.professionalColor,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -458,7 +528,11 @@ class _ProfessionalAvailabilityExceptionScreenState
             color: AppColors.professionalColor.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
-          child: Icon(icon, size: isTablet ? 20 : 18, color: AppColors.professionalColor),
+          child: Icon(
+            icon,
+            size: isTablet ? 20 : 18,
+            color: AppColors.professionalColor,
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -490,7 +564,11 @@ class _ProfessionalAvailabilityExceptionScreenState
     );
   }
 
-  Widget _cardShell({required Widget child, required bool isDark, required bool isTablet}) {
+  Widget _cardShell({
+    required Widget child,
+    required bool isDark,
+    required bool isTablet,
+  }) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(isTablet ? 20 : 16),
@@ -498,11 +576,15 @@ class _ProfessionalAvailabilityExceptionScreenState
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusChip),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.grey.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.12) : Colors.grey.withValues(alpha: 0.06),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.12)
+                : Colors.grey.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -523,7 +605,10 @@ class _ProfessionalAvailabilityExceptionScreenState
         children: [
           Row(
             children: [
-              _monthNavButton(Icons.chevron_left_rounded, () => _changeMonth(-1)),
+              _monthNavButton(
+                Icons.chevron_left_rounded,
+                () => _changeMonth(-1),
+              ),
               Expanded(
                 child: Center(
                   child: Text(
@@ -537,25 +622,30 @@ class _ProfessionalAvailabilityExceptionScreenState
                   ),
                 ),
               ),
-              _monthNavButton(Icons.chevron_right_rounded, () => _changeMonth(1)),
+              _monthNavButton(
+                Icons.chevron_right_rounded,
+                () => _changeMonth(1),
+              ),
             ],
           ),
           SizedBox(height: isTablet ? 16 : 12),
           Row(
             children: _kWeekdayShort
-                .map((d) => Expanded(
-                      child: Center(
-                        child: Text(
-                          d,
-                          style: TextStyle(
-                            fontSize: isTablet ? 12 : 11,
-                            fontWeight: FontWeight.w600,
-                            color: context.colors.textSecondary,
-                            letterSpacing: 0.2,
-                          ),
+                .map(
+                  (d) => Expanded(
+                    child: Center(
+                      child: Text(
+                        d,
+                        style: TextStyle(
+                          fontSize: isTablet ? 12 : 11,
+                          fontWeight: FontWeight.w600,
+                          color: context.colors.textSecondary,
+                          letterSpacing: 0.2,
                         ),
                       ),
-                    ))
+                    ),
+                  ),
+                )
                 .toList(),
           ),
           SizedBox(height: isTablet ? 8 : 6),
@@ -568,7 +658,10 @@ class _ProfessionalAvailabilityExceptionScreenState
             );
           }),
           SizedBox(height: isTablet ? 14 : 10),
-          Divider(color: context.colors.divider.withValues(alpha: 0.6), height: 1),
+          Divider(
+            color: context.colors.divider.withValues(alpha: 0.6),
+            height: 1,
+          ),
           SizedBox(height: isTablet ? 14 : 10),
           _buildLegend(isTablet),
         ],
@@ -607,11 +700,15 @@ class _ProfessionalAvailabilityExceptionScreenState
       bg = AppColors.professionalColor.withValues(alpha: isDark ? 0.22 : 0.14);
       fg = AppColors.professionalColor;
     } else if (override != null) {
-      final c = override.type == _OverrideType.unavailable ? AppColors.warning : AppColors.info;
+      final c = override.type == _OverrideType.unavailable
+          ? AppColors.warning
+          : AppColors.info;
       bg = c.withValues(alpha: isDark ? 0.20 : 0.13);
       fg = c;
     } else if (closedWeekday) {
-      bg = isDark ? Colors.white.withValues(alpha: 0.04) : Colors.grey.withValues(alpha: 0.08);
+      bg = isDark
+          ? Colors.white.withValues(alpha: 0.04)
+          : Colors.grey.withValues(alpha: 0.08);
       fg = context.colors.textSecondary;
     } else {
       fg = context.colors.textPrimary;
@@ -653,35 +750,50 @@ class _ProfessionalAvailabilityExceptionScreenState
 
   Widget _buildLegend(bool isTablet) {
     Widget dot(Color c) => Container(
-          width: 9,
-          height: 9,
-          decoration: BoxDecoration(color: c, shape: BoxShape.circle),
-        );
+      width: 9,
+      height: 9,
+      decoration: BoxDecoration(color: c, shape: BoxShape.circle),
+    );
     Widget item(Color c, String label) => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            dot(c),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: isTablet ? 12 : 11,
-                fontWeight: FontWeight.w500,
-                color: context.colors.textSecondary,
-              ),
-            ),
-          ],
-        );
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        dot(c),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isTablet ? 12 : 11,
+            fontWeight: FontWeight.w500,
+            color: context.colors.textSecondary,
+          ),
+        ),
+      ],
+    );
 
     return Wrap(
       spacing: 16,
       runSpacing: 8,
       children: [
-        item(context.colors.textPrimary.withValues(alpha: 0.35), AppLocalizations.of(context).exceptionsLegendWorking),
-        item(AppColors.professionalColor, AppLocalizations.of(context).exceptionsLegendVacation),
-        item(AppColors.info, AppLocalizations.of(context).exceptionsLegendCustom),
-        item(AppColors.warning, AppLocalizations.of(context).exceptionsLegendUnavailable),
-        item(context.colors.textSecondary, AppLocalizations.of(context).exceptionsLegendClosed),
+        item(
+          context.colors.textPrimary.withValues(alpha: 0.35),
+          AppLocalizations.of(context).exceptionsLegendWorking,
+        ),
+        item(
+          AppColors.professionalColor,
+          AppLocalizations.of(context).exceptionsLegendVacation,
+        ),
+        item(
+          AppColors.info,
+          AppLocalizations.of(context).exceptionsLegendCustom,
+        ),
+        item(
+          AppColors.warning,
+          AppLocalizations.of(context).exceptionsLegendUnavailable,
+        ),
+        item(
+          context.colors.textSecondary,
+          AppLocalizations.of(context).exceptionsLegendClosed,
+        ),
       ],
     );
   }
@@ -689,7 +801,8 @@ class _ProfessionalAvailabilityExceptionScreenState
   // ── Vacation card ───────────────────────────────────────
   Widget _buildVacationCard(bool isDark, bool isTablet) {
     final isActive = _vacation != null && _vacation!.covers(_today);
-    final isScheduled = _vacation != null && !isActive && _today.isBefore(_vacation!.start);
+    final isScheduled =
+        _vacation != null && !isActive && _today.isBefore(_vacation!.start);
 
     return _cardShell(
       isDark: isDark,
@@ -701,18 +814,28 @@ class _ProfessionalAvailabilityExceptionScreenState
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.professionalColor.withValues(alpha: isDark ? 0.18 : 0.1),
+                color: AppColors.professionalColor.withValues(
+                  alpha: isDark ? 0.18 : 0.1,
+                ),
                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.flight_takeoff_rounded, size: 15, color: AppColors.professionalColor),
+                  Icon(
+                    Icons.flight_takeoff_rounded,
+                    size: 15,
+                    color: AppColors.professionalColor,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     isActive
                         ? AppLocalizations.of(context).exceptionsVacationActive
-                        : AppLocalizations.of(context).exceptionsVacationScheduled(DateFormat('d MMM').format(_vacation!.start)),
+                        : AppLocalizations.of(
+                            context,
+                          ).exceptionsVacationScheduled(
+                            DateFormat('d MMM').format(_vacation!.start),
+                          ),
                     style: TextStyle(
                       fontSize: isTablet ? 13 : 12,
                       fontWeight: FontWeight.w700,
@@ -749,19 +872,34 @@ class _ProfessionalAvailabilityExceptionScreenState
           TextField(
             controller: _reasonController,
             maxLength: 80,
-            style: TextStyle(fontSize: isTablet ? 14 : 13, color: context.colors.textPrimary),
+            style: TextStyle(
+              fontSize: isTablet ? 14 : 13,
+              color: context.colors.textPrimary,
+            ),
             decoration: InputDecoration(
               labelText: AppLocalizations.of(context).exceptionsReasonLabel,
-              labelStyle: TextStyle(color: context.colors.textSecondary, fontSize: AppFontSizes.secondary),
+              labelStyle: TextStyle(
+                color: context.colors.textSecondary,
+                fontSize: AppFontSizes.secondary,
+              ),
               counterText: '',
-              prefixIcon: Icon(Icons.edit_note_rounded, color: context.colors.textSecondary, size: 20),
+              prefixIcon: Icon(
+                Icons.edit_note_rounded,
+                color: context.colors.textSecondary,
+                size: 20,
+              ),
               filled: true,
-              fillColor: isDark ? Colors.white.withValues(alpha: 0.04) : context.colors.background,
+              fillColor: isDark
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : context.colors.background,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 borderSide: BorderSide.none,
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 12,
+              ),
             ),
           ),
           SizedBox(height: isTablet ? 16 : 14),
@@ -774,11 +912,16 @@ class _ProfessionalAvailabilityExceptionScreenState
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 13),
                       side: BorderSide(color: context.colors.divider),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
                     ),
                     child: Text(
                       AppLocalizations.of(context).clearCta,
-                      style: TextStyle(fontWeight: FontWeight.w600, color: context.colors.textSecondary),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: context.colors.textSecondary,
+                      ),
                     ),
                   ),
                 ),
@@ -793,10 +936,14 @@ class _ProfessionalAvailabilityExceptionScreenState
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 13),
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    ),
                   ),
                   child: Text(
-                    _vacation == null ? AppLocalizations.of(context).exceptionsSetVacation : AppLocalizations.of(context).exceptionsUpdateVacation,
+                    _vacation == null
+                        ? AppLocalizations.of(context).exceptionsSetVacation
+                        : AppLocalizations.of(context).exceptionsUpdateVacation,
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -820,9 +967,15 @@ class _ProfessionalAvailabilityExceptionScreenState
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.04) : context.colors.background,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.04)
+              : context.colors.background,
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : context.colors.divider,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -839,16 +992,24 @@ class _ProfessionalAvailabilityExceptionScreenState
             const SizedBox(height: 4),
             Row(
               children: [
-                Icon(Icons.calendar_today_rounded, size: 14, color: context.colors.textSecondary),
+                Icon(
+                  Icons.calendar_today_rounded,
+                  size: 14,
+                  color: context.colors.textSecondary,
+                ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    value != null ? DateFormat('d MMM yyyy').format(value) : AppLocalizations.of(context).exceptionsSelectDate,
+                    value != null
+                        ? DateFormat('d MMM yyyy').format(value)
+                        : AppLocalizations.of(context).exceptionsSelectDate,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: isTablet ? 13.5 : 12.5,
                       fontWeight: FontWeight.w700,
-                      color: value != null ? context.colors.textPrimary : context.colors.textSecondary,
+                      color: value != null
+                          ? context.colors.textPrimary
+                          : context.colors.textSecondary,
                     ),
                   ),
                 ),
@@ -862,7 +1023,8 @@ class _ProfessionalAvailabilityExceptionScreenState
 
   // ── Overrides list ──────────────────────────────────────
   Widget _buildOverridesList(bool isDark, bool isTablet) {
-    final sorted = _overrides.values.toList()..sort((a, b) => a.date.compareTo(b.date));
+    final sorted = _overrides.values.toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
 
     if (sorted.isEmpty) {
       return _cardShell(
@@ -870,7 +1032,11 @@ class _ProfessionalAvailabilityExceptionScreenState
         isTablet: isTablet,
         child: Row(
           children: [
-            Icon(Icons.event_available_rounded, size: 18, color: context.colors.textSecondary),
+            Icon(
+              Icons.event_available_rounded,
+              size: 18,
+              color: context.colors.textSecondary,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -907,11 +1073,15 @@ class _ProfessionalAvailabilityExceptionScreenState
                   color: context.colors.surface,
                   borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   border: Border.all(
-                    color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.06)
+                        : Colors.grey.withValues(alpha: 0.1),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: isDark ? Colors.black.withValues(alpha: 0.10) : Colors.grey.withValues(alpha: 0.05),
+                      color: isDark
+                          ? Colors.black.withValues(alpha: 0.10)
+                          : Colors.grey.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -927,7 +1097,9 @@ class _ProfessionalAvailabilityExceptionScreenState
                         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       ),
                       child: Icon(
-                        isUnavailable ? Icons.event_busy_rounded : Icons.schedule_rounded,
+                        isUnavailable
+                            ? Icons.event_busy_rounded
+                            : Icons.schedule_rounded,
                         size: 19,
                         color: color,
                       ),
@@ -947,15 +1119,22 @@ class _ProfessionalAvailabilityExceptionScreenState
                           ),
                           const SizedBox(height: 4),
                           isUnavailable
-                              ? _statusChip(AppLocalizations.of(context).exceptionsUnavailableLabel, color)
+                              ? _statusChip(
+                                  AppLocalizations.of(
+                                    context,
+                                  ).exceptionsUnavailableLabel,
+                                  color,
+                                )
                               : Wrap(
                                   spacing: 6,
                                   runSpacing: 6,
                                   children: o.ranges
-                                      .map((r) => _statusChip(
-                                            '${r.start.format(context)} – ${r.end.format(context)}',
-                                            color,
-                                          ))
+                                      .map(
+                                        (r) => _statusChip(
+                                          '${r.start.format(context)} – ${r.end.format(context)}',
+                                          color,
+                                        ),
+                                      )
                                       .toList(),
                                 ),
                         ],
@@ -970,11 +1149,18 @@ class _ProfessionalAvailabilityExceptionScreenState
                           setState(() => _overrides.remove(_key(o.date)));
                           await _persist();
                           if (!mounted) return;
-                          AppHelpers.showSuccess(context, AppLocalizations.of(context).overrideRemoved);
+                          AppHelpers.showSuccess(
+                            context,
+                            AppLocalizations.of(context).overrideRemoved,
+                          );
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(6),
-                          child: Icon(Icons.delete_outline_rounded, size: 19, color: context.colors.textSecondary),
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            size: 19,
+                            color: context.colors.textSecondary,
+                          ),
                         ),
                       ),
                     ),
@@ -997,7 +1183,11 @@ class _ProfessionalAvailabilityExceptionScreenState
       ),
       child: Text(
         text,
-        style: TextStyle(fontSize: AppFontSizes.small, fontWeight: FontWeight.w600, color: color),
+        style: TextStyle(
+          fontSize: AppFontSizes.small,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
       ),
     );
   }
@@ -1024,10 +1214,16 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
   void initState() {
     super.initState();
     _type = widget.existing?.type ?? _OverrideType.unavailable;
-    _ranges = widget.existing?.ranges
+    _ranges =
+        widget.existing?.ranges
             .map((r) => _TimeRange(start: r.start, end: r.end))
             .toList() ??
-        [_TimeRange(start: const TimeOfDay(hour: 9, minute: 0), end: const TimeOfDay(hour: 17, minute: 0))];
+        [
+          _TimeRange(
+            start: const TimeOfDay(hour: 9, minute: 0),
+            end: const TimeOfDay(hour: 17, minute: 0),
+          ),
+        ];
   }
 
   Future<void> _pickTime(int index, {required bool isStart}) async {
@@ -1038,7 +1234,9 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
     );
     if (picked == null) return;
     setState(() {
-      _ranges[index] = isStart ? range.copyWith(start: picked) : range.copyWith(end: picked);
+      _ranges[index] = isStart
+          ? range.copyWith(start: picked)
+          : range.copyWith(end: picked);
     });
   }
 
@@ -1046,14 +1244,21 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
     final last = _ranges.last;
     final lastEndMinutes = _todMinutes(last.end);
     final newStart = lastEndMinutes + 60 < 24 * 60
-        ? TimeOfDay(hour: (lastEndMinutes + 60) ~/ 60, minute: (lastEndMinutes + 60) % 60)
+        ? TimeOfDay(
+            hour: (lastEndMinutes + 60) ~/ 60,
+            minute: (lastEndMinutes + 60) % 60,
+          )
         : const TimeOfDay(hour: 18, minute: 0);
-    final int newEndMinutes = (lastEndMinutes + 180).clamp(0, 23 * 60 + 59).toInt();
+    final int newEndMinutes = (lastEndMinutes + 180)
+        .clamp(0, 23 * 60 + 59)
+        .toInt();
     setState(() {
-      _ranges.add(_TimeRange(
-        start: newStart,
-        end: TimeOfDay(hour: newEndMinutes ~/ 60, minute: newEndMinutes % 60),
-      ));
+      _ranges.add(
+        _TimeRange(
+          start: newStart,
+          end: TimeOfDay(hour: newEndMinutes ~/ 60, minute: newEndMinutes % 60),
+        ),
+      );
     });
   }
 
@@ -1080,7 +1285,12 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
       type: _type,
       ranges: _type == _OverrideType.customHours
           ? _ranges
-          : [_TimeRange(start: const TimeOfDay(hour: 9, minute: 0), end: const TimeOfDay(hour: 17, minute: 0))],
+          : [
+              _TimeRange(
+                start: const TimeOfDay(hour: 9, minute: 0),
+                end: const TimeOfDay(hour: 17, minute: 0),
+              ),
+            ],
     );
     Navigator.of(context).pop(override);
   }
@@ -1095,7 +1305,9 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
       child: Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusXl)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppSizes.radiusXl),
+          ),
         ),
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
         child: SafeArea(
@@ -1121,10 +1333,16 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.professionalColor.withValues(alpha: 0.12),
+                      color: AppColors.professionalColor.withValues(
+                        alpha: 0.12,
+                      ),
                       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
-                    child: Icon(Icons.event_rounded, size: 19, color: AppColors.professionalColor),
+                    child: Icon(
+                      Icons.event_rounded,
+                      size: 19,
+                      color: AppColors.professionalColor,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -1142,7 +1360,10 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
                         ),
                         Text(
                           DateFormat('EEEE, yyyy').format(widget.date),
-                          style: TextStyle(fontSize: AppFontSizes.secondary, color: context.colors.textSecondary),
+                          style: TextStyle(
+                            fontSize: AppFontSizes.secondary,
+                            color: context.colors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -1152,9 +1373,23 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Expanded(child: _typeChip(_OverrideType.unavailable, AppLocalizations.of(context).exceptionsUnavailableChip, Icons.event_busy_rounded, isDark)),
+                  Expanded(
+                    child: _typeChip(
+                      _OverrideType.unavailable,
+                      AppLocalizations.of(context).exceptionsUnavailableChip,
+                      Icons.event_busy_rounded,
+                      isDark,
+                    ),
+                  ),
                   const SizedBox(width: 10),
-                  Expanded(child: _typeChip(_OverrideType.customHours, AppLocalizations.of(context).exceptionsCustomChip, Icons.schedule_rounded, isDark)),
+                  Expanded(
+                    child: _typeChip(
+                      _OverrideType.customHours,
+                      AppLocalizations.of(context).exceptionsCustomChip,
+                      Icons.schedule_rounded,
+                      isDark,
+                    ),
+                  ),
                 ],
               ),
               if (_type == _OverrideType.customHours) ...[
@@ -1171,7 +1406,11 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.add_circle_outline_rounded, size: 18, color: AppColors.professionalColor),
+                          Icon(
+                            Icons.add_circle_outline_rounded,
+                            size: 18,
+                            color: AppColors.professionalColor,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             AppLocalizations.of(context).exceptionsAddRange,
@@ -1196,12 +1435,21 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
                         onPressed: () => Navigator.of(context).pop('DELETE'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: BorderSide(color: AppColors.error.withValues(alpha: 0.4)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                          side: BorderSide(
+                            color: AppColors.error.withValues(alpha: 0.4),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusMd,
+                            ),
+                          ),
                         ),
                         child: Text(
                           AppLocalizations.of(context).removeCta,
-                          style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.error),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.error,
+                          ),
                         ),
                       ),
                     ),
@@ -1216,7 +1464,11 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
+                        ),
                       ),
                       child: Text(
                         AppLocalizations.of(context).saveCta,
@@ -1233,9 +1485,16 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
     );
   }
 
-  Widget _typeChip(_OverrideType type, String label, IconData icon, bool isDark) {
+  Widget _typeChip(
+    _OverrideType type,
+    String label,
+    IconData icon,
+    bool isDark,
+  ) {
     final selected = _type == type;
-    final color = type == _OverrideType.unavailable ? AppColors.warning : AppColors.info;
+    final color = type == _OverrideType.unavailable
+        ? AppColors.warning
+        : AppColors.info;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -1247,13 +1506,24 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
           decoration: BoxDecoration(
             color: selected
                 ? color.withValues(alpha: isDark ? 0.18 : 0.12)
-                : (isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.05)),
+                : (isDark
+                      ? Colors.white.withValues(alpha: 0.03)
+                      : Colors.grey.withValues(alpha: 0.05)),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            border: Border.all(color: selected ? color.withValues(alpha: 0.55) : Colors.transparent, width: 1.2),
+            border: Border.all(
+              color: selected
+                  ? color.withValues(alpha: 0.55)
+                  : Colors.transparent,
+              width: 1.2,
+            ),
           ),
           child: Column(
             children: [
-              Icon(icon, size: 20, color: selected ? color : context.colors.textSecondary),
+              Icon(
+                icon,
+                size: 20,
+                color: selected ? color : context.colors.textSecondary,
+              ),
               const SizedBox(height: 6),
               Text(
                 label,
@@ -1277,14 +1547,26 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
       child: Row(
         children: [
           Expanded(
-            child: _timeChip(range.start, isDark, onTap: () => _pickTime(index, isStart: true)),
+            child: _timeChip(
+              range.start,
+              isDark,
+              onTap: () => _pickTime(index, isStart: true),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Icon(Icons.arrow_forward_rounded, size: 15, color: context.colors.textSecondary.withValues(alpha: 0.6)),
+            child: Icon(
+              Icons.arrow_forward_rounded,
+              size: 15,
+              color: context.colors.textSecondary.withValues(alpha: 0.6),
+            ),
           ),
           Expanded(
-            child: _timeChip(range.end, isDark, onTap: () => _pickTime(index, isStart: false)),
+            child: _timeChip(
+              range.end,
+              isDark,
+              onTap: () => _pickTime(index, isStart: false),
+            ),
           ),
           if (_ranges.length > 1) ...[
             const SizedBox(width: 6),
@@ -1296,7 +1578,11 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
                 onTap: () => _removeRange(index),
                 child: Padding(
                   padding: const EdgeInsets.all(6),
-                  child: Icon(Icons.close_rounded, size: 18, color: context.colors.textSecondary),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 18,
+                    color: context.colors.textSecondary,
+                  ),
                 ),
               ),
             ),
@@ -1312,18 +1598,32 @@ class _OverrideEditorSheetState extends State<_OverrideEditorSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.04) : context.colors.background,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.04)
+              : context.colors.background,
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : context.colors.divider),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : context.colors.divider,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.access_time_rounded, size: 15, color: context.colors.textSecondary),
+            Icon(
+              Icons.access_time_rounded,
+              size: 15,
+              color: context.colors.textSecondary,
+            ),
             const SizedBox(width: 8),
             Text(
               time.format(context),
-              style: TextStyle(fontSize: AppFontSizes.body, fontWeight: FontWeight.w700, color: context.colors.textPrimary),
+              style: TextStyle(
+                fontSize: AppFontSizes.body,
+                fontWeight: FontWeight.w700,
+                color: context.colors.textPrimary,
+              ),
             ),
           ],
         ),

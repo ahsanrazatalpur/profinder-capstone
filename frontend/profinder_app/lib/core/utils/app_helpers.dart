@@ -188,17 +188,28 @@ class AppHelpers {
     if (currency != null && currency.trim().isNotEmpty) {
       final c = currency.trim().toUpperCase();
       switch (c) {
-        case 'PKR': return 'Rs';
-        case 'INR': return '₹';
-        case 'EUR': return '€';
-        case 'GBP': return '£';
-        case 'AED': return 'AED';
-        case 'SAR': return 'SAR';
-        case 'CAD': return 'CA\$';
-        case 'AUD': return 'A\$';
-        case 'JPY': return '¥';
-        case 'CNY': return '¥';
-        case 'USD': return '\$';
+        case 'PKR':
+          return 'Rs';
+        case 'INR':
+          return '₹';
+        case 'EUR':
+          return '€';
+        case 'GBP':
+          return '£';
+        case 'AED':
+          return 'AED';
+        case 'SAR':
+          return 'SAR';
+        case 'CAD':
+          return 'CA\$';
+        case 'AUD':
+          return 'A\$';
+        case 'JPY':
+          return '¥';
+        case 'CNY':
+          return '¥';
+        case 'USD':
+          return '\$';
       }
     }
 
@@ -206,41 +217,103 @@ class AppHelpers {
     final cityLower = (city ?? '').trim().toLowerCase();
 
     const pkCities = {
-      'badin', 'karachi', 'lahore', 'islamabad', 'rawalpindi', 'faisalabad',
-      'multan', 'peshawar', 'quetta', 'hyderabad', 'sukkur', 'gujranwala',
-      'sialkot', 'larkana', 'abbottabad', 'bahawalpur', 'sargodha', 'mirpurkhas',
-      'sheikhupura', 'jhang', 'gujrat', 'kasur', 'mardan', 'swat', 'sahiwal',
-      'okara', 'wah cantt', 'dera ghazi khan', 'rahim yar khan', 'dadu',
-      'tando allahyar', 'tando muhammad khan', 'khairpur', 'shikarpur', 'jacobabad',
-      'umerkot', 'sanghar', 'matiari', 'kashmore', 'ghotki',
+      'badin',
+      'karachi',
+      'lahore',
+      'islamabad',
+      'rawalpindi',
+      'faisalabad',
+      'multan',
+      'peshawar',
+      'quetta',
+      'hyderabad',
+      'sukkur',
+      'gujranwala',
+      'sialkot',
+      'larkana',
+      'abbottabad',
+      'bahawalpur',
+      'sargodha',
+      'mirpurkhas',
+      'sheikhupura',
+      'jhang',
+      'gujrat',
+      'kasur',
+      'mardan',
+      'swat',
+      'sahiwal',
+      'okara',
+      'wah cantt',
+      'dera ghazi khan',
+      'rahim yar khan',
+      'dadu',
+      'tando allahyar',
+      'tando muhammad khan',
+      'khairpur',
+      'shikarpur',
+      'jacobabad',
+      'umerkot',
+      'sanghar',
+      'matiari',
+      'kashmore',
+      'ghotki',
     };
 
-    if (cLower == 'pk' || cLower == 'pakistan' || pkCities.contains(cityLower)) {
+    if (cLower == 'pk' ||
+        cLower == 'pakistan' ||
+        pkCities.contains(cityLower)) {
       return 'Rs';
     }
     if (cLower == 'in' || cLower == 'india') return '₹';
-    if (cLower == 'gb' || cLower == 'uk' || cLower == 'united kingdom') return '£';
+    if (cLower == 'gb' || cLower == 'uk' || cLower == 'united kingdom')
+      return '£';
     if (cLower == 'ae' || cLower == 'uae') return 'AED';
     if (cLower == 'sa' || cLower == 'saudi arabia') return 'SAR';
     if (cLower == 'ca' || cLower == 'canada') return 'CA\$';
     if (cLower == 'au' || cLower == 'australia') return 'A\$';
-    if (cLower == 'us' || cLower == 'usa' || cLower == 'united states') return '\$';
+    if (cLower == 'us' || cLower == 'usa' || cLower == 'united states')
+      return '\$';
 
     // ProFinder default currency is PKR (Rs)
     return 'Rs';
   }
 
   /// Formats hourly rate with dynamic currency symbol: e.g. "Rs 500/hr" or "$50/hr"
-  static String formatHourlyRate(dynamic rate, {dynamic professional, String? currency, String? country, String? city}) {
-    final sym = getCurrencySymbol(professional: professional, currency: currency, country: country, city: city);
+  static String formatHourlyRate(
+    dynamic rate, {
+    dynamic professional,
+    String? currency,
+    String? country,
+    String? city,
+  }) {
+    final sym = getCurrencySymbol(
+      professional: professional,
+      currency: currency,
+      country: country,
+      city: city,
+    );
     final val = double.tryParse(rate?.toString() ?? '0') ?? 0.0;
-    final formattedVal = val == val.roundToDouble() ? val.toStringAsFixed(0) : val.toStringAsFixed(2);
+    final formattedVal = val == val.roundToDouble()
+        ? val.toStringAsFixed(0)
+        : val.toStringAsFixed(2);
     return '$sym $formattedVal/hr';
   }
 
   /// Formats price amount with dynamic currency symbol: e.g. "Rs 500" or "$50"
-  static String formatPrice(dynamic amount, {dynamic professional, String? currency, String? country, String? city, int decimals = 0}) {
-    final sym = getCurrencySymbol(professional: professional, currency: currency, country: country, city: city);
+  static String formatPrice(
+    dynamic amount, {
+    dynamic professional,
+    String? currency,
+    String? country,
+    String? city,
+    int decimals = 0,
+  }) {
+    final sym = getCurrencySymbol(
+      professional: professional,
+      currency: currency,
+      country: country,
+      city: city,
+    );
     final val = double.tryParse(amount?.toString() ?? '0') ?? 0.0;
     return '$sym ${val.toStringAsFixed(decimals)}';
   }

@@ -83,6 +83,7 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   /// Kept for existing callers: flips between Light and Dark.
-  Future<void> toggleTheme() =>
-      setThemeMode(_themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark);
+  Future<void> toggleTheme() => setThemeMode(
+    _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
+  );
 }

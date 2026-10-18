@@ -24,11 +24,11 @@ class SubscriptionScreen extends StatefulWidget {
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
   final SubscriptionService _service = SubscriptionService();
 
-  List<SubscriptionPlan> _plans       = [];
-  UserPlanStatus?        _currentPlan;
-  bool                   _loading     = true;
-  bool                   _subscribing = false;
-  String?                _error;
+  List<SubscriptionPlan> _plans = [];
+  UserPlanStatus? _currentPlan;
+  bool _loading = true;
+  bool _subscribing = false;
+  String? _error;
 
   @override
   void initState() {
@@ -37,24 +37,31 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Future<void> _loadData() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final results = await Future.wait([
         _service.getPlans(widget.userRole),
         _service.getMyPlan(),
       ]);
       setState(() {
-        _plans       = results[0] as List<SubscriptionPlan>;
+        _plans = results[0] as List<SubscriptionPlan>;
         _currentPlan = results[1] as UserPlanStatus?;
-        _loading     = false;
+        _loading = false;
       });
     } catch (e) {
-      setState(() { _error = AppLocalizations.of(context).subscriptionFailedToLoadPlans; _loading = false; });
+      setState(() {
+        _error = AppLocalizations.of(context).subscriptionFailedToLoadPlans;
+        _loading = false;
+      });
     }
   }
 
   Future<void> _subscribe(SubscriptionPlan plan) async {
-    if (plan.isFree) return; // Free plan is active by default and does not require subscription payment
+    if (plan.isFree)
+      return; // Free plan is active by default and does not require subscription payment
 
     final confirm = await _showConfirmDialog(plan);
     if (!confirm) return;
@@ -89,10 +96,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
         if (!mounted) return;
         if (captureRes['success'] == true) {
-          _showSuccess(AppLocalizations.of(context).subscriptionSubscribedTo(plan.name));
+          _showSuccess(
+            AppLocalizations.of(context).subscriptionSubscribedTo(plan.name),
+          );
           await _loadData();
         } else {
-          _showError(captureRes['error'] ?? 'Payment capture failed. Please try again.');
+          _showError(
+            captureRes['error'] ?? 'Payment capture failed. Please try again.',
+          );
         }
       }
       return;
@@ -100,77 +111,104 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
     setState(() => _subscribing = false);
     if (result['success'] == true) {
-      _showSuccess(AppLocalizations.of(context).subscriptionSubscribedTo(plan.name));
+      _showSuccess(
+        AppLocalizations.of(context).subscriptionSubscribedTo(plan.name),
+      );
       await _loadData(); // Refresh plan status
     } else {
-      _showError(result['error'] ?? AppLocalizations.of(context).subscriptionSubscriptionFailed);
+      _showError(
+        result['error'] ??
+            AppLocalizations.of(context).subscriptionSubscriptionFailed,
+      );
     }
   }
 
   Future<bool> _showPaymentConfirmationDialog(SubscriptionPlan plan) async {
     final t = AppLocalizations.of(context);
     return await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-        title: Row(
-          children: [
-            const Icon(Icons.payment_rounded, color: AppColors.customerColor),
-            const SizedBox(width: 8),
-            Expanded(child: Text('Complete Checkout', style: const TextStyle(fontWeight: FontWeight.bold))),
-          ],
-        ),
-        content: Text(
-          'Please finish payment on PayPal in your browser. Once completed, tap "Confirm Payment" below.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(t.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.colors.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             ),
-            child: const Text('Confirm Payment'),
+            title: Row(
+              children: [
+                const Icon(
+                  Icons.payment_rounded,
+                  color: AppColors.customerColor,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Complete Checkout',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            content: Text(
+              'Please finish payment on PayPal in your browser. Once completed, tap "Confirm Payment" below.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(t.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: context.colors.primary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                ),
+                child: const Text('Confirm Payment'),
+              ),
+            ],
           ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
   }
 
   Future<bool> _showConfirmDialog(SubscriptionPlan plan) async {
     final t = AppLocalizations.of(context);
     return await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
-        title: Text(t.subscriptionConfirmSubscription,
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-        content: Text(
-          t.subscriptionSubscribe(plan.name, plan.currency,
-              '${plan.price.toStringAsFixed(0)}${plan.billing == 'monthly' ? t.subscriptionPerMonth : t.subscriptionPerYear}?'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(t.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.colors.primary,
-              minimumSize: const Size(0, 40),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             ),
-            child: Text(t.subscriptionSubscribe2),
+            title: Text(
+              t.subscriptionConfirmSubscription,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Text(
+              t.subscriptionSubscribe(
+                plan.name,
+                plan.currency,
+                '${plan.price.toStringAsFixed(0)}${plan.billing == 'monthly' ? t.subscriptionPerMonth : t.subscriptionPerYear}?',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(t.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: context.colors.primary,
+                  minimumSize: const Size(0, 40),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                ),
+                child: Text(t.subscriptionSubscribe2),
+              ),
+            ],
           ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
   }
 
   void _showSuccess(String msg) {
@@ -179,7 +217,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         content: Text(msg),
         backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
       ),
     );
   }
@@ -190,7 +230,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         content: Text(msg),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radius10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radius10),
+        ),
       ),
     );
   }
@@ -207,8 +249,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? _buildError()
-              : _buildBody(),
+          ? _buildError()
+          : _buildBody(),
     );
   }
 
@@ -231,7 +273,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget _buildBody() {
     final t = AppLocalizations.of(context);
     // Free plan ko alag, paid plans alag
-    final freePlan  = _plans.where((p) => p.isFree).firstOrNull;
+    final freePlan = _plans.where((p) => p.isFree).firstOrNull;
     final paidPlans = _plans.where((p) => p.isPremium).toList();
 
     return RefreshIndicator(
@@ -247,18 +289,23 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             const SizedBox(height: 24),
 
             // ── Header ───────────────────────────────────────
-            Text(t.subscriptionAvailablePlans,
-                style: TextStyle(
-                    fontSize: AppFontSizes.h3,
-                    fontWeight: FontWeight.bold,
-                    color: context.colors.textPrimary)),
+            Text(
+              t.subscriptionAvailablePlans,
+              style: TextStyle(
+                fontSize: AppFontSizes.h3,
+                fontWeight: FontWeight.bold,
+                color: context.colors.textPrimary,
+              ),
+            ),
             const SizedBox(height: 4),
             Text(
               widget.userRole == 'customer'
                   ? t.subscriptionUpgradeUnlimitedAiSearches
                   : t.subscriptionUpgradeUnlimitedBookings,
               style: TextStyle(
-                  fontSize: AppFontSizes.body, color: context.colors.textSecondary),
+                fontSize: AppFontSizes.body,
+                color: context.colors.textSecondary,
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -313,18 +360,30 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(t.subscriptionCurrentPlan(plan.planName),
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: AppFontSizes.title)),
+                Text(
+                  t.subscriptionCurrentPlan(plan.planName),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: AppFontSizes.title,
+                  ),
+                ),
                 if (plan.endDate != null)
-                  Text(t.subscriptionValidUntil('${plan.endDate}'),
-                      style: const TextStyle(
-                          color: Colors.white70, fontSize: AppFontSizes.small)),
+                  Text(
+                    t.subscriptionValidUntil('${plan.endDate}'),
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: AppFontSizes.small,
+                    ),
+                  ),
                 if (!plan.isPremium)
-                  Text(t.subscriptionUpgradeUnlockPremiumFeatures,
-                      style: const TextStyle(color: Colors.white70, fontSize: AppFontSizes.small)),
+                  Text(
+                    t.subscriptionUpgradeUnlockPremiumFeatures,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: AppFontSizes.small,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -337,7 +396,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   Widget _buildPlanCard(SubscriptionPlan plan, {required bool isRecommended}) {
     final t = AppLocalizations.of(context);
-    final isCurrentPlan = _currentPlan?.planName == plan.name &&
+    final isCurrentPlan =
+        _currentPlan?.planName == plan.name &&
         _currentPlan?.billing == plan.billing;
     final isPremium = plan.isPremium;
 
@@ -352,8 +412,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               color: isCurrentPlan
                   ? AppColors.success
                   : isPremium && isRecommended
-                      ? context.colors.primary
-                      : context.colors.divider,
+                  ? context.colors.primary
+                  : context.colors.divider,
               width: isCurrentPlan || (isPremium && isRecommended) ? 2 : 1,
             ),
             boxShadow: [
@@ -394,19 +454,24 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(plan.name,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: AppFontSizes.title2,
-                                color: context.colors.textPrimary)),
+                        Text(
+                          plan.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: AppFontSizes.title2,
+                            color: context.colors.textPrimary,
+                          ),
+                        ),
                         Text(
                           plan.isFree
                               ? t.subscriptionFreeForever
                               : plan.billing == 'monthly'
-                                  ? t.subscriptionBilledMonthly
-                                  : t.subscriptionBilledYearly,
+                              ? t.subscriptionBilledMonthly
+                              : t.subscriptionBilledYearly,
                           style: TextStyle(
-                              fontSize: AppFontSizes.small, color: context.colors.textSecondary),
+                            fontSize: AppFontSizes.small,
+                            color: context.colors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -429,9 +494,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       ),
                       if (!plan.isFree)
                         Text(
-                          plan.billing == 'monthly' ? t.subscriptionPerMonth : t.subscriptionPerYear,
+                          plan.billing == 'monthly'
+                              ? t.subscriptionPerMonth
+                              : t.subscriptionPerYear,
                           style: TextStyle(
-                              fontSize: AppFontSizes.small, color: context.colors.textSecondary),
+                            fontSize: AppFontSizes.small,
+                            color: context.colors.textSecondary,
+                          ),
                         ),
                     ],
                   ),
@@ -464,12 +533,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ),
                 borderRadius: BorderRadius.circular(AppSizes.radiusChip),
               ),
-              child: Text(t.subscriptionRecommended,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: AppFontSizes.micro,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1)),
+              child: Text(
+                t.subscriptionRecommended,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: AppFontSizes.micro,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
             ),
           ),
 
@@ -484,11 +556,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 color: AppColors.success,
                 borderRadius: BorderRadius.circular(AppSizes.radiusChip),
               ),
-              child: Text(t.subscriptionCurrentPlan2,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: AppFontSizes.micro,
-                      fontWeight: FontWeight.bold)),
+              child: Text(
+                t.subscriptionCurrentPlan2,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: AppFontSizes.micro,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
       ],
@@ -500,36 +575,92 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final features = <Map<String, dynamic>>[];
 
     if (widget.userRole == 'customer') {
-      final aiLimit  = plan.getInt('ai_search_limit');
+      final aiLimit = plan.getInt('ai_search_limit');
       final msgLimit = plan.getInt('message_send_limit');
       features.addAll([
-        {'label': t.subscriptionFeatureAiSearchesDay,  'value': aiLimit == 0  ? t.subscriptionUnlimited : '$aiLimit',  'enabled': true},
-        {'label': t.subscriptionFeatureMessagesDay,     'value': msgLimit == 0 ? t.subscriptionUnlimited : '$msgLimit', 'enabled': true},
-        {'label': t.subscriptionFeatureUnlimitedBookings,'value': '',                                         'enabled': true},
-        {'label': t.subscriptionFeaturePrioritySupport, 'value': '', 'enabled': plan.getBool('priority_support')},
-        {'label': t.subscriptionFeaturePremiumBadge,    'value': '', 'enabled': plan.getBool('premium_badge')},
-        {'label': t.subscriptionFeatureNoAds,           'value': '', 'enabled': !plan.getBool('ads_enabled', defaultVal: true)},
+        {
+          'label': t.subscriptionFeatureAiSearchesDay,
+          'value': aiLimit == 0 ? t.subscriptionUnlimited : '$aiLimit',
+          'enabled': true,
+        },
+        {
+          'label': t.subscriptionFeatureMessagesDay,
+          'value': msgLimit == 0 ? t.subscriptionUnlimited : '$msgLimit',
+          'enabled': true,
+        },
+        {
+          'label': t.subscriptionFeatureUnlimitedBookings,
+          'value': '',
+          'enabled': true,
+        },
+        {
+          'label': t.subscriptionFeaturePrioritySupport,
+          'value': '',
+          'enabled': plan.getBool('priority_support'),
+        },
+        {
+          'label': t.subscriptionFeaturePremiumBadge,
+          'value': '',
+          'enabled': plan.getBool('premium_badge'),
+        },
+        {
+          'label': t.subscriptionFeatureNoAds,
+          'value': '',
+          'enabled': !plan.getBool('ads_enabled', defaultVal: true),
+        },
       ]);
     } else {
       final bookLimit = plan.getInt('booking_limit');
       final portLimit = plan.getInt('portfolio_limit');
-      final svcLimit  = plan.getInt('service_limit');
-      final msgLimit  = plan.getInt('message_send_limit');
+      final svcLimit = plan.getInt('service_limit');
+      final msgLimit = plan.getInt('message_send_limit');
       features.addAll([
-        {'label': t.subscriptionFeatureBookingsMonth,    'value': bookLimit == 0 ? t.subscriptionUnlimited : '$bookLimit', 'enabled': true},
-        {'label': t.subscriptionFeaturePortfolioImages,  'value': portLimit == 0 ? t.subscriptionUnlimited : '$portLimit', 'enabled': true},
-        {'label': t.subscriptionFeatureServicesListed,   'value': svcLimit  == 0 ? t.subscriptionUnlimited : '$svcLimit',  'enabled': true},
-        {'label': t.subscriptionFeatureMessagesDay,      'value': msgLimit  == 0 ? t.subscriptionUnlimited : '$msgLimit',  'enabled': true},
-        {'label': t.subscriptionFeatureFeaturedProfile,  'value': '', 'enabled': plan.getBool('featured_profile')},
-        {'label': t.subscriptionFeaturePriorityRanking,  'value': '', 'enabled': plan.getBool('priority_ranking')},
-        {'label': t.subscriptionFeaturePremiumBadge,     'value': '', 'enabled': plan.getBool('premium_badge')},
-        {'label': t.subscriptionFeatureNoAds,            'value': '', 'enabled': !plan.getBool('ads_enabled', defaultVal: true)},
+        {
+          'label': t.subscriptionFeatureBookingsMonth,
+          'value': bookLimit == 0 ? t.subscriptionUnlimited : '$bookLimit',
+          'enabled': true,
+        },
+        {
+          'label': t.subscriptionFeaturePortfolioImages,
+          'value': portLimit == 0 ? t.subscriptionUnlimited : '$portLimit',
+          'enabled': true,
+        },
+        {
+          'label': t.subscriptionFeatureServicesListed,
+          'value': svcLimit == 0 ? t.subscriptionUnlimited : '$svcLimit',
+          'enabled': true,
+        },
+        {
+          'label': t.subscriptionFeatureMessagesDay,
+          'value': msgLimit == 0 ? t.subscriptionUnlimited : '$msgLimit',
+          'enabled': true,
+        },
+        {
+          'label': t.subscriptionFeatureFeaturedProfile,
+          'value': '',
+          'enabled': plan.getBool('featured_profile'),
+        },
+        {
+          'label': t.subscriptionFeaturePriorityRanking,
+          'value': '',
+          'enabled': plan.getBool('priority_ranking'),
+        },
+        {
+          'label': t.subscriptionFeaturePremiumBadge,
+          'value': '',
+          'enabled': plan.getBool('premium_badge'),
+        },
+        {
+          'label': t.subscriptionFeatureNoAds,
+          'value': '',
+          'enabled': !plan.getBool('ads_enabled', defaultVal: true),
+        },
       ]);
     }
 
     return features.map((f) {
       final enabled = f['enabled'] as bool;
-      final value   = f['value']   as String;
+      final value = f['value'] as String;
       return Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: Row(
@@ -545,7 +676,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 f['label'] as String,
                 style: TextStyle(
                   fontSize: AppFontSizes.body,
-                  color: enabled ? context.colors.textPrimary : context.colors.textDisabled,
+                  color: enabled
+                      ? context.colors.textPrimary
+                      : context.colors.textDisabled,
                 ),
               ),
             ),
@@ -556,11 +689,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   color: context.colors.primaryLight,
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
-                child: Text(value,
-                    style: TextStyle(
-                        fontSize: AppFontSizes.small,
-                        fontWeight: FontWeight.bold,
-                        color: context.colors.primary)),
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: AppFontSizes.small,
+                    fontWeight: FontWeight.bold,
+                    color: context.colors.primary,
+                  ),
+                ),
               ),
           ],
         ),
@@ -584,9 +720,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             children: [
               const Icon(Icons.check, color: AppColors.success, size: 18),
               const SizedBox(width: 6),
-              Text(t.subscriptionCurrentPlan3,
-                  style: const TextStyle(
-                      color: AppColors.success, fontWeight: FontWeight.bold)),
+              Text(
+                t.subscriptionCurrentPlan3,
+                style: const TextStyle(
+                  color: AppColors.success,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
         ),
@@ -603,8 +743,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           border: Border.all(color: context.colors.divider),
         ),
         child: Center(
-          child: Text(t.subscriptionBasicPlan,
-              style: TextStyle(color: context.colors.textSecondary)),
+          child: Text(
+            t.subscriptionBasicPlan,
+            style: TextStyle(color: context.colors.textSecondary),
+          ),
         ),
       );
     }
@@ -627,12 +769,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
-                    color: Colors.white, strokeWidth: 2),
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
               )
             : Text(
                 t.subscriptionGet(plan.name),
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: AppFontSizes.input),
+                  fontWeight: FontWeight.bold,
+                  fontSize: AppFontSizes.input,
+                ),
               ),
       ),
     );
@@ -645,7 +791,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         padding: const EdgeInsets.only(bottom: 20),
         child: Text(
           t.subscriptionCancelAnytimeSecurePayment,
-          style: TextStyle(fontSize: AppFontSizes.small, color: context.colors.textSecondary),
+          style: TextStyle(
+            fontSize: AppFontSizes.small,
+            color: context.colors.textSecondary,
+          ),
         ),
       ),
     );

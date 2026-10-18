@@ -151,13 +151,9 @@ class HelpScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-          ...faqs.map((f) => _faqTile(
-                context,
-                f['q']!,
-                f['a']!,
-                isDark,
-                isTablet,
-              )),
+          ...faqs.map(
+            (f) => _faqTile(context, f['q']!, f['a']!, isDark, isTablet),
+          ),
         ],
       ),
     );
@@ -267,7 +263,13 @@ class HelpScreen extends StatelessWidget {
     );
   }
 
-  Widget _faqTile(BuildContext context, String q, String a, bool isDark, bool isTablet) {
+  Widget _faqTile(
+    BuildContext context,
+    String q,
+    String a,
+    bool isDark,
+    bool isTablet,
+  ) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
@@ -291,9 +293,7 @@ class HelpScreen extends StatelessWidget {
         ],
       ),
       child: Theme(
-        data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent,
-        ),
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           title: Text(
             q,

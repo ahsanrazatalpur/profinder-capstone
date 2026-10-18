@@ -40,7 +40,10 @@ class _AboutScreenState extends State<AboutScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     final lang = context.read<LocaleProvider>().locale.languageCode;
     final result = await _service.getAboutPage(lang: lang);
     if (!mounted) return;
@@ -49,7 +52,9 @@ class _AboutScreenState extends State<AboutScreen> {
       if (result['success'] == true) {
         _data = result['data'] as AboutPageData;
       } else {
-        _error = result['error'] as String? ?? AppLocalizations.of(context).aboutLoadError;
+        _error =
+            result['error'] as String? ??
+            AppLocalizations.of(context).aboutLoadError;
       }
     });
   }
@@ -103,8 +108,9 @@ class _AboutScreenState extends State<AboutScreen> {
     }
     // The page title now lives in the universal app bar, so the old blue
     // "About Us" hero banner section is skipped here (admin preview keeps it).
-    final sections =
-        _data!.sections.where((s) => s.sectionType != 'hero_banner').toList();
+    final sections = _data!.sections
+        .where((s) => s.sectionType != 'hero_banner')
+        .toList();
     if (sections.isEmpty) {
       return _emptyState(isDark, isTablet);
     }
@@ -162,7 +168,10 @@ class _AboutScreenState extends State<AboutScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.customerColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 14,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

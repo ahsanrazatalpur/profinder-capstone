@@ -51,12 +51,15 @@ class TsApiException implements Exception {
       data.forEach((k, v) {
         final key = k.toString();
         if (key == 'error' || key == 'detail' || key == 'message') return;
-        fields[key] = v is List ? v.map((x) => x.toString()).join(' ') : v.toString();
+        fields[key] = v is List
+            ? v.map((x) => x.toString()).join(' ')
+            : v.toString();
       });
       if (msg == null && fields.isNotEmpty) msg = fields.values.first;
     }
 
-    final network = e.response == null &&
+    final network =
+        e.response == null &&
         (e.type == DioExceptionType.connectionError ||
             e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.sendTimeout ||
@@ -99,9 +102,9 @@ class TrustSafetyService {
   // ── Reports ───────────────────────────────────────────────────────────────
 
   Future<List<TsReport>> fetchReports() => _guard(() async {
-        final r = await _api.get('$_base/reports/');
-        return _rows(r.data).map(TsReport.fromJson).toList();
-      });
+    final r = await _api.get('$_base/reports/');
+    return _rows(r.data).map(TsReport.fromJson).toList();
+  });
 
   /// Review / dismiss / mark action taken. Never sends `ban_user`.
   /// Omitting [adminNote] leaves the existing internal note untouched.
@@ -109,17 +112,17 @@ class TrustSafetyService {
     int reportId, {
     required String status,
     String? adminNote,
-  }) =>
-      _guard(() async {
-        final body = <String, dynamic>{'status': status};
-        if (adminNote != null) body['admin_note'] = adminNote;
-        final r = await _api.patch('$_base/reports/$reportId/', body);
-        return TsReport.fromJson(Map<String, dynamic>.from(r.data as Map));
-      });
+  }) => _guard(() async {
+    final body = <String, dynamic>{'status': status};
+    if (adminNote != null) body['admin_note'] = adminNote;
+    final r = await _api.patch('$_base/reports/$reportId/', body);
+    return TsReport.fromJson(Map<String, dynamic>.from(r.data as Map));
+  });
 
   // ── Moderation actions ────────────────────────────────────────────────────
 
-  Future<List<ModerationAction>> fetchUserHistory(int userId) => _guard(() async {
+  Future<List<ModerationAction>> fetchUserHistory(int userId) =>
+      _guard(() async {
         final r = await _api.get('$_base/users/$userId/moderation-actions/');
         return _rows(r.data).map(ModerationAction.fromJson).toList();
       });
@@ -131,22 +134,21 @@ class TrustSafetyService {
     String? adminNote,
     int? reportId,
     DateTime? expiresAt,
-  }) =>
-      _guard(() async {
-        final body = <String, dynamic>{
-          'target_user': targetUserId,
-          'action_type': actionType,
-          'reason': reason.trim(),
-        };
-        final note = adminNote?.trim() ?? '';
-        if (note.isNotEmpty) body['admin_note'] = note;
-        if (reportId != null) body['report'] = reportId;
-        if (expiresAt != null) {
-          body['expires_at'] = expiresAt.toUtc().toIso8601String();
-        }
-        final r = await _api.post('$_base/moderation-actions/', body);
-        return ModerationAction.fromJson(Map<String, dynamic>.from(r.data as Map));
-      });
+  }) => _guard(() async {
+    final body = <String, dynamic>{
+      'target_user': targetUserId,
+      'action_type': actionType,
+      'reason': reason.trim(),
+    };
+    final note = adminNote?.trim() ?? '';
+    if (note.isNotEmpty) body['admin_note'] = note;
+    if (reportId != null) body['report'] = reportId;
+    if (expiresAt != null) {
+      body['expires_at'] = expiresAt.toUtc().toIso8601String();
+    }
+    final r = await _api.post('$_base/moderation-actions/', body);
+    return ModerationAction.fromJson(Map<String, dynamic>.from(r.data as Map));
+  });
 
   Future<ModerationAction> reverseAction(int actionId, String reason) =>
       _guard(() async {
@@ -154,15 +156,17 @@ class TrustSafetyService {
           '$_base/moderation-actions/$actionId/reverse/',
           {'reason': reason.trim()},
         );
-        return ModerationAction.fromJson(Map<String, dynamic>.from(r.data as Map));
+        return ModerationAction.fromJson(
+          Map<String, dynamic>.from(r.data as Map),
+        );
       });
 
   // ── Appeals ───────────────────────────────────────────────────────────────
 
   Future<List<TsAppeal>> fetchAppeals() => _guard(() async {
-        final r = await _api.get('$_base/appeals/');
-        return _rows(r.data).map(TsAppeal.fromJson).toList();
-      });
+    final r = await _api.get('$_base/appeals/');
+    return _rows(r.data).map(TsAppeal.fromJson).toList();
+  });
 
   Future<TsAppeal> approveAppeal(int appealId, {String? decisionNote}) =>
       _guard(() async {
@@ -175,10 +179,9 @@ class TrustSafetyService {
 
   Future<TsAppeal> rejectAppeal(int appealId, {required String decisionNote}) =>
       _guard(() async {
-        final r = await _api.post(
-          '$_base/appeals/$appealId/reject/',
-          {'decision_note': decisionNote.trim()},
-        );
+        final r = await _api.post('$_base/appeals/$appealId/reject/', {
+          'decision_note': decisionNote.trim(),
+        });
         return TsAppeal.fromJson(Map<String, dynamic>.from(r.data as Map));
       });
 }

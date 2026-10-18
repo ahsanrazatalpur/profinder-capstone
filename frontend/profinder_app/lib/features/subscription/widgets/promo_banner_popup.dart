@@ -18,7 +18,7 @@ const int _kSkipLockSeconds = 5;
 
 class PromoBannerPopup extends StatefulWidget {
   final PromoBanner banner;
-  final String      userRole; // 'customer' | 'professional' | 'guest'
+  final String userRole; // 'customer' | 'professional' | 'guest'
 
   const PromoBannerPopup({
     super.key,
@@ -34,12 +34,12 @@ class PromoBannerPopup extends StatefulWidget {
   }) async {
     // Present as a centered modal dialog with an opaque backdrop
     final result = await showDialog<bool>(
-      context:           context,
-      barrierDismissible: false,   // lock period mein tap-outside blocked
-      barrierColor:      Colors.black.withValues(alpha: 0.65),
+      context: context,
+      barrierDismissible: false, // lock period mein tap-outside blocked
+      barrierColor: Colors.black.withValues(alpha: 0.65),
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
-        insetPadding:    const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
         child: PromoBannerPopup(banner: banner, userRole: userRole),
       ),
     );
@@ -53,11 +53,11 @@ class PromoBannerPopup extends StatefulWidget {
 class _PromoBannerPopupState extends State<PromoBannerPopup>
     with SingleTickerProviderStateMixin {
   late AnimationController _animCtrl;
-  late Animation<double>   _scaleAnim;
+  late Animation<double> _scaleAnim;
 
   late int _secondsLeft;
-  bool     _canSkip = false;
-  Timer?   _timer;
+  bool _canSkip = false;
+  Timer? _timer;
 
   // ── Role ke hisaab se gradient colors ──────────────────────────────────
   List<Color> get _gradientColors {
@@ -67,8 +67,9 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
     return [AppColors.customerColor, const Color(0xFF1E40AF)]; // blue
   }
 
-  Color get _accentColor =>
-      widget.userRole == 'professional' ? AppColors.violet : context.colors.primary;
+  Color get _accentColor => widget.userRole == 'professional'
+      ? AppColors.violet
+      : context.colors.primary;
 
   @override
   void initState() {
@@ -76,7 +77,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
 
     // Entry animation
     _animCtrl = AnimationController(
-      vsync:    this,
+      vsync: this,
       duration: const Duration(milliseconds: 350),
     );
     _scaleAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutBack);
@@ -85,12 +86,15 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
     // Skip countdown
     _secondsLeft = _kSkipLockSeconds;
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
-      if (!mounted) { t.cancel(); return; }
+      if (!mounted) {
+        t.cancel();
+        return;
+      }
       setState(() {
         _secondsLeft--;
         if (_secondsLeft <= 0) {
           _secondsLeft = 0;
-          _canSkip     = true;
+          _canSkip = true;
           t.cancel();
         }
       });
@@ -118,21 +122,27 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
 
     switch (widget.banner.buttonLinkType) {
       case 'subscription':
-        Navigator.push(context, MaterialPageRoute(
-          builder: (_) => SubscriptionScreen(userRole: widget.userRole),
-        ));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SubscriptionScreen(userRole: widget.userRole),
+          ),
+        );
         break;
 
       case 'category':
-        final parts   = widget.banner.buttonLinkValue.split(':');
-        final catId   = int.tryParse(parts.first.trim());
+        final parts = widget.banner.buttonLinkValue.split(':');
+        final catId = int.tryParse(parts.first.trim());
         final catName = parts.length > 1 ? parts.last.trim() : 'Professionals';
-        Navigator.push(context, MaterialPageRoute(
-          builder: (_) => SearchScreen(
-            initialCategoryId:   catId,
-            initialCategoryName: catName,
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SearchScreen(
+              initialCategoryId: catId,
+              initialCategoryName: catName,
+            ),
           ),
-        ));
+        );
         break;
 
       case 'external_url':
@@ -167,10 +177,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
       onPopInvokedWithResult: (didPop, _) {
         // Prevent dismissal while skip lock is active
       },
-      child: ScaleTransition(
-        scale: _scaleAnim,
-        child: _buildSheet(),
-      ),
+      child: ScaleTransition(scale: _scaleAnim, child: _buildSheet()),
     );
   }
 
@@ -180,14 +187,14 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       decoration: BoxDecoration(
-        color:        Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(AppSizes.radius28),
         boxShadow: [
           BoxShadow(
-            color:      Colors.black.withValues(alpha: 0.25),
+            color: Colors.black.withValues(alpha: 0.25),
             blurRadius: 40,
             spreadRadius: 0,
-            offset:     const Offset(0, 8),
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -208,11 +215,11 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                   Text(
                     widget.banner.title,
                     style: const TextStyle(
-                      fontSize:      22,
-                      fontWeight:    FontWeight.w800,
-                      color:         AppColors.background,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.background,
                       letterSpacing: -0.5,
-                      height:        1.2,
+                      height: 1.2,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -223,16 +230,15 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                     widget.banner.description,
                     style: const TextStyle(
                       fontSize: AppFontSizes.body,
-                      color:    AppColors.slate500,
-                      height:   1.6,
+                      color: AppColors.slate500,
+                      height: 1.6,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 26),
 
                   // ── CTA Button ──────────────────────────────────────
-                  if (widget.banner.buttonLinkType != 'none')
-                    _buildCtaButton(),
+                  if (widget.banner.buttonLinkType != 'none') _buildCtaButton(),
 
                   const SizedBox(height: 12),
 
@@ -256,8 +262,8 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
         children: [
           // Network banner image cached locally with shimmer placeholder and gradient fallback
           CachedNetworkImage(
-            imageUrl:    widget.banner.imageUrl.trim(),
-            fit:         BoxFit.cover,
+            imageUrl: widget.banner.imageUrl.trim(),
+            fit: BoxFit.cover,
             placeholder: (_, _) => _buildShimmer(),
             errorWidget: (_, _, _) => _buildGradientHeader(),
           ),
@@ -265,8 +271,8 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin:  Alignment.topCenter,
-                end:    Alignment.bottomCenter,
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
                 colors: [
                   Colors.transparent,
                   Colors.black.withValues(alpha: 0.15),
@@ -301,8 +307,8 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: _gradientColors,
-              begin:  Alignment.topLeft,
-              end:    Alignment.bottomRight,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
           child: Center(
@@ -311,7 +317,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
               children: [
                 // Glassy icon circle
                 Container(
-                  width:  80,
+                  width: 80,
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -322,23 +328,29 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                     ),
                   ),
                   child: const Center(
-                    child: Icon(Icons.workspace_premium_rounded,
-                        size: 42, color: Colors.amber),
+                    child: Icon(
+                      Icons.workspace_premium_rounded,
+                      size: 42,
+                      color: Colors.amber,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
-                    color:        Colors.white.withValues(alpha: 0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(AppSizes.radiusChip),
                   ),
                   child: Text(
                     AppLocalizations.of(context).subscriptionProfinderPremium,
                     style: TextStyle(
-                      color:         Colors.white,
+                      color: Colors.white,
                       fontSize: AppFontSizes.small,
-                      fontWeight:    FontWeight.w700,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 1.2,
                     ),
                   ),
@@ -361,7 +373,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
-            color:        Colors.black.withValues(alpha: 0.55),
+            color: Colors.black.withValues(alpha: 0.55),
             borderRadius: BorderRadius.circular(AppSizes.radiusChip),
           ),
           child: Row(
@@ -370,7 +382,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
               Text(
                 AppLocalizations.of(context).promoSkip,
                 style: TextStyle(
-                  color:      Colors.white,
+                  color: Colors.white,
                   fontSize: AppFontSizes.small,
                   fontWeight: FontWeight.w700,
                 ),
@@ -385,17 +397,17 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
 
     // Countdown circle
     return Container(
-      width:  38,
+      width: 38,
       height: 38,
       decoration: BoxDecoration(
-        color:  Colors.black.withValues(alpha: 0.55),
-        shape:  BoxShape.circle,
+        color: Colors.black.withValues(alpha: 0.55),
+        shape: BoxShape.circle,
       ),
       child: Center(
         child: Text(
           '$_secondsLeft',
           style: const TextStyle(
-            color:      Colors.white,
+            color: Colors.white,
             fontSize: AppFontSizes.input,
             fontWeight: FontWeight.w800,
           ),
@@ -407,15 +419,15 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
   // ── CTA Button ────────────────────────────────────────────────────────────
   Widget _buildCtaButton() {
     return SizedBox(
-      width:  double.infinity,
+      width: double.infinity,
       height: 54,
       child: ElevatedButton(
         onPressed: _handleCta,
         style: ElevatedButton.styleFrom(
           backgroundColor: _accentColor,
           foregroundColor: Colors.white,
-          elevation:       0,
-          shadowColor:     Colors.transparent,
+          elevation: 0,
+          shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           ),
@@ -431,7 +443,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                   : widget.banner.buttonText,
               style: const TextStyle(
                 fontSize: AppFontSizes.title,
-                fontWeight:    FontWeight.w800,
+                fontWeight: FontWeight.w800,
                 letterSpacing: 0.3,
               ),
             ),
@@ -446,16 +458,20 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
     return GestureDetector(
       onTap: _canSkip ? _dismiss : null,
       child: AnimatedOpacity(
-        opacity:  _canSkip ? 1.0 : 0.35,
+        opacity: _canSkip ? 1.0 : 0.35,
         duration: const Duration(milliseconds: 300),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              _canSkip ? AppLocalizations.of(context).subscriptionNoThanksMaybeLater : AppLocalizations.of(context).subscriptionPleaseWaitSeconds('$_secondsLeft'),
+              _canSkip
+                  ? AppLocalizations.of(context).subscriptionNoThanksMaybeLater
+                  : AppLocalizations.of(
+                      context,
+                    ).subscriptionPleaseWaitSeconds('$_secondsLeft'),
               style: const TextStyle(
                 fontSize: AppFontSizes.secondary,
-                color:      AppColors.slate400,
+                color: AppColors.slate400,
                 fontWeight: FontWeight.w500,
               ),
             ),

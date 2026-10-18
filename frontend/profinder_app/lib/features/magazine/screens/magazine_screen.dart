@@ -108,7 +108,6 @@ class _MagazineScreenState extends State<MagazineScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -198,7 +197,9 @@ class _MagazineScreenState extends State<MagazineScreen> {
                     child: Container(
                       margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: context.colors.textSecondary.withValues(alpha: 0.1),
+                        color: context.colors.textSecondary.withValues(
+                          alpha: 0.1,
+                        ),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -229,7 +230,12 @@ class _MagazineScreenState extends State<MagazineScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         itemCount: _categories.length + 1,
         itemBuilder: (_, i) {
-          if (i == 0) return _chip(null, AppLocalizations.of(context).magazineAllCategoriesLabel, isDark);
+          if (i == 0)
+            return _chip(
+              null,
+              AppLocalizations.of(context).magazineAllCategoriesLabel,
+              isDark,
+            );
           final cat = _categories[i - 1];
           return _chip(cat.id, cat.name, isDark);
         },
@@ -260,15 +266,15 @@ class _MagazineScreenState extends State<MagazineScreen> {
           color: isSelected
               ? null
               : isDark
-                  ? context.colors.surface.withValues(alpha: 0.5)
-                  : context.colors.surface,
+              ? context.colors.surface.withValues(alpha: 0.5)
+              : context.colors.surface,
           borderRadius: BorderRadius.circular(AppSizes.radius22),
           border: Border.all(
             color: isSelected
                 ? AppColors.customerColor
                 : isDark
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : context.colors.divider.withValues(alpha: 0.5),
+                ? Colors.white.withValues(alpha: 0.1)
+                : context.colors.divider.withValues(alpha: 0.5),
             width: isSelected ? 0 : 1,
           ),
           boxShadow: isSelected
@@ -288,9 +294,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
             fontSize: AppFontSizes.secondary,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             letterSpacing: 0.2,
-            color: isSelected
-                ? Colors.white
-                : context.colors.textPrimary,
+            color: isSelected ? Colors.white : context.colors.textPrimary,
           ),
         ),
       ),
@@ -301,7 +305,9 @@ class _MagazineScreenState extends State<MagazineScreen> {
   Widget _buildCountLine() {
     final label = _articles.length == 1
         ? AppLocalizations.of(context).magazineArticleCountSingle
-        : AppLocalizations.of(context).magazineArticleCountPlural(_articles.length);
+        : AppLocalizations.of(
+            context,
+          ).magazineArticleCountPlural(_articles.length);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
@@ -403,49 +409,49 @@ class _MagazineScreenState extends State<MagazineScreen> {
           const crossAxisSpacing = 16.0;
           const mainAxisSpacing = 16.0;
           final crossAxisExtent = constraints.crossAxisExtent;
-          final columns = (crossAxisExtent / maxCrossAxisExtent)
-              .ceil()
-              .clamp(1, 6);
+          final columns = (crossAxisExtent / maxCrossAxisExtent).ceil().clamp(
+            1,
+            6,
+          );
           // Cards size themselves (no fixed cell height), so taller scripts
           // like Urdu Nastaliq or large system fonts can never overflow.
           // Cards in one row are stretched to the same height.
           final rowCount = (_articles.length / columns).ceil();
 
           return SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (_, rowIndex) {
-                final start = rowIndex * columns;
-                return Padding(
-                  padding: EdgeInsets.only(bottom: rowIndex == rowCount - 1 ? 0 : mainAxisSpacing),
-                  child: IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        for (var c = 0; c < columns; c++) ...[
-                          if (c > 0) const SizedBox(width: crossAxisSpacing),
-                          Expanded(
-                            child: start + c < _articles.length
-                                ? ArticleCard(
-                                    article: _articles[start + c],
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => ArticleDetailScreen(
-                                          slug: _articles[start + c].slug,
-                                        ),
+            delegate: SliverChildBuilderDelegate((_, rowIndex) {
+              final start = rowIndex * columns;
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: rowIndex == rowCount - 1 ? 0 : mainAxisSpacing,
+                ),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (var c = 0; c < columns; c++) ...[
+                        if (c > 0) const SizedBox(width: crossAxisSpacing),
+                        Expanded(
+                          child: start + c < _articles.length
+                              ? ArticleCard(
+                                  article: _articles[start + c],
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ArticleDetailScreen(
+                                        slug: _articles[start + c].slug,
                                       ),
                                     ),
-                                  )
-                                : const SizedBox.shrink(),
-                          ),
-                        ],
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
                       ],
-                    ),
+                    ],
                   ),
-                );
-              },
-              childCount: rowCount,
-            ),
+                ),
+              );
+            }, childCount: rowCount),
           );
         },
       ),
@@ -509,7 +515,10 @@ class _MagazineScreenState extends State<MagazineScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.customerColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 14,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
@@ -587,10 +596,15 @@ class _MagazineScreenState extends State<MagazineScreen> {
                   _search('');
                 },
                 icon: const Icon(Icons.clear_rounded, size: 18),
-                label: Text(AppLocalizations.of(context).magazineClearSearchCta),
+                label: Text(
+                  AppLocalizations.of(context).magazineClearSearchCta,
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.customerColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppSizes.radius10),
                   ),

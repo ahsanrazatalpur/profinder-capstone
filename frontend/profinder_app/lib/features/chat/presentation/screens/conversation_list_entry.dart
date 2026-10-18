@@ -33,7 +33,9 @@ class _ConversationListEntryState extends State<ConversationListEntry> {
     setState(() => _failed = false);
     try {
       final res = await ApiService().get(AppConstants.me);
-      final id = int.tryParse((res.data as Map<String, dynamic>)['id'].toString());
+      final id = int.tryParse(
+        (res.data as Map<String, dynamic>)['id'].toString(),
+      );
       if (!mounted) return;
       setState(() => _currentUserId = id);
     } catch (_) {
@@ -93,7 +95,10 @@ class _ConversationListEntryState extends State<ConversationListEntry> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.customerColor,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28,
+                      vertical: 14,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
@@ -136,6 +141,9 @@ class _ConversationListEntryState extends State<ConversationListEntry> {
         ),
       );
     }
-    return ConversationListScreen(currentUserId: _currentUserId!, isVisible: widget.isVisible);
+    return ConversationListScreen(
+      currentUserId: _currentUserId!,
+      isVisible: widget.isVisible,
+    );
   }
 }

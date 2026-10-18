@@ -20,7 +20,8 @@ class LanguageSelectionScreen extends StatefulWidget {
   const LanguageSelectionScreen({super.key, required this.onContinue});
 
   @override
-  State<LanguageSelectionScreen> createState() => _LanguageSelectionScreenState();
+  State<LanguageSelectionScreen> createState() =>
+      _LanguageSelectionScreenState();
 }
 
 class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
@@ -78,7 +79,11 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
               Text(
                 t.selectLanguageSubtitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: context.colors.textSecondary, height: 1.4),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: context.colors.textSecondary,
+                  height: 1.4,
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -97,7 +102,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   child: ListView.separated(
                     padding: EdgeInsets.zero,
                     itemCount: SupportedLanguages.all.length,
-                    separatorBuilder: (_, _) => Divider(height: 1, color: context.colors.divider),
+                    separatorBuilder: (_, _) =>
+                        Divider(height: 1, color: context.colors.divider),
                     itemBuilder: (_, i) {
                       final lang = SupportedLanguages.all[i];
                       final selected = lang.code == _selectedCode;
@@ -116,13 +122,21 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.language_rounded, size: 18, color: context.colors.primary),
+                  Icon(
+                    Icons.language_rounded,
+                    size: 18,
+                    color: context.colors.primary,
+                  ),
                   const SizedBox(width: 8),
                   Flexible(
                     child: Text(
                       t.languageChangeNote,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 13, color: context.colors.textSecondary, height: 1.4),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: context.colors.textSecondary,
+                        height: 1.4,
+                      ),
                     ),
                   ),
                 ],
@@ -137,10 +151,14 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                       backgroundColor: context.colors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
                     onPressed: () async {
-                      await context.read<LocaleProvider>().setLocale(_selectedCode);
+                      await context.read<LocaleProvider>().setLocale(
+                        _selectedCode,
+                      );
                       widget.onContinue();
                     },
                     child: Row(
@@ -148,7 +166,10 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                       children: [
                         Text(
                           t.continueLabel,
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         const SizedBox(width: 8),
                         const Icon(Icons.arrow_forward_rounded, size: 18),
@@ -170,7 +191,11 @@ class _LanguageTile extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _LanguageTile({required this.language, required this.selected, required this.onTap});
+  const _LanguageTile({
+    required this.language,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -203,13 +228,20 @@ class _LanguageTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: selected ? context.colors.primaryDark : context.colors.textPrimary,
+                      color: selected
+                          ? context.colors.primaryDark
+                          : context.colors.textPrimary,
                     ),
                   ),
                   Text(
                     language.nativeName,
-                    textDirection: language.isRtl ? TextDirection.rtl : TextDirection.ltr,
-                    style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
+                    textDirection: language.isRtl
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: context.colors.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -221,7 +253,9 @@ class _LanguageTile extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: selected ? context.colors.primary : context.colors.divider,
+                  color: selected
+                      ? context.colors.primary
+                      : context.colors.divider,
                   width: 2,
                 ),
               ),
@@ -230,7 +264,10 @@ class _LanguageTile extends StatelessWidget {
                       child: Container(
                         width: 11,
                         height: 11,
-                        decoration: BoxDecoration(shape: BoxShape.circle, color: context.colors.primary),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: context.colors.primary,
+                        ),
                       ),
                     )
                   : null,

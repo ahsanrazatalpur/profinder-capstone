@@ -66,10 +66,7 @@ class _AdminMagazineAnalyticsScreenState
       curve: Curves.easeOut,
     );
     _slideAnimation = Tween<double>(begin: 30, end: 0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutCubic,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
     );
   }
 
@@ -119,8 +116,8 @@ class _AdminMagazineAnalyticsScreenState
         child: _loading
             ? _buildLoader()
             : _error != null
-                ? _buildError()
-                : _buildDashboard(isSmallScreen, isMediumScreen),
+            ? _buildError()
+            : _buildDashboard(isSmallScreen, isMediumScreen),
       ),
     );
   }
@@ -162,10 +159,11 @@ class _AdminMagazineAnalyticsScreenState
           primary: false,
           physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.fromLTRB(
-              isSmallScreen ? 12 : 16,
-              16,
-              isSmallScreen ? 12 : 16,
-              isMediumScreen ? 100 : 80),
+            isSmallScreen ? 12 : 16,
+            16,
+            isSmallScreen ? 12 : 16,
+            isMediumScreen ? 100 : 80,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -226,7 +224,10 @@ class _AdminMagazineAnalyticsScreenState
   }
 
   Widget _buildSummarySection(
-      MagazineAnalyticsSummary d, bool isSmallScreen, bool isMediumScreen) {
+    MagazineAnalyticsSummary d,
+    bool isSmallScreen,
+    bool isMediumScreen,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -322,7 +323,12 @@ class _AdminMagazineAnalyticsScreenState
   }
 
   Widget _statCard(
-      String label, String value, IconData icon, Color color, String subtitle) {
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    String subtitle,
+  ) {
     return _HoverLift(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -337,10 +343,7 @@ class _AdminMagazineAnalyticsScreenState
               spreadRadius: 0,
             ),
           ],
-          border: Border.all(
-            color: color.withValues(alpha: 0.08),
-            width: 1.5,
-          ),
+          border: Border.all(color: color.withValues(alpha: 0.08), width: 1.5),
         ),
         child: Row(
           children: [
@@ -461,7 +464,9 @@ class _AdminMagazineAnalyticsScreenState
                       ),
                       decoration: BoxDecoration(
                         color: color.withValues(alpha: 0.10),
-                        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.radiusChip,
+                        ),
                       ),
                       child: Text(
                         '${cat.totalViews} views',
@@ -546,15 +551,15 @@ class _AdminMagazineAnalyticsScreenState
                   ],
                 ),
                 child: Theme(
-                  data: Theme.of(context)
-                      .copyWith(dividerColor: Colors.transparent),
+                  data: Theme.of(
+                    context,
+                  ).copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
                     tilePadding: const EdgeInsets.symmetric(
                       horizontal: 14,
                       vertical: 6,
                     ),
-                    childrenPadding:
-                        const EdgeInsets.fromLTRB(14, 0, 14, 16),
+                    childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 16),
                     leading: Container(
                       width: 44,
                       height: 44,
@@ -610,7 +615,9 @@ class _AdminMagazineAnalyticsScreenState
                       ),
                       decoration: BoxDecoration(
                         color: catColor.withValues(alpha: 0.10),
-                        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.radiusChip,
+                        ),
                       ),
                       child: Text(
                         a.recentViews.isNotEmpty ? 'Details ▾' : 'No views',
@@ -629,7 +636,9 @@ class _AdminMagazineAnalyticsScreenState
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: AppColors.slate50,
-                              borderRadius: BorderRadius.circular(AppSizes.radius10),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radius10,
+                              ),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -679,7 +688,9 @@ class _AdminMagazineAnalyticsScreenState
                               ),
                               decoration: BoxDecoration(
                                 color: AppColors.slate100,
-                                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radiusMd,
+                                ),
                               ),
                               child: Text(
                                 '${a.recentViews.length}',
@@ -780,17 +791,11 @@ class _AdminMagazineAnalyticsScreenState
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 3,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: AppColors.slate50,
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              border: Border.all(
-                color: AppColors.neutral200,
-                width: 0.5,
-              ),
+              border: Border.all(color: AppColors.neutral200, width: 0.5),
             ),
             child: Text(
               _formatDate(v.viewedAt),
@@ -807,16 +812,16 @@ class _AdminMagazineAnalyticsScreenState
   }
 
   Widget _buildLoader() => const Center(
-        key: ValueKey('loading'),
-        child: SizedBox(
-          width: 32,
-          height: 32,
-          child: CircularProgressIndicator(
-            color: AppColors.adminColor,
-            strokeWidth: 2.6,
-          ),
-        ),
-      );
+    key: ValueKey('loading'),
+    child: SizedBox(
+      width: 32,
+      height: 32,
+      child: CircularProgressIndicator(
+        color: AppColors.adminColor,
+        strokeWidth: 2.6,
+      ),
+    ),
+  );
 
   /// Error state — same visual language (icon-in-circle + branded Retry
   /// button) used across the admin panel's other screens.
@@ -876,8 +881,10 @@ class _AdminMagazineAnalyticsScreenState
                 foregroundColor: Colors.white,
                 elevation: 0,
                 minimumSize: const Size(0, 46),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 26, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 26,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
@@ -905,7 +912,7 @@ class _AdminMagazineAnalyticsScreenState
         'Sep',
         'Oct',
         'Nov',
-        'Dec'
+        'Dec',
       ];
       return '${months[dt.month]} ${dt.day}, ${dt.year}';
     } catch (_) {

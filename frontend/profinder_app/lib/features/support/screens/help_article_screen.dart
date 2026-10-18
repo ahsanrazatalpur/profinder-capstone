@@ -70,7 +70,10 @@ class _HelpArticleScreenState extends State<HelpArticleScreen> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     return Scaffold(
-      appBar: UniversalAppBar(title: t.homeHelpCenter, icon: Icons.help_outline_rounded),
+      appBar: UniversalAppBar(
+        title: t.homeHelpCenter,
+        icon: Icons.help_outline_rounded,
+      ),
       body: SafeArea(child: _body(context, t)),
     );
   }
@@ -78,14 +81,17 @@ class _HelpArticleScreenState extends State<HelpArticleScreen> {
   Widget _body(BuildContext context, AppLocalizations t) {
     if (_loading) return const SupportLoadingState();
     final result = _result;
-    if (result != null && !result.isOk && result.failure == SupportFailure.notFound) {
+    if (result != null &&
+        !result.isOk &&
+        result.failure == SupportFailure.notFound) {
       return SupportEmptyState(
         icon: Icons.article_outlined,
         title: widget.title,
         message: t.helpArticleNotFound,
       );
     }
-    if (result == null || !result.isOk) return SupportErrorState(onRetry: _load);
+    if (result == null || !result.isOk)
+      return SupportErrorState(onRetry: _load);
 
     final article = result.data!;
     final styles = context.textStyles;
@@ -101,10 +107,15 @@ class _HelpArticleScreenState extends State<HelpArticleScreen> {
               const SizedBox(height: AppSizes.md),
             ],
             Directionality(
-              textDirection: article.isRtl ? TextDirection.rtl : TextDirection.ltr,
+              textDirection: article.isRtl
+                  ? TextDirection.rtl
+                  : TextDirection.ltr,
               child: Semantics(
                 header: true,
-                child: Text(article.title, style: styles.h2.copyWith(letterSpacing: 0)),
+                child: Text(
+                  article.title,
+                  style: styles.h2.copyWith(letterSpacing: 0),
+                ),
               ),
             ),
             const SizedBox(height: AppSizes.sm),
