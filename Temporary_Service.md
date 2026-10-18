@@ -1,238 +1,256 @@
-# ProFinder — External Services, Temporary Free Tiers & Production Upgrade Cost Plan
+# ProFinder — External Services & Production Cost Guide
 
-> **Document Type:** Production Readiness & Infrastructure Cost Audit  
-> **Target Application:** ProFinder Marketplace (Flutter App + Django REST Backend)  
-> **Currency Conversion Baseline:** $1 USD ≈ 280 PKR  
-> **Date of Evaluation:** October 2026  
-
----
-
-## Executive Summary
-
-During the development and testing phase, ProFinder was built using **Free Tiers**, **Developer Sandboxes**, and **Trial Quotas** across all cloud providers. While this allowed zero-cost development, a production launch on the **Google Play Store / Apple App Store** cannot operate on these free accounts due to:
-- Strict rate limits (e.g., translation blocking, email daily limits).
-- Platform restrictions (e.g., PythonAnywhere free tier does not support real-time WebSockets/ASGI).
-- Data privacy requirements (free AI APIs log prompt conversations).
-- Branding and security (subdomains, sandbox payment gateways, and unverified OAuth screens).
-
-This document outlines every external service currently in use, its current free limitations, the required production tier, and the projected monthly, annual, and one-time costs in both **USD ($)** and **Pakistani Rupees (PKR)**.
+> **Project:** ProFinder Marketplace (Flutter App + Django Backend)  
+> **Currency Baseline:** $1 USD ≈ 280 PKR  
+> **Date:** October 2026  
 
 ---
 
-## Detailed Service-by-Service Breakdown
+## 1. Quick Master Comparison Table
+
+| # | Service | Current Free Status | Recommended Production Plan | Monthly (USD) | Monthly (PKR) |
+| :---: | :--- | :--- | :--- | :---: | :---: |
+| **1** | **Backend Hosting** | PythonAnywhere Free | DigitalOcean VPS (2GB RAM, ASGI) | **$12.00** | **Rs. 3,360** |
+| **2** | **Database & Redis** | Local SQLite (`db.sqlite3`) | Supabase Managed PostgreSQL + Redis | **$25.00** | **Rs. 7,000** |
+| **3** | **Gemini AI Engine** | Free Developer Tier | Google Cloud Pay-As-You-Go | **$15.00** | **Rs. 4,200** |
+| **4** | **Media Storage** | Cloudinary Free (25 Credits) | AWS S3 Storage + CloudFront CDN | **$10.00** | **Rs. 2,800** |
+| **5** | **Email Service** | Brevo Free (300/day) | Brevo Starter (5,000 emails/mo) | **$9.00** | **Rs. 2,520** |
+| **6** | **Push Alerts (FCM)** | Firebase Spark Plan | Firebase Blaze Plan (Pay as you go) | **$0.00** | **Rs. 0** |
+| **7** | **Google Sign-In** | Dev / Testing Consent | Verified Google OAuth Screen | **$0.00** | **Rs. 0** |
+| **8** | **PayPal Payments** | Sandbox Test Mode | Verified Live PayPal Merchant | **$0.00\*** | **Rs. 0\*** |
+| **9** | **Exchange Rates** | Open Free API | Free Cached Endpoint (Retained) | **$0.00** | **Rs. 0** |
+| **10** | **Custom Domain** | Free PA Subdomain | `profinder.com` + Cloudflare SSL | **$1.16** | **Rs. 326** |
+
+*\* PayPal has no monthly fixed fee; standard 2.99%–3.49% + $0.49 is deducted per transaction.*
 
 ---
 
-### 1. Backend Web & WebSocket Hosting
-
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [PythonAnywhere](https://www.pythonanywhere.com/) (Current) / [DigitalOcean](https://www.digitalocean.com/) (Recommended) |
-| **Current Plan** | **Free Beginner Account** (`ahsanrazatalpur.pythonanywhere.com`) |
-| **Current Limitations** | • **No ASGI / WebSockets:** PythonAnywhere free tier only runs WSGI; real-time chat via Django Channels cannot maintain live WebSocket connections.<br/>• **Outbound Network Whitelist:** Free tier can only make HTTP requests to explicitly whitelisted domains; calls to external APIs frequently fail if not on the whitelist.<br/>• **Single Process & CPU Throttling:** Capped at 100 CPU-seconds/day. The web app sleeps and must be manually extended every 3 months.<br/>• **No Custom Domain:** Cannot attach a custom SSL domain like `api.profinder.com`. |
-| **Production Requirement** | Migrate to a Cloud VPS (e.g., DigitalOcean Droplet, AWS Lightsail, or Railway) running Daphne/Uvicorn to enable real-time WebSocket chat and unconstrained API performance. |
-| **Recommended Production Plan** | **DigitalOcean Basic Droplet** (2 GB RAM, 1 vCPU, 50 GB SSD NVMe) |
-| **Estimated Cost (USD)** | **$12.00 / month** ($144.00 / year) |
-| **Estimated Cost (PKR)** | **Rs. 3,360 / month** (Rs. 40,320 / year) |
+## 2. Service-by-Service Breakdown
 
 ---
 
-### 2. Production Database & Redis Caching
+### 1. Backend Server & WebSockets
 
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [Neon](https://neon.tech/) / [Supabase](https://supabase.com/) / [DigitalOcean Managed PostgreSQL](https://www.digitalocean.com/products/managed-databases-postgresql) + [Upstash Redis](https://upstash.com/) |
-| **Current Plan** | **Local SQLite File (`db.sqlite3`)** on single server |
-| **Current Limitations** | • SQLite locks the entire database file during writes (`database is locked` error). High concurrent bookings, wallet withdrawals, or multiple simultaneous logins will cause transaction failures.<br/>• No Redis cluster for Django Channels; messaging currently runs on fallback memory layer which cannot scale across multiple workers. |
-| **Production Requirement** | Managed PostgreSQL database with automatic daily backups, point-in-time recovery, and an in-memory Redis instance for real-time WebSocket connection routing. |
-| **Recommended Production Plan** | **Supabase Pro Tier** (or DigitalOcean Managed DB) + **Upstash Redis Serverless** |
-| **Estimated Cost (USD)** | **$25.00 / month** ($300.00 / year) |
-| **Estimated Cost (PKR)** | **Rs. 7,000 / month** (Rs. 84,000 / year) |
+- **Current Plan:** PythonAnywhere Free Beginner Account (`ahsanrazatalpur.pythonanywhere.com`)
+- **The Problem with Free Tier:**
+  - PythonAnywhere free tier only runs WSGI. It **cannot run ASGI/WebSockets**, meaning live chat will not work in production.
+  - Outbound HTTP requests are restricted to a whitelist. Unlisted external APIs fail.
+  - CPU usage is capped at 100 seconds/day, and the site sleeps if not manually renewed every 3 months.
+- **Recommended Paid Solution:**
+  - **DigitalOcean Basic Droplet** (2 GB RAM, 1 vCPU, 50 GB NVMe SSD) running Daphne/ASGI and Gunicorn.
+- **Estimated Cost:**
+  - **Monthly:** $12.00 USD ≈ **Rs. 3,360 PKR**
+  - **Annual:** $144.00 USD ≈ **Rs. 40,320 PKR**
 
 ---
 
-### 3. Google Gemini AI Engine & Multilingual Translation
+### 2. Managed Database & Redis Cache
 
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [Google Cloud AI Studio / Vertex AI](https://ai.google.dev/) (`google-genai`) |
-| **Current Plan** | **Gemini Free Developer Tier** (`gemini-2.5-flash` / `gemini-flash-latest`) |
-| **Current Limitations** | • **Strict Rate Limits:** 15 Requests Per Minute (RPM) and 1,500 Requests Per Day.<br/>• **Translation Throttled:** In `settings.py`, active translation is currently restricted to only Urdu and Hindi (`['ur', 'hi']`) to avoid hitting the 429 quota exhaustion. Arabic, Spanish, and French dynamic content translation is deferred.<br/>• **Data Privacy:** Google reserves the right to use prompts sent via the free API for model training. |
-| **Production Requirement** | Google Cloud Pay-As-You-Go Billing (Gemini Paid Tier). Unlocks full 5-language automated translation (`ur`, `hi`, `ar`, `es`, `fr`), zero rate throttling, and customer data privacy guarantees. |
-| **Recommended Production Plan** | **Google Cloud Gemini Flash Pay-As-You-Go** (approx. 500,000 tokens/month for search recommendations + translation cache) |
-| **Estimated Cost (USD)** | **$15.00 / month** ($180.00 / year) |
-| **Estimated Cost (PKR)** | **Rs. 4,200 / month** (Rs. 50,400 / year) |
+- **Current Plan:** Local SQLite Database (`db.sqlite3`)
+- **The Problem with Free Tier:**
+  - SQLite locks the entire database file during writes (`database is locked` error). Multiple concurrent bookings or payments will cause app crashes.
+  - No Redis server is running. Real-time chat currently falls back to in-memory, which cannot scale across multiple users.
+- **Recommended Paid Solution:**
+  - **Supabase Pro Tier** (Managed PostgreSQL with daily automated backups) + **Upstash Redis Serverless**.
+- **Estimated Cost:**
+  - **Monthly:** $25.00 USD ≈ **Rs. 7,000 PKR**
+  - **Annual:** $300.00 USD ≈ **Rs. 84,000 PKR**
+
+---
+
+### 3. Google Gemini AI & Translation Engine
+
+- **Current Plan:** Google AI Studio Free Tier (`gemini-2.5-flash` / `gemini-flash-latest`)
+- **The Problem with Free Tier:**
+  - Capped at 15 Requests Per Minute (RPM) and 1,500 Requests Per Day.
+  - Because of free quota limits, live translations are currently restricted to Urdu and Hindi only (`['ur', 'hi']`). Arabic, Spanish, and French dynamic content translation is deferred.
+  - Free API data may be used by Google for model training.
+- **Recommended Paid Solution:**
+  - **Google Cloud Gemini Paid Tier** (Pay-As-You-Go token billing).
+  - Unlocks all 5 target languages (`ur`, `hi`, `ar`, `es`, `fr`) with enterprise data privacy.
+- **Estimated Cost:**
+  - **Monthly:** $15.00 USD ≈ **Rs. 4,200 PKR**
+  - **Annual:** $180.00 USD ≈ **Rs. 50,400 PKR**
 
 ---
 
 ### 4. Cloud Media & Document Storage
 
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [Cloudinary](https://cloudinary.com/) (Current) or [AWS S3 + CloudFront](https://aws.amazon.com/s3/) (Cost-effective alternative) |
-| **Current Plan** | **Cloudinary Free Tier** (`cloud_name: dszlfm6yw`) |
-| **Current Limitations** | • Capped at **25 Monthly Credits** (~25 GB net bandwidth / storage).<br/>• ProFinder stores user profile photos, high-res professional portfolio samples, legal identity verification documents (CNIC / licenses), chat photos, and voice notes.<br/>• Once 25 credits expire, image rendering and file uploads stop immediately across the mobile app. |
-| **Production Requirement** | Either upgrade Cloudinary to a paid tier or link an AWS S3 bucket with CloudFront CDN for global distribution. |
-| **Recommended Production Plan** | **Option A (Cloudinary Plus):** $89.00 / month *(Expensive)*<br/>**Option B (Recommended — AWS S3 + CloudFront):** Pay-as-you-go based on storage & egress (~$10.00 / month for startup scale). |
-| **Estimated Cost (USD)** | **$10.00 / month** ($120.00 / year) |
-| **Estimated Cost (PKR)** | **Rs. 2,800 / month** (Rs. 33,600 / year) |
+- **Current Plan:** Cloudinary Free Account (25 Monthly Transformation Credits)
+- **The Problem with Free Tier:**
+  - ProFinder stores user profile avatars, high-res portfolio images, legal CNIC/license verification files, and chat attachments.
+  - Once 25 monthly credits are used up, all image rendering and uploads stop completely.
+- **Recommended Paid Solution:**
+  - **AWS S3 + CloudFront CDN** (Pay-as-you-go based on storage and bandwidth).
+  - Cloudinary Plus costs $89/mo, whereas AWS S3 costs only ~$10/mo for startup scale.
+- **Estimated Cost:**
+  - **Monthly:** $10.00 USD ≈ **Rs. 2,800 PKR**
+  - **Annual:** $120.00 USD ≈ **Rs. 33,600 PKR**
 
 ---
 
 ### 5. Transactional Email Service
 
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [Brevo](https://www.brevo.com/) (formerly Sendinblue) |
-| **Current Plan** | **Brevo Free Plan** (API + SMTP relay) |
-| **Current Limitations** | • Strict ceiling of **300 emails per day**.<br/>• Free accounts enforce shared sending IPs that may occasionally deliver password-reset emails to the spam/junk folder.<br/>• If more than 300 users register or request password resets in 24 hours, email delivery halts. |
-| **Production Requirement** | Dedicated transactional email plan with custom domain SPF/DKIM verification for 99%+ inbox placement. |
-| **Recommended Production Plan** | **Brevo Starter Tier** (up to 5,000 emails/month) or **Amazon SES** ($0.10 per 1,000 emails) |
-| **Estimated Cost (USD)** | **$9.00 / month** ($108.00 / year) |
-| **Estimated Cost (PKR)** | **Rs. 2,520 / month** (Rs. 30,240 / year) |
+- **Current Plan:** Brevo (Sendinblue) Free Plan
+- **The Problem with Free Tier:**
+  - Enforces a hard limit of **300 emails per day**.
+  - If more than 300 users register or request password resets in a day, emails are blocked.
+  - Shared free IPs can occasionally cause password reset emails to land in spam.
+- **Recommended Paid Solution:**
+  - **Brevo Starter Plan** (5,000 emails/month with dedicated deliverability) or **Amazon SES** ($0.10 per 1,000 emails).
+- **Estimated Cost:**
+  - **Monthly:** $9.00 USD ≈ **Rs. 2,520 PKR**
+  - **Annual:** $108.00 USD ≈ **Rs. 30,240 PKR**
 
 ---
 
-### 6. Firebase Cloud Messaging (FCM) & Push Notifications
+### 6. Firebase Cloud Messaging (FCM)
 
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [Google Firebase](https://firebase.google.com/) (`firebase-admin`) |
-| **Current Plan** | **Firebase Spark Plan (Free)** |
-| **Current Limitations** | • Basic FCM push notifications are free without hard caps.<br/>• However, production monitoring, Crashlytics, and any serverless Cloud Functions require upgrading the Google Cloud project to the Blaze plan. |
-| **Production Requirement** | Upgrade Google Cloud project to **Blaze Plan** (Pay as you go). |
-| **Estimated Cost (USD)** | **$0.00 / month** ($0.00 / year) *(FCM push remains free; minimal usage under free quota threshold)* |
-| **Estimated Cost (PKR)** | **Rs. 0 / month** (Rs. 0 / year) |
+- **Current Plan:** Firebase Spark Plan (Free)
+- **Status:**
+  - Push notifications via FCM are **free of charge** on Android and iOS.
+  - Upgrade Google Cloud project to **Blaze Plan (Pay as you go)** only to ensure billing verification for production quotas.
+- **Estimated Cost:**
+  - **Monthly:** **$0.00 USD** (Rs. 0 PKR)
 
 ---
 
-### 7. Google OAuth 2.0 (Social Sign-In)
+### 7. Google OAuth (Social Login)
 
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [Google Cloud Console](https://console.cloud.google.com/) (OAuth Consent Screen) |
-| **Current Plan** | **Development / Testing Mode** |
-| **Current Limitations** | • Consent screen shows **"Google hasn't verified this app"** warning in red text to new users.<br/>• User limit is capped at 100 test users until Google verification is completed.<br/>• Requires published Privacy Policy and Terms of Service URLs on a registered domain. |
-| **Production Requirement** | Submit OAuth Consent Screen for Google Verification and Brand Approval. |
-| **Estimated Cost (USD)** | **$0.00** *(Google does not charge for verification, but requires custom domain & hosting)* |
-| **Estimated Cost (PKR)** | **Rs. 0** |
-
----
-
-### 8. PayPal Payment Gateway & Merchant Account
-
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [PayPal Developer & Commerce Platform](https://developer.paypal.com/) |
-| **Current Plan** | **Sandbox Test Mode** (`PAYPAL_MODE = 'sandbox'`) |
-| **Current Limitations** | • Only fake sandbox buyer/seller accounts can make payments.<br/>• Live real-world money cannot be transferred, charged, or withdrawn.<br/>• Live account requires business verification, bank link, and API keys. |
-| **Production Requirement** | Live PayPal Business Account with verified bank account linked for automated payouts. |
-| **Estimated Cost (USD)** | **$0.00 / month base fee** (Transaction Fee: **2.99% to 3.49% + $0.49** deducted per payment) |
-| **Estimated Cost (PKR)** | **Rs. 0 / month base fee** (Deducted dynamically from transactions) |
+- **Current Plan:** Google Cloud Credentials (Testing Mode)
+- **The Problem with Free Tier:**
+  - Unverified consent screen displays a prominent red security warning: *"Google hasn't verified this app"*.
+  - Limited to 100 test user accounts.
+- **Recommended Paid Solution:**
+  - Submit the OAuth screen for Google Verification (Requires Privacy Policy & Terms URL on a custom domain). Google charges $0 for verification.
+- **Estimated Cost:**
+  - **Monthly:** **$0.00 USD** (Rs. 0 PKR)
 
 ---
 
-### 9. Multi-Currency Exchange Rate Engine
+### 8. PayPal Payment Gateway
 
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [ExchangeRate-API](https://www.exchangerate-api.com/) / [Open ER-API](https://open.er-api.com/) |
-| **Current Plan** | **Free Open Endpoint** (`https://open.er-api.com/v6/latest/USD`) |
-| **Current Limitations** | • Rates update once every 24 hours; free public endpoint has no uptime SLA. |
-| **Production Requirement** | ProFinder's backend already implements `ExchangeRateCache` in `apps/payments/exchange.py`, which caches rates for 12 hours. The free tier is sufficient for launch; paid tier is only needed if sub-minute live currency trading rates are required. |
-| **Recommended Production Plan** | **Free Tier (Retained)** or **Standard Plan ($10.00 / month)** if real-time rates are demanded. |
-| **Estimated Cost (USD)** | **$0.00 / month** (Optional: $10.00 / month) |
-| **Estimated Cost (PKR)** | **Rs. 0 / month** (Optional: Rs. 2,800 / month) |
-
----
-
-### 10. Custom Domain Name & SSL Certificate
-
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [Namecheap](https://www.namecheap.com/) / [Cloudflare](https://www.cloudflare.com/) / [PKNIC](https://pknic.net.pk/) |
-| **Current Plan** | **PythonAnywhere Free Subdomain** (`ahsanrazatalpur.pythonanywhere.com`) |
-| **Current Limitations** | • Cannot release a commercial mobile app on Play Store using a student/free hosting subdomain.<br/>• Required for Google OAuth verification, PayPal webhooks, and SSL trust. |
-| **Production Requirement** | Register brand domains (e.g., `profinder.com` or `profinder.pk`) with Cloudflare DNS & free Let's Encrypt SSL. |
-| **Estimated Cost (USD)** | **$14.00 / year** (approx. $1.16 / month) |
-| **Estimated Cost (PKR)** | **Rs. 3,920 / year** (approx. Rs. 326 / month) |
+- **Current Plan:** PayPal Sandbox Mode (`PAYPAL_MODE = 'sandbox'`)
+- **The Problem with Free Tier:**
+  - Only test/dummy credit cards and sandbox accounts can be used; no real money transactions can occur.
+- **Recommended Paid Solution:**
+  - Switch `PAYPAL_MODE` to `live` using verified PayPal Business Merchant credentials.
+- **Estimated Cost:**
+  - **Monthly Fixed Fee:** **$0.00 USD** (Rs. 0 PKR)
+  - **Per-Transaction Fee:** 2.99% to 3.49% + $0.49 deducted automatically per customer payment.
 
 ---
 
-### 11. Mobile App Store Developer Accounts (Play Store & App Store)
+### 9. Multi-Currency Exchange Rate API
 
-| Parameter | Details |
-|---|---|
-| **Service Provider** | [Google Play Console](https://play.google.com/console) & [Apple Developer Program](https://developer.apple.com/) |
-| **Current Plan** | **None** (Tested on physical Android devices & emulators) |
-| **Current Limitations** | Cannot distribute the application to real public users via official app stores. |
-| **Production Requirement** | Official developer licenses to publish and update the Flutter mobile apps. |
-| **Google Play Console (Android)** | **$25.00 one-time fee** (Lifetime access) — **Rs. 7,000 one-time** |
-| **Apple Developer Program (iOS)** | **$99.00 / year** (Required annually for iPhone app) — **Rs. 27,720 / year** |
+- **Current Plan:** Open Exchange Rate Endpoint (`open.er-api.com`)
+- **Status:**
+  - ProFinder has a built-in 12-hour database cache (`ExchangeRateCache`).
+  - The free endpoint is fast and completely adequate for live production.
+- **Estimated Cost:**
+  - **Monthly:** **$0.00 USD** (Rs. 0 PKR)
 
 ---
 
-## Comprehensive Cost Summary & Budget Options
+### 10. Custom Domain & SSL
 
-To help plan the project deployment budget, here are two realistic launch scenarios:
-
-### Option A: Lean Startup Budget (Recommended for Launch)
-*Includes: DigitalOcean VPS (WebSockets enabled) + Managed Supabase DB + Gemini AI Flash + AWS S3 Storage + Brevo Email + Domain + Google Play Store.*
-
-| Expense Item | Frequency | Cost (USD) | Cost (PKR) |
-|---|---|---|---|
-| **Google Play Developer Account** | One-Time | $25.00 | Rs. 7,000 |
-| **Custom Domain (`profinder.com`)** | Annual | $14.00 | Rs. 3,920 |
-| **VPS Hosting (DigitalOcean / ASGI)** | Monthly | $12.00 | Rs. 3,360 |
-| **Managed PostgreSQL Database** | Monthly | $25.00 | Rs. 7,000 |
-| **Google Gemini AI (Paid Token Quota)** | Monthly | $15.00 | Rs. 4,200 |
-| **AWS S3 Media Storage & CDN** | Monthly | $10.00 | Rs. 2,800 |
-| **Brevo Transactional Email** | Monthly | $9.00 | Rs. 2,520 |
-| **Firebase Cloud Messaging** | Monthly | $0.00 | Rs. 0 |
-| **PayPal Gateway Integration** | Monthly | $0.00 | Rs. 0 |
-| **Total One-Time Initial Expense** | **Once** | **$25.00** | **Rs. 7,000** |
-| **Total Ongoing Monthly Operating Cost** | **Monthly** | **$71.00** | **Rs. 19,880** |
-| **Total Annualized Cost (Year 1)** | **1st Year** | **$891.00** | **Rs. 249,480** |
+- **Current Plan:** PythonAnywhere Subdomain (`ahsanrazatalpur.pythonanywhere.com`)
+- **The Problem with Free Tier:**
+  - A commercial mobile app on the Play Store requires a professional brand domain (e.g., `api.profinder.com`).
+  - Required for Google OAuth verification and PayPal live webhook signatures.
+- **Recommended Paid Solution:**
+  - Buy `profinder.com` from Namecheap or Cloudflare Registrar with free Let's Encrypt / Cloudflare SSL.
+- **Estimated Cost:**
+  - **Annual:** $14.00 USD/year ≈ **Rs. 3,920 PKR/year**
+  - **Monthly Equivalent:** **$1.16 USD / mo** (Rs. 326 PKR / mo)
 
 ---
 
-### Option B: Extended Mobile Launch (Android + iOS + Premium Cloudinary)
-*Includes everything in Option A plus Apple App Store developer membership ($99/yr) and upgraded enterprise services.*
+### 11. Mobile App Store Developer Accounts
 
-| Expense Item | Frequency | Cost (USD) | Cost (PKR) |
-|---|---|---|---|
-| **Google Play Store Developer License** | One-Time | $25.00 | Rs. 7,000 |
-| **Apple Developer Program License** | Annual | $99.00 | Rs. 27,720 |
-| **Custom Domain (`profinder.com` + `.pk`)** | Annual | $35.00 | Rs. 9,800 |
-| **High-Performance VPS Hosting (4GB RAM)** | Monthly | $24.00 | Rs. 6,720 |
-| **Managed DB + High Availability Redis** | Monthly | $35.00 | Rs. 9,800 |
-| **Google Gemini AI Token Pool** | Monthly | $25.00 | Rs. 7,000 |
-| **Media Storage & CDN** | Monthly | $15.00 | Rs. 4,200 |
-| **Brevo Email Starter** | Monthly | $9.00 | Rs. 2,520 |
-| **Total One-Time Initial Expense** | **Once** | **$25.00** | **Rs. 7,000** |
-| **Total Ongoing Monthly Operating Cost** | **Monthly** | **$108.00** | **Rs. 30,240** |
-| **Total Annualized Cost (Year 1)** | **1st Year** | **$1,455.00** | **Rs. 407,400** |
+- **Google Play Console (Android):**
+  - **Type:** One-time registration fee (Lifetime).
+  - **Cost:** **$25.00 USD** ≈ **Rs. 7,000 PKR** (One-time)
+
+- **Apple Developer Program (iOS — Optional):**
+  - **Type:** Annual subscription.
+  - **Cost:** **$99.00 USD / year** ≈ **Rs. 27,720 PKR / year**
 
 ---
 
-## Step-by-Step Priority Upgrade Roadmap
+## 3. Total Production Budget Summary
 
-When ready to take ProFinder live, follow this recommended sequence to optimize costs:
+### 🅰️ Lean Startup Budget (Recommended for Google Play Launch)
 
-```mermaid
-flowchart TD
-    Step1["Step 1: Domain & Brand Identity ($14 / yr)<br/>Buy domain & configure DNS on Cloudflare"] --> Step2["Step 2: Google Play Console ($25 one-time)<br/>Register developer account & prepare store listing"]
-    Step2 --> Step3["Step 3: Production VPS & Managed DB ($37 / mo)<br/>Deploy Django Channels ASGI + Managed PostgreSQL"]
-    Step3 --> Step4["Step 4: Attach Cloud Storage & Email ($19 / mo)<br/>Connect S3/Cloudinary and verify Brevo DKIM domain"]
-    Step4 --> Step5["Step 5: Google Cloud & Gemini AI ($15 / mo)<br/>Enable Pay-as-you-go billing & submit OAuth consent screen"]
-    Step5 --> Step6["Step 6: Live PayPal Account ($0 base fee)<br/>Switch PAYPAL_MODE to 'live' and verify webhook ID"]
+*Covers: Google Play Store + Custom Domain + DigitalOcean VPS (WebSockets enabled) + Managed PostgreSQL + Gemini AI + AWS S3 Storage + Brevo Email.*
+
+```
+One-Time Initial Setup:
+  • Google Play Console Account:         $25.00   (Rs. 7,000)
+
+Annual Recurring:
+  • Custom Domain (profinder.com):       $14.00   (Rs. 3,920 / yr)
+
+Monthly Operating Cost:
+  • DigitalOcean VPS (ASGI/WebSockets):  $12.00   (Rs. 3,360 / mo)
+  • Managed PostgreSQL Database:         $25.00   (Rs. 7,000 / mo)
+  • Google Gemini AI (Paid Token Pool):  $15.00   (Rs. 4,200 / mo)
+  • AWS S3 Media Storage & CDN:          $10.00   (Rs. 2,800 / mo)
+  • Brevo Transactional Email:           $9.00    (Rs. 2,520 / mo)
+  • Firebase & PayPal Base Fee:          $0.00    (Rs. 0 / mo)
+  -------------------------------------------------------------
+  TOTAL MONTHLY COST:                   $71.00 / mo   (Rs. 19,880 / mo)
+
+FIRST YEAR COMPLETE INVESTMENT:
+  One-Time ($25) + Domain ($14) + 12 Months ($71 x 12 = $852)
+  -------------------------------------------------------------
+  TOTAL 1ST YEAR COST:                  $891.00 USD   (Rs. 249,480 PKR)
 ```
 
-1. **Phase 1 (Immediate for Beta / Play Store):**
-   - Purchase the custom domain name (~$14 / Rs. 3,920).
-   - Purchase Google Play Console account ($25 / Rs. 7,000).
-   - Migrate backend from PythonAnywhere Free to DigitalOcean VPS ($12 / mo) so that real-time WebSockets work for users.
-2. **Phase 2 (Growth & Scaling):**
-   - Attach Gemini paid billing ($15 / mo) to unlock all 5 languages for translations.
-   - Switch PayPal from Sandbox to Live merchant mode.
-   - Attach Apple Developer Program ($99 / yr) when ready to launch on iOS.
+---
+
+### 🅱️ Full Dual-Store Launch (Android + iOS App Store)
+
+*Covers everything in Option A PLUS Apple Developer Program ($99/year) and 4GB RAM VPS upgrade.*
+
+```
+One-Time Initial Setup:
+  • Google Play Console Account:         $25.00   (Rs. 7,000)
+
+Annual Recurring:
+  • Apple Developer Program:             $99.00   (Rs. 27,720 / yr)
+  • Custom Domain (profinder.com + .pk): $35.00   (Rs. 9,800 / yr)
+
+Monthly Operating Cost:
+  • High-Performance VPS (4GB RAM):      $24.00   (Rs. 6,720 / mo)
+  • Managed DB + Redis Cluster:          $35.00   (Rs. 9,800 / mo)
+  • Google Gemini AI Pool:               $25.00   (Rs. 7,000 / mo)
+  • Media Storage & CDN:                 $15.00   (Rs. 4,200 / mo)
+  • Brevo Email Starter:                 $9.00    (Rs. 2,520 / mo)
+  -------------------------------------------------------------
+  TOTAL MONTHLY COST:                   $108.00 / mo  (Rs. 30,240 / mo)
+
+FIRST YEAR COMPLETE INVESTMENT:
+  One-Time ($25) + Annual ($134) + 12 Months ($108 x 12 = $1,296)
+  -------------------------------------------------------------
+  TOTAL 1ST YEAR COST:                  $1,455.00 USD  (Rs. 407,400 PKR)
+```
+
+---
+
+## 4. Priority Roadmap — Which to Buy First
+
+```
+Phase 1: Brand & Store (One-Time / Annual)
+  1. Buy Domain name ($14 / yr) -> Rs. 3,920
+  2. Buy Google Play Console ($25 one-time) -> Rs. 7,000
+
+Phase 2: Core Server & Database (Immediate for Live App)
+  3. DigitalOcean VPS ($12 / mo) -> Rs. 3,360 / mo
+  4. Managed Database ($25 / mo) -> Rs. 7,000 / mo
+
+Phase 3: Scaling & Full AI Translation (When Users Join)
+  5. Gemini AI Paid Tier ($15 / mo) -> Rs. 4,200 / mo
+  6. AWS S3 Storage ($10 / mo) -> Rs. 2,800 / mo
+  7. Brevo Email Starter ($9 / mo) -> Rs. 2,520 / mo
+```
