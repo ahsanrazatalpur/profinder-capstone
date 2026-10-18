@@ -102,6 +102,21 @@ Extended network caching and controller disposal into admin and review component
   - `professional_booking_configuration_screen.dart`: Disposed `controller` in custom slot picker dialog.
   - `review_action_sheets.dart`: Disposed controllers in `showEditReviewSheet`, `showReplySheet`, and `showReportSheet`.
 
+### Batch 5 — Dead Buttons, Broken Callbacks & Availability Routing Remediation (`ec86e7e`)
+Exhaustively audited all 98 screen classes and every button/click callback across the Flutter codebase:
+- **`help_support_screen.dart` (Dead Callbacks):**
+  - Replaced empty `onTap: () {}` for *Contact by email* with a robust `_contactByEmail(context)` action launching `mailto:support@profinder.com` via `url_launcher` with error handling.
+  - Replaced empty `onTap: () {}` for *Live chat* with navigation to `MyTicketsScreen()`, connecting professionals directly to active support tickets and agents.
+- **`customer_home_screen.dart` (Upcoming Booking Chat Link):**
+  - Replaced the dead `ComingSoonScreen` placeholder on upcoming booking cards with `_openBookingChat(b)`. Now directly initializes/opens real-time chat with the booked professional via `ChatScreen` or gracefully falls back to `ConversationListEntry()`.
+  - Removed obsolete `_openComingSoon()` helper and unused `ComingSoonScreen` import.
+- **`guest_profile_screen.dart` (Guest Quick Action Cards):**
+  - Connected previously unresponsive quick action cards (*Bookings, Wallet, Saved, Reviews*) to a unified `_promptSignIn(context, feature)` dialog that directs guest users to register or log in.
+- **Availability & Scheduling Routing Integration:**
+  - Integrated `ProfessionalAvailabilityScreen` into `ProfessionalProfileScreen` (both in the main settings menu and directly accessible from the availability card) and `ProfessionalHomeScreen` (tap on the status chip).
+  - Integrated `ProfessionalAvailabilityExceptionScreen` (vacations & date overrides) and `ProfessionalBookingConfigurationScreen` (booking limits & buffer duration) directly into `ProfessionalAvailabilityScreen` via top `AppBar` action buttons and an *Advanced Scheduling Settings* section.
+  - **Result: 0 unreferenced screens remaining across all 98 screen classes in the app.**
+
 ---
 
 ## 4. Localization (l10n) Audit Findings
