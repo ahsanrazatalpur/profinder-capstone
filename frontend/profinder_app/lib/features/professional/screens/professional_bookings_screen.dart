@@ -49,6 +49,7 @@ import '../../../core/theme/theme_context_ext.dart';
 import '../../chat/presentation/screens/chat_screen.dart';
 import '../../chat/data/models/conversation_model.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../chat/presentation/widgets/online_status_dot.dart';
 
 class ProfessionalBookingsScreen extends StatefulWidget {
   final bool isVisible;
@@ -1058,19 +1059,33 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipOval(
-                    child: Container(
-                      width: isTablet ? 48 : 42,
-                      height: isTablet ? 48 : 42,
-                      color: context.colors.primaryLight,
-                      child: photo.isNotEmpty
-                          ? CachedNetworkImage(
-                              imageUrl: photo,
-                              fit: BoxFit.cover,
-                              memCacheWidth: 120,
-                              memCacheHeight: 120,
-                              placeholder: (_, _) => const SizedBox(),
-                              errorWidget: (_, _, _) => Center(
+                  AvatarWithStatus(
+                    avatar: ClipOval(
+                      child: Container(
+                        width: isTablet ? 48 : 42,
+                        height: isTablet ? 48 : 42,
+                        color: context.colors.primaryLight,
+                        child: photo.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: photo,
+                                fit: BoxFit.cover,
+                                memCacheWidth: 120,
+                                memCacheHeight: 120,
+                                placeholder: (_, _) => const SizedBox(),
+                                errorWidget: (_, _, _) => Center(
+                                  child: Text(
+                                    AppHelpers.getInitials(customerName),
+                                    style: TextStyle(
+                                      fontSize: AppFontSizes.secondary,
+                                      fontWeight: FontWeight.w700,
+                                      color: isCompleted
+                                          ? context.colors.textSecondary
+                                          : context.colors.primary,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Center(
                                 child: Text(
                                   AppHelpers.getInitials(customerName),
                                   style: TextStyle(
@@ -1082,36 +1097,39 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                                   ),
                                 ),
                               ),
-                            )
-                          : Center(
-                              child: Text(
-                                AppHelpers.getInitials(customerName),
-                                style: TextStyle(
-                                  fontSize: AppFontSizes.secondary,
-                                  fontWeight: FontWeight.w700,
-                                  color: isCompleted
-                                      ? context.colors.textSecondary
-                                      : context.colors.primary,
-                                ),
-                              ),
-                            ),
+                      ),
                     ),
+                    isOnline: b['customer_is_online'] == true ||
+                        b['is_online'] == true,
+                    size: isTablet ? 48 : 42,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          customerName,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: isTablet ? 15.5 : 14.5,
-                            fontWeight: FontWeight.w700,
-                            color: isCompleted
-                                ? context.colors.textSecondary
-                                : context.colors.textPrimary,
-                          ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                customerName,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: isTablet ? 15.5 : 14.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: isCompleted
+                                      ? context.colors.textSecondary
+                                      : context.colors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            OnlineStatusBadge(
+                              isOnline: b['customer_is_online'] == true ||
+                                  b['is_online'] == true,
+                              isCompact: true,
+                            ),
+                          ],
                         ),
                         if (_myServiceCategory.isNotEmpty) ...[
                           const SizedBox(height: 2),

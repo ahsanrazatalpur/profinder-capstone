@@ -68,12 +68,15 @@ class ReviewSerializer(serializers.ModelSerializer):
     is_helpful_by_me  = serializers.SerializerMethodField()
     is_owner          = serializers.SerializerMethodField()
     is_professional_viewer = serializers.SerializerMethodField()
+    reviewer_is_online     = serializers.SerializerMethodField()
+    professional_is_online = serializers.SerializerMethodField()
+    professional_is_available = serializers.SerializerMethodField()
 
     class Meta:
         model  = Review
         fields = [
-            'id', 'reviewer', 'reviewer_name', 'reviewer_photo',
-            'professional', 'professional_name', 'professional_photo',
+            'id', 'reviewer', 'reviewer_name', 'reviewer_photo', 'reviewer_is_online',
+            'professional', 'professional_name', 'professional_photo', 'professional_is_online', 'professional_is_available',
             'rating', 'comment', 'created_at',
             'is_verified_service', 'is_edited', 'edited_at',
             'photos', 'reply', 'helpful_count', 'is_helpful_by_me', 'is_owner',
@@ -133,6 +136,24 @@ class ReviewSerializer(serializers.ModelSerializer):
         if not request or not request.user or not request.user.is_authenticated:
             return False
         return obj.reviewer_id == request.user.id
+
+    def get_reviewer_is_online(self, obj):
+        if not obj.reviewer:
+            return False
+        presence = getattr(obj.reviewer, 'presence', None)
+        return bool(presence.is_online) if presence else False
+
+    def get_professional_is_online(self, obj):
+        if not obj.professional:
+            return False
+        presence = getattr(obj.professional, 'presence', None)
+        return bool(presence.is_online) if presence else False
+
+    def get_professional_is_available(self, obj):
+        if not obj.professional:
+            return True
+        prof = getattr(obj.professional, 'professionalprofile', None)
+        return getattr(prof, 'is_available', True) if prof else True
 
     def get_is_professional_viewer(self, obj):
         request = self.context.get('request')

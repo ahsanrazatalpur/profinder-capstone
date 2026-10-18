@@ -10,6 +10,7 @@ import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../chat/presentation/widgets/online_status_dot.dart';
 
 class ProfessionalReviewsScreen extends StatefulWidget {
   const ProfessionalReviewsScreen({super.key});
@@ -186,6 +187,7 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
         r['photo_url'] ??
         r['photo'];
     final photo = AppHelpers.getFullImageUrl(rawPhoto?.toString());
+    final isOnline = r['reviewer_is_online'] == true || r['is_online'] == true;
     final rating = (r['rating'] ?? 0).toDouble();
     final comment = r['comment']?.toString() ?? r['review']?.toString() ?? '';
     final date =
@@ -206,19 +208,31 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
         children: [
           Row(
             children: [
-              ClipOval(
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  color: context.colors.primaryLight,
-                  child: photo.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: photo,
-                          fit: BoxFit.cover,
-                          memCacheWidth: 100,
-                          memCacheHeight: 100,
-                          placeholder: (_, _) => const SizedBox(),
-                          errorWidget: (_, _, _) => Center(
+              AvatarWithStatus(
+                avatar: ClipOval(
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    color: context.colors.primaryLight,
+                    child: photo.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: photo,
+                            fit: BoxFit.cover,
+                            memCacheWidth: 100,
+                            memCacheHeight: 100,
+                            placeholder: (_, _) => const SizedBox(),
+                            errorWidget: (_, _, _) => Center(
+                              child: Text(
+                                AppHelpers.getInitials(customerName.toString()),
+                                style: TextStyle(
+                                  fontSize: AppFontSizes.small,
+                                  fontWeight: FontWeight.bold,
+                                  color: context.colors.primary,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Center(
                             child: Text(
                               AppHelpers.getInitials(customerName.toString()),
                               style: TextStyle(
@@ -228,31 +242,35 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
                               ),
                             ),
                           ),
-                        )
-                      : Center(
-                          child: Text(
-                            AppHelpers.getInitials(customerName.toString()),
-                            style: TextStyle(
-                              fontSize: AppFontSizes.small,
-                              fontWeight: FontWeight.bold,
-                              color: context.colors.primary,
-                            ),
-                          ),
-                        ),
+                  ),
                 ),
+                isOnline: isOnline,
+                size: 36,
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      customerName.toString(),
-                      style: TextStyle(
-                        fontSize: AppFontSizes.body,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
-                      ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            customerName.toString(),
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: AppFontSizes.body,
+                              fontWeight: FontWeight.w700,
+                              color: context.colors.textPrimary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        OnlineStatusDot(
+                          isOnline: isOnline,
+                          size: 7,
+                        ),
+                      ],
                     ),
                     if (date.isNotEmpty)
                       Text(

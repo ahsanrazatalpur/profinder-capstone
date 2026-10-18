@@ -33,6 +33,10 @@ class BookingSerializer(serializers.ModelSerializer):
     professional_verified = serializers.SerializerMethodField(read_only=True)
     professional_photo = serializers.SerializerMethodField(read_only=True)
     customer_photo     = serializers.SerializerMethodField(read_only=True)
+    professional_is_online = serializers.SerializerMethodField(read_only=True)
+    customer_is_online     = serializers.SerializerMethodField(read_only=True)
+    is_online              = serializers.SerializerMethodField(read_only=True)
+    professional_is_available = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model  = Booking
@@ -42,7 +46,9 @@ class BookingSerializer(serializers.ModelSerializer):
                   'cancel_reason', 'cancelled_by', 'created_at',
                   'profession', 'professional_rating', 'professional_reviews',
                   'location', 'professional_verified',
-                  'professional_photo', 'customer_photo']
+                  'professional_photo', 'customer_photo',
+                  'professional_is_online', 'customer_is_online', 'is_online',
+                  'professional_is_available']
         # FIX: professional bhi read_only — view already handle karta hai isko
         read_only_fields = ['customer', 'professional', 'status', 'created_at',
                             'total_price', 'currency', 'payment_status',
@@ -51,7 +57,9 @@ class BookingSerializer(serializers.ModelSerializer):
                             'profession', 'professional_rating',
                             'professional_reviews', 'location',
                             'professional_verified',
-                            'professional_photo', 'customer_photo']
+                            'professional_photo', 'customer_photo',
+                            'professional_is_online', 'customer_is_online', 'is_online',
+                            'professional_is_available']
 
     def get_professional_name(self, obj):
         return obj.professional.name if obj.professional else ''
@@ -125,6 +133,30 @@ class BookingSerializer(serializers.ModelSerializer):
             if url:
                 return url
         return None
+
+    def get_professional_is_online(self, obj):
+        if not obj.professional:
+            return False
+        presence = getattr(obj.professional, 'presence', None)
+        return bool(presence.is_online) if presence else False
+
+    def get_customer_is_online(self, obj):
+        if not obj.customer:
+            return False
+        presence = getattr(obj.customer, 'presence', None)
+        return bool(presence.is_online) if presence else False
+
+    def get_is_online(self, obj):
+        request = self.context.get('request')
+        if request and request.user and getattr(request.user, 'id', None) == getattr(obj.professional, 'id', None):
+            return self.get_customer_is_online(obj)
+        return self.get_professional_is_online(obj)
+
+    def get_professional_is_available(self, obj):
+        if not obj.professional:
+            return True
+        prof = getattr(obj.professional, 'professionalprofile', None)
+        return getattr(prof, 'is_available', True) if prof else True
 
     def validate_time(self, value):
         # Accept both "08:00 AM" and "08:00:00" formats

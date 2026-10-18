@@ -212,6 +212,8 @@ class ProfessionalCard extends StatelessWidget {
         pro['is_verified'] ==
         true; // admin-controlled — never inferred client-side
     final isPremium = pro['is_premium'] == true;
+    final isOnline = pro['is_online'] == true;
+    final isAvailable = pro['is_available'] != false;
 
     final badgeText =
         sectionTag ??
@@ -272,6 +274,8 @@ class ProfessionalCard extends StatelessWidget {
                     scale,
                     memCacheW,
                     memCacheH,
+                    isOnline: isOnline,
+                    isAvailable: isAvailable,
                   ),
                   Expanded(
                     child: Padding(
@@ -456,8 +460,10 @@ class ProfessionalCard extends StatelessWidget {
     double photoHeight,
     double scale,
     int memCacheW,
-    int memCacheH,
-  ) {
+    int memCacheH, {
+    bool isOnline = false,
+    bool isAvailable = true,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return ClipRRect(
@@ -565,6 +571,57 @@ class ProfessionalCard extends StatelessWidget {
                   ),
                 ),
               ),
+            // 4. Online/Offline & Availability badge — bottom-left of photo
+            Positioned(
+              left: _sp(9, scale, min: 7, max: 11),
+              bottom: _sp(9, scale, min: 7, max: 11),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: _sp(8, scale, min: 7, max: 10),
+                  vertical: _sp(3.5, scale, min: 3, max: 5),
+                ),
+                decoration: BoxDecoration(
+                  color: (isDark ? Colors.black : const Color(0xFF1E293B))
+                      .withValues(alpha: 0.78),
+                  borderRadius: BorderRadius.circular(
+                    _sp(12, scale, min: 10, max: 14),
+                  ),
+                  border: Border.all(
+                    color: isOnline
+                        ? AppColors.emerald.withValues(alpha: 0.75)
+                        : Colors.white.withValues(alpha: 0.2),
+                    width: 0.9,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: _sp(7, scale, min: 6, max: 8),
+                      height: _sp(7, scale, min: 6, max: 8),
+                      decoration: BoxDecoration(
+                        color: isOnline
+                            ? AppColors.emerald
+                            : AppColors.neutral400,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    SizedBox(width: _sp(5, scale, min: 4, max: 6)),
+                    Text(
+                      isOnline
+                          ? (isAvailable ? 'Online' : 'Busy')
+                          : (isAvailable ? 'Available' : 'Offline'),
+                      style: TextStyle(
+                        fontSize: _sp(11, scale, min: 10, max: 12),
+                        fontWeight: FontWeight.w600,
+                        color: isOnline ? AppColors.emerald : Colors.white,
+                        letterSpacing: 0.1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

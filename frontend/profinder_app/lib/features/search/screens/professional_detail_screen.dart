@@ -43,6 +43,7 @@ import '../../chat/presentation/screens/chat_screen.dart';
 import '../../chat/data/models/conversation_model.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../chat/presentation/widgets/online_status_dot.dart';
 
 class ProfessionalDetailScreen extends StatefulWidget {
   final Map<String, dynamic> professional;
@@ -1712,6 +1713,15 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           final date = review['created_at'] != null
               ? _formatDate(review['created_at'].toString())
               : '';
+          final rawPhoto = review['reviewer_photo'] ??
+              review['customer_photo'] ??
+              review['photo_url'] ??
+              review['photo'];
+          final photo = AppHelpers.getFullImageUrl(rawPhoto?.toString());
+          final reviewerName = review['reviewer_name']?.toString() ??
+              AppLocalizations.of(context).userLabel;
+          final isOnline = review['reviewer_is_online'] == true ||
+              review['is_online'] == true;
 
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
@@ -1735,26 +1745,83 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
                         children: [
-                          Text(
-                            review['reviewer_name']?.toString() ??
-                                AppLocalizations.of(context).userLabel,
-                            style: TextStyle(
-                              fontSize: AppFontSizes.body,
-                              fontWeight: FontWeight.w600,
-                              color: context.colors.textPrimary,
-                            ),
-                          ),
-                          if (date.isNotEmpty)
-                            Text(
-                              date,
-                              style: TextStyle(
-                                fontSize: AppFontSizes.caption,
-                                color: context.colors.textSecondary,
+                          AvatarWithStatus(
+                            avatar: ClipOval(
+                              child: Container(
+                                width: 38,
+                                height: 38,
+                                color: context.colors.primaryLight,
+                                child: photo.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageUrl: photo,
+                                        fit: BoxFit.cover,
+                                        memCacheWidth: 100,
+                                        memCacheHeight: 100,
+                                        placeholder: (_, _) => const SizedBox(),
+                                        errorWidget: (_, _, _) => Center(
+                                          child: Text(
+                                            AppHelpers.getInitials(reviewerName),
+                                            style: TextStyle(
+                                              fontSize: AppFontSizes.small,
+                                              fontWeight: FontWeight.bold,
+                                              color: context.colors.primary,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          AppHelpers.getInitials(reviewerName),
+                                          style: TextStyle(
+                                            fontSize: AppFontSizes.small,
+                                            fontWeight: FontWeight.bold,
+                                            color: context.colors.primary,
+                                          ),
+                                        ),
+                                      ),
                               ),
                             ),
+                            isOnline: isOnline,
+                            size: 38,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        reviewerName,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: AppFontSizes.body,
+                                          fontWeight: FontWeight.w600,
+                                          color: context.colors.textPrimary,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    OnlineStatusDot(
+                                      isOnline: isOnline,
+                                      size: 7,
+                                    ),
+                                  ],
+                                ),
+                                if (date.isNotEmpty)
+                                  Text(
+                                    date,
+                                    style: TextStyle(
+                                      fontSize: AppFontSizes.caption,
+                                      color: context.colors.textSecondary,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),

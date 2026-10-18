@@ -1821,6 +1821,8 @@ def _build_professional_data(user, customer_lat=None, customer_lng=None, relevan
             'is_verified':       prof.is_verified,
             'is_premium':        prem,
             'is_available':      getattr(prof, 'is_available', True),
+            'working_hours_start': getattr(prof, 'working_hours_start', '09:00') or '09:00',
+            'working_hours_end':   getattr(prof, 'working_hours_end', '18:00') or '18:00',
             'is_online':         is_online,
             'last_seen':         last_seen,
             'completed_jobs':    getattr(user, 'completed_jobs_count', 0) or 0,

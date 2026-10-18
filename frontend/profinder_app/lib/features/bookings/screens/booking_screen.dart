@@ -38,6 +38,9 @@ import '../../../services/booking_service.dart';
 import '../../subscription/widgets/booking_limit_dialog.dart';
 import '../../subscription/widgets/promo_banner_mixin.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../chat/presentation/widgets/online_status_dot.dart';
+import '../../../services/api_service.dart';
+import '../../../core/constants/app_constants.dart';
 
 enum _LocationChoice { professional, custom }
 
@@ -103,6 +106,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
   final _customLocationController = TextEditingController();
   final _service = BookingService();
 
+  late Map<String, dynamic> _pro;
   int _currentStep = 0;
   DateTime? _selectedDate;
   bool _isLoading = false;
@@ -120,11 +124,27 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
   @override
   void initState() {
     super.initState();
+    _pro = Map<String, dynamic>.from(widget.professional);
     _visibleMonth = DateTime(_today.year, _today.month, 1);
+    _refreshProfessionalDetails();
     // Display promotional banner with a short delay after initial page render.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) showBannerForScreen('booking', delaySeconds: 3);
     });
+  }
+
+  Future<void> _refreshProfessionalDetails() async {
+    final rawId = _pro['user_id'] ?? _pro['id'];
+    if (rawId == null) return;
+    try {
+      final res =
+          await ApiService().get('${AppConstants.professionalProfile}$rawId/');
+      if (res.statusCode == 200 && res.data is Map && mounted) {
+        setState(() {
+          _pro.addAll(Map<String, dynamic>.from(res.data as Map));
+        });
+      }
+    } catch (_) {}
   }
 
   @override
@@ -325,16 +345,21 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
   }
 
   List<TimeOfDay> _generateSlots() {
-    final startStr = (widget.professional['working_hours_start'] ?? '09:00')
-        .toString();
-    final endStr = (widget.professional['working_hours_end'] ?? '18:00')
-        .toString();
+    final startStr = (_pro['working_hours_start'] ?? '09:00').toString();
+    final endStr = (_pro['working_hours_end'] ?? '18:00').toString();
     final start = _parseHHmm(startStr) ?? const TimeOfDay(hour: 9, minute: 0);
     final end = _parseHHmm(endStr) ?? const TimeOfDay(hour: 18, minute: 0);
 
     final slots = <TimeOfDay>[];
     int cur = start.hour * 60 + start.minute;
-    final endMinutes = end.hour * 60 + end.minute;
+    int endMinutes = end.hour * 60 + end.minute;
+
+    // Safety fallback: if end is not after start, use standard 09:00 - 18:00
+    if (endMinutes <= cur) {
+      cur = 9 * 60;
+      endMinutes = 18 * 60;
+    }
+
     while (cur < endMinutes) {
       slots.add(TimeOfDay(hour: cur ~/ 60, minute: cur % 60));
       cur += 30;
@@ -362,6 +387,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
 
   // ── Step navigation ──────────────────────────────────────────────────
   bool _canProceed(int step) {
+    if (_pro['is_available'] == false) return false;
     switch (step) {
       case 1:
         return _selectedDate != null;
@@ -946,7 +972,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
 
   // ── Step 0: Service Summary ─────────────────────────────────────────
   Widget _buildServiceSummaryStep(bool isDark, bool isTablet) {
-    final pro = widget.professional;
+    final pro = _pro;
     final name =
         (pro['name'] ?? AppLocalizations.of(context).professionalDefaultName)
             .toString();
@@ -969,6 +995,55 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (_pro['is_available'] == false) ...[
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(isTablet ? 16 : 14),
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: AppColors.error.withValues(alpha: isDark ? 0.16 : 0.08),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+              border: Border.all(
+                color: AppColors.error.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.do_not_disturb_on_rounded,
+                  color: AppColors.error,
+                  size: 22,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Professional Currently Unavailable',
+                        style: TextStyle(
+                          fontSize: isTablet ? 15 : 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.error,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'This professional is currently not accepting new bookings. Please check back later or choose another professional.',
+                        style: TextStyle(
+                          fontSize: isTablet ? 13 : 12,
+                          color: context.colors.textSecondary,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         _cardShell(
           isDark: isDark,
           isTablet: isTablet,
@@ -977,19 +1052,31 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
             children: [
               Row(
                 children: [
-                  ClipOval(
-                    child: Container(
-                      width: isTablet ? 68 : 60,
-                      height: isTablet ? 68 : 60,
-                      color: context.colors.primaryLight,
-                      child: photo.isNotEmpty
-                          ? CachedNetworkImage(
-                              imageUrl: photo,
-                              fit: BoxFit.cover,
-                              memCacheWidth: 160,
-                              memCacheHeight: 160,
-                              placeholder: (_, _) => const SizedBox(),
-                              errorWidget: (_, _, _) => Center(
+                  AvatarWithStatus(
+                    avatar: ClipOval(
+                      child: Container(
+                        width: isTablet ? 68 : 60,
+                        height: isTablet ? 68 : 60,
+                        color: context.colors.primaryLight,
+                        child: photo.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: photo,
+                                fit: BoxFit.cover,
+                                memCacheWidth: 160,
+                                memCacheHeight: 160,
+                                placeholder: (_, _) => const SizedBox(),
+                                errorWidget: (_, _, _) => Center(
+                                  child: Text(
+                                    AppHelpers.getInitials(name),
+                                    style: TextStyle(
+                                      color: AppColors.customerColor,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: isTablet ? 17 : 15,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Center(
                                 child: Text(
                                   AppHelpers.getInitials(name),
                                   style: TextStyle(
@@ -999,18 +1086,10 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                                   ),
                                 ),
                               ),
-                            )
-                          : Center(
-                              child: Text(
-                                AppHelpers.getInitials(name),
-                                style: TextStyle(
-                                  color: AppColors.customerColor,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: isTablet ? 17 : 15,
-                                ),
-                              ),
-                            ),
+                      ),
                     ),
+                    isOnline: _pro['is_online'] == true,
+                    size: isTablet ? 68 : 60,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -1039,6 +1118,11 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                                 size: 18,
                               ),
                             ],
+                            const SizedBox(width: 8),
+                            OnlineStatusBadge(
+                              isOnline: _pro['is_online'] == true,
+                              isCompact: true,
+                            ),
                           ],
                         ),
                         if (category.isNotEmpty)
@@ -1513,6 +1597,14 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
       );
     }
 
+    final now = DateTime.now();
+    final isToday =
+        _selectedDate!.year == now.year &&
+        _selectedDate!.month == now.month &&
+        _selectedDate!.day == now.day;
+    final allSlotsPast =
+        isToday && slots.isNotEmpty && slots.every((t) => _isSlotPast(t));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1538,6 +1630,78 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
           ),
         ),
         SizedBox(height: isTablet ? 16 : 12),
+        if (allSlotsPast) ...[
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(isTablet ? 18 : 15),
+            margin: const EdgeInsets.only(bottom: 14),
+            decoration: BoxDecoration(
+              color: AppColors.customerColor.withValues(
+                alpha: isDark ? 0.16 : 0.08,
+              ),
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+              border: Border.all(
+                color: AppColors.customerColor.withValues(alpha: 0.35),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.nightlight_round,
+                      color: AppColors.customerColor,
+                      size: 22,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        "Today's Working Hours Ended",
+                        style: TextStyle(
+                          fontSize: isTablet ? 16 : 14.5,
+                          fontWeight: FontWeight.w700,
+                          color: context.colors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'All time slots for today (${DateFormat('MMM d').format(_selectedDate!)}) have ended as this professional works until ${_slotLabel(slots.last)}. You can easily book an appointment for tomorrow!',
+                  style: TextStyle(
+                    fontSize: isTablet ? 13.5 : 12.5,
+                    color: context.colors.textSecondary,
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _selectedDate = _today.add(const Duration(days: 1));
+                        _selectedSlot = null;
+                      });
+                    },
+                    icon: const Icon(Icons.arrow_forward_rounded, size: 16),
+                    label: const Text('Book for Tomorrow'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.customerColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         _cardShell(
           isDark: isDark,
           isTablet: isTablet,
@@ -2031,7 +2195,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
 
   // ── Step 5: Booking Summary + Confirm ───────────────────────────────
   Widget _buildSummaryStep(bool isDark, bool isTablet) {
-    final pro = widget.professional;
+    final pro = _pro;
     final name =
         (pro['name'] ?? AppLocalizations.of(context).professionalDefaultName)
             .toString();
@@ -2064,19 +2228,31 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
             children: [
               Row(
                 children: [
-                  ClipOval(
-                    child: Container(
-                      width: isTablet ? 52 : 46,
-                      height: isTablet ? 52 : 46,
-                      color: context.colors.primaryLight,
-                      child: photo.isNotEmpty
-                          ? CachedNetworkImage(
-                              imageUrl: photo,
-                              fit: BoxFit.cover,
-                              memCacheWidth: 150,
-                              memCacheHeight: 150,
-                              placeholder: (_, _) => const SizedBox(),
-                              errorWidget: (_, _, _) => Center(
+                  AvatarWithStatus(
+                    avatar: ClipOval(
+                      child: Container(
+                        width: isTablet ? 52 : 46,
+                        height: isTablet ? 52 : 46,
+                        color: context.colors.primaryLight,
+                        child: photo.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: photo,
+                                fit: BoxFit.cover,
+                                memCacheWidth: 150,
+                                memCacheHeight: 150,
+                                placeholder: (_, _) => const SizedBox(),
+                                errorWidget: (_, _, _) => Center(
+                                  child: Text(
+                                    AppHelpers.getInitials(name),
+                                    style: TextStyle(
+                                      color: AppColors.customerColor,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: isTablet ? 15 : 13,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Center(
                                 child: Text(
                                   AppHelpers.getInitials(name),
                                   style: TextStyle(
@@ -2086,31 +2262,35 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                                   ),
                                 ),
                               ),
-                            )
-                          : Center(
-                              child: Text(
-                                AppHelpers.getInitials(name),
-                                style: TextStyle(
-                                  color: AppColors.customerColor,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: isTablet ? 15 : 13,
-                                ),
-                              ),
-                            ),
+                      ),
                     ),
+                    isOnline: _pro['is_online'] == true,
+                    size: isTablet ? 52 : 46,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          name,
-                          style: TextStyle(
-                            fontSize: isTablet ? 16 : 15,
-                            fontWeight: FontWeight.w700,
-                            color: context.colors.textPrimary,
-                          ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                name,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: isTablet ? 16 : 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: context.colors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            OnlineStatusBadge(
+                              isOnline: _pro['is_online'] == true,
+                              isCompact: true,
+                            ),
+                          ],
                         ),
                         if (pro['category_name'] != null &&
                             pro['category_name'].toString().isNotEmpty)
@@ -2434,7 +2614,9 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                             ),
                           )
                         : Text(
-                            isLastStep
+                            _pro['is_available'] == false
+                                ? 'Currently Unavailable'
+                                : isLastStep
                                 ? AppLocalizations.of(context).confirmBookingCta
                                 : AppLocalizations.of(context).nextCta,
                             style: const TextStyle(

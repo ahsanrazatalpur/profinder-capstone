@@ -15,6 +15,7 @@ import 'write_review_screen.dart';
 import '../../subscription/widgets/promo_banner_mixin.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../chat/presentation/widgets/online_status_dot.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -444,19 +445,31 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ClipOval(
-                          child: Container(
-                            width: 48,
-                            height: 48,
-                            color: context.colors.primaryLight,
-                            child: photo.isNotEmpty
-                                ? CachedNetworkImage(
-                                    imageUrl: photo,
-                                    fit: BoxFit.cover,
-                                    memCacheWidth: 150,
-                                    memCacheHeight: 150,
-                                    placeholder: (_, _) => const SizedBox(),
-                                    errorWidget: (_, _, _) => Center(
+                        AvatarWithStatus(
+                          avatar: ClipOval(
+                            child: Container(
+                              width: 48,
+                              height: 48,
+                              color: context.colors.primaryLight,
+                              child: photo.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      imageUrl: photo,
+                                      fit: BoxFit.cover,
+                                      memCacheWidth: 150,
+                                      memCacheHeight: 150,
+                                      placeholder: (_, _) => const SizedBox(),
+                                      errorWidget: (_, _, _) => Center(
+                                        child: Text(
+                                          AppHelpers.getInitials(proName),
+                                          style: TextStyle(
+                                            color: context.colors.primary,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: AppFontSizes.body,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Center(
                                       child: Text(
                                         AppHelpers.getInitials(proName),
                                         style: TextStyle(
@@ -466,18 +479,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                                         ),
                                       ),
                                     ),
-                                  )
-                                : Center(
-                                    child: Text(
-                                      AppHelpers.getInitials(proName),
-                                      style: TextStyle(
-                                        color: context.colors.primary,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: AppFontSizes.body,
-                                      ),
-                                    ),
-                                  ),
+                            ),
                           ),
+                          isOnline: booking['is_online'] == true ||
+                              booking['professional_is_online'] == true ||
+                              booking['customer_is_online'] == true,
+                          size: 48,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -507,6 +514,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                                       color: context.colors.primary,
                                     ),
                                   ],
+                                  const SizedBox(width: 6),
+                                  OnlineStatusBadge(
+                                    isOnline: booking['is_online'] == true ||
+                                        booking['professional_is_online'] == true ||
+                                        booking['customer_is_online'] == true,
+                                    isCompact: true,
+                                  ),
                                 ],
                               ),
                               if (profession.isNotEmpty) ...[
