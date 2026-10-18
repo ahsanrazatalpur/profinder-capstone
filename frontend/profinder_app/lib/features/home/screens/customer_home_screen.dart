@@ -514,7 +514,10 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           initialQuery: query,
         ),
       ),
-    ).then((_) => _loadSearchHistory());
+    ).then((_) {
+      _loadSearchHistory();
+      if (mounted) setState(() => _currentNavIndex = 0);
+    });
   }
 
   bool _isOpeningBookingChat = false;
@@ -2661,7 +2664,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const MagazineScreen()),
-              );
+              ).then((_) {
+                if (mounted) setState(() => _currentNavIndex = 0);
+              });
               break;
             case 3:
               Navigator.push(
@@ -2669,15 +2674,19 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                 MaterialPageRoute(
                   builder: (_) => const ConversationListEntry(),
                 ),
-              ).then((_) => setState(() => _currentNavIndex = 0));
+              ).then((_) {
+                if (mounted) setState(() => _currentNavIndex = 0);
+              });
               break; // — Messages
             case 4:
-              Navigator.pushNamed(context, '/bookings');
+              Navigator.pushNamed(context, '/bookings').then((_) {
+                if (mounted) setState(() => _currentNavIndex = 0);
+              });
               break;
             case 5:
               Navigator.pushNamed(context, '/profile').then((_) {
                 _loadProfessionals();
-                setState(() => _currentNavIndex = 0);
+                if (mounted) setState(() => _currentNavIndex = 0);
               });
               break;
           }

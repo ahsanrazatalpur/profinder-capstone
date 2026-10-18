@@ -20,6 +20,7 @@ import '../../notifications/services/push_notification_service.dart';
 import '../../support/screens/new_ticket_screen.dart';
 import '../../support/screens/privacy_policy_screen.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../payments/services/payment_service.dart';
 import '../widgets/delete_account_dialog.dart';
 import 'language_settings_screen.dart';
 
@@ -37,11 +38,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _emailEnabled = true;
   bool _hasPassword = true;
   String _userEmail = '';
+  String _selectedCurrency = 'USD';
 
   @override
   void initState() {
     super.initState();
     _loadNotificationPreferences();
+    _loadCurrency();
+  }
+
+  Future<void> _loadCurrency() async {
+    try {
+      final curr = await PaymentService().getSelectedCurrency();
+      if (mounted) setState(() => _selectedCurrency = curr);
+    } catch (_) {}
   }
 
   Future<void> _loadNotificationPreferences() async {
@@ -129,10 +139,130 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _comingSoon(String feature) {
-    AppHelpers.showInfo(
-      context,
-      AppLocalizations.of(context).comingSoonMessage(feature),
+  void _showCurrencySheet(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final currencies = const [
+      {'code': 'USD', 'name': 'US Dollar', 'symbol': '\$'},
+      {'code': 'EUR', 'name': 'Euro', 'symbol': '€'},
+      {'code': 'GBP', 'name': 'British Pound', 'symbol': '£'},
+      {'code': 'PKR', 'name': 'Pakistani Rupee', 'symbol': '₨'},
+      {'code': 'SAR', 'name': 'Saudi Riyal', 'symbol': '﷼'},
+      {'code': 'AED', 'name': 'UAE Dirham', 'symbol': 'د.إ'},
+      {'code': 'INR', 'name': 'Indian Rupee', 'symbol': '₹'},
+      {'code': 'CAD', 'name': 'Canadian Dollar', 'symbol': 'CA\$'},
+      {'code': 'AUD', 'name': 'Australian Dollar', 'symbol': 'AU\$'},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: context.colors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSizes.radiusXl)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.customerColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                        ),
+                        child: const Icon(
+                          Icons.attach_money_rounded,
+                          color: AppColors.customerColor,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          AppLocalizations.of(context).currencyLabel,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: context.colors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Divider(
+                  height: 1,
+                  color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.08),
+                ),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: currencies.length,
+                    separatorBuilder: (_, __) => Divider(
+                      height: 1,
+                      indent: 64,
+                      color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                    ),
+                    itemBuilder: (context, index) {
+                      final item = currencies[index];
+                      final isSelected = item['code'] == _selectedCurrency;
+                      return ListTile(
+                        leading: CircleAvatar(
+                          radius: 18,
+                          backgroundColor: isSelected
+                              ? AppColors.customerColor.withValues(alpha: 0.15)
+                              : (isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.withValues(alpha: 0.1)),
+                          child: Text(
+                            item['symbol']!,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: isSelected ? AppColors.customerColor : context.colors.textSecondary,
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          '${item['name']} (${item['code']})',
+                          style: TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                            color: isSelected ? AppColors.customerColor : context.colors.textPrimary,
+                          ),
+                        ),
+                        trailing: isSelected
+                            ? const Icon(Icons.check_circle_rounded, color: AppColors.customerColor, size: 20)
+                            : null,
+                        onTap: () async {
+                          final code = item['code']!;
+                          await PaymentService().setSelectedCurrency(code);
+                          if (mounted) {
+                            setState(() => _selectedCurrency = code);
+                          }
+                          if (ctx.mounted) Navigator.pop(ctx);
+                          if (mounted) {
+                            AppHelpers.showSuccess(
+                              this.context,
+                              'Currency updated to $code',
+                            );
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -212,8 +342,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             context,
             Icons.attach_money_rounded,
             AppLocalizations.of(context).currencyLabel,
-            'USD',
-            () => _comingSoon(AppLocalizations.of(context).currencyFeatureName),
+            _selectedCurrency,
+            () => _showCurrencySheet(context),
             isDark: isDark,
             isTablet: isTablet,
           ),
