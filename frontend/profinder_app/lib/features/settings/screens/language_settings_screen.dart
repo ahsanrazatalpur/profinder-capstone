@@ -9,6 +9,7 @@ import '../../../core/localization/locale_provider.dart';
 import '../../../core/localization/supported_languages.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../core/utils/app_helpers.dart';
 import '../../../services/auth_provider.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
@@ -114,12 +115,7 @@ class LanguageSettingsScreen extends StatelessWidget {
 
     if (context.mounted) {
       final t = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(t.languageUpdated),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      AppHelpers.showSuccess(context, t.languageUpdated);
     }
   }
 }

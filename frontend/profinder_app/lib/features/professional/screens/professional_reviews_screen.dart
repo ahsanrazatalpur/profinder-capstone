@@ -266,10 +266,7 @@ class _ProfessionalReviewsScreenState extends State<ProfessionalReviewsScreen> {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        OnlineStatusDot(
-                          isOnline: isOnline,
-                          size: 7,
-                        ),
+                        OnlineStatusDot(isOnline: isOnline, size: 7),
                       ],
                     ),
                     if (date.isNotEmpty)

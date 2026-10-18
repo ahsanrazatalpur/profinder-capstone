@@ -1713,14 +1713,17 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
           final date = review['created_at'] != null
               ? _formatDate(review['created_at'].toString())
               : '';
-          final rawPhoto = review['reviewer_photo'] ??
+          final rawPhoto =
+              review['reviewer_photo'] ??
               review['customer_photo'] ??
               review['photo_url'] ??
               review['photo'];
           final photo = AppHelpers.getFullImageUrl(rawPhoto?.toString());
-          final reviewerName = review['reviewer_name']?.toString() ??
+          final reviewerName =
+              review['reviewer_name']?.toString() ??
               AppLocalizations.of(context).userLabel;
-          final isOnline = review['reviewer_is_online'] == true ||
+          final isOnline =
+              review['reviewer_is_online'] == true ||
               review['is_online'] == true;
 
           return Container(
@@ -1762,7 +1765,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                                         placeholder: (_, _) => const SizedBox(),
                                         errorWidget: (_, _, _) => Center(
                                           child: Text(
-                                            AppHelpers.getInitials(reviewerName),
+                                            AppHelpers.getInitials(
+                                              reviewerName,
+                                            ),
                                             style: TextStyle(
                                               fontSize: AppFontSizes.small,
                                               fontWeight: FontWeight.bold,

@@ -1099,7 +1099,8 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                               ),
                       ),
                     ),
-                    isOnline: b['customer_is_online'] == true ||
+                    isOnline:
+                        b['customer_is_online'] == true ||
                         b['is_online'] == true,
                     size: isTablet ? 48 : 42,
                   ),
@@ -1125,7 +1126,8 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
                             ),
                             const SizedBox(width: 6),
                             OnlineStatusBadge(
-                              isOnline: b['customer_is_online'] == true ||
+                              isOnline:
+                                  b['customer_is_online'] == true ||
                                   b['is_online'] == true,
                               isCompact: true,
                             ),

@@ -137,8 +137,9 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     final rawId = _pro['user_id'] ?? _pro['id'];
     if (rawId == null) return;
     try {
-      final res =
-          await ApiService().get('${AppConstants.professionalProfile}$rawId/');
+      final res = await ApiService().get(
+        '${AppConstants.professionalProfile}$rawId/',
+      );
       if (res.statusCode == 200 && res.data is Map && mounted) {
         setState(() {
           _pro.addAll(Map<String, dynamic>.from(res.data as Map));
@@ -255,82 +256,17 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
         widget.professional['name']?.toString() ??
         AppLocalizations.of(context).professionalDefaultName;
 
-    showDialog(
+    UniversalDialog.showSuccess(
       context: context,
-      barrierDismissible: false,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusChip),
-        ),
-        backgroundColor: context.colors.surface,
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: context.colors.accentLight,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check_circle_rounded,
-                  size: 38,
-                  color: context.colors.accent,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                AppLocalizations.of(context).bookingSuccessTitle,
-                style: TextStyle(
-                  fontSize: AppFontSizes.title2,
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                AppLocalizations.of(context).bookingSuccessMessage(proName),
-                style: TextStyle(
-                  fontSize: AppFontSizes.secondary,
-                  color: context.colors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                  Navigator.pushNamed(context, '/bookings');
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 46),
-                  backgroundColor: AppColors.customerColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  ),
-                ),
-                child: Text(
-                  AppLocalizations.of(context).viewMyBookingsCta,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: () =>
-                    Navigator.popUntil(context, (route) => route.isFirst),
-                child: Text(
-                  AppLocalizations.of(context).backToHomeCta,
-                  style: TextStyle(color: context.colors.textSecondary),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      title: AppLocalizations.of(context).bookingSuccessTitle,
+      message: AppLocalizations.of(context).bookingSuccessMessage(proName),
+      primaryLabel: AppLocalizations.of(context).viewMyBookingsCta,
+      onPrimary: () {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushNamed(context, '/bookings');
+      },
+      secondaryLabel: AppLocalizations.of(context).backToHomeCta,
+      onSecondary: () => Navigator.popUntil(context, (route) => route.isFirst),
     );
   }
 
@@ -1003,9 +939,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
             decoration: BoxDecoration(
               color: AppColors.error.withValues(alpha: isDark ? 0.16 : 0.08),
               borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-              border: Border.all(
-                color: AppColors.error.withValues(alpha: 0.3),
-              ),
+              border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,7 +1,6 @@
 // lib/features/professional/screens/professional_profile_screen.dart
 
 import '../../../core/constants/app_sizes.dart';
-import '../../../core/theme/app_text_styles.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -2004,129 +2003,8 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
   }
 
   // ── Logout Dialog ─────────────────────────────────────────
-  // Centered layout + two equal buttons side by side, so it looks even in every
-  // language (LTR and RTL). No letterSpacing: it breaks joined Urdu/Arabic letters.
   Future<void> _confirmLogout(AuthProvider auth) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        final t = AppLocalizations.of(ctx);
-        return Dialog(
-          backgroundColor: ctx.colors.surface,
-          elevation: 0,
-          insetPadding: const EdgeInsets.symmetric(
-            horizontal: 28,
-            vertical: 24,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-          ),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 380),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 24, 22, 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.error.withValues(alpha: 0.12),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.logout_rounded,
-                        color: AppColors.error,
-                        size: 26,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    t.logoutDialogTitle,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: AppFontSizes.title,
-                      fontWeight: FontWeight.w700,
-                      color: ctx.colors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    t.logoutDialogContent,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: AppFontSizes.body,
-                      color: ctx.colors.textSecondary,
-                      height: 1.6,
-                    ),
-                  ),
-                  const SizedBox(height: 22),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Navigator.pop(ctx, false),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(46),
-                            foregroundColor: ctx.colors.textSecondary,
-                            side: BorderSide(color: ctx.colors.divider),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppSizes.radiusMd,
-                              ),
-                            ),
-                          ),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              t.cancelCta,
-                              maxLines: 1,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.pop(ctx, true),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(46),
-                            backgroundColor: AppColors.error,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppSizes.radiusMd,
-                              ),
-                            ),
-                          ),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              t.logoutCta,
-                              maxLines: 1,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    final confirmed = await UniversalDialog.showLogout(context);
     if (confirmed != true || !mounted) return;
     await auth.logout();
     if (!mounted) return;

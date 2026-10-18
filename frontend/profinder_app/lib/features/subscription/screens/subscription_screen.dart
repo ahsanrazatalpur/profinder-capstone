@@ -9,6 +9,7 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/app_helpers.dart';
 import '../../../services/payment_service.dart';
 
 class SubscriptionScreen extends StatefulWidget {
@@ -212,29 +213,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   void _showSuccess(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radius10),
-        ),
-      ),
-    );
+    AppHelpers.showSuccess(context, msg);
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        backgroundColor: AppColors.error,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radius10),
-        ),
-      ),
-    );
+    AppHelpers.showError(context, msg);
   }
 
   @override

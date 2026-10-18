@@ -35,6 +35,7 @@ import 'admin_verification_requests_screen.dart';
 import 'admin_about_page_screen.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../shared/widgets/universal_dialog.dart';
 
 class AdminMainScreen extends StatefulWidget {
   const AdminMainScreen({super.key});
@@ -494,52 +495,12 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
   // ── Logout ────────────────────────────────────────────────
   Future<void> _confirmLogout(AuthProvider auth) async {
     Navigator.pop(context); // close drawer
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        ),
-        title: const Row(
-          children: [
-            Icon(Icons.logout_rounded, color: AppColors.error, size: 20),
-            SizedBox(width: 8),
-            Text(
-              'Logout?',
-              style: TextStyle(
-                fontSize: AppFontSizes.title,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-        content: const Text(
-          'You will be logged out of the admin panel.',
-          style: TextStyle(
-            fontSize: AppFontSizes.secondary,
-            color: AppColors.grayDeep,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.neutral400),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-              ),
-            ),
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Logout', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+    final confirmed = await UniversalDialog.showLogout(
+      context,
+      title: 'Logout?',
+      message: 'You will be logged out of the admin panel.',
+      confirmLabel: 'Logout',
+      cancelLabel: 'Cancel',
     );
 
     if (confirmed == true && mounted) {

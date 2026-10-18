@@ -13,6 +13,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/theme/theme_mode_picker.dart';
 import '../../../core/theme/theme_provider.dart';
+import '../../../core/utils/app_helpers.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../notifications/services/push_notification_service.dart';
@@ -72,7 +73,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _onTogglePush(bool value) async {
-    final messenger = ScaffoldMessenger.of(context);
     final errorMsg = AppLocalizations.of(context).saveSettingsError;
 
     setState(() => _pushEnabled = value);
@@ -94,14 +94,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('pref_push_notifications', !value);
 
-      messenger.showSnackBar(
-        SnackBar(content: Text(errorMsg), behavior: SnackBarBehavior.floating),
-      );
+      if (!mounted) return;
+      AppHelpers.showError(context, errorMsg);
     }
   }
 
   Future<void> _onToggleEmail(bool value) async {
-    final messenger = ScaffoldMessenger.of(context);
     final errorMsg = AppLocalizations.of(context).saveSettingsError;
 
     setState(() => _emailEnabled = value);
@@ -118,23 +116,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('pref_email_notifications', !value);
 
-      messenger.showSnackBar(
-        SnackBar(content: Text(errorMsg), behavior: SnackBarBehavior.floating),
-      );
+      if (!mounted) return;
+      AppHelpers.showError(context, errorMsg);
     }
   }
 
   void _comingSoon(String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context).comingSoonMessage(feature)),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: context.colors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          side: BorderSide(color: context.colors.divider),
-        ),
-      ),
+    AppHelpers.showInfo(
+      context,
+      AppLocalizations.of(context).comingSoonMessage(feature),
     );
   }
 
@@ -435,97 +425,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // ── Delete Account Confirmation ────────────────────────
   void _confirmDelete(BuildContext context) {
-    showDialog(
+    final t = AppLocalizations.of(context);
+    UniversalDialog.showConfirmation(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: context.colors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        ),
-        elevation: 0,
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.delete_outline_rounded,
-                color: AppColors.error,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              AppLocalizations.of(context).deleteAccountDialogTitle,
-              style: TextStyle(
-                fontSize: AppFontSizes.title,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-                letterSpacing: -0.3,
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          AppLocalizations.of(context).deleteAccountDialogContent,
-          style: TextStyle(
-            fontSize: AppFontSizes.body,
-            color: context.colors.textSecondary,
-            height: 1.5,
-            letterSpacing: 0.2,
+      title: t.deleteAccountDialogTitle,
+      message: t.deleteAccountDialogContent,
+      confirmLabel: t.deleteAccountContactSupportCta,
+      cancelLabel: t.okCta,
+      type: UniversalDialogType.danger,
+      icon: Icons.delete_outline_rounded,
+    ).then((confirmed) {
+      if (confirmed == true && context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const NewTicketScreen(initialCategory: 'privacy'),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              foregroundColor: context.colors.textSecondary,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              ),
-            ),
-            child: Text(
-              AppLocalizations.of(context).okCta,
-              style: TextStyle(
-                fontSize: AppFontSizes.body,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.3,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      const NewTicketScreen(initialCategory: 'privacy'),
-                ),
-              );
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.error,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              ),
-            ),
-            child: Text(
-              AppLocalizations.of(context).deleteAccountContactSupportCta,
-              style: TextStyle(
-                fontSize: AppFontSizes.body,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+        );
+      }
+    });
   }
 }

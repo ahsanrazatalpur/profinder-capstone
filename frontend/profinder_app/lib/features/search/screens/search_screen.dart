@@ -610,26 +610,12 @@ class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
     });
     if (_aiMode) {
       final t = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.auto_awesome, color: Colors.white, size: 16),
-              const SizedBox(width: 8),
-              Text(
-                _isPremium
-                    ? t.searchAiPremiumActive
-                    : t.searchAiRemainingToday(_aiLimit - _aiUsed),
-              ),
-            ],
-          ),
-          backgroundColor: context.colors.primary,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          ),
-          duration: const Duration(seconds: 2),
-        ),
+      AppHelpers.showInfo(
+        context,
+        _isPremium
+            ? t.searchAiPremiumActive
+            : t.searchAiRemainingToday(_aiLimit - _aiUsed),
+        duration: const Duration(seconds: 2),
       );
       showBannerForScreen('ai_search', delaySeconds: 1);
     }

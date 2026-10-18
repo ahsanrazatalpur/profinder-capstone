@@ -67,11 +67,7 @@ class OnlineStatusDot extends StatelessWidget {
   final bool isOnline;
   final double size;
 
-  const OnlineStatusDot({
-    super.key,
-    required this.isOnline,
-    this.size = 8.0,
-  });
+  const OnlineStatusDot({super.key, required this.isOnline, this.size = 8.0});
 
   @override
   Widget build(BuildContext context) {
@@ -110,8 +106,12 @@ class OnlineStatusBadge extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: isOnline
-            ? (isDark ? AppColors.emerald.withValues(alpha: 0.16) : AppColors.emerald.withValues(alpha: 0.10))
-            : (isDark ? Colors.white.withValues(alpha: 0.06) : AppColors.neutral100),
+            ? (isDark
+                  ? AppColors.emerald.withValues(alpha: 0.16)
+                  : AppColors.emerald.withValues(alpha: 0.10))
+            : (isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : AppColors.neutral100),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: color.withValues(alpha: isOnline ? 0.35 : 0.20),

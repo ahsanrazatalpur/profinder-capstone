@@ -3,8 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../constants/app_constants.dart';
+import '../constants/app_sizes.dart';
 import '../theme/app_colors.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/widgets/universal_dialog.dart';
+
+export '../../shared/widgets/universal_dialog.dart';
 
 class AppHelpers {
   AppHelpers._();
@@ -74,40 +78,182 @@ class AppHelpers {
     return '$base$path';
   }
 
-  // ─── Snackbar ───────────────────────────────────────────
-  // same snackbar for full app
-  static void showSuccess(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
+  // ─── Universal Toast / Quick Popup ──────────────────────
+  static void _showUniversalToast({
+    required BuildContext context,
+    required String message,
+    required Color backgroundColor,
+    required IconData icon,
+    Duration duration = const Duration(seconds: 3),
+    SnackBarAction? action,
+  }) {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.success,
+        content: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.22),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: Colors.white, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  height: 1.35,
+                ),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: backgroundColor,
         behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
+        elevation: 6,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          side: BorderSide(
+            color: Colors.white.withValues(alpha: 0.15),
+            width: 1,
+          ),
+        ),
+        duration: duration,
+        action: action,
       ),
     );
   }
 
-  static void showError(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.error,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
-      ),
+  static void showSuccess(
+    BuildContext context,
+    String message, {
+    Duration duration = const Duration(seconds: 3),
+    SnackBarAction? action,
+  }) {
+    _showUniversalToast(
+      context: context,
+      message: message,
+      backgroundColor: AppColors.emerald,
+      icon: Icons.check_circle_rounded,
+      duration: duration,
+      action: action,
     );
   }
 
-  static void showInfo(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.info,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
-      ),
+  static void showError(
+    BuildContext context,
+    String message, {
+    Duration duration = const Duration(seconds: 3),
+    SnackBarAction? action,
+  }) {
+    _showUniversalToast(
+      context: context,
+      message: message,
+      backgroundColor: AppColors.error,
+      icon: Icons.error_outline_rounded,
+      duration: duration,
+      action: action,
     );
   }
+
+  static void showWarning(
+    BuildContext context,
+    String message, {
+    Duration duration = const Duration(seconds: 3),
+    SnackBarAction? action,
+  }) {
+    _showUniversalToast(
+      context: context,
+      message: message,
+      backgroundColor: AppColors.warningAmber,
+      icon: Icons.warning_amber_rounded,
+      duration: duration,
+      action: action,
+    );
+  }
+
+  static void showInfo(
+    BuildContext context,
+    String message, {
+    Duration duration = const Duration(seconds: 3),
+    SnackBarAction? action,
+  }) {
+    _showUniversalToast(
+      context: context,
+      message: message,
+      backgroundColor: AppColors.customerColor,
+      icon: Icons.info_outline_rounded,
+      duration: duration,
+      action: action,
+    );
+  }
+
+  // ─── Universal Dialog Forwarders ────────────────────────
+  static Future<bool?> showConfirmationDialog({
+    required BuildContext context,
+    required String title,
+    required String message,
+    String? confirmLabel,
+    String? cancelLabel,
+    UniversalDialogType type = UniversalDialogType.danger,
+    IconData? icon,
+    Widget? customContent,
+  }) => UniversalDialog.showConfirmation(
+    context: context,
+    title: title,
+    message: message,
+    confirmLabel: confirmLabel,
+    cancelLabel: cancelLabel,
+    type: type,
+    icon: icon,
+    customContent: customContent,
+  );
+
+  static Future<void> showSuccessDialog({
+    required BuildContext context,
+    required String title,
+    required String message,
+    required String primaryLabel,
+    required VoidCallback onPrimary,
+    String? secondaryLabel,
+    VoidCallback? onSecondary,
+    Widget? customContent,
+  }) => UniversalDialog.showSuccess(
+    context: context,
+    title: title,
+    message: message,
+    primaryLabel: primaryLabel,
+    onPrimary: onPrimary,
+    secondaryLabel: secondaryLabel,
+    onSecondary: onSecondary,
+    customContent: customContent,
+  );
+
+  static Future<bool?> showLogoutDialog(
+    BuildContext context, {
+    required VoidCallback onConfirm,
+  }) => UniversalDialog.showLogout(context, onConfirm: onConfirm);
+
+  static Future<bool?> showDeleteDialog(
+    BuildContext context, {
+    required String title,
+    required String message,
+    required VoidCallback onConfirm,
+  }) => UniversalDialog.showDelete(
+    context,
+    title: title,
+    message: message,
+    onConfirm: onConfirm,
+  );
 
   // ─── Role Helper ────────────────────────────────────────
   // return color according to roles
