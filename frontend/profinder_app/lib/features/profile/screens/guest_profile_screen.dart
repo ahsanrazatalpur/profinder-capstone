@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../auth/screens/login_screen.dart';
@@ -14,7 +13,9 @@ import '../../../core/theme/theme_mode_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/profile_header_card.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../../../shared/widgets/universal_dialog.dart';
 import '../../about/screens/about_screen.dart';
+import '../../settings/screens/settings_screen.dart';
 import '../../support/screens/help_center_screen.dart';
 import '../../support/screens/privacy_policy_screen.dart';
 import '../../../core/localization/locale_provider.dart';
@@ -35,7 +36,7 @@ class GuestProfileScreen extends StatelessWidget {
 
     final contentMaxWidth = width > 680 ? 680.0 : width;
     final hPad = ResponsiveUtils.screenPadding(width);
-    final sectionGap = ResponsiveUtils.sp(28, scale, min: 24, max: 32);
+    final sectionGap = ResponsiveUtils.sp(24, scale, min: 20, max: 28);
 
     return Scaffold(
       backgroundColor: context.colors.background,
@@ -92,7 +93,7 @@ class GuestProfileScreen extends StatelessWidget {
 
                 SizedBox(height: sectionGap),
 
-                // ── Quick Actions (locked placeholders prompting guests to sign in) ──
+                // ── Quick Actions Row (4 Cards) ──
                 Row(
                   children: [
                     Expanded(
@@ -138,62 +139,77 @@ class GuestProfileScreen extends StatelessWidget {
 
                 SizedBox(height: sectionGap),
 
-                // ── Account Section ─────────────────────────────
+                // ── Group 1: Activity & Services (Same as Customer/Pro) ──
                 ProfileSectionHeader(
                   title: t.accountSection,
-                  icon: Icons.account_circle_rounded,
+                  icon: Icons.work_outline_rounded,
                   iconColor: AppColors.indigo,
                   scale: scale,
-                ),
-                ProfileMenuTile(
-                  icon: Icons.edit_outlined,
-                  iconColor: AppColors.sky,
-                  title: t.profileEditProfile,
-                  subtitle: t.profileNotAvailable,
-                  isLocked: true,
-                  scale: scale,
-                  trailing: const SizedBox.shrink(),
-                ),
-                ProfileMenuTile(
-                  icon: Icons.login_rounded,
-                  iconColor: AppColors.indigo,
-                  title: t.login,
-                  subtitle: t.profileAccessBookingsProfile,
-                  scale: scale,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  ),
-                ),
-                ProfileMenuTile(
-                  icon: Icons.person_add_rounded,
-                  iconColor: AppColors.emerald,
-                  title: t.register,
-                  subtitle: t.profileCreateFreeCustomerAccount,
-                  scale: scale,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                  ),
                 ),
                 ProfileMenuTile(
                   icon: Icons.workspace_premium_rounded,
-                  iconColor: AppColors.accentPurple,
-                  title: t.profileBecomeProfessional,
-                  subtitle: t.profileListServicesGetHired,
+                  iconColor: AppColors.warningAmber,
+                  title: t.subscriptionUpgradeLabel,
+                  subtitle: t.subscriptionUpgradeStatus,
+                  isLocked: true,
                   scale: scale,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          const RegisterScreen(initialRole: 'professional'),
-                    ),
-                  ),
+                  onLockedTap: () =>
+                      _promptSignIn(context, t.subscriptionUpgradeLabel),
+                ),
+                ProfileMenuTile(
+                  icon: Icons.account_balance_wallet_outlined,
+                  iconColor: AppColors.badgeTrending,
+                  title: t.walletActionLabel,
+                  subtitle: t.walletActionSubtitle,
+                  isLocked: true,
+                  scale: scale,
+                  onLockedTap: () =>
+                      _promptSignIn(context, t.walletActionLabel),
+                ),
+                ProfileMenuTile(
+                  icon: Icons.calendar_today_outlined,
+                  iconColor: AppColors.cyan,
+                  title: t.bookingsActionLabel,
+                  subtitle: t.bookingsActionSubtitle,
+                  isLocked: true,
+                  scale: scale,
+                  onLockedTap: () =>
+                      _promptSignIn(context, t.bookingsActionLabel),
+                ),
+                ProfileMenuTile(
+                  icon: Icons.favorite_border_rounded,
+                  iconColor: AppColors.pink,
+                  title: t.savedProfessionalsActionLabel,
+                  subtitle: t.savedProfessionalsActionSubtitle,
+                  isLocked: true,
+                  scale: scale,
+                  onLockedTap: () =>
+                      _promptSignIn(context, t.savedProfessionalsActionLabel),
+                ),
+                ProfileMenuTile(
+                  icon: Icons.rate_review_outlined,
+                  iconColor: AppColors.violet,
+                  title: t.reviewsActionLabel,
+                  subtitle: t.reviewsActionSubtitle,
+                  isLocked: true,
+                  scale: scale,
+                  onLockedTap: () =>
+                      _promptSignIn(context, t.reviewsActionLabel),
+                ),
+                ProfileMenuTile(
+                  icon: Icons.receipt_long_outlined,
+                  iconColor: AppColors.indigo,
+                  title: t.paymentsActionLabel,
+                  subtitle: t.paymentsActionSubtitle,
+                  isLocked: true,
+                  scale: scale,
+                  onLockedTap: () =>
+                      _promptSignIn(context, t.paymentsActionLabel),
                 ),
 
                 SizedBox(height: sectionGap),
 
-                // ── Preferences Section ─────────────────────────
+                // ── Group 2: Preferences (Same as Customer/Pro) ──
                 ProfileSectionHeader(
                   title: t.preferencesSection,
                   icon: Icons.settings_rounded,
@@ -202,12 +218,13 @@ class GuestProfileScreen extends StatelessWidget {
                 ),
                 ProfileMenuTile(
                   icon: Icons.notifications_outlined,
-                  iconColor: AppColors.badgePopular,
-                  title: t.notifications,
-                  subtitle: t.profileNotAvailable,
+                  iconColor: AppColors.rose,
+                  title: t.notificationsActionLabel,
+                  subtitle: t.notificationsActionSubtitle,
                   isLocked: true,
                   scale: scale,
-                  trailing: const SizedBox.shrink(),
+                  onLockedTap: () =>
+                      _promptSignIn(context, t.notificationsActionLabel),
                 ),
                 Builder(
                   builder: (context) {
@@ -243,18 +260,30 @@ class GuestProfileScreen extends StatelessWidget {
                   },
                 ),
                 ProfileMenuTile(
+                  icon: Icons.settings_outlined,
+                  iconColor: AppColors.slate500,
+                  title: t.settingsActionLabel,
+                  subtitle: t.settingsActionSubtitle,
+                  scale: scale,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                  ),
+                ),
+                ProfileMenuTile(
                   icon: Icons.security_rounded,
-                  iconColor: AppColors.greenDeep,
-                  title: t.security,
-                  subtitle: t.profileNotAvailable,
+                  iconColor: AppColors.emerald,
+                  title: t.securityActionLabel,
+                  subtitle: t.securityActionSubtitle,
                   isLocked: true,
                   scale: scale,
-                  trailing: const SizedBox.shrink(),
+                  onLockedTap: () =>
+                      _promptSignIn(context, t.securityActionLabel),
                 ),
 
                 SizedBox(height: sectionGap),
 
-                // ── Support Section ─────────────────────────────
+                // ── Group 3: Trust, Safety & Support (Same as Customer/Pro) ──
                 ProfileSectionHeader(
                   title: t.supportSection,
                   icon: Icons.support_rounded,
@@ -262,9 +291,30 @@ class GuestProfileScreen extends StatelessWidget {
                   scale: scale,
                 ),
                 ProfileMenuTile(
-                  icon: Icons.help_center_rounded,
-                  iconColor: AppColors.warningAmber,
-                  title: t.profileHelpSupport,
+                  icon: Icons.shield_outlined,
+                  iconColor: AppColors.dangerRed,
+                  title: t.myTsAccountStatusTitle,
+                  subtitle: t.myTsAccountStatusActionSubtitle,
+                  isLocked: true,
+                  scale: scale,
+                  onLockedTap: () =>
+                      _promptSignIn(context, t.myTsAccountStatusTitle),
+                ),
+                ProfileMenuTile(
+                  icon: Icons.outlined_flag_rounded,
+                  iconColor: AppColors.sky,
+                  title: t.myTsMyReportsTitle,
+                  subtitle: t.myTsMyReportsActionSubtitle,
+                  isLocked: true,
+                  scale: scale,
+                  onLockedTap: () =>
+                      _promptSignIn(context, t.myTsMyReportsTitle),
+                ),
+                ProfileMenuTile(
+                  icon: Icons.help_outline_rounded,
+                  iconColor: AppColors.teal,
+                  title: t.helpActionLabel,
+                  subtitle: t.helpActionSubtitle,
                   scale: scale,
                   onTap: () => Navigator.push(
                     context,
@@ -272,9 +322,19 @@ class GuestProfileScreen extends StatelessWidget {
                   ),
                 ),
                 ProfileMenuTile(
+                  icon: Icons.support_agent_rounded,
+                  iconColor: AppColors.accentPurple,
+                  title: t.ticketsTitle,
+                  subtitle: t.ticketsTileSubtitle,
+                  isLocked: true,
+                  scale: scale,
+                  onLockedTap: () => _promptSignIn(context, t.ticketsTitle),
+                ),
+                ProfileMenuTile(
                   icon: Icons.privacy_tip_rounded,
                   iconColor: AppColors.emerald,
                   title: t.profilePrivacyPolicy,
+                  subtitle: t.privacyActionSubtitle,
                   scale: scale,
                   onTap: () => Navigator.push(
                     context,
@@ -286,11 +346,30 @@ class GuestProfileScreen extends StatelessWidget {
                 ProfileMenuTile(
                   icon: Icons.info_rounded,
                   iconColor: AppColors.indigo,
-                  title: t.profileAboutProfinder,
+                  title: t.aboutActionLabel,
+                  subtitle: t.aboutActionSubtitle,
                   scale: scale,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const AboutScreen()),
+                  ),
+                ),
+
+                SizedBox(height: sectionGap),
+
+                // ── Group 4: Join / Become Pro Banner ──
+                ProfileMenuTile(
+                  icon: Icons.workspace_premium_rounded,
+                  iconColor: AppColors.accentPurple,
+                  title: t.profileBecomeProfessional,
+                  subtitle: t.profileListServicesGetHired,
+                  scale: scale,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          const RegisterScreen(initialRole: 'professional'),
+                    ),
                   ),
                 ),
 
@@ -333,36 +412,6 @@ class GuestProfileScreen extends StatelessWidget {
   }
 
   void _promptSignIn(BuildContext context, String feature) {
-    final t = AppLocalizations.of(context);
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        ),
-        title: Text(t.searchLoginRequired),
-        content: Text('${t.profileLoginBookSaveManageRequests} ($feature)'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(t.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(0, 40),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-            ),
-            child: Text(t.login),
-          ),
-        ],
-      ),
-    );
+    UniversalDialog.showLoginPrompt(context, featureName: feature);
   }
 }

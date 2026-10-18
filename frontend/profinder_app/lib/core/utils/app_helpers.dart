@@ -255,6 +255,20 @@ class AppHelpers {
     onConfirm: onConfirm,
   );
 
+  static Future<bool?> showLoginPromptDialog(
+    BuildContext context, {
+    String? featureName,
+    String? title,
+    String? message,
+    VoidCallback? onLogin,
+  }) => UniversalDialog.showLoginPrompt(
+    context,
+    featureName: featureName,
+    title: title,
+    message: message,
+    onLogin: onLogin,
+  );
+
   // ─── Role Helper ────────────────────────────────────────
   // return color according to roles
   static Color getRoleColor(String role) {

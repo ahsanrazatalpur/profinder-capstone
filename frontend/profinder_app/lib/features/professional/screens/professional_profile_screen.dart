@@ -1,6 +1,7 @@
 // lib/features/professional/screens/professional_profile_screen.dart
 
 import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_text_styles.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -390,8 +391,9 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
   ImageProvider? _getAvatar() {
     if (kIsWeb && _webBytes != null) return MemoryImage(_webBytes!);
     if (!kIsWeb && _pickedImage != null) return FileImage(_pickedImage!);
-    if (_photoUrl != null && _photoUrl!.isNotEmpty)
+    if (_photoUrl != null && _photoUrl!.isNotEmpty) {
       return NetworkImage(_photoUrl!);
+    }
     return null;
   }
 
@@ -1535,15 +1537,39 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
     );
   }
 
-  // ── Account Actions ────────────────────────────────────
-  Widget _buildAccountActions(
-    AuthProvider auth,
+  Widget _groupLabel(String text) => Padding(
+    padding: const EdgeInsets.only(left: 4, bottom: 8),
+    child: Text(
+      text.toUpperCase(),
+      style: TextStyle(
+        fontSize: AppFontSizes.caption,
+        fontWeight: FontWeight.bold,
+        color: context.colors.textSecondary,
+        letterSpacing: 0.6,
+      ),
+    ),
+  );
+
+  Widget _menuGroup(
+    List<Widget> tiles,
     bool isDark,
     bool isTablet,
     bool isDesktop,
   ) {
     final dividerIndent = isDesktop ? 76.0 : (isTablet ? 72.0 : 68.0);
-
+    final withDividers = <Widget>[];
+    for (var i = 0; i < tiles.length; i++) {
+      if (i > 0) {
+        withDividers.add(
+          Divider(
+            height: 1,
+            indent: dividerIndent,
+            color: context.colors.divider,
+          ),
+        );
+      }
+      withDividers.add(tiles[i]);
+    }
     return Material(
       color: context.colors.surface,
       borderRadius: BorderRadius.circular(
@@ -1569,70 +1595,30 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
             ),
           ],
         ),
-        child: Column(
-          children: [
-            Builder(
-              builder: (context) {
-                final mode = context.watch<ThemeProvider>().themeMode;
-                const themeColor = AppColors.accentPurple;
-                return Column(
-                  children: [
-                    ListTile(
-                      leading: Container(
-                        width: isDesktop ? 42 : 38,
-                        height: isDesktop ? 42 : 38,
-                        decoration: BoxDecoration(
-                          color: themeColor.withValues(alpha: 0.14),
-                          borderRadius: BorderRadius.circular(
-                            AppSizes.radiusMd,
-                          ),
-                        ),
-                        child: Icon(
-                          themeModeIcon(mode),
-                          size: isDesktop ? 22.0 : (isTablet ? 20.0 : 19.0),
-                          color: themeColor,
-                        ),
-                      ),
-                      title: Text(
-                        AppLocalizations.of(context).themeModeTitle,
-                        style: TextStyle(
-                          fontSize: isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0),
-                          fontWeight: FontWeight.w600,
-                          color: context.colors.textPrimary,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                      subtitle: Text(
-                        themeModeLabel(AppLocalizations.of(context), mode),
-                        style: TextStyle(
-                          fontSize: isDesktop ? 13.0 : (isTablet ? 12.0 : 11.0),
-                          color: context.colors.textSecondary,
-                        ),
-                      ),
-                      trailing: Icon(
-                        Icons.chevron_right_rounded,
-                        size: isDesktop ? 20.0 : 18.0,
-                        color: context.colors.textSecondary,
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0),
-                        vertical: 4.0,
-                      ),
-                      onTap: () => showThemeModeSheet(context),
-                    ),
-                    Divider(
-                      height: 1,
-                      indent: dividerIndent,
-                      color: context.colors.divider,
-                    ),
-                  ],
-                );
-              },
-            ),
+        child: Column(children: withDividers),
+      ),
+    );
+  }
+
+  // ── Account Actions ────────────────────────────────────
+  Widget _buildAccountActions(
+    AuthProvider auth,
+    bool isDark,
+    bool isTablet,
+    bool isDesktop,
+  ) {
+    final t = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Group 1: Workspace & Services ──────────────────────
+        _groupLabel(t.accountSection),
+        _menuGroup(
+          [
             _buildMenuItem(
               icon: Icons.event_available_outlined,
-              title: AppLocalizations.of(context).availabilityTitle,
-              subtitle: AppLocalizations.of(context).availabilityWeeklySubtitle,
+              title: t.availabilityTitle,
+              subtitle: t.availabilityWeeklySubtitle,
               iconColor: AppColors.professionalColor,
               isDark: isDark,
               isTablet: isTablet,
@@ -1644,14 +1630,9 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 ),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
             _buildMenuItem(
               icon: Icons.photo_library_outlined,
-              title: AppLocalizations.of(context).myPortfolioLabel,
+              title: t.myPortfolioLabel,
               iconColor: AppColors.primary,
               isDark: isDark,
               isTablet: isTablet,
@@ -1663,14 +1644,9 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 ),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
             _buildMenuItem(
               icon: Icons.card_membership_outlined,
-              title: AppLocalizations.of(context).certificatesLabel,
+              title: t.certificatesLabel,
               iconColor: AppColors.warningAmber,
               isDark: isDark,
               isTablet: isTablet,
@@ -1682,14 +1658,9 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 ),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
             _buildMenuItem(
               icon: Icons.photo_outlined,
-              title: AppLocalizations.of(context).galleryLabel,
+              title: t.galleryLabel,
               iconColor: AppColors.pink,
               isDark: isDark,
               isTablet: isTablet,
@@ -1701,14 +1672,9 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 ),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
             _buildMenuItem(
               icon: Icons.account_balance_wallet_outlined,
-              title: AppLocalizations.of(context).walletEarningsLabel,
+              title: t.walletEarningsLabel,
               iconColor: AppColors.successDeep,
               isDark: isDark,
               isTablet: isTablet,
@@ -1720,14 +1686,9 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 ),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
             _buildMenuItem(
               icon: Icons.workspace_premium_rounded,
-              title: AppLocalizations.of(context).subscriptionUpgradeLabel,
+              title: t.subscriptionUpgradeLabel,
               iconColor: AppColors.warningAmber,
               isDark: isDark,
               isTablet: isTablet,
@@ -1740,72 +1701,31 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 ),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
+          ],
+          isDark,
+          isTablet,
+          isDesktop,
+        ),
+
+        const SizedBox(height: 16),
+
+        // ── Group 2: Preferences ───────────────────────────────
+        _groupLabel(t.preferencesGroupLabel),
+        _menuGroup(
+          [
             _buildMenuItem(
-              icon: Icons.lock_outline_rounded,
-              title: AppLocalizations.of(context).changePasswordLabel,
-              iconColor: AppColors.emerald,
+              icon: Icons.notifications_outlined,
+              title: t.notificationsActionLabel,
+              subtitle: t.notificationsActionSubtitle,
+              iconColor: AppColors.rose,
               isDark: isDark,
               isTablet: isTablet,
               isDesktop: isDesktop,
-              onTap: () => showDialog(
-                context: context,
-                builder: (_) => const ChangePasswordDialog(),
-              ),
-            ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
-            // Trust & Safety Part 8 — user-facing account status + reports.
-            _buildMenuItem(
-              icon: Icons.shield_outlined,
-              title: AppLocalizations.of(context).myTsAccountStatusTitle,
-              subtitle: AppLocalizations.of(
-                context,
-              ).myTsAccountStatusActionSubtitle,
-              iconColor: AppColors.dangerRed,
-              isDark: isDark,
-              isTablet: isTablet,
-              isDesktop: isDesktop,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AccountStatusScreen()),
-              ),
-            ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
-            _buildMenuItem(
-              icon: Icons.outlined_flag_rounded,
-              title: AppLocalizations.of(context).myTsMyReportsTitle,
-              subtitle: AppLocalizations.of(
-                context,
-              ).myTsMyReportsActionSubtitle,
-              iconColor: AppColors.sky,
-              isDark: isDark,
-              isTablet: isTablet,
-              isDesktop: isDesktop,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const MyReportsScreen()),
-              ),
-            ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
+              onTap: () => Navigator.pushNamed(context, '/notifications'),
             ),
             _buildMenuItem(
               icon: Icons.language_rounded,
-              title: AppLocalizations.of(context).languageLabel,
+              title: t.languageLabel,
               subtitle: SupportedLanguages.byCode(
                 context.watch<LocaleProvider>().locale.languageCode,
               ).nativeName,
@@ -1820,15 +1740,26 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 ),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
+            // Theme Mode picker (Light, Dark, System) directly on profile screen
+            Builder(
+              builder: (context) {
+                final mode = context.watch<ThemeProvider>().themeMode;
+                return _buildMenuItem(
+                  icon: themeModeIcon(mode),
+                  title: t.themeModeTitle,
+                  subtitle: themeModeLabel(t, mode),
+                  iconColor: AppColors.accentPurple,
+                  isDark: isDark,
+                  isTablet: isTablet,
+                  isDesktop: isDesktop,
+                  onTap: () => showThemeModeSheet(context),
+                );
+              },
             ),
             _buildMenuItem(
               icon: Icons.settings_outlined,
-              title: AppLocalizations.of(context).settingsActionLabel,
-              subtitle: AppLocalizations.of(context).settingsActionSubtitle,
+              title: t.settingsActionLabel,
+              subtitle: t.settingsActionSubtitle,
               iconColor: AppColors.slate500,
               isDark: isDark,
               isTablet: isTablet,
@@ -1838,15 +1769,60 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 MaterialPageRoute(builder: (_) => const SettingsScreen()),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
+            _buildMenuItem(
+              icon: Icons.lock_outline_rounded,
+              title: t.changePasswordLabel,
+              iconColor: AppColors.emerald,
+              isDark: isDark,
+              isTablet: isTablet,
+              isDesktop: isDesktop,
+              onTap: () => showDialog(
+                context: context,
+                builder: (_) => const ChangePasswordDialog(),
+              ),
+            ),
+          ],
+          isDark,
+          isTablet,
+          isDesktop,
+        ),
+
+        const SizedBox(height: 16),
+
+        // ── Group 3: Trust, Safety & Support ──────────────────
+        _groupLabel(t.supportSection),
+        _menuGroup(
+          [
+            _buildMenuItem(
+              icon: Icons.shield_outlined,
+              title: t.myTsAccountStatusTitle,
+              subtitle: t.myTsAccountStatusActionSubtitle,
+              iconColor: AppColors.dangerRed,
+              isDark: isDark,
+              isTablet: isTablet,
+              isDesktop: isDesktop,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AccountStatusScreen()),
+              ),
+            ),
+            _buildMenuItem(
+              icon: Icons.outlined_flag_rounded,
+              title: t.myTsMyReportsTitle,
+              subtitle: t.myTsMyReportsActionSubtitle,
+              iconColor: AppColors.sky,
+              isDark: isDark,
+              isTablet: isTablet,
+              isDesktop: isDesktop,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MyReportsScreen()),
+              ),
             ),
             _buildMenuItem(
               icon: Icons.help_outline_rounded,
-              title: AppLocalizations.of(context).helpSupportLabel,
-              subtitle: AppLocalizations.of(context).helpActionSubtitle,
+              title: t.helpSupportLabel,
+              subtitle: t.helpActionSubtitle,
               iconColor: AppColors.teal,
               isDark: isDark,
               isTablet: isTablet,
@@ -1861,15 +1837,10 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 ),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
             _buildMenuItem(
               icon: Icons.support_agent_rounded,
-              title: AppLocalizations.of(context).ticketsTitle,
-              subtitle: AppLocalizations.of(context).ticketsTileSubtitle,
+              title: t.ticketsTitle,
+              subtitle: t.ticketsTileSubtitle,
               iconColor: AppColors.accentPurple,
               isDark: isDark,
               isTablet: isTablet,
@@ -1879,15 +1850,10 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 MaterialPageRoute(builder: (_) => const MyTicketsScreen()),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
             _buildMenuItem(
               icon: Icons.privacy_tip_outlined,
-              title: AppLocalizations.of(context).profilePrivacyPolicy,
-              subtitle: AppLocalizations.of(context).privacyActionSubtitle,
+              title: t.profilePrivacyPolicy,
+              subtitle: t.privacyActionSubtitle,
               iconColor: AppColors.slate500,
               isDark: isDark,
               isTablet: isTablet,
@@ -1897,15 +1863,10 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
-            ),
             _buildMenuItem(
               icon: Icons.info_outline_rounded,
-              title: AppLocalizations.of(context).aboutLabel,
-              subtitle: AppLocalizations.of(context).aboutActionSubtitle,
+              title: t.aboutLabel,
+              subtitle: t.aboutActionSubtitle,
               iconColor: AppColors.indigo,
               isDark: isDark,
               isTablet: isTablet,
@@ -1915,14 +1876,34 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                 MaterialPageRoute(builder: (_) => const AboutScreen()),
               ),
             ),
-            Divider(
-              height: 1,
-              indent: dividerIndent,
-              color: context.colors.divider,
+          ],
+          isDark,
+          isTablet,
+          isDesktop,
+        ),
+
+        const SizedBox(height: 16),
+
+        // ── Group 4: Logout ────────────────────────────────────
+        Material(
+          color: context.colors.surface,
+          borderRadius: BorderRadius.circular(
+            isDesktop ? 18.0 : (isTablet ? 16.0 : 14.0),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                isDesktop ? 18.0 : (isTablet ? 16.0 : 14.0),
+              ),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.grey.withValues(alpha: 0.1),
+              ),
             ),
-            _buildMenuItem(
+            child: _buildMenuItem(
               icon: Icons.logout_rounded,
-              title: AppLocalizations.of(context).logoutActionLabel,
+              title: t.logoutActionLabel,
               iconColor: AppColors.error,
               titleColor: AppColors.error,
               isDark: isDark,
@@ -1931,9 +1912,9 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               showArrow: false,
               onTap: () => _confirmLogout(auth),
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 

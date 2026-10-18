@@ -21,6 +21,7 @@ class ProfileMenuTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final VoidCallback? onTap;
+  final VoidCallback? onLockedTap;
   final Widget? trailing;
   final bool isLocked;
   final double? scale;
@@ -34,6 +35,7 @@ class ProfileMenuTile extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.onTap,
+    this.onLockedTap,
     this.trailing,
     this.isLocked = false,
     this.scale,
@@ -77,7 +79,7 @@ class ProfileMenuTile extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         child: InkWell(
-          onTap: isLocked ? null : onTap,
+          onTap: isLocked ? onLockedTap : onTap,
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           child: Padding(
             padding:
@@ -115,7 +117,7 @@ class ProfileMenuTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: ResponsiveUtils.sp(
-                            15,
+                            14.5,
                             effectiveScale,
                             min: 14,
                             max: 17,
@@ -149,18 +151,31 @@ class ProfileMenuTile extends StatelessWidget {
                   ),
                 ),
                 trailing ??
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: context.colors.textSecondary.withValues(
-                        alpha: 0.5,
-                      ),
-                      size: ResponsiveUtils.sp(
-                        20,
-                        effectiveScale,
-                        min: 18,
-                        max: 24,
-                      ),
-                    ),
+                    (isLocked
+                        ? Icon(
+                            Icons.lock_outline_rounded,
+                            color: context.colors.textSecondary.withValues(
+                              alpha: 0.5,
+                            ),
+                            size: ResponsiveUtils.sp(
+                              18,
+                              effectiveScale,
+                              min: 16,
+                              max: 20,
+                            ),
+                          )
+                        : Icon(
+                            Icons.chevron_right_rounded,
+                            color: context.colors.textSecondary.withValues(
+                              alpha: 0.5,
+                            ),
+                            size: ResponsiveUtils.sp(
+                              20,
+                              effectiveScale,
+                              min: 18,
+                              max: 24,
+                            ),
+                          )),
               ],
             ),
           ),

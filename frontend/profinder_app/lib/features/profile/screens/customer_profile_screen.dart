@@ -35,6 +35,8 @@ import 'help_screen.dart';
 import '../../trust_safety/screens/my_reports_screen.dart';
 import '../../trust_safety/screens/account_status_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
+import '../../../core/theme/theme_provider.dart';
+import '../../../core/theme/theme_mode_picker.dart';
 import '../../../shared/widgets/profile_header_card.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import '../../about/screens/about_screen.dart';
@@ -880,6 +882,20 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             ),
             iconColor: AppColors.cyan,
           ),
+          // Theme Mode picker (Light, Dark, System) directly on profile screen
+          Builder(
+            builder: (context) {
+              final t = AppLocalizations.of(context);
+              final mode = context.watch<ThemeProvider>().themeMode;
+              return _actionTile(
+                themeModeIcon(mode),
+                t.themeModeTitle,
+                themeModeLabel(t, mode),
+                () => showThemeModeSheet(context),
+                iconColor: AppColors.indigo,
+              );
+            },
+          ),
           _actionTile(
             Icons.settings_outlined,
             AppLocalizations.of(context).settingsActionLabel,
@@ -900,6 +916,11 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             ),
             iconColor: AppColors.emerald,
           ),
+        ]),
+
+        const SizedBox(height: 16),
+        _groupLabel(AppLocalizations.of(context).supportSection),
+        _menuGroup([
           // Trust & Safety Part 8 — user-facing account status + reports.
           _actionTile(
             Icons.shield_outlined,

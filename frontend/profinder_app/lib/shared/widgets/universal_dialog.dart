@@ -377,4 +377,36 @@ class UniversalDialog {
     }
     return confirmed;
   }
+
+  static Future<bool?> showLoginPrompt(
+    BuildContext context, {
+    String? featureName,
+    String? title,
+    String? message,
+    VoidCallback? onLogin,
+  }) async {
+    final t = AppLocalizations.of(context);
+    final feat = featureName != null ? ' ($featureName)' : '';
+    final confirmed = await showConfirmation(
+      context: context,
+      title: title ?? 'Sign In Required',
+      message:
+          message ??
+          'You are currently browsing as a guest. Please log in or create an account to access this feature$feat.',
+      confirmLabel: t.login,
+      cancelLabel: t.cancelCta,
+      type: UniversalDialogType.info,
+      icon: Icons.lock_outline_rounded,
+      customColor: AppColors.customerColor,
+    );
+
+    if (confirmed == true) {
+      if (onLogin != null) {
+        onLogin();
+      } else if (context.mounted) {
+        Navigator.pushNamed(context, '/login');
+      }
+    }
+    return confirmed;
+  }
 }
