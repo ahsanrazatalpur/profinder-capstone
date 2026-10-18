@@ -71,13 +71,6 @@ class GoogleAuthService {
     final googleSignIn = kIsWeb ? _webGoogleSignIn : _mobileGoogleSignIn;
 
     try {
-      // Disconnect/sign out any stale cached session to prevent "kabhi hoti kabhi nh" hanging
-      try {
-        await googleSignIn.signOut();
-      } catch (_) {
-        // Silently ignore sign-out errors on fresh sessions
-      }
-
       final googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         // User voluntarily dismissed or cancelled the Google account picker
@@ -104,6 +97,36 @@ class GoogleAuthService {
         debugPrint('[GOOGLE AUTH SERVICE ERROR] $errStr');
       }
 
+      // Check for user cancellation first
+      if (errStr.contains('popup_closed_by_user') ||
+          errStr.contains('cancelled') ||
+          errStr.contains('canceled') ||
+          errStr.contains('User canceled') ||
+          errStr.contains('12501')) {
+        return GoogleAuthResult.cancelled();
+      }
+
+      // Automatically fall back to Web Bridge on Web or if native auth encounters an issue
+      if (kIsWeb ||
+          errStr.contains('Unimplemented') ||
+          errStr.contains('MissingPluginException') ||
+          errStr.contains('origin') ||
+          errStr.contains('gsi_logger') ||
+          errStr.contains('popup_blocked')) {
+        if (context.mounted) {
+          debugPrint('[GOOGLE AUTH] Native sign-in encountered an issue, launching Web Bridge fallback...');
+          try {
+            return await performDesktopGoogleSignIn(
+              context,
+              role: role,
+              baseUrl: AppConstants.baseUrl,
+            );
+          } catch (fallbackErr) {
+            debugPrint('[GOOGLE AUTH FALLBACK ERROR] $fallbackErr');
+          }
+        }
+      }
+
       if (errStr.contains('ApiException: 10') ||
           errStr.contains('DEVELOPER_ERROR')) {
         return GoogleAuthResult.error(
@@ -112,7 +135,7 @@ class GoogleAuthService {
       } else if (errStr.contains('ApiException: 12500') ||
           errStr.contains('SIGN_IN_FAILED')) {
         return GoogleAuthResult.error(
-          'Google Sign-In failed. Please check your Google Play Services or network connection.',
+          'Google Sign-In failed on device. Please check your Google Play Services or network connection.',
         );
       } else if (errStr.contains('network') ||
           errStr.contains('SocketException') ||
@@ -120,23 +143,10 @@ class GoogleAuthService {
         return GoogleAuthResult.error(
           'Network connection error while connecting to Google. Please check your internet connection.',
         );
-      } else if (errStr.contains('Unimplemented') ||
-          errStr.contains('MissingPluginException')) {
-        // Fallback to desktop browser bridge if native mobile plugin throws unimplemented
-        if (context.mounted) {
-          return await performDesktopGoogleSignIn(
-            context,
-            role: role,
-            baseUrl: AppConstants.baseUrl,
-          );
-        }
-        return GoogleAuthResult.error(
-          'Google Sign-In is not supported natively on this platform.',
-        );
       }
 
       return GoogleAuthResult.error(
-        'Google Sign-In could not be completed. Please try again.',
+        'Google Sign-In could not be completed: ${errStr.replaceFirst('Exception: ', '').replaceFirst('PlatformException(', '')}',
       );
     }
   }

@@ -188,6 +188,15 @@
       const urlParams = new URLSearchParams(window.location.search);
       const port = urlParams.get('port');
 
+      // Post back to Flutter Web opener if available
+      try {
+        if (window.opener && window.opener !== window) {
+          window.opener.postMessage({ type: 'PROFINDER_GOOGLE_AUTH', id_token: idToken }, '*');
+        }
+      } catch (e) {
+        console.warn('postMessage to opener failed:', e);
+      }
+
       if (port) {
         fetch('http://127.0.0.1:' + port + '/auth?id_token=' + encodeURIComponent(idToken))
           .then(res => {
