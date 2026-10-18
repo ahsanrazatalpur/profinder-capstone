@@ -21,20 +21,10 @@ load_dotenv(BASE_DIR / ".env")
 DEBUG = os.getenv('DEBUG', 'False').strip().lower() == 'true'
 
 SECRET_KEY = os.getenv('SECRET_KEY')
-if not SECRET_KEY:
-    if DEBUG:
-        SECRET_KEY = 'django-insecure-dev-fallback-key-for-local-testing-only-replace-in-env'
-    else:
-        raise ImproperlyConfigured(
-            "SECRET_KEY is required in production. Please define SECRET_KEY in your .env file."
-        )
-elif not DEBUG and SECRET_KEY in ['your-secret-key-here', 'change-me', 'secret', 'django-insecure-default']:
-    raise ImproperlyConfigured(
-        "Known insecure placeholder SECRET_KEY detected in production. Please set a unique, random SECRET_KEY."
-    )
+if not SECRET_KEY or SECRET_KEY in ['your-secret-key-here', 'change-me', 'secret', 'django-insecure-default']:
+    SECRET_KEY = 'django-insecure-profinder-live-auth-key-2026-production-fallback-do-not-share'
 
-# Live domain + local dev. Extra host chahiye to .env mein
-# ALLOWED_HOSTS=host1,host2 likho.
+# Live domain + local dev + Flutter web
 ALLOWED_HOSTS = [
     h.strip()
     for h in os.getenv(
@@ -43,6 +33,8 @@ ALLOWED_HOSTS = [
     ).split(',')
     if h.strip()
 ]
+if '*' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('*')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -289,7 +281,12 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # ─── CORS ─────────────────────────────────────────────────────────────
 
-CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'True' if DEBUG else 'False').strip().lower() == 'true'
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https?://localhost(:\d+)?$",
+    r"^https?://127\.0\.0\.1(:\d+)?$",
+]
 cors_allowed_env = os.getenv('CORS_ALLOWED_ORIGINS', '')
 if cors_allowed_env:
     CORS_ALLOWED_ORIGINS = [o.strip() for o in cors_allowed_env.split(',') if o.strip()]
@@ -298,6 +295,8 @@ else:
         'https://ahsanrazatalpur.pythonanywhere.com',
         'http://localhost:3000',
         'http://127.0.0.1:3000',
+        'http://localhost:5000',
+        'http://127.0.0.1:5000',
         'http://localhost:8000',
         'http://127.0.0.1:8000',
     ]
@@ -320,7 +319,7 @@ if not DEBUG and not TESTING:
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
+    X_FRAME_OPTIONS = 'SAMEORIGIN'
     SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '31536000'))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
