@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/google_auth_service.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_colors.dart';
@@ -349,67 +349,33 @@ class _RegisterScreenState extends State<RegisterScreen>
   // at the top of this screen) is sent along so a brand-new Google account
   // gets created with the role the person picked; an existing account
   // just logs in with whatever role it already has.
-  // One shared instance — creating a new GoogleSignIn() on every tap made
-  // google.accounts.id.initialize() run again and again on web.
-  static final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-    clientId: kIsWeb
-        ? '405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com'
-        : null,
-    serverClientId: kIsWeb
-        ? null
-        : '405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com',
-  );
-
   Future<void> _handleGoogleSignIn() async {
-    // Web needs `clientId` (same Web Client ID as the <meta> tag in
-    // web/index.html and the backend's GOOGLE_CLIENT_ID); native
-    // Android/iOS instead use `serverClientId` so the idToken's audience
-    // matches what the backend verifies against.
-    final googleSignIn = _googleSignIn;
-    try {
-      final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return; // person cancelled the account picker
-
-      final googleAuth = await googleUser.authentication;
-      final idToken = googleAuth.idToken;
-      // on web, google_sign_in never returns an idToken — only an
-      // accessToken. Only treat this as a failure when BOTH are missing.
-      final accessToken = googleAuth.accessToken;
-      if (idToken == null && accessToken == null) {
-        if (!mounted) return;
-        AppHelpers.showError(
-          context,
-          AppLocalizations.of(context).registerServerError,
-        );
-        return;
-      }
-
+    final authResult = await GoogleAuthService.signIn(
+      context,
+      role: _selectedRole,
+    );
+    if (authResult.isCancelled) return;
+    if (authResult.errorMessage != null) {
       if (!mounted) return;
-      final auth = context.read<AuthProvider>();
-      final success = await auth.loginWithGoogle(
-        idToken: idToken,
-        accessToken: idToken == null ? accessToken : null,
-        role: _selectedRole,
-      );
-      if (!mounted) return;
+      AppHelpers.showError(context, authResult.errorMessage!);
+      return;
+    }
 
-      if (success) {
-        await _navigateAfterSocialLogin(auth);
-      } else {
-        AppHelpers.showError(
-          context,
-          auth.errorMessage ?? AppLocalizations.of(context).registerServerError,
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      if (kDebugMode) {
-        debugPrint('[GOOGLE SIGN-IN DEBUG] $e');
-      }
+    if (!mounted) return;
+    final auth = context.read<AuthProvider>();
+    final success = await auth.loginWithGoogle(
+      idToken: authResult.idToken,
+      accessToken: authResult.accessToken,
+      role: _selectedRole,
+    );
+    if (!mounted) return;
+
+    if (success) {
+      await _navigateAfterSocialLogin(auth);
+    } else {
       AppHelpers.showError(
         context,
-        AppLocalizations.of(context).registerServerError,
+        auth.errorMessage ?? AppLocalizations.of(context).registerServerError,
       );
     }
   }

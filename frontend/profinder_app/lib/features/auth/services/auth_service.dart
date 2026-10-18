@@ -67,11 +67,12 @@ class AuthService {
       'loginWithGoogle needs either idToken or accessToken',
     );
     try {
-      final response = await _api.post(AppConstants.googleLogin, {
-        'id_token': ?idToken,
-        if (idToken == null && accessToken != null) 'access_token': accessToken,
-        'role': role,
-      });
+      final body = <String, dynamic>{'role': role};
+      if (idToken != null && idToken.isNotEmpty) body['id_token'] = idToken;
+      if (accessToken != null && accessToken.isNotEmpty) {
+        body['access_token'] = accessToken;
+      }
+      final response = await _api.post(AppConstants.googleLogin, body);
       await _saveTokens(
         access: response.data['access'],
         refresh: response.data['refresh'],

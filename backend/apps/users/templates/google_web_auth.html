@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProFinder - Sign in with Google</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #F8FAFC;
+      color: #0F172A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .auth-container {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+      width: 100%;
+      max-width: 440px;
+      padding: 40px 32px;
+      text-align: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #EFF6FF;
+      color: #2563EB;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .brand-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .brand-title span {
+      color: #2563EB;
+    }
+    .subtext {
+      color: #64748B;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 28px;
+    }
+    .google-btn-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      min-height: 44px;
+    }
+    #statusMessage {
+      font-size: 14px;
+      font-weight: 600;
+      min-height: 20px;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+    .status-loading {
+      color: #2563EB;
+    }
+    .status-success {
+      color: #10B981;
+    }
+    .status-error {
+      color: #EF4444;
+    }
+    .manual-fallback {
+      display: none;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #E2E8F0;
+      text-align: left;
+    }
+    .manual-fallback label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+    .token-box {
+      width: 100%;
+      height: 70px;
+      font-family: monospace;
+      font-size: 11px;
+      padding: 10px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      background: #F1F5F9;
+      color: #334155;
+      resize: none;
+      outline: none;
+    }
+    .copy-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      background: #2563EB;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover {
+      background: #1D4ED8;
+    }
+    .footer-note {
+      font-size: 12px;
+      color: #94A3B8;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2zm0-10h2v8h-2z"/>
+      </svg>
+      Desktop Authentication
+    </div>
+
+    <h1 class="brand-title">Pro<span>Finder</span></h1>
+    <p class="subtext">Sign in with your Google account to automatically connect your ProFinder Desktop app.</p>
+
+    <!-- Google Identity Services Button -->
+    <div id="g_id_onload"
+         data-client_id="{{ client_id }}"
+         data-context="signin"
+         data-ux_mode="popup"
+         data-callback="handleGoogleCredential"
+         data-auto_prompt="false">
+    </div>
+    <div class="google-btn-wrapper">
+      <div class="g_id_signin"
+           data-type="standard"
+           data-shape="pill"
+           data-theme="outline"
+           data-text="continue_with"
+           data-size="large"
+           data-logo_alignment="left">
+      </div>
+    </div>
+
+    <div id="statusMessage"></div>
+
+    <div id="manualFallback" class="manual-fallback">
+      <label for="tokenInput">If your desktop app did not respond automatically, copy your token:</label>
+      <textarea id="tokenInput" class="token-box" readonly></textarea>
+      <button class="copy-btn" onclick="copyToken()">Copy Token to Clipboard</button>
+    </div>
+
+    <div class="footer-note">
+      End-to-end encrypted connection with ProFinder Security
+    </div>
+  </div>
+
+  <script>
+    function handleGoogleCredential(response) {
+      const idToken = response.credential;
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.className = 'status-loading';
+      statusEl.innerText = 'Connecting to ProFinder Desktop...';
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const port = urlParams.get('port');
+
+      if (port) {
+        fetch('http://127.0.0.1:' + port + '/auth?id_token=' + encodeURIComponent(idToken))
+          .then(res => {
+            statusEl.className = 'status-success';
+            statusEl.innerText = '✓ Connected! You can return to ProFinder.';
+            setTimeout(() => {
+              window.close();
+            }, 1500);
+          })
+          .catch(err => {
+            console.warn('Local loopback fetch failed, showing manual code:', err);
+            statusEl.className = 'status-error';
+            statusEl.innerText = 'Auto-connect blocked by browser. Please copy code below:';
+            showManualFallback(idToken);
+          });
+      } else {
+        showManualFallback(idToken);
+      }
+    }
+
+    function showManualFallback(token) {
+      document.getElementById('manualFallback').style.display = 'block';
+      const tokenInput = document.getElementById('tokenInput');
+      tokenInput.value = token;
+      tokenInput.select();
+    }
+
+    function copyToken() {
+      const tokenInput = document.getElementById('tokenInput');
+      tokenInput.select();
+      navigator.clipboard.writeText(tokenInput.value).then(() => {
+        alert('Token copied! Return to ProFinder Desktop to complete sign in.');
+      });
+    }
+  </script>
+</body>
+</html>

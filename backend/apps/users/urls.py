@@ -3,7 +3,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from apps.users.views import (
-    RegisterView, LoginView, UserView, GoogleLoginView,
+    RegisterView, LoginView, UserView, GoogleLoginView, GoogleWebAuthView,
     ForgotPasswordView, ResetPasswordView, ChangePasswordView,
     AdminUserListView, CheckEmailView, PublicCountriesView, PublicCitiesView,
     UpdateLanguageView, SendOTPView, VerifyOTPView, ResetPasswordWithOTPView,
@@ -16,6 +16,7 @@ urlpatterns = [
     path('cities/',                                 PublicCitiesView.as_view(),          name='public_cities'),
     path('login/',                                  LoginView.as_view(),                 name='login'),
     path('google/',                                 GoogleLoginView.as_view(),           name='google_login'),
+    path('google/web-auth/',                        GoogleWebAuthView.as_view(),         name='google_web_auth'),
     path('token/refresh/',                          TokenRefreshView.as_view(),          name='token_refresh'),
     path('me/',                                     UserView.as_view(),                  name='user'),
     path('language/',                               UpdateLanguageView.as_view(),        name='update_language'),

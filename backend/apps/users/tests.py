@@ -239,3 +239,44 @@ class EmailOTPTests(TestCase):
             self.assertIn("948210", text_body)
             self.assertIn("ProFinder", text_body)
             self.assertIn("5 minutes", text_body)
+
+    @patch("google.oauth2.id_token.verify_oauth2_token")
+    def test_google_login_success_and_profile_sync(self, mock_verify):
+        """Test Google login verifies token, creates user, marks email verified, and syncs profiles."""
+        mock_verify.return_value = {
+            "iss": "https://accounts.google.com",
+            "aud": "405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com",
+            "email": "googleuser@example.com",
+            "email_verified": True,
+            "name": "Google User",
+            "picture": "https://lh3.googleusercontent.com/test-pic",
+        }
+
+        resp = self.client.post("/api/users/google/", {
+            "id_token": "valid-mock-google-id-token",
+            "role": "professional",
+        })
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertIn("access", resp.data)
+        self.assertIn("refresh", resp.data)
+        self.assertEqual(resp.data["role"], "professional")
+
+        # Verify database state
+        user = User.objects.get(email="googleuser@example.com")
+        self.assertTrue(user.is_email_verified)
+        self.assertEqual(user.role, "professional")
+        self.assertEqual(user.name, "Google User")
+
+        # Verify profiles created
+        from apps.profiles.models import UserProfile, ProfessionalProfile
+        up = UserProfile.objects.get(user=user)
+        self.assertTrue(bool(up.photo_url))
+        self.assertTrue(ProfessionalProfile.objects.filter(user=user).exists())
+
+    def test_google_web_auth_view(self):
+        """Test desktop Google web auth HTML bridge returns 200 and renders client_id."""
+        resp = self.client.get("/api/users/google/web-auth/?port=8085&role=customer")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertIn(b"Desktop Authentication", resp.content)
+        self.assertIn(b"405649887034", resp.content)
+

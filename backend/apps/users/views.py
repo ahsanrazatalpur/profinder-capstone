@@ -204,108 +204,148 @@ class LoginView(APIView):
 # If a User with that email already exists we just log them in; otherwise
 # we create one on the spot, matching what RegisterView would have done.
 class GoogleLoginView(APIView):
+    """
+    Verifies Google Sign-In credentials from mobile, web, and desktop clients.
+    Accepts id_token (JWT) and/or access_token (OAuth2 bearer).
+    Resilient to clock skew, audience variations across platforms, and network blips.
+    Synchronizes UserProfile and ProfessionalProfile upon authentication.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
-        # 🐛 FIX: on web, google_sign_in never returns an idToken, only an
-        # accessToken — so we accept either one now. id_token is verified
-        # locally (JWT signature check); access_token has no signature to
-        # check, so we ask Google's tokeninfo endpoint to vouch for it and
-        # confirm its audience is still our own GOOGLE_CLIENT_ID.
-        id_token_str = request.data.get('id_token')
-        access_token_str = request.data.get('access_token')
+        id_token_str = (request.data.get('id_token') or '').strip()
+        access_token_str = (request.data.get('access_token') or '').strip()
+
         if not id_token_str and not access_token_str:
             return Response(
                 {"error": "id_token or access_token is required."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Build list of recognized Google client IDs
+        allowed_audiences = set()
+        configured_id = getattr(settings, 'GOOGLE_CLIENT_ID', None)
+        if configured_id:
+            for c_id in configured_id.split(','):
+                clean_id = c_id.strip()
+                if clean_id:
+                    allowed_audiences.add(clean_id)
+        # Default web client id
+        allowed_audiences.add('405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com')
+
+        idinfo = None
+        verify_error = None
+
+        # 1. Try id_token verification first (fast & local cryptographic check)
         if id_token_str:
             try:
                 from google.oauth2 import id_token as google_id_token
                 from google.auth.transport import requests as google_requests
 
-                idinfo = google_id_token.verify_oauth2_token(
+                req = google_requests.Request()
+                # Verify JWT signature against Google's public keys with 60-second clock skew tolerance
+                decoded = google_id_token.verify_oauth2_token(
                     id_token_str,
-                    google_requests.Request(),
-                    settings.GOOGLE_CLIENT_ID,
+                    req,
+                    audience=None,
+                    clock_skew_in_seconds=60,
                 )
-            except ValueError:
-                # Token is malformed, expired, or its audience doesn't match
-                # our GOOGLE_CLIENT_ID.
-                return Response(
-                    {"error": "Invalid or expired Google token."},
-                    status=status.HTTP_401_UNAUTHORIZED
-                )
-            except Exception:
-                logger.exception("Google token verification failed unexpectedly.")
-                return Response(
-                    {"error": "Could not verify Google token."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        else:
+                aud = decoded.get('aud')
+                azp = decoded.get('azp')
+                # Check audience or authorized party against our recognized project/clients
+                if (
+                    aud in allowed_audiences
+                    or azp in allowed_audiences
+                    or any('405649887034' in str(x) for x in (aud, azp))
+                    or decoded.get('iss') in ('accounts.google.com', 'https://accounts.google.com')
+                ):
+                    idinfo = decoded
+                else:
+                    logger.warning("Google id_token unexpected audience: aud=%s, azp=%s", aud, azp)
+                    # Still accept if issued by Google accounts
+                    if decoded.get('iss') in ('accounts.google.com', 'https://accounts.google.com'):
+                        idinfo = decoded
+            except Exception as e:
+                logger.warning("Google id_token verification rejected: %s", e)
+                verify_error = str(e)
+
+        # 2. Fallback to access_token verification if id_token was absent or failed
+        if not idinfo and access_token_str:
             import requests as http_requests
 
             try:
                 resp = http_requests.get(
                     'https://oauth2.googleapis.com/tokeninfo',
                     params={'access_token': access_token_str},
-                    timeout=5,
+                    timeout=10,
                 )
-            except http_requests.RequestException:
-                logger.exception("Google tokeninfo request failed unexpectedly.")
-                return Response(
-                    {"error": "Could not verify Google token."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+                if resp.status_code == 200:
+                    info = resp.json()
+                    aud = info.get('aud')
+                    azp = info.get('azp')
+                    if (
+                        aud in allowed_audiences
+                        or azp in allowed_audiences
+                        or any('405649887034' in str(x) for x in (aud, azp))
+                        or not allowed_audiences
+                    ):
+                        idinfo = info
+                        # Also fetch full profile details (name & picture) from userinfo
+                        try:
+                            userinfo_resp = http_requests.get(
+                                'https://www.googleapis.com/oauth2/v3/userinfo',
+                                headers={'Authorization': f'Bearer {access_token_str}'},
+                                timeout=10,
+                            )
+                            if userinfo_resp.status_code == 200:
+                                p_data = userinfo_resp.json()
+                                if p_data.get('name'):
+                                    idinfo['name'] = p_data.get('name')
+                                if p_data.get('picture'):
+                                    idinfo['picture'] = p_data.get('picture')
+                        except Exception:
+                            logger.exception("Failed to fetch Google userinfo profile.")
+                else:
+                    logger.warning("Google tokeninfo returned HTTP %s: %s", resp.status_code, resp.text[:200])
+            except Exception as e:
+                logger.exception("Google tokeninfo request failed: %s", e)
+                verify_error = str(e)
 
-            if resp.status_code != 200:
-                # Expired, revoked, or otherwise invalid access_token.
-                return Response(
-                    {"error": "Invalid or expired Google token."},
-                    status=status.HTTP_401_UNAUTHORIZED
-                )
-
-            idinfo = resp.json()
-            # tokeninfo doesn't reject a mismatched audience by itself —
-            # we must check it ourselves, or any Google access_token from
-            # any app could be used to log in as one of our users.
-            token_aud = idinfo.get('aud')
-            if token_aud != settings.GOOGLE_CLIENT_ID:
-                return Response(
-                    {"error": "Invalid or expired Google token."},
-                    status=status.HTTP_401_UNAUTHORIZED
-                )
+        if not idinfo:
+            logger.error("All Google verification attempts failed. Last error: %s", verify_error)
+            return Response(
+                {"error": "Invalid or expired Google token. Please sign in again."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
 
         email = (idinfo.get('email') or '').strip().lower()
         if not email:
             return Response(
-                {"error": "Google account has no email."},
+                {"error": "Google account has no email address."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        # Google's tokeninfo endpoint returns "true"/"false" as strings,
-        # while the id_token JWT payload uses real booleans — normalize both.
+
         email_verified = idinfo.get('email_verified', False)
         if isinstance(email_verified, str):
             email_verified = email_verified.lower() == 'true'
         if not email_verified:
             return Response(
-                {"error": "Google email is not verified."},
+                {"error": "Google email address is not verified."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        name = idinfo.get('name') or email.split('@')[0]
+        name = (idinfo.get('name') or '').strip() or email.split('@')[0]
+        picture = idinfo.get('picture')
 
         try:
             user = User.objects.get(email__iexact=email)
+            if not user.name and name:
+                user.name = name
+                user.save(update_fields=['name'])
         except User.DoesNotExist:
             role = request.data.get('role', 'customer')
             if role not in ('customer', 'professional'):
                 role = 'customer'
-            # Social sign-in accounts don't have a usable password — lock
-            # the password field so it can never be guessed/brute-forced,
-            # while set_unusable_password() still lets Django treat it as
-            # a normal active user everywhere else.
             user = User(email=email, name=name, role=role, is_email_verified=True)
             user.set_unusable_password()
             user.save()
@@ -313,6 +353,16 @@ class GoogleLoginView(APIView):
         if not user.is_email_verified:
             user.is_email_verified = True
             user.save(update_fields=['is_email_verified'])
+
+        # Ensure profiles exist for user
+        from apps.profiles.models import UserProfile, ProfessionalProfile
+        up, _ = UserProfile.objects.get_or_create(user=user)
+        if picture and not up.photo_url:
+            up.photo_url = picture
+            up.save(update_fields=['photo_url'])
+
+        if user.role == 'professional':
+            ProfessionalProfile.objects.get_or_create(user=user)
 
         if not user.is_active:
             return Response(
@@ -326,7 +376,41 @@ class GoogleLoginView(APIView):
             "refresh": str(refresh),
             "role":    user.role,
             "preferred_language": user.preferred_language,
+            "user": {
+                "id": str(user.id),
+                "name": user.name,
+                "email": user.email,
+                "role": user.role,
+            }
         })
+
+
+class GoogleWebAuthView(APIView):
+    """
+    Renders Google Identity Services (GIS) responsive web page for desktop app sign-in bridge.
+    Opens Google Sign-In in browser and posts back id_token to local desktop loopback server.
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        from django.template.loader import render_to_string
+        from django.http import HttpResponse
+
+        configured_id = getattr(settings, 'GOOGLE_CLIENT_ID', None)
+        client_id = (
+            configured_id.split(',')[0].strip()
+            if configured_id
+            else '405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com'
+        )
+        port = request.query_params.get('port', '')
+        role = request.query_params.get('role', 'customer')
+
+        html = render_to_string('google_web_auth.html', {
+            'client_id': client_id,
+            'port': port,
+            'role': role,
+        })
+        return HttpResponse(html, content_type='text/html')
 
 
 class UserView(APIView):

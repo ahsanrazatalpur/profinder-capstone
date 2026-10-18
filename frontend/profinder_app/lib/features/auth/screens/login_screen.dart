@@ -16,6 +16,10 @@ import '../../../services/auth_provider.dart';
 import '../../../core/localization/locale_provider.dart';
 import '../../../core/localization/language_sync_service.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/google_logo.dart';
+import '../widgets/social_auth_button.dart';
+import '../services/google_auth_service.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 import 'otp_verification_screen.dart';
@@ -174,6 +178,59 @@ class _LoginScreenState extends State<LoginScreen> {
     context.read<AuthProvider>().setGuest();
     // same stack-clear treatment as the logged-in cases above.
     Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    final authResult = await GoogleAuthService.signIn(
+      context,
+      role: 'customer',
+    );
+    if (authResult.isCancelled) return;
+    if (authResult.errorMessage != null) {
+      if (!mounted) return;
+      AppHelpers.showError(context, authResult.errorMessage!);
+      return;
+    }
+
+    if (!mounted) return;
+    final auth = context.read<AuthProvider>();
+    final success = await auth.loginWithGoogle(
+      idToken: authResult.idToken,
+      accessToken: authResult.accessToken,
+      role: 'customer',
+    );
+    if (!mounted) return;
+
+    if (success) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('just_logged_in_banner_flag', true);
+      if (!mounted) return;
+      switch (auth.role) {
+        case 'customer':
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+          break;
+        case 'professional':
+          Navigator.pushNamedAndRemoveUntil(context, '/pro', (route) => false);
+          break;
+        case 'admin':
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/admin',
+            (route) => false,
+          );
+          break;
+        default:
+          AppHelpers.showError(
+            context,
+            AppLocalizations.of(context).unknownRoleError,
+          );
+      }
+    } else {
+      AppHelpers.showError(
+        context,
+        auth.errorMessage ?? AppLocalizations.of(context).serverError,
+      );
+    }
   }
 
   @override
@@ -391,6 +448,45 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
+                      ),
+
+                      const SizedBox(height: AppSizes.md),
+
+                      // ── Divider ───────────────────────────────
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(color: context.colors.divider),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSizes.sm,
+                            ),
+                            child: Text(
+                              AppLocalizations.of(context).continueWithGoogle,
+                              style: AppTextStyles.caption.copyWith(
+                                color: context.colors.textSecondary,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(color: context.colors.divider),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: AppSizes.md),
+
+                      // ── Google Sign-In ────────────────────────
+                      SocialAuthButton(
+                        logo: const GoogleLogo(size: 18),
+                        label: AppLocalizations.of(context).googleSignInLabel,
+                        background: isDark
+                            ? const Color(0xFF2C2C2E)
+                            : AppColors.white,
+                        textColor: context.colors.textPrimary,
+                        borderColor: context.colors.divider,
+                        onTap: _handleGoogleSignIn,
                       ),
 
                       const SizedBox(height: AppSizes.lg),
