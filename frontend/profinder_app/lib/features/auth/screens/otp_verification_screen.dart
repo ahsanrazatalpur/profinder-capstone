@@ -124,7 +124,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   void _onDigitChanged(int index, String value) {
     setState(() => _errorMessage = null);
 
-    // Handle full 6-digit paste
+    // Handle multi-digit paste directly into the box
     if (value.length > 1) {
       final digits = value.replaceAll(RegExp(r'\D'), '');
       if (digits.length >= _codeLength) {
@@ -134,12 +134,23 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         _focusNodes[_codeLength - 1].requestFocus();
         _verifyOtp();
         return;
-      } else {
-        _controllers[index].text = digits.isNotEmpty ? digits[0] : '';
+      } else if (digits.isNotEmpty) {
+        for (int i = 0; i < digits.length && (index + i) < _codeLength; i++) {
+          _controllers[index + i].text = digits[i];
+        }
+        final nextFocus = (index + digits.length < _codeLength)
+            ? index + digits.length
+            : _codeLength - 1;
+        _focusNodes[nextFocus].requestFocus();
+        return;
       }
     }
 
     if (value.isNotEmpty) {
+      // Keep only the last character if multiple were entered without matching multi-paste
+      if (value.length > 1) {
+        _controllers[index].text = value[value.length - 1];
+      }
       if (index < _codeLength - 1) {
         _focusNodes[index + 1].requestFocus();
       } else {
@@ -150,6 +161,38 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       }
     }
   }
+
+  Future<void> _pasteFromClipboard() async {
+    try {
+      final data = await Clipboard.getData(Clipboard.kTextPlain);
+      final text = data?.text ?? '';
+      final digits = text.replaceAll(RegExp(r'\D'), '');
+      if (digits.length >= _codeLength) {
+        for (int i = 0; i < _codeLength; i++) {
+          _controllers[i].text = digits[i];
+        }
+        setState(() => _errorMessage = null);
+        _focusNodes[_codeLength - 1].requestFocus();
+        _verifyOtp();
+      } else if (digits.isNotEmpty) {
+        for (int i = 0; i < digits.length && i < _codeLength; i++) {
+          _controllers[i].text = digits[i];
+        }
+        setState(() => _errorMessage = null);
+        if (digits.length < _codeLength) {
+          _focusNodes[digits.length].requestFocus();
+        }
+      } else {
+        AppHelpers.showWarning(
+          context,
+          'No digits found in clipboard. Please copy your 6-digit code first.',
+        );
+      }
+    } catch (e) {
+      debugPrint('[OTP PASTE ERROR] $e');
+    }
+  }
+
 
   Future<void> _resendCode() async {
     if (_cooldownSeconds > 0 || _isResending) return;
@@ -454,12 +497,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                             focusNode: _focusNodes[index],
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
-                            maxLength: 1,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w800,
                               fontFamily: 'monospace',
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
                             ),
+                            cursorColor: context.colors.primary,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
@@ -467,8 +513,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                               counterText: '',
                               filled: true,
                               fillColor: isDark
-                                  ? context.colors.surface
-                                  : AppColors.background,
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFFF1F5F9),
                               contentPadding: const EdgeInsets.symmetric(
                                 vertical: 12,
                               ),
@@ -477,7 +523,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                   AppSizes.radiusMd,
                                 ),
                                 borderSide: BorderSide(
-                                  color: context.colors.divider,
+                                  color: isDark
+                                      ? const Color(0xFF334155)
+                                      : const Color(0xFFCBD5E1),
                                   width: 1.5,
                                 ),
                               ),
@@ -496,6 +544,29 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         ),
                       );
                     }),
+                  ),
+
+                  const SizedBox(height: AppSizes.md),
+
+                  // Convenient 1-Tap Paste Button
+                  OutlinedButton.icon(
+                    onPressed: _pasteFromClipboard,
+                    icon: const Icon(Icons.content_paste_rounded, size: 16),
+                    label: const Text('Paste Code from Clipboard'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: context.colors.primary,
+                      side: BorderSide(
+                        color: context.colors.primary.withValues(alpha: 0.35),
+                        width: 1.2,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                      ),
+                    ),
                   ),
 
                   if (_errorMessage != null) ...[
