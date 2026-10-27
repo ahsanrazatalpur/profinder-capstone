@@ -165,6 +165,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   Future<void> _pasteFromClipboard() async {
     try {
       final data = await Clipboard.getData(Clipboard.kTextPlain);
+      if (!mounted) return;
       final text = data?.text ?? '';
       final digits = text.replaceAll(RegExp(r'\D'), '');
       if (digits.length >= _codeLength) {
@@ -192,7 +193,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       debugPrint('[OTP PASTE ERROR] $e');
     }
   }
-
 
   Future<void> _resendCode() async {
     if (_cooldownSeconds > 0 || _isResending) return;

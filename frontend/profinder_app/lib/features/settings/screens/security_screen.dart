@@ -16,7 +16,6 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../services/auth_provider.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
-import '../../../shared/widgets/universal_dialog.dart';
 
 class SecurityScreen extends StatefulWidget {
   const SecurityScreen({super.key});
@@ -275,8 +274,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           size: 20,
                         ),
                         onTap: () async {
-                          final confirmed =
-                              await UniversalDialog.showLogout(context);
+                          final confirmed = await UniversalDialog.showLogout(
+                            context,
+                          );
                           if (confirmed != true || !mounted) return;
                           await auth.logout();
                           if (!mounted) return;

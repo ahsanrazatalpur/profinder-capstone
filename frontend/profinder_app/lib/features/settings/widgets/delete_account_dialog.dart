@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
-import '../../../core/utils/app_helpers.dart';
 import '../../../services/auth_provider.dart';
 
 /// Modal dialog for permanently deleting a user's account.
@@ -111,7 +110,8 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
       _otpFocusNodes[0].requestFocus();
     } else {
       setState(() {
-        _errorMessage = result['message'] ?? 'Failed to send verification code.';
+        _errorMessage =
+            result['message'] ?? 'Failed to send verification code.';
       });
     }
   }
@@ -132,7 +132,10 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         for (int i = 0; i < digits.length; i++) {
           _otpControllers[i].text = digits[i];
         }
-        _otpFocusNodes[digits.length < _codeLength ? digits.length : _codeLength - 1].requestFocus();
+        _otpFocusNodes[digits.length < _codeLength
+                ? digits.length
+                : _codeLength - 1]
+            .requestFocus();
       }
     } catch (_) {}
   }
@@ -201,7 +204,9 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
     } else {
       final otp = _currentOtp;
       if (otp.length != _codeLength) {
-        setState(() => _errorMessage = 'Please enter the complete 6-digit code.');
+        setState(
+          () => _errorMessage = 'Please enter the complete 6-digit code.',
+        );
         return;
       }
 
@@ -223,7 +228,9 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final maskedEmail = widget.userEmail.isNotEmpty ? widget.userEmail : 'your email';
+    final maskedEmail = widget.userEmail.isNotEmpty
+        ? widget.userEmail
+        : 'your email';
 
     return Dialog(
       backgroundColor: context.colors.surface,
@@ -274,7 +281,10 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
               // ── Warning Box ──
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.error.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -296,7 +306,9 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                         'This action is permanent and cannot be undone. All your bookings, messages, reviews, and profile data will be permanently removed.',
                         style: TextStyle(
                           fontSize: 12.5,
-                          color: isDark ? const Color(0xFFFCA5A5) : const Color(0xFF991B1B),
+                          color: isDark
+                              ? const Color(0xFFFCA5A5)
+                              : const Color(0xFF991B1B),
                           height: 1.35,
                           fontWeight: FontWeight.w500,
                         ),
@@ -310,7 +322,10 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
               // ── Error Message ──
               if (_errorMessage != null) ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
                     color: AppColors.error.withValues(alpha: 0.1),
@@ -318,7 +333,11 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline_rounded, size: 16, color: AppColors.error),
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        size: 16,
+                        color: AppColors.error,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -357,15 +376,24 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                   ),
                   decoration: InputDecoration(
                     hintText: 'Current Password',
-                    prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
+                    prefixIcon: const Icon(
+                      Icons.lock_outline_rounded,
+                      size: 20,
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         size: 20,
                       ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     ),
@@ -429,7 +457,8 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                         focusNode: FocusNode(),
                         onKeyEvent: (event) {
                           if (event is KeyDownEvent &&
-                              event.logicalKey == LogicalKeyboardKey.backspace &&
+                              event.logicalKey ==
+                                  LogicalKeyboardKey.backspace &&
                               _otpControllers[index].text.isEmpty &&
                               index > 0) {
                             _otpFocusNodes[index - 1].requestFocus();
@@ -444,7 +473,9 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF0F172A),
+                            color: isDark
+                                ? const Color(0xFFFFFFFF)
+                                : const Color(0xFF0F172A),
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
@@ -454,15 +485,23 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                             counterText: '',
                             contentPadding: EdgeInsets.zero,
                             filled: true,
-                            fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+                            fillColor: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFF8FAFC),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
                               borderSide: BorderSide(
-                                color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                                color: isDark
+                                    ? const Color(0xFF334155)
+                                    : const Color(0xFFCBD5E1),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                              borderRadius: BorderRadius.circular(
+                                AppSizes.radiusMd,
+                              ),
                               borderSide: BorderSide(
                                 color: context.colors.primary,
                                 width: 2,
@@ -488,7 +527,10 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                       side: BorderSide(
                         color: context.colors.primary.withValues(alpha: 0.35),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 6,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       ),
@@ -505,7 +547,10 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                   children: [
                     Text(
                       "Didn't receive the code? ",
-                      style: TextStyle(fontSize: 12.5, color: context.colors.textSecondary),
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: context.colors.textSecondary,
+                      ),
                     ),
                     if (_cooldownSeconds > 0)
                       Text(
@@ -513,14 +558,19 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                         style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.bold,
-                          color: context.colors.textSecondary.withValues(alpha: 0.7),
+                          color: context.colors.textSecondary.withValues(
+                            alpha: 0.7,
+                          ),
                         ),
                       )
                     else
                       TextButton(
                         onPressed: _isRequestingOtp ? null : _requestOtp,
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
@@ -528,7 +578,9 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                             ? const SizedBox(
                                 width: 12,
                                 height: 12,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : Text(
                                 'Resend Code',
@@ -571,11 +623,15 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(false),
+                      onPressed: _isSubmitting
+                          ? null
+                          : () => Navigator.of(context).pop(false),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
                         ),
                       ),
                       child: const Text('Cancel'),
@@ -590,7 +646,9 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusMd,
+                          ),
                         ),
                       ),
                       child: _isSubmitting
