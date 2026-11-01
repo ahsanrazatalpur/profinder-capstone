@@ -33,7 +33,28 @@ class AppLanguage {
 class SupportedLanguages {
   SupportedLanguages._();
 
-  static const List<AppLanguage> all = [
+  /// Set to true for Pakistan National scope (English + Urdu only).
+  /// Flip to false when ready to scale globally (>1,000 users) to re-enable
+  /// Hindi, Arabic, French, and Spanish instantly.
+  static const bool isNationalOnly = true;
+
+  static const List<AppLanguage> nationalLanguages = [
+    AppLanguage(
+      code: 'en',
+      englishName: 'English',
+      nativeName: 'English',
+      flag: '🇬🇧',
+    ),
+    AppLanguage(
+      code: 'ur',
+      englishName: 'Urdu',
+      nativeName: 'اردو',
+      flag: '🇵🇰',
+      isRtl: true,
+    ),
+  ];
+
+  static const List<AppLanguage> globalLanguages = [
     AppLanguage(
       code: 'en',
       englishName: 'English',
@@ -73,6 +94,9 @@ class SupportedLanguages {
       flag: '🇪🇸',
     ),
   ];
+
+  static List<AppLanguage> get all =>
+      isNationalOnly ? nationalLanguages : globalLanguages;
 
   static const AppLanguage fallback = AppLanguage(
     code: 'en',

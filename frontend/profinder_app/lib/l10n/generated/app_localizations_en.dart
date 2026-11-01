@@ -99,7 +99,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get experience => 'Years of Experience';
 
   @override
-  String get hourlyRate => 'Hourly Rate (USD)';
+  String get hourlyRate => 'Hourly Rate (PKR)';
 
   @override
   String get verified => 'Verified';

@@ -243,9 +243,12 @@ class _ChatScreenBodyState extends State<_ChatScreenBody>
                       _statusSubtitle(context, provider),
                       style: TextStyle(
                         fontSize: AppFontSizes.small,
-                        color: Colors.white.withValues(
-                          alpha: provider.otherUserTyping ? 1 : 0.8,
-                        ),
+                        color: provider.otherUserOnline
+                            ? AppColors.onlineGreen
+                            : Colors.white.withValues(alpha: 0.70),
+                        fontWeight: provider.otherUserOnline
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
                     ),
                   ],
@@ -517,11 +520,11 @@ class _ChatScreenBodyState extends State<_ChatScreenBody>
   String _statusSubtitle(BuildContext context, ChatProvider provider) {
     final t = AppLocalizations.of(context);
     if (provider.otherUserTyping) return t.chatTyping;
-    if (provider.otherUserOnline) return t.searchOnline;
+    if (provider.otherUserOnline) return t.onlineLabel;
     if (provider.otherUserLastSeen != null) {
       return t.chatLastSeen(AppHelpers.formatTime(provider.otherUserLastSeen!));
     }
-    return '';
+    return t.offlineLabel;
   }
 
   Widget _buildMessageList(ChatProvider provider) {

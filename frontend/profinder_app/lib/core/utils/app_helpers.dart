@@ -324,6 +324,10 @@ class AppHelpers {
   }
 
   // ─── Currency Helpers ────────────────────────────────────
+  /// When true, enforce Pakistan National currency ('Rs') everywhere across the app.
+  /// Set to false when ready to scale globally (>1,000 users).
+  static const bool isNationalCurrency = true;
+
   /// Returns currency symbol ('Rs', '$', '€', '£', etc.)
   /// Inspects currency code, country, or city with default fallback to 'Rs' for Pakistan.
   static String getCurrencySymbol({
@@ -332,6 +336,9 @@ class AppHelpers {
     String? country,
     String? city,
   }) {
+    if (isNationalCurrency) {
+      return 'Rs';
+    }
     if (professional is Map) {
       if (professional['currency_symbol'] != null &&
           professional['currency_symbol'].toString().trim().isNotEmpty) {

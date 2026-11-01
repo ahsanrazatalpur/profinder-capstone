@@ -99,7 +99,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get experience => 'سالوں کا تجربہ';
 
   @override
-  String get hourlyRate => 'فی گھنٹہ ریٹ (USD)';
+  String get hourlyRate => 'فی گھنٹہ ریٹ (PKR)';
 
   @override
   String get verified => 'تصدیق شدہ';

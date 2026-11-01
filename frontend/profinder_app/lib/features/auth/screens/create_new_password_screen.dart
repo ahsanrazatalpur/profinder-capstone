@@ -8,9 +8,12 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../core/utils/app_helpers.dart';
+import '../../../core/utils/app_validators.dart';
 import '../../../core/utils/responsive_utils.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../services/auth_provider.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
+import '../widgets/password_strength_meter.dart';
 
 class CreateNewPasswordScreen extends StatefulWidget {
   final String email;
@@ -37,7 +40,20 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
   bool _isSubmitting = false;
 
   @override
+  void initState() {
+    super.initState();
+    _passwordController.addListener(_refresh);
+    _confirmController.addListener(_refresh);
+  }
+
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
+  @override
   void dispose() {
+    _passwordController.removeListener(_refresh);
+    _confirmController.removeListener(_refresh);
     _passwordController.dispose();
     _confirmController.dispose();
     super.dispose();
@@ -47,7 +63,10 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_passwordController.text != _confirmController.text) {
-      AppHelpers.showError(context, 'Passwords do not match.');
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).valPasswordsMismatch,
+      );
       return;
     }
 
@@ -138,13 +157,14 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final width = MediaQuery.sizeOf(context).width;
     final contentMaxWidth = width > 520 ? 460.0 : width;
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: const UniversalAppBar(
-        title: 'Create New Password',
+      appBar: UniversalAppBar(
+        title: t.resetPassTitle,
         icon: Icons.lock_outline_rounded,
       ),
       body: SafeArea(
@@ -193,13 +213,13 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                     ),
                     const SizedBox(height: AppSizes.xs),
                     Text(
-                      'Your new password must be at least 8 characters long and different from previous passwords.',
+                      'Your new password must be at least 8 characters long with uppercase, lowercase, numbers, and symbols.',
                       style: context.textStyles.bodyMedium.copyWith(
                         color: context.colors.textSecondary,
                       ),
                     ),
 
-                    const SizedBox(height: AppSizes.xxl),
+                    const SizedBox(height: AppSizes.xl),
 
                     // Password Field
                     TextFormField(
@@ -208,9 +228,10 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       style: context.textStyles.inputText.copyWith(
                         color: context.colors.textPrimary,
                       ),
+                      textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        labelText: 'New Password',
-                        hintText: 'Enter at least 8 characters',
+                        labelText: t.newPasswordLabel,
+                        hintText: t.passwordHint,
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -223,16 +244,11 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                           ),
                         ),
                       ),
-                      validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return 'Please enter a new password';
-                        }
-                        if (val.length < 8) {
-                          return 'Password must be at least 8 characters';
-                        }
-                        return null;
-                      },
+                      validator: (v) => AppValidators.password(v, t),
                     ),
+
+                    const SizedBox(height: AppSizes.xs),
+                    PasswordStrengthMeter(password: _passwordController.text),
 
                     const SizedBox(height: AppSizes.lg),
 
@@ -243,30 +259,48 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       style: context.textStyles.inputText.copyWith(
                         color: context.colors.textPrimary,
                       ),
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (_) => _onResetPressed(),
                       decoration: InputDecoration(
-                        labelText: 'Confirm New Password',
-                        hintText: 'Re-enter your new password',
+                        labelText: t.confirmPasswordLabel,
+                        hintText: t.confirmPasswordHint,
                         prefixIcon: const Icon(Icons.lock_clock_outlined),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureConfirm
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                          ),
-                          onPressed: () => setState(
-                            () => _obscureConfirm = !_obscureConfirm,
-                          ),
+                        suffixIcon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (_confirmController.text.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: Icon(
+                                  _confirmController.text ==
+                                          _passwordController.text
+                                      ? Icons.check_circle_rounded
+                                      : Icons.cancel_rounded,
+                                  color: _confirmController.text ==
+                                          _passwordController.text
+                                      ? AppColors.success
+                                      : AppColors.error,
+                                  size: 20,
+                                ),
+                              ),
+                            IconButton(
+                              icon: Icon(
+                                _obscureConfirm
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                              ),
+                              onPressed: () => setState(
+                                () => _obscureConfirm = !_obscureConfirm,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return 'Please confirm your new password';
-                        }
-                        if (val != _passwordController.text) {
-                          return 'Passwords do not match';
-                        }
-                        return null;
-                      },
+                      validator: (v) => AppValidators.confirmPassword(
+                        v,
+                        _passwordController.text,
+                        t,
+                      ),
                     ),
 
                     const SizedBox(height: AppSizes.xxl),
@@ -293,9 +327,9 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text(
-                                'Reset Password',
-                                style: TextStyle(
+                            : Text(
+                                t.resetPassTitle,
+                                style: const TextStyle(
                                   fontSize: AppSizes.fontLg,
                                   fontWeight: FontWeight.w700,
                                 ),

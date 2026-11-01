@@ -831,7 +831,9 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                               min: 11,
                               max: 15,
                             ),
-                            color: Colors.white.withValues(alpha: 0.85),
+                            color: _isOnline
+                                ? AppColors.onlineGreen
+                                : Colors.white.withValues(alpha: 0.65),
                             fontWeight: FontWeight.w600,
                           ),
                         ),

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_context_ext.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 /// Wraps any avatar widget and overlays a green (online) or gray (offline) dot
 /// on the bottom-right corner — providing dynamic WhatsApp/Messenger style presence.
@@ -17,7 +18,7 @@ class AvatarWithStatus extends StatelessWidget {
     required this.avatar,
     required this.isOnline,
     this.size = 40,
-    this.showOfflineDot = true,
+    this.showOfflineDot = false,
   });
 
   @override
@@ -95,9 +96,10 @@ class OnlineStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final color = isOnline ? AppColors.emerald : AppColors.neutral400;
-    final text = isOnline ? 'Online' : 'Offline';
+    final text = isOnline ? t.onlineLabel : t.offlineLabel;
 
     return Container(
       padding: EdgeInsets.symmetric(

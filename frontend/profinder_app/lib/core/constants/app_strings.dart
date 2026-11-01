@@ -58,7 +58,7 @@ class AppStrings {
   static String get city => _t?.city ?? 'City';
   static String get bio => _t?.bio ?? 'Bio';
   static String get experience => _t?.experience ?? 'Years of Experience';
-  static String get hourlyRate => _t?.hourlyRate ?? 'Hourly Rate (USD)';
+  static String get hourlyRate => _t?.hourlyRate ?? 'Hourly Rate (PKR)';
   static String get verified => _t?.verified ?? 'Verified';
   static String get notVerified => _t?.notVerified ?? 'Not Verified';
 

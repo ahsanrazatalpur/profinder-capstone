@@ -289,7 +289,7 @@ abstract class AppLocalizations {
   /// No description provided for @hourlyRate.
   ///
   /// In en, this message translates to:
-  /// **'Hourly Rate (USD)'**
+  /// **'Hourly Rate (PKR)'**
   String get hourlyRate;
 
   /// No description provided for @verified.

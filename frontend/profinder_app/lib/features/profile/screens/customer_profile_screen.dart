@@ -158,10 +158,27 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         ? List<Map<String, dynamic>>.from(result['data'] ?? [])
         : <Map<String, dynamic>>[];
 
+    // Prioritize Pakistan at the top of the country list
+    countries.sort((a, b) {
+      final aName = (a['name'] ?? '').toString().toLowerCase();
+      final bName = (b['name'] ?? '').toString().toLowerCase();
+      if (aName == 'pakistan') return -1;
+      if (bName == 'pakistan') return 1;
+      return aName.compareTo(bName);
+    });
+
     Map<String, dynamic>? matchedCountry;
     if (countryName != null && countryName.isNotEmpty) {
       for (final c in countries) {
         if ((c['name'] as String).toLowerCase() == countryName.toLowerCase()) {
+          matchedCountry = c;
+          break;
+        }
+      }
+    } else {
+      // Auto-select Pakistan when no country is previously set
+      for (final c in countries) {
+        if ((c['name'] as String).toLowerCase() == 'pakistan') {
           matchedCountry = c;
           break;
         }

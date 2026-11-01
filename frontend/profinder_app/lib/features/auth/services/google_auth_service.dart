@@ -106,21 +106,34 @@ class GoogleAuthService {
         return GoogleAuthResult.cancelled();
       }
 
-      // Automatically fall back to Web Bridge on Web or if native auth encounters an issue
+      final bool isNativeConfigError = errStr.contains('ApiException: 10') ||
+          errStr.contains('10;') ||
+          errStr.contains('10,') ||
+          errStr.contains(': 10') ||
+          errStr.contains('Q0.e: 10') ||
+          errStr.contains('DEVELOPER_ERROR') ||
+          errStr.contains('sign_in_failed') ||
+          errStr.contains('ApiException: 12500');
+
+      // Automatically fall back to Web Bridge on Web, Mobile (if native SHA-1/config issue), or Desktop
       if (kIsWeb ||
           errStr.contains('Unimplemented') ||
           errStr.contains('MissingPluginException') ||
           errStr.contains('origin') ||
           errStr.contains('gsi_logger') ||
-          errStr.contains('popup_blocked')) {
+          errStr.contains('popup_blocked') ||
+          isNativeConfigError) {
         if (context.mounted) {
-          debugPrint('[GOOGLE AUTH] Native sign-in encountered an issue, launching Web Bridge fallback...');
+          debugPrint('[GOOGLE AUTH] Native sign-in encountered an issue ($errStr), launching Web Bridge fallback...');
           try {
-            return await performDesktopGoogleSignIn(
+            final fallbackResult = await performDesktopGoogleSignIn(
               context,
               role: role,
               baseUrl: AppConstants.baseUrl,
             );
+            if (!fallbackResult.isCancelled && fallbackResult.errorMessage == null) {
+              return fallbackResult;
+            }
           } catch (fallbackErr) {
             debugPrint('[GOOGLE AUTH FALLBACK ERROR] $fallbackErr');
           }

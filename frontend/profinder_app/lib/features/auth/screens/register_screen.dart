@@ -214,10 +214,35 @@ class _RegisterScreenState extends State<RegisterScreen>
   Future<void> _loadCountries() async {
     final result = await _geoService.getCountries();
     if (!mounted) return;
+    final list = List<dynamic>.from(result['data'] ?? []);
+
+    // Prioritize Pakistan at the top of the country list
+    list.sort((a, b) {
+      final aName = (a is Map ? a['name'] : '').toString().toLowerCase();
+      final bName = (b is Map ? b['name'] : '').toString().toLowerCase();
+      if (aName == 'pakistan') return -1;
+      if (bName == 'pakistan') return 1;
+      return aName.compareTo(bName);
+    });
+
     setState(() {
-      _countries = result['data'] ?? [];
+      _countries = list;
       _loadingCountries = false;
     });
+
+    // Auto-select Pakistan by default for national focus so cities load immediately
+    if (_selectedCountry == null && list.isNotEmpty) {
+      final pkIndex = list.indexWhere(
+        (c) =>
+            c is Map &&
+            (c['name']?.toString().toLowerCase() == 'pakistan' ||
+             c['code']?.toString().toLowerCase() == 'pk'),
+      );
+      if (pkIndex != -1) {
+        final pk = Map<String, dynamic>.from(list[pkIndex] as Map);
+        _onCountrySelected(pk);
+      }
+    }
   }
 
   Future<void> _onCountrySelected(Map<String, dynamic> country) async {

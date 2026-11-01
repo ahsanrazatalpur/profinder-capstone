@@ -10,6 +10,8 @@ import '../../../core/utils/app_helpers.dart';
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../core/utils/app_validators.dart';
+import '../../auth/widgets/password_strength_meter.dart';
 
 class ChangePasswordDialog extends StatefulWidget {
   const ChangePasswordDialog({super.key});
@@ -32,7 +34,20 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   bool _isSaving = false;
 
   @override
+  void initState() {
+    super.initState();
+    _newPasswordController.addListener(_refresh);
+    _confirmPasswordController.addListener(_refresh);
+  }
+
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
+  @override
   void dispose() {
+    _newPasswordController.removeListener(_refresh);
+    _confirmPasswordController.removeListener(_refresh);
     _oldPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
@@ -142,15 +157,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 controller: _newPasswordController,
                 obscure: _obscureNew,
                 onToggle: () => setState(() => _obscureNew = !_obscureNew),
-                validator: (v) {
-                  if (v == null || v.isEmpty)
-                    return AppLocalizations.of(context).passwordRequiredError;
-                  if (v.length < 6)
-                    return AppLocalizations.of(context).passwordMinLengthError;
-                  return null;
-                },
-                helperText: AppLocalizations.of(context).passwordHelperText,
+                validator: (v) => AppValidators.password(v, AppLocalizations.of(context)),
               ),
+              const SizedBox(height: 6),
+              PasswordStrengthMeter(password: _newPasswordController.text),
               const SizedBox(height: 14),
 
               _passwordField(
@@ -159,12 +169,11 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                 obscure: _obscureConfirm,
                 onToggle: () =>
                     setState(() => _obscureConfirm = !_obscureConfirm),
-                validator: (v) {
-                  if (v != _newPasswordController.text) {
-                    return AppLocalizations.of(context).passwordMismatchError;
-                  }
-                  return null;
-                },
+                validator: (v) => AppValidators.confirmPassword(
+                  v,
+                  _newPasswordController.text,
+                  AppLocalizations.of(context),
+                ),
               ),
               const SizedBox(height: 22),
 

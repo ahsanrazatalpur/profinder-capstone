@@ -17,7 +17,7 @@ class PaymentService {
 
   Future<String> getSelectedCurrency() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_currencyPrefKey) ?? 'USD';
+    return prefs.getString(_currencyPrefKey) ?? 'PKR';
   }
 
   Future<void> setSelectedCurrency(String currencyCode) async {

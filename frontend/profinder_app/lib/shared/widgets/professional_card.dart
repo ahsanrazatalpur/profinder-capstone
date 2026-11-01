@@ -609,12 +609,16 @@ class ProfessionalCard extends StatelessWidget {
                     SizedBox(width: _sp(5, scale, min: 4, max: 6)),
                     Text(
                       isOnline
-                          ? (isAvailable ? 'Online' : 'Busy')
-                          : (isAvailable ? 'Available' : 'Offline'),
+                          ? AppLocalizations.of(context).onlineLabel
+                          : (isAvailable
+                              ? AppLocalizations.of(context).offlineLabel
+                              : AppLocalizations.of(context).availabilityStatusBusy),
                       style: TextStyle(
                         fontSize: _sp(11, scale, min: 10, max: 12),
                         fontWeight: FontWeight.w600,
-                        color: isOnline ? AppColors.emerald : Colors.white,
+                        color: isOnline
+                            ? AppColors.emerald
+                            : Colors.white.withValues(alpha: 0.75),
                         letterSpacing: 0.1,
                       ),
                     ),

@@ -33,7 +33,7 @@
   "city": "City",
   "bio": "Bio",
   "experience": "Years of Experience",
-  "hourlyRate": "Hourly Rate (USD)",
+  "hourlyRate": "Hourly Rate (PKR)",
   "verified": "Verified",
   "notVerified": "Not Verified",
   "bookings": "Bookings",

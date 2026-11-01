@@ -113,7 +113,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                 itemBuilder: (_, i) {
                   final p = _payments[i];
                   final amount = double.tryParse('${p['amount']}') ?? 0;
-                  final currency = p['currency']?.toString() ?? 'USD';
+                  final currency = p['currency']?.toString() ?? 'PKR';
                   final status = p['status']?.toString() ?? 'pending';
                   final parsedDate = DateTime.tryParse(
                     p['created_at']?.toString() ?? '',

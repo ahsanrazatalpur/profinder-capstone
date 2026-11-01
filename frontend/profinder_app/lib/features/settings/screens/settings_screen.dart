@@ -211,7 +211,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             context,
             Icons.attach_money_rounded,
             AppLocalizations.of(context).currencyLabel,
-            'USD',
+            'PKR (Rs)',
             () => _comingSoon(AppLocalizations.of(context).currencyFeatureName),
             isDark: isDark,
             isTablet: isTablet,
