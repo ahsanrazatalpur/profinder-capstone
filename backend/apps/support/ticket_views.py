@@ -114,7 +114,7 @@ class TicketListCreateView(_Authenticated, APIView):
                 ticket=ticket, author=request.user, is_staff=False, body=data['body'])
             TicketEvent.objects.create(ticket=ticket, actor=request.user, action='created')
             _notify_staff('New support ticket',
-                          f'{request.user.name}: {ticket.subject[:80]}', ticket.pk)
+                          f'{ticket.reference} — {request.user.name}: {ticket.subject[:80]}', ticket.pk)
 
         return Response(ticket_detail(ticket), status=201)
 

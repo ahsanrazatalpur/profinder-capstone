@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 # tells a user to do something they can't yet do. Flipping it to True is the
 # only change needed: `_appeal_line` below is already wired into every
 # action notification.
-APPEALS_AVAILABLE = True
+APPEALS_AVAILABLE = False
 
 NOTIF_TYPE = 'report'          # existing 'Report / Moderation' type
 _REASON_MAX = 500              # keep push/DB text reasonable

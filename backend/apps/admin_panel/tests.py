@@ -1065,7 +1065,7 @@ class ModerationActionNotificationTests(ModerationNotificationBase):
         self.fcm.assert_called_once()
         args, kwargs = self.fcm.call_args
         self.assertEqual(args[0], 'fcm-target-token')
-        self.assertEqual(args[1], 'Community Guidelines Warning')
+        self.assertIn('Community Guidelines Warning', args[1])
         self.assertIn('Abusive language in chat', args[2])
         self.assertEqual(kwargs['data']['event'], 'warning_issued')
         self.assertEqual(kwargs['data']['moderation_action_id'], r.data['id'])

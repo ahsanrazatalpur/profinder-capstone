@@ -304,8 +304,7 @@ def notify_user(user, title, message, notif_type='general', data=None, push_kind
     user_name = getattr(user, 'name', '') or (user_email.split('@')[0] if user_email else '')
 
     kind = push_kind or detect_push_kind(title, notif_type)
-    push_data = dict(data or {})
-    push_data.setdefault('type', kind)
+    push_data = dict(data) if data is not None else {'type': kind}
     push_title = style_push_title(kind, title, getattr(user, 'preferred_language', None))
 
     t = threading.Thread(
@@ -347,8 +346,7 @@ def notify_admins(title, message, notif_type='general', data=None):
         user_name = getattr(admin, 'name', '') or (user_email.split('@')[0] if user_email else '')
 
         kind = detect_push_kind(title, notif_type)
-        push_data = dict(data or {})
-        push_data.setdefault('type', kind)
+        push_data = dict(data) if data is not None else {'type': kind}
         push_title = style_push_title(kind, title, getattr(admin, 'preferred_language', None))
 
         t = threading.Thread(

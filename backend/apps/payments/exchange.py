@@ -113,7 +113,7 @@ def resolve_currency_for_user(country=None, city=None):
 
 
 def get_base_currency():
-    return getattr(settings, 'BASE_SETTLEMENT_CURRENCY', 'USD')
+    return getattr(settings, 'BASE_SETTLEMENT_CURRENCY', 'PKR')
 
 
 def refresh_exchange_rates(force=False):

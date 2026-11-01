@@ -433,7 +433,7 @@ TRANSLATION_SOURCE_LANGUAGE       = 'en'
 # TEMPORARY (free quota bachane ke liye): abhi sirf Urdu + Hindi ka dynamic content translate hota hai.
 # Fund / billing milne par wapas poori list kar dein: ['ur', 'hi', 'ar', 'es', 'fr']
 # (baqi languages ki static UI .arb se phir bhi chalti rahegi, sirf DB content English dikhega.)
-TRANSLATION_LANGUAGES             = ['ur', 'hi']
+TRANSLATION_LANGUAGES             = ['ur']
 
 # Kisi naye (never-seen) string ke liye server itne seconds tak translation ka intezar
 # karta hai. Pehle 2.5 tha -- Gemini ko 3-8 sec lagte hain, is liye pehli load hamesha
@@ -462,6 +462,6 @@ PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID', '')
 PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET', '')
 PAYPAL_WEBHOOK_ID = os.getenv('PAYPAL_WEBHOOK_ID', '')
 PAYPAL_ALLOW_MOCK_SUCCESS = os.getenv('PAYPAL_ALLOW_MOCK_SUCCESS', 'True' if (DEBUG or TESTING or not PAYPAL_CLIENT_ID) else 'False').strip().lower() == 'true'
-BASE_SETTLEMENT_CURRENCY = os.getenv('BASE_SETTLEMENT_CURRENCY', 'USD')
+BASE_SETTLEMENT_CURRENCY = os.getenv('BASE_SETTLEMENT_CURRENCY', 'PKR')
 MIN_WITHDRAWAL_AMOUNT = float(os.getenv('MIN_WITHDRAWAL_AMOUNT', 20.0))
-EXCHANGE_RATE_API_URL = os.getenv('EXCHANGE_RATE_API_URL', 'https://open.er-api.com/v6/latest/USD')
+EXCHANGE_RATE_API_URL = os.getenv('EXCHANGE_RATE_API_URL', 'https://open.er-api.com/v6/latest/USD')

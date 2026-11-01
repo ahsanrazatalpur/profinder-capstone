@@ -30,7 +30,7 @@ class Payment(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='payments'
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, default='USD')
+    currency = models.CharField(max_length=10, default='PKR')
     purpose = models.CharField(
         max_length=30, choices=PURPOSE_CHOICES, default='booking', db_index=True
     )
@@ -115,7 +115,7 @@ class WalletTransaction(models.Model):
     )
     transaction_type = models.CharField(max_length=20, choices=TYPE_CHOICES, db_index=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, default='USD')
+    currency = models.CharField(max_length=10, default='PKR')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='completed', db_index=True)
 
     payment = models.ForeignKey(
@@ -174,7 +174,7 @@ class WithdrawalRequest(models.Model):
         related_name='withdrawal_requests'
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, default='USD')
+    currency = models.CharField(max_length=10, default='PKR')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING, db_index=True)
     payout_method = models.CharField(max_length=30, choices=METHOD_CHOICES, default='bank_transfer')
     paypal_email = models.CharField(max_length=255, blank=True)
@@ -199,7 +199,7 @@ class ExchangeRateCache(models.Model):
     """
     Cached exchange rates against base currency (default USD).
     """
-    base_currency = models.CharField(max_length=10, default='USD')
+    base_currency = models.CharField(max_length=10, default='PKR')
     target_currency = models.CharField(max_length=10, db_index=True, unique=True)
     rate = models.DecimalField(max_digits=14, decimal_places=6)
     updated_at = models.DateTimeField(auto_now=True)

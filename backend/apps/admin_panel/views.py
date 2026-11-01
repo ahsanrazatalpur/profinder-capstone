@@ -711,10 +711,10 @@ def _notify_report_resolution(report, was_banned, status_changed=True):
         target_name = getattr(report.reported_user, 'name', 'the user') if report.reported_user else 'the reported user'
         reason_display = report.get_reason_display() if hasattr(report, 'get_reason_display') else 'your report'
         reporter_msg = {
-            'action_taken': f"Your report regarding {target_name} ({reason_display}) has been reviewed and appropriate action has been taken.",
-            'dismissed':    f"We've reviewed your report regarding {target_name} ({reason_display}) and didn't find a violation of our guidelines this time. Thanks for flagging it.",
-            'reviewed':     f"We've reviewed your report regarding {target_name} ({reason_display}). Thanks for helping keep the community safe.",
-        }.get(report.status, f"We've reviewed your report regarding {target_name}. Thanks for helping keep the community safe.")
+            'action_taken': "Your report has been reviewed and appropriate action has been taken.",
+            'dismissed':    "We've reviewed your report and did not find a violation of our community guidelines at this time. Thanks for flagging it.",
+            'reviewed':     "We've reviewed your report. Thanks for helping keep the community safe.",
+        }.get(report.status, "We've reviewed your report. Thanks for helping keep the community safe.")
 
         notify_user(
             report.reporter,

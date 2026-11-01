@@ -1056,9 +1056,11 @@ class ChangePasswordView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        if len(new_password) < 8:
+        try:
+            validate_password(new_password, user=user)
+        except DjangoValidationError as e:
             return Response(
-                {"error": "New password must be at least 8 characters."},
+                {"error": " ".join(e.messages)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -1205,4 +1207,4 @@ class DeleteAccountConfirmView(APIView):
         return Response({
             "success": True,
             "message": "Your ProFinder account and associated data have been permanently deleted.",
-        })
+        })
