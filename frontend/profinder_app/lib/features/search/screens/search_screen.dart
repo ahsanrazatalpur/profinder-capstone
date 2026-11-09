@@ -359,6 +359,48 @@ class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
     query = query.trim();
     if (query.isEmpty) return;
     _debounce?.cancel(); // kill any pending suggestion-fetch timer
+
+    final qLower = query.toLowerCase().trim();
+    if (qLower == 'top rated' ||
+        qLower == 'top-rated' ||
+        qLower == 'best' ||
+        qLower == 'اعلیٰ درجہ بندی' ||
+        qLower == 'top rated pros' ||
+        qLower == 'top rated professionals') {
+      _minRating = 4.0;
+      _sortBy = 'rating_desc';
+      await _searchWithFilters(label: AppLocalizations.of(context).homeTopRatedLabel);
+      return;
+    }
+    if (qLower == 'available now' ||
+        qLower == 'available' ||
+        qLower == 'فوری دستیاب' ||
+        qLower == 'available pros') {
+      _availableOnly = true;
+      await _searchWithFilters(label: AppLocalizations.of(context).homeFilterAvailableNow);
+      return;
+    }
+    if (qLower == 'verified' ||
+        qLower == 'verified pros' ||
+        qLower == 'تصدیق شدہ') {
+      _verifiedOnly = true;
+      await _searchWithFilters(label: AppLocalizations.of(context).verified);
+      return;
+    }
+    if (qLower == 'trending' ||
+        qLower == 'popular' ||
+        qLower == 'ٹرینڈنگ') {
+      _sortBy = 'popular';
+      await _searchWithFilters(label: AppLocalizations.of(context).homeTrendingLabel);
+      return;
+    }
+    if (qLower == 'nearby' ||
+        qLower == 'near me' ||
+        qLower == 'قریبی') {
+      _sortBy = 'distance';
+      await _searchWithFilters(label: AppLocalizations.of(context).homeNearbyLabel);
+      return;
+    }
     _suggestRequestId++; // ...and any suggestion request already in flight
     _showSuggestions = false; // make sure it can't flip back on mid-search
     if (_aiMode) {

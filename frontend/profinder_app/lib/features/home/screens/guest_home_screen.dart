@@ -41,6 +41,7 @@ class GuestHomeScreen extends StatefulWidget {
 class _GuestHomeScreenState extends State<GuestHomeScreen>
     with PromoBannerMixin, AutomaticKeepAliveClientMixin {
   final MagazineService _magazineService = MagazineService();
+  String? _activeQuickFilter; // null, 'trending', 'available', 'top_rated', 'verified', 'nearby'
 
   List<Article> _articles = [];
   bool _articlesLoading = true;
@@ -309,6 +310,8 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                     SliverToBoxAdapter(
                       child: _buildQuickActionChips(home.categories, isDark),
                     ),
+                    if (_activeQuickFilter != null)
+                      _buildQuickFilterSection(home, isDark),
 
                     if (feedStillLoading)
                       SliverToBoxAdapter(child: _buildLoadingSkeleton(isDark))
@@ -634,34 +637,29 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     final t = AppLocalizations.of(context);
     final filters = [
       {
+        'key': 'trending',
         'label': t.homeTrendingLabel,
         'icon': Icons.trending_up_rounded,
-        'filled': false,
-        'action': () => _openSearch(sortBy: 'popular'),
       },
       {
+        'key': 'available',
         'label': t.homeFilterAvailableNow,
         'icon': Icons.flash_on_rounded,
-        'filled': false,
-        'action': () => _openSearch(availableOnly: true),
       },
       {
+        'key': 'top_rated',
         'label': t.homeTopRatedLabel,
         'icon': Icons.star_rounded,
-        'filled': false,
-        'action': () => _openSearch(minRating: 4.0, sortBy: 'rating'),
       },
       {
+        'key': 'verified',
         'label': t.verified,
         'icon': Icons.verified_rounded,
-        'filled': false,
-        'action': () => _openSearch(verifiedOnly: true),
       },
       {
+        'key': 'nearby',
         'label': t.homeNearbyLabel,
         'icon': Icons.near_me_rounded,
-        'filled': false,
-        'action': () => _openSearch(sortBy: 'distance'),
       },
     ];
 
@@ -679,17 +677,101 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           separatorBuilder: (_, _) => const SizedBox(width: 10),
           itemBuilder: (_, i) {
             final f = filters[i];
+            final key = f['key'] as String;
+            final isSelected = _activeQuickFilter == key;
             return _chip(
               f['label'] as String,
               context.colors.primary,
-              filled: f['filled'] == true,
+              filled: isSelected,
               icon: f['icon'] as IconData,
-              onTap: f['action'] as VoidCallback,
+              onTap: () {
+                setState(() {
+                  _activeQuickFilter = isSelected ? null : key;
+                });
+              },
               isDark: isDark,
             );
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildQuickFilterSection(HomeProvider home, bool isDark) {
+    final t = AppLocalizations.of(context);
+    String title = '';
+    String badgeTag = '';
+    IconData badgeIcon = Icons.star_rounded;
+    Color badgeColor = context.colors.primary;
+    List<dynamic> list = [];
+
+    switch (_activeQuickFilter) {
+      case 'trending':
+        title = t.homeTrendingThisWeek;
+        badgeTag = t.homeTrendingLabel;
+        badgeIcon = Icons.trending_up_rounded;
+        badgeColor = AppColors.badgeTrending;
+        list = home.trendingFeed.isNotEmpty
+            ? home.trendingFeed
+            : home.nearbyProfessionals;
+        break;
+      case 'available':
+        title = t.homeFilterAvailableNow;
+        badgeTag = t.homeFilterAvailableNow;
+        badgeIcon = Icons.flash_on_rounded;
+        badgeColor = Colors.green;
+        final avail = home.nearbyProfessionals
+            .where((p) => p['is_available'] == true || p['available'] == true)
+            .toList();
+        list = avail.isNotEmpty ? avail : home.nearbyProfessionals;
+        break;
+      case 'top_rated':
+        title = t.homeTopRatedProfessionals;
+        badgeTag = t.homeTopRatedLabel;
+        badgeIcon = Icons.emoji_events_rounded;
+        badgeColor = AppColors.badgeTopRated;
+        if (home.topRatedFeed.isNotEmpty) {
+          list = home.topRatedFeed;
+        } else {
+          final sorted = List<dynamic>.from(home.nearbyProfessionals);
+          sorted.sort(
+            (a, b) => ((b['average_rating'] ?? 0) as num).compareTo(
+              (a['average_rating'] ?? 0) as num,
+            ),
+          );
+          list = sorted.where((p) => (p['average_rating'] ?? 0) >= 4.0).toList();
+          if (list.isEmpty) list = sorted;
+        }
+        break;
+      case 'verified':
+        title = '${t.verified} ${t.professional}';
+        badgeTag = t.verified;
+        badgeIcon = Icons.verified_rounded;
+        badgeColor = context.colors.primary;
+        final verified = home.nearbyProfessionals
+            .where((p) => p['is_verified'] == true || p['identity_verified'] == true)
+            .toList();
+        list = verified.isNotEmpty ? verified : home.nearbyProfessionals;
+        break;
+      case 'nearby':
+        title = t.nearbyProfessionals;
+        badgeTag = t.homeNearbyLabel;
+        badgeIcon = Icons.near_me_rounded;
+        badgeColor = context.colors.primary;
+        list = home.nearbyProfessionals;
+        break;
+      default:
+        return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
+
+    return _buildProSection(
+      title,
+      list,
+      icon: badgeIcon,
+      badgeTag: badgeTag,
+      badgeIcon: badgeIcon,
+      badgeColor: badgeColor,
+      isDark: isDark,
     );
   }
 

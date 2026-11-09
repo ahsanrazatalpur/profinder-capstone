@@ -535,7 +535,7 @@ GENDER_INTENT_WORDS = {
     'male':   {'male', 'man', 'men', 'boy'},
 }
 
-URGENCY_INTENT_WORDS = {'now', 'urgent', 'immediately', 'today', 'asap'}
+URGENCY_INTENT_WORDS = {'now', 'urgent', 'immediately', 'today', 'asap', 'available', 'hazir', 'fori'}
 
 EXPERIENCE_INTENT_WORDS = {
     'experienced': 5, 'senior': 5, 'expert': 7, 'veteran': 8,
@@ -707,6 +707,13 @@ def _extract_intent_filters(normalized_term: str) -> dict:
 
     if words & URGENCY_INTENT_WORDS:
         intent['urgent'] = True
+
+    if any(p in normalized_term for p in ('top rated', 'top-rated', 'highest rated', 'best', 'top rating', 'behtreen')):
+        intent['min_rating'] = 4.0
+        intent['sort_by'] = 'rating'
+
+    if any(p in normalized_term for p in ('verified', 'certified', 'tasdeeq')):
+        intent['verified'] = True
 
     for word, years in EXPERIENCE_INTENT_WORDS.items():
         if word in words:
@@ -980,14 +987,14 @@ def _core_query(term: str, city_tokens=None) -> tuple:
         drop |= words
     drop |= URGENCY_INTENT_WORDS
     drop |= LANGUAGE_INTENT_WORDS
+    drop |= {'top', 'rated', 'rating', 'best', 'verified', 'certified', 'available', 'urgent', 'now', 'behtreen'}
     if not any(k in term for k in _MULTI_WORD_SYNONYM_KEYS):
         drop |= set(EXPERIENCE_INTENT_WORDS)
 
     kept = [w for w in text.split() if w not in drop and not w.isdigit()]
     ignored = set(term.split()) - set(kept)
     if not kept:
-        filter_words = ignored - _QUERY_FILLER_WORDS
-        return ('', ignored) if filter_words else (term, set())
+        return ('', ignored)
     return ' '.join(kept), ignored
 
 
@@ -2398,7 +2405,8 @@ class NearbyProfessionalsView(APIView):
             category_id or city_param or min_price > 0 or max_price < 999999 or
             min_rating > 0 or verified_only or gender_param or (min_exp_param is not None) or
             available_only_param or language_param or service_mode_param or
-            (max_distance_param is not None) or (customer_lat and customer_lng)
+            (max_distance_param is not None) or (customer_lat and customer_lng) or
+            any(w in raw_query.lower() for w in ('top rated', 'top-rated', 'available', 'urgent', 'verified', 'trending', 'popular', 'best'))
         )
         if q_param_provided and not raw_query and not has_any_filter:
             empty_data = _build_empty_state(customer_lat=customer_lat, customer_lng=customer_lng)
@@ -2630,6 +2638,8 @@ class NearbyProfessionalsView(APIView):
         effective_language    = language_param or detected_intent.get('language', '')
         effective_min_exp     = min_exp_param if min_exp_param is not None else detected_intent.get('min_experience')
         effective_service_mode = service_mode_param or detected_intent.get('service_mode', '')
+        effective_min_rating  = min_rating if min_rating > 0 else detected_intent.get('min_rating', 0)
+        effective_verified    = verified_only or detected_intent.get('verified', False)
         effective_max_distance = (
             max_distance_param if max_distance_param is not None
             else detected_intent.get('max_distance')
@@ -2639,6 +2649,10 @@ class NearbyProfessionalsView(APIView):
             qs = qs.filter(userprofile__gender=effective_gender)
         if effective_urgent:
             qs = qs.filter(professionalprofile__is_available=True)
+        if effective_min_rating > 0:
+            qs = qs.filter(professionalprofile__average_rating__gte=effective_min_rating)
+        if effective_verified:
+            qs = qs.filter(professionalprofile__is_verified=True)
         if effective_language:
             qs = qs.filter(professionalprofile__languages__icontains=effective_language)
         if effective_min_exp:
