@@ -148,6 +148,32 @@ class MonetizationComprehensiveTestCase(TestCase):
         self.assertEqual(payment.status, 'pending')
         self.assertEqual(payment.purpose, 'subscription')
 
+    def test_safepay_initialize_with_raast_and_card_payment_methods(self):
+        self.client.force_authenticate(user=self.pro_user)
+
+        # 1. Raast Instant Pay
+        raast_payload = {
+            'purpose': 'subscription',
+            'plan_id': self.plan_pro_monthly.id,
+            'payment_method': 'raast',
+        }
+        res_raast = self.client.post('/api/payments/checkout/initialize/', raast_payload, format='json')
+        self.assertEqual(res_raast.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res_raast.data['payment_method'], 'raast')
+        self.assertIn('components', res_raast.data['checkout_url'])
+        self.assertEqual(len(res_raast.data['supported_methods']), 3)
+
+        # 2. Card Payment
+        card_payload = {
+            'purpose': 'subscription',
+            'plan_id': self.plan_pro_monthly.id,
+            'payment_method': 'card',
+        }
+        res_card = self.client.post('/api/payments/checkout/initialize/', card_payload, format='json')
+        self.assertEqual(res_card.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res_card.data['payment_method'], 'card')
+        self.assertIn('components', res_card.data['checkout_url'])
+
     def test_featured_promotion_checkout_initialize(self):
         self.client.force_authenticate(user=self.pro_user)
         payload = {

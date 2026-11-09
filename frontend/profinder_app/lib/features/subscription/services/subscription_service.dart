@@ -40,6 +40,7 @@ class SubscriptionService {
     int planId, {
     bool isFree = false,
     String? currency,
+    String paymentMethod = 'all',
   }) async {
     if (isFree) {
       try {
@@ -58,6 +59,7 @@ class SubscriptionService {
     final paymentRes = await paymentService.initializeSafepayCheckout(
       purpose: 'subscription',
       planId: planId,
+      paymentMethod: paymentMethod,
     );
 
     if (paymentRes['success'] != true) {
@@ -96,10 +98,11 @@ class SubscriptionService {
   String _extractError(dynamic e) {
     try {
       final data = (e as dynamic).response?.data;
-      if (data is Map)
+      if (data is Map) {
         return data['error'] ??
             data['detail'] ??
             AppStrings.errSomethingWentWrong;
+      }
     } catch (_) {}
     return AppStrings.errSomethingWentWrong;
   }

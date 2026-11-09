@@ -60,17 +60,19 @@ class SafepayGateway:
 
         if self.environment == 'production':
             self.base_url = 'https://api.getsafepay.com'
-            self.checkout_url = 'https://getsafepay.com/components'
+            self.checkout_url = getattr(settings, 'SAFEPAY_CHECKOUT_URL', 'https://getsafepay.com/components')
         else:
             self.base_url = 'https://sandbox.api.getsafepay.com'
-            self.checkout_url = 'https://sandbox.api.getsafepay.com/embedded/payment/auth'
+            self.checkout_url = getattr(settings, 'SAFEPAY_CHECKOUT_URL', 'https://sandbox.api.getsafepay.com/components')
 
         self.allow_mock = getattr(settings, 'SAFEPAY_ALLOW_MOCK_SUCCESS', False)
 
-    def create_order(self, amount_paisas: int, currency: str = 'PKR') -> dict:
+    def create_order(self, amount_paisas: int, currency: str = 'PKR', intent: str = None) -> dict:
         """
         Creates an order with Safepay Orders v3 API.
         amount_paisas: Amount in minor units (paisas), must be positive integer.
+        intent: Optional payment rail intent (e.g. 'RAAST' for Raast Dynamic QR & RTP,
+                'CYBERSOURCE' for Debit/Credit Cards, or None for all supported account rails).
         Returns dict containing 'tracker' and raw metadata.
         """
         if not isinstance(amount_paisas, int) or amount_paisas <= 0:
@@ -93,6 +95,9 @@ class SafepayGateway:
             "currency": currency,
             "environment": self.environment,
         }
+        if intent and intent.strip():
+            payload["intent"] = intent.strip().upper()
+
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -168,22 +173,26 @@ class SafepayGateway:
         self,
         tracker: str,
         tbt: str,
-        source: str = 'mobile',
+        source: str = 'custom',
         redirect_url: str = None,
         cancel_url: str = None,
+        order_id: str = None,
     ) -> str:
         """
-        Constructs the official Safepay Express Checkout URL.
-        Parameters: beacon, token, tracker, tbt, env, source, redirect_url, cancel_url.
+        Constructs the official Safepay Hosted Checkout Component URL.
+        Renders all enabled multi-rail payment methods (Cards, Raast QR & RTP, Wallets).
         """
         params = {
-            'tracker': tracker,
             'beacon': tracker,
-            'tbt': tbt,
+            'tracker': tracker,
             'token': tbt,
+            'tbt': tbt,
             'env': self.environment,
-            'source': source,
+            'source': source or 'custom',
+            'webhooks': 'true',
         }
+        if order_id:
+            params['order_id'] = order_id
         if redirect_url:
             params['redirect_url'] = redirect_url
         if cancel_url:

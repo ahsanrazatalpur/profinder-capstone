@@ -831,14 +831,17 @@ class SafepayInitializeCheckoutView(APIView):
             price = plan.price
             amount_paisas = pkr_to_paisas(price)
 
+            payment_method = (request.data.get('payment_method') or 'all').strip().lower()
+            intent = 'RAAST' if payment_method == 'raast' else ('CYBERSOURCE' if payment_method == 'card' else None)
+
             try:
-                order_result = gateway.create_order(amount_paisas=amount_paisas, currency='PKR')
+                order_result = gateway.create_order(amount_paisas=amount_paisas, currency='PKR', intent=intent)
                 tracker = order_result['tracker']
                 tbt = gateway.create_passport_token()
                 checkout_url = gateway.build_express_checkout_url(
                     tracker=tracker,
                     tbt=tbt,
-                    source='mobile',
+                    source='custom',
                     redirect_url=redirect_url,
                     cancel_url=cancel_url,
                 )
@@ -870,6 +873,12 @@ class SafepayInitializeCheckoutView(APIView):
                 'amount': str(payment.amount),
                 'currency': payment.currency,
                 'purpose': purpose,
+                'payment_method': payment_method,
+                'supported_methods': [
+                    {'id': 'all', 'name': 'All Payment Methods (Cards, Raast QR & RTP, Wallets)'},
+                    {'id': 'raast', 'name': 'Raast Instant Payment (Dynamic QR & RTP)'},
+                    {'id': 'card', 'name': 'Debit / Credit Card (Visa, Mastercard, PayPak)'},
+                ],
             }, status=status.HTTP_201_CREATED)
 
         elif purpose == 'featured_listing':
@@ -900,14 +909,17 @@ class SafepayInitializeCheckoutView(APIView):
             price = pkg.price
             amount_paisas = pkr_to_paisas(price)
 
+            payment_method = (request.data.get('payment_method') or 'all').strip().lower()
+            intent = 'RAAST' if payment_method == 'raast' else ('CYBERSOURCE' if payment_method == 'card' else None)
+
             try:
-                order_result = gateway.create_order(amount_paisas=amount_paisas, currency='PKR')
+                order_result = gateway.create_order(amount_paisas=amount_paisas, currency='PKR', intent=intent)
                 tracker = order_result['tracker']
                 tbt = gateway.create_passport_token()
                 checkout_url = gateway.build_express_checkout_url(
                     tracker=tracker,
                     tbt=tbt,
-                    source='mobile',
+                    source='custom',
                     redirect_url=redirect_url,
                     cancel_url=cancel_url,
                 )

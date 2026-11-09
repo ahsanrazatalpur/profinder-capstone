@@ -110,6 +110,7 @@ class PaymentService {
     int? categoryId,
     String? redirectUrl,
     String? cancelUrl,
+    String paymentMethod = 'all',
   }) async {
     try {
       final defaultRedirect = kIsWeb
@@ -121,6 +122,7 @@ class PaymentService {
 
       final payload = <String, dynamic>{
         'purpose': purpose,
+        'payment_method': paymentMethod,
         'redirect_url': redirectUrl ?? defaultRedirect,
         'cancel_url': cancelUrl ?? defaultCancel,
       };

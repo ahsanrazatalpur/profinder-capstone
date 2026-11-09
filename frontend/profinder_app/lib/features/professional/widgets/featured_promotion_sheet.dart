@@ -43,6 +43,7 @@ class _FeaturedPromotionSheetState extends State<FeaturedPromotionSheet> {
   final PaymentService _paymentService = PaymentService();
   List<Map<String, dynamic>> _packages = [];
   int? _selectedPackageId;
+  String _selectedPaymentMethod = 'all';
   bool _loading = true;
   bool _processing = false;
   String? _error;
@@ -87,6 +88,7 @@ class _FeaturedPromotionSheetState extends State<FeaturedPromotionSheet> {
       purpose: 'featured_listing',
       packageId: _selectedPackageId,
       categoryId: widget.defaultCategoryId,
+      paymentMethod: _selectedPaymentMethod,
     );
 
     if (!mounted) return;
@@ -325,6 +327,52 @@ class _FeaturedPromotionSheetState extends State<FeaturedPromotionSheet> {
                 ),
               );
             }),
+            const SizedBox(height: 14),
+            const Text(
+              'Select Payment Method:',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            _buildPaymentMethodOption(
+              id: 'all',
+              title: 'All Supported Methods (Recommended)',
+              subtitle: 'Cards, Raast Dynamic QR, Request to Pay & Wallets',
+              icon: Icons.payments_rounded,
+            ),
+            const SizedBox(height: 6),
+            _buildPaymentMethodOption(
+              id: 'raast',
+              title: 'Raast Instant Pay (QR / RTP)',
+              subtitle: 'Scan Dynamic QR or send via Pakistani bank app',
+              icon: Icons.qr_code_scanner_rounded,
+            ),
+            const SizedBox(height: 6),
+            _buildPaymentMethodOption(
+              id: 'card',
+              title: 'Debit / Credit Card',
+              subtitle: 'Visa, Mastercard, PayPak & UnionPay via 3DS',
+              icon: Icons.credit_card_rounded,
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.blueGrey.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.lock_outline, size: 14, color: Colors.blueGrey),
+                  SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      '100% SBP-Compliant & PCI-DSS Secured via Safepay Pakistan',
+                      style: TextStyle(fontSize: 11, color: Colors.blueGrey),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _processing ? null : _initiateCheckout,
@@ -355,6 +403,59 @@ class _FeaturedPromotionSheetState extends State<FeaturedPromotionSheet> {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentMethodOption({
+    required String id,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
+    final isSelected = _selectedPaymentMethod == id;
+    return InkWell(
+      onTap: () => setState(() => _selectedPaymentMethod = id),
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isSelected ? context.colors.primary : Colors.grey.withValues(alpha: 0.25),
+            width: isSelected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(10),
+          color: isSelected ? context.colors.primary.withValues(alpha: 0.05) : Colors.transparent,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+              color: isSelected ? context.colors.primary : Colors.grey,
+              size: 18,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? context.colors.primary : null,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

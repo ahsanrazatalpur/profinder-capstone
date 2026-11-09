@@ -65,11 +65,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       return; // Free plan is active by default and does not require subscription payment
     }
 
-    final confirm = await _showConfirmDialog(plan);
-    if (!confirm) return;
+    final selectedMethod = await _showPaymentMethodDialog(plan);
+    if (selectedMethod == null) return;
 
     setState(() => _subscribing = true);
-    final result = await _service.subscribe(plan.id, isFree: plan.isFree);
+    final result = await _service.subscribe(
+      plan.id,
+      isFree: plan.isFree,
+      paymentMethod: selectedMethod,
+    );
 
     if (!mounted) {
       setState(() => _subscribing = false);
@@ -187,43 +191,302 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         false;
   }
 
-  Future<bool> _showConfirmDialog(SubscriptionPlan plan) async {
+  Future<String?> _showPaymentMethodDialog(SubscriptionPlan plan) async {
     final t = AppLocalizations.of(context);
-    return await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-            ),
-            title: Text(
-              t.subscriptionConfirmSubscription,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            content: Text(
-              t.subscriptionSubscribe(
-                plan.name,
-                plan.currency,
-                '${plan.price.toStringAsFixed(0)}${plan.billing == 'monthly' ? t.subscriptionPerMonth : t.subscriptionPerYear}?',
+    String selected = 'all';
+
+    return await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            final bg = isDark ? const Color(0xFF1E293B) : Colors.white;
+            final cardBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+            final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              decoration: BoxDecoration(
+                color: bg,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    blurRadius: 20,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(t.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.colors.primary,
-                  minimumSize: const Size(0, 40),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 44,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00A86B).withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.verified_user_rounded,
+                            color: Color(0xFF00A86B),
+                            size: 26,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Subscribe to ${plan.name}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                '${plan.currency} ${plan.price.toStringAsFixed(0)} / ${plan.billing == 'monthly' ? 'month' : 'year'}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: context.colors.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'Choose Payment Method:',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Option 1: All Supported Methods (Multi-Rail)
+                    _buildPaymentOptionTile(
+                      title: 'All Supported Methods',
+                      badge: 'RECOMMENDED',
+                      badgeColor: const Color(0xFF00A86B),
+                      subtitle: 'Cards, Raast Dynamic QR, Request to Pay (RTP) & Wallets',
+                      icon: Icons.payments_rounded,
+                      value: 'all',
+                      selectedGroupValue: selected,
+                      cardBg: cardBg,
+                      borderColor: borderColor,
+                      onTap: () => setModalState(() => selected = 'all'),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Option 2: Raast Instant Payment
+                    _buildPaymentOptionTile(
+                      title: 'Raast Instant Pay (QR / RTP)',
+                      badge: 'INSTANT 0% FEE',
+                      badgeColor: const Color(0xFF10B981),
+                      subtitle: 'Scan Dynamic QR or send to IBAN via any Pakistani bank app',
+                      icon: Icons.qr_code_scanner_rounded,
+                      value: 'raast',
+                      selectedGroupValue: selected,
+                      cardBg: cardBg,
+                      borderColor: borderColor,
+                      onTap: () => setModalState(() => selected = 'raast'),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Option 3: Debit / Credit Card
+                    _buildPaymentOptionTile(
+                      title: 'Debit / Credit Card',
+                      badge: 'VISA / MASTERCARD / PAYPAK',
+                      badgeColor: const Color(0xFF3B82F6),
+                      subtitle: 'Direct 3D-Secure payment from your local or international card',
+                      icon: Icons.credit_card_rounded,
+                      value: 'card',
+                      selectedGroupValue: selected,
+                      cardBg: cardBg,
+                      borderColor: borderColor,
+                      onTap: () => setModalState(() => selected = 'card'),
+                    ),
+
+                    const SizedBox(height: 14),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.blueGrey.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.lock_outline, size: 16, color: Colors.blueGrey),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '100% SBP-Compliant & PCI-DSS Secured via Safepay Pakistan',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.blueGrey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(ctx, null),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(t.cancel),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.pop(ctx, selected),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: context.colors.primary,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              'Proceed to Safepay',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                child: Text(t.subscriptionSubscribe2),
               ),
-            ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildPaymentOptionTile({
+    required String title,
+    required String badge,
+    required Color badgeColor,
+    required String subtitle,
+    required IconData icon,
+    required String value,
+    required String selectedGroupValue,
+    required Color cardBg,
+    required Color borderColor,
+    required VoidCallback onTap,
+  }) {
+    final isSelected = value == selectedGroupValue;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected ? context.colors.primary.withValues(alpha: 0.08) : cardBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? context.colors.primary : borderColor,
+            width: isSelected ? 2 : 1,
           ),
-        ) ??
-        false;
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Icon(
+                isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                color: isSelected ? context.colors.primary : Colors.grey,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: isSelected ? context.colors.primary : null,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: badgeColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          badge,
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: badgeColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showSuccess(String msg) {
