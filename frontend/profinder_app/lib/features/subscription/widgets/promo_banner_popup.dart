@@ -20,7 +20,7 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
-const int _kSkipLockSeconds = 5;
+const int _kSkipLockSeconds = 3;
 
 class PromoBannerPopup extends StatefulWidget {
   final PromoBanner banner;
@@ -191,45 +191,35 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
   Widget _buildSheet() {
     return Center(
       child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ── Main Promo Card ───────────────────────────────────────────────
-            Container(
-              width: double.infinity,
-              constraints: const BoxConstraints(maxWidth: 420),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppSizes.radiusXl),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.28),
-                    blurRadius: 36,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+        child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(maxWidth: 420),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.28),
+                blurRadius: 36,
+                spreadRadius: 2,
+                offset: const Offset(0, 10),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppSizes.radiusXl),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Top: Banner image bleeding edge-to-edge (0 padding / margins)
-                    _buildTopMedia(),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Top: Banner image bleeding edge-to-edge (0 padding / margins)
+                _buildTopMedia(),
 
-                    // Bottom: Title, description, CTA button, skip text
-                    _buildCardBody(),
-                  ],
-                ),
-              ),
+                // Bottom: Title, description, CTA button, skip text
+                _buildCardBody(),
+              ],
             ),
-
-            // ── Floating Bottom Close Button (matches design reference) ───────
-            const SizedBox(height: 20),
-            _buildBottomCloseButton(),
-          ],
+          ),
         ),
       ),
     );
@@ -534,43 +524,6 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
             fontWeight: _canSkip ? FontWeight.w600 : FontWeight.w500,
           ),
           textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  // ── Floating Bottom Close Button (Circular X Icon) ────────────────────────
-  Widget _buildBottomCloseButton() {
-    return GestureDetector(
-      onTap: _canSkip ? _dismiss : null,
-      child: AnimatedOpacity(
-        opacity: _canSkip ? 1.0 : 0.45,
-        duration: const Duration(milliseconds: 250),
-        child: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.black.withValues(alpha: 0.55),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.25),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.35),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: const Center(
-            child: Icon(
-              Icons.close_rounded,
-              color: Colors.white,
-              size: 24,
-            ),
-          ),
         ),
       ),
     );
