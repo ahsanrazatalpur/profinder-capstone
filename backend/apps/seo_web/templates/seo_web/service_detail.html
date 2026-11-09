@@ -1,0 +1,107 @@
+{% extends "seo_web/base.html" %}
+
+{% block content %}
+<section class="hero-section">
+    <h1>{{ service.title }}</h1>
+    <p>{{ service.short_description }}</p>
+
+    <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;">
+        {% if service.category %}
+            <a href="/categories/{{ service.category.slug }}/" class="chip" style="background: rgba(255,255,255,0.2); color: #ffffff; padding: 8px 18px; font-weight: 600;">
+                Category: {{ service.category.name }}
+            </a>
+        {% endif %}
+        {% if service.city %}
+            <span class="chip" style="background: rgba(255,255,255,0.2); color: #ffffff; padding: 8px 18px; font-weight: 600;">
+                City: {{ service.city.name }}
+            </span>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Service Content Overview -->
+<div class="card" style="padding: 32px; margin-bottom: 40px;">
+    <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 14px;">Service Scope & Details</h2>
+    <p style="font-size: 15px; line-height: 1.8; color: #334155;">
+        {{ service.full_content|default:service.short_description }}
+    </p>
+
+    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 24px; font-size: 14px; color: var(--text-muted);">
+        <div>✓ Background-checked technicians</div>
+        <div>✓ Upfront transparent pricing</div>
+        <div>✓ Direct booking with zero middleman fee</div>
+        <div>✓ Verified local customer reviews</div>
+    </div>
+</div>
+
+<!-- Available Specialists for this Service -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Available Specialists for {{ service.title }}</h2>
+        <p>Connect directly with verified local specialists offering this exact service.</p>
+    </div>
+
+    {% if specialists %}
+    <div class="cards-grid">
+        {% for pro in specialists %}
+        <a href="/professionals/{{ pro.slug }}/" class="card">
+            <div class="pro-card-header">
+                {% if pro.photo_url %}
+                    <img src="{{ pro.photo_url.url }}" alt="{{ pro.user.name }}" class="pro-avatar" loading="lazy">
+                {% else %}
+                    <div class="pro-avatar" style="display:flex;align-items:center;justify-content:center;font-weight:bold;color:#64748b;font-size:20px;">
+                        {{ pro.user.name|slice:":1" }}
+                    </div>
+                {% endif %}
+                <div class="pro-title-meta">
+                    <h3>{{ pro.user.name }}</h3>
+                    <div style="font-size: 13px; color: var(--text-muted);">{{ pro.specialization|default:pro.category.name }}</div>
+                    {% if pro.is_verified %}
+                        <span class="verified-badge">✓ Verified</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if pro.average_rating > 0 %}
+            <div class="rating-row">
+                <span class="rating-stars">★ {{ pro.average_rating|floatformat:1 }}</span>
+                <span style="color: var(--text-muted); font-size: 12px;">({{ pro.user.received_reviews.count }} reviews)</span>
+            </div>
+            {% endif %}
+
+            <div class="location-tag">
+                📍 {{ pro.user.userprofile.city|default:"Pakistan" }}
+            </div>
+
+            <p>{{ pro.bio|default:"Qualified specialist ready to deliver reliable on-site service."|truncatewords:20 }}</p>
+
+            {% if pro.hourly_rate > 0 %}
+            <div class="hourly-rate">PKR {{ pro.hourly_rate|floatformat:0 }} / hr</div>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="background: #ffffff; padding: 40px; border-radius: var(--radius); text-align: center; border: 1px solid var(--border);">
+        <p style="color: var(--text-muted); font-size: 16px;">
+            Additional specialists are being assigned to this service area. You can also submit a general search query.
+        </p>
+    </div>
+    {% endif %}
+</section>
+
+<!-- FAQs Section -->
+{% if faqs %}
+<section class="geo-faq-section">
+    <h2>Frequently Asked Questions about {{ service.title }}</h2>
+    <p class="lead-intro">Essential information before booking this service through ProFinder.</p>
+
+    {% for item in faqs %}
+    <div class="faq-item">
+        <div class="faq-question">{{ item.q }}</div>
+        <div class="faq-answer">{{ item.a }}</div>
+    </div>
+    {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

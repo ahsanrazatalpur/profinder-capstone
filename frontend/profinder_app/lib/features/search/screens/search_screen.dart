@@ -1,3 +1,4 @@
+import '../../../core/utils/web_identity/web_identity.dart';
 // lib/features/search/screens/search_screen.dart
 
 import '../../../services/content_localizer.dart';
@@ -58,6 +59,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
+
   final _controller = TextEditingController();
   final _focus = FocusNode();
   final _service = HomeService();
@@ -212,6 +214,7 @@ class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
     _debounce?.cancel();
     _controller.dispose();
     _focus.dispose();
+    WebIdentity.resetToDefault();
     super.dispose();
   }
 
@@ -331,6 +334,8 @@ class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
 
     _addToHistory(query);
     _focus.unfocus();
+    final targetCity = _cityFilter.trim().isNotEmpty ? _cityFilter.trim() : 'Pakistan';
+    WebIdentity.setIdentity(title: '$query in $targetCity | ProFinder');
     setState(() {
       _isLoading = true;
       _hasSearched = true;
@@ -512,6 +517,8 @@ class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
     _controller.text = name;
     _addToHistory(name);
     _focus.unfocus();
+    final targetCity = _cityFilter.trim().isNotEmpty ? _cityFilter.trim() : 'Pakistan';
+    WebIdentity.setIdentity(title: '$name in $targetCity | ProFinder');
     setState(() {
       _isLoading = true;
       _hasSearched = true;

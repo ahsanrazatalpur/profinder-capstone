@@ -1,0 +1,91 @@
+{% extends "seo_web/base.html" %}
+
+{% block content %}
+<section class="hero-section" style="padding: 40px 20px;">
+    <h1>Find Verified Local Specialists</h1>
+    <p>Search background-checked professionals by keyword, category, or city across Pakistan.</p>
+
+    <form class="search-box" action="/search/" method="get" role="search">
+        <input type="text" name="q" value="{{ query }}" placeholder="Service or specialty (e.g. Doctor, Electrician)..." aria-label="Search Query">
+        <select name="category" aria-label="Category Filter">
+            <option value="">All Categories</option>
+            {% for cat in categories %}
+                <option value="{{ cat.slug }}" {% if selected_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="city" aria-label="City Filter">
+            <option value="">All Pakistan Cities</option>
+            {% for c in cities %}
+                <option value="{{ c.slug }}" {% if selected_city == c.slug %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Search</button>
+    </form>
+</section>
+
+<!-- Search Results -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <h2>Results Directory</h2>
+            <p>
+                Found {{ results|length }} verified professional{{ results|length|pluralize }}
+                {% if query %}matching "<strong>{{ query }}</strong>"{% endif %}
+                {% if selected_city_name %}in <strong>{{ selected_city_name }}</strong>{% endif %}.
+            </p>
+        </div>
+    </div>
+
+    {% if results %}
+    <div class="cards-grid">
+        {% for pro in results %}
+        <a href="/professionals/{{ pro.slug }}/" class="card">
+            <div class="pro-card-header">
+                {% if pro.photo_url %}
+                    <img src="{{ pro.photo_url.url }}" alt="{{ pro.user.name }}" class="pro-avatar" loading="lazy">
+                {% else %}
+                    <div class="pro-avatar" style="display:flex;align-items:center;justify-content:center;font-weight:bold;color:#64748b;font-size:20px;">
+                        {{ pro.user.name|slice:":1" }}
+                    </div>
+                {% endif %}
+                <div class="pro-title-meta">
+                    <h3>{{ pro.user.name }}</h3>
+                    <div style="font-size: 13px; color: var(--text-muted);">{{ pro.specialization|default:pro.category.name }}</div>
+                    {% if pro.is_verified %}
+                        <span class="verified-badge">✓ Verified</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if pro.average_rating > 0 %}
+            <div class="rating-row">
+                <span class="rating-stars">★ {{ pro.average_rating|floatformat:1 }}</span>
+                <span style="color: var(--text-muted); font-size: 12px;">({{ pro.user.received_reviews.count }} reviews)</span>
+            </div>
+            {% endif %}
+
+            <div class="location-tag">
+                📍 {{ pro.user.userprofile.city|default:"Pakistan" }}
+            </div>
+
+            <p>{{ pro.bio|default:"Experienced specialist dedicated to providing dependable, high-standard professional service."|truncatewords:20 }}</p>
+
+            {% if pro.hourly_rate > 0 %}
+            <div class="hourly-rate">PKR {{ pro.hourly_rate|floatformat:0 }} / hr</div>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="background: #ffffff; padding: 50px 20px; border-radius: var(--radius); text-align: center; border: 1px solid var(--border);">
+        <h3 style="font-size: 18px; margin-bottom: 8px;">No exact specialists found matching your search.</h3>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+            Try clearing specific filters, using broader keywords, or browsing our main categories.
+        </p>
+        <a href="/" style="display: inline-block; background: var(--primary); color: #ffffff; padding: 10px 24px; border-radius: 6px; font-weight: 600; font-size: 14px;">
+            Return to Homepage
+        </a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

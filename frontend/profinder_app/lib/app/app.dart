@@ -16,6 +16,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../services/auth_provider.dart';
 import '../services/home_provider.dart';
 import '../services/push_notification_service.dart';
+import '../core/utils/web_identity/app_route_identity_observer.dart';
 import 'routes/app_routes.dart';
 
 /// Root application widget for ProFinder.
@@ -41,7 +42,10 @@ class ProFinderApp extends StatelessWidget {
         builder: (context, locale, themeProvider, _) {
           return MaterialApp(
             navigatorKey: PushNotificationService.navigatorKey,
-            title: 'ProFinder',
+            navigatorObservers: [
+              AppRouteIdentityObserver(),
+            ],
+            title: 'ProFinder | Find Trusted Professionals in Pakistan',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
@@ -59,9 +63,6 @@ class ProFinderApp extends StatelessWidget {
 
             builder: (context, child) {
               AppStrings.setContext(context);
-              PushNotificationService().updateChannelLocalization(
-                AppLocalizations.of(context),
-              );
               return child!;
             },
 

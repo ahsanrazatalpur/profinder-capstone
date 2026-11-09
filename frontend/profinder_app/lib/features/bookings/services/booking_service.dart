@@ -8,6 +8,7 @@ import '../../../core/network/api_service.dart';
 
 class BookingService {
   final ApiService _api = ApiService();
+  ApiService get api => _api;
 
   // ── Create Booking ──────────────────────────────────────────────────────────
   Future<Map<String, dynamic>> createBooking({
@@ -51,6 +52,62 @@ class BookingService {
         'status': 'cancelled',
         'cancel_reason': reason,
       });
+      return {'success': true, 'data': response.data};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  // ── Complete / Confirm Job Done ─────────────────────────────────────────────
+  Future<Map<String, dynamic>> completeBooking(int bookingId) async {
+    try {
+      final response = await _api.patch('${AppConstants.bookings}$bookingId/', {
+        'status': 'completed',
+      });
+      return {'success': true, 'data': response.data};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  // ── Proposes / Reschedules a New Booking Time (Replaces local SharedPreferences) ──
+  Future<Map<String, dynamic>> suggestTime({
+    required int bookingId,
+    required String date,
+    required String time,
+    String reason = '',
+  }) async {
+    try {
+      final response = await _api.post('/bookings/$bookingId/suggest-time/', {
+        'suggested_date': date,
+        'suggested_time': time,
+        'reason': reason,
+      });
+      return {'success': true, 'data': response.data};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  // ── Responds to a Proposed Time (Accept / Decline) ────────────────────────
+  Future<Map<String, dynamic>> respondSuggestion({
+    required int bookingId,
+    required String action,
+  }) async {
+    try {
+      final response = await _api.post('/bookings/$bookingId/respond-suggestion/', {
+        'action': action,
+      });
+      return {'success': true, 'data': response.data};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  // ── Customer Confirms Job Completion & Unlocks Review ────────────────────
+  Future<Map<String, dynamic>> confirmCompletion(int bookingId) async {
+    try {
+      final response = await _api.post('/bookings/$bookingId/confirm-completion/', {});
       return {'success': true, 'data': response.data};
     } catch (e) {
       return _handleError(e);

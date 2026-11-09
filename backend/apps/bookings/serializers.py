@@ -37,21 +37,30 @@ class BookingSerializer(serializers.ModelSerializer):
     customer_is_online     = serializers.SerializerMethodField(read_only=True)
     is_online              = serializers.SerializerMethodField(read_only=True)
     professional_is_available = serializers.SerializerMethodField(read_only=True)
+    price_amount           = serializers.DecimalField(source='total_price', max_digits=10, decimal_places=2, read_only=True)
+    pricing_unit           = serializers.SerializerMethodField(read_only=True)
+    pricing_unit_display   = serializers.SerializerMethodField(read_only=True)
+    is_inquiry             = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model  = Booking
         fields = ['id', 'customer', 'professional', 'professional_name',
                   'customer_name', 'date', 'time', 'note', 'status',
-                  'total_price', 'currency', 'payment_status',
+                  'total_price', 'price_amount', 'pricing_unit', 'pricing_unit_display',
+                  'is_inquiry', 'currency', 'payment_status',
                   'cancel_reason', 'cancelled_by', 'created_at',
                   'profession', 'professional_rating', 'professional_reviews',
                   'location', 'professional_verified',
                   'professional_photo', 'customer_photo',
                   'professional_is_online', 'customer_is_online', 'is_online',
-                  'professional_is_available']
-        # FIX: professional bhi read_only — view already handle karta hai isko
+                  'professional_is_available',
+                  'suggested_date', 'suggested_time', 'suggested_by', 'rescheduled_reason',
+                  'completion_marked_by_pro', 'completion_confirmed_by_customer', 'completion_date']
         read_only_fields = ['customer', 'professional', 'status', 'created_at',
-                            'total_price', 'currency', 'payment_status',
+                            'suggested_date', 'suggested_time', 'suggested_by', 'rescheduled_reason',
+                            'completion_marked_by_pro', 'completion_confirmed_by_customer', 'completion_date',
+                            'total_price', 'price_amount', 'pricing_unit', 'pricing_unit_display',
+                            'is_inquiry', 'currency', 'payment_status',
                             'professional_name', 'customer_name',
                             'cancel_reason', 'cancelled_by',
                             'profession', 'professional_rating',
@@ -60,6 +69,21 @@ class BookingSerializer(serializers.ModelSerializer):
                             'professional_photo', 'customer_photo',
                             'professional_is_online', 'customer_is_online', 'is_online',
                             'professional_is_available']
+
+    def get_pricing_unit(self, obj):
+        if not obj.professional:
+            return 'per_service'
+        prof = getattr(obj.professional, 'professionalprofile', None)
+        return getattr(prof, 'pricing_unit', 'per_service') if prof else 'per_service'
+
+    def get_pricing_unit_display(self, obj):
+        if not obj.professional:
+            return 'Per Service'
+        prof = getattr(obj.professional, 'professionalprofile', None)
+        return prof.get_pricing_unit_display() if prof and hasattr(prof, 'get_pricing_unit_display') else 'Per Service'
+
+    def get_is_inquiry(self, obj):
+        return True
 
     def get_professional_name(self, obj):
         return obj.professional.name if obj.professional else ''

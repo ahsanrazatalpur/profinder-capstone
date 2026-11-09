@@ -30,7 +30,7 @@ SUPPORTED_CURRENCIES = {
     'USD': {'name': 'US Dollar', 'symbol': '$', 'decimals': 2},
     'EUR': {'name': 'Euro', 'symbol': '€', 'decimals': 2},
     'GBP': {'name': 'British Pound', 'symbol': '£', 'decimals': 2},
-    'PKR': {'name': 'Pakistani Rupee', 'symbol': 'Rs', 'decimals': 2},
+    'PKR': {'name': 'Pakistani Rupee', 'symbol': 'Rs.', 'decimals': 0},
     'INR': {'name': 'Indian Rupee', 'symbol': '₹', 'decimals': 2},
     'AED': {'name': 'UAE Dirham', 'symbol': 'AED', 'decimals': 2},
     'SAR': {'name': 'Saudi Riyal', 'symbol': 'SAR', 'decimals': 2},
@@ -78,9 +78,13 @@ PK_CITIES = {
 
 def resolve_currency_for_user(country=None, city=None):
     """
-    Returns (currency_code, currency_symbol), e.g. ('PKR', 'Rs').
-    Detects based on user country or city. Defaults to PKR for Pakistan/local users.
+    Returns (currency_code, currency_symbol), e.g. ('PKR', 'Rs.').
+    In Pakistan-only mode, returns ('PKR', 'Rs.') consistently.
+    Preserves international detection for future global expansion.
     """
+    from profinder.localization_config import MARKETPLACE_SCOPE_MODE, DEFAULT_CURRENCY_CODE, DEFAULT_CURRENCY_SYMBOL
+    if MARKETPLACE_SCOPE_MODE == 'PK_NATIONAL':
+        return DEFAULT_CURRENCY_CODE, DEFAULT_CURRENCY_SYMBOL
     c_clean = (country or '').strip().upper()
     city_clean = (city or '').strip().lower()
 
@@ -219,7 +223,7 @@ def convert_currency(amount, from_currency='USD', to_currency='USD'):
     return (converted, rate)
 
 
-def format_currency_amount(amount, currency_code='USD'):
+def format_currency_amount(amount, currency_code='PKR'):
     """
     Formats decimal amount with appropriate currency symbol.
     """
@@ -233,7 +237,7 @@ def format_currency_amount(amount, currency_code='USD'):
     symbol = meta['symbol']
     decimals = meta.get('decimals', 2)
 
-    if decimals == 0:
+    if decimals == 0 or amount == amount.to_integral():
         formatted_num = f"{int(amount.quantize(Decimal('1'), rounding=ROUND_HALF_UP)):,}"
     else:
         formatted_num = f"{amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"

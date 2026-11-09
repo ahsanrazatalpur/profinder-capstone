@@ -1,3 +1,4 @@
+import '../../../core/utils/web_identity/web_identity.dart';
 // lib/features/home/screens/guest_main_screen.dart
 
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ class GuestMainScreenState extends State<GuestMainScreen> {
   void initState() {
     super.initState();
     _current = this;
+    WebIdentity.resetToDefault();
   }
 
   @override
@@ -38,7 +40,30 @@ class GuestMainScreenState extends State<GuestMainScreen> {
   }
 
   void switchToTab(int index) {
-    if (index >= 0 && index < 5) setState(() => _currentIndex = index);
+    if (index >= 0 && index < 5) {
+      setState(() => _currentIndex = index);
+      _updateTabIdentity(index);
+    }
+  }
+
+  void _updateTabIdentity(int index) {
+    switch (index) {
+      case 0:
+        WebIdentity.resetToDefault();
+        break;
+      case 1:
+        WebIdentity.setIdentity(title: 'Find Trusted Professionals in Pakistan | ProFinder');
+        break;
+      case 2:
+        WebIdentity.setIdentity(title: 'Magazine | ProFinder');
+        break;
+      case 3:
+        WebIdentity.setIdentity(title: 'Join as a Professional | ProFinder');
+        break;
+      case 4:
+        WebIdentity.setIdentity(title: 'My Profile | ProFinder');
+        break;
+    }
   }
 
   @override

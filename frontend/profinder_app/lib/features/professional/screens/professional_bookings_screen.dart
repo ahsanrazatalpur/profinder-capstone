@@ -191,19 +191,35 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   Future<void> _saveSuggestedTime(
     String bookingId,
     DateTime date,
-    TimeOfDay time,
-  ) async {
+    TimeOfDay time, {
+    String? reason,
+  }) async {
     final dateStr = DateFormat('yyyy-MM-dd').format(date);
-    final timeStr = time.format(context);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-      '${_suggestedTimesPrefsKey}_$bookingId',
-      '$dateStr|$timeStr',
-    );
-    if (!mounted) return;
-    setState(
-      () => _suggestedTimes[bookingId] = {'date': dateStr, 'time': timeStr},
-    );
+    final hourStr = time.hour.toString().padLeft(2, '0');
+    final minuteStr = time.minute.toString().padLeft(2, '0');
+    final timeStr = '$hourStr:$minuteStr:00';
+    try {
+      await _api.post('/bookings/$bookingId/suggest-time/', {
+        'suggested_date': dateStr,
+        'suggested_time': timeStr,
+        'reason': reason ?? '',
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('New time suggested! The customer has been notified.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      _loadBookings();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to suggest time: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   Future<void> _clearSuggestedTime(String bookingId) async {
@@ -218,7 +234,7 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
   String _statusOf(dynamic b) =>
       (b['status']?.toString() ?? 'pending').toLowerCase();
   bool _isSuggested(dynamic b) =>
-      _suggestedTimes.containsKey(b['id'].toString());
+      (b['suggested_date'] != null && b['suggested_time'] != null) || _suggestedTimes.containsKey(b['id'].toString());
 
   // The customer booking flow folds "Location: ..." as the first line of
   // the free-text `note`. Parse it back out for display only.
@@ -566,7 +582,9 @@ class _ProfessionalBookingsScreenState extends State<ProfessionalBookingsScreen>
     final notes = split['note'] ?? '';
     final cancelReason = b['cancel_reason']?.toString() ?? '';
     final cancelledBy = b['cancelled_by']?.toString() ?? '';
-    final suggested = _suggestedTimes[b['id'].toString()];
+    final suggested = (b['suggested_date'] != null && b['suggested_time'] != null)
+          ? {'date': b['suggested_date'].toString(), 'time': b['suggested_time'].toString()}
+          : _suggestedTimes[b['id'].toString()];
 
     showModalBottomSheet(
       context: context,

@@ -1,6 +1,6 @@
-# ProFinder — Professional Services Marketplace
+# ProFinder — Pakistan Professional Discovery & Listing Marketplace
 
-> An end-to-end global marketplace connecting customers with verified professionals across healthcare, legal, engineering, education, and home services. Features real-time WebSocket messaging, AI-powered discovery, automated translation across 6 languages, flexible subscription tiers, and production-hardened transaction security.
+> A specialized, Pakistan-focused discovery marketplace connecting customers with verified local professionals (Doctors, Electricians, Tutors, Plumbers, Mechanics, Technicians, Carpenters, and more). Built with a decoupled Flutter cross-platform client and a high-performance Django REST Framework backend running on the Daphne ASGI server with real-time WebSockets, dynamic SEO/web identity, 10 flexible pricing units, and 100% full bilingual (English & Urdu RTL) capability.
 
 ---
 
@@ -8,80 +8,31 @@
 
 ```mermaid
 graph TD
-    Client[Flutter Frontend<br/>Android / iOS / Web] -->|HTTPS REST API| Backend[Django REST Backend<br/>Django 6 / PythonAnywhere]
+    Client[Flutter Frontend<br/>Web / Android / iOS] -->|HTTPS REST API| Backend[Django REST Backend<br/>Daphne ASGI Server]
     Client -->|WSS Realtime Socket| Backend
-    Backend --> DB[(PostgreSQL / SQLite)]
-    Backend --> Cloudinary[Cloudinary Media Storage]
+    Backend --> DB[(PostgreSQL Database<br/>pg_trgm GIN Indexes)]
+    Backend --> Cloudinary[Cloudinary Cloud Media CDN]
     Backend --> Firebase[Firebase Cloud Messaging FCM]
     Backend --> Gemini[Google Gemini AI Engine]
-    Backend --> PayPal[PayPal Payment Gateway]
-    Backend --> Brevo[Brevo / SMTP Email Service]
+    Backend --> WhatsApp[Direct WhatsApp Deep Link]
+    Backend --> Raast[Direct Payments: Raast / Cash / JazzCash]
 ```
 
 1. **[Flutter Frontend (`frontend/profinder_app/`)](frontend/profinder_app/README.md)**:
-   - Built with Flutter 3.x & Dart.
-   - Clean, feature-first architecture (`core/`, `features/`, `shared/`, `l10n/`).
-   - Supports 6 languages (English, Urdu, Arabic, Spanish, French, Hindi) with bi-directional RTL layouts.
-   - Real-time chat with text, voice notes, and emoji reactions via WebSockets.
-   - Passes static analysis with **0 errors / 0 warnings** and a **100% test pass rate (136 / 136 tests)**.
+   - Built with Flutter 3.x & Dart with full responsive layout (`ResponsiveUtils`).
+   - Clean, feature-first architecture (`app/`, `core/`, `features/`, `l10n/`, `shared/`).
+   - 100% Bilingual localization (English and Urdu) with automated RTL directionality and `ContentLocalizer` for live database text.
+   - Dynamic Browser Web Identity (`WebMetadataService`): dynamically updates tab titles, favicons, and OpenGraph/JSON-LD metadata on the web.
+   - Real-time chat with text, voice notes (.m4a), and typing indicators via persistent WebSockets.
+   - Passes static analysis with **0 errors / 0 warnings** across all files.
 
 2. **[Django Backend (`backend/`)](backend/README.md)**:
-   - Built with Django 6.x & Django REST Framework (DRF) with ASGI WebSocket routing.
-   - JWT authentication (`djangorestframework-simplejwt`) + Google OAuth.
-   - 12 modular micro-apps: `users`, `profiles`, `search`, `bookings`, `reviews`, `payments`, `subscriptions`, `notifications`, `messaging`, `ai_engine`, `support`, and `admin_panel`.
-   - Google Gemini AI recommendations and automated multilingual content translation.
-   - Production-hardened against double-booking concurrency, wallet race conditions, and unverified PayPal captures.
-   - Full test suite covering payments, bookings, reviews, messaging, notifications, search, and AI translation (**181+ passing tests**).
-
----
-
-## Repository Directory Layout
-
-```
-ProFinder/
-├── README.md                           # Master project documentation (this file)
-├── Guide.md                            # Comprehensive viva preparation & architecture guide
-├── Installation.md                     # Step-by-step local installation & venv guide
-├── admin.md                            # Test credentials for Admin, Customers, and Professionals
-├── CLEANUP_REPORT.md                   # Frontend code audit & dead code removal report
-│
-├── backups/                            # Consolidated safety backups (DB snapshots & source archives, gitignored)
-│   ├── data_backup.json                # JSON dump of database fixtures
-│   ├── db.sqlite3.bak                  # SQLite baseline backup
-│   ├── db.sqlite3.hardening_backup*    # Pre-hardening database snapshot
-│   └── frontend_backup_before_cleanup* # Pre-cleanup frontend archive
-│
-├── frontend/
-│   └── profinder_app/                  # Flutter cross-platform mobile & web client
-│       ├── README.md                   # Complete frontend documentation & viva guide
-│       ├── pubspec.yaml                # Flutter dependencies & assets definition
-│       ├── lib/                        # Flutter source code
-│       │   ├── app/                    # Routing, navigation guards, and auth gates
-│       │   ├── core/                   # Theme tokens, networking (Dio), localization utils
-│       │   ├── features/               # Modular features (chat, bookings, search, admin, etc.)
-│       │   ├── l10n/                   # Multi-language translation files (.arb)
-│       │   └── shared/                 # Universal widgets (cards, headers, banners)
-│       └── test/                       # Unit & widget test suite (136 passing tests)
-│
-└── backend/                            # Django REST Framework backend API
-    ├── README.md                       # Complete backend API & model documentation
-    ├── manage.py                       # Django CLI entrypoint
-    ├── requirements.txt                # Python backend dependencies
-    ├── profinder/                      # Django project configuration & ASGI/WSGI
-    └── apps/                           # Django micro-apps
-        ├── users/                      # Auth, JWT, user roles, email dispatch
-        ├── profiles/                   # User & professional portfolios
-        ├── search/                     # High-precision search: category isolation, phonetic aliases & typo correction
-        ├── bookings/                   # Appointment lifecycle & concurrency guards
-        ├── messaging/                  # Real-time WebSocket chat, voice notes & attachments
-        ├── reviews/                    # Verified ratings & reviews
-        ├── payments/                   # PayPal order capture, wallet ledger, exchange rate cache
-        ├── subscriptions/              # Dynamic plans & feature quotas
-        ├── notifications/              # In-app feed & FCM push notifications
-        ├── ai_engine/                  # Google Gemini AI & multilingual translation engine
-        ├── support/                    # Help center & ticket system
-        └── admin_panel/                # Audit logs, promo banners, Trust & Safety moderation & appeals
-```
+   - Built with Django 6.x & Django REST Framework (DRF) running on **Daphne ASGI Server**.
+   - Stateless JWT authentication (`rest_framework_simplejwt`) + OTP verification.
+   - Modular micro-apps: `accounts`, `services`, `inquiries`, `chat`, `reviews`, `notifications`, `support`, and `admin_panel`.
+   - High-performance fuzzy search powered by PostgreSQL `pg_trgm` (Trigram) and GIN indexing for typo-tolerant queries.
+   - **Service Inquiry & Direct Dealing Business Model**: 0% platform commission; customers and professionals finalize quotes, timing, and payments directly via Cash, Raast, JazzCash, EasyPaisa, or Bank Transfer.
+   - Strict sensitive data protection: CNIC numbers and professional licenses are never exposed in public serializers.
 
 ---
 
@@ -89,10 +40,43 @@ ProFinder/
 
 | Role | Interface | Core Capabilities |
 |---|---|---|
-| **Guest** | `GuestMainScreen` | Browse popular categories, view verified professional cards, read magazine articles, preview platform. |
-| **Customer** | `CustomerHomeScreen` | Natural-language AI search, book appointments, chat in real time, make payments, write reviews. |
-| **Professional** | `ProfessionalMainScreen` | Manage booking requests, track earnings & wallet withdrawals, build portfolio, upgrade plan. |
-| **Admin** | `AdminMainScreen` | Verify professional portfolios, ban/unban users, review audit logs, manage promo banners, handle moderation & appeals. |
+| **Guest** | `GuestMainScreen` | Browse categories, view verified cards, read magazine articles, inspect pricing units, preview platform. |
+| **Customer** | `CustomerHomeScreen` | Typo-tolerant search, submit Service Inquiries (`Request Service`), chat in real-time, direct WhatsApp contact, write verified reviews. |
+| **Professional** | `ProfessionalMainScreen` | Manage incoming service inquiries (accept/decline), configure WhatsApp number, set indicative pricing across 10 units, showcase portfolio. |
+| **Admin** | `AdminMainScreen` | Verify professional credentials (CNIC, PMDC/PEC licenses), approve verification badges, monitor user reports, manage promo banners. |
+
+---
+
+## Business & Monetization Model
+
+ProFinder is NOT an e-commerce payment intermediary or escrow service:
+- **No In-App Payment Deductions**: ProFinder does not hold funds or deduct transactional cuts from tradespeople or clients.
+- **Service Inquiry Model**: Replaces paid bookings with direct appointment requests.
+- **Direct Settlement**: Customers pay professionals directly via **Cash on Delivery**, **Raast (instant zero-fee P2P)**, **JazzCash / EasyPaisa**, or **Direct Bank Transfer**.
+- **Future Platform Revenue**: Free standard professional listings + premium sponsored placement subscriptions, verified badges, and localized banner advertising.
+
+---
+
+## 📚 Master Documentation & Viva Preparation Hub
+
+Comprehensive project guides, technical basics (Server, Daphne, Middleware, REST APIs, PostgreSQL Trigram, WebSockets, Security), and viva interview preparation are located inside:
+
+📂 **[`C:\Users\Tony  Stark\OneDrive\Desktop\profinder_guide\`](file:///C:/Users/Tony%20%20Stark/OneDrive/Desktop/profinder_guide/README.md)**
+
+### Sequenced Curriculum:
+1. `01_PROJECT_ARCHITECTURE_AND_SYSTEM_DESIGN.md` — High-level 3-tier architecture & data lifecycle.
+2. `02_BACKEND_SERVER_ASGI_WSGI_AND_DAPHNE.md` — ASGI vs WSGI, Daphne server, event loop concurrency.
+3. `03_DJANGO_MIDDLEWARE_AND_REQUEST_LIFECYCLE.md` — Middleware pipeline, CORS preflight, custom middleware.
+4. `04_REST_APIS_SERIALIZERS_AND_HTTP_LIFECYCLE.md` — DRF ModelSerializer, ViewSets, HTTP methods & status codes.
+5. `05_DATABASE_POSTGRESQL_AND_TRIGRAM_SEARCH.md` — PostgreSQL, `pg_trgm` GIN indexing, `transaction.atomic()`.
+6. `06_SECURITY_JWT_AUTHENTICATION_AND_SENSITIVE_PRIVACY.md` — Stateless JWT, PBKDF2 hashing, CNIC privacy guards.
+7. `07_REALTIME_CHAT_WEBSOCKETS_AND_CHANNELS.md` — WebSockets persistent sockets, channels consumers, voice notes.
+8. `08_SERVICE_INQUIRY_AND_PAKISTAN_DIRECT_DEALING_MODEL.md` — Zero-commission, 10 pricing units, direct payments.
+9. `09_DYNAMIC_SEO_GEO_AND_BROWSER_WEB_IDENTITY.md` — Dynamic tab titles, dynamic favicons, DOM conditional imports.
+10. `10_URDU_LOCALIZATION_AND_TRANSLATION_SYSTEM.md` — 100% bilingual engine, ARB files, ContentLocalizer, RTL layout.
+11. `11_FLUTTER_FRONTEND_ENCYCLOPEDIA.md` — Complete reference of all Flutter widgets, providers, slivers, and layout utilities.
+12. `12_PYTHON_DJANGO_BACKEND_ENCYCLOPEDIA.md` — Complete reference of Python & Django concepts, ORM queries, and signals.
+13. `13_TOP_35_VIVA_AND_TECHNICAL_INTERVIEW_QUESTIONS.md` — Top 35 Viva exam questions with answers in English and Roman Urdu.
 
 ---
 
@@ -105,49 +89,44 @@ Quick test accounts are available in [admin.md](admin.md):
 - **Doctor**: `dr.ahmed@profinder.com` / `Test@1234`
 - **Lawyer**: `adv.fatima@profinder.com` / `Test@1234`
 - **Electrician**: `elec.kamran@profinder.com` / `Test@1234`
-- *See [admin.md](admin.md) for full credential table across all professions.*
 
 ---
 
 ## Quick Start Guide
 
-### 1. Backend Setup (Django)
+### 1. Backend Setup (Django + Daphne)
 
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate    # On Windows: venv\Scripts\activate
+venv\Scripts\activate    # On Windows
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py build_search_index
-python manage.py runserver
+
+# Run with Daphne ASGI Server
+daphne -b 0.0.0.0 -p 8000 core.asgi:application
 ```
-*API will run at `http://127.0.0.1:8000/api/`.*  
-*Detailed backend setup instructions: [backend/README.md](backend/README.md).*
+*API runs at `http://127.0.0.1:8000/api/` and WebSockets at `ws://127.0.0.1:8000/ws/`.*
 
 ### 2. Frontend Setup (Flutter)
 
 ```bash
 cd frontend/profinder_app
 flutter pub get
+flutter gen-l10n
+
+# Run on Web (Chrome)
+flutter run -d chrome --web-port=5000
+
+# Or run on Android / iOS
 flutter run
 ```
-*Supports connected Android/iOS devices, emulators, and Chrome.*  
-*Detailed frontend setup instructions: [frontend/profinder_app/README.md](frontend/profinder_app/README.md).*
 
 ---
 
-## Testing & Quality Assurance
+## Quality Assurance & Verification
 
-- **Frontend Static Analysis**: `flutter analyze` — **0 issues found** (clean state across all files)
-- **Frontend Automated Tests**: `flutter test` — **136 / 136 passed (100%)**
-- **Backend Test Suites**:
-  ```bash
-  python manage.py test apps.payments apps.bookings apps.reviews apps.messaging apps.notifications apps.search apps.ai_engine.tests_translation
-  ```
-  **181+ tests passed** with zero regressions.
-- **Production Hardening**:
-  - PayPal server-side order capture verification.
-  - Concurrency locks on wallet withdrawals and booking time slots.
-  - Strict category isolation and Roman Urdu/Hindi phonetic normalization in search.
-  - Centralized multilingual translation cache with background persistence.
+- **Frontend Static Analysis**: `flutter analyze` — **0 issues found** (clean state across all files).
+- **Localization Parity**: 2,197 keys in `app_en.arb` matching 2,197 keys in `app_ur.arb` with **0 untranslated messages**.
+- **Responsive Layout**: Button text and icons scale smoothly with `FittedBox` across compact mobile viewports (360px) and wide desktop screens.

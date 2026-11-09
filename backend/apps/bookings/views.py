@@ -157,9 +157,9 @@ class BookingView(APIView):
 
             _notify(
                 user=professional,
-                title='New Booking Request 📅',
+                title='New Service Inquiry 📩',
                 message=(
-                    f'{request.user.name} has booked you.\n'
+                    f'{request.user.name} has sent you a service inquiry.\n'
                     f'{_booking_detail(booking)}'
                 ),
             )
@@ -174,6 +174,24 @@ class BookingView(APIView):
             booking = Booking.objects.get(id=booking_id, customer=request.user)
         except Booking.DoesNotExist:
             return Response({'error': 'Booking not found.'}, status=404)
+
+        new_status = request.data.get('status', 'cancelled')
+
+        # Allow customer to confirm/mark job as completed once accepted
+        if new_status == 'completed':
+            if booking.status != 'accepted':
+                return Response(
+                    {'error': f"Cannot mark as completed. Booking must be 'accepted' first (currently '{booking.status}')."},
+                    status=400)
+            booking.status = 'completed'
+            booking.save()
+
+            detail = _booking_detail(booking)
+            _notify(booking.professional,
+                    'Inquiry Completed & Confirmed! 🎉',
+                    f'{booking.customer.name} has confirmed that your service inquiry is completed.\n{detail}',
+                    notif_type='booking')
+            return Response(BookingSerializer(booking).data)
 
         if booking.status != 'pending':
             return Response(
@@ -242,22 +260,19 @@ class ProfessionalDashboardView(APIView):
 
         completed_qs = bookings.filter(status='completed')
 
-        # NOTE: Booking model mein abhi tak koi per-job price field nahi hai,
-        # is liye hum ProfessionalProfile.hourly_rate ko har completed booking
-        # ki "value" maan kar earnings calculate kar rahe hain. Jab aap
-        # Booking mein 'total_price' field add karenge, ye calculation
-        # us field ko use karne lagegi (aur zyada accurate ho jayegi).
-        today_earnings = completed_qs.filter(date=today).count() * hourly_rate
-        month_earnings = completed_qs.filter(
-            date__year=today.year, date__month=today.month
-        ).count() * hourly_rate
-        total_earnings = completed_qs.count() * hourly_rate
+        today_earnings = 0.0
+        month_earnings = 0.0
+        total_earnings = 0.0
 
         stats = {
             'total_bookings':     bookings.count(),
             'pending_bookings':   bookings.filter(status='pending').count(),
             'accepted_bookings':  bookings.filter(status='accepted').count(),
             'completed_bookings': completed_qs.count(),
+            'total_inquiries':     bookings.count(),
+            'pending_inquiries':   bookings.filter(status='pending').count(),
+            'accepted_inquiries':  bookings.filter(status='accepted').count(),
+            'completed_inquiries': completed_qs.count(),
         }
 
         # ── Rating ──────────────────────────────────────────────────────
@@ -370,42 +385,46 @@ class ProfessionalBookingView(APIView):
         reason = request.data.get('cancel_reason', '').strip()
         detail = _booking_detail(booking)
 
-        booking.status = new_status
-        if new_status == 'cancelled':
-            booking.cancel_reason = reason
-            booking.cancelled_by  = 'professional'
-        booking.save()
+        from django.db import transaction
 
         if new_status == 'accepted':
-            _notify(booking.customer, 'Booking Accepted! ✅',
-                    f'{booking.professional.name} has accepted your booking.\n{detail}')
+            # Concurrency & Overlap Protection (Atomic Transaction + Row Locking)
+            with transaction.atomic():
+                locked_booking = Booking.objects.select_for_update().get(id=booking.id)
+                overlap = Booking.objects.filter(
+                    professional=locked_booking.professional,
+                    date=locked_booking.date,
+                    time=locked_booking.time,
+                    status__in=['accepted', 'confirmed']
+                ).exclude(id=locked_booking.id).exists()
+                if overlap:
+                    return Response({
+                        'error': f'A confirmed booking already exists for {locked_booking.date} at {locked_booking.time}. Please propose an alternative time.'
+                    }, status=status.HTTP_409_CONFLICT)
+
+                locked_booking.status = 'accepted'
+                locked_booking.save()
+                booking = locked_booking
+
+            _notify(booking.customer, 'Inquiry Accepted!',
+                    f'{booking.professional.name} has accepted your service inquiry.\n{detail}')
 
         elif new_status == 'rejected':
+            booking.status = 'rejected'
+            booking.save()
             reason_line = f'\nReason: {reason}' if reason else ''
-            _notify(booking.customer, 'Booking Rejected ❌',
+            _notify(booking.customer, 'Booking Rejected',
                     f'{booking.professional.name} has rejected your booking.\n{detail}{reason_line}')
 
         elif new_status == 'completed':
-            # Ledger: If booking was paid, credit professional's wallet ledger
-            if booking.payment_status == 'paid' and booking.total_price > 0:
-                try:
-                    from apps.payments.models import WalletTransaction
-                    if not WalletTransaction.objects.filter(booking=booking, transaction_type='credit').exists():
-                        WalletTransaction.objects.create(
-                            user=booking.professional,
-                            transaction_type='credit',
-                            amount=booking.total_price,
-                            currency=booking.currency,
-                            status='completed',
-                            booking=booking,
-                            description=f"Earnings for completed service with {booking.customer.name}"
-                        )
-                except Exception as ex:
-                    logger.error("Failed to credit wallet on booking completion: %s", ex)
-
-            _notify(booking.customer, 'Service Completed! 🎉',
+            booking.status = 'completed'
+            booking.completion_marked_by_pro = True
+            booking.save()
+            # Direct Settlement Model: ProFinder charges 0% commission.
+            # Customers settle directly with professionals (Cash, Raast, Direct Bank Transfer).
+            _notify(booking.customer, 'Service Completed!',
                     f'{booking.professional.name} has marked the service as completed.\n'
-                    f'{detail}\nPlease leave a review!',
+                    f'{detail}\nPlease confirm completion and leave a review!',
                     notif_type='review')
 
         elif new_status == 'cancelled':
@@ -419,3 +438,151 @@ class ProfessionalBookingView(APIView):
                         f'{detail}{reason_line}\nCancelled by: Professional')
 
         return Response(BookingSerializer(booking).data)
+
+# ─── Suggest New Time View (Replaces Local SharedPreferences) ────────────────
+class BookingSuggestTimeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, booking_id):
+        user = request.user
+        try:
+            booking = Booking.objects.get(id=booking_id)
+        except Booking.DoesNotExist:
+            return Response({'error': 'Booking not found.'}, status=404)
+
+        if user != booking.professional and user != booking.customer:
+            return Response({'error': 'You are not authorized for this booking.'}, status=403)
+
+        suggested_date = request.data.get('suggested_date')
+        suggested_time = request.data.get('suggested_time')
+        reason = request.data.get('reason', '').strip()
+
+        if not suggested_date or not suggested_time:
+            return Response({'error': 'suggested_date and suggested_time are required.'}, status=400)
+
+        suggested_by = 'professional' if user == booking.professional else 'customer'
+        recipient = booking.customer if suggested_by == 'professional' else booking.professional
+
+        booking.suggested_date = suggested_date
+        booking.suggested_time = suggested_time
+        booking.suggested_by = suggested_by
+        booking.rescheduled_reason = reason
+        booking.save()
+
+        # Notify other party
+        _notify(
+            recipient,
+            'New Service Time Proposed ⏰',
+            f"{user.name or 'The other party'} has proposed a new time for your booking: {suggested_date} at {suggested_time}."
+            + (f" Reason: {reason}" if reason else ""),
+            notif_type='booking'
+        )
+
+        return Response(BookingSerializer(booking).data)
+
+
+# ─── Respond to Suggested Time View ──────────────────────────────────────────
+class BookingRespondSuggestionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, booking_id):
+        user = request.user
+        try:
+            booking = Booking.objects.get(id=booking_id)
+        except Booking.DoesNotExist:
+            return Response({'error': 'Booking not found.'}, status=404)
+
+        if user != booking.professional and user != booking.customer:
+            return Response({'error': 'You are not authorized for this booking.'}, status=403)
+
+        action = request.data.get('action') # 'accept' | 'decline'
+        if action not in ['accept', 'decline']:
+            return Response({'error': "action must be 'accept' or 'decline'."}, status=400)
+
+        proposer = booking.professional if booking.suggested_by == 'professional' else booking.customer
+
+        if action == 'accept':
+            if not booking.suggested_date or not booking.suggested_time:
+                return Response({'error': 'No suggested time exists on this booking.'}, status=400)
+            from django.db import transaction
+            with transaction.atomic():
+                locked_booking = Booking.objects.select_for_update().get(id=booking.id)
+                overlap = Booking.objects.filter(
+                    professional=locked_booking.professional,
+                    date=locked_booking.suggested_date,
+                    time=locked_booking.suggested_time,
+                    status__in=['accepted', 'confirmed']
+                ).exclude(id=locked_booking.id).exists()
+                if overlap:
+                    return Response({
+                        'error': 'This time slot is no longer available as another booking was confirmed. Please select another slot.'
+                    }, status=status.HTTP_409_CONFLICT)
+
+                locked_booking.date = locked_booking.suggested_date
+                locked_booking.time = locked_booking.suggested_time
+                locked_booking.suggested_date = None
+                locked_booking.suggested_time = None
+                locked_booking.suggested_by = ''
+                locked_booking.rescheduled_reason = ''
+                locked_booking.status = 'accepted'
+                locked_booking.save()
+                booking = locked_booking
+
+            _notify(
+                proposer,
+                'Proposed Time Accepted! ✅',
+                f"{user.name or 'Customer'} has accepted your proposed booking time. The appointment is scheduled for {booking.date} at {booking.time}.",
+                notif_type='booking'
+            )
+            return Response({'message': 'Time accepted successfully.', 'booking': BookingSerializer(booking).data})
+        else:
+            booking.suggested_date = None
+            booking.suggested_time = None
+            booking.suggested_by = ''
+            booking.rescheduled_reason = ''
+            booking.save()
+
+            _notify(
+                proposer,
+                'Proposed Time Declined ❌',
+                f"{user.name or 'Customer'} has declined the proposed new time. The previous schedule remains active.",
+                notif_type='booking'
+            )
+            return Response({'message': 'Time suggestion declined.', 'booking': BookingSerializer(booking).data})
+
+
+# ─── Customer Job Completion Confirmation View ───────────────────────────────
+class BookingConfirmCompletionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, booking_id):
+        user = request.user
+        try:
+            booking = Booking.objects.get(id=booking_id, customer=user)
+        except Booking.DoesNotExist:
+            return Response({'error': 'Booking not found or you are not the customer.'}, status=404)
+
+        if booking.status == 'completed' and booking.completion_confirmed_by_customer:
+            return Response({'message': 'Booking is already confirmed complete.', 'booking': BookingSerializer(booking).data})
+
+        from django.utils import timezone
+        booking.status = 'completed'
+        booking.completion_marked_by_pro = True
+        booking.completion_confirmed_by_customer = True
+        booking.completion_date = timezone.now()
+        booking.save()
+
+        _notify(
+            booking.professional,
+            'Job Completion Confirmed! 🎉',
+            f"{user.name or 'Customer'} has confirmed that your service is completed. Thank you for your work!",
+            notif_type='booking'
+        )
+
+        return Response({
+            'message': 'Job completion confirmed successfully! Please share a review for this professional.',
+            'booking': BookingSerializer(booking).data,
+            'prompt_review': True,
+            'professional_id': booking.professional.id,
+            'professional_name': booking.professional.name,
+        })

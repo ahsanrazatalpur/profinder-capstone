@@ -15,6 +15,10 @@ from apps.admin_panel.views import (
     AdminCancelBookingView,
     PromoBannerAdminView,
     ContentTranslationAdminView,
+    ServeDisplayAdView,
+    TrackDisplayAdClickView,
+    AdminDisplayAdCampaignView,
+    AdminCustomProfessionsView,
     PromoBannerImageUploadView,
     ActivePromoBannerView,
     AdminSubscriptionPlanView,
@@ -189,4 +193,12 @@ urlpatterns = [
     # ── Content translations (generic: announcement, promobanner, ...) ───────────
     path('translations/<str:label>/<int:object_id>/<int:language_id>/',
          ContentTranslationAdminView.as_view(),                                  name='admin_content_translation'),
+    # ── Display Ad Campaigns (Serving, Tracking, Admin) ──────────────────────────
+    path('ads/serve/',                                      ServeDisplayAdView.as_view(),          name='serve_display_ad'),
+    path('ads/<int:ad_id>/click/',                          TrackDisplayAdClickView.as_view(),     name='track_display_ad_click'),
+    path('ads/',                                            AdminDisplayAdCampaignView.as_view(),  name='admin_display_ads'),
+    path('ads/<int:campaign_id>/',                             AdminDisplayAdCampaignView.as_view(),  name='admin_display_ad_detail'),
+    # ── Custom Professions Approval ──────────────────────────────────────────
+    path('custom-professions/',                             AdminCustomProfessionsView.as_view(),  name='admin_custom_professions'),
+    path('custom-professions/<int:profile_id>/',            AdminCustomProfessionsView.as_view(),  name='admin_custom_profession_action'),
 ]

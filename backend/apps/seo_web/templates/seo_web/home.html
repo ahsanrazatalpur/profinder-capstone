@@ -1,0 +1,164 @@
+{% extends "seo_web/base.html" %}
+
+{% block content %}
+<section class="hero-section">
+    <h1>Find Trusted Professionals Near You in Pakistan</h1>
+    <p>
+        Explore verified doctors, certified electricians, plumbers, civil engineers, tutors, and local repair specialists across 99+ Pakistan cities. Compare transparent rates, inspect real customer reviews, and hire directly.
+    </p>
+
+    <form class="search-box" action="/search/" method="get" role="search">
+        <input type="text" name="q" placeholder="What service do you need? (e.g. Electrician, Doctor, Plumber)" aria-label="Search Query">
+        <select name="city" aria-label="Select City">
+            <option value="">All Pakistan Cities</option>
+            {% for city in popular_cities %}
+                <option value="{{ city.slug }}">{{ city.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Search Verified Pros</button>
+    </form>
+</section>
+
+<!-- Popular Service Categories -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Explore Service Categories</h2>
+        <p>Browse licensed experts and skilled technicians by specialized trade and sector.</p>
+    </div>
+    <div class="cards-grid">
+        {% for cat in categories %}
+        <a href="/categories/{{ cat.slug }}/" class="card">
+            <div style="font-size: 28px; margin-bottom: 12px;">📁</div>
+            <h3>{{ cat.name }}</h3>
+            <p>Connect with verified {{ cat.name|lower }} specialists ready for on-site appointments and home visits.</p>
+            <span style="font-weight: 600; font-size: 13px; color: var(--primary);">View Specialists &rarr;</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Featured Verified Professionals -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Featured Verified Professionals</h2>
+        <p>High-rated, background-checked specialists available for immediate service booking.</p>
+    </div>
+    <div class="cards-grid">
+        {% for pro in featured_pros %}
+        <a href="/professionals/{{ pro.slug }}/" class="card">
+            <div class="pro-card-header">
+                {% if pro.photo_url %}
+                    <img src="{{ pro.photo_url.url }}" alt="{{ pro.user.name }}" class="pro-avatar" loading="lazy">
+                {% else %}
+                    <div class="pro-avatar" style="display:flex;align-items:center;justify-content:center;font-weight:bold;color:#64748b;font-size:20px;">
+                        {{ pro.user.name|slice:":1" }}
+                    </div>
+                {% endif %}
+                <div class="pro-title-meta">
+                    <h3>{{ pro.user.name }}</h3>
+                    <div style="font-size: 13px; color: var(--text-muted);">{{ pro.specialization|default:pro.category.name }}</div>
+                    {% if pro.is_verified %}
+                        <span class="verified-badge">✓ Verified</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if pro.average_rating > 0 %}
+            <div class="rating-row">
+                <span class="rating-stars">★ {{ pro.average_rating|floatformat:1 }}</span>
+                <span style="color: var(--text-muted); font-size: 12px;">({{ pro.user.received_reviews.count }} reviews)</span>
+            </div>
+            {% endif %}
+
+            <div class="location-tag">
+                📍 {{ pro.user.userprofile.city|default:"Pakistan" }}
+            </div>
+
+            <p>{{ pro.bio|default:"Experienced specialist dedicated to providing dependable, high-standard professional service."|truncatewords:20 }}</p>
+
+            {% if pro.hourly_rate > 0 %}
+            <div class="hourly-rate">PKR {{ pro.hourly_rate|floatformat:0 }} / hr</div>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Curated Local Services -->
+{% if popular_services %}
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Popular On-Demand Services</h2>
+        <p>Direct access to specific home, technical, and professional repairs.</p>
+    </div>
+    <div class="cards-grid">
+        {% for s in popular_services %}
+        <a href="/services/{{ s.slug }}/" class="card">
+            <div style="font-size: 24px; margin-bottom: 10px;">🔧</div>
+            <h3>{{ s.title }}</h3>
+            <p>{{ s.short_description }}</p>
+            <span style="font-weight: 600; font-size: 13px; color: var(--primary);">Explore Service &rarr;</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Pakistan Regional Hubs -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Browse Services by Province & City</h2>
+        <p>Discover localized service directories across all provinces of Pakistan.</p>
+    </div>
+    <div class="cards-grid">
+        {% for prov_slug, prov in provinces.items %}
+        <a href="/pakistan/{{ prov_slug }}/" class="card">
+            <h3>{{ prov.name }} ({{ prov.urdu }})</h3>
+            <p>{{ prov.description }}</p>
+            <div class="chips-container">
+                {% for city in prov.cities|slice:":4" %}
+                    <span class="chip">{{ city|title }}</span>
+                {% endfor %}
+            </div>
+            <span style="margin-top: 14px; font-weight: 600; font-size: 13px; color: var(--primary);">Browse {{ prov.name }} &rarr;</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- GEO / AI Answer Engine Information & FAQs -->
+<section class="geo-faq-section">
+    <h2>Frequently Asked Questions about ProFinder Pakistan</h2>
+    <p class="lead-intro">
+        Clear, factual information regarding how ProFinder connects consumers with independent service experts across Pakistan.
+    </p>
+
+    <div class="faq-item">
+        <div class="faq-question">What is ProFinder and how does it work?</div>
+        <div class="faq-answer">
+            ProFinder is Pakistan's comprehensive local service marketplace directory. Users can search for verified doctors, electricians, lawyers, plumbers, carpenters, and civil engineers across Sindh, Punjab, KPK, Balochistan, and Islamabad. You can view complete professional qualifications, customer reviews, hourly rates, and portfolio photos, and then initiate direct bookings.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">Does ProFinder charge booking or payment commissions?</div>
+        <div class="faq-answer">
+            No. ProFinder operates as a direct discovery and booking platform. Customers pay zero booking commissions to ProFinder, and in-app financial transactions are excluded. All payments are settled directly between customer and professional via Cash on Delivery (COD), direct bank transfer, or mobile wallets (JazzCash / Easypaisa).
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">How does ProFinder verify professionals?</div>
+        <div class="faq-answer">
+            Professionals submitted to ProFinder undergo identity review including national identification, qualification certificates, and approved work portfolio samples before being granted the "Verified" badge.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">How can I book an urgent service in my city?</div>
+        <div class="faq-answer">
+            Select your city or province from the navigation menu, filter by your required profession or emergency service, inspect available specialist profiles, and submit a booking request. You will receive direct communication from the chosen technician.
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -177,12 +177,25 @@ class City(models.Model):
 
     name       = models.CharField(max_length=100)
     country    = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='cities')
+    province   = models.CharField(max_length=100, blank=True, default='')
+    slug       = models.SlugField(max_length=120, blank=True, null=True)
     status     = models.CharField(max_length=15, choices=STATUS_CHOICES, default='coming_soon')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['name']
         unique_together = ('name', 'country')
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from apps.seo_web.slug_utils import clean_slug_text
+            self.slug = clean_slug_text(self.name)
+        if not self.province:
+            from apps.seo_web.geo_data import CITY_TO_PROVINCE, PROVINCES
+            prov_key = CITY_TO_PROVINCE.get(self.slug, '')
+            if prov_key and prov_key in PROVINCES:
+                self.province = PROVINCES[prov_key]['name']
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name}, {self.country.name}"
@@ -688,6 +701,70 @@ class PromoBanner(models.Model):
         return True
 
 
+class DisplayAdCampaign(models.Model):
+    """
+    Permanent in-page external business advertisement slots.
+    Completely isolated from modal popup PromoBanners.
+    Admin manually creates and schedules these after verifying offline payment.
+    """
+    PLACEMENT_CHOICES = [
+        ('homepage_masthead', 'Homepage Masthead Banner'),
+        ('category_top',      'Category Top Leaderboard'),
+        ('feed_native',       'In-Feed Native Discovery Banner'),
+    ]
+
+    title = models.CharField(max_length=150, help_text="Internal campaign title")
+    advertiser_name = models.CharField(max_length=150)
+    contact_phone_or_whatsapp = models.CharField(max_length=30)
+    contact_email = models.EmailField(blank=True)
+
+    placement_slot = models.CharField(max_length=30, choices=PLACEMENT_CHOICES, db_index=True)
+    target_category = models.ForeignKey('search.Category', on_delete=models.SET_NULL, null=True, blank=True, related_name='display_ads')
+    target_city = models.CharField(max_length=80, blank=True, help_text="Empty means nationwide")
+
+    desktop_banner_url = models.URLField(max_length=500, blank=True, help_text="Cloudinary or image URL")
+    mobile_banner_url = models.URLField(max_length=500, blank=True, help_text="Cloudinary or mobile image URL")
+    destination_url = models.URLField(max_length=500, help_text="External website or WhatsApp redirect URL")
+    alt_text = models.CharField(max_length=200, blank=True)
+
+    negotiated_price_pkr = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Custom negotiated price for this campaign")
+    manual_payment_reference = models.CharField(max_length=100, blank=True, help_text="Direct Bank Transfer / Raast transaction reference")
+    payment_verified_by_admin = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False, db_index=True)
+
+    start_datetime = models.DateTimeField(db_index=True)
+    end_datetime = models.DateTimeField(db_index=True)
+
+    raw_impressions_count = models.PositiveIntegerField(default=0)
+    unique_impressions_count = models.PositiveIntegerField(default=0)
+    raw_clicks_count = models.PositiveIntegerField(default=0)
+    unique_clicks_count = models.PositiveIntegerField(default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['placement_slot', 'is_active', 'is_approved', 'payment_verified_by_admin']),
+            models.Index(fields=['start_datetime', 'end_datetime']),
+        ]
+
+    def is_currently_eligible(self):
+        from django.utils import timezone
+        now = timezone.now()
+        return (
+            self.is_active and
+            self.is_approved and
+            self.payment_verified_by_admin and
+            self.start_datetime <= now <= self.end_datetime
+        )
+
+    def __str__(self):
+        return f"{self.title} ({self.advertiser_name}) - {self.placement_slot}"
+
+
 # ─── Content translations (generic) ───────────────────────────────────────────
 # Ek hi table har admin-authored text ki translation rakhta hai (announcement,
 # promo banner, aur aage category/article/city...). Naya translatable model
@@ -698,6 +775,7 @@ class PromoBanner(models.Model):
 TRANSLATABLE_FIELDS = {
     'announcement': ('title', 'message'),
     'promobanner':  ('title', 'description', 'button_text'),
+    'displayadcampaign': ('title', 'alt_text'),
     'category':     ('name',),
     'subcategory':  ('name',),
     'notificationbroadcast': ('title', 'message'),

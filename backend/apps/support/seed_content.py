@@ -16,6 +16,34 @@ PLACEHOLDER_MARK = '[PLACEHOLDER'
 
 POLICY_EN_TITLE = 'Privacy Policy'
 POLICY_EN_BODY = """\
+# Direct Dealing & Intermediary Policy
+ProFinder acts solely as an open discovery and service inquiry directory. All service agreements, schedules, and payments take place directly between clients and independent service professionals.
+
+# 1. Intermediary Platform Model
+ProFinder provides an open technology platform enabling customers to search, discover, compare portfolios, and connect with local independent service professionals. ProFinder does not provide direct labor, employ service professionals, or supervise physical execution of services.
+
+# 2. Direct Payments Only
+- No In-App Payment Processing: ProFinder does not charge, collect, hold, or escrow customer funds for professional service bookings.
+- Independent Dealing: All rates, quotes, material costs, and payments are settled directly between the client and the professional (via Cash, Direct Bank Transfer, Raast, or Mobile Wallets).
+- Price Estimates: Listed rates are indicative starting estimates provided by professionals for informational purposes. Final agreed costs are determined mutually between both parties.
+
+# 3. Platform Responsibility & Safety
+- Independent Contracts: Any engagement formed is strictly a direct contract between the customer and the professional.
+- Mutual Discretion: Both parties engage and conduct transactions entirely at their own mutual discretion and risk.
+- Platform Moderation: ProFinder reviews user reports, moderates listings, investigates suspicious accounts, and suspends accounts violating community standards under applicable Pakistani laws.
+
+# 4. How Jobs Done is Tracked
+- Verified Inquiries: Jobs are tracked transparently when inquiries are accepted and confirmed as completed by both parties.
+- Client Confirmation: Customers have direct authority in their inquiries dashboard to confirm completed services upon satisfactory delivery.
+- Verified Reviews: Once confirmed, customers are invited to rate and write verified reviews.
+
+# 5. Best Practices for Safe Dealing
+- Inspect Work First: Always review completed work before making any direct payment.
+- Avoid 100% Upfront Advances: Never transfer full payment in advance to unverified individuals.
+- Document Agreements: Keep clear records of agreed scope, materials, and price in chat messages.
+- Request Receipts: Ask the professional for a direct physical or digital payment receipt.
+- Report Suspicious Behavior: Report any misconduct, scam attempts, or policy violations via our Support Center.
+
 # Who we are
 ProFinder is a marketplace app that helps customers find and book local service professionals in Pakistan. The service is operated by [PLACEHOLDER: LEGAL ENTITY NAME], [PLACEHOLDER: REGISTERED ADDRESS]. You can reach us at [PLACEHOLDER: SUPPORT EMAIL] or through Help & Support in the app.
 
@@ -77,6 +105,34 @@ Questions about this policy: [PLACEHOLDER: SUPPORT EMAIL].
 
 POLICY_UR_TITLE = 'رازداری کی پالیسی'
 POLICY_UR_BODY = """\
+# براہ راست لین دین اور پلیٹ فارم شرائط و ضوابط
+ProFinder صرف اور صرف پیشہ ور افراد کی تلاش اور رابطہ کا ایک معلوماتی پلیٹ فارم ہے۔ تمام معاہدے، کام کی شرائط، اور ادائیگیاں براہ راست کسٹمر اور آزاد پیشہ ور کے درمیان طے پاتی ہیں۔
+
+# ۱. انٹرمیڈیری پلیٹ فارم ماڈل (صرف رابطہ و سروس انکوائری)
+ProFinder ایک اوپن ٹیکنالوجی پلیٹ فارم مہیا کرتا ہے جس کے ذریعے کسٹمرز مقامی پیشہ ور افراد کو تلاش کر سکتے ہیں، ان کے پروفائل اور پورٹ فولیو کا موازنہ کر سکتے ہیں اور ان سے رابطہ قائم کر سکتے ہیں۔ ProFinder براہ راست لیبر فراہم نہیں کرتا اور نہ ہی کسی سروس کی نگرانی کرتا ہے۔
+
+# ۲. صرف براہ راست ادائیگی (کوئی ایپ پیمنٹ نہیں)
+- ایپ میں ادائیگی کی سہولت نہیں: ProFinder کسٹمرز سے پروفیشنل سروسز کے لیے کوئی فنڈز، پیمنٹ یا ایسکرو وصول نہیں کرتا۔
+- آزادانہ لین دین: تمام ریٹس، کوٹس، میٹریل کے اخراجات اور ادائیگیاں براہ راست کسٹمر اور پیشہ ور کے درمیان (کیش، بینک ٹرانسفر، راست، جاز کیش یا ایزی پیسہ) ادا کی جاتی ہیں۔
+- معلوماتی ریٹس: پروفائل پر درج ریٹس صرف اندازاً رہنمائی کے لیے ہوتے ہیں۔ حتمی رقم دونوں فریقین باہمی رضامندی سے طے کرتے ہیں۔
+
+# ۳. پلیٹ فارم کی ذمہ داری اور حدود
+- آزاد معاہدے: کوئی بھی سروس معاہدہ براہ راست کسٹمر اور پیشہ ور کے درمیان ہوتا ہے۔
+- باہمی احتیاط: دونوں فریقین مکمل باہمی صوابدید پر لین دین کرتے ہیں۔
+- پلیٹ فارم ماڈریشن: ProFinder شکایات کا جائزہ لیتا ہے، مشکوک اکاؤنٹس کی جانچ کرتا ہے اور قوانین کی خلاف ورزی پر ضروری تادیبی کارروائی کرتا ہے۔
+
+# ۴. کام کی تصدیق (Jobs Done)
+- شفاف ریکارڈ: کام کی گنتی تب ہوتی ہے جب انکوائری مکمل ہونے پر دونوں فریقین اس کی تصدیق کریں۔
+- کسٹمر تصدیق: کسٹمر کو اپنے ڈیش بورڈ میں سروس مکمل ہونے کی توثیق کا اختیار حاصل ہوتا ہے۔
+- تصدیق شدہ ریویوز: سروس مکمل ہونے کے بعد کسٹمر حقیقی ریویو اور ریٹنگ جمع کرا سکتے ہیں۔
+
+# ۵. محفوظ لین دین کے لیے اہم مشورے
+- کام مکمل ہونے کے بعد معائنہ کریں: ادائیگی سے قبل مکمل شدہ کام کا تسلی بخش جائزہ لیں۔
+- ایڈوانس ادائیگی سے گریز: غیر مصدقہ افراد کو مکمل ایڈوانس رقم مت دیں۔
+- ریکارڈ برقرار رکھیں: طے شدہ کام اور ریٹ چیٹ میسجز میں واضح رکھیں۔
+- رسید طلب کریں: پیشہ ور سے باضابطہ رسید حاصل کریں۔
+- مشکوک سرگرمی کی رپورٹ کریں: کسی بھی دھوکہ دہی کی صورت میں سپورٹ سنٹر پر اطلاع دیں۔
+
 # ہم کون ہیں
 ProFinder ایک مارکیٹ پلیس ایپ ہے جو پاکستان میں صارفین کو مقامی سروس پروفیشنلز تلاش کرنے اور بُک کرنے میں مدد دیتی ہے۔ یہ سروس [PLACEHOLDER: LEGAL ENTITY NAME] چلاتی ہے، پتہ: [PLACEHOLDER: REGISTERED ADDRESS]۔ آپ ہم سے [PLACEHOLDER: SUPPORT EMAIL] پر یا ایپ میں مدد اور سپورٹ کے ذریعے رابطہ کر سکتے ہیں۔
 

@@ -44,6 +44,7 @@ class AuthProvider extends ChangeNotifier {
     String? city,
     String? country,
     int? categoryId,
+    String? customProfession,
   }) async {
     _setLoading(true);
     final result = await _authService.register(
@@ -54,6 +55,7 @@ class AuthProvider extends ChangeNotifier {
       city: city,
       country: country,
       categoryId: categoryId,
+      customProfession: customProfession,
     );
     _setLoading(false);
     if (result['success']) return true;

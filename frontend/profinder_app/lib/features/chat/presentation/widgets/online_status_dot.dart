@@ -18,7 +18,7 @@ class AvatarWithStatus extends StatelessWidget {
     required this.avatar,
     required this.isOnline,
     this.size = 40,
-    this.showOfflineDot = false,
+    this.showOfflineDot = true,
   });
 
   @override

@@ -1,0 +1,217 @@
+{% extends "seo_web/base.html" %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 340px; gap: 30px; margin-bottom: 50px;">
+    <!-- Main Left Column -->
+    <div>
+        <!-- Profile Hero Card -->
+        <div class="card" style="padding: 30px; margin-bottom: 30px;">
+            <div style="display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;">
+                {% if pro.photo_url %}
+                    <img src="{{ pro.photo_url.url }}" alt="{{ pro.user.name }}" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 3px solid #eff6ff;" loading="lazy">
+                {% else %}
+                    <div style="width: 110px; height: 110px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: bold; color: #64748b;">
+                        {{ pro.user.name|slice:":1" }}
+                    </div>
+                {% endif %}
+
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px;">
+                        <h1 style="font-size: 26px; font-weight: 800; color: var(--secondary);">{{ pro.user.name }}</h1>
+                        {% if pro.is_verified %}
+                            <span class="verified-badge">✓ Verified Specialist</span>
+                        {% endif %}
+                    </div>
+
+                    <div style="font-size: 16px; color: var(--primary); font-weight: 600; margin-bottom: 8px;">
+                        {{ pro.specialization|default:pro.category.name }}
+                    </div>
+
+                    <div style="display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">
+                        <span>📍 {{ pro.user.userprofile.city|default:"Pakistan" }}{% if pro.user.userprofile.area %}, {{ pro.user.userprofile.area }}{% endif %}</span>
+                        {% if pro.experience_years > 0 %}
+                            <span>💼 {{ pro.experience_years }} Year{{ pro.experience_years|pluralize }} Experience</span>
+                        {% endif %}
+                        {% if pro.working_hours_start %}
+                            <span>⏰ {{ pro.working_hours_start }} – {{ pro.working_hours_end }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if pro.average_rating > 0 %}
+                    <div class="rating-row" style="font-size: 16px; margin-bottom: 0;">
+                        <span class="rating-stars">★ {{ pro.average_rating|floatformat:1 }}</span>
+                        <span style="color: var(--text-muted); font-size: 14px;">({{ reviews_count }} genuine review{{ reviews_count|pluralize }})</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="card" style="padding: 28px; margin-bottom: 30px;">
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 14px;">About {{ pro.user.name }}</h2>
+            <p style="font-size: 15px; line-height: 1.7; color: #334155;">
+                {{ pro.bio|default:"Experienced specialist dedicated to providing dependable, high-standard professional service. Committed to transparency, technical excellence, and client satisfaction." }}
+            </p>
+
+            {% if pro.education %}
+            <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">🎓 Education & Background</h3>
+                <p style="font-size: 14px; color: var(--text-muted);">{{ pro.education }}</p>
+            </div>
+            {% endif %}
+
+            {% if pro.languages %}
+            <div style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px;">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">🗣️ Languages</h3>
+                <p style="font-size: 14px; color: var(--text-muted);">{{ pro.languages }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Skills & Services -->
+        {% if skills_list or services_list %}
+        <div class="card" style="padding: 28px; margin-bottom: 30px;">
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 14px;">Skills & Services</h2>
+            {% if skills_list %}
+            <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Technical Skills:</h4>
+                <div class="chips-container">
+                    {% for sk in skills_list %}
+                        <span class="chip">{{ sk }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if services_list %}
+            <div>
+                <h4 style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Offered Services:</h4>
+                <div class="chips-container">
+                    {% for serv in services_list %}
+                        <span class="chip" style="background: #eff6ff; color: var(--primary);">⚡ {{ serv }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Portfolio Work Samples -->
+        {% if portfolio_items %}
+        <div class="card" style="padding: 28px; margin-bottom: 30px;">
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 14px;">Approved Work Portfolio</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+                {% for item in portfolio_items %}
+                <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+                    {% if item.image_url %}
+                        <img src="{{ item.image_url.url }}" alt="{{ item.title }}" style="width: 100%; height: 140px; object-fit: cover;" loading="lazy">
+                    {% endif %}
+                    <div style="padding: 10px;">
+                        <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 4px;">{{ item.title }}</h4>
+                        {% if item.description %}
+                            <p style="font-size: 12px; color: var(--text-muted);">{{ item.description|truncatewords:12 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Client Reviews & Feedback -->
+        <div class="card" style="padding: 28px; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 20px; font-weight: 700;">Client Reviews & Ratings</h2>
+                {% if pro.average_rating > 0 %}
+                <div style="font-size: 16px; font-weight: 700; color: #b45309;">
+                    ★ {{ pro.average_rating|floatformat:1 }} / 5.0 ({{ reviews_count }} review{{ reviews_count|pluralize }})
+                </div>
+                {% endif %}
+            </div>
+
+            {% if reviews %}
+                {% for rev in reviews %}
+                <div style="border-bottom: 1px solid var(--border); padding-bottom: 18px; margin-bottom: 18px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <div style="font-weight: 700; font-size: 15px;">{{ rev.reviewer.name|default:"Verified Client" }}</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">{{ rev.created_at|date:"M d, Y" }}</div>
+                    </div>
+                    <div style="color: #f59e0b; margin-bottom: 6px; font-size: 14px;">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= rev.rating %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                        {% if rev.is_verified_service %}
+                            <span class="verified-badge" style="font-size: 11px; margin-left: 8px;">✓ Verified Service</span>
+                        {% endif %}
+                    </div>
+                    <p style="font-size: 14px; color: #334155; line-height: 1.6;">{{ rev.comment|default:"Service completed satisfactorily." }}</p>
+
+                    {% if rev.reply %}
+                    <div style="background: #f8fafc; border-left: 3px solid var(--primary); padding: 10px 14px; margin-top: 10px; border-radius: 4px;">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--secondary);">Response from {{ pro.user.name }}:</div>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">{{ rev.reply.text }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 14px;">No reviews recorded yet for this specialist.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Sidebar / Booking & Rates Card -->
+    <div>
+        <div class="card" style="padding: 24px; position: sticky; top: 90px;">
+            <h3 style="font-size: 18px; margin-bottom: 14px;">Direct Booking & Rates</h3>
+
+            {% if pro.hourly_rate > 0 %}
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 13px; color: var(--text-muted);">Estimated Rate:</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--primary);">
+                    PKR {{ pro.hourly_rate|floatformat:0 }} <span style="font-size: 14px; font-weight: normal; color: var(--text-muted);">/ hour</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-bottom: 18px;">
+                <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">Service Location:</div>
+                <div style="font-weight: 600; font-size: 14px;">📍 {{ pro.user.userprofile.city|default:"Pakistan" }}{% if pro.user.userprofile.area %}, {{ pro.user.userprofile.area }}{% endif %}</div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-bottom: 20px;">
+                <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">Availability:</div>
+                {% if pro.is_available %}
+                    <span style="color: #059669; font-weight: 700; font-size: 14px;">● Available for Bookings</span>
+                {% else %}
+                    <span style="color: #dc2626; font-weight: 700; font-size: 14px;">● Currently Busy</span>
+                {% endif %}
+            </div>
+
+            <a href="/search/?city={{ pro.user.userprofile.city|slugify }}&category={{ pro.category.slug }}" style="display: block; width: 100%; text-align: center; background: var(--primary); color: #ffffff; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 15px; margin-bottom: 10px;">
+                Request Booking / Consultation
+            </a>
+
+            <div style="font-size: 12px; color: #64748b; line-height: 1.5; margin-top: 14px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--border);">
+                ℹ️ <strong>Zero Platform Fee:</strong> ProFinder connects you directly. Agree on job scope and pay the specialist directly (Cash / JazzCash / Bank transfer) upon work completion.
+            </div>
+        </div>
+
+        {% if related_pros %}
+        <div class="card" style="padding: 20px; margin-top: 24px;">
+            <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">Other Pros in {{ pro.user.userprofile.city|default:"Your City" }}</h4>
+            {% for rpro in related_pros %}
+            <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+                <a href="/professionals/{{ rpro.slug }}/" style="font-weight: 700; font-size: 14px; color: var(--secondary);">{{ rpro.user.name }}</a>
+                <div style="font-size: 12px; color: var(--text-muted);">{{ rpro.specialization|default:rpro.category.name }}</div>
+                {% if rpro.average_rating > 0 %}
+                    <div style="font-size: 12px; color: #f59e0b;">★ {{ rpro.average_rating|floatformat:1 }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

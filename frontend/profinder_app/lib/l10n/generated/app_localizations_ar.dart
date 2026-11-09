@@ -7223,4 +7223,57 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get themeModeSystemHint => 'يتبع إعداد جهازك';
+
+  @override
+  String get requestService => 'Request Service';
+
+  @override
+  String get serviceInquiry => 'Service Request';
+
+  @override
+  String get inquiryAccepted => 'Request Accepted';
+
+  @override
+  String get myServiceInquiries => 'My Service Requests';
+
+  @override
+  String get cancelInquiry => 'Cancel Request';
+
+  @override
+  String get unitPerVisit => 'Per Visit';
+
+  @override
+  String get unitPerSession => 'Per Session';
+
+  @override
+  String get unitPerService => 'Per Service';
+
+  @override
+  String get unitPerConsultation => 'Per Consultation';
+
+  @override
+  String get unitPerProject => 'Per Project';
+
+  @override
+  String get unitPerMonth => 'Per Month';
+
+  @override
+  String get unitFixedPrice => 'Fixed Price';
+
+  @override
+  String get unitStartingFrom => 'Starting From';
+
+  @override
+  String get unitNegotiable => 'Negotiable';
+
+  @override
+  String get unitFreeConsultation => 'Free Consultation';
+
+  @override
+  String get customerDisclosure =>
+      'ProFinder connects you with independent professionals. Service scope, schedule, and payments are settled directly between you and the professional. ProFinder never collects service fees.';
+
+  @override
+  String get professionalDisclosure =>
+      'You receive direct service requests from clients. Set your own terms and receive 100% of your earnings directly with zero commission.';
 }

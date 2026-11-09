@@ -337,7 +337,7 @@ class AppHelpers {
     String? city,
   }) {
     if (isNationalCurrency) {
-      return 'Rs';
+      return 'Rs.';
     }
     if (professional is Map) {
       if (professional['currency_symbol'] != null &&
@@ -356,7 +356,7 @@ class AppHelpers {
       final c = currency.trim().toUpperCase();
       switch (c) {
         case 'PKR':
-          return 'Rs';
+          return 'Rs.';
         case 'INR':
           return '₹';
         case 'EUR':
@@ -429,23 +429,147 @@ class AppHelpers {
     if (cLower == 'pk' ||
         cLower == 'pakistan' ||
         pkCities.contains(cityLower)) {
-      return 'Rs';
+      return 'Rs.';
     }
-    if (cLower == 'in' || cLower == 'india') return '₹';
-    if (cLower == 'gb' || cLower == 'uk' || cLower == 'united kingdom')
+    if (cLower == 'in' || cLower == 'india') { return '₹'; }
+    if (cLower == 'gb' || cLower == 'uk' || cLower == 'united kingdom') {
       return '£';
-    if (cLower == 'ae' || cLower == 'uae') return 'AED';
-    if (cLower == 'sa' || cLower == 'saudi arabia') return 'SAR';
-    if (cLower == 'ca' || cLower == 'canada') return 'CA\$';
-    if (cLower == 'au' || cLower == 'australia') return 'A\$';
-    if (cLower == 'us' || cLower == 'usa' || cLower == 'united states')
+    }
+    if (cLower == 'ae' || cLower == 'uae') { return 'AED'; }
+    if (cLower == 'sa' || cLower == 'saudi arabia') { return 'SAR'; }
+    if (cLower == 'ca' || cLower == 'canada') { return 'CA\$'; }
+    if (cLower == 'au' || cLower == 'australia') { return 'A\$'; }
+    if (cLower == 'us' || cLower == 'usa' || cLower == 'united states') {
       return '\$';
+    }
 
-    // ProFinder default currency is PKR (Rs)
-    return 'Rs';
+    // ProFinder default currency is PKR (Rs.)
+    return 'Rs.';
   }
 
-  /// Formats hourly rate with dynamic currency symbol: e.g. "Rs 500/hr" or "$50/hr"
+  /// 10 Standard Informational Pricing Units supported by ProFinder:
+  static const Map<String, String> pricingUnitNames = {
+    'per_hour': 'Per Hour',
+    'per_day': 'Per Day',
+    'per_visit': 'Per Visit',
+    'per_session': 'Per Session',
+    'per_service': 'Per Service',
+    'per_consultation': 'Per Consultation',
+    'per_project': 'Per Project',
+    'per_month': 'Per Month',
+    'fixed_price': 'Fixed Price',
+    'starting_from': 'Starting From',
+    'negotiable': 'Negotiable',
+    'free_consultation': 'Free Consultation',
+    'custom': 'Custom Unit',
+  };
+
+  /// Resolves the readable label for a pricing unit
+  /// Short suffix for pricing cards, e.g. " /hr", " /day", " /visit"
+  static String getPricingUnitShortLabel({String? unit, dynamic professional}) {
+    String u = (unit ?? '').trim().toLowerCase();
+    if (u.isEmpty && professional is Map) {
+      u = (professional['pricing_unit'] ?? '').toString().trim().toLowerCase();
+    }
+    switch (u) {
+      case 'per_hour': return ' /hr';
+      case 'per_day': return ' /day';
+      case 'per_visit': return ' /visit';
+      case 'per_session': return ' /session';
+      case 'per_consultation': return ' /consult';
+      case 'per_project': return ' /proj';
+      case 'per_month': return ' /mo';
+      case 'fixed_price': return ' fixed';
+      case 'starting_from': return '+';
+      case 'negotiable': return ' (neg)';
+      case 'free_consultation': return ' free';
+      default: return ' /service';
+    }
+  }
+
+  static String getPricingUnitLabel(
+    String? unit, {
+    String? customUnit,
+    bool customUnitApproved = false,
+  }) {
+    final u = (unit ?? 'per_service').trim().toLowerCase();
+    if (u == 'custom' && (customUnit ?? '').isNotEmpty && customUnitApproved) {
+      return customUnit!;
+    }
+    return pricingUnitNames[u] ?? 'Per Service';
+  }
+
+  /// Formats price with its descriptive unit (eliminates rigid hourly rate assumption)
+  static String formatPriceWithUnit(
+    dynamic amount, {
+    String? unit,
+    String? customUnit,
+    bool customUnitApproved = false,
+    dynamic professional,
+    String? currency,
+    String? country,
+    String? city,
+  }) {
+    String resolvedUnit = (unit ?? '').trim().toLowerCase();
+    String resolvedCustom = customUnit ?? '';
+    bool resolvedApproved = customUnitApproved;
+
+    if (professional is Map) {
+      if (resolvedUnit.isEmpty) {
+        resolvedUnit = (professional['pricing_unit'] ?? '').toString().trim().toLowerCase();
+      }
+      if (resolvedCustom.isEmpty) {
+        resolvedCustom = (professional['custom_pricing_unit'] ?? '').toString();
+      }
+      if (!resolvedApproved) {
+        resolvedApproved = professional['custom_pricing_unit_approved'] == true;
+      }
+    }
+
+    if (resolvedUnit == 'free_consultation') {
+      return 'Free Consultation';
+    }
+    if (resolvedUnit == 'negotiable') {
+      return 'Negotiable';
+    }
+
+    final priceStr = formatPrice(
+      amount,
+      professional: professional,
+      currency: currency,
+      country: country,
+      city: city,
+    );
+
+    switch (resolvedUnit) {
+      case 'per_visit':
+        return '$priceStr / visit';
+      case 'per_session':
+        return '$priceStr / session';
+      case 'per_service':
+        return '$priceStr / service';
+      case 'per_consultation':
+        return '$priceStr / consult';
+      case 'per_project':
+        return '$priceStr / project';
+      case 'per_month':
+        return '$priceStr / month';
+      case 'fixed_price':
+        return '$priceStr (Fixed)';
+      case 'starting_from':
+        return 'Starting from $priceStr';
+      case 'custom':
+        if (resolvedCustom.isNotEmpty && resolvedApproved) {
+          return '$priceStr / $resolvedCustom';
+        }
+        return '$priceStr / service';
+      default:
+        return '$priceStr / service';
+    }
+  }
+
+  /// Backward-compatible alias for formatHourlyRate that renders the dynamic pricing unit
+  /// rather than hardcoded "/hr"
   static String formatHourlyRate(
     dynamic rate, {
     dynamic professional,
@@ -453,20 +577,16 @@ class AppHelpers {
     String? country,
     String? city,
   }) {
-    final sym = getCurrencySymbol(
+    return formatPriceWithUnit(
+      rate,
       professional: professional,
       currency: currency,
       country: country,
       city: city,
     );
-    final val = double.tryParse(rate?.toString() ?? '0') ?? 0.0;
-    final formattedVal = val == val.roundToDouble()
-        ? val.toStringAsFixed(0)
-        : val.toStringAsFixed(2);
-    return '$sym $formattedVal/hr';
   }
 
-  /// Formats price amount with dynamic currency symbol: e.g. "Rs 500" or "$50"
+  /// Formats price amount with dynamic currency symbol: e.g. "Rs. 1,500"
   static String formatPrice(
     dynamic amount, {
     dynamic professional,
@@ -482,6 +602,9 @@ class AppHelpers {
       city: city,
     );
     final val = double.tryParse(amount?.toString() ?? '0') ?? 0.0;
-    return '$sym ${val.toStringAsFixed(decimals)}';
+    if (decimals == 0 || val == val.roundToDouble()) {
+      return '$sym ${NumberFormat('#,##0').format(val.toInt())}';
+    }
+    return '$sym ${NumberFormat('#,##0.00').format(val)}';
   }
 }

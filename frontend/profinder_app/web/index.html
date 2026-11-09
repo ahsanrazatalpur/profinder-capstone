@@ -1,67 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Find trusted professionals, doctors, electricians, tutors, plumbers, and mechanics near you in Pakistan.">
 
-  <!-- ✅ NEW — Google Sign-In (Flutter Web). Required for google_sign_in
-       package to work in the browser — without it, GoogleSignIn().signIn()
-       throws and it looks like a generic failure with no real error. -->
-  <meta name="google-signin-client_id" content="405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Open Graph & Social Identity -->
+  <meta property="og:site_name" content="ProFinder">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ProFinder | Find Trusted Professionals in Pakistan">
+  <meta property="og:description" content="Find trusted professionals near you in Pakistan.">
+  <meta property="og:image" content="icons/Icon-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ProFinder | Find Trusted Professionals in Pakistan">
+  <meta name="twitter:description" content="Find trusted professionals near you in Pakistan.">
 
-  <!-- ✅ NEW — Facebook Sign-In (Flutter Web). Required for
-       flutter_facebook_auth to work in the browser. -->
-  <div id="fb-root"></div>
-  <script>
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId: 'PASTE_YOUR_FACEBOOK_APP_ID_HERE',
-        cookie: true,
-        xfbml: true,
-        version: 'v19.0'
-      });
-    };
-  </script>
-  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+  <!-- Dynamic Favicon Identity -->
+  <link rel="icon" type="image/png" id="dynamic-favicon" href="favicon.png"/>
+  <link rel="apple-touch-icon" id="dynamic-apple-favicon" href="favicon.png">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="profinder_app">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <meta name="apple-mobile-web-app-title" content="ProFinder">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <!-- Google Sign-In (Flutter Web) -->
+  <meta name="google-signin-client_id" content="405649887034-vtb975grk99t5qrn4747bk36gifq3g6a.apps.googleusercontent.com">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <title>profinder_app</title>
+  <title>ProFinder | Find Trusted Professionals in Pakistan</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  <div id="fb-root"></div>
+  <script>
+    window.fbAsyncInit = function() {
+      var appId = 'PASTE_YOUR_FACEBOOK_APP_ID_HERE';
+      if (appId && !appId.includes('PASTE')) {
+        FB.init({
+          appId: appId,
+          cookie: true,
+          xfbml: true,
+          version: 'v19.0'
+        });
+      }
+    };
+  </script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

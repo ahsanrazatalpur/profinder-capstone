@@ -44,6 +44,17 @@ class Booking(models.Model):
         default='unpaid',
         db_index=True
     )
+    # Suggested / Rescheduled Time fields (Replaces local storage)
+    suggested_date = models.DateField(null=True, blank=True)
+    suggested_time = models.TimeField(null=True, blank=True)
+    suggested_by = models.CharField(max_length=20, blank=True) # 'professional' | 'customer'
+    rescheduled_reason = models.TextField(blank=True)
+
+    # Job Completion verification workflow
+    completion_marked_by_pro = models.BooleanField(default=False)
+    completion_confirmed_by_customer = models.BooleanField(default=False)
+    completion_date = models.DateTimeField(null=True, blank=True)
+
     created_at    = models.DateTimeField(auto_now_add=True)
 
     class Meta:

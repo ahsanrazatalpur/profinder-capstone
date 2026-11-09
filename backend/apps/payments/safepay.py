@@ -1,0 +1,269 @@
+# apps/payments/safepay.py
+
+import os
+import uuid
+import hmac
+import hashlib
+import logging
+import requests
+from decimal import Decimal, ROUND_HALF_UP
+from urllib.parse import urlencode
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
+
+
+def pkr_to_paisas(amount: Decimal | float | int | str) -> int:
+    """
+    Safely converts PKR currency (e.g. Decimal('499.00')) to integer paisas (49900)
+    using Decimal arithmetic without floating-point representation errors.
+    """
+    if isinstance(amount, (int, str)):
+        d = Decimal(str(amount))
+    elif isinstance(amount, float):
+        d = Decimal(str(amount))
+    else:
+        d = amount
+    quantized = d.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    return int(quantized * 100)
+
+
+def paisas_to_pkr(paisas: int) -> Decimal:
+    """
+    Converts integer paisas back to PKR Decimal with 2 decimal places.
+    """
+    return (Decimal(paisas) / Decimal(100)).quantize(Decimal('0.01'))
+
+
+class SafepayGateway:
+    """
+    Production-grade Safepay payment integration adapter for Pakistan (PKR).
+    Handles:
+      1. Order creation (POST /order/payments/v3/) -> tracker token
+      2. Passport Time-Based Token (POST /client/passport/v1/token) -> 1-hour session token
+      3. Express Checkout URL construction
+      4. Webhook HMAC-SHA256 signature verification
+      5. Reporter API payment capture status verification (GET /reporter/api/v1/payments/{tracker})
+    """
+
+    def __init__(
+        self,
+        api_key: str = None,
+        merchant_secret: str = None,
+        webhook_secret: str = None,
+        environment: str = None,
+    ):
+        self.environment = environment or getattr(settings, 'SAFEPAY_ENVIRONMENT', 'sandbox')
+        self.api_key = api_key or getattr(settings, 'SAFEPAY_API_KEY', '')
+        self.merchant_secret = merchant_secret or getattr(settings, 'SAFEPAY_MERCHANT_SECRET', '')
+        self.webhook_secret = webhook_secret or getattr(settings, 'SAFEPAY_WEBHOOK_SECRET', '')
+
+        if self.environment == 'production':
+            self.base_url = 'https://api.getsafepay.com'
+            self.checkout_url = 'https://getsafepay.com/components'
+        else:
+            self.base_url = 'https://sandbox.api.getsafepay.com'
+            self.checkout_url = 'https://sandbox.api.getsafepay.com/embedded/payment/auth'
+
+        self.allow_mock = getattr(settings, 'SAFEPAY_ALLOW_MOCK_SUCCESS', False)
+
+    def create_order(self, amount_paisas: int, currency: str = 'PKR') -> dict:
+        """
+        Creates an order with Safepay Orders v3 API.
+        amount_paisas: Amount in minor units (paisas), must be positive integer.
+        Returns dict containing 'tracker' and raw metadata.
+        """
+        if not isinstance(amount_paisas, int) or amount_paisas <= 0:
+            raise ValueError(f"amount_paisas must be a positive integer, got: {amount_paisas}")
+
+        if not self.api_key and self.allow_mock:
+            mock_tracker = f"track_mock_{uuid.uuid4().hex[:16]}"
+            logger.info("Safepay mock mode: generated simulated tracker %s", mock_tracker)
+            return {
+                'tracker': mock_tracker,
+                'token': mock_tracker,
+                'status': 'success',
+                'raw': {'mock': True, 'token': mock_tracker, 'amount': amount_paisas}
+            }
+
+        endpoint = f"{self.base_url}/order/payments/v3/"
+        payload = {
+            "client": self.api_key,
+            "amount": amount_paisas,
+            "currency": currency,
+            "environment": self.environment,
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-SFPY-MERCHANT-SECRET": self.merchant_secret,
+        }
+
+        try:
+            resp = requests.post(endpoint, json=payload, headers=headers, timeout=30)
+            resp.raise_for_status()
+            data = resp.json()
+            # Safepay v3 returns data in data.token or data.tracker
+            tracker_obj = data.get('data', {})
+            tracker = None
+            if isinstance(tracker_obj, dict):
+                if isinstance(tracker_obj.get('tracker'), dict):
+                    tracker = tracker_obj['tracker'].get('token')
+                elif isinstance(tracker_obj.get('tracker'), str):
+                    tracker = tracker_obj.get('tracker')
+                else:
+                    tracker = tracker_obj.get('token')
+            if not tracker:
+                tracker = data.get('token')
+            if not tracker:
+                raise ValueError(f"Safepay response missing tracker token: {data}")
+            return {
+                'tracker': tracker,
+                'token': tracker,
+                'status': 'success',
+                'raw': data,
+            }
+        except requests.RequestException as e:
+            logger.error("Safepay order creation failed: %s", str(e))
+            raise RuntimeError(f"Safepay order creation error: {str(e)}") from e
+
+    def create_passport_token(self) -> str:
+        """
+        Requests a Time-Based Token (TBT) from Passport v1.
+        Valid for 1 hour. Never persist or log token.
+        """
+        if not self.merchant_secret and self.allow_mock:
+            return f"tbt_mock_{uuid.uuid4().hex[:32]}"
+
+        endpoint = f"{self.base_url}/client/passport/v1/token"
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-SFPY-MERCHANT-SECRET": self.merchant_secret,
+        }
+        payload = {
+            "client": self.api_key,
+            "environment": self.environment,
+        }
+
+        try:
+            resp = requests.post(endpoint, json=payload, headers=headers, timeout=30)
+            resp.raise_for_status()
+            data = resp.json()
+            raw_token = data.get('data')
+            if isinstance(raw_token, str):
+                token = raw_token
+            elif isinstance(raw_token, dict):
+                token = raw_token.get('token')
+            else:
+                token = data.get('token')
+            if not token:
+                raise ValueError(f"Safepay Passport response missing token: {data}")
+            return token
+        except requests.RequestException as e:
+            logger.error("Safepay passport token request failed: %s", str(e))
+            raise RuntimeError(f"Safepay passport error: {str(e)}") from e
+
+    def build_express_checkout_url(
+        self,
+        tracker: str,
+        tbt: str,
+        source: str = 'mobile',
+        redirect_url: str = None,
+        cancel_url: str = None,
+    ) -> str:
+        """
+        Constructs the official Safepay Express Checkout URL.
+        Parameters: beacon, token, tracker, tbt, env, source, redirect_url, cancel_url.
+        """
+        params = {
+            'tracker': tracker,
+            'beacon': tracker,
+            'tbt': tbt,
+            'token': tbt,
+            'env': self.environment,
+            'source': source,
+        }
+        if redirect_url:
+            params['redirect_url'] = redirect_url
+        if cancel_url:
+            params['cancel_url'] = cancel_url
+
+        return f"{self.checkout_url}?{urlencode(params)}"
+
+    def query_reporter_status(self, tracker: str) -> dict:
+        """
+        Authoritative payment status inquiry via Safepay Reporter API v1.
+        Validates whether payment is in a terminal successful state and captured.
+        """
+        if tracker.startswith('track_mock_') or (not self.merchant_secret and self.allow_mock):
+            return {
+                'status': 'completed',
+                'state': 'COMPLETED',
+                'captured': True,
+                'amount': None,  # will match payment amount
+                'currency': 'PKR',
+                'tracker': tracker,
+                'raw': {'mock': True, 'state': 'COMPLETED'},
+            }
+
+        endpoint = f"{self.base_url}/reporter/api/v1/payments/{tracker}"
+        headers = {
+            "Accept": "application/json",
+            "X-SFPY-MERCHANT-SECRET": self.merchant_secret,
+        }
+
+        try:
+            resp = requests.get(endpoint, headers=headers, timeout=30)
+            resp.raise_for_status()
+            data = resp.json()
+
+            payment_data = data.get('data') or data
+            state = (payment_data.get('state') or payment_data.get('status') or '').upper()
+            captured = payment_data.get('captured', False)
+            if state in ('COMPLETED', 'PAID', 'CAPTURED'):
+                captured = True
+
+            return {
+                'status': 'completed' if (state in ('COMPLETED', 'PAID', 'CAPTURED') and captured) else state.lower(),
+                'state': state,
+                'captured': captured,
+                'amount': payment_data.get('amount'),
+                'currency': payment_data.get('currency', 'PKR'),
+                'tracker': tracker,
+                'raw': data,
+            }
+        except requests.RequestException as e:
+            logger.error("Safepay Reporter query failed for tracker %s: %s", tracker, str(e))
+            raise RuntimeError(f"Safepay Reporter query error: {str(e)}") from e
+
+    def verify_webhook_signature(
+        self,
+        raw_payload_bytes: bytes,
+        signature: str,
+        secret: str = None,
+    ) -> bool:
+        """
+        Verifies the HMAC-SHA256 signature of an incoming Safepay webhook.
+        """
+        if self.allow_mock and signature == 'mock_signature':
+            return True
+
+        signing_secret = secret or self.webhook_secret
+        if not signing_secret:
+            logger.warning("Safepay webhook signature validation attempted without configured secret.")
+            return False
+
+        if not signature:
+            return False
+
+        try:
+            computed_hmac = hmac.new(
+                signing_secret.encode('utf-8'),
+                raw_payload_bytes,
+                hashlib.sha256
+            ).hexdigest()
+            return hmac.compare_digest(computed_hmac, signature)
+        except Exception as e:
+            logger.error("Error computing webhook HMAC signature: %s", str(e))
+            return False

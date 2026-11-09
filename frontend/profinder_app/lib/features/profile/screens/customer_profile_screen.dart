@@ -18,12 +18,11 @@ import '../../../services/favorites_store.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../services/geo_service.dart';
 import '../../../core/constants/country_flags.dart';
+import '../../../core/constants/app_localization_config.dart';
 import '../../auth/widgets/searchable_picker_field.dart';
 import '../../notifications/screens/notification_screen.dart';
 import '../../subscription/services/subscription_service.dart';
 import '../../subscription/screens/subscription_screen.dart';
-import 'wallet_screen.dart';
-import 'payments_screen.dart';
 import 'saved_professionals_screen.dart';
 import 'my_reviews_screen.dart';
 import 'settings_screen.dart';
@@ -75,6 +74,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   // ── Controllers ──────────────────────────────────────────
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _whatsappController = TextEditingController();
   final _api = ApiService();
   final _bookingSvc = BookingService();
   final _favStore = FavoritesStore();
@@ -100,6 +100,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
+    _whatsappController.dispose();
     super.dispose();
   }
 
@@ -128,6 +129,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         _photoUrl = profileData['photo_url'] as String?;
         _nameController.text = merged['name'] ?? '';
         _phoneController.text = merged['phone'] ?? '';
+        _whatsappController.text = (merged['whatsapp_number'] ?? merged['phone'] ?? '').toString();
       });
       _loadCountriesAndPreselect(
         merged['country'] as String?,
@@ -441,8 +443,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       final formData = FormData.fromMap({
         'full_name': _nameController.text.trim(),
         'phone': _phoneController.text.trim(),
+        'whatsapp_number': _whatsappController.text.trim(),
         'city': _selectedCity?['name'] ?? '',
-        'country': _selectedCountry?['name'] ?? '',
+        'country': _selectedCountry?['name'] ?? (AppLocalizationConfig.isPakistanOnly ? 'Pakistan' : ''),
         'photo': ?photoMultipart,
       });
 
@@ -480,6 +483,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
       _webImageBytes = null;
       _nameController.text = _profile?['name'] ?? '';
       _phoneController.text = _profile?['phone'] ?? '';
+      _whatsappController.text = (_profile?['whatsapp_number'] ?? _profile?['phone'] ?? '').toString();
     });
     _loadCountriesAndPreselect(
       _profile?['country'] as String?,
@@ -740,33 +744,42 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             type: TextInputType.phone,
           ),
           const SizedBox(height: 12),
-          _buildLocationField(
-            label: AppLocalizations.of(context).countryLabel,
-            icon: Icons.public_outlined,
-            displayValue:
-                (_selectedCountry?['name'] as String?) ??
-                (_profile?['country'] as String?),
-            editingBuilder: () => SearchablePickerField<Map<String, dynamic>>(
-              value: _selectedCountry,
-              items: _countries,
-              itemLabel: (c) => c['name'] as String,
-              itemLeading: (c) {
-                final flag = CountryFlags.flagFor(c['name'] as String);
-                return Text(
-                  flag ?? '🌐',
-                  style: const TextStyle(fontSize: AppFontSizes.title2),
-                );
-              },
-              label: AppLocalizations.of(context).countryLabel,
-              hint: AppLocalizations.of(context).countryHint,
-              prefixIcon: Icons.public_outlined,
-              loading: _loadingCountries,
-              searchHint: AppLocalizations.of(context).countrySearchHint,
-              emptyMessage: AppLocalizations.of(context).countryEmptyMessage,
-              onChanged: _onCountrySelected,
-            ),
+          _buildField(
+            'WhatsApp Number',
+            _whatsappController,
+            Icons.chat_outlined,
+            type: TextInputType.phone,
           ),
           const SizedBox(height: 12),
+          if (AppLocalizationConfig.allowCountrySelection) ...[
+            _buildLocationField(
+              label: AppLocalizations.of(context).countryLabel,
+              icon: Icons.public_outlined,
+              displayValue:
+                  (_selectedCountry?['name'] as String?) ??
+                  (_profile?['country'] as String?),
+              editingBuilder: () => SearchablePickerField<Map<String, dynamic>>(
+                value: _selectedCountry,
+                items: _countries,
+                itemLabel: (c) => c['name'] as String,
+                itemLeading: (c) {
+                  final flag = CountryFlags.flagFor(c['name'] as String);
+                  return Text(
+                    flag ?? '🌐',
+                    style: const TextStyle(fontSize: AppFontSizes.title2),
+                  );
+                },
+                label: AppLocalizations.of(context).countryLabel,
+                hint: AppLocalizations.of(context).countryHint,
+                prefixIcon: Icons.public_outlined,
+                loading: _loadingCountries,
+                searchHint: AppLocalizations.of(context).countrySearchHint,
+                emptyMessage: AppLocalizations.of(context).countryEmptyMessage,
+                onChanged: _onCountrySelected,
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
           _buildLocationField(
             label: AppLocalizations.of(context).cityLabel,
             icon: Icons.location_city_outlined,
@@ -826,16 +839,6 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             iconColor: AppColors.warningAmber,
           ),
           _actionTile(
-            Icons.account_balance_wallet_outlined,
-            AppLocalizations.of(context).walletActionLabel,
-            AppLocalizations.of(context).walletActionSubtitle,
-            () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const WalletScreen()),
-            ),
-            iconColor: AppColors.badgeTrending,
-          ),
-          _actionTile(
             Icons.calendar_today_outlined,
             AppLocalizations.of(context).bookingsActionLabel,
             AppLocalizations.of(context).bookingsActionSubtitle,
@@ -864,16 +867,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
             ),
             iconColor: AppColors.violet,
           ),
-          _actionTile(
-            Icons.receipt_long_outlined,
-            AppLocalizations.of(context).paymentsActionLabel,
-            AppLocalizations.of(context).paymentsActionSubtitle,
-            () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PaymentsScreen()),
-            ),
-            iconColor: AppColors.indigo,
-          ),
+
         ]),
 
         const SizedBox(height: 16),

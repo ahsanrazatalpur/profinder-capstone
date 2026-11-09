@@ -21,6 +21,7 @@ import '../../../services/auth_service.dart';
 import '../../../services/home_service.dart';
 import '../../../services/geo_service.dart';
 import '../../../core/constants/country_flags.dart';
+import '../../../core/constants/app_localization_config.dart';
 import '../widgets/password_strength_meter.dart';
 import '../widgets/searchable_picker_field.dart';
 import '../widgets/account_type_card.dart';
@@ -63,6 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   late String _selectedRole = widget.initialRole ?? 'customer';
   Map<String, dynamic>? _selectedCategory;
+  final _customProfessionController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _capsLockOn = false;
@@ -196,9 +198,9 @@ class _RegisterScreenState extends State<RegisterScreen>
     final confirmOk =
         _confirmPassController.text.isNotEmpty &&
         _confirmPassController.text == _passwordController.text;
-    final cityOk = _selectedCountry != null && _selectedCity != null;
+    final cityOk = (AppLocalizationConfig.allowCountrySelection ? _selectedCountry != null : true) && _selectedCity != null;
     final categoryOk =
-        _selectedRole != 'professional' || _selectedCategory != null;
+        _selectedRole != 'professional' || (_selectedCategory != null && (_selectedCategory!['id'] != -1 || _customProfessionController.text.trim().isNotEmpty));
 
     return nameOk && emailOk && passOk && confirmOk && cityOk && categoryOk;
   }
@@ -207,11 +209,28 @@ class _RegisterScreenState extends State<RegisterScreen>
   Future<void> _loadCategories() async {
     final result = await HomeService().getCategories();
     if (result['success'] && mounted) {
-      setState(() => _categories = result['data'] ?? []);
+      final list = List<Map<String, dynamic>>.from(result['data'] ?? []);
+        list.add({'id': -1, 'name': 'Other / دیگر پیشہ'});
+        setState(() => _categories = list);
     }
   }
 
   Future<void> _loadCountries() async {
+    if (!AppLocalizationConfig.allowCountrySelection) {
+      // Pakistan-only operational mode: auto-assign Pakistan and load cities directly
+      _selectedCountry = {'id': 1, 'name': 'Pakistan', 'code': 'PK'};
+      setState(() {
+        _loadingCountries = false;
+        _loadingCities = true;
+      });
+      final result = await _geoService.getCities(1);
+      if (!mounted) return;
+      setState(() {
+        _cities = result['data'] ?? [];
+        _loadingCities = false;
+      });
+      return;
+    }
     final result = await _geoService.getCountries();
     if (!mounted) return;
     final list = List<dynamic>.from(result['data'] ?? []);
@@ -270,6 +289,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPassController.dispose();
+    _customProfessionController.dispose();
     _nameFocusNode.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
@@ -309,7 +329,8 @@ class _RegisterScreenState extends State<RegisterScreen>
       password: _passwordController.text,
       city: _selectedCity?['name'] as String?,
       country: _selectedCountry?['name'] as String?,
-      categoryId: _selectedCategory?['id'] as int?,
+      categoryId: _selectedCategory?['id'] == -1 ? null : _selectedCategory?['id'] as int?,
+      customProfession: _selectedCategory?['id'] == -1 ? _customProfessionController.text.trim() : null,
     );
 
     if (!mounted) return;
@@ -626,41 +647,42 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                     const SizedBox(height: AppSizes.sm),
 
-                    // ── Country ───────────────────────────────
-                    SearchablePickerField<Map<String, dynamic>>(
-                      value: _selectedCountry,
-                      items: List<Map<String, dynamic>>.from(_countries),
-                      itemLabel: (c) => c['name'] as String,
-                      itemLeading: (c) {
-                        final flag = CountryFlags.flagFor(c['name'] as String);
-                        return flag != null
-                            ? Text(
-                                flag,
-                                style: const TextStyle(
-                                  fontSize: AppFontSizes.h3,
-                                ),
-                              )
-                            : const Icon(Icons.public, size: 20);
-                      },
-                      label: AppLocalizations.of(context).countryLabel,
-                      hint: AppLocalizations.of(context).countryHint,
-                      prefixIcon: Icons.public_outlined,
-                      loading: _loadingCountries,
-                      searchHint: AppLocalizations.of(
-                        context,
-                      ).countrySearchHint,
-                      emptyMessage: AppLocalizations.of(
-                        context,
-                      ).countryEmptyMessage,
-                      onChanged: (country) {
-                        if (country != null) _onCountrySelected(country);
-                      },
-                      validator: (value) => value == null
-                          ? AppLocalizations.of(context).countryRequiredError
-                          : null,
-                    ),
-
-                    const SizedBox(height: AppSizes.sm),
+                    if (AppLocalizationConfig.allowCountrySelection) ...[
+                      // ── Country (Global Mode) ───────────────────────────
+                      SearchablePickerField<Map<String, dynamic>>(
+                        value: _selectedCountry,
+                        items: List<Map<String, dynamic>>.from(_countries),
+                        itemLabel: (c) => c['name'] as String,
+                        itemLeading: (c) {
+                          final flag = CountryFlags.flagFor(c['name'] as String);
+                          return flag != null
+                              ? Text(
+                                  flag,
+                                  style: const TextStyle(
+                                    fontSize: AppFontSizes.h3,
+                                  ),
+                                )
+                              : const Icon(Icons.public, size: 20);
+                        },
+                        label: AppLocalizations.of(context).countryLabel,
+                        hint: AppLocalizations.of(context).countryHint,
+                        prefixIcon: Icons.public_outlined,
+                        loading: _loadingCountries,
+                        searchHint: AppLocalizations.of(
+                          context,
+                        ).countrySearchHint,
+                        emptyMessage: AppLocalizations.of(
+                          context,
+                        ).countryEmptyMessage,
+                        onChanged: (country) {
+                          if (country != null) _onCountrySelected(country);
+                        },
+                        validator: (value) => value == null
+                            ? AppLocalizations.of(context).countryRequiredError
+                            : null,
+                      ),
+                      const SizedBox(height: AppSizes.sm),
+                    ],
 
                     // ── City — depends on Country ─────────────
                     SearchablePickerField<Map<String, dynamic>>(
@@ -671,7 +693,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                       label: AppLocalizations.of(context).cityLabel,
                       hint: AppLocalizations.of(context).cityHint,
                       prefixIcon: Icons.location_city_outlined,
-                      enabled: _selectedCountry != null,
+                      enabled: _selectedCountry != null || !AppLocalizationConfig.allowCountrySelection,
                       loading: _loadingCities,
                       disabledHint: AppLocalizations.of(
                         context,

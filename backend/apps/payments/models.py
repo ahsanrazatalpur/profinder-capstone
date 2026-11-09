@@ -8,18 +8,22 @@ from django.conf import settings
 
 class Payment(models.Model):
     STATUS_CHOICES = [
-        ('pending',   'Pending'),
-        ('approved',  'Approved'),
-        ('completed', 'Completed'),
-        ('failed',    'Failed'),
-        ('cancelled', 'Cancelled'),
-        ('refunded',  'Refunded'),
+        ('pending',            'Pending'),
+        ('processing',         'Processing'),
+        ('approved',           'Approved'),
+        ('completed',          'Completed'),
+        ('failed',             'Failed'),
+        ('cancelled',          'Cancelled'),
+        ('refunded',           'Refunded'),
+        ('partially_refunded', 'Partially Refunded'),
+        ('disputed',           'Disputed'),
     ]
 
     PURPOSE_CHOICES = [
-        ('booking',      'Booking Payment'),
-        ('subscription', 'Subscription Payment'),
-        ('other',        'Other Payment'),
+        ('booking',          'Booking Payment'),
+        ('subscription',     'Subscription Payment'),
+        ('featured_listing', 'Featured Listing Promotion'),
+        ('other',            'Other Payment'),
     ]
 
     order_id = models.CharField(
@@ -64,6 +68,8 @@ class Payment(models.Model):
     paypal_payer_email = models.CharField(max_length=255, blank=True)
     idempotency_key = models.CharField(max_length=255, blank=True, db_index=True)
     approval_url = models.TextField(blank=True)
+    safepay_tracker = models.CharField(max_length=120, unique=True, null=True, blank=True, db_index=True)
+    safepay_environment = models.CharField(max_length=20, default='sandbox')
 
     # Local currency presentation snapshot
     local_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
@@ -102,10 +108,15 @@ class WalletTransaction(models.Model):
     ]
 
     STATUS_CHOICES = [
-        ('pending',   'Pending'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
-        ('failed',    'Failed'),
+        ('pending',            'Pending'),
+        ('processing',         'Processing'),
+        ('approved',           'Approved'),
+        ('completed',          'Completed'),
+        ('failed',             'Failed'),
+        ('cancelled',          'Cancelled'),
+        ('refunded',           'Refunded'),
+        ('partially_refunded', 'Partially Refunded'),
+        ('disputed',           'Disputed'),
     ]
 
     user = models.ForeignKey(
@@ -209,3 +220,53 @@ class ExchangeRateCache(models.Model):
 
     def __str__(self):
         return f"1 {self.base_currency} = {self.rate} {self.target_currency} (as of {self.updated_at.strftime('%Y-%m-%d %H:%M')})"
+
+class WebhookEventLog(models.Model):
+    STATUS_CHOICES = [
+        ('received',                     'Received'),
+        ('processing',                   'Processing'),
+        ('completed',                    'Completed'),
+        ('retryable_failure',            'Retryable Failure'),
+        ('dead_letter',                  'Dead Letter'),
+        ('quarantined_unknown_tracker',  'Quarantined Unknown Tracker'),
+        ('payload_tampering_conflict',   'Payload Tampering Conflict'),
+        ('permanently_invalid',          'Permanently Invalid'),
+    ]
+    provider = models.CharField(max_length=30, default='safepay')
+    event_id = models.CharField(max_length=150, db_index=True)
+    delivery_fingerprint = models.CharField(max_length=64, blank=True, db_index=True)
+    event_type = models.CharField(max_length=80, blank=True)
+    status = models.CharField(max_length=40, choices=STATUS_CHOICES, default='received', db_index=True)
+    lease_token = models.UUIDField(null=True, blank=True, db_index=True)
+    lease_expires_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    retry_count = models.PositiveSmallIntegerField(default=0)
+    retry_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    sanitized_payload = models.JSONField(null=True, blank=True)
+    error_message = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('provider', 'event_id')
+        indexes = [
+            models.Index(fields=['provider', 'event_id']),
+            models.Index(fields=['status', 'lease_expires_at']),
+            models.Index(fields=['status', 'retry_at']),
+        ]
+
+    def __str__(self):
+        return f"[{self.provider}] {self.event_id} ({self.status})"
+
+
+class CacheInvalidationOutbox(models.Model):
+    cache_key = models.CharField(max_length=255, db_index=True)
+    action = models.CharField(max_length=30, default='incr')
+    processed = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    processed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"{self.cache_key} [{self.action}] - {'Done' if self.processed else 'Pending'}"

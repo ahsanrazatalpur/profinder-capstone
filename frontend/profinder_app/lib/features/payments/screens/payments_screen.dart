@@ -169,7 +169,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '$currency ${amount.toStringAsFixed(2)}',
+                                AppHelpers.formatPrice(amount, currency: currency),
                                 style: TextStyle(
                                   fontSize: isTablet ? 15.0 : 14.0,
                                   fontWeight: FontWeight.w700,

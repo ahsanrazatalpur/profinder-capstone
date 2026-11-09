@@ -1,3 +1,4 @@
+import '../../../core/utils/web_identity/web_identity.dart';
 // PATH: lib/features/search/screens/professional_detail_screen.dart
 // lib/features/search/screens/professional_detail_screen.dart
 //
@@ -24,6 +25,7 @@
 import '../../../services/content_localizer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../shared/widgets/universal_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_sizes.dart';
@@ -83,11 +85,21 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
   String? _loadError;
   bool _isFavorite = false;
 
+    void _updateInitialWebIdentity() {
+    final name = widget.professional['user']?['name'] ?? widget.professional['name'] ?? 'Professional';
+    final city = widget.professional['city'] ?? 'Pakistan';
+    final spec = widget.professional['category_name'] ?? widget.professional['specialization'] ?? '';
+    final title = spec.isNotEmpty ? '$name - $spec in $city | ProFinder' : '$name - $city | ProFinder';
+    final photo = widget.professional['profile_picture'] ?? widget.professional['user']?['profile_picture'];
+    WebIdentity.setIdentity(title: title, faviconUrl: photo?.toString(), imageUrl: photo?.toString());
+  }
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
     _tabController.addListener(_onTabChanged);
+    _updateInitialWebIdentity();
     _loadData();
     _loadFavoriteStatus();
   }
@@ -97,6 +109,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
     _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     _scroll.dispose();
+    WebIdentity.resetToDefault();
     super.dispose();
   }
 
@@ -252,7 +265,15 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         try {
           if (results[0]['success'] == true) {
             final data = results[0]['data'];
-            if (data is Map) _fullProfile = Map<String, dynamic>.from(data);
+            if (data is Map) {
+              _fullProfile = Map<String, dynamic>.from(data);
+              final uName = _fullProfile?['user']?['name'] ?? _fullProfile?['name'] ?? widget.professional['name'] ?? 'Professional';
+              final uCity = _fullProfile?['city'] ?? widget.professional['city'] ?? 'Pakistan';
+              final uSpec = _fullProfile?['category_name'] ?? _fullProfile?['specialization'] ?? widget.professional['specialization'] ?? '';
+              final uPhoto = _fullProfile?['profile_picture'] ?? _fullProfile?['user']?['profile_picture'] ?? widget.professional['profile_picture'];
+              final dynamicTitle = uSpec.isNotEmpty ? '$uName - $uSpec in $uCity | ProFinder' : '$uName - $uCity | ProFinder';
+              WebIdentity.setIdentity(title: dynamicTitle, faviconUrl: uPhoto?.toString(), imageUrl: uPhoto?.toString());
+            }
           }
         } catch (e, st) {
           debugPrint('[ProfessionalDetail] profile parse error: $e\n$st');
@@ -328,6 +349,42 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
 
   // ── Merged data helper — fullProfile overrides widget.professional ──────────
   dynamic _get(String key) => _fullProfile?[key] ?? widget.professional[key];
+
+  String get _whatsappNumber =>
+      (_get('whatsapp_number') ?? _get('phone') ?? '').toString().trim();
+
+  Future<void> _openWhatsApp() async {
+    final num = _whatsappNumber;
+    if (num.isEmpty) {
+      AppHelpers.showInfo(
+        context,
+        'WhatsApp contact is not available for this professional.',
+      );
+      return;
+    }
+    var cleaned = num.replaceAll(RegExp(r'[^0-9]'), '');
+    if (cleaned.startsWith('03')) {
+      cleaned = '92${cleaned.substring(1)}';
+    } else if (!cleaned.startsWith('92') && cleaned.length == 10) {
+      cleaned = '92$cleaned';
+    }
+    final name = (_get('name') ?? 'Professional').toString();
+    final message = Uri.encodeComponent(
+      'Hello $name, I found your profile on ProFinder and would like to inquire about your services.',
+    );
+    final uri = Uri.parse('https://wa.me/$cleaned?text=$message');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+    } catch (_) {
+      if (mounted) {
+        AppHelpers.showError(context, 'Could not open WhatsApp: $num');
+      }
+    }
+  }
 
   String get _currencySym => AppHelpers.getCurrencySymbol(
     professional: _fullProfile ?? widget.professional,
@@ -1202,8 +1259,12 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   const Divider(height: 20),
                   _detailRow(
                     Icons.payments_outlined,
-                    AppLocalizations.of(context).hourlyRateLabel,
-                    '$_currencySym ${_get('hourly_rate') ?? 0}/hr',
+                    'Service Pricing',
+                    AppHelpers.formatPriceWithUnit(
+                      _get('hourly_rate'),
+                      professional: _fullProfile ?? widget.professional,
+                      currency: _currencySym,
+                    ),
                   ),
                   const Divider(height: 20),
                   _detailRow(
@@ -1236,6 +1297,65 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                         context,
                         _get('category_name').toString(),
                       ),
+                    ),
+                  ],
+                  if (_whatsappNumber.isNotEmpty) ...[
+                    const Divider(height: 20),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.chat_rounded,
+                          size: 18,
+                          color: Color(0xFF25D366),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'WhatsApp Contact',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _whatsappNumber,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: context.colors.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: _openWhatsApp,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF25D366),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 0,
+                          ),
+                          icon: const Icon(Icons.open_in_new_rounded, size: 14),
+                          label: const Text(
+                            'Chat',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ],
@@ -2172,41 +2292,45 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
         top: false,
         child: Padding(
           padding: EdgeInsets.fromLTRB(
-            ResponsiveUtils.screenPadding(width, base: 16),
-            12,
-            ResponsiveUtils.screenPadding(width, base: 16),
-            12,
+            ResponsiveUtils.screenPadding(width, base: 12),
+            10,
+            ResponsiveUtils.screenPadding(width, base: 12),
+            10,
           ),
           child: Row(
             children: [
               ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: width * 0.28),
+                constraints: BoxConstraints(maxWidth: width < 420 ? width * 0.22 : width * 0.25),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppLocalizations.of(context).hourlyRateLabel,
+                      'Rate',
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(
-                          11,
+                          10,
                           scale,
-                          min: 10,
-                          max: 14,
+                          min: 9,
+                          max: 13,
                         ),
                         color: context.colors.textSecondary,
                       ),
                     ),
                     Text(
-                      '$_currencySym ${pro['hourly_rate'] ?? 0}/hr',
+                      AppHelpers.formatPriceWithUnit(
+                        pro['hourly_rate'],
+                        professional: pro,
+                        currency: _currencySym,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(
-                          20,
+                          15,
                           scale,
-                          min: 18,
-                          max: 25,
+                          min: 13,
+                          max: 19,
                         ),
                         fontWeight: FontWeight.w800,
                         color: context.colors.primary,
@@ -2215,7 +2339,36 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   ],
                 ),
               ),
-              SizedBox(width: ResponsiveUtils.sp(16, scale, min: 12, max: 20)),
+              SizedBox(width: ResponsiveUtils.sp(8, scale, min: 6, max: 10)),
+              if (_whatsappNumber.isNotEmpty) ...[
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                    onTap: _openWhatsApp,
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF25D366).withValues(alpha: 0.12),
+                        border: Border.all(
+                          color: const Color(0xFF25D366),
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.chat_rounded,
+                          color: Color(0xFF25D366),
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: ResponsiveUtils.sp(6, scale, min: 4, max: 8)),
+              ],
               // Message — secondary outlined action.
               Material(
                 color: Colors.transparent,
@@ -2223,8 +2376,8 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                   onTap: _isStartingChat ? null : () => _startConversation(pro),
                   child: Container(
-                    width: btnSize,
-                    height: btnSize,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: context.colors.primary,
@@ -2234,24 +2387,19 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                     ),
                     child: _isStartingChat
                         ? const Padding(
-                            padding: EdgeInsets.all(14),
+                            padding: EdgeInsets.all(12),
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : Icon(
                             Icons.chat_bubble_outline_rounded,
                             color: context.colors.primary,
-                            size: ResponsiveUtils.sp(
-                              22,
-                              scale,
-                              min: 20,
-                              max: 27,
-                            ),
+                            size: 20,
                           ),
                   ),
                 ),
               ),
-              SizedBox(width: ResponsiveUtils.sp(10, scale, min: 8, max: 14)),
-              // Book Now — primary filled, the strongest CTA on the screen.
+              SizedBox(width: ResponsiveUtils.sp(8, scale, min: 6, max: 10)),
+              // Request Service — expanded with increased width so the entire text is fully visible.
               Expanded(
                 child: ElevatedButton(
                   onPressed: () => Navigator.push(
@@ -2264,6 +2412,7 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   ),
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(0, btnSize),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
                     elevation: 2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppSizes.radiusLg),
@@ -2271,17 +2420,25 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
                   ),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
-                    child: Text(
-                      AppLocalizations.of(context).bookNowCta,
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(
-                          15,
-                          scale,
-                          min: 14,
-                          max: 18,
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.send_rounded, size: 16),
+                        const SizedBox(width: 6),
+                        Text(
+                          AppLocalizations.of(context).requestService,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(
+                              15,
+                              scale,
+                              min: 14,
+                              max: 18,
+                            ),
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                        fontWeight: FontWeight.w700,
-                      ),
+                      ],
                     ),
                   ),
                 ),
@@ -2309,25 +2466,54 @@ class _ProfessionalDetailScreenState extends State<ProfessionalDetailScreen>
             ResponsiveUtils.screenPadding(width, base: 16),
             12,
           ),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.neutral400,
-              minimumSize: Size(
-                double.infinity,
-                ResponsiveUtils.sp(50, scale, min: 48, max: 62),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.neutral400,
+                  minimumSize: Size(
+                    double.infinity,
+                    ResponsiveUtils.sp(50, scale, min: 48, max: 62),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                  ),
+                ),
+                onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+                child: Text(
+                  AppLocalizations.of(context).loginToBookCta,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-              ),
-            ),
-            onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
-            child: Text(
-              AppLocalizations.of(context).loginToBookCta,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+              if (_whatsappNumber.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF25D366),
+                    side: const BorderSide(color: Color(0xFF25D366), width: 1.5),
+                    minimumSize: Size(
+                      double.infinity,
+                      ResponsiveUtils.sp(46, scale, min: 44, max: 54),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                    ),
+                  ),
+                  onPressed: _openWhatsApp,
+                  icon: const Icon(Icons.chat_rounded, size: 20),
+                  label: const Text(
+                    'Contact on WhatsApp',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
       ),

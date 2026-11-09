@@ -1,20 +1,38 @@
 # PATH: backend/apps/profiles/views.py
 # apps/profiles/views.py
 
+import uuid
+from datetime import timedelta
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from django.utils import timezone
-from apps.profiles.models import UserProfile, ProfessionalProfile, Portfolio, Certificate, GalleryImage, ProfileView
+from django.db import transaction
+from django.contrib.auth import get_user_model
+from apps.profiles.models import (
+    UserProfile,
+    ProfessionalProfile,
+    Portfolio,
+    Certificate,
+    GalleryImage,
+    ProfileView,
+    ProfessionalSecondaryCategory,
+    StagedMedia,
+)
 from apps.profiles.serializers import (
     UserProfileSerializer,
     ProfessionalProfileSerializer,
     PortfolioSerializer,
     CertificateSerializer,
     GalleryImageSerializer,
+    ProfessionalSecondaryCategorySerializer,
 )
+from apps.search.models import Category
+from apps.subscriptions.utils import is_premium
 from django.db.models import Q, Avg
+
+User = get_user_model()
 
 
 class UserProfileView(APIView):
@@ -79,6 +97,8 @@ class ProfessionalProfileView(APIView):
                 )
                 data['currency'] = curr
                 data['currency_symbol'] = sym
+                data['whatsapp_number'] = profile.whatsapp_number or (up.whatsapp_number if up else '') or (up.phone if up else '')
+                data['phone'] = (up.phone if up else '') or profile.whatsapp_number
 
                 # ✅ NEW — log this view for Analytics (skip if professional
                 # is viewing their own profile via this route)
@@ -105,6 +125,8 @@ class ProfessionalProfileView(APIView):
         )
         data['currency'] = curr
         data['currency_symbol'] = sym
+        data['whatsapp_number'] = profile.whatsapp_number or (up.whatsapp_number if up else '') or (up.phone if up else '')
+        data['phone'] = (up.phone if up else '') or profile.whatsapp_number
         return Response(data)
 
     def patch(self, request, user_id=None):
@@ -246,23 +268,50 @@ class CertificateView(APIView):
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-# ✅ NEW — Gallery (simple photo grid, no title/description/approval)
+# ✅ NEW — Gallery (10 photos Free, 30 photos Pro, atomic quota check)
 class GalleryView(APIView):
-    permission_classes = [IsAuthenticated]
+    def get_permissions(self):
+        if self.request.method == 'GET' and 'user_id' in self.kwargs:
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     def get(self, request, user_id=None, image_id=None):
         if user_id:
-            images = GalleryImage.objects.filter(professional_id=user_id)
+            images = GalleryImage.objects.filter(professional_id=user_id).order_by('-created_at')
+            try:
+                target_user = User.objects.get(id=user_id)
+                # Non-destructive downgrade check: slice to 10 for Free professionals
+                if not is_premium(target_user):
+                    images = images[:10]
+            except User.DoesNotExist:
+                pass
         else:
-            images = GalleryImage.objects.filter(professional=request.user)
+            images = GalleryImage.objects.filter(professional=request.user).order_by('-created_at')
         return Response(GalleryImageSerializer(images, many=True).data)
 
     def post(self, request, **kwargs):
-        serializer = GalleryImageSerializer(data=request.data)
-        if serializer.is_valid():
-            img = serializer.save(professional=request.user)
-            return Response(GalleryImageSerializer(img).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if request.user.role != 'professional':
+            return Response({'error': 'Only professionals can upload gallery photos.'}, status=status.HTTP_403_FORBIDDEN)
+
+        with transaction.atomic():
+            user = User.objects.select_for_update().get(id=request.user.id)
+            current_count = GalleryImage.objects.filter(professional=user).count()
+            max_limit = 30 if is_premium(user) else 10
+
+            if current_count >= max_limit:
+                return Response({
+                    'error': 'gallery_quota_exceeded',
+                    'message': f'You have reached your gallery photo limit ({max_limit} photos).',
+                    'limit': max_limit,
+                    'current_count': current_count,
+                    'upgrade_required': not is_premium(user),
+                }, status=status.HTTP_403_FORBIDDEN)
+
+            serializer = GalleryImageSerializer(data=request.data)
+            if serializer.is_valid():
+                img = serializer.save(professional=user)
+                return Response(GalleryImageSerializer(img).data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, image_id=None, **kwargs):
         try:
@@ -271,6 +320,201 @@ class GalleryView(APIView):
             return Response({'message': 'Deleted successfully'})
         except GalleryImage.DoesNotExist:
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class GalleryStageView(APIView):
+    """
+    Preallocates Cloudinary public_id and issues an upload lease token (1-hour validity).
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if request.user.role != 'professional':
+            return Response({'error': 'Only professionals can stage gallery uploads.'}, status=status.HTTP_403_FORBIDDEN)
+
+        current_count = GalleryImage.objects.filter(professional=request.user).count()
+        max_limit = 30 if is_premium(request.user) else 10
+        if current_count >= max_limit:
+            return Response({
+                'error': 'gallery_quota_exceeded',
+                'message': f'You have reached your gallery photo limit ({max_limit} photos).',
+                'limit': max_limit,
+                'current_count': current_count,
+                'upgrade_required': not is_premium(request.user),
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        public_id = f"gallery/{request.user.id}/{uuid.uuid4().hex[:12]}"
+        lease_token = uuid.uuid4()
+        lease_expires_at = timezone.now() + timedelta(hours=1)
+
+        staged = StagedMedia.objects.create(
+            public_id=public_id,
+            professional=request.user,
+            upload_lease_token=lease_token,
+            lease_expires_at=lease_expires_at,
+            status='preallocated'
+        )
+        return Response({
+            'public_id': staged.public_id,
+            'upload_lease_token': str(staged.upload_lease_token),
+            'lease_expires_at': staged.lease_expires_at.isoformat(),
+        }, status=status.HTTP_201_CREATED)
+
+
+class GalleryCommitView(APIView):
+    """
+    Fences and commits staged Cloudinary upload into GalleryImage atomically.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if request.user.role != 'professional':
+            return Response({'error': 'Only professionals can commit gallery uploads.'}, status=status.HTTP_403_FORBIDDEN)
+
+        public_id = request.data.get('public_id')
+        lease_token = request.data.get('upload_lease_token')
+        image_url = request.data.get('image_url')
+
+        if not public_id or not lease_token or not image_url:
+            return Response({'error': 'public_id, upload_lease_token, and image_url are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            staged = StagedMedia.objects.get(
+                public_id=public_id,
+                professional=request.user,
+                upload_lease_token=lease_token
+            )
+        except (StagedMedia.DoesNotExist, ValueError):
+            return Response({'error': 'Invalid staging token or media not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if timezone.now() > staged.lease_expires_at:
+            return Response({'error': 'Upload lease has expired. Please re-stage.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        with transaction.atomic():
+            user = User.objects.select_for_update().get(id=request.user.id)
+            current_count = GalleryImage.objects.filter(professional=user).count()
+            max_limit = 30 if is_premium(user) else 10
+
+            if current_count >= max_limit:
+                return Response({
+                    'error': 'gallery_quota_exceeded',
+                    'message': f'You have reached your gallery photo limit ({max_limit} photos).',
+                    'limit': max_limit,
+                    'current_count': current_count,
+                    'upgrade_required': not is_premium(user),
+                }, status=status.HTTP_403_FORBIDDEN)
+
+            img = GalleryImage.objects.create(
+                professional=user,
+                image=image_url,
+                cloudinary_public_id=public_id
+            )
+            staged.status = 'committed'
+            staged.save(update_fields=['status', 'updated_at'])
+
+        return Response(GalleryImageSerializer(img).data, status=status.HTTP_201_CREATED)
+
+
+class SecondaryCategoryView(APIView):
+    """
+    Secondary categories: Max 2 for Pro, 0 for Free.
+    """
+    def get_permissions(self):
+        if self.request.method == 'GET' and 'user_id' in self.kwargs:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get(self, request, user_id=None):
+        if user_id:
+            try:
+                target_user = User.objects.get(id=user_id)
+                prof = target_user.professionalprofile
+            except (User.DoesNotExist, AttributeError, ProfessionalProfile.DoesNotExist):
+                return Response({'error': 'Professional not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            if not is_premium(target_user):
+                return Response([])
+
+            cats = ProfessionalSecondaryCategory.objects.filter(
+                professional_profile=prof,
+                is_active=True
+            ).select_related('category')
+            return Response(ProfessionalSecondaryCategorySerializer(cats, many=True).data)
+
+        if request.user.role != 'professional':
+            return Response({'error': 'Only professionals have secondary categories.'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            prof = request.user.professionalprofile
+        except ProfessionalProfile.DoesNotExist:
+            return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        cats = ProfessionalSecondaryCategory.objects.filter(
+            professional_profile=prof
+        ).select_related('category')
+        return Response(ProfessionalSecondaryCategorySerializer(cats, many=True).data)
+
+    def post(self, request):
+        if request.user.role != 'professional':
+            return Response({'error': 'Only professionals can add secondary categories.'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            prof = request.user.professionalprofile
+        except ProfessionalProfile.DoesNotExist:
+            return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if not is_premium(request.user):
+            return Response({
+                'error': 'pro_required',
+                'message': 'Secondary categories are an exclusive Pro feature. Upgrade to Professional Pro to add up to 2 secondary categories.'
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        category_id = request.data.get('category')
+        if not category_id:
+            return Response({'error': 'category is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            return Response({'error': 'Category not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if prof.category_id == category.id:
+            return Response({'error': 'Secondary category cannot be your primary category.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        with transaction.atomic():
+            count = ProfessionalSecondaryCategory.objects.filter(professional_profile=prof).count()
+            if count >= 2:
+                return Response({
+                    'error': 'limit_reached',
+                    'message': 'You can add at most 2 secondary categories.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            sec_cat, created = ProfessionalSecondaryCategory.objects.get_or_create(
+                professional_profile=prof,
+                category=category,
+                defaults={'is_active': True}
+            )
+            if not created and not sec_cat.is_active:
+                sec_cat.is_active = True
+                sec_cat.save(update_fields=['is_active'])
+
+        return Response(ProfessionalSecondaryCategorySerializer(sec_cat).data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, cat_id=None):
+        if request.user.role != 'professional':
+            return Response({'error': 'Only professionals can modify secondary categories.'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            prof = request.user.professionalprofile
+        except ProfessionalProfile.DoesNotExist:
+            return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            sec_cat = ProfessionalSecondaryCategory.objects.get(id=cat_id, professional_profile=prof)
+            sec_cat.delete()
+            return Response({'message': 'Secondary category removed successfully.'})
+        except ProfessionalSecondaryCategory.DoesNotExist:
+            return Response({'error': 'Secondary category not found.'}, status=status.HTTP_404_NOT_FOUND)
 
 
 # ✅ NEW — Analytics: Profile Views, Visitors, Performance Score,

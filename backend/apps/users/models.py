@@ -49,8 +49,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     email_notifications = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # ✅ i18n — synced with the Flutter app's language selection.
-    LANGUAGE_CHOICES = [
+    # ✅ i18n — In Pakistan-only mode, actively support English ('en') and Urdu ('ur').
+    # Global language choices are preserved for future international expansion.
+    NATIONAL_LANGUAGE_CHOICES = [
+        ('en', 'English'),
+        ('ur', 'Urdu'),
+    ]
+    GLOBAL_LANGUAGE_CHOICES = [
         ('en', 'English'),
         ('ur', 'Urdu'),
         ('hi', 'Hindi'),
@@ -58,8 +63,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('fr', 'French'),
         ('es', 'Spanish'),
     ]
+    LANGUAGE_CHOICES = NATIONAL_LANGUAGE_CHOICES
+
     preferred_language = models.CharField(
-        max_length=5, null=True, blank=True, choices=LANGUAGE_CHOICES,
+        max_length=5, null=True, blank=True, choices=GLOBAL_LANGUAGE_CHOICES, default='en',
     )
     
     objects = UserManager()

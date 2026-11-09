@@ -1,0 +1,121 @@
+{% extends "seo_web/base.html" %}
+
+{% block content %}
+<section class="hero-section">
+    <h1>Find Trusted {{ profession.name }} in Pakistan</h1>
+    <p>
+        Compare top-rated, certified {{ profession.singular|lower }}s across Pakistan. Browse verified qualifications, inspect past project photos, check genuine client reviews, and book direct appointments with transparent rates.
+    </p>
+
+    <form class="search-box" action="/search/" method="get" role="search">
+        <input type="text" name="q" value="{{ profession.singular }}" placeholder="Search {{ profession.name }}..." aria-label="Search within profession">
+        <select name="city" aria-label="Select City">
+            <option value="">All Pakistan Cities</option>
+            {% for c in active_cities %}
+                <option value="{{ c.slug }}">{{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Find Verified {{ profession.singular }}</button>
+    </form>
+</section>
+
+<!-- Popular Services for this Profession -->
+{% if profession.popular_services %}
+<section style="margin-bottom: 40px;">
+    <div class="section-header">
+        <h2>Specialized {{ profession.singular }} Services</h2>
+        <p>Common on-demand tasks and maintenance requests handled by {{ profession.name|lower }}.</p>
+    </div>
+    <div class="chips-container" style="gap: 10px;">
+        {% for s_title in profession.popular_services %}
+        <span class="chip" style="padding: 8px 16px; font-weight: 600; background: #ffffff; border: 1px solid var(--border); font-size: 13px;">
+            ⚡ {{ s_title }}
+        </span>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Professional Listings -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Available {{ profession.name }}</h2>
+        <p>Verified {{ profession.singular|lower }}s registered and active on ProFinder.</p>
+    </div>
+
+    {% if professionals %}
+    <div class="cards-grid">
+        {% for pro in professionals %}
+        <a href="/professionals/{{ pro.slug }}/" class="card">
+            <div class="pro-card-header">
+                {% if pro.photo_url %}
+                    <img src="{{ pro.photo_url.url }}" alt="{{ pro.user.name }}" class="pro-avatar" loading="lazy">
+                {% else %}
+                    <div class="pro-avatar" style="display:flex;align-items:center;justify-content:center;font-weight:bold;color:#64748b;font-size:20px;">
+                        {{ pro.user.name|slice:":1" }}
+                    </div>
+                {% endif %}
+                <div class="pro-title-meta">
+                    <h3>{{ pro.user.name }}</h3>
+                    <div style="font-size: 13px; color: var(--text-muted);">{{ pro.specialization|default:profession.singular }}</div>
+                    {% if pro.is_verified %}
+                        <span class="verified-badge">✓ Verified</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if pro.average_rating > 0 %}
+            <div class="rating-row">
+                <span class="rating-stars">★ {{ pro.average_rating|floatformat:1 }}</span>
+                <span style="color: var(--text-muted); font-size: 12px;">({{ pro.user.received_reviews.count }} reviews)</span>
+            </div>
+            {% endif %}
+
+            <div class="location-tag">
+                📍 {{ pro.user.userprofile.city|default:"Pakistan" }}
+            </div>
+
+            <p>{{ pro.bio|default:"Experienced specialist dedicated to providing dependable, high-standard professional service."|truncatewords:20 }}</p>
+
+            {% if pro.hourly_rate > 0 %}
+            <div class="hourly-rate">PKR {{ pro.hourly_rate|floatformat:0 }} / hr</div>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="background: #ffffff; padding: 40px; border-radius: var(--radius); text-align: center; border: 1px solid var(--border);">
+        <p style="color: var(--text-muted); font-size: 16px;">
+            Additional {{ profession.name|lower }} are currently joining our verified network. Browse related categories or request a service specialist.
+        </p>
+    </div>
+    {% endif %}
+</section>
+
+<!-- GEO FAQs -->
+<section class="geo-faq-section">
+    <h2>Frequently Asked Questions about Hiring {{ profession.name }}</h2>
+    <p class="lead-intro">Helpful insights for finding and booking trusted {{ profession.singular|lower }}s in Pakistan.</p>
+
+    <div class="faq-item">
+        <div class="faq-question">How do I verify the credentials of {{ profession.name|lower }}?</div>
+        <div class="faq-answer">
+            ProFinder requires professionals to upload government ID and relevant certifications before granting the verified status badge. You can view experience history, educational background, and customer feedback on their profile.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">What are standard {{ profession.singular|lower }} charges in Pakistan?</div>
+        <div class="faq-answer">
+            Charges vary based on technical difficulty and location. Review the transparent hourly or visit rate stated on the specialist's profile and confirm total estimates directly with them.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">How are payments processed?</div>
+        <div class="faq-answer">
+            Payments are made directly to the specialist via cash or local digital wallets upon project completion. ProFinder does not manage customer funds or take commission cuts.
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -17,6 +17,7 @@ class AuthService {
     String? city,
     String? country,
     int? categoryId,
+    String? customProfession,
   }) async {
     try {
       final body = <String, dynamic>{

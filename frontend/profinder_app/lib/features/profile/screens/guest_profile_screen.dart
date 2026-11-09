@@ -104,16 +104,7 @@ class GuestProfileScreen extends StatelessWidget {
                         onTap: () => _promptSignIn(context, t.bookings),
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ProfileQuickActionCard(
-                        icon: Icons.account_balance_wallet_rounded,
-                        label: t.profileWalletLabel,
-                        isLocked: true,
-                        onTap: () =>
-                            _promptSignIn(context, t.profileWalletLabel),
-                      ),
-                    ),
+
                     const SizedBox(width: 10),
                     Expanded(
                       child: ProfileQuickActionCard(
@@ -156,16 +147,7 @@ class GuestProfileScreen extends StatelessWidget {
                   onLockedTap: () =>
                       _promptSignIn(context, t.subscriptionUpgradeLabel),
                 ),
-                ProfileMenuTile(
-                  icon: Icons.account_balance_wallet_outlined,
-                  iconColor: AppColors.badgeTrending,
-                  title: t.walletActionLabel,
-                  subtitle: t.walletActionSubtitle,
-                  isLocked: true,
-                  scale: scale,
-                  onLockedTap: () =>
-                      _promptSignIn(context, t.walletActionLabel),
-                ),
+
                 ProfileMenuTile(
                   icon: Icons.calendar_today_outlined,
                   iconColor: AppColors.cyan,
@@ -196,16 +178,7 @@ class GuestProfileScreen extends StatelessWidget {
                   onLockedTap: () =>
                       _promptSignIn(context, t.reviewsActionLabel),
                 ),
-                ProfileMenuTile(
-                  icon: Icons.receipt_long_outlined,
-                  iconColor: AppColors.indigo,
-                  title: t.paymentsActionLabel,
-                  subtitle: t.paymentsActionSubtitle,
-                  isLocked: true,
-                  scale: scale,
-                  onLockedTap: () =>
-                      _promptSignIn(context, t.paymentsActionLabel),
-                ),
+
 
                 SizedBox(height: sectionGap),
 

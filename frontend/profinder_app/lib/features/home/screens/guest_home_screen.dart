@@ -431,7 +431,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     ); // AnnotatedRegion
   }
 
-  void _openSearch({int? categoryId, String? categoryName}) {
+  void _openSearch({int? categoryId, String? categoryName, String? query}) {
     if (!mounted) return;
     Navigator.push(
       context,
@@ -439,6 +439,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
         builder: (_) => SearchScreen(
           initialCategoryId: categoryId,
           initialCategoryName: categoryName,
+          initialQuery: query,
         ),
       ),
     );
@@ -619,7 +620,15 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   // ═══════════════════════════════════════════════════════════════════
   Widget _buildQuickActionChips(List<dynamic> categories, bool isDark) {
     final t = AppLocalizations.of(context);
-    final top = categories.take(6).toList();
+    final filters = [
+      {'label': t.homeTrendingLabel, 'icon': Icons.trending_up_rounded, 'filled': true, 'action': () => _openSearch()},
+      {'label': 'Available Now', 'icon': Icons.flash_on_rounded, 'filled': false, 'action': () => _openSearch(query: 'available')},
+      {'label': t.rating, 'icon': Icons.star_rounded, 'filled': false, 'action': () => _openSearch(query: 'top rated')},
+      {'label': 'Home Service', 'icon': Icons.home_repair_service_rounded, 'filled': false, 'action': () => _openSearch(query: 'home visit')},
+      {'label': 'Online Consult', 'icon': Icons.videocam_rounded, 'filled': false, 'action': () => _openSearch(query: 'online')},
+      {'label': 'Verified Pros', 'icon': Icons.verified_rounded, 'filled': false, 'action': () => _openSearch(query: 'verified')},
+    ];
+
     return Container(
       color: context.colors.background,
       padding: const EdgeInsets.only(top: AppSizes.md, bottom: AppSizes.sm),
@@ -630,29 +639,16 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           padding: const EdgeInsets.symmetric(
             horizontal: AppSizes.screenPadding,
           ),
-          itemCount: top.length + 1,
+          itemCount: filters.length,
           separatorBuilder: (_, _) => const SizedBox(width: 10),
           itemBuilder: (_, i) {
-            if (i == 0) {
-              return _chip(
-                t.homeTrendingLabel,
-                context.colors.primary,
-                filled: true,
-                icon: Icons.trending_up_rounded,
-                onTap: () => _openSearch(),
-                isDark: isDark,
-              );
-            }
-            final cat = top[i - 1] as Map;
+            final f = filters[i];
             return _chip(
-              cat['name']?.toString() ?? '',
+              f['label'] as String,
               context.colors.primary,
-              onTap: () => _openSearch(
-                categoryId: cat['id'] is int
-                    ? cat['id']
-                    : int.tryParse('${cat['id']}'),
-                categoryName: cat['name']?.toString(),
-              ),
+              filled: f['filled'] == true,
+              icon: f['icon'] as IconData,
+              onTap: f['action'] as VoidCallback,
               isDark: isDark,
             );
           },

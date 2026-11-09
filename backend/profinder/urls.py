@@ -27,11 +27,14 @@ urlpatterns = [
     path('api/bookings/',           include('apps.bookings.urls')),
     path('api/articles/',           include('apps.articles.urls')),   
     path('api/messaging/',          include('apps.messaging.urls')), 
-    path("api/about-page/", include("apps.about_page.urls")),
+    path("api/about-page/",         include("apps.about_page.urls")),
     path('api/support/',            include('apps.support.urls')),    # Help Center, Privacy Policy, tickets
 
     # Public website page (no auth) — same DB source as the in-app Privacy screen
     path('privacy/',                privacy_policy_page,              name='privacy-policy-page'),
+
+    # SEO & GEO Public Marketplace Web Layer
+    path('',                        include('apps.seo_web.urls', namespace='seo_web')),
 ]
 
 # 🐛 FIX: nothing was serving MEDIA_URL, so every uploaded file (chat

@@ -635,16 +635,19 @@ class AboutPageContent extends StatelessWidget {
                             : null,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        m.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: context.colors.textPrimary,
-                        ),
-                      ),
+                      Builder(builder: (context) {
+                        final isFounder = m.title.toLowerCase().contains('ahsan') || designation.toLowerCase().contains('founder');
+                        return Text(
+                          m.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: isFounder ? Colors.indigo.shade700 : context.colors.textPrimary,
+                          ),
+                        );
+                      }),
                       if (designation.isNotEmpty)
                         Text(
                           designation,

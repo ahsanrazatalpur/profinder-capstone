@@ -114,15 +114,67 @@ class AppValidators {
     return value.trim().replaceAll(RegExp(r'\s+'), ' ');
   }
 
-  // ─── Phone ──────────────────────────────────────────────
+  // ─── Phone (Pakistan +92 standard with international fallback) ──────
   static String? phone(String? value, [AppLocalizations? t]) {
     if (value == null || value.trim().isEmpty) {
       return t?.valPhoneRequired ?? 'Phone number is required';
     }
-    if (value.trim().length < 7) {
+    final clean = value.trim().replaceAll(RegExp(r'[\s\-\(\)]'), '');
+
+    // Allow standard Pakistani numbers: 03XX XXXXXXX, +923XX XXXXXXX, 923XX XXXXXXX, 3XX XXXXXXX
+    if (clean.startsWith('+92')) {
+      if (clean.length != 13 || !RegExp(r'^\+923\d{9}$').hasMatch(clean)) {
+        return 'Enter a valid Pakistani mobile number (e.g. +92 300 1234567)';
+      }
+      return null;
+    }
+    if (clean.startsWith('92') && clean.length == 12) {
+      if (!RegExp(r'^923\d{9}$').hasMatch(clean)) {
+        return 'Enter a valid Pakistani mobile number (e.g. 0300 1234567)';
+      }
+      return null;
+    }
+    if (clean.startsWith('03')) {
+      if (clean.length != 11 || !RegExp(r'^03\d{9}$').hasMatch(clean)) {
+        return 'Enter a valid Pakistani mobile number (e.g. 0300 1234567)';
+      }
+      return null;
+    }
+    if (clean.startsWith('3') && clean.length == 10) {
+      if (!RegExp(r'^3\d{9}$').hasMatch(clean)) {
+        return 'Enter a valid Pakistani mobile number (e.g. 0300 1234567)';
+      }
+      return null;
+    }
+
+    // Preserve existing verified international phone numbers (+...) without breaking
+    if (clean.startsWith('+')) {
+      if (clean.length >= 8 && clean.length <= 16 && RegExp(r'^\+\d{7,15}$').hasMatch(clean)) {
+        return null;
+      }
       return t?.valPhoneInvalid ?? 'Enter a valid phone number';
     }
+
+    if (clean.length < 10 || clean.length > 13) {
+      return 'Enter a valid Pakistani mobile number (e.g. 0300 1234567)';
+    }
+
     return null;
+  }
+
+  /// Normalizes Pakistani phone input to canonical international format (+923XXXXXXXXX).
+  static String normalizePakistaniPhone(String raw) {
+    final clean = raw.trim().replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    if (clean.startsWith('03') && clean.length == 11) {
+      return '+92${clean.substring(1)}';
+    }
+    if (clean.startsWith('3') && clean.length == 10) {
+      return '+92$clean';
+    }
+    if (clean.startsWith('923') && clean.length == 12) {
+      return '+$clean';
+    }
+    return clean;
   }
 
   // ─── Required field (generic) ───────────────────────────
@@ -132,8 +184,9 @@ class AppValidators {
     AppLocalizations? t,
   }) {
     if (value == null || value.trim().isEmpty) {
-      if (fieldName == null)
+      if (fieldName == null) {
         return t?.valFieldRequired ?? 'This field is required';
+      }
       return t?.valFieldNamedRequired(fieldName) ?? '$fieldName is required';
     }
     return null;

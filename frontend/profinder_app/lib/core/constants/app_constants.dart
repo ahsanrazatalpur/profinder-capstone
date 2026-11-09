@@ -142,6 +142,19 @@ class AppConstants {
   static const String paymentCurrencies = '/payments/currencies/';
   static const String paymentExchangeRates = '/payments/exchange-rates/';
 
+  // Safepay & Monetization
+  static const String safepayCheckoutInitialize = '/payments/checkout/initialize/';
+  static const String safepayVerifyStatus = '/payments/verify-status/';
+  static const String featuredPackages = '/payments/featured/packages/';
+  static const String displayAdServe = '/admin-panel/ads/serve/';
+  static String displayAdClick(int adId) => '/admin-panel/ads/$adId/click/';
+  static const String adminDisplayAds = '/admin-panel/ads/';
+  static String adminDisplayAdDetail(int id) => '/admin-panel/ads/$id/';
+  static const String secondaryCategories = '/profiles/secondary-categories/';
+  static String secondaryCategoryDelete(int catId) => '/profiles/secondary-categories/$catId/';
+  static const String galleryStage = '/profiles/gallery/stage/';
+  static const String galleryCommit = '/profiles/gallery/commit/';
+
   // ─── Wallet & Withdrawals ─────────────────────────────────
   static const String walletSummary = '/payments/wallet/';
   static const String withdrawals = '/payments/withdrawals/';

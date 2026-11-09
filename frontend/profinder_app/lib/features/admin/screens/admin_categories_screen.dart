@@ -39,12 +39,13 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
   String? _error;
   List<dynamic> _categories = [];
   List<dynamic> _subcategories = [];
+  List<dynamic> _customProfessions = [];
   int? _subcategoryFilter; // filter subcategories by parent category id
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     // Rebuilds the header so its "Add" button/tooltip target the tab that
     // is actually visible (Category vs. Subcategory) as the user swipes.
     _tabController.addListener(() {
@@ -135,6 +136,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                 tabs: [
                   Tab(text: 'Categories (${_categories.length})'),
                   Tab(text: 'Subcategories (${_subcategories.length})'),
+                  Tab(text: 'Custom Requests (${_customProfessions.length})'),
                 ],
               ),
             ),
@@ -159,6 +161,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
                         children: [
                           _buildCategoriesTab(),
                           _buildSubcategoriesTab(),
+                          _buildCustomProfessionsTab(),
                         ],
                       ),
               ),
@@ -1011,6 +1014,157 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen>
       ),
     );
   }
+
+  Widget _buildCustomProfessionsTab() {
+    if (_customProfessions.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: AppColors.adminColor.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_circle_outline_rounded,
+                  size: 36,
+                  color: AppColors.adminColor,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'No Pending Profession Requests',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'When professionals select "Other" during registration, their submitted professions appear here for review and approval.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: _customProfessions.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
+      itemBuilder: (context, i) {
+        final item = _customProfessions[i];
+        final profileId = item['profile_id'];
+        final professionName = item['custom_profession'] ?? 'Unnamed Profession';
+        final userName = item['name'] ?? 'Professional';
+        final userEmail = item['email'] ?? '';
+        final userPhone = item['phone'] ?? '';
+
+        return Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: const BorderSide(color: AppColors.neutral200),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.work_outline_rounded, color: AppColors.primary, size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            professionName,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Requested by: $userName',
+                            style: TextStyle(fontSize: 13, color: Colors.grey[800], fontWeight: FontWeight.w500),
+                          ),
+                          if (userEmail.isNotEmpty || userPhone.isNotEmpty)
+                            Text(
+                              '$userEmail • $userPhone',
+                              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Divider(height: 1),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red[700],
+                        side: BorderSide(color: Colors.red[300]!),
+                        minimumSize: const Size(90, 38),
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                      ),
+                      icon: const Icon(Icons.close_rounded, size: 16),
+                      label: const Text('Reject'),
+                      onPressed: () => _handleCustomProfessionAction(profileId, 'reject', professionName),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[700],
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(110, 38),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                      icon: const Icon(Icons.check_rounded, size: 16),
+                      label: const Text('Approve & Add Category'),
+                      onPressed: () => _handleCustomProfessionAction(profileId, 'approve', professionName),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _handleCustomProfessionAction(int profileId, String action, String name) async {
+    try {
+      final res = await _api.post('/admin-panel/custom-professions/$profileId/', {
+        'action': action,
+      });
+      final msg = res.data is Map && res.data['message'] != null
+          ? res.data['message']
+          : (action == 'approve' ? 'Profession "$name" approved and category created!' : 'Profession rejected.');
+      _showSnack(msg, isError: false);
+      _load();
+    } catch (e) {
+      _showSnack('Action failed: $e', isError: true);
+    }
+  }
+
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1203,4 +1357,5 @@ class _HoverScaleChipState extends State<_HoverScaleChip> {
       ),
     );
   }
+
 }

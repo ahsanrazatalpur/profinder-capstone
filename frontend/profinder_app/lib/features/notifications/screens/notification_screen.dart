@@ -172,11 +172,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
     } else if (role == 'admin') {
       // Tab numbers of the admin shell (admin_main_screen.dart).
       final tab = switch (target) {
-        'professional_signup' => 12, // Verify
-        'report' => 9, // Reports
-        'appeal' => 26, // Appeals
-        'booking' => 5, // Bookings
-        'support' => 27, // Support
+        'professional_signup' => 13, // Verify Requests
+        'report' => 15, // Reported Users
+        'appeal' => 16, // Appeals
+        'booking' => 6, // Bookings
+        'support' => 18, // Support Tickets
         _ => null,
       };
       final goTo = widget.onNavigateToAdminTab;

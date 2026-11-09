@@ -1,7 +1,7 @@
 # apps/profiles/serializers.py
 
 from rest_framework import serializers
-from apps.profiles.models import UserProfile, ProfessionalProfile, Portfolio, Certificate, GalleryImage
+from apps.profiles.models import UserProfile, ProfessionalProfile, Portfolio, Certificate, GalleryImage, ProfessionalSecondaryCategory, StagedMedia
 
 
 def _resolve_photo_url(val):
@@ -26,7 +26,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = UserProfile
-        fields = ['id', 'full_name', 'photo_url', 'photo', 'phone', 'gender', 'city', 'country', 'latitude', 'longitude']
+        fields = ['id', 'full_name', 'photo_url', 'photo', 'phone', 'whatsapp_number', 'working_days', 'custom_profession', 'custom_profession_approved', 'gender', 'city', 'country', 'latitude', 'longitude']
 
     def get_photo_url(self, obj):
         if obj.photo_url:
@@ -44,6 +44,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
         photo = validated_data.pop('photo', None)
         if photo:
             instance.photo_url = photo   # CloudinaryField automatically upload karega
+        whatsapp = validated_data.get('whatsapp_number')
+        if whatsapp is not None:
+            pp = getattr(instance.user, 'professionalprofile', None)
+            if pp and pp.whatsapp_number != whatsapp:
+                pp.whatsapp_number = whatsapp
+                pp.save(update_fields=['whatsapp_number'])
         return super().update(instance, validated_data)
 
     def validate_phone(self, value):
@@ -67,13 +73,11 @@ class ProfessionalProfileSerializer(serializers.ModelSerializer):
     photo_url   = serializers.SerializerMethodField()
     cnic_url    = serializers.SerializerMethodField()
     license_url = serializers.SerializerMethodField()
-    # ✅ Real-time presence (from messaging's UserPresence, updated by the
-    # chat WebSocket) — separate from `is_available`, which is just the
-    # professional's manual "open for bookings" toggle. The profile screen
-    # needs BOTH: this for the green "Online" dot, is_available for the
-    # "Availability" info card.
     is_online   = serializers.SerializerMethodField()
     last_seen   = serializers.SerializerMethodField()
+
+    pricing_unit_display = serializers.CharField(source='get_pricing_unit_display', read_only=True)
+    price_amount         = serializers.DecimalField(source='hourly_rate', max_digits=10, decimal_places=2, required=False)
 
     # Write-only upload fields
     photo   = serializers.ImageField(write_only=True, required=False)
@@ -83,11 +87,16 @@ class ProfessionalProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model  = ProfessionalProfile
         fields = ['id', 'photo_url', 'photo', 'bio', 'experience_years', 'hourly_rate',
-                  'is_verified', 'average_rating', 'cnic_url', 'cnic', 'license_url', 'license',
+                  'price_amount', 'pricing_unit', 'pricing_unit_display',
+                  'custom_pricing_unit', 'custom_pricing_unit_approved',
+                  'is_verified', 'identity_verified', 'credentials_verified',
+                  'average_rating', 'cnic_url', 'cnic', 'license_url', 'license',
                   'skills', 'is_available', 'is_online', 'last_seen',
-                  'languages', 'education', 'working_hours_start', 'working_hours_end',  # ✅ NEW
-                  'bank_account_name', 'bank_account_number', 'bank_name']  # ✅ NEW — Wallet ke liye
-        read_only_fields = ['is_verified', 'average_rating']
+                  'languages', 'education', 'working_hours_start', 'working_hours_end',
+                  'whatsapp_number', 'working_days', 'custom_profession', 'custom_profession_approved',
+                  'bank_account_name', 'bank_account_number', 'bank_name']
+        read_only_fields = ['is_verified', 'identity_verified', 'credentials_verified',
+                            'custom_pricing_unit_approved', 'pricing_unit_display', 'average_rating']
 
     def get_photo_url(self, obj):
         if obj.photo_url:
@@ -102,10 +111,18 @@ class ProfessionalProfileSerializer(serializers.ModelSerializer):
         return None
 
     def get_cnic_url(self, obj):
-        return obj.cnic_url.url if obj.cnic_url else None
+        # Privacy protection: CNIC is sensitive identity documentation and is never exposed to public/customers
+        request = self.context.get('request')
+        if request and request.user and (request.user.is_staff or request.user == obj.user):
+            return obj.cnic_url.url if obj.cnic_url else None
+        return None
 
     def get_license_url(self, obj):
-        return obj.license_url.url if obj.license_url else None
+        # Privacy protection: License credentials URL is kept private to owner and staff
+        request = self.context.get('request')
+        if request and request.user and (request.user.is_staff or request.user == obj.user):
+            return obj.license_url.url if obj.license_url else None
+        return None
 
     def get_is_online(self, obj):
         presence = getattr(obj.user, 'presence', None)
@@ -122,6 +139,12 @@ class ProfessionalProfileSerializer(serializers.ModelSerializer):
         if photo:   instance.photo_url   = photo
         if cnic:    instance.cnic_url    = cnic
         if license: instance.license_url = license
+        whatsapp = validated_data.get('whatsapp_number')
+        if whatsapp is not None:
+            up = getattr(instance.user, 'userprofile', None)
+            if up and up.whatsapp_number != whatsapp:
+                up.whatsapp_number = whatsapp
+                up.save(update_fields=['whatsapp_number'])
         return super().update(instance, validated_data)
 
     def validate_hourly_rate(self, value):
@@ -198,12 +221,25 @@ class CertificateSerializer(serializers.ModelSerializer):
 # ✅ NEW — Gallery (photo-only, no title/description/approval)
 class GalleryImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
-    image     = serializers.ImageField(write_only=True, required=True)
+    image     = serializers.ImageField(write_only=True, required=False)
+    cloudinary_public_id = serializers.CharField(read_only=True)
 
     class Meta:
         model  = GalleryImage
-        fields = ['id', 'image_url', 'image', 'created_at']
+        fields = ['id', 'image_url', 'image', 'cloudinary_public_id', 'created_at']
         read_only_fields = ['created_at']
 
     def get_image_url(self, obj):
-        return obj.image.url if obj.image else None
+        if not obj.image:
+            return None
+        return _resolve_photo_url(obj.image) or (obj.image.url if hasattr(obj.image, 'url') else str(obj.image))
+
+
+class ProfessionalSecondaryCategorySerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    category_slug = serializers.CharField(source='category.slug', read_only=True)
+
+    class Meta:
+        model = ProfessionalSecondaryCategory
+        fields = ['id', 'category', 'category_name', 'category_slug', 'is_active', 'created_at']
+        read_only_fields = ['is_active', 'created_at']

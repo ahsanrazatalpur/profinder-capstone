@@ -53,11 +53,11 @@ class SubscriptionService {
       }
     }
 
-    // Paid plan: initiate payment checkout
+    // Paid plan: initiate Safepay checkout
     final paymentService = PaymentService();
-    final paymentRes = await paymentService.createSubscriptionPayment(
+    final paymentRes = await paymentService.initializeSafepayCheckout(
+      purpose: 'subscription',
       planId: planId,
-      currency: currency,
     );
 
     if (paymentRes['success'] != true) {
@@ -72,12 +72,11 @@ class SubscriptionService {
     return {
       'success': true,
       'requires_payment': true,
-      'approval_url': data['approval_url'] ?? '',
-      'paypal_order_id': data['paypal_order_id'] ?? '',
+      'approval_url': data['checkout_url'] ?? data['approval_url'] ?? '',
+      'safepay_tracker': data['safepay_tracker'] ?? '',
       'order_id': data['order_id'] ?? '',
       'amount': data['amount'],
-      'currency': data['currency'],
-      'display_formatted': data['display_formatted'],
+      'currency': data['currency'] ?? 'PKR',
     };
   }
 

@@ -1,14 +1,21 @@
 # apps/payments/admin.py
 
 from django.contrib import admin
-from apps.payments.models import Payment, WalletTransaction, WithdrawalRequest, ExchangeRateCache
+from apps.payments.models import (
+    Payment,
+    WalletTransaction,
+    WithdrawalRequest,
+    ExchangeRateCache,
+    WebhookEventLog,
+    CacheInvalidationOutbox,
+)
 
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ('order_id', 'user', 'amount', 'currency', 'purpose', 'status', 'gateway', 'created_at')
-    list_filter = ('status', 'purpose', 'currency', 'gateway')
-    search_fields = ('order_id', 'user__email', 'paypal_order_id', 'paypal_capture_id')
+    list_display = ('order_id', 'user', 'amount', 'currency', 'purpose', 'status', 'gateway', 'safepay_tracker', 'created_at')
+    list_filter = ('status', 'purpose', 'currency', 'gateway', 'safepay_environment')
+    search_fields = ('order_id', 'user__email', 'safepay_tracker', 'paypal_order_id', 'paypal_capture_id')
     readonly_fields = ('created_at', 'updated_at')
 
 
@@ -32,3 +39,19 @@ class WithdrawalRequestAdmin(admin.ModelAdmin):
 class ExchangeRateCacheAdmin(admin.ModelAdmin):
     list_display = ('base_currency', 'target_currency', 'rate', 'updated_at')
     search_fields = ('target_currency',)
+
+
+@admin.register(WebhookEventLog)
+class WebhookEventLogAdmin(admin.ModelAdmin):
+    list_display = ('id', 'provider', 'event_id', 'event_type', 'status', 'retry_count', 'created_at', 'updated_at')
+    list_filter = ('provider', 'status', 'event_type')
+    search_fields = ('event_id', 'delivery_fingerprint')
+    readonly_fields = ('created_at', 'updated_at')
+
+
+@admin.register(CacheInvalidationOutbox)
+class CacheInvalidationOutboxAdmin(admin.ModelAdmin):
+    list_display = ('id', 'cache_key', 'action', 'processed', 'created_at')
+    list_filter = ('processed', 'action')
+    search_fields = ('cache_key',)
+    readonly_fields = ('created_at',)

@@ -23,6 +23,7 @@ import '../../notifications/screens/notification_screen.dart';
 import '../../../shared/widgets/role_app_bar.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/app_helpers.dart';
 
 /// Responsive breakpoints used throughout the dashboard for adaptive layout.
 class _Breakpoints {
@@ -472,37 +473,43 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       _QuickAction(
         'Review Approvals',
         Icons.fact_check_rounded,
-        () => widget.onNavigateToTab?.call(4),
+        () => widget.onNavigateToTab?.call(8), // Portfolio
         AppColors.warning,
       ),
       _QuickAction(
         'View Bookings',
         Icons.calendar_month_rounded,
-        () => widget.onNavigateToTab?.call(5),
+        () => widget.onNavigateToTab?.call(6), // Bookings
         AppColors.sky,
+      ),
+      _QuickAction(
+        'Startup Ads',
+        Icons.ad_units_rounded,
+        () => widget.onNavigateToTab?.call(2), // Startup Ads
+        AppColors.adminColor,
       ),
       _QuickAction(
         'Reported Users',
         Icons.flag_rounded,
-        () => widget.onNavigateToTab?.call(9),
+        () => widget.onNavigateToTab?.call(15), // Reported Users
         AppColors.error,
       ),
       _QuickAction(
         'Analytics',
         Icons.insights_rounded,
-        () => widget.onNavigateToTab?.call(10),
+        () => widget.onNavigateToTab?.call(1), // Analytics
         AppColors.greenDeep,
       ),
       _QuickAction(
         'Manage Banners',
         Icons.campaign_rounded,
-        () => widget.onNavigateToTab?.call(7),
+        () => widget.onNavigateToTab?.call(20), // Banners
         AppColors.accentPurple,
       ),
       _QuickAction(
         'View Logs',
         Icons.history_rounded,
-        () => widget.onNavigateToTab?.call(6),
+        () => widget.onNavigateToTab?.call(28), // Logs
         AppColors.slate500,
       ),
     ];
@@ -574,41 +581,42 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         value: '$_totalUsers',
         icon: Icons.groups_rounded,
         color: context.colors.primary,
-        onTap: () => widget.onNavigateToTab?.call(1),
+        onTap: () => widget.onNavigateToTab?.call(10), // Users
       ),
       _StatCard(
         label: 'Professionals',
         value: '$_totalPros',
         icon: Icons.work_outline_rounded,
         color: AppColors.accentPurple,
-        onTap: () => widget.onNavigateToTab?.call(3),
+        onTap: () => widget.onNavigateToTab?.call(12), // Professionals
       ),
       _StatCard(
         label: 'Customers',
         value: '$_totalCustomers',
         icon: Icons.person_outline_rounded,
         color: AppColors.sky,
-        onTap: () => widget.onNavigateToTab?.call(2),
+        onTap: () => widget.onNavigateToTab?.call(11), // Customers
       ),
       _StatCard(
         label: 'Revenue',
         value: 'Rs $_revenueDisplay',
         icon: Icons.payments_rounded,
         color: AppColors.greenDeep,
+        onTap: () => widget.onNavigateToTab?.call(3), // Revenue
       ),
       _StatCard(
         label: "Today's Bookings",
         value: '$_todayBookings',
         icon: Icons.event_available_rounded,
         color: context.colors.accent,
-        onTap: () => widget.onNavigateToTab?.call(5),
+        onTap: () => widget.onNavigateToTab?.call(6), // Bookings
       ),
       _StatCard(
         label: 'Pending Verification',
         value: '$_pendingVerification',
         icon: Icons.hourglass_top_rounded,
         color: AppColors.warning,
-        onTap: () => widget.onNavigateToTab?.call(4),
+        onTap: () => widget.onNavigateToTab?.call(13), // Verification Requests
       ),
       _StatCard(
         label: 'Reported Users',
@@ -616,14 +624,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         icon: Icons.flag_rounded,
         color: AppColors.error,
         note: _reportedUsers > 0 ? '$_reportedUsers need review' : null,
-        onTap: () => widget.onNavigateToTab?.call(9),
+        onTap: () => widget.onNavigateToTab?.call(15), // Reported Users
       ),
       _StatCard(
         label: 'Blocked Users',
         value: '$_blockedUsers',
         icon: Icons.block_rounded,
         color: AppColors.slate500,
-        onTap: () => widget.onNavigateToTab?.call(1),
+        onTap: () => widget.onNavigateToTab?.call(14), // Blocked Users
       ),
     ];
 
@@ -778,7 +786,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           title: name,
           subtitle: title,
           trailing: TextButton(
-            onPressed: () => widget.onNavigateToTab?.call(4),
+            onPressed: () => widget.onNavigateToTab?.call(8),
             style: TextButton.styleFrom(
               foregroundColor: AppColors.adminColor,
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -830,7 +838,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           leadingIcon: Icons.payment_rounded,
           leadingColor: statusColor,
           title: name,
-          subtitle: '$curr $amount',
+          subtitle: AppHelpers.formatPrice(amount, currency: curr.isEmpty ? 'PKR' : curr),
           trailing: _statusPill(status.toUpperCase(), statusColor),
           dateStr: date,
         );

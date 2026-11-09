@@ -9,7 +9,7 @@ from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 import cloudinary.uploader 
 
 from apps.admin_panel.models import (
@@ -470,8 +470,23 @@ class PromoBannerImageUploadView(APIView):
             return Response({'error': 'No image file provided.'}, status=400)
 
         try:
+            import cloudinary
+            import cloudinary.uploader
+            from django.conf import settings
+            import os
+
+            cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME') or getattr(settings, 'CLOUDINARY_STORAGE', {}).get('CLOUD_NAME')
+            api_key = os.getenv('CLOUDINARY_API_KEY') or getattr(settings, 'CLOUDINARY_STORAGE', {}).get('API_KEY')
+            api_secret = os.getenv('CLOUDINARY_API_SECRET') or getattr(settings, 'CLOUDINARY_STORAGE', {}).get('API_SECRET')
+
+            cloudinary.config(
+                cloud_name=cloud_name,
+                api_key=api_key,
+                api_secret=api_secret,
+                secure=True
+            )
             result = cloudinary.uploader.upload(image, folder='promo_banners')
-            return Response({'url': result['secure_url']})
+            return Response({'url': result.get('secure_url') or result.get('url')})
         except Exception as e:
             return Response({'error': f'Upload failed: {str(e)}'}, status=500)
 
@@ -2424,7 +2439,11 @@ class AdminCountryView(APIView):
     def get(self, request):
         if not _is_admin(request.user):
             return Response({'error': 'Admin only.'}, status=403)
-        return Response(CountrySerializer(Country.objects.all(), many=True).data)
+        from django.db.models import Case, When
+        countries = Country.objects.annotate(
+            is_pk=Case(When(name__iexact='Pakistan', then=0), default=1)
+        ).order_by('is_pk', 'name')
+        return Response(CountrySerializer(countries, many=True).data)
 
     def post(self, request):
         if not _is_admin(request.user):
@@ -2519,6 +2538,9 @@ class AdminCityView(APIView):
         country_id = request.query_params.get('country')
         if country_id:
             cities = cities.filter(country_id=country_id)
+        elif getattr(settings, 'PROFINDER_SCOPE_MODE', 'PK_NATIONAL') == 'PK_NATIONAL':
+            # In Pakistan-only mode, prioritize/default to Pakistan cities
+            cities = cities.filter(country__name__iexact='Pakistan')
         return Response(CitySerializer(cities, many=True).data)
 
     def post(self, request):
@@ -2847,3 +2869,286 @@ class ContentTranslationAdminView(APIView):
         ContentTranslation.objects.filter(
             model_label=label, object_id=object_id, language=language).delete()
         return Response({'message': 'Translation removed — base text will show instead.'})
+
+
+# ─── Display Ad Campaigns (Phase 1 Operations & Serving) ─────────────────────
+
+from apps.admin_panel.models import DisplayAdCampaign
+from django.db.models import F
+
+
+class ServeDisplayAdView(APIView):
+    """
+    GET /api/admin-panel/ads/serve/?placement=<slot>&category_id=<id>&city=<city>
+    Public endpoint: Serves verified, active display banner ad and atomically increments impressions.
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        placement = request.query_params.get('placement', 'homepage_masthead')
+        category_id = request.query_params.get('category_id')
+        city = (request.query_params.get('city') or '').strip()
+
+        now = timezone.now()
+        qs = DisplayAdCampaign.objects.filter(
+            placement_slot=placement,
+            is_approved=True,
+            is_active=True,
+            payment_verified_by_admin=True,
+            start_datetime__lte=now,
+            end_datetime__gte=now,
+        )
+
+        if category_id:
+            qs = qs.filter(Q(target_category_id=category_id) | Q(target_category=None))
+
+        if city:
+            qs = qs.filter(Q(target_city__iexact=city) | Q(target_city=''))
+
+        ad = qs.order_by('?').first()
+        if not ad:
+            return Response({'ad': None})
+
+        # Atomic raw impression increment
+        DisplayAdCampaign.objects.filter(id=ad.id).update(
+            raw_impressions_count=F('raw_impressions_count') + 1
+        )
+
+        return Response({
+            'ad': {
+                'id': ad.id,
+                'title': ad.title,
+                'advertiser_name': ad.advertiser_name,
+                'placement_slot': ad.placement_slot,
+                'desktop_banner_url': ad.desktop_banner_url,
+                'mobile_banner_url': ad.mobile_banner_url,
+                'destination_url': ad.destination_url,
+                'alt_text': ad.alt_text,
+                'target_city': ad.target_city,
+            }
+        })
+
+
+class TrackDisplayAdClickView(APIView):
+    """
+    POST /api/admin-panel/ads/<int:ad_id>/click/
+    Public endpoint: Atomically increments ad clicks and returns destination URL.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request, ad_id):
+        try:
+            ad = DisplayAdCampaign.objects.get(id=ad_id)
+        except DisplayAdCampaign.DoesNotExist:
+            return Response({'error': 'Ad campaign not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        DisplayAdCampaign.objects.filter(id=ad.id).update(
+            raw_clicks_count=F('raw_clicks_count') + 1
+        )
+
+        return Response({
+            'status': 'recorded',
+            'destination_url': ad.destination_url,
+        })
+
+
+class AdminDisplayAdCampaignView(APIView):
+    """
+    GET  /api/admin-panel/ads/  -> list all campaigns with performance stats
+    POST /api/admin-panel/ads/  -> create a new campaign
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        campaigns = DisplayAdCampaign.objects.all().order_by('-created_at')
+        data = []
+        for c in campaigns:
+            ctr = round((c.raw_clicks_count / c.raw_impressions_count * 100), 2) if c.raw_impressions_count > 0 else 0.0
+            data.append({
+                'id': c.id,
+                'title': c.title,
+                'advertiser_name': c.advertiser_name,
+                'contact_phone_or_whatsapp': c.contact_phone_or_whatsapp,
+                'contact_email': c.contact_email,
+                'placement_slot': c.placement_slot,
+                'target_category': c.target_category.name if c.target_category else None,
+                'target_city': c.target_city,
+                'desktop_banner_url': c.desktop_banner_url,
+                'mobile_banner_url': c.mobile_banner_url,
+                'destination_url': c.destination_url,
+                'alt_text': c.alt_text,
+                'negotiated_price_pkr': str(c.negotiated_price_pkr),
+                'manual_payment_reference': c.manual_payment_reference,
+                'payment_verified_by_admin': c.payment_verified_by_admin,
+                'is_approved': c.is_approved,
+                'is_active': c.is_active,
+                'start_datetime': c.start_datetime.isoformat(),
+                'end_datetime': c.end_datetime.isoformat(),
+                'raw_impressions_count': c.raw_impressions_count,
+                'raw_clicks_count': c.raw_clicks_count,
+                'ctr_percentage': ctr,
+                'created_at': c.created_at.isoformat(),
+            })
+        return Response(data)
+
+    def post(self, request, campaign_id=None):
+        data = request.data
+        cid = campaign_id or data.get('id')
+        if cid:
+            if data.get('action') == 'delete':
+                return self.delete(request, campaign_id=cid)
+            return self.patch(request, campaign_id=cid)
+        campaign = DisplayAdCampaign.objects.create(
+            title=data.get('title', 'Untitled Ad'),
+            advertiser_name=data.get('advertiser_name', ''),
+            contact_phone_or_whatsapp=data.get('contact_phone_or_whatsapp', ''),
+            contact_email=data.get('contact_email', ''),
+            placement_slot=data.get('placement_slot', 'homepage_masthead'),
+            target_category_id=data.get('target_category_id'),
+            target_city=data.get('target_city', ''),
+            desktop_banner_url=data.get('desktop_banner_url', ''),
+            mobile_banner_url=data.get('mobile_banner_url', ''),
+            destination_url=data.get('destination_url', ''),
+            alt_text=data.get('alt_text', ''),
+            negotiated_price_pkr=data.get('negotiated_price_pkr', 0),
+            manual_payment_reference=data.get('manual_payment_reference', ''),
+            payment_verified_by_admin=data.get('payment_verified_by_admin', False),
+            is_approved=data.get('is_approved', False),
+            is_active=data.get('is_active', False),
+            start_datetime=data.get('start_datetime'),
+            end_datetime=data.get('end_datetime'),
+        )
+        return Response({'id': campaign.id, 'message': 'Display ad campaign created successfully.'}, status=status.HTTP_201_CREATED)
+
+    def put(self, request, campaign_id=None):
+        return self.patch(request, campaign_id=campaign_id)
+
+    def patch(self, request, campaign_id=None):
+        cid = campaign_id or request.data.get('id')
+        if not cid:
+            return Response({'error': 'campaign_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            campaign = DisplayAdCampaign.objects.get(id=cid)
+        except DisplayAdCampaign.DoesNotExist:
+            return Response({'error': 'Campaign not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        data = request.data
+        for field in [
+            'title', 'advertiser_name', 'contact_phone_or_whatsapp', 'contact_email',
+            'placement_slot', 'target_city', 'desktop_banner_url', 'mobile_banner_url',
+            'destination_url', 'alt_text', 'manual_payment_reference'
+        ]:
+            if field in data:
+                setattr(campaign, field, data[field])
+
+        for bool_field in ['payment_verified_by_admin', 'is_approved', 'is_active']:
+            if bool_field in data:
+                setattr(campaign, bool_field, bool(data[bool_field]))
+
+        if 'negotiated_price_pkr' in data:
+            campaign.negotiated_price_pkr = data['negotiated_price_pkr']
+        if 'start_datetime' in data and data['start_datetime']:
+            campaign.start_datetime = data['start_datetime']
+        if 'end_datetime' in data and data['end_datetime']:
+            campaign.end_datetime = data['end_datetime']
+        if 'target_category_id' in data:
+            campaign.target_category_id = data['target_category_id']
+
+        campaign.save()
+        return Response({'message': 'Campaign updated successfully.'})
+
+    def delete(self, request, campaign_id=None):
+        cid = campaign_id or request.data.get('id') or request.query_params.get('id')
+        if not cid:
+            return Response({'error': 'campaign_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            campaign = DisplayAdCampaign.objects.get(id=cid)
+        except DisplayAdCampaign.DoesNotExist:
+            return Response({'error': 'Campaign not found'}, status=status.HTTP_404_NOT_FOUND)
+        campaign.delete()
+        return Response({'message': 'Campaign deleted successfully.'})
+
+
+# ─── Custom Professions Admin Management ───────────────────────────────────────
+class AdminCustomProfessionsView(APIView):
+    """
+    GET  /api/admin-panel/custom-professions/ -> List pending custom professions
+    POST /api/admin-panel/custom-professions/<profile_id>/ -> Approve or Reject
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        from apps.profiles.models import ProfessionalProfile
+        profiles = ProfessionalProfile.objects.filter(
+            custom_profession__isnull=False
+        ).exclude(custom_profession='').filter(
+            custom_profession_approved=False
+        ).select_related('user')
+
+        data = []
+        for p in profiles:
+            data.append({
+                'profile_id': p.id,
+                'user_id': p.user.id,
+                'name': p.user.name,
+                'email': p.user.email,
+                'phone': p.user.phone,
+                'custom_profession': p.custom_profession,
+                'created_at': p.user.created_at.isoformat() if hasattr(p.user, 'created_at') else None,
+            })
+        return Response(data)
+
+    def post(self, request, profile_id=None):
+        from apps.profiles.models import ProfessionalProfile
+        from apps.search.models import Category
+        from apps.notifications.models import Notification
+        from django.utils.text import slugify
+
+        pid = profile_id or request.data.get('profile_id')
+        action = request.data.get('action', 'approve')  # approve | reject
+
+        try:
+            profile = ProfessionalProfile.objects.select_related('user').get(id=pid)
+        except ProfessionalProfile.DoesNotExist:
+            return Response({'error': 'Professional profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        custom_name = (profile.custom_profession or '').strip()
+        if not custom_name:
+            return Response({'error': 'No custom profession submitted on this profile.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if action == 'approve':
+            cat_slug = slugify(custom_name) or custom_name.lower().replace(' ', '-')
+            category, _ = Category.objects.get_or_create(
+                name__iexact=custom_name,
+                defaults={'name': custom_name, 'slug': cat_slug, 'is_active': True, 'order': 99}
+            )
+            profile.category = category
+            profile.custom_profession_approved = True
+            profile.save()
+
+            Notification.objects.create(
+                user=profile.user,
+                title="Profession Approved! 🎉",
+                message=f"Your requested profession '{custom_name}' has been approved and added to ProFinder categories.",
+                type='general',
+            )
+            return Response({
+                'message': f"Profession '{custom_name}' approved successfully.",
+                'category_id': category.id,
+                'category_name': category.name,
+            })
+
+        elif action == 'reject':
+            reason = request.data.get('reason', 'Profession does not meet directory guidelines.')
+            profile.custom_profession_approved = False
+            profile.save()
+
+            Notification.objects.create(
+                user=profile.user,
+                title="Custom Profession Update",
+                message=f"Your custom profession request was reviewed by admin. Reason: {reason}",
+                type='general',
+            )
+            return Response({'message': f"Profession '{custom_name}' rejected."})
+
+        return Response({'error': f"Unknown action: '{action}'."}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,6 +1,7 @@
 # PATH: backend/apps/profiles/models.py
 # apps/profiles/models.py
 
+import uuid
 from django.db import models
 from django.conf import settings
 from cloudinary.models import CloudinaryField
@@ -17,11 +18,12 @@ class UserProfile(models.Model):
     user      = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='userprofile')
     full_name = models.CharField(max_length=255, blank=True)
     photo_url = CloudinaryField('image', blank=True, null=True)
-    phone     = models.CharField(max_length=20, blank=True)
+    phone           = models.CharField(max_length=20, blank=True)
+    whatsapp_number = models.CharField(max_length=20, blank=True, default='')
     gender    = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)  # NEW — AI Search intent ("female dentist")
     city      = models.CharField(max_length=100, blank=True)
     area      = models.CharField(max_length=100, blank=True)   # NEW — mohalla/area
-    country   = models.CharField(max_length=100, blank=True)   # NEW — Pakistan, India etc
+    country   = models.CharField(max_length=100, blank=True, default='Pakistan')   # Pakistan National Focus
     latitude  = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
@@ -38,13 +40,35 @@ class UserProfile(models.Model):
 
 
 class ProfessionalProfile(models.Model):
+    PRICING_UNIT_CHOICES = [
+        ('per_hour',         'Per Hour'),
+        ('per_day',          'Per Day'),
+        ('per_visit',        'Per Visit'),
+        ('per_session',      'Per Session'),
+        ('per_service',      'Per Service'),
+        ('per_consultation', 'Per Consultation'),
+        ('per_project',      'Per Project'),
+        ('per_month',        'Per Month'),
+        ('fixed_price',      'Fixed Price'),
+        ('starting_from',    'Starting From'),
+        ('negotiable',       'Negotiable'),
+        ('free_consultation','Free Consultation'),
+        ('custom',           'Custom Unit'),
+    ]
+
     user             = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='professionalprofile')
+    slug             = models.SlugField(max_length=255, unique=True, blank=True, null=True)
     category         = models.ForeignKey('search.Category', on_delete=models.SET_NULL, null=True, blank=True)
     bio              = models.TextField(blank=True)
     photo_url        = CloudinaryField('image', blank=True, null=True)
     experience_years = models.IntegerField(default=0)
     hourly_rate      = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pricing_unit     = models.CharField(max_length=30, choices=PRICING_UNIT_CHOICES, default='per_service')
+    custom_pricing_unit = models.CharField(max_length=50, blank=True, default='')
+    custom_pricing_unit_approved = models.BooleanField(default=False)
     is_verified      = models.BooleanField(default=False)
+    identity_verified = models.BooleanField(default=False)
+    credentials_verified = models.BooleanField(default=False)
     average_rating   = models.DecimalField(max_digits=3, decimal_places=1, default=0.0)
     cnic_url         = CloudinaryField('image', blank=True, null=True)
     license_url      = CloudinaryField('image', blank=True, null=True)
@@ -73,6 +97,22 @@ class ProfessionalProfile(models.Model):
     education            = models.TextField(blank=True)              # free-text, e.g. "BSc Computer Science, XYZ University"
     working_hours_start  = models.CharField(max_length=5, blank=True, default='09:00')  # "HH:MM" 24-hr
     working_hours_end    = models.CharField(max_length=5, blank=True, default='18:00')  # "HH:MM" 24-hr
+    whatsapp_number      = models.CharField(max_length=20, blank=True, default='')
+    custom_profession    = models.CharField(max_length=100, blank=True, default='')
+    custom_profession_approved = models.BooleanField(default=False)
+    working_days         = models.CharField(max_length=100, blank=True, default='Mon,Tue,Wed,Thu,Fri,Sat')
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from apps.seo_web.slug_utils import generate_unique_slug
+            user_name = self.user.name if self.user else 'pro'
+            spec = self.specialization or (self.category.name if self.category else '')
+            city = ''
+            if hasattr(self.user, 'userprofile') and self.user.userprofile.city:
+                city = self.user.userprofile.city
+            base = f"{user_name} {spec} {city}".strip()
+            self.slug = generate_unique_slug(ProfessionalProfile, base, instance_id=self.id)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.user.email} - Professional"
@@ -141,6 +181,7 @@ class Certificate(models.Model):
 class GalleryImage(models.Model):
     professional = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='gallery_images')
     image        = CloudinaryField('image')
+    cloudinary_public_id = models.CharField(max_length=255, unique=True, null=True, blank=True, db_index=True)
     created_at   = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -163,3 +204,67 @@ class ProfileView(models.Model):
 
     def __str__(self):
         return f"View of {self.professional.email} at {self.created_at}"
+
+
+class ProfessionalSecondaryCategory(models.Model):
+    """
+    Pro subscribers can list in up to 2 secondary categories (total 3).
+    is_active controls search visibility and enables non-destructive downgrade.
+    """
+    professional_profile = models.ForeignKey(
+        'profiles.ProfessionalProfile',
+        on_delete=models.CASCADE,
+        related_name='secondary_categories'
+    )
+    category = models.ForeignKey(
+        'search.Category',
+        on_delete=models.CASCADE,
+        related_name='secondary_professionals'
+    )
+    is_active = models.BooleanField(default=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('professional_profile', 'category')
+        verbose_name = "Professional Secondary Category"
+        verbose_name_plural = "Professional Secondary Categories"
+
+    def __str__(self):
+        return f"{self.professional_profile} - {self.category.name} ({'Active' if self.is_active else 'Inactive'})"
+
+
+class StagedMedia(models.Model):
+    """
+    Durable staging for Cloudinary media uploads.
+    Prevents orphan assets via preallocated IDs, upload lease heartbeats,
+    fencing checks at commit, and background sweeper cleanup.
+    """
+    STATUS_CHOICES = [
+        ('preallocated', 'Preallocated'),
+        ('uploaded',     'Uploaded'),
+        ('committed',    'Committed'),
+        ('cleaning',     'Cleaning'),
+        ('cleanup_failed','Cleanup Failed'),
+    ]
+    public_id = models.CharField(max_length=255, unique=True, db_index=True)
+    professional = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='staged_media'
+    )
+    upload_lease_token = models.UUIDField(default=uuid.uuid4, db_index=True)
+    lease_expires_at = models.DateTimeField(db_index=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='preallocated', db_index=True)
+    cleanup_lease_token = models.UUIDField(null=True, blank=True)
+    cleanup_retries = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status', 'lease_expires_at']),
+        ]
+
+    def __str__(self):
+        return f"{self.public_id} ({self.status}) for {self.professional.email}"

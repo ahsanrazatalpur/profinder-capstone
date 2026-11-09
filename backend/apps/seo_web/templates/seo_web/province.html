@@ -1,0 +1,114 @@
+{% extends "seo_web/base.html" %}
+
+{% block content %}
+<section class="hero-section">
+    <h1>Find Verified Professionals in {{ province.name }} ({{ province.urdu }})</h1>
+    <p>{{ province.description }}</p>
+
+    <div style="font-size: 15px; color: #cbd5e1; margin-top: 14px;">
+        Administrative Capital: <strong>{{ province.capital }}</strong> &bull; Total Covered Cities: <strong>{{ cities|length }}</strong>
+    </div>
+</section>
+
+<!-- Cities in Province -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Cities in {{ province.name }}</h2>
+        <p>Select your city or district to browse local service specialists.</p>
+    </div>
+    <div class="cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+        {% for c in cities %}
+        <a href="/pakistan/{{ province_slug }}/{{ c.slug }}/" class="card">
+            <h3 style="font-size: 16px;">📍 {{ c.name }}</h3>
+            <span style="font-weight: 600; font-size: 13px; color: var(--primary); margin-top: auto;">Explore City &rarr;</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Top Verified Pros in this Province -->
+{% if professionals %}
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Top Verified Professionals in {{ province.name }}</h2>
+        <p>Experienced specialists serving residential and commercial clients across {{ province.name }}.</p>
+    </div>
+    <div class="cards-grid">
+        {% for pro in professionals %}
+        <a href="/professionals/{{ pro.slug }}/" class="card">
+            <div class="pro-card-header">
+                {% if pro.photo_url %}
+                    <img src="{{ pro.photo_url.url }}" alt="{{ pro.user.name }}" class="pro-avatar" loading="lazy">
+                {% else %}
+                    <div class="pro-avatar" style="display:flex;align-items:center;justify-content:center;font-weight:bold;color:#64748b;font-size:20px;">
+                        {{ pro.user.name|slice:":1" }}
+                    </div>
+                {% endif %}
+                <div class="pro-title-meta">
+                    <h3>{{ pro.user.name }}</h3>
+                    <div style="font-size: 13px; color: var(--text-muted);">{{ pro.specialization|default:pro.category.name }}</div>
+                    {% if pro.is_verified %}
+                        <span class="verified-badge">✓ Verified</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if pro.average_rating > 0 %}
+            <div class="rating-row">
+                <span class="rating-stars">★ {{ pro.average_rating|floatformat:1 }}</span>
+                <span style="color: var(--text-muted); font-size: 12px;">({{ pro.user.received_reviews.count }} reviews)</span>
+            </div>
+            {% endif %}
+
+            <div class="location-tag">
+                📍 {{ pro.user.userprofile.city|default:province.name }}
+            </div>
+
+            <p>{{ pro.bio|default:"Experienced specialist dedicated to providing dependable, high-standard professional service."|truncatewords:20 }}</p>
+
+            {% if pro.hourly_rate > 0 %}
+            <div class="hourly-rate">PKR {{ pro.hourly_rate|floatformat:0 }} / hr</div>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Categories in Province -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Services in {{ province.name }}</h2>
+        <p>Explore popular service categories available throughout the province.</p>
+    </div>
+    <div class="cards-grid">
+        {% for cat in categories %}
+        <a href="/categories/{{ cat.slug }}/" class="card">
+            <h3>{{ cat.name }}</h3>
+            <p>Connect with verified {{ cat.name|lower }} specialists across {{ province.name }}.</p>
+            <span style="font-weight: 600; font-size: 13px; color: var(--primary);">View Category &rarr;</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Province FAQs -->
+<section class="geo-faq-section">
+    <h2>Frequently Asked Questions about Services in {{ province.name }}</h2>
+    <p class="lead-intro">Local service availability and booking guidelines for {{ province.name }}.</p>
+
+    <div class="faq-item">
+        <div class="faq-question">How can I find a trusted specialist in {{ province.name }}?</div>
+        <div class="faq-answer">
+            ProFinder features verified local doctors, electrical contractors, plumbers, and home repair professionals in {{ province.name }}. Review credentials, client ratings, and hourly rates, then submit a direct booking request.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">Are home visits available across {{ province.name }}?</div>
+        <div class="faq-answer">
+            Yes, many registered professionals offer on-site home visits and emergency call-outs within their designated city and adjacent areas.
+        </div>
+    </div>
+</section>
+{% endblock %}

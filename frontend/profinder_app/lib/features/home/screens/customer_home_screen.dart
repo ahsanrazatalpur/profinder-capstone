@@ -1,3 +1,4 @@
+import '../../../core/utils/web_identity/web_identity.dart';
 // PATH: lib/features/home/screens/customer_home_screen.dart
 // lib/features/home/screens/customer_home_screen.dart
 //
@@ -39,6 +40,7 @@ import '../../../shared/widgets/professional_card.dart';
 import '../../../shared/widgets/category_card.dart';
 import '../../../shared/widgets/cta_banner.dart';
 import '../../../shared/widgets/announcement_banner.dart';
+import '../../../shared/widgets/display_ad_banner.dart';
 import '../../../shared/widgets/role_app_bar.dart';
 import '../../search/screens/professional_detail_screen.dart';
 import '../../search/screens/search_screen.dart';
@@ -132,12 +134,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   List<dynamic> _upcomingBookings = [];
   bool _bookingsLoading = true;
 
-  // ── Wallet / Payment Summary ──────────────────────────────
-  double _totalSpent = 0;
-  int _paymentsCount = 0;
+  // ── Subscription Summary ──────────────────────────────────
   bool _isPremium = false;
   String _planName = '';
-  bool _walletLoading = true;
 
   // ── Notifications preview ─────────────────────────────────
   int _unreadCount = 0;
@@ -158,6 +157,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   @override
   void initState() {
     super.initState();
+    WebIdentity.resetToDefault();
     ApiService.contentRevision.addListener(_onContentRevision);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadNearbySections();
@@ -396,30 +396,14 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   }
 
   Future<void> _loadWallet() async {
-    setState(() => _walletLoading = true);
     try {
-      final res = await _api.get(AppConstants.payments);
-      final list = res.data is List ? List<dynamic>.from(res.data) : [];
-      list.sort(
-        (a, b) => (b['created_at'] ?? '').compareTo(a['created_at'] ?? ''),
-      );
-      final completed = list.where((p) => p['status'] == 'completed').toList();
-      final spent = completed.fold(0.0, (s, p) => s + _num(p['amount']));
-
       final plan = await _subSvc.getMyPlan();
-
       if (!mounted) return;
       setState(() {
-        _totalSpent = spent;
-        _paymentsCount = list.length;
         _isPremium = plan?.isPremium ?? false;
         _planName = plan?.planName ?? '';
-        _walletLoading = false;
       });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _walletLoading = false);
-    }
+    } catch (_) {}
   }
 
   Future<void> _loadNotifications() async {
@@ -644,6 +628,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                       ),
                       SliverToBoxAdapter(child: _buildGreeting(fullName, city)),
                       SliverToBoxAdapter(child: _buildSearchTap()),
+                      const SliverToBoxAdapter(
+                        child: DisplayAdBanner(placementSlot: 'homepage_masthead'),
+                      ),
                       SliverToBoxAdapter(child: _buildAiRecommendationCard()),
                       SliverToBoxAdapter(child: _buildQuickActions()),
                       SliverToBoxAdapter(
@@ -1017,7 +1004,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     final photo = AppHelpers.getFullImageUrl(pick['photo_url']?.toString());
     final rating = _num(pick['average_rating']);
     final price = _num(pick['hourly_rate']);
-    final currencySym = AppHelpers.getCurrencySymbol(professional: pick);
 
     Widget initials() => Center(
       child: Text(
@@ -1095,7 +1081,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           ),
           const SizedBox(height: 6),
           Text(
-            '$currencySym ${price.toStringAsFixed(0)}/hr',
+            AppHelpers.formatHourlyRate(price, professional: pick),
             style: const TextStyle(
               color: Colors.white70,
               fontSize: AppFontSizes.small,
@@ -1159,12 +1145,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
         ),
       },
       {
-        'icon': Icons.account_balance_wallet_rounded,
-        'label': t.homeWalletQuickAction,
+        'icon': Icons.star_rounded,
+        'label': t.rating,
         'color': AppColors.warningAmber,
         'onTap': () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const WalletScreen()),
+          MaterialPageRoute(builder: (_) => const SearchScreen(initialQuery: 'top rated')),
         ),
       },
       {
@@ -1968,53 +1954,28 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                   Row(
                     children: [
                       const Icon(
-                        Icons.account_balance_wallet_rounded,
+                        Icons.handshake_rounded,
                         color: Colors.white,
                         size: 22,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        t.homeTotalSpent,
-                        style: const TextStyle(
-                          color: Colors.white70,
+                      const Text(
+                        'Direct Dealing Platform',
+                        style: TextStyle(
+                          color: Colors.white,
                           fontSize: AppFontSizes.secondary,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  _walletLoading
-                      ? const SizedBox(
-                          height: 30,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        )
-                      : Text(
-                          'Rs ${_totalSpent.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: AppFontSizes.display,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 8),
                   Text(
-                    _paymentsCount == 1
-                        ? t.homeAcrossTransaction('$_paymentsCount')
-                        : t.homeAcrossTransactions('$_paymentsCount'),
+                    'ProFinder never charges customer booking commissions. Discuss requirements and settle payments directly with verified local professionals.',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Colors.white.withValues(alpha: 0.9),
                       fontSize: AppFontSizes.caption,
+                      height: 1.35,
                     ),
                   ),
                   const Divider(color: Colors.white30, height: 24),

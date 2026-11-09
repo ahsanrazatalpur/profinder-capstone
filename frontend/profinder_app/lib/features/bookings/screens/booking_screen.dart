@@ -41,6 +41,7 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../chat/presentation/widgets/online_status_dot.dart';
 import '../../../services/api_service.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../support/screens/privacy_policy_screen.dart';
 
 enum _LocationChoice { professional, custom }
 
@@ -358,7 +359,7 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: UniversalAppBar(
-        title: AppLocalizations.of(context).bookAppointmentTitle,
+        title: AppLocalizations.of(context).requestService,
         icon: Icons.event_available_rounded,
         onBackPressed: _onBackPressed,
       ),
@@ -758,6 +759,107 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
     );
   }
 
+  Widget _directDealingDisclaimerCard({
+    required bool isDark,
+    required bool isTablet,
+  }) {
+    return _cardShell(
+      isDark: isDark,
+      isTablet: isTablet,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors.warningAmber.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.gavel_rounded,
+                  size: 18,
+                  color: AppColors.warningAmber,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Direct Dealing & Payment Notice',
+                      style: TextStyle(
+                        fontSize: isTablet ? 16 : 14.5,
+                        fontWeight: FontWeight.w700,
+                        color: context.colors.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      'براہ راست لین دین اور ادائیگی کے اصول',
+                      style: TextStyle(
+                        fontSize: isTablet ? 12.5 : 11.5,
+                        fontWeight: FontWeight.w600,
+                        color: context.colors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '• ProFinder is purely a listing & booking directory. We do not process or collect payments.\n'
+            '• All payments (Cash, Bank Transfer, JazzCash/EasyPaisa) are handled directly between you and the professional.\n'
+            '• ProFinder is not responsible for financial scams, work quality disputes, or offline fraud.\n'
+            '• Please inspect completed work before releasing any direct payment.',
+            style: TextStyle(
+              fontSize: isTablet ? 13.5 : 12.5,
+              color: context.colors.textSecondary,
+              height: 1.45,
+            ),
+          ),
+          const SizedBox(height: 10),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const PrivacyPolicyScreen(),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(6),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Read Full Terms & Safety Guidelines',
+                    style: TextStyle(
+                      fontSize: isTablet ? 13 : 12,
+                      fontWeight: FontWeight.w700,
+                      color: context.colors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 14,
+                    color: context.colors.primary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _policyCard({
     required String title,
     required List<String> points,
@@ -913,7 +1015,6 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
         (pro['name'] ?? AppLocalizations.of(context).professionalDefaultName)
             .toString();
     final rate = pro['hourly_rate'] ?? 0;
-    final currencySym = AppHelpers.getCurrencySymbol(professional: pro);
     final category = (pro['category_name'] ?? '').toString();
     final isVerified = pro['is_verified'] == true;
     final rating = double.tryParse(pro['average_rating']?.toString() ?? '');
@@ -1106,8 +1207,8 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
               SizedBox(height: isTablet ? 16 : 12),
               _summaryInfoRow(
                 Icons.payments_rounded,
-                AppLocalizations.of(context).hourlyRateLabel,
-                '$currencySym $rate/hr',
+                'Pricing',
+                AppHelpers.formatPriceWithUnit(rate, professional: pro),
                 isTablet,
               ),
               const SizedBox(height: 10),
@@ -1170,6 +1271,8 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
           isDark: isDark,
           isTablet: isTablet,
         ),
+        SizedBox(height: isTablet ? 20 : 16),
+        _directDealingDisclaimerCard(isDark: isDark, isTablet: isTablet),
       ],
     );
   }
@@ -2547,15 +2650,18 @@ class _BookingScreenState extends State<BookingScreen> with PromoBannerMixin {
                               color: Colors.white,
                             ),
                           )
-                        : Text(
-                            _pro['is_available'] == false
-                                ? 'Currently Unavailable'
-                                : isLastStep
-                                ? AppLocalizations.of(context).confirmBookingCta
-                                : AppLocalizations.of(context).nextCta,
-                            style: const TextStyle(
-                              fontSize: AppFontSizes.body,
-                              fontWeight: FontWeight.w700,
+                        : FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              _pro['is_available'] == false
+                                  ? 'Currently Unavailable'
+                                  : isLastStep
+                                  ? AppLocalizations.of(context).requestService
+                                  : AppLocalizations.of(context).nextCta,
+                              style: const TextStyle(
+                                fontSize: AppFontSizes.body,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                   ),

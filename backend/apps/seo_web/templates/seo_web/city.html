@@ -1,0 +1,138 @@
+{% extends "seo_web/base.html" %}
+
+{% block content %}
+<section class="hero-section">
+    <h1>Find Verified Professionals in {{ city.name }}, {{ province.name }}</h1>
+    <p>
+        Explore verified doctors, certified electricians, plumbers, civil engineers, tutors, and local repair specialists located in {{ city.name }}. Compare customer reviews, transparent rates, and book directly.
+    </p>
+
+    <form class="search-box" action="/search/" method="get" role="search">
+        <input type="hidden" name="city" value="{{ city.slug }}">
+        <input type="text" name="q" placeholder="Search services in {{ city.name }} (e.g. Electrician, Doctor)..." aria-label="Search within city">
+        <select name="category" aria-label="Select Category">
+            <option value="">All Categories</option>
+            {% for cat in categories %}
+                <option value="{{ cat.slug }}">{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Search in {{ city.name }}</button>
+    </form>
+</section>
+
+<!-- Categories Active in this City -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Local Service Categories in {{ city.name }}</h2>
+        <p>Find specialized trades and professionals based in {{ city.name }}.</p>
+    </div>
+    <div class="cards-grid">
+        {% for cat in categories %}
+        <a href="/pakistan/{{ province_slug }}/{{ city.slug }}/{{ cat.slug }}/" class="card">
+            <h3>{{ cat.name }} in {{ city.name }}</h3>
+            <p>Connect with verified {{ cat.name|lower }} specialists ready for on-site appointments in {{ city.name }}.</p>
+            <span style="font-weight: 600; font-size: 13px; color: var(--primary);">View Local Specialists &rarr;</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Verified Pros in this City -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Verified Professionals in {{ city.name }}</h2>
+        <p>Specialists registered and active in {{ city.name }}, {{ province.name }}.</p>
+    </div>
+
+    {% if professionals %}
+    <div class="cards-grid">
+        {% for pro in professionals %}
+        <a href="/professionals/{{ pro.slug }}/" class="card">
+            <div class="pro-card-header">
+                {% if pro.photo_url %}
+                    <img src="{{ pro.photo_url.url }}" alt="{{ pro.user.name }}" class="pro-avatar" loading="lazy">
+                {% else %}
+                    <div class="pro-avatar" style="display:flex;align-items:center;justify-content:center;font-weight:bold;color:#64748b;font-size:20px;">
+                        {{ pro.user.name|slice:":1" }}
+                    </div>
+                {% endif %}
+                <div class="pro-title-meta">
+                    <h3>{{ pro.user.name }}</h3>
+                    <div style="font-size: 13px; color: var(--text-muted);">{{ pro.specialization|default:pro.category.name }}</div>
+                    {% if pro.is_verified %}
+                        <span class="verified-badge">✓ Verified</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if pro.average_rating > 0 %}
+            <div class="rating-row">
+                <span class="rating-stars">★ {{ pro.average_rating|floatformat:1 }}</span>
+                <span style="color: var(--text-muted); font-size: 12px;">({{ pro.user.received_reviews.count }} reviews)</span>
+            </div>
+            {% endif %}
+
+            <div class="location-tag">
+                📍 {{ pro.user.userprofile.city|default:city.name }}
+            </div>
+
+            <p>{{ pro.bio|default:"Experienced specialist dedicated to providing dependable, high-standard professional service."|truncatewords:20 }}</p>
+
+            {% if pro.hourly_rate > 0 %}
+            <div class="hourly-rate">PKR {{ pro.hourly_rate|floatformat:0 }} / hr</div>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="background: #ffffff; padding: 40px; border-radius: var(--radius); text-align: center; border: 1px solid var(--border);">
+        <p style="color: var(--text-muted); font-size: 16px;">
+            Additional verified professionals in {{ city.name }} are completing profile validation. You can also browse nearby cities in {{ province.name }}.
+        </p>
+    </div>
+    {% endif %}
+</section>
+
+<!-- Nearby Cities -->
+{% if nearby_cities %}
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Other Cities in {{ province.name }}</h2>
+    </div>
+    <div class="chips-container" style="gap: 10px;">
+        {% for nc in nearby_cities %}
+        <a href="/pakistan/{{ province_slug }}/{{ nc.slug }}/" class="chip" style="padding: 8px 16px; font-weight: 600; background: #ffffff; border: 1px solid var(--border);">
+            📍 {{ nc.name }}
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- City GEO FAQs -->
+<section class="geo-faq-section">
+    <h2>Frequently Asked Questions about Professional Services in {{ city.name }}</h2>
+    <p class="lead-intro">Hiring guidance, rates, and direct booking in {{ city.name }}, {{ province.name }}.</p>
+
+    <div class="faq-item">
+        <div class="faq-question">How can I hire a professional in {{ city.name }}?</div>
+        <div class="faq-answer">
+            Search for your required service, inspect verified professional profiles registered in {{ city.name }}, compare ratings and hourly rates, and initiate a direct booking request without platform fees.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">How are payments handled for services in {{ city.name }}?</div>
+        <div class="faq-answer">
+            All payments are settled directly between you and the local specialist upon job completion via Cash on Delivery, JazzCash, Easypaisa, or online bank transfer. ProFinder never handles payments or charges middleman cuts.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">Can I book emergency repair services in {{ city.name }}?</div>
+        <div class="faq-answer">
+            Yes, several local electricians, plumbers, and technicians in {{ city.name }} provide rapid-response on-site emergency visits. Check the availability indicator on the specialist's profile.
+        </div>
+    </div>
+</section>
+{% endblock %}

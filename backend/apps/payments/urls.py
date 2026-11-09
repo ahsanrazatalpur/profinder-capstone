@@ -11,6 +11,10 @@ from apps.payments.views import (
     WithdrawalRequestView,
     CurrencyListView,
     ExchangeRatesView,
+    FeaturedPromotionPackagesListView,
+    SafepayInitializeCheckoutView,
+    SafepayVerifyPaymentView,
+    SafepayWebhookView,
 )
 
 urlpatterns = [
@@ -23,4 +27,10 @@ urlpatterns = [
     path('withdrawals/', WithdrawalRequestView.as_view(), name='withdrawals'),
     path('currencies/', CurrencyListView.as_view(), name='currencies'),
     path('exchange-rates/', ExchangeRatesView.as_view(), name='exchange_rates'),
+
+    # Safepay & Monetization Endpoints
+    path('checkout/initialize/', SafepayInitializeCheckoutView.as_view(), name='safepay_checkout_initialize'),
+    path('verify-status/', SafepayVerifyPaymentView.as_view(), name='safepay_verify_status'),
+    path('webhook/safepay/', SafepayWebhookView.as_view(), name='safepay_webhook'),
+    path('featured/packages/', FeaturedPromotionPackagesListView.as_view(), name='featured_packages_list'),
 ]

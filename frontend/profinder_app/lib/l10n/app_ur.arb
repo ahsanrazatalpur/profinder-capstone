@@ -33,18 +33,18 @@
   "city": "شہر",
   "bio": "بائیو",
   "experience": "سالوں کا تجربہ",
-  "hourlyRate": "فی گھنٹہ ریٹ (PKR)",
+  "hourlyRate": "سروس ریٹ (PKR)",
   "verified": "تصدیق شدہ",
   "notVerified": "غیر تصدیق شدہ",
-  "bookings": "بکنگز",
-  "myBookings": "میری بکنگز",
-  "bookNow": "ابھی بک کریں",
+  "bookings": "سروس انکوائریز",
+  "myBookings": "میری سروس انکوائریز",
+  "bookNow": "سروس کی درخواست کریں",
   "cancel": "منسوخ کریں",
   "accept": "قبول کریں",
   "reject": "مسترد کریں",
   "complete": "مکمل کریں",
   "pending": "زیر التوا",
-  "accepted": "قبول شدہ",
+  "accepted": "انکوائری منظور شدہ",
   "rejected": "مسترد شدہ",
   "completed": "مکمل",
   "notifications": "اطلاعات",
@@ -2075,14 +2075,14 @@
   "bankDetailsSubtitle": "آپ کے اکاؤنٹ میں رقم نکلوانے کے لیے استعمال ہوتی ہیں",
   "bankNameLabel": "بینک کا نام",
   "bioLabel": "تعارف",
-  "bookAppointmentTitle": "اپائنٹمنٹ بک کریں",
+  "bookAppointmentTitle": "سروس کی درخواست کریں",
   "bookCta": "بک کریں",
-  "bookNowCta": "ابھی بک کریں",
+  "bookNowCta": "سروس کی درخواست کریں",
   "bookingConfigurationTitle": "بکنگ کی ترتیب",
   "bookingDateRequired": "براہ کرم تاریخ منتخب کریں",
-  "bookingDetailsTitle": "بکنگ کی تفصیلات",
+  "bookingDetailsTitle": "درخواست کی تفصیلات",
   "bookingFailed": "بکنگ ناکام ہو گئی۔ براہ کرم دوبارہ کوشش کریں۔",
-  "bookingManagementTitle": "بکنگز کا انتظام",
+  "bookingManagementTitle": "سروس انکوائریز",
   "bookingSoFarLabel": "اب تک کی بکنگز",
   "bookingStatusUpdated": "بکنگ کو {value1} کے طور پر نشان زد کر دیا گیا",
   "@bookingStatusUpdated": {
@@ -2092,7 +2092,7 @@
       }
     }
   },
-  "bookingSuccessMessage": "{value1} کے ساتھ آپ کی بکنگ کی درخواست بھیج دی گئی ہے",
+  "bookingSuccessMessage": "آپ کی سروس انکوائری {value1} کو بھیج دی گئی ہے",
   "@bookingSuccessMessage": {
     "placeholders": {
       "value1": {
@@ -2100,7 +2100,7 @@
       }
     }
   },
-  "bookingSuccessTitle": "بکنگ کی درخواست بھیج دی گئی",
+  "bookingSuccessTitle": "انکوائری جمع ہوگئی",
   "bookingTimeRequired": "براہ کرم وقت منتخب کریں",
   "bookingTipText": "آپ اپائنٹمنٹ سے 24 گھنٹے پہلے تک مفت منسوخ کر سکتے ہیں",
   "bookingUpdateError": "بکنگ اپ ڈیٹ کرنے میں ناکامی",
@@ -2193,7 +2193,7 @@
   },
   "commentOptionalLabel": "تبصرہ (اختیاری)",
   "completedLabel": "مکمل",
-  "confirmBookingCta": "بکنگ کی تصدیق کریں",
+  "confirmBookingCta": "سروس انکوائری جمع کریں",
   "confirmPasswordLabel": "پاس ورڈ کی تصدیق کریں",
   "contactChatLabel": "ہم سے چیٹ کریں",
   "contactChatSubtitle": "چیٹ میں فوری جواب حاصل کریں",
@@ -2590,12 +2590,12 @@
   "newPasswordLabel": "نیا پاس ورڈ",
   "newPhotoSelectedHint": "نئی تصویر منتخب کی گئی",
   "nextCta": "اگلا",
-  "noBookingsAccepted": "کوئی قبول شدہ بکنگ نہیں",
-  "noBookingsAll": "ابھی تک کوئی بکنگ نہیں",
-  "noBookingsCancelled": "کوئی منسوخ شدہ بکنگ نہیں",
-  "noBookingsCompleted": "کوئی مکمل شدہ بکنگ نہیں",
+  "noBookingsAccepted": "کوئی منظور شدہ سروس انکوائری نہیں",
+  "noBookingsAll": "ابھی تک کوئی سروس انکوائری نہیں",
+  "noBookingsCancelled": "کوئی منسوخ شدہ انکوائری نہیں",
+  "noBookingsCompleted": "کوئی مکمل انکوائری نہیں",
   "noBookingsDefault": "کوئی بکنگ نہیں ملی",
-  "noBookingsPending": "کوئی زیر التوا بکنگ نہیں",
+  "noBookingsPending": "کوئی زیر التوا سروس انکوائری نہیں",
   "noBookingsRescheduled": "کوئی نئے وقت پر منتقل شدہ بکنگ نہیں",
   "noBookingsToday": "آج کوئی بکنگ نہیں",
   "noBookingsYet": "ابھی تک کوئی بکنگ نہیں",
@@ -3609,9 +3609,21 @@
   "bkCancelFailed": "منسوخ نہیں ہو سکی، براہ کرم دوبارہ کوشش کریں",
   "detailTabOverview": "جائزہ",
   "detailTabPortfolio": "پورٹ فولیو ({count})",
-  "@detailTabPortfolio": {"placeholders": {"count": {"type": "int"}}},
+  "@detailTabPortfolio": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "detailTabReviews": "جائزے ({count})",
-  "@detailTabReviews": {"placeholders": {"count": {"type": "int"}}},
+  "@detailTabReviews": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "detailTabServices": "خدمات",
   "detailTabAvailability": "دستیابی",
   "detailNotAvailable": "دستیاب نہیں",
@@ -3725,7 +3737,13 @@
   "helpNoResultsMessage": "مختلف یا کم الفاظ آزما کر دیکھیں۔",
   "helpSearchTooShort": "تلاش کے لیے کم از کم 2 حروف لکھیں۔",
   "helpArticleCount": "{count, plural, =1{1 مضمون} other{{count} مضامین}}",
-  "@helpArticleCount": {"placeholders": {"count": {"type": "int"}}},
+  "@helpArticleCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "helpNoArticlesTitle": "ابھی کوئی مضمون نہیں",
   "helpNoArticlesMessage": "مدد کے مضامین جلد یہاں نظر آئیں گے۔",
   "helpArticleNotFound": "یہ مضمون اب دستیاب نہیں ہے۔",
@@ -3748,7 +3766,13 @@
   "ticketMessageHint": "بتائیں کیا ہوا۔ جتنی تفصیل دیں گے، اتنی جلدی مدد کر سکیں گے۔",
   "ticketSubmitCta": "پیغام بھیجیں",
   "ticketCreatedMessage": "پیغام بھیج دیا گیا۔ آپ کا حوالہ نمبر {reference} ہے",
-  "@ticketCreatedMessage": {"placeholders": {"reference": {"type": "String"}}},
+  "@ticketCreatedMessage": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
   "ticketReplyHint": "جواب لکھیں",
   "ticketReplySendTooltip": "جواب بھیجیں",
   "ticketCloseCta": "حل ہو گیا",
@@ -3784,8 +3808,31 @@
   "guestContactSentTitle": "پیغام بھیج دیا گیا",
   "guestContactSentMessage": "شکریہ! ہمیں آپ کا پیغام مل گیا ہے اور ہم آپ کے دیے گئے ای میل پر جواب دیں گے۔",
   "guestContactReference": "حوالہ نمبر: {reference}",
-  "@guestContactReference": {"placeholders": {"reference": {"type": "String"}}},
+  "@guestContactReference": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
   "themeModeTitle": "تھیم",
   "themeModeSystem": "سسٹم ڈیفالٹ",
-  "themeModeSystemHint": "آپ کے ڈیوائس کی سیٹنگ کے مطابق"
+  "themeModeSystemHint": "آپ کے ڈیوائس کی سیٹنگ کے مطابق",
+  "requestService": "سروس کی درخواست کریں",
+  "serviceInquiry": "سروس کی درخواست",
+  "inquiryAccepted": "انکوائری منظور شدہ",
+  "myServiceInquiries": "میری سروس انکوائریز",
+  "cancelInquiry": "درخواست منسوخ کریں",
+  "unitPerVisit": "فی وزٹ",
+  "unitPerSession": "فی سیشن",
+  "unitPerService": "فی سروس",
+  "unitPerConsultation": "فی مشاورت",
+  "unitPerProject": "فی پراجیکٹ",
+  "unitPerMonth": "فی مہینہ",
+  "unitFixedPrice": "مقررہ قیمت",
+  "unitStartingFrom": "شروع قیمت",
+  "unitNegotiable": "قابلِ بات چیت",
+  "unitFreeConsultation": "مفت مشاورت",
+  "customerDisclosure": "پرو فائنڈر آپ کو آزاد ماہرین سے جوڑتا ہے۔ کام، شیڈول اور ادائیگی براہ راست طے کی جاتی ہے۔ پرو فائنڈر سروس فیس نہیں لیتا۔",
+  "professionalDisclosure": "آپ براہ راست کلائنٹس سے انکوائریز وصول کرتے ہیں۔ اپنی شرائط خود طے کریں اور بغیر کمیشن 100 فیصد رقم براہ راست وصول کریں۔"
 }

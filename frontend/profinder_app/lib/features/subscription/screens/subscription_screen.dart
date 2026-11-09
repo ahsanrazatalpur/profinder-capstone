@@ -77,7 +77,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
     if (result['success'] == true && result['requires_payment'] == true) {
       final approvalUrl = result['approval_url']?.toString() ?? '';
-      final paypalOrderId = result['paypal_order_id']?.toString() ?? '';
+      final safepayTracker = result['safepay_tracker']?.toString() ?? '';
       final orderId = result['order_id']?.toString() ?? '';
 
       setState(() => _subscribing = false);
@@ -89,9 +89,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       final completed = await _showPaymentConfirmationDialog(plan);
       if (completed == true && mounted) {
         setState(() => _subscribing = true);
-        final captureRes = await PaymentService().capturePayment(
-          paypalOrderId: paypalOrderId,
+        final captureRes = await PaymentService().verifySafepayPayment(
           orderId: orderId,
+          tracker: safepayTracker.isNotEmpty ? safepayTracker : null,
         );
         setState(() => _subscribing = false);
 
@@ -103,7 +103,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           await _loadData();
         } else {
           _showError(
-            captureRes['error'] ?? 'Payment capture failed. Please try again.',
+            captureRes['error'] ?? 'Payment verification failed. Please try again.',
           );
         }
       }
@@ -149,7 +149,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ],
             ),
             content: Text(
-              'Please finish payment on PayPal in your browser. Once completed, tap "Confirm Payment" below.',
+              'Please complete your payment securely via Safepay in your browser. Once completed, tap "Confirm Payment" below.',
             ),
             actions: [
               TextButton(
@@ -466,7 +466,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       Text(
                         plan.isFree
                             ? t.subscriptionFree
-                            : '${plan.currency} ${plan.price.toStringAsFixed(0)}',
+                            : AppHelpers.formatPrice(plan.price, currency: plan.currency),
                         style: TextStyle(
                           fontSize: plan.isFree ? 18 : 22,
                           fontWeight: FontWeight.bold,

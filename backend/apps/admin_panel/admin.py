@@ -2,7 +2,7 @@ from django.contrib import admin
 from apps.admin_panel.models import (
     AdminLog, PromoBanner, UserReport, Complaint, NotificationBroadcast,
     Language, TranslationKey, TranslationString,
-    Country, City, Announcement,
+    Country, City, Announcement, DisplayAdCampaign,
 )
 
 admin.site.register(AdminLog)
@@ -61,3 +61,12 @@ class CityAdmin(admin.ModelAdmin):
 class AnnouncementAdmin(admin.ModelAdmin):
     list_display  = ('title', 'type', 'audience', 'is_active', 'created_at')
     list_filter   = ('type', 'audience', 'is_active')
+
+
+@admin.register(DisplayAdCampaign)
+class DisplayAdCampaignAdmin(admin.ModelAdmin):
+    list_display = ('title', 'advertiser_name', 'placement_slot', 'is_approved', 'is_active', 'start_datetime', 'end_datetime', 'raw_impressions_count', 'raw_clicks_count')
+    list_filter = ('placement_slot', 'is_approved', 'is_active')
+    search_fields = ('title', 'advertiser_name', 'contact_phone_or_whatsapp', 'contact_email')
+    readonly_fields = ('raw_impressions_count', 'unique_impressions_count', 'raw_clicks_count', 'unique_clicks_count', 'created_at', 'updated_at')
+

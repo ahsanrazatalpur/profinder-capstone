@@ -27,12 +27,12 @@ import 'admin_support_content_screen.dart';
 import 'admin_reports_hub_screen.dart';
 import 'admin_notifications_screen.dart';
 import 'admin_languages_screen.dart';
-import 'admin_countries_screen.dart';
 import 'admin_cities_screen.dart';
 import 'admin_announcements_screen.dart';
 import 'admin_blocked_users_screen.dart';
 import 'admin_verification_requests_screen.dart';
 import 'admin_about_page_screen.dart';
+import 'admin_display_ads_screen.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/universal_dialog.dart';
@@ -74,36 +74,48 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
   );
 
   List<Widget? Function()> _buildScreenBuilders() => [
-    () => AdminDashboardScreen(onNavigateToTab: _goTo),
-    () => const AdminUsersScreen(),
-    () => const AdminCustomersScreen(),
-    () => const AdminProfessionalsScreen(),
-    () => const AdminPortfolioScreen(),
-    () => const AdminBookingsScreen(),
-    () => const AdminLogsScreen(),
-    () => const AdminPromoBannersScreen(),
-    () => const AdminArticlesScreen(),
-    () => const AdminReportedUsersScreen(),
-    () => const AdminAnalyticsScreen(),
-    () => const AdminBlockedUsersScreen(),
-    () => const AdminVerificationRequestsScreen(),
-    () => const AdminCategoriesScreen(),
-    () => const AdminPaymentsScreen(),
-    () => const AdminRevenueScreen(),
-    () => const AdminSubscriptionsScreen(),
-    () => const AdminReviewsScreen(),
-    () => const AdminComplaintsScreen(),
-    () => const AdminReportsHubScreen(),
-    () => const AdminNotificationsScreen(),
-    () => const AdminLanguagesScreen(),
-    () => const AdminCountriesScreen(),
-    () => const AdminCitiesScreen(),
-    () => const AdminAnnouncementsScreen(),
-    () => const AdminAboutPageScreen(),
-    () =>
-        const AdminAppealsScreen(), // index 26 — appended, keeps existing indices stable
-    () => const AdminSupportTicketsScreen(), // index 27 — appended
-    () => const AdminSupportContentScreen(), // index 28 — appended
+    // ── Category 1: Overview & Insights (0-1) ───────────
+    () => AdminDashboardScreen(onNavigateToTab: _goTo),        // 0: Dashboard
+    () => const AdminAnalyticsScreen(),                       // 1: Analytics
+
+    // ── Category 2: Monetization & Ads (2-5) ─────────────
+    () => const AdminDisplayAdsScreen(),                      // 2: Startup Ads (Promoted!)
+    () => const AdminRevenueScreen(),                         // 3: Revenue
+    () => const AdminSubscriptionsScreen(),                   // 4: Subscriptions
+    () => const AdminPaymentsScreen(),                        // 5: Payments
+
+    // ── Category 3: Marketplace & Operations (6-9) ────────
+    () => const AdminBookingsScreen(),                        // 6: Bookings
+    () => const AdminCategoriesScreen(),                      // 7: Categories
+    () => const AdminPortfolioScreen(),                       // 8: Portfolio
+    () => const AdminReviewsScreen(),                         // 9: Reviews
+
+    // ── Category 4: User Management (10-14) ──────────────
+    () => const AdminUsersScreen(),                           // 10: Users
+    () => const AdminCustomersScreen(),                       // 11: Customers
+    () => const AdminProfessionalsScreen(),                   // 12: Professionals
+    () => const AdminVerificationRequestsScreen(),            // 13: Verify Requests
+    () => const AdminBlockedUsersScreen(),                    // 14: Blocked Users
+
+    // ── Category 5: Trust, Safety & Support (15-19) ──────
+    () => const AdminReportedUsersScreen(),                   // 15: Reported Users
+    () => const AdminAppealsScreen(),                         // 16: Appeals
+    () => const AdminComplaintsScreen(),                      // 17: Complaints
+    () => const AdminSupportTicketsScreen(),                  // 18: Support Tickets
+    () => const AdminReportsHubScreen(),                      // 19: Reports Hub
+
+    // ── Category 6: Marketing & Content (20-25) ──────────
+    () => const AdminPromoBannersScreen(),                    // 20: Promo Banners
+    () => const AdminAnnouncementsScreen(),                   // 21: Announcements
+    () => const AdminNotificationsScreen(),                   // 22: Notifications
+    () => const AdminArticlesScreen(),                        // 23: Magazine
+    () => const AdminAboutPageScreen(),                       // 24: About Page
+    () => const AdminSupportContentScreen(),                  // 25: Help Content
+
+    // ── Category 7: System & Localization (26-29) ────────
+    () => const AdminCitiesScreen(),                          // 26: Cities
+    () => const AdminLanguagesScreen(),                       // 28: Languages
+    () => const AdminLogsScreen(),                            // 29: Audit Logs
   ];
 
   // Returns the widget for tab [i], building (and caching) it on first
@@ -118,67 +130,48 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
   }
 
   static const _navItems = [
+    // 0-1: Overview & Insights
     _NavItem(Icons.dashboard_rounded, Icons.dashboard_outlined, 'Dashboard'),
+    _NavItem(Icons.insights_rounded, Icons.insights_outlined, 'Analytics'),
+
+    // 2-5: Monetization & Ads
+    _NavItem(Icons.ad_units_rounded, Icons.ad_units_outlined, 'Startup Ads'),
+    _NavItem(Icons.trending_up_rounded, Icons.trending_up_rounded, 'Revenue'),
+    _NavItem(Icons.workspace_premium_rounded, Icons.workspace_premium_outlined, 'Subscriptions'),
+    _NavItem(Icons.payments_rounded, Icons.payments_outlined, 'Payments'),
+
+    // 6-9: Marketplace & Operations
+    _NavItem(Icons.calendar_month_rounded, Icons.calendar_month_outlined, 'Bookings'),
+    _NavItem(Icons.category_rounded, Icons.category_outlined, 'Categories'),
+    _NavItem(Icons.photo_library_rounded, Icons.photo_library_outlined, 'Portfolio'),
+    _NavItem(Icons.star_rounded, Icons.star_outline_rounded, 'Reviews'),
+
+    // 10-14: User Management
     _NavItem(Icons.people_alt_rounded, Icons.people_alt_outlined, 'Users'),
     _NavItem(Icons.person_rounded, Icons.person_outline_rounded, 'Customers'),
     _NavItem(Icons.work_rounded, Icons.work_outline_rounded, 'Professionals'),
-    _NavItem(
-      Icons.photo_library_rounded,
-      Icons.photo_library_outlined,
-      'Portfolio',
-    ),
-    _NavItem(
-      Icons.calendar_month_rounded,
-      Icons.calendar_month_outlined,
-      'Bookings',
-    ),
-    _NavItem(Icons.history_rounded, Icons.history_outlined, 'Logs'),
-    _NavItem(Icons.campaign_rounded, Icons.campaign_outlined, 'Banners'),
-    _NavItem(Icons.menu_book_rounded, Icons.menu_book_outlined, 'Magazine'),
-    _NavItem(Icons.flag_rounded, Icons.flag_outlined, 'Reports'),
-    _NavItem(Icons.insights_rounded, Icons.insights_outlined, 'Analytics'),
-    _NavItem(Icons.block_rounded, Icons.block_outlined, 'Blocked'),
-    _NavItem(
-      Icons.verified_user_rounded,
-      Icons.verified_user_outlined,
-      'Verify',
-    ),
-    _NavItem(Icons.category_rounded, Icons.category_outlined, 'Categories'),
-    _NavItem(Icons.payments_rounded, Icons.payments_outlined, 'Payments'),
-    _NavItem(Icons.trending_up_rounded, Icons.trending_up_rounded, 'Revenue'),
-    _NavItem(
-      Icons.workspace_premium_rounded,
-      Icons.workspace_premium_outlined,
-      'Subscriptions',
-    ),
-    _NavItem(Icons.star_rounded, Icons.star_outline_rounded, 'Reviews'),
-    _NavItem(
-      Icons.report_problem_rounded,
-      Icons.report_problem_outlined,
-      'Complaints',
-    ),
-    _NavItem(Icons.summarize_rounded, Icons.summarize_outlined, 'Reports Hub'),
-    _NavItem(
-      Icons.notifications_active_rounded,
-      Icons.notifications_outlined,
-      'Notifications',
-    ),
-    _NavItem(Icons.translate_rounded, Icons.translate_rounded, 'Languages'),
-    _NavItem(Icons.public_rounded, Icons.public_outlined, 'Countries'),
-    _NavItem(
-      Icons.location_city_rounded,
-      Icons.location_city_outlined,
-      'Cities',
-    ),
-    _NavItem(Icons.campaign_rounded, Icons.campaign_outlined, 'Announcements'),
-    _NavItem(Icons.info_rounded, Icons.info_outline_rounded, 'About Page'),
+    _NavItem(Icons.verified_user_rounded, Icons.verified_user_outlined, 'Verify Requests'),
+    _NavItem(Icons.block_rounded, Icons.block_outlined, 'Blocked Users'),
+
+    // 15-19: Trust, Safety & Support
+    _NavItem(Icons.flag_rounded, Icons.flag_outlined, 'Reported Users'),
     _NavItem(Icons.gavel_rounded, Icons.gavel_outlined, 'Appeals'),
-    _NavItem(
-      Icons.support_agent_rounded,
-      Icons.support_agent_outlined,
-      'Support',
-    ),
+    _NavItem(Icons.report_problem_rounded, Icons.report_problem_outlined, 'Complaints'),
+    _NavItem(Icons.support_agent_rounded, Icons.support_agent_outlined, 'Support'),
+    _NavItem(Icons.summarize_rounded, Icons.summarize_outlined, 'Reports Hub'),
+
+    // 20-25: Marketing & Content
+    _NavItem(Icons.campaign_rounded, Icons.campaign_outlined, 'Promo Banners'),
+    _NavItem(Icons.campaign_outlined, Icons.campaign_outlined, 'Announcements'),
+    _NavItem(Icons.notifications_active_rounded, Icons.notifications_outlined, 'Notifications'),
+    _NavItem(Icons.menu_book_rounded, Icons.menu_book_outlined, 'Magazine'),
+    _NavItem(Icons.info_rounded, Icons.info_outline_rounded, 'About Page'),
     _NavItem(Icons.edit_note_rounded, Icons.edit_note_outlined, 'Help Content'),
+
+    // 26-29: System & Localization
+    _NavItem(Icons.location_city_rounded, Icons.location_city_outlined, 'Cities'),
+    _NavItem(Icons.translate_rounded, Icons.translate_rounded, 'Languages'),
+    _NavItem(Icons.history_rounded, Icons.history_outlined, 'Audit Logs'),
   ];
 
   void _goTo(int index) {
@@ -273,19 +266,27 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
 
           const SizedBox(height: 8),
 
-          // All 6 nav items
+          // Categorized nav items with priority section headers
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.zero,
+              padding: const EdgeInsets.symmetric(vertical: 6),
               itemCount: _navItems.length,
               itemBuilder: (_, i) {
                 final item = _navItems[i];
                 final isActive = _currentIndex == i;
-                return _buildDrawerTile(
-                  icon: isActive ? item.activeIcon : item.icon,
-                  label: item.label,
-                  isActive: isActive,
-                  onTap: () => _goTo(i),
+                final header = _getSectionHeader(i);
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (header != null) _buildSectionHeader(header),
+                    _buildDrawerTile(
+                      icon: isActive ? item.activeIcon : item.icon,
+                      label: item.label,
+                      isActive: isActive,
+                      onTap: () => _goTo(i),
+                    ),
+                  ],
                 );
               },
             ),
@@ -315,6 +316,42 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
           ),
           const SizedBox(height: 12),
         ],
+      ),
+    );
+  }
+
+  String? _getSectionHeader(int index) {
+    switch (index) {
+      case 0:
+        return 'OVERVIEW';
+      case 2:
+        return 'MONETIZATION & ADS';
+      case 6:
+        return 'OPERATIONS';
+      case 10:
+        return 'USER MANAGEMENT';
+      case 15:
+        return 'TRUST & SUPPORT';
+      case 20:
+        return 'MARKETING & CONTENT';
+      case 26:
+        return 'SYSTEM & LOCALIZATION';
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 18, right: 18, top: 14, bottom: 4),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.9,
+          color: Colors.grey[500],
+        ),
       ),
     );
   }

@@ -352,14 +352,14 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
 
     final stats = _dashboard?['stats'] as Map<String, dynamic>? ?? {};
     final rating = _dashboard?['rating'] as Map<String, dynamic>? ?? {};
-    final earnings = _dashboard?['earnings'] as Map<String, dynamic>? ?? {};
+    // Direct dealing model - in-app wallet balance tracking is disabled
+    // final earnings = _dashboard?['earnings'] as Map<String, dynamic>? ?? {};
     final totalBookings = _allBookings.isNotEmpty
         ? _allBookings.length
         : ((stats['pending_bookings'] ?? 0) as int) +
               ((stats['accepted_bookings'] ?? 0) as int) +
               ((stats['completed_bookings'] ?? 0) as int);
     final avgRating = (rating['average'] ?? 0).toDouble();
-    final totalEarnings = (earnings['total'] ?? 0).toDouble();
     final clientsCount = _allBookings
         .map((b) => (b['customer_id'] ?? b['customer_name'] ?? '').toString())
         .where((c) => c.isNotEmpty)
@@ -454,9 +454,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                 _headerStatDivider(),
                 Expanded(
                   child: _headerStat(
-                    Icons.account_balance_wallet_rounded,
-                    'Rs ${_formatMoney(totalEarnings)}',
-                    t.earningsLabel,
+                    Icons.mark_email_read_rounded,
+                    _formatCompactNumber(totalBookings),
+                    'Inquiries',
                   ),
                 ),
               ],
@@ -516,6 +516,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     return '${k.toStringAsFixed(k >= 10 ? 0 : 1)}K';
   }
 
+  // ignore: unused_element
   String _formatMoney(double amount) {
     final rounded = amount.round();
     final str = rounded.toString();
@@ -1104,12 +1105,11 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     );
   }
 
-  // ── Earnings Section ──────────────────────────────────
+  // ── Direct Settlement & Service Performance Section ───────────────────
   Widget _buildEarningsSection(bool isDark) {
-    final earnings = _dashboard?['earnings'] as Map<String, dynamic>? ?? {};
-    final today = (earnings['today'] ?? 0).toDouble();
-    final month = (earnings['month'] ?? 0).toDouble();
-    final total = (earnings['total'] ?? 0).toDouble();
+    final stats = _dashboard?['stats'] as Map<String, dynamic>? ?? {};
+    final pendingCount = (stats['pending_bookings'] ?? 0).toInt();
+    final acceptedCount = (stats['accepted_bookings'] ?? 0).toInt();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
@@ -1120,7 +1120,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context).earningsLabel,
+                'Direct Settlement Model',
                 style: TextStyle(
                   fontSize: AppFontSizes.title,
                   fontWeight: FontWeight.w600,
@@ -1128,55 +1128,82 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                   letterSpacing: 0.1,
                 ),
               ),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const ProfessionalWalletScreen(),
-                  ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.professionalColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
-                  AppLocalizations.of(context).viewWalletLabel,
+                child: const Text(
+                  '0% Commission',
                   style: TextStyle(
-                    fontSize: AppFontSizes.secondary,
+                    fontSize: 11,
                     color: AppColors.professionalColor,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.2,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: _earningsHeroCard(
-                  AppLocalizations.of(context).todaysEarningsLabel,
-                  today,
-                  isDark,
-                ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
               ),
-            ],
+              borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Direct Client Dealing',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Keep 100% of your earnings. Clients pay you directly with zero deduction.',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.handshake_rounded,
+                  color: Colors.white,
+                  size: 32,
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
                 child: _earningsMiniCard(
-                  AppLocalizations.of(context).thisMonthLabel,
-                  month,
-                  Icons.calendar_view_month_rounded,
+                  'Pending Inquiries',
+                  pendingCount.toDouble(),
+                  Icons.mark_email_unread_rounded,
                   isDark,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _earningsMiniCard(
-                  AppLocalizations.of(context).totalEarnedLabel,
-                  total,
-                  Icons.savings_outlined,
+                  'Accepted Inquiries',
+                  acceptedCount.toDouble(),
+                  Icons.thumb_up_alt_rounded,
                   isDark,
                 ),
               ),
@@ -1187,6 +1214,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
     );
   }
 
+  // ignore: unused_element
   Widget _earningsHeroCard(String label, double amount, bool isDark) {
     return GestureDetector(
       onTap: () => Navigator.push(

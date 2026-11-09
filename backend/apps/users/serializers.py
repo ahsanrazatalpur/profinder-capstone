@@ -13,10 +13,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     city        = serializers.CharField(max_length=100, required=False, allow_blank=True)
     country     = serializers.CharField(max_length=100, required=False, allow_blank=True)
     category_id = serializers.IntegerField(required=False, allow_null=True)
+    custom_profession = serializers.CharField(max_length=100, required=False, allow_blank=True)
 
     class Meta:
         model  = User
-        fields = ['email', 'name', 'role', 'password', 'city', 'country', 'category_id']
+        fields = ['email', 'name', 'role', 'password', 'city', 'country', 'category_id', 'custom_profession']
 
     def validate_email(self, value):
         value = value.strip().lower()
@@ -43,8 +44,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Extract extra fields before creating user
-        city        = validated_data.pop('city', '')
-        country     = validated_data.pop('country', '')
+        city        = validated_data.pop('city', '').strip()
+        # Default country to Pakistan in Pakistan-only scope
+        country     = validated_data.pop('country', '').strip() or 'Pakistan'
         category_id = validated_data.pop('category_id', None)
 
         # Create user
@@ -55,11 +57,11 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
         )
 
-        # Auto create UserProfile with city + country
+        # Auto create UserProfile with city + country (defaults to Pakistan)
         UserProfile.objects.create(
             user=user,
             city=city,
-            country=country,
+            country=country or 'Pakistan',
         )
 
         # If professional — auto create ProfessionalProfile with category
@@ -78,4 +80,4 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 # ✅ i18n — used by PATCH /api/users/language/
 class UpdateLanguageSerializer(serializers.Serializer):
-    preferred_language = serializers.ChoiceField(choices=User.LANGUAGE_CHOICES)
+    preferred_language = serializers.ChoiceField(choices=User.NATIONAL_LANGUAGE_CHOICES)

@@ -1,0 +1,107 @@
+{% extends "seo_web/base.html" %}
+
+{% block content %}
+<section class="hero-section">
+    <h1>Find Verified Professional Services in Pakistan</h1>
+    <p>
+        Pakistan's national directory of background-checked doctors, electricians, legal advocates, civil engineers, home tutors, and maintenance technicians across all 5 provinces and territories.
+    </p>
+
+    <form class="search-box" action="/search/" method="get" role="search">
+        <input type="text" name="q" placeholder="What service do you need? (e.g. Electrician, Doctor)" aria-label="Search Services">
+        <select name="city" aria-label="Select City">
+            <option value="">All Pakistan Cities (99+)</option>
+            {% for c in cities %}
+                <option value="{{ c.slug }}">{{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Search National Directory</button>
+    </form>
+</section>
+
+<!-- Provinces Grid -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Pakistan Provinces & Administrative Territories</h2>
+        <p>Explore verified service directories by administrative region.</p>
+    </div>
+    <div class="cards-grid">
+        {% for prov_slug, prov in provinces.items %}
+        <a href="/pakistan/{{ prov_slug }}/" class="card">
+            <h3>{{ prov.name }} ({{ prov.urdu }})</h3>
+            <p>{{ prov.description }}</p>
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+                <strong>Capital:</strong> {{ prov.capital }}
+            </div>
+            <div class="chips-container">
+                {% for c_name in prov.cities|slice:":4" %}
+                    <span class="chip">{{ c_name|title }}</span>
+                {% endfor %}
+            </div>
+            <span style="margin-top: 14px; font-weight: 600; font-size: 13px; color: var(--primary);">View {{ prov.name }} Directory &rarr;</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Top Cities -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Top Service Hubs & Major Cities</h2>
+        <p>Direct access to verified local talent across Pakistan's major metropolitan areas.</p>
+    </div>
+    <div class="cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+        {% for c in major_cities %}
+        <a href="/pakistan/{{ c.province|slugify|default:'sindh' }}/{{ c.slug }}/" class="card">
+            <h3 style="font-size: 17px;">📍 {{ c.name }}</h3>
+            <p style="font-size: 13px; margin-bottom: 8px;">{{ c.province|default:"Pakistan" }}</p>
+            <span style="font-weight: 600; font-size: 13px; color: var(--primary);">Browse Local Pros &rarr;</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- National Service Categories -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Services Across Pakistan</h2>
+        <p>Select a trade or profession to find qualified service providers nationally.</p>
+    </div>
+    <div class="cards-grid">
+        {% for cat in categories %}
+        <a href="/categories/{{ cat.slug }}/" class="card">
+            <h3>{{ cat.name }}</h3>
+            <p>Find licensed and reviewed {{ cat.name|lower }} across Pakistan.</p>
+            <span style="font-weight: 600; font-size: 13px; color: var(--primary);">Browse Category &rarr;</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- GEO FAQs -->
+<section class="geo-faq-section">
+    <h2>Frequently Asked Questions about ProFinder in Pakistan</h2>
+    <p class="lead-intro">Essential information for Pakistani consumers and businesses.</p>
+
+    <div class="faq-item">
+        <div class="faq-question">How many cities does ProFinder cover in Pakistan?</div>
+        <div class="faq-answer">
+            ProFinder covers 99+ cities across Sindh, Punjab, Khyber Pakhtunkhwa, Balochistan, and Islamabad Capital Territory, including major metropolitan hubs and regional district headquarters.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">How do I verify a local service provider's authenticity?</div>
+        <div class="faq-answer">
+            Every specialist profile features verification badges, genuine client reviews from completed jobs, uploaded portfolio photos, and transparent hourly rates.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">How do payments work on ProFinder in Pakistan?</div>
+        <div class="faq-answer">
+            ProFinder is a pure discovery and booking platform with zero hidden commission. You pay the professional directly using Cash on Delivery (COD), JazzCash, Easypaisa, or direct bank transfer once the job is completed to your satisfaction.
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -289,7 +289,7 @@ abstract class AppLocalizations {
   /// No description provided for @hourlyRate.
   ///
   /// In en, this message translates to:
-  /// **'Hourly Rate (PKR)'**
+  /// **'Service Rate (PKR)'**
   String get hourlyRate;
 
   /// No description provided for @verified.
@@ -307,19 +307,19 @@ abstract class AppLocalizations {
   /// No description provided for @bookings.
   ///
   /// In en, this message translates to:
-  /// **'Bookings'**
+  /// **'Service Requests'**
   String get bookings;
 
   /// No description provided for @myBookings.
   ///
   /// In en, this message translates to:
-  /// **'My Bookings'**
+  /// **'My Service Requests'**
   String get myBookings;
 
   /// No description provided for @bookNow.
   ///
   /// In en, this message translates to:
-  /// **'Book Now'**
+  /// **'Request Service'**
   String get bookNow;
 
   /// No description provided for @cancel.
@@ -355,7 +355,7 @@ abstract class AppLocalizations {
   /// No description provided for @accepted.
   ///
   /// In en, this message translates to:
-  /// **'Accepted'**
+  /// **'Request Accepted'**
   String get accepted;
 
   /// No description provided for @rejected.
@@ -6215,7 +6215,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookAppointmentTitle.
   ///
   /// In en, this message translates to:
-  /// **'Book Appointment'**
+  /// **'Request Service'**
   String get bookAppointmentTitle;
 
   /// No description provided for @bookCta.
@@ -6227,7 +6227,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookNowCta.
   ///
   /// In en, this message translates to:
-  /// **'Book Now'**
+  /// **'Request Service'**
   String get bookNowCta;
 
   /// No description provided for @bookingConfigurationTitle.
@@ -6245,7 +6245,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookingDetailsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Booking Details'**
+  /// **'Request Details'**
   String get bookingDetailsTitle;
 
   /// No description provided for @bookingFailed.
@@ -6257,7 +6257,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookingManagementTitle.
   ///
   /// In en, this message translates to:
-  /// **'Manage Bookings'**
+  /// **'Service Requests'**
   String get bookingManagementTitle;
 
   /// No description provided for @bookingSoFarLabel.
@@ -6275,13 +6275,13 @@ abstract class AppLocalizations {
   /// No description provided for @bookingSuccessMessage.
   ///
   /// In en, this message translates to:
-  /// **'Your booking request with {value1} has been sent'**
+  /// **'Your service request with {value1} has been submitted'**
   String bookingSuccessMessage(Object value1);
 
   /// No description provided for @bookingSuccessTitle.
   ///
   /// In en, this message translates to:
-  /// **'Booking Requested'**
+  /// **'Request Submitted'**
   String get bookingSuccessTitle;
 
   /// No description provided for @bookingTimeRequired.
@@ -6671,7 +6671,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmBookingCta.
   ///
   /// In en, this message translates to:
-  /// **'Confirm Booking'**
+  /// **'Submit Service Request'**
   String get confirmBookingCta;
 
   /// No description provided for @confirmPasswordLabel.
@@ -8363,25 +8363,25 @@ abstract class AppLocalizations {
   /// No description provided for @noBookingsAccepted.
   ///
   /// In en, this message translates to:
-  /// **'No accepted bookings'**
+  /// **'No accepted service requests'**
   String get noBookingsAccepted;
 
   /// No description provided for @noBookingsAll.
   ///
   /// In en, this message translates to:
-  /// **'No bookings yet'**
+  /// **'No service requests yet'**
   String get noBookingsAll;
 
   /// No description provided for @noBookingsCancelled.
   ///
   /// In en, this message translates to:
-  /// **'No cancelled bookings'**
+  /// **'No cancelled requests'**
   String get noBookingsCancelled;
 
   /// No description provided for @noBookingsCompleted.
   ///
   /// In en, this message translates to:
-  /// **'No completed bookings'**
+  /// **'No completed requests'**
   String get noBookingsCompleted;
 
   /// No description provided for @noBookingsDefault.
@@ -8393,7 +8393,7 @@ abstract class AppLocalizations {
   /// No description provided for @noBookingsPending.
   ///
   /// In en, this message translates to:
-  /// **'No pending bookings'**
+  /// **'No pending service requests'**
   String get noBookingsPending;
 
   /// No description provided for @noBookingsRescheduled.
@@ -13189,6 +13189,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Matches your device setting'**
   String get themeModeSystemHint;
+
+  /// No description provided for @requestService.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Service'**
+  String get requestService;
+
+  /// No description provided for @serviceInquiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Request'**
+  String get serviceInquiry;
+
+  /// No description provided for @inquiryAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Accepted'**
+  String get inquiryAccepted;
+
+  /// No description provided for @myServiceInquiries.
+  ///
+  /// In en, this message translates to:
+  /// **'My Service Requests'**
+  String get myServiceInquiries;
+
+  /// No description provided for @cancelInquiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Request'**
+  String get cancelInquiry;
+
+  /// No description provided for @unitPerVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Per Visit'**
+  String get unitPerVisit;
+
+  /// No description provided for @unitPerSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Per Session'**
+  String get unitPerSession;
+
+  /// No description provided for @unitPerService.
+  ///
+  /// In en, this message translates to:
+  /// **'Per Service'**
+  String get unitPerService;
+
+  /// No description provided for @unitPerConsultation.
+  ///
+  /// In en, this message translates to:
+  /// **'Per Consultation'**
+  String get unitPerConsultation;
+
+  /// No description provided for @unitPerProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Per Project'**
+  String get unitPerProject;
+
+  /// No description provided for @unitPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Per Month'**
+  String get unitPerMonth;
+
+  /// No description provided for @unitFixedPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed Price'**
+  String get unitFixedPrice;
+
+  /// No description provided for @unitStartingFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting From'**
+  String get unitStartingFrom;
+
+  /// No description provided for @unitNegotiable.
+  ///
+  /// In en, this message translates to:
+  /// **'Negotiable'**
+  String get unitNegotiable;
+
+  /// No description provided for @unitFreeConsultation.
+  ///
+  /// In en, this message translates to:
+  /// **'Free Consultation'**
+  String get unitFreeConsultation;
+
+  /// No description provided for @customerDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'ProFinder connects you with independent professionals. Service scope, schedule, and payments are settled directly between you and the professional. ProFinder never collects service fees.'**
+  String get customerDisclosure;
+
+  /// No description provided for @professionalDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'You receive direct service requests from clients. Set your own terms and receive 100% of your earnings directly with zero commission.'**
+  String get professionalDisclosure;
 }
 
 class _AppLocalizationsDelegate

@@ -1747,7 +1747,7 @@ def _validate_professional_coords(lat, lng, city):
     return True, None
 
 
-def _build_professional_data(user, customer_lat=None, customer_lng=None, relevance=None, is_premium=None):
+def _build_professional_data(user, customer_lat=None, customer_lng=None, relevance=None, is_premium=None, is_featured=None):
     try:
         prof = user.professionalprofile
         up   = user.userprofile
@@ -1813,13 +1813,23 @@ def _build_professional_data(user, customer_lat=None, customer_lng=None, relevan
             'company_name':      prof.company_name,
             'services':          prof.services,
             'tags':              prof.tags,
+            'whatsapp_number':   getattr(prof, 'whatsapp_number', '') or getattr(up, 'whatsapp_number', '') or getattr(up, 'phone', '') or '',
+            'phone':             getattr(up, 'phone', '') or getattr(prof, 'whatsapp_number', '') or '',
             'hourly_rate':       float(prof.hourly_rate),
+            'price_amount':      float(prof.hourly_rate),
+            'pricing_unit':      getattr(prof, 'pricing_unit', 'per_service') or 'per_service',
+            'pricing_unit_display': prof.get_pricing_unit_display() if hasattr(prof, 'get_pricing_unit_display') else 'Per Service',
+            'custom_pricing_unit': getattr(prof, 'custom_pricing_unit', '') or '',
+            'custom_pricing_unit_approved': getattr(prof, 'custom_pricing_unit_approved', False),
+            'identity_verified': getattr(prof, 'identity_verified', False),
+            'credentials_verified': getattr(prof, 'credentials_verified', False),
             'currency':          currency,
             'currency_symbol':   currency_symbol,
             'average_rating':    float(prof.average_rating),
             'experience_years':  prof.experience_years,
             'is_verified':       prof.is_verified,
             'is_premium':        prem,
+            'is_featured':       bool(is_featured) if is_featured is not None else False,
             'is_available':      getattr(prof, 'is_available', True),
             'working_hours_start': getattr(prof, 'working_hours_start', '09:00') or '09:00',
             'working_hours_end':   getattr(prof, 'working_hours_end', '18:00') or '18:00',
@@ -1868,6 +1878,7 @@ def _sort_professionals(results):
     return sorted(
         results,
         key=lambda x: (
+            not x.get('is_featured',    False),
             -x.get('relevance_score',   0),
             not x.get('is_verified',    False),
             -x.get('average_rating',    0),
@@ -2469,6 +2480,24 @@ class NearbyProfessionalsView(APIView):
         except Exception:
             active_premium_user_ids = set()
 
+        # ── Pre-fetch active featured professional IDs (INNER JOIN payment__status='completed') ──
+        try:
+            from apps.subscriptions.models import FeaturedListingCampaign
+            featured_now = timezone.now()
+            featured_qs = FeaturedListingCampaign.objects.filter(
+                is_active=True,
+                start_date__lte=featured_now,
+                end_date__gte=featured_now,
+                payment__status='completed',
+            )
+            if category_id:
+                featured_qs = featured_qs.filter(category_id=category_id)
+            active_featured_user_ids = set(
+                featured_qs.values_list('professional__user_id', flat=True)
+            )
+        except Exception:
+            active_featured_user_ids = set()
+
         # ── Filters ───────────────────────────────────────────────────────
         if min_rating   > 0:   qs = qs.filter(professionalprofile__average_rating__gte=min_rating)
         if verified_only:       qs = qs.filter(professionalprofile__is_verified=True)
@@ -2651,7 +2680,8 @@ class NearbyProfessionalsView(APIView):
                 continue
             data = _build_professional_data(
                 user, customer_lat, customer_lng, relevance=score,
-                is_premium=user_is_premium
+                is_premium=user_is_premium,
+                is_featured=(user.id in active_featured_user_ids)
             )
             if data:
                 results.append(data)

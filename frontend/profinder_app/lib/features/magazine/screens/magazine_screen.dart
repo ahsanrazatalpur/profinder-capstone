@@ -1,3 +1,4 @@
+import '../../../core/utils/web_identity/web_identity.dart';
 // lib/features/magazine/screens/magazine_screen.dart
 
 import '../../../services/content_localizer.dart';
@@ -38,6 +39,7 @@ class _MagazineScreenState extends State<MagazineScreen> {
   @override
   void initState() {
     super.initState();
+    WebIdentity.setIdentity(title: 'Magazine | ProFinder');
     _loadAll();
   }
 
@@ -230,12 +232,13 @@ class _MagazineScreenState extends State<MagazineScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         itemCount: _categories.length + 1,
         itemBuilder: (_, i) {
-          if (i == 0)
+          if (i == 0) {
             return _chip(
               null,
               AppLocalizations.of(context).magazineAllCategoriesLabel,
               isDark,
             );
+          }
           final cat = _categories[i - 1];
           return _chip(cat.id, cat.name, isDark);
         },

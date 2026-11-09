@@ -123,15 +123,15 @@ class ReviewView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Enforce legitimate booking history with the professional
-        has_booking = Booking.objects.filter(
+        # Enforce legitimate booking history with the professional: ONLY completed jobs
+        has_completed_booking = Booking.objects.filter(
             customer=request.user, professional=professional,
-            status__in=['accepted', 'completed'],
+            status='completed',
         ).exists()
 
-        if not has_booking:
+        if not has_completed_booking:
             return Response(
-                {"error": "You can only review professionals with whom you have booked a service."},
+                {"error": "You can only review professionals after a booked service has been completed."},
                 status=status.HTTP_403_FORBIDDEN
             )
 

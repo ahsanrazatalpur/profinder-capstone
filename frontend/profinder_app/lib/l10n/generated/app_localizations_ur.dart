@@ -99,7 +99,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get experience => 'سالوں کا تجربہ';
 
   @override
-  String get hourlyRate => 'فی گھنٹہ ریٹ (PKR)';
+  String get hourlyRate => 'سروس ریٹ (PKR)';
 
   @override
   String get verified => 'تصدیق شدہ';
@@ -108,13 +108,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get notVerified => 'غیر تصدیق شدہ';
 
   @override
-  String get bookings => 'بکنگز';
+  String get bookings => 'سروس انکوائریز';
 
   @override
-  String get myBookings => 'میری بکنگز';
+  String get myBookings => 'میری سروس انکوائریز';
 
   @override
-  String get bookNow => 'ابھی بک کریں';
+  String get bookNow => 'سروس کی درخواست کریں';
 
   @override
   String get cancel => 'منسوخ کریں';
@@ -132,7 +132,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get pending => 'زیر التوا';
 
   @override
-  String get accepted => 'قبول شدہ';
+  String get accepted => 'انکوائری منظور شدہ';
 
   @override
   String get rejected => 'مسترد شدہ';
@@ -3470,13 +3470,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get bioLabel => 'تعارف';
 
   @override
-  String get bookAppointmentTitle => 'اپائنٹمنٹ بک کریں';
+  String get bookAppointmentTitle => 'سروس کی درخواست کریں';
 
   @override
   String get bookCta => 'بک کریں';
 
   @override
-  String get bookNowCta => 'ابھی بک کریں';
+  String get bookNowCta => 'سروس کی درخواست کریں';
 
   @override
   String get bookingConfigurationTitle => 'بکنگ کی ترتیب';
@@ -3485,13 +3485,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get bookingDateRequired => 'براہ کرم تاریخ منتخب کریں';
 
   @override
-  String get bookingDetailsTitle => 'بکنگ کی تفصیلات';
+  String get bookingDetailsTitle => 'درخواست کی تفصیلات';
 
   @override
   String get bookingFailed => 'بکنگ ناکام ہو گئی۔ براہ کرم دوبارہ کوشش کریں۔';
 
   @override
-  String get bookingManagementTitle => 'بکنگز کا انتظام';
+  String get bookingManagementTitle => 'سروس انکوائریز';
 
   @override
   String get bookingSoFarLabel => 'اب تک کی بکنگز';
@@ -3503,11 +3503,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String bookingSuccessMessage(Object value1) {
-    return '$value1 کے ساتھ آپ کی بکنگ کی درخواست بھیج دی گئی ہے';
+    return 'آپ کی سروس انکوائری $value1 کو بھیج دی گئی ہے';
   }
 
   @override
-  String get bookingSuccessTitle => 'بکنگ کی درخواست بھیج دی گئی';
+  String get bookingSuccessTitle => 'انکوائری جمع ہوگئی';
 
   @override
   String get bookingTimeRequired => 'براہ کرم وقت منتخب کریں';
@@ -3719,7 +3719,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get completedLabel => 'مکمل';
 
   @override
-  String get confirmBookingCta => 'بکنگ کی تصدیق کریں';
+  String get confirmBookingCta => 'سروس انکوائری جمع کریں';
 
   @override
   String get confirmPasswordLabel => 'پاس ورڈ کی تصدیق کریں';
@@ -4619,22 +4619,22 @@ class AppLocalizationsUr extends AppLocalizations {
   String get nextCta => 'اگلا';
 
   @override
-  String get noBookingsAccepted => 'کوئی قبول شدہ بکنگ نہیں';
+  String get noBookingsAccepted => 'کوئی منظور شدہ سروس انکوائری نہیں';
 
   @override
-  String get noBookingsAll => 'ابھی تک کوئی بکنگ نہیں';
+  String get noBookingsAll => 'ابھی تک کوئی سروس انکوائری نہیں';
 
   @override
-  String get noBookingsCancelled => 'کوئی منسوخ شدہ بکنگ نہیں';
+  String get noBookingsCancelled => 'کوئی منسوخ شدہ انکوائری نہیں';
 
   @override
-  String get noBookingsCompleted => 'کوئی مکمل شدہ بکنگ نہیں';
+  String get noBookingsCompleted => 'کوئی مکمل انکوائری نہیں';
 
   @override
   String get noBookingsDefault => 'کوئی بکنگ نہیں ملی';
 
   @override
-  String get noBookingsPending => 'کوئی زیر التوا بکنگ نہیں';
+  String get noBookingsPending => 'کوئی زیر التوا سروس انکوائری نہیں';
 
   @override
   String get noBookingsRescheduled => 'کوئی نئے وقت پر منتقل شدہ بکنگ نہیں';
@@ -7267,4 +7267,57 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get themeModeSystemHint => 'آپ کے ڈیوائس کی سیٹنگ کے مطابق';
+
+  @override
+  String get requestService => 'سروس کی درخواست کریں';
+
+  @override
+  String get serviceInquiry => 'سروس کی درخواست';
+
+  @override
+  String get inquiryAccepted => 'انکوائری منظور شدہ';
+
+  @override
+  String get myServiceInquiries => 'میری سروس انکوائریز';
+
+  @override
+  String get cancelInquiry => 'درخواست منسوخ کریں';
+
+  @override
+  String get unitPerVisit => 'فی وزٹ';
+
+  @override
+  String get unitPerSession => 'فی سیشن';
+
+  @override
+  String get unitPerService => 'فی سروس';
+
+  @override
+  String get unitPerConsultation => 'فی مشاورت';
+
+  @override
+  String get unitPerProject => 'فی پراجیکٹ';
+
+  @override
+  String get unitPerMonth => 'فی مہینہ';
+
+  @override
+  String get unitFixedPrice => 'مقررہ قیمت';
+
+  @override
+  String get unitStartingFrom => 'شروع قیمت';
+
+  @override
+  String get unitNegotiable => 'قابلِ بات چیت';
+
+  @override
+  String get unitFreeConsultation => 'مفت مشاورت';
+
+  @override
+  String get customerDisclosure =>
+      'پرو فائنڈر آپ کو آزاد ماہرین سے جوڑتا ہے۔ کام، شیڈول اور ادائیگی براہ راست طے کی جاتی ہے۔ پرو فائنڈر سروس فیس نہیں لیتا۔';
+
+  @override
+  String get professionalDisclosure =>
+      'آپ براہ راست کلائنٹس سے انکوائریز وصول کرتے ہیں۔ اپنی شرائط خود طے کریں اور بغیر کمیشن 100 فیصد رقم براہ راست وصول کریں۔';
 }

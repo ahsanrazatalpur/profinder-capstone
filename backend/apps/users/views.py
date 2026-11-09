@@ -107,7 +107,13 @@ class CheckEmailView(APIView):
 class PublicCountriesView(APIView):
     def get(self, request):
         from apps.admin_panel.models import Country
-        countries = Country.objects.filter(status='active').order_by('name')
+        from profinder.localization_config import MARKETPLACE_SCOPE_MODE, DEFAULT_COUNTRY_NAME
+        if MARKETPLACE_SCOPE_MODE == 'PK_NATIONAL':
+            countries = Country.objects.filter(name__iexact=DEFAULT_COUNTRY_NAME)
+            if not countries.exists():
+                countries = Country.objects.filter(status='active')[:1]
+        else:
+            countries = Country.objects.filter(status='active').order_by('name')
         data = [{"id": c.id, "name": c.name} for c in countries]
         return Response(data)
 
@@ -117,18 +123,25 @@ class PublicCountriesView(APIView):
 class PublicCitiesView(APIView):
     def get(self, request):
         from apps.admin_panel.models import Country, City
+        from profinder.localization_config import MARKETPLACE_SCOPE_MODE, DEFAULT_COUNTRY_NAME
         country_id = request.query_params.get('country')
-        if not country_id:
+        if not country_id and MARKETPLACE_SCOPE_MODE == 'PK_NATIONAL':
+            # Default to Pakistan in Pakistan-only scope
+            country = Country.objects.filter(name__iexact=DEFAULT_COUNTRY_NAME).first()
+            if not country:
+                country = Country.objects.first()
+        elif country_id:
+            try:
+                country = Country.objects.get(id=country_id, status='active')
+            except (Country.DoesNotExist, ValueError):
+                return Response(
+                    {"error": "Country not found or not active."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        else:
             return Response(
                 {"error": "country is required."},
                 status=status.HTTP_400_BAD_REQUEST
-            )
-        try:
-            country = Country.objects.get(id=country_id, status='active')
-        except (Country.DoesNotExist, ValueError):
-            return Response(
-                {"error": "Country not found or not active."},
-                status=status.HTTP_404_NOT_FOUND
             )
         cities = City.objects.filter(country=country, status='active').order_by('name')
         data = [{"id": c.id, "name": c.name} for c in cities]

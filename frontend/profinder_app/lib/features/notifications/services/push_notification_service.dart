@@ -32,7 +32,14 @@ class PushNotificationService {
   PushNotificationService._internal();
 
   final _api = ApiService();
-  final _messaging = FirebaseMessaging.instance;
+  FirebaseMessaging? get _messaging {
+    try {
+      return FirebaseMessaging.instance;
+    } catch (e) {
+      debugPrint('[FCM] FirebaseMessaging unavailable: $e');
+      return null;
+    }
+  }
   final FlutterLocalNotificationsPlugin _local =
       FlutterLocalNotificationsPlugin();
 
@@ -103,58 +110,72 @@ class PushNotificationService {
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
   Future<void> init() async {
-    final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-    debugPrint('[FCM] Permission: ${settings.authorizationStatus}');
-
-    await _messaging.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    if (_isAndroid) {
-      const initSettings = InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      );
-      await _local.initialize(
-        initSettings,
-        onDidReceiveNotificationResponse: (NotificationResponse r) {
-          final payload = r.payload;
-          if (payload == null || payload.isEmpty) return;
-          try {
-            _handleTap(Map<String, dynamic>.from(jsonDecode(payload) as Map));
-          } catch (_) {}
-        },
-      );
-
-      final androidImpl = _local
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >();
-      await androidImpl?.createNotificationChannel(_generalChannel);
-      await androidImpl?.createNotificationChannel(_chatChannel);
-    }
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      debugPrint(
-        '[FCM] Foreground: ${message.notification?.title} — ${message.notification?.body}',
-      );
-      await _showForegroundNotification(message);
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      debugPrint('[FCM] Opened via notification, data: ${message.data}');
-      _handleTap(Map<String, dynamic>.from(message.data));
-    });
-
-    final initial = await _messaging.getInitialMessage();
-    if (initial != null) {
-      debugPrint('[FCM] Cold start via notification, data: ${initial.data}');
-      _pendingData = Map<String, dynamic>.from(initial.data);
+    try {
+      final messaging = _messaging;
+      if (messaging == null) return;
+      if (!kIsWeb) {
+        final settings = await _messaging?.requestPermission(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+        debugPrint('[FCM] Permission: ${settings?.authorizationStatus}');
+        await _messaging?.setForegroundNotificationPresentationOptions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+      } else {
+        try {
+          await _messaging?.requestPermission(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+        } catch (e) {
+          debugPrint('[FCM Web] Permission note: $e');
+        }
+      }
+      if (_isAndroid) {
+        const initSettings = InitializationSettings(
+          android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        );
+        await _local.initialize(
+          initSettings,
+          onDidReceiveNotificationResponse: (NotificationResponse r) {
+            final payload = r.payload;
+            if (payload == null || payload.isEmpty) return;
+            try {
+              _handleTap(Map<String, dynamic>.from(jsonDecode(payload) as Map));
+            } catch (_) {}
+          },
+        );
+        final androidImpl = _local
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
+        await androidImpl?.createNotificationChannel(_generalChannel);
+        await androidImpl?.createNotificationChannel(_chatChannel);
+      }
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+        debugPrint(
+          '[FCM] Foreground: ${message.notification?.title} - ${message.notification?.body}',
+        );
+        await _showForegroundNotification(message);
+      });
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        debugPrint('[FCM] Opened via notification, data: ${message.data}');
+        _handleTap(Map<String, dynamic>.from(message.data));
+      });
+      if (!kIsWeb) {
+        final initial = await _messaging?.getInitialMessage();
+        if (initial != null) {
+          debugPrint('[FCM] Cold start via notification, data: ${initial.data}');
+          _pendingData = Map<String, dynamic>.from(initial.data);
+        }
+      }
+    } catch (e) {
+      debugPrint('[FCM] init note: $e');
     }
   }
 
@@ -303,7 +324,9 @@ class PushNotificationService {
 
   Future<void> registerToken() async {
     try {
-      final token = await _messaging.getToken();
+      final messaging = _messaging;
+      if (messaging == null) return;
+      final token = await messaging.getToken();
       if (token == null) {
         debugPrint('[FCM] Could not get token (web may require VAPID key)');
         return;
@@ -316,7 +339,7 @@ class PushNotificationService {
 
     if (!_tokenListenerAttached) {
       _tokenListenerAttached = true;
-      _messaging.onTokenRefresh.listen((newToken) async {
+      _messaging?.onTokenRefresh.listen((newToken) async {
         try {
           await _api.patch(AppConstants.me, {'fcm_token': newToken});
           debugPrint('[FCM] Token refreshed & updated');
@@ -328,7 +351,7 @@ class PushNotificationService {
   Future<void> unregisterToken() async {
     try {
       await _api.patch(AppConstants.me, {'fcm_token': ''});
-      await _messaging.deleteToken();
+      await _messaging?.deleteToken();
       debugPrint('[FCM] Token unregistered');
     } catch (e) {
       debugPrint('[FCM] Token unregister failed: $e');

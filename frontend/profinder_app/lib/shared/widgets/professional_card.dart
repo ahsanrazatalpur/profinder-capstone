@@ -119,7 +119,7 @@ class ProfessionalCard extends StatelessWidget {
   // truth parent screens size their wrappers from, so nothing that
   // reads this card's layout elsewhere needed to change.
   static const double _basePhotoHeight = 168.0;
-  static const double _baseBodyHeight = 210.0;
+  static const double _baseBodyHeight = 226.0;
   static const double _baseCardWidth = 230.0;
   static const double _cardRadius = 20.0;
 
@@ -414,9 +414,7 @@ class ProfessionalCard extends StatelessWidget {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: AppLocalizations.of(
-                                    context,
-                                  ).perHourLabel,
+                                  text: AppHelpers.getPricingUnitShortLabel(professional: pro),
                                   style: TextStyle(
                                     fontSize: _sp(
                                       12,
@@ -688,6 +686,7 @@ class ProfessionalCard extends StatelessWidget {
     double scale,
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final expNum = int.tryParse('$experience') ?? 0;
 
     return Row(
       children: [
@@ -724,47 +723,54 @@ class ProfessionalCard extends StatelessWidget {
           ),
         ),
         if (reviews != null) ...[
-          SizedBox(width: _sp(6, scale, min: 5, max: 8)),
-          Flexible(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: AlignmentDirectional.centerStart,
-              child: Text(
-                AppLocalizations.of(context).reviewsCountLabel(reviews),
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: _sp(12, scale, min: 10.5, max: 14),
-                  color: context.colors.textSecondary,
-                  letterSpacing: 0.2,
-                ),
-              ),
+          SizedBox(width: _sp(5, scale, min: 4, max: 6)),
+          Text(
+            '($reviews)',
+            maxLines: 1,
+            style: TextStyle(
+              fontSize: _sp(11.5, scale, min: 10, max: 13),
+              color: context.colors.textSecondary,
             ),
           ),
         ],
-        if (experience != null) ...[
-          SizedBox(width: _sp(8, scale, min: 6, max: 10)),
-          Icon(
-            Icons.work_outline_rounded,
-            size: _sp(13, scale, min: 11.5, max: 15),
-            color: context.colors.textSecondary,
+        const Spacer(),
+        // Dedicated Experience Badge (Never squashed by FittedBox!)
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: _sp(6, scale, min: 5, max: 8),
+            vertical: _sp(2.5, scale, min: 2, max: 3.5),
           ),
-          SizedBox(width: _sp(2, scale, min: 1.5, max: 3)),
-          Flexible(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: AlignmentDirectional.centerStart,
-              child: Text(
-                AppLocalizations.of(context).experienceYearsLabel(experience),
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: _sp(12, scale, min: 10.5, max: 14),
-                  color: context.colors.textSecondary,
-                  letterSpacing: 0.2,
-                ),
-              ),
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.blueGrey.withValues(alpha: 0.25)
+                : const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(AppSizes.radiusBadge),
+            border: Border.all(
+              color: isDark ? Colors.blueGrey.withValues(alpha: 0.4) : const Color(0xFFE2E8F0),
+              width: 0.8,
             ),
           ),
-        ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.workspace_premium_outlined,
+                size: _sp(11.5, scale, min: 10, max: 13),
+                color: isDark ? Colors.blueGrey[300] : const Color(0xFF475569),
+              ),
+              SizedBox(width: _sp(3, scale, min: 2, max: 4)),
+              Text(
+                expNum > 0 ? '${expNum}y exp' : 'New Pro',
+                style: TextStyle(
+                  fontSize: _sp(10.5, scale, min: 9.5, max: 12),
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.blueGrey[300] : const Color(0xFF334155),
+                  letterSpacing: 0.1,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -841,74 +847,84 @@ class ProfessionalCard extends StatelessWidget {
 
   // ── 9 + 10. View Profile, Book Now ────────────────────────────────────
   Widget _buildActionRow(BuildContext context, double scale) {
-    final vPad = _sp(15, scale, min: 12.5, max: 18);
-    final fSize = _sp(13, scale, min: 11.5, max: 15);
-    final btnRadius = BorderRadius.circular(AppSizes.radiusMd);
+    // Generous sizing and expanded blue action area for maximum visual appeal & conversion
+    final btnHeight = _sp(40.0, scale, min: 37.0, max: 44.0);
+    final fSize = _sp(12.5, scale, min: 11.5, max: 14.0);
+    final btnRadius = BorderRadius.circular(24);
+
     return Row(
       children: [
+        // View Profile Button (clean outlined capsule)
         Expanded(
-          child: OutlinedButton(
-            onPressed: onTap,
-            style: OutlinedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: vPad),
-              side: BorderSide(color: context.colors.divider, width: 1.3),
-              shape: RoundedRectangleBorder(borderRadius: btnRadius),
-              foregroundColor: context.colors.textPrimary,
-              // Without these, Material enforces a hidden 48px minimum
-              // touch-target height regardless of our padding — that
-              // uncounted extra height was the real cause of the bottom
-              // overflow on smaller/narrower phones.
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              AppLocalizations.of(context).viewProfileCta,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: fSize,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.2,
+          flex: 8,
+          child: SizedBox(
+            height: btnHeight,
+            child: OutlinedButton(
+              onPressed: onTap,
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                side: BorderSide(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white24
+                      : const Color(0xFFD1D5DB),
+                  width: 1.2,
+                ),
+                shape: RoundedRectangleBorder(borderRadius: btnRadius),
+                foregroundColor: context.colors.textPrimary,
+                backgroundColor: Colors.transparent,
+              ),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  AppLocalizations.of(context).viewProfileCta,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: fSize,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                  ),
+                ),
               ),
             ),
           ),
         ),
-        SizedBox(width: _sp(9, scale, min: 7, max: 11)),
+        SizedBox(width: _sp(8, scale, min: 6, max: 10)),
+        // Request Service Button - significantly larger blue area with premium soft glow & capsule styling
         Expanded(
-          // Soft brand-colored shadow under the primary CTA — the modern
-          // "elevated pill button" look (Fiverr/LinkedIn-style), instead of
-          // a flat, shadowless button competing visually with View Profile.
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: btnRadius,
-              boxShadow: [
-                BoxShadow(
-                  color: context.colors.primary.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: ElevatedButton(
-              onPressed: onBookNow,
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: vPad),
-                backgroundColor: context.colors.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: btnRadius),
-                // Same fix as View Profile — no hidden 48px min height.
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          flex: 12,
+          child: SizedBox(
+            height: btnHeight,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: btnRadius,
+                boxShadow: [
+                  BoxShadow(
+                    color: context.colors.primary.withValues(alpha: 0.38),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3.5),
+                  ),
+                ],
               ),
-              child: Text(
-                AppLocalizations.of(context).bookNowCta,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: fSize,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.3,
+              child: ElevatedButton(
+                onPressed: onBookNow,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  backgroundColor: context.colors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: btnRadius),
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    AppLocalizations.of(context).bookNowCta,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: fSize,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
                 ),
               ),
             ),

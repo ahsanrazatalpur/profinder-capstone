@@ -81,9 +81,6 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
   final _expController = TextEditingController();
   final _educationController = TextEditingController();
 
-  final _bankNameController = TextEditingController();
-  final _bankAccountNameController = TextEditingController();
-  final _bankAccountNumberController = TextEditingController();
 
   @override
   void initState() {
@@ -98,9 +95,6 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
     _phoneController.dispose();
     _rateController.dispose();
     _expController.dispose();
-    _bankNameController.dispose();
-    _bankAccountNameController.dispose();
-    _bankAccountNumberController.dispose();
     _skillInputController.dispose();
     _languageInputController.dispose();
     _educationController.dispose();
@@ -132,10 +126,6 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
         _phoneController.text = userProf['phone'] ?? '';
         _rateController.text = (proProf['hourly_rate'] ?? '').toString();
         _expController.text = (proProf['experience_years'] ?? '').toString();
-        _bankNameController.text = proProf['bank_name'] ?? '';
-        _bankAccountNameController.text = proProf['bank_account_name'] ?? '';
-        _bankAccountNumberController.text =
-            proProf['bank_account_number'] ?? '';
 
         _isAvailable = proProf['is_available'] ?? true;
         final skillsRaw = (proProf['skills'] ?? '').toString();
@@ -326,9 +316,6 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
         'education': _educationController.text.trim(),
         'working_hours_start': _formatTime(_workStart),
         'working_hours_end': _formatTime(_workEnd),
-        'bank_name': _bankNameController.text.trim(),
-        'bank_account_name': _bankAccountNameController.text.trim(),
-        'bank_account_number': _bankAccountNumberController.text.trim(),
         'photo': ?photoMultipart,
       });
 
@@ -368,10 +355,6 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
       _phoneController.text = _profile?['phone'] ?? '';
       _rateController.text = (_profile?['hourly_rate'] ?? '').toString();
       _expController.text = (_profile?['experience_years'] ?? '').toString();
-      _bankNameController.text = _profile?['bank_name'] ?? '';
-      _bankAccountNameController.text = _profile?['bank_account_name'] ?? '';
-      _bankAccountNumberController.text =
-          _profile?['bank_account_number'] ?? '';
       final languagesRaw = (_profile?['languages'] ?? '').toString();
       _languages = languagesRaw
           .split(',')
@@ -459,7 +442,7 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
                       SizedBox(height: spacing),
                       _buildInfoCard(isDark, isTablet, isDesktop),
                       SizedBox(height: spacing),
-                      _buildBankDetailsCard(isDark, isTablet, isDesktop),
+                      _buildDirectPaymentNotice(isDark, isTablet, isDesktop),
                       SizedBox(height: spacing),
                       _buildAccountActions(auth, isDark, isTablet, isDesktop),
                       SizedBox(
@@ -1375,10 +1358,8 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
     );
   }
 
-  // ── Bank Details Card ──────────────────────────────────
-  Widget _buildBankDetailsCard(bool isDark, bool isTablet, bool isDesktop) {
-    final hasBankDetails = _bankAccountNumberController.text.isNotEmpty;
-
+  // ── Direct Settlement Info Card (Replaces bank collection) ──
+  Widget _buildDirectPaymentNotice(bool isDark, bool isTablet, bool isDesktop) {
     return Container(
       padding: EdgeInsets.all(isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0)),
       decoration: BoxDecoration(
@@ -1391,149 +1372,41 @@ class _ProfessionalProfileScreenState extends State<ProfessionalProfileScreen> {
               ? Colors.white.withValues(alpha: 0.06)
               : Colors.grey.withValues(alpha: 0.1),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.1)
-                : Colors.grey.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.account_balance_outlined,
-                size: isDesktop ? 20.0 : (isTablet ? 18.0 : 16.0),
-                color: AppColors.professionalColor,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                AppLocalizations.of(context).bankDetailsLabel,
-                style: TextStyle(
-                  fontSize: isDesktop ? 16.0 : (isTablet ? 15.0 : 14.0),
-                  fontWeight: FontWeight.w700,
-                  color: context.colors.textPrimary,
-                  letterSpacing: -0.2,
-                ),
-              ),
-              const Spacer(),
-              if (!_isEditing)
-                Icon(
-                  Icons.lock_outline_rounded,
-                  size: isDesktop ? 18.0 : (isTablet ? 17.0 : 16.0),
-                  color: context.colors.textSecondary.withValues(alpha: 0.4),
-                ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          if (!_isEditing)
-            Text(
-              hasBankDetails
-                  ? AppLocalizations.of(context).bankDetailsSubtitle
-                  : AppLocalizations.of(context).bankDetailsEmpty,
-              style: TextStyle(
-                fontSize: isDesktop ? 13.0 : (isTablet ? 12.0 : 11.0),
-                color: context.colors.textSecondary,
-                fontWeight: FontWeight.w400,
-                letterSpacing: 0.2,
-              ),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.success.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
             ),
-          const SizedBox(height: 16),
-          _buildField(
-            AppLocalizations.of(context).bankNameLabel,
-            _bankNameController,
-            Icons.business_outlined,
-            isDark: isDark,
-            isTablet: isTablet,
-            isDesktop: isDesktop,
+            child: const Icon(Icons.handshake_rounded, color: AppColors.success, size: 22),
           ),
-          const SizedBox(height: 14),
-          _buildField(
-            AppLocalizations.of(context).accountHolderLabel,
-            _bankAccountNameController,
-            Icons.person_outline_rounded,
-            isDark: isDark,
-            isTablet: isTablet,
-            isDesktop: isDesktop,
-          ),
-          const SizedBox(height: 14),
-          _isEditing
-              ? _buildField(
-                  AppLocalizations.of(context).accountNumberLabel,
-                  _bankAccountNumberController,
-                  Icons.numbers_rounded,
-                  type: TextInputType.number,
-                  isDark: isDark,
-                  isTablet: isTablet,
-                  isDesktop: isDesktop,
-                )
-              : _buildMaskedField(
-                  AppLocalizations.of(context).accountNumberLabel,
-                  _bankAccountNumberController.text,
-                  Icons.numbers_rounded,
-                  isDark: isDark,
-                  isTablet: isTablet,
-                  isDesktop: isDesktop,
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '100% Direct Client Settlements (0% Commission)',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  'ProFinder never holds your earnings or cuts job commissions. Clients settle with you directly via Cash on Visit, Raast (instant), or Direct Bank Transfer.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.colors.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _buildMaskedField(
-    String label,
-    String value,
-    IconData icon, {
-    required bool isDark,
-    required bool isTablet,
-    required bool isDesktop,
-  }) {
-    final masked = value.length > 4
-        ? '•••• •••• ${value.substring(value.length - 4)}'
-        : (value.isEmpty
-              ? AppLocalizations.of(context).notSetPlaceholder
-              : value);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isDesktop ? 12.0 : (isTablet ? 11.0 : 10.0),
-            color: context.colors.textSecondary,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.3,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Icon(
-              icon,
-              size: isDesktop ? 18.0 : (isTablet ? 17.0 : 16.0),
-              color: context.colors.textSecondary,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              masked,
-              style: TextStyle(
-                fontSize: isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0),
-                letterSpacing: value.isEmpty ? 0 : 1.2,
-                color: value.isEmpty
-                    ? context.colors.textSecondary.withValues(alpha: 0.5)
-                    : context.colors.textPrimary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 

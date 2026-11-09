@@ -33,18 +33,18 @@
   "city": "City",
   "bio": "Bio",
   "experience": "Years of Experience",
-  "hourlyRate": "Hourly Rate (PKR)",
+  "hourlyRate": "Service Rate (PKR)",
   "verified": "Verified",
   "notVerified": "Not Verified",
-  "bookings": "Bookings",
-  "myBookings": "My Bookings",
-  "bookNow": "Book Now",
+  "bookings": "Service Requests",
+  "myBookings": "My Service Requests",
+  "bookNow": "Request Service",
   "cancel": "Cancel",
   "accept": "Accept",
   "reject": "Reject",
   "complete": "Complete",
   "pending": "Pending",
-  "accepted": "Accepted",
+  "accepted": "Request Accepted",
   "rejected": "Rejected",
   "completed": "Completed",
   "notifications": "Notifications",
@@ -2075,14 +2075,14 @@
   "bankDetailsSubtitle": "Used for withdrawals to your account",
   "bankNameLabel": "Bank Name",
   "bioLabel": "Bio",
-  "bookAppointmentTitle": "Book Appointment",
+  "bookAppointmentTitle": "Request Service",
   "bookCta": "Book",
-  "bookNowCta": "Book Now",
+  "bookNowCta": "Request Service",
   "bookingConfigurationTitle": "Booking Configuration",
   "bookingDateRequired": "Please select a date",
-  "bookingDetailsTitle": "Booking Details",
+  "bookingDetailsTitle": "Request Details",
   "bookingFailed": "Booking failed. Please try again.",
-  "bookingManagementTitle": "Manage Bookings",
+  "bookingManagementTitle": "Service Requests",
   "bookingSoFarLabel": "Bookings so far",
   "bookingStatusUpdated": "Booking marked as {value1}",
   "@bookingStatusUpdated": {
@@ -2092,7 +2092,7 @@
       }
     }
   },
-  "bookingSuccessMessage": "Your booking request with {value1} has been sent",
+  "bookingSuccessMessage": "Your service request with {value1} has been submitted",
   "@bookingSuccessMessage": {
     "placeholders": {
       "value1": {
@@ -2100,7 +2100,7 @@
       }
     }
   },
-  "bookingSuccessTitle": "Booking Requested",
+  "bookingSuccessTitle": "Request Submitted",
   "bookingTimeRequired": "Please select a time",
   "bookingTipText": "You can cancel for free up to 24 hours before the appointment",
   "bookingUpdateError": "Failed to update booking",
@@ -2200,7 +2200,7 @@
   },
   "commentOptionalLabel": "Comment Optional",
   "completedLabel": "Completed",
-  "confirmBookingCta": "Confirm Booking",
+  "confirmBookingCta": "Submit Service Request",
   "confirmPasswordLabel": "Confirm Password",
   "contactChatLabel": "Chat with us",
   "contactChatSubtitle": "Get a quick response in chat",
@@ -2597,12 +2597,12 @@
   "newPasswordLabel": "New Password",
   "newPhotoSelectedHint": "New photo selected",
   "nextCta": "Next",
-  "noBookingsAccepted": "No accepted bookings",
-  "noBookingsAll": "No bookings yet",
-  "noBookingsCancelled": "No cancelled bookings",
-  "noBookingsCompleted": "No completed bookings",
+  "noBookingsAccepted": "No accepted service requests",
+  "noBookingsAll": "No service requests yet",
+  "noBookingsCancelled": "No cancelled requests",
+  "noBookingsCompleted": "No completed requests",
   "noBookingsDefault": "No bookings found",
-  "noBookingsPending": "No pending bookings",
+  "noBookingsPending": "No pending service requests",
   "noBookingsRescheduled": "No rescheduled bookings",
   "noBookingsToday": "No bookings today",
   "noBookingsYet": "No bookings yet",
@@ -3535,7 +3535,13 @@
   "reviewFilterAll": "All Reviews",
   "promoSkip": "Skip",
   "reviewCountPlural": "{count, plural, =1{1 review} other{{count} reviews}}",
-  "@reviewCountPlural": {"placeholders": {"count": {"type": "int"}}},
+  "@reviewCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "valEmailRequired": "Email is required",
   "valEmailInvalid": "Enter a valid email",
   "valEmailTooLong": "Email is too long",
@@ -3556,7 +3562,13 @@
   "valPhoneInvalid": "Enter a valid phone number",
   "valFieldRequired": "This field is required",
   "valFieldNamedRequired": "{field} is required",
-  "@valFieldNamedRequired": {"placeholders": {"field": {"type": "String"}}},
+  "@valFieldNamedRequired": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
   "pwReqMinLength": "Minimum 8 characters",
   "pwReqUppercase": "Uppercase letter",
   "pwReqLowercase": "Lowercase letter",
@@ -3581,7 +3593,13 @@
   "bkStatusBooked": "Booked",
   "bkSwipeHint": "swipe",
   "bkCountPlural": "{count, plural, =1{1 booking} other{{count} bookings}}",
-  "@bkCountPlural": {"placeholders": {"count": {"type": "int"}}},
+  "@bkCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "bkSectionDetails": "Booking details",
   "bkSectionService": "Service",
   "bkSectionNotes": "Customer notes",
@@ -3598,9 +3616,21 @@
   "bkCancelFailed": "Could not cancel, please try again",
   "detailTabOverview": "Overview",
   "detailTabPortfolio": "Portfolio ({count})",
-  "@detailTabPortfolio": {"placeholders": {"count": {"type": "int"}}},
+  "@detailTabPortfolio": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "detailTabReviews": "Reviews ({count})",
-  "@detailTabReviews": {"placeholders": {"count": {"type": "int"}}},
+  "@detailTabReviews": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "detailTabServices": "Services",
   "detailTabAvailability": "Availability",
   "detailNotAvailable": "Not available",
@@ -3714,7 +3744,13 @@
   "helpNoResultsMessage": "Try different or fewer words.",
   "helpSearchTooShort": "Type at least 2 characters to search.",
   "helpArticleCount": "{count, plural, =1{1 article} other{{count} articles}}",
-  "@helpArticleCount": {"placeholders": {"count": {"type": "int"}}},
+  "@helpArticleCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "helpNoArticlesTitle": "No articles yet",
   "helpNoArticlesMessage": "Help articles will appear here soon.",
   "helpArticleNotFound": "This article is no longer available.",
@@ -3737,7 +3773,13 @@
   "ticketMessageHint": "Tell us what happened. The more detail you give, the faster we can help.",
   "ticketSubmitCta": "Send message",
   "ticketCreatedMessage": "Message sent. Your reference number is {reference}",
-  "@ticketCreatedMessage": {"placeholders": {"reference": {"type": "String"}}},
+  "@ticketCreatedMessage": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
   "ticketReplyHint": "Write a reply",
   "ticketReplySendTooltip": "Send reply",
   "ticketCloseCta": "Mark as solved",
@@ -3773,8 +3815,31 @@
   "guestContactSentTitle": "Message sent",
   "guestContactSentMessage": "Thank you! We received your message and will reply to the email you gave us.",
   "guestContactReference": "Reference number: {reference}",
-  "@guestContactReference": {"placeholders": {"reference": {"type": "String"}}},
+  "@guestContactReference": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
   "themeModeTitle": "Theme",
   "themeModeSystem": "System default",
-  "themeModeSystemHint": "Matches your device setting"
+  "themeModeSystemHint": "Matches your device setting",
+  "requestService": "Request Service",
+  "serviceInquiry": "Service Request",
+  "inquiryAccepted": "Request Accepted",
+  "myServiceInquiries": "My Service Requests",
+  "cancelInquiry": "Cancel Request",
+  "unitPerVisit": "Per Visit",
+  "unitPerSession": "Per Session",
+  "unitPerService": "Per Service",
+  "unitPerConsultation": "Per Consultation",
+  "unitPerProject": "Per Project",
+  "unitPerMonth": "Per Month",
+  "unitFixedPrice": "Fixed Price",
+  "unitStartingFrom": "Starting From",
+  "unitNegotiable": "Negotiable",
+  "unitFreeConsultation": "Free Consultation",
+  "customerDisclosure": "ProFinder connects you with independent professionals. Service scope, schedule, and payments are settled directly between you and the professional. ProFinder never collects service fees.",
+  "professionalDisclosure": "You receive direct service requests from clients. Set your own terms and receive 100% of your earnings directly with zero commission."
 }

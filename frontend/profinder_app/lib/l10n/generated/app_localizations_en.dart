@@ -99,7 +99,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get experience => 'Years of Experience';
 
   @override
-  String get hourlyRate => 'Hourly Rate (PKR)';
+  String get hourlyRate => 'Service Rate (PKR)';
 
   @override
   String get verified => 'Verified';
@@ -108,13 +108,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notVerified => 'Not Verified';
 
   @override
-  String get bookings => 'Bookings';
+  String get bookings => 'Service Requests';
 
   @override
-  String get myBookings => 'My Bookings';
+  String get myBookings => 'My Service Requests';
 
   @override
-  String get bookNow => 'Book Now';
+  String get bookNow => 'Request Service';
 
   @override
   String get cancel => 'Cancel';
@@ -132,7 +132,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pending => 'Pending';
 
   @override
-  String get accepted => 'Accepted';
+  String get accepted => 'Request Accepted';
 
   @override
   String get rejected => 'Rejected';
@@ -3459,13 +3459,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bioLabel => 'Bio';
 
   @override
-  String get bookAppointmentTitle => 'Book Appointment';
+  String get bookAppointmentTitle => 'Request Service';
 
   @override
   String get bookCta => 'Book';
 
   @override
-  String get bookNowCta => 'Book Now';
+  String get bookNowCta => 'Request Service';
 
   @override
   String get bookingConfigurationTitle => 'Booking Configuration';
@@ -3474,13 +3474,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookingDateRequired => 'Please select a date';
 
   @override
-  String get bookingDetailsTitle => 'Booking Details';
+  String get bookingDetailsTitle => 'Request Details';
 
   @override
   String get bookingFailed => 'Booking failed. Please try again.';
 
   @override
-  String get bookingManagementTitle => 'Manage Bookings';
+  String get bookingManagementTitle => 'Service Requests';
 
   @override
   String get bookingSoFarLabel => 'Bookings so far';
@@ -3492,11 +3492,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String bookingSuccessMessage(Object value1) {
-    return 'Your booking request with $value1 has been sent';
+    return 'Your service request with $value1 has been submitted';
   }
 
   @override
-  String get bookingSuccessTitle => 'Booking Requested';
+  String get bookingSuccessTitle => 'Request Submitted';
 
   @override
   String get bookingTimeRequired => 'Please select a time';
@@ -3707,7 +3707,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get completedLabel => 'Completed';
 
   @override
-  String get confirmBookingCta => 'Confirm Booking';
+  String get confirmBookingCta => 'Submit Service Request';
 
   @override
   String get confirmPasswordLabel => 'Confirm Password';
@@ -4604,22 +4604,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextCta => 'Next';
 
   @override
-  String get noBookingsAccepted => 'No accepted bookings';
+  String get noBookingsAccepted => 'No accepted service requests';
 
   @override
-  String get noBookingsAll => 'No bookings yet';
+  String get noBookingsAll => 'No service requests yet';
 
   @override
-  String get noBookingsCancelled => 'No cancelled bookings';
+  String get noBookingsCancelled => 'No cancelled requests';
 
   @override
-  String get noBookingsCompleted => 'No completed bookings';
+  String get noBookingsCompleted => 'No completed requests';
 
   @override
   String get noBookingsDefault => 'No bookings found';
 
   @override
-  String get noBookingsPending => 'No pending bookings';
+  String get noBookingsPending => 'No pending service requests';
 
   @override
   String get noBookingsRescheduled => 'No rescheduled bookings';
@@ -7247,4 +7247,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeModeSystemHint => 'Matches your device setting';
+
+  @override
+  String get requestService => 'Request Service';
+
+  @override
+  String get serviceInquiry => 'Service Request';
+
+  @override
+  String get inquiryAccepted => 'Request Accepted';
+
+  @override
+  String get myServiceInquiries => 'My Service Requests';
+
+  @override
+  String get cancelInquiry => 'Cancel Request';
+
+  @override
+  String get unitPerVisit => 'Per Visit';
+
+  @override
+  String get unitPerSession => 'Per Session';
+
+  @override
+  String get unitPerService => 'Per Service';
+
+  @override
+  String get unitPerConsultation => 'Per Consultation';
+
+  @override
+  String get unitPerProject => 'Per Project';
+
+  @override
+  String get unitPerMonth => 'Per Month';
+
+  @override
+  String get unitFixedPrice => 'Fixed Price';
+
+  @override
+  String get unitStartingFrom => 'Starting From';
+
+  @override
+  String get unitNegotiable => 'Negotiable';
+
+  @override
+  String get unitFreeConsultation => 'Free Consultation';
+
+  @override
+  String get customerDisclosure =>
+      'ProFinder connects you with independent professionals. Service scope, schedule, and payments are settled directly between you and the professional. ProFinder never collects service fees.';
+
+  @override
+  String get professionalDisclosure =>
+      'You receive direct service requests from clients. Set your own terms and receive 100% of your earnings directly with zero commission.';
 }

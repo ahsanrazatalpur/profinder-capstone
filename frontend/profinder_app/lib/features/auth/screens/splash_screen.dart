@@ -6,7 +6,6 @@ import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/app_loader.dart';
 import '../../../services/auth_provider.dart';
 import '../../../services/push_notification_service.dart';
-import 'login_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -82,10 +81,8 @@ class _SplashScreenState extends State<SplashScreen>
           // Unknown role indicates corrupted session; clear auth state.
           await auth.logout();
           if (!mounted) return;
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const LoginScreen()),
-          );
+          auth.setGuest();
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
       }
     } else {
       // Handle corrupted session where token exists without a valid role.
@@ -94,10 +91,9 @@ class _SplashScreenState extends State<SplashScreen>
         if (!mounted) return;
       }
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
+      // By default first time land directly in guest mode without asking for login
+      auth.setGuest();
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
     }
 
     // Signal notification service that the app is ready to process cold-start payloads.

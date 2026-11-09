@@ -1,3 +1,4 @@
+import '../../../core/utils/web_identity/web_identity.dart';
 // lib/features/magazine/screens/article_detail_screen.dart
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -21,6 +22,12 @@ class ArticleDetailScreen extends StatefulWidget {
 }
 
 class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
+  @override
+  void dispose() {
+    WebIdentity.resetToDefault();
+    super.dispose();
+  }
+
   final _service = MagazineService();
   bool _loading = true;
   String? _error;
@@ -49,6 +56,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         _loading = false;
         _article = article;
       });
+      WebIdentity.setIdentity(
+        title: '${article.title} | ProFinder',
+        imageUrl: article.coverImage,
+      );
     }
   }
 

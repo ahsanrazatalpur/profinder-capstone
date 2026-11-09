@@ -22,6 +22,7 @@ class Category(models.Model):
         (13, 'Other'),
     ]
     name       = models.CharField(max_length=100)
+    slug       = models.SlugField(max_length=150, unique=True, blank=True, null=True)
     icon       = models.CharField(max_length=100, blank=True)
     order      = models.IntegerField(default=99)  # Lower = shown first
     # Admin-controlled "Featured Categories" flag — Guest Home shows only
@@ -34,6 +35,12 @@ class Category(models.Model):
 
     class Meta:
         ordering = ['order', 'name']  # Auto sort by order
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from apps.seo_web.slug_utils import generate_unique_slug
+            self.slug = generate_unique_slug(Category, self.name, instance_id=self.id)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

@@ -1,0 +1,123 @@
+{% extends "seo_web/base.html" %}
+
+{% block content %}
+<section class="hero-section">
+    <h1>Find Verified {{ category.name }} in {{ city.name }}, {{ province.name }}</h1>
+    <p>
+        Looking for trusted {{ category.name|lower }} in {{ city.name }}? Explore verified professionals, compare transparent hourly rates, read authentic customer reviews, and schedule direct bookings with zero platform commissions.
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap;">
+        <a href="/pakistan/{{ province_slug }}/{{ city.slug }}/" class="chip" style="background: rgba(255,255,255,0.2); color: #ffffff; padding: 8px 18px; font-weight: 600;">
+            📍 All Services in {{ city.name }}
+        </a>
+        <a href="/categories/{{ category.slug }}/" class="chip" style="background: rgba(255,255,255,0.2); color: #ffffff; padding: 8px 18px; font-weight: 600;">
+            📁 {{ category.name }} across Pakistan
+        </a>
+    </div>
+</section>
+
+<!-- Professionals in City + Category -->
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>{{ category.name }} in {{ city.name }}</h2>
+        <p>Showing verified specialists available for appointments in {{ city.name }}.</p>
+    </div>
+
+    {% if professionals %}
+    <div class="cards-grid">
+        {% for pro in professionals %}
+        <a href="/professionals/{{ pro.slug }}/" class="card">
+            <div class="pro-card-header">
+                {% if pro.photo_url %}
+                    <img src="{{ pro.photo_url.url }}" alt="{{ pro.user.name }}" class="pro-avatar" loading="lazy">
+                {% else %}
+                    <div class="pro-avatar" style="display:flex;align-items:center;justify-content:center;font-weight:bold;color:#64748b;font-size:20px;">
+                        {{ pro.user.name|slice:":1" }}
+                    </div>
+                {% endif %}
+                <div class="pro-title-meta">
+                    <h3>{{ pro.user.name }}</h3>
+                    <div style="font-size: 13px; color: var(--text-muted);">{{ pro.specialization|default:category.name }}</div>
+                    {% if pro.is_verified %}
+                        <span class="verified-badge">✓ Verified</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if pro.average_rating > 0 %}
+            <div class="rating-row">
+                <span class="rating-stars">★ {{ pro.average_rating|floatformat:1 }}</span>
+                <span style="color: var(--text-muted); font-size: 12px;">({{ pro.user.received_reviews.count }} reviews)</span>
+            </div>
+            {% endif %}
+
+            <div class="location-tag">
+                📍 {{ pro.user.userprofile.city|default:city.name }}
+            </div>
+
+            <p>{{ pro.bio|default:"Experienced specialist dedicated to providing dependable, high-standard professional service."|truncatewords:20 }}</p>
+
+            {% if pro.hourly_rate > 0 %}
+            <div class="hourly-rate">PKR {{ pro.hourly_rate|floatformat:0 }} / hr</div>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="background: #ffffff; padding: 40px; border-radius: var(--radius); text-align: center; border: 1px solid var(--border);">
+        <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 16px;">
+            We are currently vetting additional {{ category.name|lower }} specialists located in {{ city.name }}.
+        </p>
+        <a href="/categories/{{ category.slug }}/" style="font-weight: 700; color: var(--primary);">
+            Explore {{ category.name }} in nearby cities &rarr;
+        </a>
+    </div>
+    {% endif %}
+</section>
+
+<!-- Other Categories in this City -->
+{% if other_categories %}
+<section style="margin-bottom: 50px;">
+    <div class="section-header">
+        <h2>Other Services in {{ city.name }}</h2>
+    </div>
+    <div class="cards-grid">
+        {% for ocat in other_categories %}
+        <a href="/pakistan/{{ province_slug }}/{{ city.slug }}/{{ ocat.slug }}/" class="card">
+            <h3>{{ ocat.name }}</h3>
+            <p>Connect with local {{ ocat.name|lower }} specialists in {{ city.name }}.</p>
+            <span style="font-weight: 600; font-size: 13px; color: var(--primary);">Browse in {{ city.name }} &rarr;</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- City + Category GEO FAQs -->
+<section class="geo-faq-section">
+    <h2>Frequently Asked Questions about {{ category.name }} in {{ city.name }}</h2>
+    <p class="lead-intro">Essential information for hiring {{ category.name|lower }} specialists in {{ city.name }}.</p>
+
+    <div class="faq-item">
+        <div class="faq-question">How quickly can a {{ category.name|lower }} professional visit in {{ city.name }}?</div>
+        <div class="faq-answer">
+            Most local specialists in {{ city.name }} respond within a few hours to arrange scheduling. Emergency services can often arrive within 30 to 90 minutes.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">What are the fees for {{ category.name|lower }} in {{ city.name }}?</div>
+        <div class="faq-answer">
+            Consultation and service fees are listed directly on each professional's profile. You can agree on total project fees directly before work begins.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">How do I make payment for services in {{ city.name }}?</div>
+        <div class="faq-answer">
+            Payment is completed directly with the specialist upon completion using Cash, JazzCash, Easypaisa, or direct bank transfer. ProFinder charges zero payment fees.
+        </div>
+    </div>
+</section>
+{% endblock %}

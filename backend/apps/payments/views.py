@@ -58,12 +58,18 @@ class PaymentView(APIView):
 class CreateBookingPaymentView(APIView):
     """
     POST /api/payments/booking/create/
-    Creates a server-side verified PayPal order for a booking.
-    Payload: { "booking_id": 12, "currency": "USD" (optional display currency) }
+    Disabled: ProFinder is a discovery and inquiry marketplace.
+    Direct dealings and offline payments only.
     """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        return Response({
+            'error': 'service_payments_disabled',
+            'message': 'ProFinder is a discovery and service inquiry marketplace. We do not process payments for professional services. Customers and professionals agree upon terms and settle payments directly without platform fees or escrow.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    def _disabled_post(self, request):
         from apps.bookings.models import Booking
 
         booking_id = request.data.get('booking_id')
@@ -501,15 +507,17 @@ class WalletSummaryView(APIView):
         )
 
         return Response({
-            'available_balance': float(available_balance),
-            'total_earned': float(credits_sum),
-            'total_withdrawn': float(debits_sum),
-            'pending_withdrawal': float(pending_withdrawals),
-            'min_withdrawal': MIN_WITHDRAWAL_AMOUNT,
+            'available_balance': 0.0,
+            'total_earned': 0.0,
+            'total_withdrawn': 0.0,
+            'pending_withdrawal': 0.0,
+            'min_withdrawal': 0.0,
             'bank_on_file': bool(profile and profile.bank_account_number),
-            'transactions': tx_history,
+            'transactions': [],
             'currency': curr,
             'currency_symbol': sym,
+            'is_direct_payment_model': True,
+            'notice': 'ProFinder operates on a direct dealing model. All payments for services are settled directly between clients and professionals outside the app.',
         })
 
 
@@ -527,6 +535,12 @@ class WithdrawalRequestView(APIView):
         return Response(WithdrawalRequestSerializer(withdrawals, many=True).data)
 
     def post(self, request):
+        return Response({
+            'error': 'withdrawals_not_applicable',
+            'message': 'ProFinder does not hold funds or deduct commissions from professional service fees. Service payments are received directly by professionals.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    def _disabled_post(self, request):
         from apps.profiles.models import ProfessionalProfile
 
         try:
@@ -537,6 +551,11 @@ class WithdrawalRequestView(APIView):
         payout_method = request.data.get('payout_method', 'bank_transfer')
         paypal_email = (request.data.get('paypal_email') or '').strip()
 
+        return Response({
+            'error': 'ProFinder operates on a 100% direct client settlement model (Cash, Raast, Direct Bank Transfer). ProFinder charges 0% commission on service jobs and does not process payouts or withdrawals.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Legacy logic disabled under Direct Settlement Business Model
         if payout_method == 'paypal' and not paypal_email:
             return Response({'error': 'PayPal payout email is required.'}, status=status.HTTP_400_BAD_REQUEST)
         elif payout_method == 'bank_transfer' and not profile.bank_account_number:
@@ -621,3 +640,465 @@ class ExchangeRatesView(APIView):
             'base_currency': get_base_currency(),
             'rates': ExchangeRateCacheSerializer(rates, many=True).data,
         })
+
+# ─── 9. Safepay Integration & Entitlement Fulfillment ─────────────────────────
+
+from apps.payments.safepay import SafepayGateway, pkr_to_paisas, paisas_to_pkr
+from apps.payments.models import WebhookEventLog, CacheInvalidationOutbox
+from apps.subscriptions.models import (
+    SubscriptionPlan,
+    Subscription,
+    FeaturedPromotionPackage,
+    FeaturedListingCampaign,
+    CampaignAuditLog,
+)
+from apps.profiles.models import ProfessionalProfile, ProfessionalSecondaryCategory
+from apps.search.models import Category
+import hashlib
+import json
+
+
+def fulfill_payment_entitlement(payment: Payment) -> bool:
+    """
+    Authoritative, idempotent fulfillment of monetization entitlements.
+    Guarantees that subscriptions and featured campaigns are only activated once.
+    """
+    if payment.status == 'completed':
+        return True
+
+    with transaction.atomic():
+        payment = Payment.objects.select_for_update().get(id=payment.id)
+        if payment.status == 'completed':
+            return True
+
+        now = timezone.now()
+        payment.status = 'completed'
+        payment.save(update_fields=['status', 'updated_at'])
+
+        if payment.purpose == 'subscription':
+            plan = payment.subscription_plan
+            if not plan:
+                logger.error("Payment %s has no subscription_plan attached", payment.order_id)
+                return False
+
+            # Cancel previous active subscriptions for this user
+            Subscription.objects.filter(user=payment.user, status='active').update(status='cancelled')
+
+            duration_days = plan.duration_days if plan.duration_days > 0 else 30
+            end_date = now + timedelta(days=duration_days)
+
+            sub = Subscription.objects.create(
+                user=payment.user,
+                plan=plan,
+                status='active',
+                start_date=now,
+                end_date=end_date,
+            )
+            payment.subscription = sub
+            payment.save(update_fields=['subscription'])
+
+            # Reactivate any secondary categories that were deactivated during Free period
+            pp = getattr(payment.user, 'professionalprofile', None)
+            if pp:
+                ProfessionalSecondaryCategory.objects.filter(
+                    professional_profile=pp, is_active=False
+                ).update(is_active=True)
+
+            # Invalidate cache outbox
+            CacheInvalidationOutbox.objects.create(
+                cache_key=f"pro_sub:{payment.user_id}",
+                action="invalidate"
+            )
+
+            notify_user(
+                user=payment.user,
+                title="Professional Pro Active 🌟",
+                message=f"Your {plan.name} subscription is active until {end_date.strftime('%d %b %Y')}.",
+                notif_type="subscription"
+            )
+
+        elif payment.purpose == 'featured_listing':
+            campaign = getattr(payment, 'featured_campaign', None)
+            if not campaign:
+                campaign = FeaturedListingCampaign.objects.filter(payment=payment).first()
+
+            if campaign:
+                campaign.start_date = now
+                campaign.end_date = now + timedelta(days=campaign.duration_days)
+                campaign.is_active = True
+                campaign.save(update_fields=['start_date', 'end_date', 'is_active', 'updated_at'])
+
+                CampaignAuditLog.objects.create(
+                    campaign=campaign,
+                    action='activated',
+                    previous_state='inactive',
+                    new_state='active',
+                    actor=payment.user,
+                    reason='Safepay payment verified and captured'
+                )
+
+                # Invalidate category featured cache outbox
+                CacheInvalidationOutbox.objects.create(
+                    cache_key=f"featured_cat:{campaign.category_id}",
+                    action="incr"
+                )
+
+                notify_user(
+                    user=payment.user,
+                    title="Featured Listing Activated 🚀",
+                    message=f"Your profile is featured in {campaign.category.name} for {campaign.duration_days} days.",
+                    notif_type="promotion"
+                )
+
+    return True
+
+
+class FeaturedPromotionPackagesListView(APIView):
+    """
+    GET /api/payments/featured/packages/
+    Lists available featured promotion packages.
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        packages = FeaturedPromotionPackage.objects.filter(is_active=True).order_by('duration_days')
+        data = [
+            {
+                'id': p.id,
+                'name': p.name,
+                'duration_days': p.duration_days,
+                'price': str(p.price),
+                'currency': p.currency,
+                'formatted_price': f"{p.currency} {p.price:,.0f}",
+                'is_active': p.is_active,
+            }
+            for p in packages
+        ]
+        return Response(data)
+
+
+class SafepayInitializeCheckoutView(APIView):
+    """
+    POST /api/payments/checkout/initialize/
+    Initiates a verified checkout with Safepay for Subscriptions or Featured Promotions.
+    All amounts are looked up exclusively from the DB; client amounts are ignored.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        purpose = request.data.get('purpose')
+        redirect_url = request.data.get('redirect_url')
+        cancel_url = request.data.get('cancel_url')
+
+        if purpose not in ('subscription', 'featured_listing'):
+            return Response(
+                {'error': 'Invalid purpose. Must be "subscription" or "featured_listing".'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        gateway = SafepayGateway()
+
+        if purpose == 'subscription':
+            plan_id = request.data.get('plan_id')
+            if not plan_id:
+                return Response({'error': 'plan_id is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                plan = SubscriptionPlan.objects.get(id=plan_id, is_active=True)
+            except SubscriptionPlan.DoesNotExist:
+                return Response({'error': 'Subscription plan not found or inactive.'}, status=status.HTTP_404_NOT_FOUND)
+
+            if plan.plan_type != request.user.role:
+                return Response({'error': f'This plan is for {plan.plan_type}s only.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Free plan immediate activation without payment
+            if plan.billing == 'free' or plan.price <= Decimal('0.00'):
+                with transaction.atomic():
+                    Subscription.objects.filter(user=request.user, status='active').update(status='cancelled')
+                    sub = Subscription.objects.create(
+                        user=request.user,
+                        plan=plan,
+                        status='active',
+                        end_date=None,
+                    )
+                return Response({
+                    'status': 'completed',
+                    'is_free': True,
+                    'plan_name': plan.name,
+                    'message': f'Successfully activated {plan.name} plan.',
+                }, status=status.HTTP_200_OK)
+
+            price = plan.price
+            amount_paisas = pkr_to_paisas(price)
+
+            try:
+                order_result = gateway.create_order(amount_paisas=amount_paisas, currency='PKR')
+                tracker = order_result['tracker']
+                tbt = gateway.create_passport_token()
+                checkout_url = gateway.build_express_checkout_url(
+                    tracker=tracker,
+                    tbt=tbt,
+                    source='mobile',
+                    redirect_url=redirect_url,
+                    cancel_url=cancel_url,
+                )
+            except Exception as exc:
+                logger.error("Safepay checkout initialization failed: %s", exc)
+                return Response({'error': f'Failed to initialize checkout: {str(exc)}'}, status=status.HTTP_502_BAD_GATEWAY)
+
+            payment = Payment.objects.create(
+                user=request.user,
+                amount=price,
+                currency='PKR',
+                purpose='subscription',
+                subscription_plan=plan,
+                gateway='safepay',
+                safepay_tracker=tracker,
+                safepay_environment=gateway.environment,
+                approval_url=checkout_url,
+                local_amount=price,
+                local_currency='PKR',
+                exchange_rate=Decimal('1.00'),
+                status='pending',
+            )
+
+            return Response({
+                'order_id': payment.order_id,
+                'payment_id': payment.id,
+                'safepay_tracker': tracker,
+                'checkout_url': checkout_url,
+                'amount': str(payment.amount),
+                'currency': payment.currency,
+                'purpose': purpose,
+            }, status=status.HTTP_201_CREATED)
+
+        elif purpose == 'featured_listing':
+            if request.user.role != 'professional':
+                return Response({'error': 'Only professionals can purchase featured promotions.'}, status=status.HTTP_403_FORBIDDEN)
+
+            try:
+                prof_profile = request.user.professionalprofile
+            except ProfessionalProfile.DoesNotExist:
+                return Response({'error': 'Professional profile required.'}, status=status.HTTP_404_NOT_FOUND)
+
+            package_id = request.data.get('package_id')
+            category_id = request.data.get('category_id')
+
+            if not package_id or not category_id:
+                return Response({'error': 'package_id and category_id are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                pkg = FeaturedPromotionPackage.objects.get(id=package_id, is_active=True)
+            except FeaturedPromotionPackage.DoesNotExist:
+                return Response({'error': 'Featured package not found or inactive.'}, status=status.HTTP_404_NOT_FOUND)
+
+            try:
+                category = Category.objects.get(id=category_id)
+            except Category.DoesNotExist:
+                return Response({'error': 'Category not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            price = pkg.price
+            amount_paisas = pkr_to_paisas(price)
+
+            try:
+                order_result = gateway.create_order(amount_paisas=amount_paisas, currency='PKR')
+                tracker = order_result['tracker']
+                tbt = gateway.create_passport_token()
+                checkout_url = gateway.build_express_checkout_url(
+                    tracker=tracker,
+                    tbt=tbt,
+                    source='mobile',
+                    redirect_url=redirect_url,
+                    cancel_url=cancel_url,
+                )
+            except Exception as exc:
+                logger.error("Safepay checkout initialization failed: %s", exc)
+                return Response({'error': f'Failed to initialize checkout: {str(exc)}'}, status=status.HTTP_502_BAD_GATEWAY)
+
+            with transaction.atomic():
+                payment = Payment.objects.create(
+                    user=request.user,
+                    amount=price,
+                    currency='PKR',
+                    purpose='featured_listing',
+                    gateway='safepay',
+                    safepay_tracker=tracker,
+                    safepay_environment=gateway.environment,
+                    approval_url=checkout_url,
+                    local_amount=price,
+                    local_currency='PKR',
+                    exchange_rate=Decimal('1.00'),
+                    status='pending',
+                )
+
+                FeaturedListingCampaign.objects.create(
+                    professional=prof_profile,
+                    category=category,
+                    package=pkg,
+                    duration_days=pkg.duration_days,
+                    payment=payment,
+                    is_active=False,
+                )
+
+            return Response({
+                'order_id': payment.order_id,
+                'payment_id': payment.id,
+                'safepay_tracker': tracker,
+                'checkout_url': checkout_url,
+                'amount': str(payment.amount),
+                'currency': payment.currency,
+                'purpose': purpose,
+                'duration_days': pkg.duration_days,
+            }, status=status.HTTP_201_CREATED)
+
+
+class SafepayVerifyPaymentView(APIView):
+    """
+    GET /api/payments/verify-status/?order_id=PO-... or ?tracker=track_...
+    Authoritatively queries Safepay Reporter API to verify payment capture and grants entitlement.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        order_id = request.query_params.get('order_id')
+        tracker = request.query_params.get('tracker')
+
+        if not order_id and not tracker:
+            return Response({'error': 'order_id or tracker parameter is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            if order_id:
+                payment = Payment.objects.get(order_id=order_id, user=request.user)
+            else:
+                payment = Payment.objects.get(safepay_tracker=tracker, user=request.user)
+        except Payment.DoesNotExist:
+            return Response({'error': 'Payment record not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if payment.status == 'completed':
+            return Response({
+                'status': 'completed',
+                'order_id': payment.order_id,
+                'purpose': payment.purpose,
+                'message': 'Payment already verified and completed.',
+            })
+
+        if not payment.safepay_tracker:
+            return Response({'error': 'Payment has no associated Safepay tracker.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        gateway = SafepayGateway()
+        try:
+            reporter_res = gateway.query_reporter_status(payment.safepay_tracker)
+        except Exception as exc:
+            logger.error("Reporter query error for payment %s: %s", payment.order_id, exc)
+            return Response({'error': f'Failed to query Safepay Reporter API: {str(exc)}'}, status=status.HTTP_502_BAD_GATEWAY)
+
+        if reporter_res.get('status') == 'completed' and reporter_res.get('captured'):
+            fulfill_payment_entitlement(payment)
+            payment.refresh_from_db()
+            return Response({
+                'status': 'completed',
+                'order_id': payment.order_id,
+                'purpose': payment.purpose,
+                'message': 'Payment verified and entitlement granted successfully.',
+            })
+        else:
+            current_state = reporter_res.get('state') or reporter_res.get('status') or 'pending'
+            return Response({
+                'status': current_state.lower(),
+                'order_id': payment.order_id,
+                'purpose': payment.purpose,
+                'message': f'Payment is currently {current_state}.',
+            })
+
+
+class SafepayWebhookView(APIView):
+    """
+    POST /api/payments/webhook/safepay/
+    Durable webhook ingestion endpoint:
+      1. HMAC-SHA256 signature verification.
+      2. Durable event deduplication in WebhookEventLog.
+      3. Immediate HTTP 200 OK acknowledgement.
+      4. Reporter API verification before entitlement grant.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        raw_body = request.body
+        signature = (
+            request.headers.get('X-SFPY-SIGNATURE') or
+            request.headers.get('X-Safepay-Signature') or
+            request.META.get('HTTP_X_SFPY_SIGNATURE') or
+            ''
+        )
+
+        gateway = SafepayGateway()
+        is_valid_sig = gateway.verify_webhook_signature(raw_body, signature)
+
+        delivery_fingerprint = hashlib.sha256(raw_body).hexdigest()
+
+        try:
+            payload = json.loads(raw_body.decode('utf-8')) if raw_body else {}
+        except Exception:
+            payload = {}
+
+        event_id = payload.get('id') or payload.get('event_id') or f"evt_{delivery_fingerprint[:24]}"
+        event_type = payload.get('type') or payload.get('event_type') or 'payment.completed'
+
+        if not is_valid_sig:
+            logger.warning("Safepay webhook signature validation failed. Fingerprint: %s", delivery_fingerprint)
+            WebhookEventLog.objects.create(
+                provider='safepay',
+                event_id=event_id,
+                delivery_fingerprint=delivery_fingerprint,
+                event_type=event_type,
+                status='payload_tampering_conflict',
+                sanitized_payload={'raw_length': len(raw_body)},
+                error_message='Invalid HMAC-SHA256 signature',
+            )
+            return Response({'error': 'Invalid webhook signature.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Durable deduplication check
+        existing_log = WebhookEventLog.objects.filter(provider='safepay', event_id=event_id).first()
+        if existing_log:
+            logger.info("Safepay duplicate webhook ignored for event %s", event_id)
+            return Response({'status': 'duplicate_ignored'}, status=status.HTTP_200_OK)
+
+        log_entry = WebhookEventLog.objects.create(
+            provider='safepay',
+            event_id=event_id,
+            delivery_fingerprint=delivery_fingerprint,
+            event_type=event_type,
+            status='received',
+            sanitized_payload=payload,
+        )
+
+        # Retrieve tracker and fulfill entitlement with Reporter API
+        tracker = (
+            payload.get('data', {}).get('token') or
+            payload.get('data', {}).get('tracker') or
+            payload.get('token') or
+            payload.get('tracker')
+        )
+
+        if tracker:
+            payment = Payment.objects.filter(safepay_tracker=tracker).first()
+            if payment:
+                log_entry.status = 'processing'
+                log_entry.save(update_fields=['status'])
+                try:
+                    reporter_res = gateway.query_reporter_status(tracker)
+                    if reporter_res.get('status') == 'completed' and reporter_res.get('captured'):
+                        fulfill_payment_entitlement(payment)
+                        log_entry.status = 'completed'
+                    else:
+                        log_entry.status = 'retryable_failure'
+                except Exception as exc:
+                    logger.error("Error during webhook Reporter query for tracker %s: %s", tracker, exc)
+                    log_entry.status = 'retryable_failure'
+                    log_entry.error_message = str(exc)
+                log_entry.save(update_fields=['status', 'error_message'])
+            else:
+                log_entry.status = 'quarantined_unknown_tracker'
+                log_entry.save(update_fields=['status'])
+
+        return Response({'status': 'received'}, status=status.HTTP_200_OK)

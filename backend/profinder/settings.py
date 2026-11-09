@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'apps.messaging',  # ✅ NEW — in-app chat between customers and professionals
     "apps.about_page",
     "apps.support",  # Help Center, Privacy Policy, support tickets
+    "apps.seo_web",  # SEO, GEO & Server-Side Rendered Public Marketplace
 ]
 
 # Safe conditional inclusion: on PythonAnywhere / standard WSGI environments where
@@ -107,6 +108,8 @@ MIDDLEWARE = [
     # Universal dynamic-content localization (reads X-App-Language). Runs last on
     # the way in / first on the way out so it sees the final JSON response.
     'apps.ai_engine.middleware.ContentLocalizationMiddleware',
+    # SEO URL normalization, slug 301 redirects, canonical path handling
+    'apps.seo_web.middleware.SEOUrlNormalizationMiddleware',
 ]
 
 ROOT_URLCONF = 'profinder.urls'
@@ -204,12 +207,28 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# ─── Internationalization ─────────────────────────────────────────────
+# ─── Internationalization & Localization ───────────────────────────────────
+
+from .localization_config import (
+    DEFAULT_TIME_ZONE,
+    DEFAULT_CURRENCY_CODE,
+    DEFAULT_COUNTRY_CODE,
+    DEFAULT_COUNTRY_NAME,
+    DEFAULT_DIALING_CODE,
+    MARKETPLACE_SCOPE_MODE,
+)
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = DEFAULT_TIME_ZONE  # 'Asia/Karachi' (UTC+05:00)
 USE_I18N = True
 USE_TZ = True
+
+# Regional Settlement Defaults
+BASE_SETTLEMENT_CURRENCY = DEFAULT_CURRENCY_CODE  # 'PKR'
+DEFAULT_COUNTRY = DEFAULT_COUNTRY_CODE  # 'PK'
+DEFAULT_COUNTRY_FULLNAME = DEFAULT_COUNTRY_NAME  # 'Pakistan'
+DEFAULT_DIALING_PREFIX = DEFAULT_DIALING_CODE  # '+92'
+PROFINDER_SCOPE_MODE = MARKETPLACE_SCOPE_MODE  # 'PK_NATIONAL'
 
 # ─── Static / Media ───────────────────────────────────────────────────
 
@@ -345,6 +364,9 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
@@ -465,3 +487,19 @@ PAYPAL_ALLOW_MOCK_SUCCESS = os.getenv('PAYPAL_ALLOW_MOCK_SUCCESS', 'True' if (DE
 BASE_SETTLEMENT_CURRENCY = os.getenv('BASE_SETTLEMENT_CURRENCY', 'PKR')
 MIN_WITHDRAWAL_AMOUNT = float(os.getenv('MIN_WITHDRAWAL_AMOUNT', 20.0))
 EXCHANGE_RATE_API_URL = os.getenv('EXCHANGE_RATE_API_URL', 'https://open.er-api.com/v6/latest/USD')
+
+# ─── Safepay Gateway Configuration (Pakistan National Settlement) ────
+SAFEPAY_ENVIRONMENT = os.getenv('SAFEPAY_ENVIRONMENT', 'sandbox').strip().lower()
+SAFEPAY_API_KEY = os.getenv('SAFEPAY_API_KEY', '')
+SAFEPAY_MERCHANT_SECRET = os.getenv('SAFEPAY_MERCHANT_SECRET', '')
+SAFEPAY_WEBHOOK_SECRET = os.getenv('SAFEPAY_WEBHOOK_SECRET', '')
+
+if SAFEPAY_ENVIRONMENT == 'production':
+    SAFEPAY_BASE_URL = 'https://api.getsafepay.com'
+    SAFEPAY_CHECKOUT_URL = 'https://getsafepay.com/components'
+else:
+    SAFEPAY_BASE_URL = 'https://sandbox.api.getsafepay.com'
+    SAFEPAY_CHECKOUT_URL = 'https://sandbox.api.getsafepay.com/components'
+
+SAFEPAY_ALLOW_MOCK_SUCCESS = os.getenv('SAFEPAY_ALLOW_MOCK_SUCCESS', 'True' if (DEBUG or TESTING or not SAFEPAY_API_KEY) else 'False').strip().lower() == 'true'
+

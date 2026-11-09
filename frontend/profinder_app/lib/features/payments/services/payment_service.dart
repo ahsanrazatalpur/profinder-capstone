@@ -100,6 +100,58 @@ class PaymentService {
     }
   }
 
+  // ─── Safepay Express Checkout ──────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> initializeSafepayCheckout({
+    required String purpose,
+    int? planId,
+    int? packageId,
+    int? categoryId,
+    String? redirectUrl,
+    String? cancelUrl,
+  }) async {
+    try {
+      final payload = <String, dynamic>{
+        'purpose': purpose,
+        'redirect_url': redirectUrl ?? 'profinder://payment-success',
+        'cancel_url': cancelUrl ?? 'profinder://payment-cancel',
+      };
+      if (planId != null) payload['plan_id'] = planId;
+      if (packageId != null) payload['package_id'] = packageId;
+      if (categoryId != null) payload['category_id'] = categoryId;
+
+      final res = await _api.post(AppConstants.safepayCheckoutInitialize, payload);
+      return {'success': true, 'data': res.data};
+    } catch (e) {
+      return {'success': false, 'error': _extractError(e)};
+    }
+  }
+
+  Future<Map<String, dynamic>> verifySafepayPayment({
+    required String orderId,
+    String? tracker,
+  }) async {
+    try {
+      final query = tracker != null ? 'tracker=$tracker' : 'order_id=$orderId';
+      final res = await _api.get('${AppConstants.safepayVerifyStatus}?$query');
+      return {'success': true, 'data': res.data};
+    } catch (e) {
+      return {'success': false, 'error': _extractError(e)};
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getFeaturedPromotionPackages() async {
+    try {
+      final res = await _api.get(AppConstants.featuredPackages);
+      if (res.data is List) {
+        return List<Map<String, dynamic>>.from(res.data);
+      }
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
   // ─── Launch PayPal Approval URL ────────────────────────────────────────────
 
   Future<bool> launchApprovalUrl(String url) async {
