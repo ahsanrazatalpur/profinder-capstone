@@ -54,14 +54,21 @@ void _updateFavicon(String url) {
   final head = web.document.head;
   if (head == null) return;
 
-  var link = web.document.querySelector("link[rel*='icon']") as web.HTMLLinkElement?;
-  if (link == null) {
-    link = web.document.createElement('link') as web.HTMLLinkElement;
+  final iconLinks = web.document.querySelectorAll("link[rel*='icon']");
+  if (iconLinks.length == 0) {
+    final link = web.document.createElement('link') as web.HTMLLinkElement;
     link.rel = 'icon';
     link.type = 'image/png';
+    link.href = url;
     head.appendChild(link);
+  } else {
+    for (int i = 0; i < iconLinks.length; i++) {
+      final item = iconLinks.item(i) as web.HTMLLinkElement?;
+      if (item != null) {
+        item.href = url;
+      }
+    }
   }
-  link.href = url;
 
   // Also update apple-touch-icon
   var appleLink = web.document.querySelector("link[rel='apple-touch-icon']") as web.HTMLLinkElement?;

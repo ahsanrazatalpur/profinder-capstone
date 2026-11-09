@@ -9,7 +9,7 @@ class WebIdentity {
   WebIdentity._();
 
   static const String brandTitle = 'ProFinder | Find Trusted Professionals in Pakistan';
-  static const String defaultFavicon = 'favicon.png';
+  static const String defaultFavicon = 'favicon.png?v=profinder2';
 
   /// Dynamically updates the browser tab title, favicon, and meta tags.
   static void setIdentity({

@@ -1,32 +1,42 @@
 {
-    "name": "profinder_app",
-    "short_name": "profinder_app",
+    "name": "ProFinder | Find Trusted Professionals in Pakistan",
+    "short_name": "ProFinder",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#2563EB",
+    "theme_color": "#2563EB",
+    "description": "Find trusted professionals, doctors, electricians, tutors, plumbers, and mechanics near you in Pakistan.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
         {
-            "src": "icons/Icon-192.png",
+            "src": "favicon.ico",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "favicon.png?v=profinder2",
+            "sizes": "64x64",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-192.png?v=profinder2",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "icons/Icon-512.png",
+            "src": "icons/Icon-512.png?v=profinder2",
             "sizes": "512x512",
             "type": "image/png"
         },
         {
-            "src": "icons/Icon-maskable-192.png",
+            "src": "icons/Icon-maskable-192.png?v=profinder2",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "maskable"
         },
         {
-            "src": "icons/Icon-maskable-512.png",
+            "src": "icons/Icon-maskable-512.png?v=profinder2",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
