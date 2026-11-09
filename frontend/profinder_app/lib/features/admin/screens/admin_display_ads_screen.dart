@@ -468,24 +468,26 @@ class _AdminDisplayAdsScreenState extends State<AdminDisplayAdsScreen> {
           if (imageUrl.isNotEmpty)
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSizes.radiusLg)),
-              child: Stack(
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    height: 140,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      height: 140,
-                      color: Colors.grey[200],
-                      child: const Center(child: CircularProgressIndicator()),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      height: 140,
-                      color: Colors.grey[200],
-                      child: const Center(child: Icon(Icons.broken_image_rounded, size: 40, color: Colors.grey)),
-                    ),
-                  ),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Container(
+                  color: const Color(0xFF0F172A),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center,
+                        placeholder: (context, url) => Container(
+                          color: const Color(0xFF1E293B),
+                          child: const Center(child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white54)),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: const Color(0xFF1E293B),
+                          child: const Center(child: Icon(Icons.broken_image_rounded, size: 40, color: Colors.grey)),
+                        ),
+                      ),
                   Positioned(
                     top: 8,
                     left: 8,
@@ -519,6 +521,8 @@ class _AdminDisplayAdsScreenState extends State<AdminDisplayAdsScreen> {
                 ],
               ),
             ),
+          ),
+        ),
 
           Padding(
             padding: const EdgeInsets.all(AppSizes.md),
@@ -1122,6 +1126,11 @@ class _CampaignEditorSheetState extends State<_CampaignEditorSheet> {
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Recommended: 16:9 ratio (1600×900 px), PNG or JPG. Banners are rendered horizontally.',
+                        style: TextStyle(color: Colors.grey, fontSize: 11),
                       ),
                       if (_localImageBytes != null) ...[
                         const SizedBox(height: 8),

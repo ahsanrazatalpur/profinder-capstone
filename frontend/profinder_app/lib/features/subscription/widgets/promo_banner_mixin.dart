@@ -186,7 +186,7 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
   Future<bool> _wasShownRecently(String userKey, PromoBanner banner) async {
     // 1. Session check: if this banner was already displayed in this app session, skip it
     if (_sessionShownBanners.contains(banner.id)) {
-      debugPrint('[Banner] # already shown in current session');
+      debugPrint('[Banner] #${banner.id} already shown in current session');
       return true;
     }
 
@@ -199,7 +199,7 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
 
     // For authenticated users (customer & professional):
     final prefs = await SharedPreferences.getInstance();
-    final shownKey = 'banner__';
+    final shownKey = 'banner_${userKey}_${banner.id}';
     final ts = prefs.getInt(shownKey);
     if (ts == null) return false;
 
@@ -210,10 +210,10 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
       final elapsedMs = DateTime.now().millisecondsSinceEpoch - ts;
       final inCooldown = elapsedMs < cooldownMs;
       debugPrint(
-        '[Banner] # every__days — '
-        'elapsed:  days, '
-        'cooldown:  days, '
-        'in_cooldown: ',
+        '[Banner] #${banner.id} every_${banner.triggerXDays}_days — '
+        'elapsed: ${(elapsedMs / (1000 * 86400)).toStringAsFixed(1)} days, '
+        'cooldown: $cooldownDays days, '
+        'in_cooldown: $inCooldown',
       );
       return inCooldown;
     }
@@ -226,7 +226,7 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
     final inCooldown = elapsedMs < cooldownMs;
     if (inCooldown) {
       debugPrint(
-        '[Banner] # in short cooldown (m elapsed)',
+        '[Banner] #${banner.id} in short cooldown (${(elapsedMs / (1000 * 60)).toStringAsFixed(1)}m elapsed)',
       );
     }
     return inCooldown;

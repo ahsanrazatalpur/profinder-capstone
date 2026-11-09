@@ -960,7 +960,7 @@ class _AdminPromoBannersScreenState extends State<AdminPromoBannersScreen>
               ),
               const SizedBox(height: 4),
               const Text(
-                'Recommended: 1200×600, JPG or PNG',
+                'Recommended: 16:9 ratio (1600×900 px), JPG or PNG',
                 style: TextStyle(
                   fontSize: AppFontSizes.caption,
                   color: AppColors.neutral400,

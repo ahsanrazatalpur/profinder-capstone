@@ -25,6 +25,7 @@ import '../../subscription/screens/subscription_screen.dart';
 import '../../../core/theme/theme_context_ext.dart';
 import '../../../shared/widgets/cta_banner.dart';
 import '../../../shared/widgets/announcement_banner.dart';
+import '../../../shared/widgets/display_ad_banner.dart';
 import '../../../shared/widgets/role_app_bar.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
@@ -283,6 +284,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                     _buildAppBar(),
                     SliverToBoxAdapter(child: _buildGreetingAndKpis(isDark)),
                     SliverToBoxAdapter(child: _buildSearchBar(isDark)),
+                    const SliverToBoxAdapter(
+                      child: DisplayAdBanner(placementSlot: 'homepage_masthead'),
+                    ),
                     if (isSearchMode)
                       SliverToBoxAdapter(child: _buildSearchResults(isDark))
                     else ...[
@@ -1358,7 +1362,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
               Expanded(
                 child: ListView.separated(
                   itemCount: history.length,
-                  separatorBuilder: (_, __) => const Divider(height: 16),
+                  separatorBuilder: (context, index) => const Divider(height: 16),
                   itemBuilder: (ctx, i) {
                     final item = history[i] as Map<String, dynamic>;
                     final pkg = item['package_name'] ?? 'Promotion';

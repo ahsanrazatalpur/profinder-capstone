@@ -1,8 +1,10 @@
 // Centered modal popup presenting active promotional banners.
 // Supports countdown skip lock, cached banner graphics, and deep-linked CTAs.
+//
+// Displays startup advertisements as clean, responsive, 16:9 horizontal banners
+// with 0% edge clipping and floating skip/countdown controls.
 
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,10 +39,11 @@ class PromoBannerPopup extends StatefulWidget {
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // lock period mein tap-outside blocked
-      barrierColor: Colors.black.withValues(alpha: 0.65),
+      barrierColor: Colors.black.withValues(alpha: 0.70),
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+        elevation: 0,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: PromoBannerPopup(banner: banner, userRole: userRole),
       ),
     );
@@ -184,7 +187,120 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
 
   Widget _buildSheet() {
     final hasImage = widget.banner.imageUrl.trim().startsWith('http');
+    if (hasImage) {
+      return _buildImageBanner();
+    }
+    return _buildTextSheet();
+  }
 
+  // ── 16:9 Horizontal Image Banner Presentation ────────────────────────────
+  // Displays complete uploaded banner creative with 0% edge clipping,
+  // responsive aspect ratio, and floating skip/countdown pill.
+  Widget _buildImageBanner() {
+    final imgUrl = widget.banner.imageUrl.trim();
+    final hasAction = widget.banner.buttonLinkType != 'none';
+    final hasCtaText = widget.banner.buttonText.trim().isNotEmpty;
+
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.40),
+              blurRadius: 30,
+              spreadRadius: 2,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              color: const Color(0xFF0F172A), // Dark slate canvas backdrop
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // 1. Crisp uncropped banner image — BoxFit.contain guarantees 0% edge clipping
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: hasAction ? _handleCta : null,
+                    child: CachedNetworkImage(
+                      imageUrl: imgUrl,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.center,
+                      placeholder: (_, _) => _buildShimmer(),
+                      errorWidget: (_, _, _) => _buildTextSheet(),
+                    ),
+                  ),
+
+                  // 2. Floating CTA Button (if action configured and button text provided)
+                  if (hasAction && hasCtaText)
+                    Positioned(
+                      bottom: 12,
+                      right: 12,
+                      child: GestureDetector(
+                        onTap: _handleCta,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _accentColor,
+                            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.35),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                widget.banner.buttonText.trim(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              const Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 15,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  // 3. Floating Skip / Countdown pill — top right corner
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: _buildCountdownPill(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Fallback Text Announcement Sheet (when no image provided) ─────────────
+  Widget _buildTextSheet() {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       decoration: BoxDecoration(
@@ -204,15 +320,12 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ── Header: image ya gradient ─────────────────────────────
-            hasImage ? _buildImageHeader() : _buildGradientHeader(),
+            _buildGradientHeader(),
 
-            // ── Body ─────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 22, 24, 28),
               child: Column(
                 children: [
-                  // Title
                   Text(
                     widget.banner.title,
                     style: const TextStyle(
@@ -226,7 +339,6 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                   ),
                   const SizedBox(height: 10),
 
-                  // Description
                   Text(
                     widget.banner.description,
                     style: const TextStyle(
@@ -238,12 +350,10 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                   ),
                   const SizedBox(height: 26),
 
-                  // ── CTA Button ──────────────────────────────────────
                   if (widget.banner.buttonLinkType != 'none') _buildCtaButton(),
 
                   const SizedBox(height: 12),
 
-                  // ── Skip / Countdown ────────────────────────────────
                   _buildSkipButton(),
                 ],
               ),
@@ -254,72 +364,17 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
     );
   }
 
-  // ── Image header — full uncropped image with ambient blur backdrop ───────
-  Widget _buildImageHeader() {
-    final imgUrl = widget.banner.imageUrl.trim();
-    return Container(
-      height: 230,
-      width: double.infinity,
-      color: const Color(0xFF0F172A), // Dark slate canvas backdrop
-      child: Stack(
-        fit: StackFit.expand,
-        alignment: Alignment.center,
-        children: [
-          // Background ambient fill blurred so non-standard aspect ratios look cohesive
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.35,
-              child: CachedNetworkImage(
-                imageUrl: imgUrl,
-                fit: BoxFit.cover,
-                errorWidget: (_, _, _) => const SizedBox.shrink(),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-              child: const SizedBox.expand(),
-            ),
-          ),
-          // Subtle top/bottom gradient for contrast and readable countdown pill
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withValues(alpha: 0.35),
-                  Colors.transparent,
-                  Colors.black.withValues(alpha: 0.15),
-                ],
-              ),
-            ),
-          ),
-          // Complete uncropped image: BoxFit.contain guarantees 0% edge clipping
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-            child: CachedNetworkImage(
-              imageUrl: imgUrl,
-              fit: BoxFit.contain,
-              alignment: Alignment.center,
-              placeholder: (_, _) => _buildShimmer(),
-              errorWidget: (_, _, _) => _buildGradientHeader(),
-            ),
-          ),
-          // Skip/countdown pill — top right
-          Positioned(top: 14, right: 14, child: _buildCountdownPill()),
-        ],
-      ),
-    );
-  }
-
   Widget _buildShimmer() {
     return Container(
-      height: 230,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.slate200, AppColors.slate50, AppColors.slate200],
+      color: const Color(0xFF1E293B),
+      child: const Center(
+        child: SizedBox(
+          width: 28,
+          height: 28,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            color: Colors.white54,
+          ),
         ),
       ),
     );
@@ -342,7 +397,6 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Glassy icon circle
                 Container(
                   width: 80,
                   height: 80,
@@ -374,7 +428,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                   ),
                   child: Text(
                     AppLocalizations.of(context).subscriptionProfinderPremium,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: AppFontSizes.small,
                       fontWeight: FontWeight.w700,
@@ -386,7 +440,6 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
             ),
           ),
         ),
-        // Skip pill — top right
         Positioned(top: 14, right: 14, child: _buildCountdownPill()),
       ],
     );
@@ -400,45 +453,71 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.55),
+            color: Colors.black.withValues(alpha: 0.75),
             borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.35),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 AppLocalizations.of(context).promoSkip,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: AppFontSizes.small,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(width: 5),
-              Icon(Icons.close_rounded, color: Colors.white, size: 14),
+              const SizedBox(width: 5),
+              const Icon(Icons.close_rounded, color: Colors.white, size: 15),
             ],
           ),
         ),
       );
     }
 
-    // Countdown circle
+    // Countdown indicator
     return Container(
-      width: 38,
-      height: 38,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.55),
-        shape: BoxShape.circle,
-      ),
-      child: Center(
-        child: Text(
-          '$_secondsLeft',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: AppFontSizes.input,
-            fontWeight: FontWeight.w800,
-          ),
+        color: Colors.black.withValues(alpha: 0.75),
+        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.25),
+          width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.timer_outlined, size: 14, color: Colors.white70),
+          const SizedBox(width: 5),
+          Text(
+            '${_secondsLeft}s',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: AppFontSizes.small,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
       ),
     );
   }

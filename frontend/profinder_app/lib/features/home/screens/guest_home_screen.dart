@@ -15,6 +15,7 @@ import '../../../shared/widgets/featured_category_card.dart';
 import '../../../shared/widgets/category_card.dart';
 import '../../../shared/widgets/cta_banner.dart';
 import '../../../shared/widgets/announcement_banner.dart';
+import '../../../shared/widgets/display_ad_banner.dart';
 import '../../../shared/widgets/role_app_bar.dart';
 import '../../../core/constants/category_style.dart';
 import '../../search/screens/professional_detail_screen.dart';
@@ -307,6 +308,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
                     ),
                     SliverToBoxAdapter(child: _buildHeader(nearby, isDark)),
                     SliverToBoxAdapter(child: _buildHeroSearch(isDark)),
+                    const SliverToBoxAdapter(
+                      child: DisplayAdBanner(placementSlot: 'homepage_masthead'),
+                    ),
                     SliverToBoxAdapter(
                       child: _buildQuickActionChips(home.categories, isDark),
                     ),
