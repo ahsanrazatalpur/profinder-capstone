@@ -1,8 +1,11 @@
 // Centered modal popup presenting active promotional banners.
 // Supports countdown skip lock, cached banner graphics, and deep-linked CTAs.
 //
-// Displays startup advertisements as clean, responsive, 16:9 horizontal banners
-// with 0% edge clipping and floating skip/countdown controls.
+// Formatted as a unified card:
+// - Top: Edge-to-edge 16:9 banner image (0 white padding/margins around image).
+// - Inside top right: Countdown circular badge (e.g. "3" or close button).
+// - Bottom: Title, Subtitle/Description, Full-width Action Button, Skip text.
+// - Below card: Floating circular close button.
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -43,7 +46,7 @@ class PromoBannerPopup extends StatefulWidget {
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: PromoBannerPopup(banner: banner, userRole: userRole),
       ),
     );
@@ -186,206 +189,215 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
   }
 
   Widget _buildSheet() {
-    final hasImage = widget.banner.imageUrl.trim().startsWith('http');
-    if (hasImage) {
-      return _buildImageBanner();
-    }
-    return _buildTextSheet();
-  }
-
-  // ── 16:9 Horizontal Image Banner Presentation ────────────────────────────
-  // Displays complete uploaded banner creative with 0% edge clipping,
-  // responsive aspect ratio, and floating skip/countdown pill.
-  Widget _buildImageBanner() {
-    final imgUrl = widget.banner.imageUrl.trim();
-    final hasAction = widget.banner.buttonLinkType != 'none';
-    final hasCtaText = widget.banner.buttonText.trim().isNotEmpty;
-
     return Center(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.40),
-              blurRadius: 30,
-              spreadRadius: 2,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              color: const Color(0xFF0F172A), // Dark slate canvas backdrop
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  // 1. Crisp uncropped banner image — BoxFit.contain guarantees 0% edge clipping
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: hasAction ? _handleCta : null,
-                    child: CachedNetworkImage(
-                      imageUrl: imgUrl,
-                      fit: BoxFit.contain,
-                      alignment: Alignment.center,
-                      placeholder: (_, _) => _buildShimmer(),
-                      errorWidget: (_, _, _) => _buildTextSheet(),
-                    ),
-                  ),
-
-                  // 2. Floating CTA Button (if action configured and button text provided)
-                  if (hasAction && hasCtaText)
-                    Positioned(
-                      bottom: 12,
-                      right: 12,
-                      child: GestureDetector(
-                        onTap: _handleCta,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _accentColor,
-                            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.35),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                widget.banner.buttonText.trim(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.3,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              const Icon(
-                                Icons.arrow_forward_rounded,
-                                size: 15,
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                  // 3. Floating Skip / Countdown pill — top right corner
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: _buildCountdownPill(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ── Fallback Text Announcement Sheet (when no image provided) ─────────────
-  Widget _buildTextSheet() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppSizes.radius28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 40,
-            spreadRadius: 0,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppSizes.radius28),
+      child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildGradientHeader(),
-
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 22, 24, 28),
-              child: Column(
-                children: [
-                  Text(
-                    widget.banner.title,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.background,
-                      letterSpacing: -0.5,
-                      height: 1.2,
-                    ),
-                    textAlign: TextAlign.center,
+            // ── Main Promo Card ───────────────────────────────────────────────
+            Container(
+              width: double.infinity,
+              constraints: const BoxConstraints(maxWidth: 420),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.28),
+                    blurRadius: 36,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 10),
                   ),
-                  const SizedBox(height: 10),
-
-                  Text(
-                    widget.banner.description,
-                    style: const TextStyle(
-                      fontSize: AppFontSizes.body,
-                      color: AppColors.slate500,
-                      height: 1.6,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 26),
-
-                  if (widget.banner.buttonLinkType != 'none') _buildCtaButton(),
-
-                  const SizedBox(height: 12),
-
-                  _buildSkipButton(),
                 ],
               ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Top: Banner image bleeding edge-to-edge (0 padding / margins)
+                    _buildTopMedia(),
+
+                    // Bottom: Title, description, CTA button, skip text
+                    _buildCardBody(),
+                  ],
+                ),
+              ),
             ),
+
+            // ── Floating Bottom Close Button (matches design reference) ───────
+            const SizedBox(height: 20),
+            _buildBottomCloseButton(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildShimmer() {
+  // ── Top Image / Media Section ─────────────────────────────────────────────
+  Widget _buildTopMedia() {
+    final imgUrl = widget.banner.imageUrl.trim();
+    final hasImage = imgUrl.startsWith('http');
+    final hasAction = widget.banner.buttonLinkType != 'none';
+
+    if (!hasImage) {
+      return _buildGradientHeader();
+    }
+
+    return Stack(
+      children: [
+        // Edge-to-edge 16:9 banner image without internal padding
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: hasAction ? _handleCta : null,
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: CachedNetworkImage(
+              imageUrl: imgUrl,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              placeholder: (_, _) => _buildShimmer(),
+              errorWidget: (_, _, _) => _buildGradientHeader(),
+            ),
+          ),
+        ),
+
+        // Countdown circular badge (top-right overlay)
+        Positioned(
+          top: 12,
+          right: 12,
+          child: _buildCountdownBadge(),
+        ),
+      ],
+    );
+  }
+
+  // ── Countdown Badge / Skip Pill (Top Right) ───────────────────────────────
+  Widget _buildCountdownBadge() {
+    if (_canSkip) {
+      return GestureDetector(
+        onTap: _dismiss,
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black.withValues(alpha: 0.65),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.35),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.25),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.close_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Circular countdown badge displaying remaining seconds (e.g. "3")
     return Container(
-      color: const Color(0xFF1E293B),
-      child: const Center(
-        child: SizedBox(
-          width: 28,
-          height: 28,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.5,
-            color: Colors.white54,
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.black.withValues(alpha: 0.65),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.35),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          '$_secondsLeft',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ),
     );
   }
 
-  // ── Gradient header (no image) ────────────────────────────────────────────
+  // ── Card Body (Title, Description, CTA, Skip Text) ────────────────────────
+  Widget _buildCardBody() {
+    final hasAction = widget.banner.buttonLinkType != 'none';
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(22, 20, 22, 22),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Title
+          if (widget.banner.title.trim().isNotEmpty) ...[
+            Text(
+              widget.banner.title.trim(),
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: AppColors.background,
+                letterSpacing: -0.4,
+                height: 1.25,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+          ],
+
+          // Description
+          if (widget.banner.description.trim().isNotEmpty) ...[
+            Text(
+              widget.banner.description.trim(),
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.slate500,
+                height: 1.45,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 22),
+          ],
+
+          // CTA Action Button
+          if (hasAction) ...[
+            _buildCtaButton(),
+            const SizedBox(height: 12),
+          ],
+
+          // Skip text
+          _buildSkipButton(),
+        ],
+      ),
+    );
+  }
+
+  // ── Fallback Gradient Header (when no image provided) ─────────────────────
   Widget _buildGradientHeader() {
     return Stack(
       children: [
         Container(
-          height: 180,
+          height: 160,
+          width: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: _gradientColors,
@@ -398,8 +410,8 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 80,
-                  height: 80,
+                  width: 72,
+                  height: 72,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.white.withValues(alpha: 0.15),
@@ -411,16 +423,16 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
                   child: const Center(
                     child: Icon(
                       Icons.workspace_premium_rounded,
-                      size: 42,
+                      size: 40,
                       color: Colors.amber,
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
-                    vertical: 5,
+                    vertical: 4,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.15),
@@ -440,93 +452,36 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
             ),
           ),
         ),
-        Positioned(top: 14, right: 14, child: _buildCountdownPill()),
+        Positioned(
+          top: 12,
+          right: 12,
+          child: _buildCountdownBadge(),
+        ),
       ],
     );
   }
 
-  // ── Skip / countdown pill ────────────────────────────────────────────────
-  Widget _buildCountdownPill() {
-    if (_canSkip) {
-      return GestureDetector(
-        onTap: _dismiss,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.75),
-            borderRadius: BorderRadius.circular(AppSizes.radiusChip),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.35),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                AppLocalizations.of(context).promoSkip,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: AppFontSizes.small,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(width: 5),
-              const Icon(Icons.close_rounded, color: Colors.white, size: 15),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // Countdown indicator
+  Widget _buildShimmer() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.75),
-        borderRadius: BorderRadius.circular(AppSizes.radiusChip),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.25),
-          width: 1,
+      color: const Color(0xFF1E293B),
+      child: const Center(
+        child: SizedBox(
+          width: 28,
+          height: 28,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            color: Colors.white54,
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.timer_outlined, size: 14, color: Colors.white70),
-          const SizedBox(width: 5),
-          Text(
-            '${_secondsLeft}s',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: AppFontSizes.small,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
       ),
     );
   }
 
-  // ── CTA Button ────────────────────────────────────────────────────────────
+  // ── Full-Width CTA Button ─────────────────────────────────────────────────
   Widget _buildCtaButton() {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: 52,
       child: ElevatedButton(
         onPressed: _handleCta,
         style: ElevatedButton.styleFrom(
@@ -546,9 +501,9 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
             Text(
               widget.banner.buttonText.trim().isEmpty
                   ? AppLocalizations.of(context).promoGetPremium
-                  : widget.banner.buttonText,
+                  : widget.banner.buttonText.trim(),
               style: const TextStyle(
-                fontSize: AppFontSizes.title,
+                fontSize: 16,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.3,
               ),
@@ -559,29 +514,63 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
     );
   }
 
-  // ── Skip/Maybe-Later text button ──────────────────────────────────────────
+  // ── Skip / Countdown Text Below Button ────────────────────────────────────
   Widget _buildSkipButton() {
     return GestureDetector(
       onTap: _canSkip ? _dismiss : null,
+      behavior: HitTestBehavior.opaque,
       child: AnimatedOpacity(
-        opacity: _canSkip ? 1.0 : 0.35,
+        opacity: _canSkip ? 1.0 : 0.45,
         duration: const Duration(milliseconds: 300),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _canSkip
-                  ? AppLocalizations.of(context).subscriptionNoThanksMaybeLater
-                  : AppLocalizations.of(
-                      context,
-                    ).subscriptionPleaseWaitSeconds('$_secondsLeft'),
-              style: const TextStyle(
-                fontSize: AppFontSizes.secondary,
-                color: AppColors.slate400,
-                fontWeight: FontWeight.w500,
-              ),
+        child: Text(
+          _canSkip
+              ? AppLocalizations.of(context).subscriptionNoThanksMaybeLater
+              : AppLocalizations.of(
+                  context,
+                ).subscriptionPleaseWaitSeconds('$_secondsLeft'),
+          style: TextStyle(
+            fontSize: AppFontSizes.secondary,
+            color: _canSkip ? AppColors.slate500 : AppColors.slate400,
+            fontWeight: _canSkip ? FontWeight.w600 : FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  // ── Floating Bottom Close Button (Circular X Icon) ────────────────────────
+  Widget _buildBottomCloseButton() {
+    return GestureDetector(
+      onTap: _canSkip ? _dismiss : null,
+      child: AnimatedOpacity(
+        opacity: _canSkip ? 1.0 : 0.45,
+        duration: const Duration(milliseconds: 250),
+        child: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black.withValues(alpha: 0.55),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.25),
+              width: 1.5,
             ),
-          ],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.35),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.close_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
         ),
       ),
     );
