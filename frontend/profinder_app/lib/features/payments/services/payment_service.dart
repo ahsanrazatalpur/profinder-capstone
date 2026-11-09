@@ -170,6 +170,18 @@ class PaymentService {
     }
   }
 
+  Future<Map<String, dynamic>?> getFeaturedStatus() async {
+    try {
+      final res = await _api.get(AppConstants.featuredStatus);
+      if (res.data is Map) {
+        return Map<String, dynamic>.from(res.data);
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   // ─── Launch PayPal Approval URL ────────────────────────────────────────────
 
   Future<bool> launchApprovalUrl(String url) async {

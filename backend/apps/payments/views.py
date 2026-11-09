@@ -753,15 +753,62 @@ def fulfill_payment_entitlement(payment: Payment) -> bool:
     return True
 
 
+def sweep_expired_campaigns():
+    """
+    Marks campaigns that have passed their end_date as is_active=False and logs audit.
+    Returns the count of swept campaigns.
+    """
+    now = timezone.now()
+    expired_camps = FeaturedListingCampaign.objects.filter(
+        is_active=True,
+        end_date__lt=now
+    )
+    count = 0
+    for camp in expired_camps:
+        camp.is_active = False
+        camp.save(update_fields=['is_active', 'updated_at'])
+        CampaignAuditLog.objects.create(
+            campaign=camp,
+            action='expired',
+            previous_state='active',
+            new_state='expired',
+            reason='Campaign reached duration expiry date'
+        )
+        count += 1
+    return count
+
+
 class FeaturedPromotionPackagesListView(APIView):
     """
     GET /api/payments/featured/packages/
-    Lists available featured promotion packages.
+    Lists available featured promotion packages with clear pricing and benefits.
     """
     permission_classes = [AllowAny]
 
     def get(self, request):
         packages = FeaturedPromotionPackage.objects.filter(is_active=True).order_by('duration_days')
+        BENEFITS = {
+            7: [
+                'Pinned at top of category search results for 7 days',
+                'Distinct Amber "Featured" badge',
+                'Higher visibility in Normal and AI Search',
+                'Priority ranking over regular listings',
+            ],
+            15: [
+                'Pinned at top of category search results for 15 days',
+                'Distinct Amber "Featured" badge',
+                'Higher visibility in Normal and AI Search',
+                'Priority ranking over regular listings',
+                'Best value for bi-weekly campaigns',
+            ],
+            30: [
+                'Pinned at top of category search results for 30 days',
+                'Distinct Amber "Featured" badge',
+                'Higher visibility in Normal and AI Search',
+                'Priority ranking over regular listings',
+                'Maximum exposure & customer inquiries',
+            ],
+        }
         data = [
             {
                 'id': p.id,
@@ -771,10 +818,102 @@ class FeaturedPromotionPackagesListView(APIView):
                 'currency': p.currency,
                 'formatted_price': f"{p.currency} {p.price:,.0f}",
                 'is_active': p.is_active,
+                'benefits': BENEFITS.get(p.duration_days, [
+                    f'Featured placement for {p.duration_days} days',
+                    'Distinct Amber "Featured" badge',
+                    'Priority search placement',
+                ]),
+                'disclosure': 'Featured placement is a promotional listing and does not imply identity verification.',
             }
             for p in packages
         ]
         return Response(data)
+
+
+class ProfessionalFeaturedStatusView(APIView):
+    """
+    GET /api/payments/featured/status/
+    Returns the current professional's featured promotion status, active campaign, and purchase history.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role != 'professional':
+            return Response({'error': 'Only professionals have featured promotion status.'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            prof_profile = request.user.professionalprofile
+        except Exception:
+            return Response({'error': 'Professional profile required.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Run sweep to ensure any past-due campaign is marked inactive
+        sweep_expired_campaigns()
+
+        now = timezone.now()
+        active_camp = FeaturedListingCampaign.objects.filter(
+            professional=prof_profile,
+            is_active=True,
+            start_date__lte=now,
+            end_date__gte=now,
+            payment__status='completed'
+        ).select_related('package', 'category', 'payment').first()
+
+        active_data = None
+        if active_camp:
+            remaining = active_camp.end_date - now
+            remaining_days = max(0, remaining.days)
+            remaining_hours = max(0, int(remaining.total_seconds() // 3600))
+            active_data = {
+                'id': active_camp.id,
+                'package_name': active_camp.package.name if active_camp.package else f"{active_camp.duration_days} Days Promotion",
+                'duration_days': active_camp.duration_days,
+                'category_id': active_camp.category_id,
+                'category_name': active_camp.category.name if active_camp.category else '',
+                'start_date': active_camp.start_date.isoformat() if active_camp.start_date else None,
+                'end_date': active_camp.end_date.isoformat() if active_camp.end_date else None,
+                'start_date_formatted': active_camp.start_date.strftime('%d %b %Y, %I:%M %p') if active_camp.start_date else None,
+                'end_date_formatted': active_camp.end_date.strftime('%d %b %Y, %I:%M %p') if active_camp.end_date else None,
+                'remaining_days': remaining_days,
+                'remaining_hours': remaining_hours,
+                'payment_status': active_camp.payment.status if active_camp.payment else 'completed',
+                'order_id': active_camp.payment.order_id if active_camp.payment else None,
+                'safepay_tracker': active_camp.payment.safepay_tracker if active_camp.payment else None,
+                'amount': str(active_camp.payment.amount) if active_camp.payment else str(active_camp.package.price if active_camp.package else 0),
+                'currency': active_camp.payment.currency if active_camp.payment else 'PKR',
+            }
+
+        # Past campaigns history
+        campaigns_qs = FeaturedListingCampaign.objects.filter(
+            professional=prof_profile
+        ).select_related('package', 'category', 'payment').order_by('-created_at')[:10]
+
+        history = []
+        for c in campaigns_qs:
+            history.append({
+                'id': c.id,
+                'package_name': c.package.name if c.package else f"{c.duration_days} Days Promotion",
+                'duration_days': c.duration_days,
+                'category_name': c.category.name if c.category else '',
+                'start_date': c.start_date.strftime('%d %b %Y') if c.start_date else None,
+                'end_date': c.end_date.strftime('%d %b %Y') if c.end_date else None,
+                'is_active': c.is_currently_running(),
+                'payment_status': c.payment.status if c.payment else 'unknown',
+                'amount': str(c.payment.amount) if c.payment else '0',
+                'order_id': c.payment.order_id if c.payment else None,
+                'created_at': c.created_at.strftime('%d %b %Y, %I:%M %p'),
+            })
+
+        default_cat_id = prof_profile.category_id
+        default_cat_name = prof_profile.category.name if prof_profile.category else 'Your Category'
+
+        return Response({
+            'has_active_promotion': bool(active_data),
+            'can_promote': active_data is None,
+            'active_campaign': active_data,
+            'history': history,
+            'default_category_id': default_cat_id,
+            'default_category_name': default_cat_name,
+        })
 
 
 class SafepayInitializeCheckoutView(APIView):
@@ -887,11 +1026,34 @@ class SafepayInitializeCheckoutView(APIView):
 
             try:
                 prof_profile = request.user.professionalprofile
-            except ProfessionalProfile.DoesNotExist:
+            except Exception:
                 return Response({'error': 'Professional profile required.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Automatically sweep any expired campaigns first
+            sweep_expired_campaigns()
+
+            # Prevent duplicate overlapping active promotions
+            now = timezone.now()
+            existing_active = FeaturedListingCampaign.objects.filter(
+                professional=prof_profile,
+                is_active=True,
+                start_date__lte=now,
+                end_date__gte=now,
+                payment__status='completed',
+            ).first()
+            if existing_active:
+                cat_name = existing_active.category.name if existing_active.category else 'your category'
+                expiry_str = existing_active.end_date.strftime('%d %b %Y') if existing_active.end_date else 'soon'
+                return Response({
+                    'error': f'You already have an active Featured Listing in {cat_name} running until {expiry_str}. You can promote again after it expires.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
             package_id = request.data.get('package_id')
             category_id = request.data.get('category_id')
+
+            # Default to professional's primary category if omitted
+            if not category_id and prof_profile.category_id:
+                category_id = prof_profile.category_id
 
             if not package_id or not category_id:
                 return Response({'error': 'package_id and category_id are required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -905,6 +1067,18 @@ class SafepayInitializeCheckoutView(APIView):
                 category = Category.objects.get(id=category_id)
             except Category.DoesNotExist:
                 return Response({'error': 'Category not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Strict relevance validation:
+            # Professional must belong to this category (primary or secondary)
+            is_primary = (prof_profile.category_id == category.id)
+            is_secondary = ProfessionalSecondaryCategory.objects.filter(
+                professional_profile=prof_profile, category=category
+            ).exists()
+            if not (is_primary or is_secondary):
+                primary_name = prof_profile.category.name if prof_profile.category else 'none'
+                return Response({
+                    'error': f'You can only promote your profile in categories registered to your profile ({primary_name}).'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
             price = pkg.price
             amount_pkr = int(round(float(price)))

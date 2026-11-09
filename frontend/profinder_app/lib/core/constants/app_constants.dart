@@ -146,6 +146,7 @@ class AppConstants {
   static const String safepayCheckoutInitialize = '/payments/checkout/initialize/';
   static const String safepayVerifyStatus = '/payments/verify-status/';
   static const String featuredPackages = '/payments/featured/packages/';
+  static const String featuredStatus = '/payments/featured/status/';
   static const String displayAdServe = '/admin-panel/ads/serve/';
   static String displayAdClick(int adId) => '/admin-panel/ads/$adId/click/';
   static const String adminDisplayAds = '/admin-panel/ads/';

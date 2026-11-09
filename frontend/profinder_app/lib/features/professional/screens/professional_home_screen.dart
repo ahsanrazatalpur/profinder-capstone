@@ -1,3 +1,5 @@
+import '../widgets/featured_promotion_sheet.dart';
+import '../../payments/services/payment_service.dart';
 // lib/features/professional/screens/professional_home_screen.dart
 
 import '../../../core/constants/app_sizes.dart';
@@ -46,6 +48,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   List<dynamic> _allBookings = [];
   DateTime _selectedCalendarDate = DateTime.now();
   Map<String, dynamic>? _myPlan;
+  Map<String, dynamic>? _featuredStatus;
   Map<String, dynamic> _proProfile = {};
   int? _myUserId;
   bool _isTogglingAvailability = false;
@@ -133,6 +136,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         _api.get(AppConstants.professionalBookings),
         _api.get(AppConstants.me),
       ]);
+      final featuredStatus = await PaymentService().getFeaturedStatus();
 
       if (!mounted) return;
 
@@ -173,6 +177,7 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
         _allBookings = bookingsList;
         _myPlan = myPlan;
         _proProfile = proProfile;
+        _featuredStatus = featuredStatus;
         _myUserId = int.tryParse(meData['id']?.toString() ?? '');
         _profileCompletion = _calculateCompletion(
           proProfile,
@@ -291,6 +296,9 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
                       ),
                       SliverToBoxAdapter(
                         child: _buildVerificationBanner(isDark),
+                      ),
+                      SliverToBoxAdapter(
+                        child: _buildFeaturedPromotionSection(isDark),
                       ),
                       SliverToBoxAdapter(child: _buildQuickActions(isDark)),
                       SliverToBoxAdapter(child: _buildEarningsSection(isDark)),
@@ -967,6 +975,445 @@ class _ProfessionalHomeScreenState extends State<ProfessionalHomeScreen>
   }
 
   // ── Quick Actions ─────────────────────────────────────
+  // ── Featured Listing Promotion Section (Safepay) ─────────────
+  Widget _buildFeaturedPromotionSection(bool isDark) {
+    final hasActive = _featuredStatus?['has_active_promotion'] == true;
+    final activeCamp = _featuredStatus?['active_campaign'] as Map<String, dynamic>?;
+    final history = (_featuredStatus?['history'] as List?) ?? [];
+
+    if (hasActive && activeCamp != null) {
+      final catName = activeCamp['category_name'] ?? 'Your Category';
+      final pkgName = activeCamp['package_name'] ?? 'Featured Listing';
+      final remainingDays = activeCamp['remaining_days'] ?? 0;
+      final remainingHours = activeCamp['remaining_hours'] ?? 0;
+      final expiryStr = activeCamp['end_date_formatted'] ?? 'Soon';
+      final orderId = activeCamp['order_id'] ?? '';
+
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: isDark
+                  ? [const Color(0xFF2E2413), const Color(0xFF1E1E28)]
+                  : [const Color(0xFFFFFBEB), Colors.white],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.6 : 0.4),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFEF3C7),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFF59E0B)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.star_rounded, color: Color(0xFFD97706), size: 16),
+                        SizedBox(width: 4),
+                        Text(
+                          'FEATURED ACTIVE',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFB45309),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.timer_outlined, size: 14, color: Color(0xFF059669)),
+                        const SizedBox(width: 4),
+                        Text(
+                          remainingDays > 0 ? '$remainingDays days left' : '$remainingHours hrs left',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF059669),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Pinned at Top of $catName',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : const Color(0xFF1E293B),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Your profile is currently featured and pinned at the top of category search results.',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                  height: 1.3,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.amber.shade50.withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.event_available_rounded, size: 16, color: Color(0xFFD97706)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Active Package: $pkgName • Expires: $expiryStr',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? Colors.grey.shade300 : const Color(0xFF78350F),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (orderId.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  'Safepay Verified Transaction: $orderId',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.blueGrey.shade400,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () => _showPromotionHistoryModal(context, history),
+                    icon: const Icon(Icons.history_rounded, size: 16),
+                    label: const Text('Campaign History'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFD97706),
+                      side: const BorderSide(color: Color(0xFFD97706)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final catName = _proProfile['category']?['name'] ?? _proProfile['category_name'] ?? _featuredStatus?['default_category_name'] ?? 'Your Category';
+    final catId = _proProfile['category_id'] ?? _featuredStatus?['default_category_id'] ?? 1;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isDark
+                ? [const Color(0xFF1E293B), const Color(0xFF282116)]
+                : [Colors.white, const Color(0xFFFFFBEB)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.4 : 0.25),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF3C7),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.rocket_launch_rounded,
+                    color: Color(0xFFD97706),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Promote My Profile',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? Colors.white : const Color(0xFF1E293B),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFEF3C7),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'NEW',
+                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFFB45309)),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Pin your profile to the top of $catName search',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                _promoPill('⭐ Pinned Top Placement', isDark),
+                _promoPill('🚀 Up to 5x More Inquiries', isDark),
+                _promoPill('💳 Safepay Pakistan', isDark),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      FeaturedPromotionSheet.show(
+                        context,
+                        defaultCategoryId: catId,
+                        defaultCategoryName: catName,
+                        onPromotionActivated: _loadData,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD97706),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      elevation: 2,
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.star_rounded, size: 18),
+                        SizedBox(width: 6),
+                        Text(
+                          'Promote Now • from Rs. 99',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (history.isNotEmpty) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    tooltip: 'Promotion History',
+                    onPressed: () => _showPromotionHistoryModal(context, history),
+                    icon: const Icon(Icons.history_rounded, color: Color(0xFFD97706)),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _promoPill(String text, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFFEF3C7).withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.3 : 0.2),
+        ),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          color: isDark ? Colors.amber.shade200 : const Color(0xFF92400E),
+        ),
+      ),
+    );
+  }
+
+  void _showPromotionHistoryModal(BuildContext context, List history) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Row(
+              children: [
+                Icon(Icons.history_rounded, color: Color(0xFFD97706)),
+                SizedBox(width: 8),
+                Text(
+                  'Promotion History',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (history.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 30),
+                child: Center(child: Text('No previous featured promotions found.')),
+              )
+            else
+              Expanded(
+                child: ListView.separated(
+                  itemCount: history.length,
+                  separatorBuilder: (_, __) => const Divider(height: 16),
+                  itemBuilder: (ctx, i) {
+                    final item = history[i] as Map<String, dynamic>;
+                    final pkg = item['package_name'] ?? 'Promotion';
+                    final cat = item['category_name'] ?? '';
+                    final amt = item['amount'] ?? '0';
+                    final date = item['created_at'] ?? '';
+                    final isActive = item['is_active'] == true;
+                    final status = item['payment_status'] ?? 'unknown';
+
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: CircleAvatar(
+                        backgroundColor: isActive
+                            ? const Color(0xFF10B981).withValues(alpha: 0.15)
+                            : Colors.grey.withValues(alpha: 0.15),
+                        child: Icon(
+                          isActive ? Icons.star_rounded : Icons.star_border_rounded,
+                          color: isActive ? const Color(0xFF059669) : Colors.grey,
+                        ),
+                      ),
+                      title: Text(
+                        '$pkg ($cat)',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      subtitle: Text(
+                        'Date: $date • Status: $status • PKR $amt',
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                      trailing: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: isActive
+                              ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                              : Colors.grey.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          isActive ? 'ACTIVE' : 'COMPLETED',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: isActive ? const Color(0xFF059669) : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildQuickActions(bool isDark) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),

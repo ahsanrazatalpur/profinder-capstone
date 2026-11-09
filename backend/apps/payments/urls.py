@@ -12,6 +12,7 @@ from apps.payments.views import (
     CurrencyListView,
     ExchangeRatesView,
     FeaturedPromotionPackagesListView,
+    ProfessionalFeaturedStatusView,
     SafepayInitializeCheckoutView,
     SafepayVerifyPaymentView,
     SafepayWebhookView,
@@ -33,4 +34,5 @@ urlpatterns = [
     path('verify-status/', SafepayVerifyPaymentView.as_view(), name='safepay_verify_status'),
     path('webhook/safepay/', SafepayWebhookView.as_view(), name='safepay_webhook'),
     path('featured/packages/', FeaturedPromotionPackagesListView.as_view(), name='featured_packages_list'),
+    path('featured/status/', ProfessionalFeaturedStatusView.as_view(), name='featured_status'),
 ]

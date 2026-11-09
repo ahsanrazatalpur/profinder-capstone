@@ -3382,6 +3382,7 @@ class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
     final rating = (pro['average_rating'] ?? 0.0).toDouble();
     final isVerified = pro['is_verified'] ?? false;
     final isPremium = pro['is_premium'] ?? false;
+    final isFeatured = pro['is_featured'] ?? false;
     final photo = AppHelpers.getFullImageUrl(
       (pro['photo_url'] ?? pro['photo'])?.toString(),
     );
@@ -3519,6 +3520,51 @@ class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      if (isFeatured) ...[
+                        const SizedBox(width: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEF3C7),
+                            border: Border.all(color: const Color(0xFFF59E0B)),
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.radiusBadge,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.star_rounded,
+                                color: const Color(0xFFD97706),
+                                size: ResponsiveUtils.sp(
+                                  10,
+                                  scale,
+                                  min: 9,
+                                  max: 13,
+                                ),
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                'Featured',
+                                style: TextStyle(
+                                  color: const Color(0xFFB45309),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: ResponsiveUtils.sp(
+                                    9,
+                                    scale,
+                                    min: 8,
+                                    max: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       if (isPremium) ...[
                         const SizedBox(width: 4),
                         Container(

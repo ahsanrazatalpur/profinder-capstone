@@ -79,6 +79,96 @@ class _FeaturedPromotionSheetState extends State<FeaturedPromotionSheet> {
   Future<void> _initiateCheckout() async {
     if (_selectedPackageId == null) return;
 
+    final selectedPkg = _packages.firstWhere(
+      (p) => p['id'] == _selectedPackageId,
+      orElse: () => {},
+    );
+    final pkgName = selectedPkg['name'] ?? 'Featured Package';
+    final pkgPrice = selectedPkg['formatted_price'] ?? 'PKR ${selectedPkg['price']}';
+    final pkgDays = selectedPkg['duration_days'] ?? 7;
+
+    // Requirement: Show confirmation containing selected package and amount before checkout
+    final confirmedCheckout = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.rocket_launch_rounded, color: Color(0xFFD97706)),
+            SizedBox(width: 8),
+            Text('Confirm Promotion', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Promote your profile at the top of "${widget.defaultCategoryName}".',
+              style: const TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFEF3C7).withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.4)),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Selected Package:', style: TextStyle(fontSize: 13, color: Colors.blueGrey)),
+                      Text('$pkgName ($pkgDays Days)', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Category:', style: TextStyle(fontSize: 13, color: Colors.blueGrey)),
+                      Text(widget.defaultCategoryName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  const Divider(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Total Price:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                      Text(pkgPrice, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFFD97706))),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Safepay Pakistan checkout will open in your browser to complete payment securely via card, Raast QR or bank.',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFD97706),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Proceed to Safepay', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmedCheckout != true) return;
+
     setState(() {
       _processing = true;
       _error = null;
@@ -374,10 +464,85 @@ class _FeaturedPromotionSheetState extends State<FeaturedPromotionSheet> {
               ),
             ),
             const SizedBox(height: 16),
+            // Selected Package Benefits
+            if (_packages.isNotEmpty) ...[
+              () {
+                final currentPkg = _packages.firstWhere(
+                  (p) => p['id'] == _selectedPackageId,
+                  orElse: () => _packages.first,
+                );
+                final benefits = (currentPkg['benefits'] as List?)?.cast<String>() ?? [
+                  'Pinned at top of category search results',
+                  'Distinct Amber "Featured" badge',
+                  'Higher visibility in Normal and AI Search',
+                  'Priority ranking over regular listings',
+                ];
+
+                return Container(
+                  margin: const EdgeInsets.only(top: 8, bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF3C7).withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.25)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.workspace_premium_rounded, size: 16, color: Color(0xFFD97706)),
+                          SizedBox(width: 6),
+                          Text(
+                            'Promotion Benefits Included:',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF92400E)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      ...benefits.map((b) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('• ', style: TextStyle(color: Color(0xFFD97706), fontWeight: FontWeight.bold)),
+                            Expanded(
+                              child: Text(b, style: const TextStyle(fontSize: 12, color: Color(0xFF78350F))),
+                            ),
+                          ],
+                        ),
+                      )),
+                    ],
+                  ),
+                );
+              }(),
+            ],
+            // Clear Sponsored / Featured Disclosure
+            Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, size: 16, color: Color(0xFFD97706)),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Sponsored/Featured Disclosure: Featured placement is a promotional listing and does not imply identity verification or guarantee jobs.',
+                      style: TextStyle(fontSize: 11, color: Color(0xFF92400E), height: 1.3),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             ElevatedButton(
               onPressed: _processing ? null : _initiateCheckout,
               style: ElevatedButton.styleFrom(
-                backgroundColor: context.colors.primary,
+                backgroundColor: const Color(0xFFD97706),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -392,13 +557,20 @@ class _FeaturedPromotionSheetState extends State<FeaturedPromotionSheet> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text(
-                      'Pay with Safepay & Pin Listing',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                  : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.rocket_launch_rounded, color: Colors.white, size: 18),
+                        SizedBox(width: 8),
+                        Text(
+                          'Promote Now 🚀',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
             ),
           ],

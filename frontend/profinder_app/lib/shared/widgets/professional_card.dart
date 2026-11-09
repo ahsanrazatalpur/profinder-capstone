@@ -212,18 +212,22 @@ class ProfessionalCard extends StatelessWidget {
         pro['is_verified'] ==
         true; // admin-controlled — never inferred client-side
     final isPremium = pro['is_premium'] == true;
+    final isFeatured = pro['is_featured'] == true;
     final isOnline = pro['is_online'] == true;
     final isAvailable = pro['is_available'] != false;
 
-    final badgeText =
-        sectionTag ??
-        (isPremium ? AppLocalizations.of(context).proBadgeLabel : null);
+    final badgeText = sectionTag ??
+        (isFeatured
+            ? 'Featured'
+            : (isPremium ? AppLocalizations.of(context).proBadgeLabel : null));
     final badgeIcon = sectionTag != null
         ? sectionTagIcon
-        : (isPremium ? Icons.workspace_premium_rounded : null);
+        : (isFeatured
+            ? Icons.star_rounded
+            : (isPremium ? Icons.workspace_premium_rounded : null));
     final badgeColor = sectionTag != null
         ? (sectionTagColor ?? context.colors.primary)
-        : AppColors.accentPurple;
+        : (isFeatured ? const Color(0xFFD97706) : AppColors.accentPurple);
 
     final bodyHeight = _bodyHeightFor(context);
 

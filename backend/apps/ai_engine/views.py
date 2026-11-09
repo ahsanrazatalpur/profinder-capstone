@@ -730,6 +730,21 @@ class AISearchView(APIView):
             ).exclude(plan__billing='free').values_list('user_id', flat=True)
         )
 
+        # Prefetch active featured professional user IDs (strict join: payment__status='completed', is_active=True, valid dates)
+        try:
+            from apps.subscriptions.models import FeaturedListingCampaign
+            featured_now = timezone.now()
+            active_featured_user_ids = set(
+                FeaturedListingCampaign.objects.filter(
+                    is_active=True,
+                    start_date__lte=featured_now,
+                    end_date__gte=featured_now,
+                    payment__status='completed',
+                ).values_list('professional__user_id', flat=True)
+            )
+        except Exception:
+            active_featured_user_ids = set()
+
         def name_of(pro):
             return (pro.full_name or pro.user.name or '').strip()
 
@@ -1225,6 +1240,10 @@ class AISearchView(APIView):
                     'hourly_rate':    float(getattr(prof, 'hourly_rate', 0) or 0),
                 }, personalization_profile)
 
+            # 12. Active Featured Promotion ranking advantage (respecting all category, location & budget filters)
+            if pro.user_id in active_featured_user_ids:
+                score += 180.0
+
             return score
 
         rank_score_by_pro_id = {id(p): _rank_score(p) for p in search_pool}
@@ -1233,6 +1252,7 @@ class AISearchView(APIView):
             search_pool,
             key=lambda p: (
                 1 if query_lower in name_of(p).lower() else 0,
+                1 if p.user_id in active_featured_user_ids else 0,
                 rank_score_by_pro_id[id(p)],
                 -int(p.user_id),
             ),
@@ -1340,16 +1360,20 @@ Rank the top {top_n} most relevant candidates.
 
                     data = _build_professional_data(
                         pro.user, customer_lat, customer_lng,
-                        is_premium=(pro.user_id in active_premium_ids)
+                        is_premium=(pro.user_id in active_premium_ids),
+                        is_featured=(pro.user_id in active_featured_user_ids)
                     )
                     if data:
                         data['ai_reason']     = item.get('reason', '')
                         data['ai_confidence'] = item.get('confidence', 0)
                         matched_pros.append(data)
 
-            # Sort by deterministic priority score
+            # Sort by active featured status and priority score
             matched_pros.sort(
-                key=lambda d: rank_score_by_user_id.get(d.get('id'), 0.0),
+                key=lambda d: (
+                    1 if d.get('is_featured') else 0,
+                    rank_score_by_user_id.get(d.get('id'), 0.0),
+                ),
                 reverse=True,
             )
 
@@ -1385,7 +1409,8 @@ Rank the top {top_n} most relevant candidates.
 
                 _data = _build_professional_data(
                     _pro.user, customer_lat, customer_lng,
-                    is_premium=(_pro.user_id in active_premium_ids)
+                    is_premium=(_pro.user_id in active_premium_ids),
+                    is_featured=(_pro.user_id in active_featured_user_ids)
                 )
                 if _data:
                     _data['ai_reason']     = _why
