@@ -7,8 +7,11 @@ Idempotent: Safe to run repeatedly without creating duplicates.
 """
 
 import sys
+import time
 from datetime import timedelta
+from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.db import connection, transaction
 from django.utils import timezone
 from apps.articles.models import Article, ArticleCategory
 from apps.admin_panel.models import ContentTranslation, Language
@@ -817,123 +820,152 @@ class Command(BaseCommand):
         skip_upload = options.get("no_upload", False)
         self.stdout.write(self.style.MIGRATE_HEADING("=== Starting ProFinder Magazine Content Replacement ==="))
 
-        # Step 1: Ensure Urdu Language exists
-        ur_lang, _ = Language.objects.get_or_create(
-            code="ur",
-            defaults={"name": "Urdu", "is_rtl": True, "status": "active"},
-        )
-        self.stdout.write(f"[OK] Language verified: {ur_lang.name} ({ur_lang.code}, RTL={ur_lang.is_rtl})")
+        # Disable AI translation prewarm hooks during bulk seed to prevent SQLite lock contention
+        old_translation_enabled = getattr(settings, 'TRANSLATION_ENABLED', True)
+        settings.TRANSLATION_ENABLED = False
 
-        # Step 2: Seed / Ensure Categories
-        category_map = {}
-        for cat_data in CATEGORIES:
-            cat, created = ArticleCategory.objects.get_or_create(
-                name=cat_data["name"],
-                defaults={
-                    "icon": cat_data["icon"],
-                    "color": cat_data["color"],
-                },
-            )
-            if not created and (cat.icon != cat_data["icon"] or cat.color != cat_data["color"]):
-                cat.icon = cat_data["icon"]
-                cat.color = cat_data["color"]
-                cat.save()
+        # Set SQLite busy timeout to 60 seconds to safely wait for any concurrent locks
+        if connection.vendor == 'sqlite':
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute('PRAGMA busy_timeout = 60000;')
+            except Exception:
+                pass
 
-            category_map[cat.name] = cat
-
-            # Seed Urdu translation for category
-            ContentTranslation.objects.update_or_create(
-                model_label="articlecategory",
-                object_id=cat.id,
-                field="name",
-                language=ur_lang,
-                defaults={"text": cat_data["ur_name"]},
-            )
-            action_label = "Created" if created else "Updated"
-            self.stdout.write(f"  -> {action_label} category: {cat.name} ({cat_data['ur_name']})")
-
-        # Step 3: Remove old dummy articles that do not belong to our 10 official slugs
-        target_slugs = {a["slug"] for a in ARTICLES_DATA}
-        dummy_articles = Article.objects.exclude(slug__in=target_slugs)
-        dummy_count = dummy_articles.count()
-        if dummy_count > 0:
-            dummy_ids = list(dummy_articles.values_list("id", flat=True))
-            # Clean up translations for deleted articles
-            ContentTranslation.objects.filter(model_label="article", object_id__in=dummy_ids).delete()
-            dummy_articles.delete()
-            self.stdout.write(self.style.WARNING(f"[OK] Safely removed {dummy_count} old dummy article(s)."))
-        else:
-            self.stdout.write("[OK] No extraneous dummy articles found.")
-
-        # Step 4: Seed the 10 professional articles
-        now = timezone.now()
-        seeded_count = 0
-
-        for idx, data in enumerate(ARTICLES_DATA, start=1):
-            slug = data["slug"]
-            cat = category_map.get(data["category_name"])
-            image_url = data["image_source"]
-
-            # Upload to Cloudinary if available and not skipped
-            if CLOUDINARY_AVAILABLE and not skip_upload:
+        def save_translation(model_label, obj_id, field, lang, text):
+            if not text:
+                return
+            for attempt in range(5):
                 try:
-                    public_id = f"magazine_{slug}"
-                    res = cloudinary.uploader.upload(
-                        data["image_source"],
-                        folder="articles",
-                        public_id=public_id,
-                        overwrite=False,  # idempotent: don't re-upload if already there
-                        resource_type="image",
+                    ContentTranslation.objects.filter(
+                        model_label=model_label,
+                        object_id=obj_id,
+                        field=field,
+                        language=lang,
+                    ).delete()
+                    ContentTranslation.objects.create(
+                        model_label=model_label,
+                        object_id=obj_id,
+                        field=field,
+                        language=lang,
+                        text=text,
                     )
-                    image_url = res.get("secure_url") or image_url
-                except Exception as upload_err:
-                    self.stdout.write(
-                        self.style.NOTICE(f"  [Cloudinary note for #{idx}]: {upload_err}. Using verified CDN URL directly.")
-                    )
+                    return
+                except Exception as err:
+                    if attempt == 4:
+                        self.stdout.write(
+                            self.style.WARNING(f"  [Notice] Translation save for {field} (#{obj_id}): {err}")
+                        )
+                    time.sleep(0.3)
 
-            # Publish date staggered over past 10 days for realistic editorial timeline
-            pub_date = now - timedelta(days=10 - idx, hours=idx * 2)
-
-            article, created = Article.objects.update_or_create(
-                slug=slug,
-                defaults={
-                    "title": data["title"],
-                    "summary": data["summary"],
-                    "content": data["content"],
-                    "cover_image": image_url,
-                    "category": cat,
-                    "editorial_label": data["editorial_label"],
-                    "read_time": data["read_time"],
-                    "is_published": True,
-                    "is_archived": False,
-                    "published_at": pub_date,
-                },
+        try:
+            # Step 1: Ensure Urdu Language exists
+            ur_lang, _ = Language.objects.get_or_create(
+                code="ur",
+                defaults={"name": "Urdu", "is_rtl": True, "status": "active"},
             )
+            self.stdout.write(f"[OK] Language verified: {ur_lang.name} ({ur_lang.code}, RTL={ur_lang.is_rtl})")
 
-            # Seed Urdu translations in ContentTranslation table
-            ur_data = data.get("ur", {})
-            for field_name in ["title", "summary", "content", "editorial_label"]:
-                translated_text = ur_data.get(field_name)
-                if translated_text:
-                    ContentTranslation.objects.update_or_create(
-                        model_label="article",
-                        object_id=article.id,
-                        field=field_name,
-                        language=ur_lang,
-                        defaults={"text": translated_text},
-                    )
-
-            status_str = "Created" if created else "Updated"
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f"[OK] [{idx}/10] {status_str}: \"{article.title}\" | {cat.name} | Read: {article.read_time}m"
+            # Step 2: Seed / Ensure Categories
+            category_map = {}
+            for cat_data in CATEGORIES:
+                cat, created = ArticleCategory.objects.get_or_create(
+                    name=cat_data["name"],
+                    defaults={
+                        "icon": cat_data["icon"],
+                        "color": cat_data["color"],
+                    },
                 )
-            )
-            seeded_count += 1
+                if not created and (cat.icon != cat_data["icon"] or cat.color != cat_data["color"]):
+                    cat.icon = cat_data["icon"]
+                    cat.color = cat_data["color"]
+                    cat.save()
 
-        self.stdout.write(self.style.MIGRATE_LABEL("\n=== Verification Summary ==="))
-        total_active = Article.objects.filter(is_published=True).count()
-        total_translations = ContentTranslation.objects.filter(model_label="article").count()
-        self.stdout.write(f"Total Published Magazine Articles: {total_active}")
-        self.stdout.write(f"Total Urdu Article Field Translations: {total_translations}")
-        self.stdout.write(self.style.SUCCESS("=== ProFinder Magazine Seeding Completed Successfully! ==="))
+                category_map[cat.name] = cat
+
+                # Seed Urdu translation for category
+                save_translation("articlecategory", cat.id, "name", ur_lang, cat_data["ur_name"])
+                action_label = "Created" if created else "Updated"
+                self.stdout.write(f"  -> {action_label} category: {cat.name} ({cat_data['ur_name']})")
+
+            # Step 3: Remove old dummy articles that do not belong to our 10 official slugs
+            target_slugs = {a["slug"] for a in ARTICLES_DATA}
+            dummy_articles = Article.objects.exclude(slug__in=target_slugs)
+            dummy_count = dummy_articles.count()
+            if dummy_count > 0:
+                dummy_ids = list(dummy_articles.values_list("id", flat=True))
+                # Clean up translations for deleted articles
+                ContentTranslation.objects.filter(model_label="article", object_id__in=dummy_ids).delete()
+                dummy_articles.delete()
+                self.stdout.write(self.style.WARNING(f"[OK] Safely removed {dummy_count} old dummy article(s)."))
+            else:
+                self.stdout.write("[OK] No extraneous dummy articles found.")
+
+            # Step 4: Seed the 10 professional articles
+            now = timezone.now()
+            seeded_count = 0
+
+            for idx, data in enumerate(ARTICLES_DATA, start=1):
+                slug = data["slug"]
+                cat = category_map.get(data["category_name"])
+                image_url = data["image_source"]
+
+                # Upload to Cloudinary if available and not skipped
+                if CLOUDINARY_AVAILABLE and not skip_upload:
+                    try:
+                        public_id = f"magazine_{slug}"
+                        res = cloudinary.uploader.upload(
+                            data["image_source"],
+                            folder="articles",
+                            public_id=public_id,
+                            overwrite=False,  # idempotent: don't re-upload if already there
+                            resource_type="image",
+                        )
+                        image_url = res.get("secure_url") or image_url
+                    except Exception as upload_err:
+                        self.stdout.write(
+                            self.style.NOTICE(f"  [Cloudinary note for #{idx}]: {upload_err}. Using verified CDN URL directly.")
+                        )
+
+                # Publish date staggered over past 10 days for realistic editorial timeline
+                pub_date = now - timedelta(days=10 - idx, hours=idx * 2)
+
+                article, created = Article.objects.update_or_create(
+                    slug=slug,
+                    defaults={
+                        "title": data["title"],
+                        "summary": data["summary"],
+                        "content": data["content"],
+                        "cover_image": image_url,
+                        "category": cat,
+                        "editorial_label": data["editorial_label"],
+                        "read_time": data["read_time"],
+                        "is_published": True,
+                        "is_archived": False,
+                        "published_at": pub_date,
+                    },
+                )
+
+                # Seed Urdu translations in ContentTranslation table safely
+                ur_data = data.get("ur", {})
+                for field_name in ["title", "summary", "content", "editorial_label"]:
+                    translated_text = ur_data.get(field_name)
+                    if translated_text:
+                        save_translation("article", article.id, field_name, ur_lang, translated_text)
+
+                status_str = "Created" if created else "Updated"
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"[OK] [{idx}/10] {status_str}: \"{article.title}\" | {cat.name} | Read: {article.read_time}m"
+                    )
+                )
+                seeded_count += 1
+
+            self.stdout.write(self.style.MIGRATE_LABEL("\n=== Verification Summary ==="))
+            total_active = Article.objects.filter(is_published=True).count()
+            total_translations = ContentTranslation.objects.filter(model_label="article").count()
+            self.stdout.write(f"Total Published Magazine Articles: {total_active}")
+            self.stdout.write(f"Total Urdu Article Field Translations: {total_translations}")
+            self.stdout.write(self.style.SUCCESS("=== ProFinder Magazine Seeding Completed Successfully! ==="))
+        finally:
+            settings.TRANSLATION_ENABLED = old_translation_enabled
