@@ -2,6 +2,7 @@
 // Supports countdown skip lock, cached banner graphics, and deep-linked CTAs.
 
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -253,31 +254,57 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
     );
   }
 
-  // ── Image header — cached_network_image se white blank fix ───────────────
+  // ── Image header — full uncropped image with ambient blur backdrop ───────
   Widget _buildImageHeader() {
-    return SizedBox(
-      height: 220,
+    final imgUrl = widget.banner.imageUrl.trim();
+    return Container(
+      height: 230,
+      width: double.infinity,
+      color: const Color(0xFF0F172A), // Dark slate canvas backdrop
       child: Stack(
         fit: StackFit.expand,
+        alignment: Alignment.center,
         children: [
-          // Network banner image cached locally with shimmer placeholder and gradient fallback
-          CachedNetworkImage(
-            imageUrl: widget.banner.imageUrl.trim(),
-            fit: BoxFit.cover,
-            placeholder: (_, _) => _buildShimmer(),
-            errorWidget: (_, _, _) => _buildGradientHeader(),
+          // Background ambient fill blurred so non-standard aspect ratios look cohesive
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.35,
+              child: CachedNetworkImage(
+                imageUrl: imgUrl,
+                fit: BoxFit.cover,
+                errorWidget: (_, _, _) => const SizedBox.shrink(),
+              ),
+            ),
           ),
-          // Subtle gradient overlay to ensure subtitle and title readability
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+              child: const SizedBox.expand(),
+            ),
+          ),
+          // Subtle top/bottom gradient for contrast and readable countdown pill
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
+                  Colors.black.withValues(alpha: 0.35),
                   Colors.transparent,
                   Colors.black.withValues(alpha: 0.15),
                 ],
               ),
+            ),
+          ),
+          // Complete uncropped image: BoxFit.contain guarantees 0% edge clipping
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+            child: CachedNetworkImage(
+              imageUrl: imgUrl,
+              fit: BoxFit.contain,
+              alignment: Alignment.center,
+              placeholder: (_, _) => _buildShimmer(),
+              errorWidget: (_, _, _) => _buildGradientHeader(),
             ),
           ),
           // Skip/countdown pill — top right
@@ -289,7 +316,7 @@ class _PromoBannerPopupState extends State<PromoBannerPopup>
 
   Widget _buildShimmer() {
     return Container(
-      height: 220,
+      height: 230,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [AppColors.slate200, AppColors.slate50, AppColors.slate200],

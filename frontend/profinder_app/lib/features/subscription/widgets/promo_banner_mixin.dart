@@ -20,7 +20,7 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
   /// [trigger]: Screen context ('home', 'search', 'ai_search', 'booking', 'login').
   Future<void> showBannerForScreen(
     String trigger, {
-    int delaySeconds = 2,
+    int delaySeconds = 1,
   }) async {
     debugPrint('[Banner] ▶ showBannerForScreen called — trigger: $trigger');
 
@@ -150,6 +150,7 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
       userRole: displayRole,
     );
 
+    _sessionShownBanners.add(toShow.id);
     if (userTappedCta) {
       await _markShown(userKey, toShow.id);
     } else {
@@ -162,7 +163,7 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
     required String trigger,
     String? userType,
     String? userRole,
-    int delaySeconds = 2,
+    int delaySeconds = 1,
   }) async {
     await showBannerForScreen(trigger, delaySeconds: delaySeconds);
   }
@@ -178,39 +179,54 @@ mixin PromoBannerMixin<T extends StatefulWidget> on State<T> {
   }
 
   // ── Frequency Capping & Cooldown Checks ────────────────────────────────────
-  // Checks whether a banner is in its cooldown window or has reached the 3-dismiss cap.
-  Future<bool> _wasShownRecently(String userKey, PromoBanner banner) async {
-    final prefs = await SharedPreferences.getInstance();
-    final shownKey = 'banner_${userKey}_${banner.id}';
-    final dismissKey = 'banner_dismiss_${userKey}_${banner.id}';
+  // In-memory set to prevent duplicate popups during the same app session/navigation
+  static final Set<int> _sessionShownBanners = {};
 
-    // Permanently suppress if dismissed 3 or more times
-    final dismissCount = prefs.getInt(dismissKey) ?? 0;
-    if (dismissCount >= 3) {
-      debugPrint(
-        '[Banner] #${banner.id} permanently hidden (dismissed $dismissCount times)',
-      );
+  // Checks whether a banner is in its cooldown window
+  Future<bool> _wasShownRecently(String userKey, PromoBanner banner) async {
+    // 1. Session check: if this banner was already displayed in this app session, skip it
+    if (_sessionShownBanners.contains(banner.id)) {
+      debugPrint('[Banner] # already shown in current session');
       return true;
     }
 
+    final isGuest = userKey == 'guest';
+
+    // Guests should always receive eligible startup ads on app launch / startup
+    if (isGuest) {
+      return false;
+    }
+
+    // For authenticated users (customer & professional):
+    final prefs = await SharedPreferences.getInstance();
+    final shownKey = 'banner__';
     final ts = prefs.getInt(shownKey);
     if (ts == null) return false;
 
-    // Determine cooldown days based on banner configuration
-    final int cooldownDays = banner.trigger == 'every_x_days'
-        ? banner.triggerXDays.clamp(1, 365)
-        : 30;
-
-    final cooldownMs = cooldownDays * 24 * 60 * 60 * 1000;
-    final elapsedMs = DateTime.now().millisecondsSinceEpoch - ts;
-
-    final inCooldown = elapsedMs < cooldownMs;
+    // For every_x_days, respect the admin-configured interval
     if (banner.trigger == 'every_x_days') {
+      final cooldownDays = banner.triggerXDays.clamp(1, 365);
+      final cooldownMs = cooldownDays * 24 * 60 * 60 * 1000;
+      final elapsedMs = DateTime.now().millisecondsSinceEpoch - ts;
+      final inCooldown = elapsedMs < cooldownMs;
       debugPrint(
-        '[Banner] #${banner.id} every_${banner.triggerXDays}_days — '
-        'elapsed: ${(elapsedMs / 86400000).toStringAsFixed(1)} days, '
-        'cooldown: ${banner.triggerXDays} days, '
-        'in_cooldown: $inCooldown',
+        '[Banner] # every__days — '
+        'elapsed:  days, '
+        'cooldown:  days, '
+        'in_cooldown: ',
+      );
+      return inCooldown;
+    }
+
+    // For startup / home / app_open banners:
+    // Once per session is guaranteed by _sessionShownBanners.
+    // If closed less than 20 minutes ago, avoid popping up immediately on rapid tab reload
+    final elapsedMs = DateTime.now().millisecondsSinceEpoch - ts;
+    const cooldownMs = 20 * 60 * 1000; // 20 minutes cooldown
+    final inCooldown = elapsedMs < cooldownMs;
+    if (inCooldown) {
+      debugPrint(
+        '[Banner] # in short cooldown (m elapsed)',
       );
     }
     return inCooldown;

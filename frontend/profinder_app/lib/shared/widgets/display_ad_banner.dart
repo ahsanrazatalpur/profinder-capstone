@@ -107,36 +107,54 @@ class _DisplayAdBannerState extends State<DisplayAdBanner> {
         onTap: _handleClick,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Stack(
-            children: [
-              CachedNetworkImage(
-                imageUrl: imageUrl,
-                width: double.infinity,
-                height: widget.height ?? 110,
-                fit: BoxFit.cover,
-                errorWidget: (_, _, _) => const SizedBox.shrink(),
-              ),
-              Positioned(
-                top: 6,
-                right: 6,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.65),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Text(
-                    'Ad',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
+          child: Container(
+            width: double.infinity,
+            height: widget.height ?? 110,
+            color: const Color(0xFF0F172A),
+            child: Stack(
+              fit: StackFit.expand,
+              alignment: Alignment.center,
+              children: [
+                // Ambient background fill
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0.25,
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, _, _) => const SizedBox.shrink(),
                     ),
                   ),
                 ),
-              ),
-            ],
+                // Full uncropped banner image (BoxFit.contain guarantees complete display without edge cropping)
+                CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.center,
+                  errorWidget: (_, _, _) => const SizedBox.shrink(),
+                ),
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.65),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      'Ad',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
