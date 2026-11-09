@@ -1,5 +1,6 @@
 // lib/features/payments/services/payment_service.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_constants.dart';
@@ -111,10 +112,17 @@ class PaymentService {
     String? cancelUrl,
   }) async {
     try {
+      final defaultRedirect = kIsWeb
+          ? '${Uri.base.origin}/#/subscription?payment=success'
+          : 'profinder://payment-success';
+      final defaultCancel = kIsWeb
+          ? '${Uri.base.origin}/#/subscription?payment=cancel'
+          : 'profinder://payment-cancel';
+
       final payload = <String, dynamic>{
         'purpose': purpose,
-        'redirect_url': redirectUrl ?? 'profinder://payment-success',
-        'cancel_url': cancelUrl ?? 'profinder://payment-cancel',
+        'redirect_url': redirectUrl ?? defaultRedirect,
+        'cancel_url': cancelUrl ?? defaultCancel,
       };
       if (planId != null) payload['plan_id'] = planId;
       if (packageId != null) payload['package_id'] = packageId;
@@ -134,7 +142,15 @@ class PaymentService {
     try {
       final query = tracker != null ? 'tracker=$tracker' : 'order_id=$orderId';
       final res = await _api.get('${AppConstants.safepayVerifyStatus}?$query');
-      return {'success': true, 'data': res.data};
+      final data = res.data is Map ? Map<String, dynamic>.from(res.data) : <String, dynamic>{};
+      final isCompleted = data['status']?.toString().toLowerCase() == 'completed';
+      return {
+        'success': isCompleted,
+        'status': data['status']?.toString().toLowerCase() ?? 'pending',
+        'data': data,
+        'message': data['message'] ?? (isCompleted ? 'Payment completed.' : 'Payment pending confirmation.'),
+        if (!isCompleted) 'error': data['message'] ?? 'Payment has not been completed or verified yet.',
+      };
     } catch (e) {
       return {'success': false, 'error': _extractError(e)};
     }

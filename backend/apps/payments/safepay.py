@@ -218,18 +218,49 @@ class SafepayGateway:
             resp.raise_for_status()
             data = resp.json()
 
-            payment_data = data.get('data') or data
-            state = (payment_data.get('state') or payment_data.get('status') or '').upper()
-            captured = payment_data.get('captured', False)
-            if state in ('COMPLETED', 'PAID', 'CAPTURED'):
+            data_obj = data.get('data') if isinstance(data.get('data'), dict) else data
+            tracker_obj = data_obj.get('tracker') if isinstance(data_obj.get('tracker'), dict) else data_obj
+
+            # State can be on tracker_obj, data_obj, or top-level data
+            raw_state = (
+                tracker_obj.get('state') or
+                tracker_obj.get('status') or
+                data_obj.get('state') or
+                data_obj.get('status') or
+                data.get('state') or
+                data.get('status') or
+                ''
+            )
+            state = str(raw_state).strip().upper()
+
+            # Safepay terminal payment success states for one-time payment trackers:
+            # TRACKER_ENDED is the official Safepay Reporter API terminal success state.
+            SUCCESS_STATES = {
+                'TRACKER_ENDED',
+                'TRACKER_COMPLETED',
+                'COMPLETED',
+                'PAID',
+                'CAPTURED',
+                'SUCCESS',
+            }
+
+            captured = bool(tracker_obj.get('captured') or data_obj.get('captured') or False)
+            if state in SUCCESS_STATES:
                 captured = True
 
+            is_completed = (state in SUCCESS_STATES) and captured
+
+            amount = tracker_obj.get('amount') or data_obj.get('amount')
+            currency = tracker_obj.get('currency') or data_obj.get('currency', 'PKR')
+
+            logger.info("Safepay Reporter query tracker %s resolved state: %s, captured: %s", tracker, state, captured)
+
             return {
-                'status': 'completed' if (state in ('COMPLETED', 'PAID', 'CAPTURED') and captured) else state.lower(),
+                'status': 'completed' if is_completed else state.lower(),
                 'state': state,
                 'captured': captured,
-                'amount': payment_data.get('amount'),
-                'currency': payment_data.get('currency', 'PKR'),
+                'amount': amount,
+                'currency': currency,
                 'tracker': tracker,
                 'raw': data,
             }
@@ -245,25 +276,39 @@ class SafepayGateway:
     ) -> bool:
         """
         Verifies the HMAC-SHA256 signature of an incoming Safepay webhook.
+        Safepay sends the signature in X-SFPY-SIGNATURE computed over raw body bytes.
         """
         if self.allow_mock and signature == 'mock_signature':
             return True
 
-        signing_secret = secret or self.webhook_secret
-        if not signing_secret:
-            logger.warning("Safepay webhook signature validation attempted without configured secret.")
+        if not signature or not raw_payload_bytes:
             return False
 
-        if not signature:
+        sig = signature.strip().lower()
+
+        # Check with configured webhook secret first, then merchant secret fallback
+        secrets_to_try = []
+        if secret and secret.strip():
+            secrets_to_try.append(secret.strip())
+        if self.webhook_secret and self.webhook_secret.strip() and self.webhook_secret.strip() not in secrets_to_try:
+            secrets_to_try.append(self.webhook_secret.strip())
+        if self.merchant_secret and self.merchant_secret.strip() and self.merchant_secret.strip() not in secrets_to_try:
+            secrets_to_try.append(self.merchant_secret.strip())
+
+        if not secrets_to_try:
+            logger.warning("Safepay webhook signature validation attempted without any configured secret.")
             return False
 
-        try:
-            computed_hmac = hmac.new(
-                signing_secret.encode('utf-8'),
-                raw_payload_bytes,
-                hashlib.sha256
-            ).hexdigest()
-            return hmac.compare_digest(computed_hmac, signature)
-        except Exception as e:
-            logger.error("Error computing webhook HMAC signature: %s", str(e))
-            return False
+        for sec in secrets_to_try:
+            try:
+                computed_hmac = hmac.new(
+                    sec.encode('utf-8'),
+                    raw_payload_bytes,
+                    hashlib.sha256
+                ).hexdigest().lower()
+                if hmac.compare_digest(computed_hmac, sig):
+                    return True
+            except Exception as e:
+                logger.error("Error computing webhook HMAC signature: %s", str(e))
+
+        return False

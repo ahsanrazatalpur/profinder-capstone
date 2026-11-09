@@ -995,6 +995,7 @@ class SafepayVerifyPaymentView(APIView):
         if reporter_res.get('status') == 'completed' and reporter_res.get('captured'):
             fulfill_payment_entitlement(payment)
             payment.refresh_from_db()
+            logger.info("Safepay payment %s verified and entitlement fulfilled via verify-status.", payment.order_id)
             return Response({
                 'status': 'completed',
                 'order_id': payment.order_id,
@@ -1003,6 +1004,7 @@ class SafepayVerifyPaymentView(APIView):
             })
         else:
             current_state = reporter_res.get('state') or reporter_res.get('status') or 'pending'
+            logger.info("Safepay payment %s verify-status check: state is %s", payment.order_id, current_state)
             return Response({
                 'status': current_state.lower(),
                 'order_id': payment.order_id,
@@ -1026,8 +1028,11 @@ class SafepayWebhookView(APIView):
         raw_body = request.body
         signature = (
             request.headers.get('X-SFPY-SIGNATURE') or
+            request.headers.get('x-sfpy-signature') or
             request.headers.get('X-Safepay-Signature') or
+            request.headers.get('x-safepay-signature') or
             request.META.get('HTTP_X_SFPY_SIGNATURE') or
+            request.META.get('HTTP_X_SAFEPAY_SIGNATURE') or
             ''
         )
 
@@ -1042,10 +1047,15 @@ class SafepayWebhookView(APIView):
             payload = {}
 
         event_id = payload.get('id') or payload.get('event_id') or f"evt_{delivery_fingerprint[:24]}"
-        event_type = payload.get('type') or payload.get('event_type') or 'payment.completed'
+        event_type = payload.get('type') or payload.get('event') or payload.get('event_type') or 'payment.completed'
+
+        logger.info(
+            "Safepay webhook received. Event: %s, EventID: %s, Fingerprint: %s",
+            event_type, event_id, delivery_fingerprint[:12]
+        )
 
         if not is_valid_sig:
-            logger.warning("Safepay webhook signature validation failed. Fingerprint: %s", delivery_fingerprint)
+            logger.warning("Safepay webhook signature validation failed. Fingerprint: %s", delivery_fingerprint[:12])
             WebhookEventLog.objects.create(
                 provider='safepay',
                 event_id=event_id,
@@ -1056,6 +1066,8 @@ class SafepayWebhookView(APIView):
                 error_message='Invalid HMAC-SHA256 signature',
             )
             return Response({'error': 'Invalid webhook signature.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        logger.info("Safepay webhook signature verified successfully for event %s", event_id)
 
         # Durable deduplication check
         existing_log = WebhookEventLog.objects.filter(provider='safepay', event_id=event_id).first()
@@ -1072,32 +1084,64 @@ class SafepayWebhookView(APIView):
             sanitized_payload=payload,
         )
 
-        # Retrieve tracker and fulfill entitlement with Reporter API
+        # Retrieve tracker token safely
+        data_obj = payload.get('data') if isinstance(payload.get('data'), dict) else {}
+        tracker_inner = data_obj.get('tracker')
+        tracker_token_from_inner = tracker_inner.get('token') if isinstance(tracker_inner, dict) else tracker_inner
+
         tracker = (
-            payload.get('data', {}).get('token') or
-            payload.get('data', {}).get('tracker') or
+            data_obj.get('token') or
+            tracker_token_from_inner or
             payload.get('token') or
             payload.get('tracker')
+        )
+
+        # Check payload state as well
+        payload_state = str(
+            (tracker_inner.get('state') if isinstance(tracker_inner, dict) else None) or
+            data_obj.get('state') or
+            data_obj.get('status') or
+            payload.get('state') or
+            ''
+        ).strip().upper()
+
+        PAYLOAD_SUCCESS_STATES = {'TRACKER_ENDED', 'TRACKER_COMPLETED', 'COMPLETED', 'PAID', 'CAPTURED', 'SUCCESS'}
+        is_payload_success = (
+            event_type in ('payment.completed', 'payment:created') or
+            payload_state in PAYLOAD_SUCCESS_STATES
         )
 
         if tracker:
             payment = Payment.objects.filter(safepay_tracker=tracker).first()
             if payment:
+                logger.info(
+                    "Safepay webhook matched Payment: OrderID: %s, User: %s, Amount: %s",
+                    payment.order_id, payment.user.email, payment.amount
+                )
                 log_entry.status = 'processing'
                 log_entry.save(update_fields=['status'])
                 try:
                     reporter_res = gateway.query_reporter_status(tracker)
-                    if reporter_res.get('status') == 'completed' and reporter_res.get('captured'):
+                    reporter_success = reporter_res.get('status') == 'completed' and reporter_res.get('captured')
+                    if reporter_success or is_payload_success:
                         fulfill_payment_entitlement(payment)
                         log_entry.status = 'completed'
+                        logger.info("Safepay webhook successfully fulfilled entitlement for payment %s", payment.order_id)
                     else:
                         log_entry.status = 'retryable_failure'
+                        logger.warning("Safepay webhook payment %s not in completed state yet: %s", payment.order_id, reporter_res)
                 except Exception as exc:
-                    logger.error("Error during webhook Reporter query for tracker %s: %s", tracker, exc)
-                    log_entry.status = 'retryable_failure'
-                    log_entry.error_message = str(exc)
+                    if is_payload_success:
+                        fulfill_payment_entitlement(payment)
+                        log_entry.status = 'completed'
+                        logger.info("Safepay webhook fulfilled via verified payload despite Reporter query error: %s", exc)
+                    else:
+                        logger.error("Error during webhook Reporter query for tracker %s: %s", tracker, exc)
+                        log_entry.status = 'retryable_failure'
+                        log_entry.error_message = str(exc)
                 log_entry.save(update_fields=['status', 'error_message'])
             else:
+                logger.warning("Safepay webhook received tracker %s with no matching Payment record.", tracker)
                 log_entry.status = 'quarantined_unknown_tracker'
                 log_entry.save(update_fields=['status'])
 

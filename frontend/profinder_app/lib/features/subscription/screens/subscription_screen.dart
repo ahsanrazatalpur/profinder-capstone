@@ -61,8 +61,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Future<void> _subscribe(SubscriptionPlan plan) async {
-    if (plan.isFree)
+    if (plan.isFree) {
       return; // Free plan is active by default and does not require subscription payment
+    }
 
     final confirm = await _showConfirmDialog(plan);
     if (!confirm) return;
@@ -93,17 +94,30 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           orderId: orderId,
           tracker: safepayTracker.isNotEmpty ? safepayTracker : null,
         );
+
+        // Requirement 7: Fetch actual subscription status from Django backend after checkout.
+        // Never show a successful activation message merely because the user returned or HTTP returned 200.
+        await _loadData();
         setState(() => _subscribing = false);
 
         if (!mounted) return;
-        if (captureRes['success'] == true) {
+
+        final bool isVerified = captureRes['success'] == true &&
+            captureRes['data']?['status'] == 'completed';
+
+        final bool isPlanActuallyActive = _currentPlan != null &&
+            _currentPlan!.hasSubscription &&
+            (_currentPlan!.planName.toLowerCase() == plan.name.toLowerCase() || _currentPlan!.isPremium);
+
+        if (isVerified || isPlanActuallyActive) {
           _showSuccess(
             AppLocalizations.of(context).subscriptionSubscribedTo(plan.name),
           );
-          await _loadData();
         } else {
+          final serverMsg = captureRes['data']?['message'] ?? captureRes['error'];
           _showError(
-            captureRes['error'] ?? 'Payment verification failed. Please try again.',
+            serverMsg ??
+                'Payment is currently pending verification. Your plan will activate automatically once Safepay confirmation is received.',
           );
         }
       }
