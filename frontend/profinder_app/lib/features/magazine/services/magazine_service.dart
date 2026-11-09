@@ -1,6 +1,7 @@
 // lib/features/magazine/services/magazine_service.dart
 
 import '../../../services/api_service.dart';
+import '../../../core/localization/locale_provider.dart';
 import '../models/article_model.dart';
 
 class MagazineService {
@@ -8,7 +9,7 @@ class MagazineService {
 
   Future<List<ArticleCategory>> getCategories() async {
     try {
-      final res = await _api.get('/articles/categories/');
+      final res = await _api.get('/articles/categories/?lang=${LocaleProvider.currentCode}');
       final list = res.data is List ? List<dynamic>.from(res.data) : [];
       return list.map((j) => ArticleCategory.fromJson(j)).toList();
     } catch (_) {
@@ -21,11 +22,12 @@ class MagazineService {
     String query = '',
   }) async {
     try {
-      final params = <String>[];
+      final params = <String>['lang=${LocaleProvider.currentCode}'];
       if (categoryId != null) params.add('category_id=$categoryId');
-      if (query.trim().isNotEmpty)
+      if (query.trim().isNotEmpty) {
         params.add('q=${Uri.encodeComponent(query.trim())}');
-      final qs = params.isEmpty ? '' : '?${params.join('&')}';
+      }
+      final qs = '?${params.join('&')}';
       final res = await _api.get('/articles/$qs');
       final list = res.data is List ? List<dynamic>.from(res.data) : [];
       return list.map((j) => Article.fromJson(j)).toList();
@@ -36,7 +38,7 @@ class MagazineService {
 
   Future<Article?> getArticle(String slug) async {
     try {
-      final res = await _api.get('/articles/$slug/');
+      final res = await _api.get('/articles/$slug/?lang=${LocaleProvider.currentCode}');
       return Article.fromJson(res.data as Map<String, dynamic>);
     } catch (_) {
       return null;

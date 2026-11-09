@@ -225,6 +225,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     // Title
                     Text(
                       a.title,
+                      textDirection: RegExp(r'[؀-ۿ]').hasMatch(a.title)
+                          ? TextDirection.rtl
+                          : null,
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(
                           26,
@@ -370,6 +373,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         ),
                         child: Text(
                           a.summary,
+                          textDirection: RegExp(r'[؀-ۿ]').hasMatch(a.summary)
+                              ? TextDirection.rtl
+                              : null,
                           style: TextStyle(
                             fontSize: ResponsiveUtils.sp(
                               15,
@@ -475,11 +481,15 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         .toList();
 
     return paragraphs.map((para) {
+      final isRtl = RegExp(r'[؀-ۿ]').hasMatch(para);
+      final textDir = isRtl ? TextDirection.rtl : null;
+
       if (para.startsWith('##')) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 10, top: 20),
           child: Text(
             para.replaceFirst(RegExp(r'^#+\s*'), ''),
+            textDirection: textDir,
             style: TextStyle(
               fontSize: ResponsiveUtils.sp(20, scale, min: 18, max: 24),
               fontWeight: FontWeight.w800,
@@ -495,6 +505,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           padding: const EdgeInsets.only(bottom: 10, top: 16),
           child: Text(
             para.replaceFirst(RegExp(r'^#+\s*'), ''),
+            textDirection: textDir,
             style: TextStyle(
               fontSize: ResponsiveUtils.sp(18, scale, min: 16, max: 21),
               fontWeight: FontWeight.w700,
@@ -509,6 +520,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         padding: const EdgeInsets.only(bottom: 16),
         child: Text(
           para,
+          textDirection: textDir,
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(15, scale, min: 14, max: 18),
             color: context.colors.textPrimary,

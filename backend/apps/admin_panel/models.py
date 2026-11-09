@@ -779,6 +779,8 @@ TRANSLATABLE_FIELDS = {
     'category':     ('name',),
     'subcategory':  ('name',),
     'notificationbroadcast': ('title', 'message'),
+    'article':      ('title', 'summary', 'content', 'editorial_label'),
+    'articlecategory': ('name',),
 }
 
 DEFAULT_CONTENT_LANG = 'en'

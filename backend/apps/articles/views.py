@@ -28,14 +28,19 @@ def _log_view(request, article):
     Guest → session_key se track.
     Ek session/user ek article pe sirf ek baar count ho.
     """
-    user = request.user if request.user.is_authenticated else None
+    user = request.user if getattr(request, 'user', None) and request.user.is_authenticated else None
 
     session_key = ''
     if not user:
-        session_key = request.session.get('magazine_sid', '')
-        if not session_key:
-            session_key = str(uuid.uuid4())
-            request.session['magazine_sid'] = session_key
+        session = getattr(request, 'session', None)
+        if session is not None:
+            session_key = session.get('magazine_sid', '')
+            if not session_key:
+                session_key = str(uuid.uuid4())
+                try:
+                    session['magazine_sid'] = session_key
+                except Exception:
+                    pass
 
     # Duplicate guard — same user/session same article dobara count na ho
     # (24-hour window ke andar)
@@ -62,8 +67,12 @@ class ArticleCategoryView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        return Response(
-            ArticleCategorySerializer(ArticleCategory.objects.all(), many=True).data)
+        data = ArticleCategorySerializer(ArticleCategory.objects.all(), many=True).data
+        lang = request.query_params.get('lang') or request.headers.get('Accept-Language')
+        if lang:
+            from apps.admin_panel.models import ContentTranslation
+            data = ContentTranslation.localize_rows('articlecategory', data, lang)
+        return Response(data)
 
     def post(self, request):
         if not _is_admin(request.user):
@@ -110,6 +119,7 @@ class ArticleListView(APIView):
         articles = Article.objects.filter(is_published=True)
         cat_id   = request.query_params.get('category_id')
         query    = request.query_params.get('q')
+        lang     = request.query_params.get('lang') or request.headers.get('Accept-Language')
         if cat_id:
             articles = articles.filter(category_id=cat_id)
         if query:
@@ -117,7 +127,11 @@ class ArticleListView(APIView):
                 Q(title__icontains=query) |
                 Q(summary__icontains=query) |
                 Q(content__icontains=query))
-        return Response(ArticleListSerializer(articles, many=True).data)
+        data = ArticleListSerializer(articles, many=True).data
+        if lang:
+            from apps.admin_panel.models import ContentTranslation
+            data = ContentTranslation.localize_rows('article', data, lang)
+        return Response(data)
 
     def post(self, request):
         if not _is_admin(request.user):
@@ -148,7 +162,14 @@ class ArticleDetailView(APIView):
         if not article:
             return Response({'error': 'Article not found.'}, status=404)
         _log_view(request, article)
-        return Response(ArticleDetailSerializer(article).data)
+        data = ArticleDetailSerializer(article).data
+        lang = request.query_params.get('lang') or request.headers.get('Accept-Language')
+        if lang:
+            from apps.admin_panel.models import ContentTranslation
+            localized = ContentTranslation.localize_rows('article', [data], lang)
+            if localized:
+                data = localized[0]
+        return Response(data)
 
     def patch(self, request, slug):
         if not _is_admin(request.user):
