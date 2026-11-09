@@ -88,7 +88,7 @@ class SafepayGateway:
                 'raw': {'mock': True, 'token': mock_tracker, 'amount': amount_paisas}
             }
 
-        endpoint = f"{self.base_url}/order/payments/v3/"
+        endpoint = f"{self.base_url}/order/v1/init"
         payload = {
             "client": self.api_key,
             "amount": amount_paisas,
@@ -108,16 +108,10 @@ class SafepayGateway:
             resp = requests.post(endpoint, json=payload, headers=headers, timeout=30)
             resp.raise_for_status()
             data = resp.json()
-            # Safepay v3 returns data in data.token or data.tracker
-            tracker_obj = data.get('data', {})
+            data_obj = data.get('data') or {}
             tracker = None
-            if isinstance(tracker_obj, dict):
-                if isinstance(tracker_obj.get('tracker'), dict):
-                    tracker = tracker_obj['tracker'].get('token')
-                elif isinstance(tracker_obj.get('tracker'), str):
-                    tracker = tracker_obj.get('tracker')
-                else:
-                    tracker = tracker_obj.get('token')
+            if isinstance(data_obj, dict):
+                tracker = data_obj.get('token') or data_obj.get('tracker')
             if not tracker:
                 tracker = data.get('token')
             if not tracker:
@@ -184,9 +178,6 @@ class SafepayGateway:
         """
         params = {
             'beacon': tracker,
-            'tracker': tracker,
-            'token': tbt,
-            'tbt': tbt,
             'env': self.environment,
             'source': source or 'custom',
             'webhooks': 'true',
