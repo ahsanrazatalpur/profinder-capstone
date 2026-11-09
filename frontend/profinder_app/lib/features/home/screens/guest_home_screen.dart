@@ -431,7 +431,15 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
     ); // AnnotatedRegion
   }
 
-  void _openSearch({int? categoryId, String? categoryName, String? query}) {
+  void _openSearch({
+    int? categoryId,
+    String? categoryName,
+    String? query,
+    bool? availableOnly,
+    bool? verifiedOnly,
+    double? minRating,
+    String? sortBy,
+  }) {
     if (!mounted) return;
     Navigator.push(
       context,
@@ -440,6 +448,10 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
           initialCategoryId: categoryId,
           initialCategoryName: categoryName,
           initialQuery: query,
+          initialAvailableOnly: availableOnly,
+          initialVerifiedOnly: verifiedOnly,
+          initialMinRating: minRating,
+          initialSortBy: sortBy,
         ),
       ),
     );
@@ -621,12 +633,36 @@ class _GuestHomeScreenState extends State<GuestHomeScreen>
   Widget _buildQuickActionChips(List<dynamic> categories, bool isDark) {
     final t = AppLocalizations.of(context);
     final filters = [
-      {'label': t.homeTrendingLabel, 'icon': Icons.trending_up_rounded, 'filled': true, 'action': () => _openSearch()},
-      {'label': 'Available Now', 'icon': Icons.flash_on_rounded, 'filled': false, 'action': () => _openSearch(query: 'available')},
-      {'label': t.rating, 'icon': Icons.star_rounded, 'filled': false, 'action': () => _openSearch(query: 'top rated')},
-      {'label': 'Home Service', 'icon': Icons.home_repair_service_rounded, 'filled': false, 'action': () => _openSearch(query: 'home visit')},
-      {'label': 'Online Consult', 'icon': Icons.videocam_rounded, 'filled': false, 'action': () => _openSearch(query: 'online')},
-      {'label': 'Verified Pros', 'icon': Icons.verified_rounded, 'filled': false, 'action': () => _openSearch(query: 'verified')},
+      {
+        'label': t.homeTrendingLabel,
+        'icon': Icons.trending_up_rounded,
+        'filled': false,
+        'action': () => _openSearch(sortBy: 'popular'),
+      },
+      {
+        'label': t.homeFilterAvailableNow,
+        'icon': Icons.flash_on_rounded,
+        'filled': false,
+        'action': () => _openSearch(availableOnly: true),
+      },
+      {
+        'label': t.homeTopRatedLabel,
+        'icon': Icons.star_rounded,
+        'filled': false,
+        'action': () => _openSearch(minRating: 4.0, sortBy: 'rating'),
+      },
+      {
+        'label': t.verified,
+        'icon': Icons.verified_rounded,
+        'filled': false,
+        'action': () => _openSearch(verifiedOnly: true),
+      },
+      {
+        'label': t.homeNearbyLabel,
+        'icon': Icons.near_me_rounded,
+        'filled': false,
+        'action': () => _openSearch(sortBy: 'distance'),
+      },
     ];
 
     return Container(

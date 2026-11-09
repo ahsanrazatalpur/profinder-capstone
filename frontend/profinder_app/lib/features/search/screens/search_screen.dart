@@ -42,6 +42,10 @@ class SearchScreen extends StatefulWidget {
   // button. Callers that push SearchScreen as its own route (e.g.
   // CustomerHomeScreen) can leave this null — Navigator.pop() handles it.
   final VoidCallback? onBackWhenEmbedded;
+  final bool? initialAvailableOnly;
+  final bool? initialVerifiedOnly;
+  final double? initialMinRating;
+  final String? initialSortBy;
 
   const SearchScreen({
     super.key,
@@ -51,6 +55,10 @@ class SearchScreen extends StatefulWidget {
     this.initialCategoryId,
     this.initialCategoryName,
     this.initialQuery,
+    this.initialAvailableOnly,
+    this.initialVerifiedOnly,
+    this.initialMinRating,
+    this.initialSortBy,
     this.onBackWhenEmbedded,
   });
 
@@ -156,6 +164,18 @@ class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
   @override
   void initState() {
     super.initState();
+    if (widget.initialAvailableOnly == true) {
+      _availableOnly = true;
+    }
+    if (widget.initialVerifiedOnly == true) {
+      _verifiedOnly = true;
+    }
+    if (widget.initialMinRating != null && widget.initialMinRating! > 0) {
+      _minRating = widget.initialMinRating!;
+    }
+    if (widget.initialSortBy != null && widget.initialSortBy!.isNotEmpty) {
+      _sortBy = widget.initialSortBy!;
+    }
     _loadCategories();
     _loadAuthStatus();
     _loadUserLocation();
@@ -173,6 +193,24 @@ class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
           widget.initialQuery!.isNotEmpty) {
         _controller.text = widget.initialQuery!;
         _search(widget.initialQuery!);
+      } else if (widget.initialAvailableOnly == true ||
+          widget.initialVerifiedOnly == true ||
+          (widget.initialMinRating != null && widget.initialMinRating! > 0) ||
+          (widget.initialSortBy != null && widget.initialSortBy!.isNotEmpty)) {
+        final t = AppLocalizations.of(context);
+        String label = '';
+        if (widget.initialAvailableOnly == true) {
+          label = t.homeFilterAvailableNow;
+        } else if (widget.initialVerifiedOnly == true) {
+          label = t.verified;
+        } else if (widget.initialMinRating != null && widget.initialMinRating! > 0) {
+          label = t.homeTopRatedLabel;
+        } else if (widget.initialSortBy == 'popular') {
+          label = t.homeTrendingLabel;
+        } else if (widget.initialSortBy == 'distance') {
+          label = t.homeNearbyLabel;
+        }
+        _searchWithFilters(label: label);
       }
     });
   }
@@ -586,14 +624,104 @@ class _SearchScreenState extends State<SearchScreen> with PromoBannerMixin {
           (a, b) => (b['hourly_rate'] ?? 0).compareTo(a['hourly_rate'] ?? 0),
         );
         break;
+      case 'rating':
       case 'rating_desc':
         sorted.sort(
           (a, b) =>
               (b['average_rating'] ?? 0).compareTo(a['average_rating'] ?? 0),
         );
         break;
+      case 'popular':
+        sorted.sort(
+          (a, b) {
+            final aPop = (a['completed_bookings_count'] ?? a['review_count'] ?? a['total_bookings'] ?? 0) as num;
+            final bPop = (b['completed_bookings_count'] ?? b['review_count'] ?? b['total_bookings'] ?? 0) as num;
+            return bPop.compareTo(aPop);
+          },
+        );
+        break;
+      case 'distance':
+        sorted.sort(
+          (a, b) {
+            final aDist = (a['distance_km'] ?? 99999) as num;
+            final bDist = (b['distance_km'] ?? 99999) as num;
+            return aDist.compareTo(bDist);
+          },
+        );
+        break;
     }
     return sorted;
+  }
+
+  Future<void> _searchWithFilters({String label = ''}) async {
+    final int requestId = ++_searchRequestId;
+    _debounce?.cancel();
+    _showSuggestions = false;
+    _focus.unfocus();
+    if (label.isNotEmpty) {
+      _controller.text = label;
+      _addToHistory(label);
+    }
+    final targetCity = _cityFilter.trim().isNotEmpty ? _cityFilter.trim() : 'Pakistan';
+    WebIdentity.setIdentity(title: '${label.isNotEmpty ? label : "Search"} in $targetCity | ProFinder');
+    setState(() {
+      _isLoading = true;
+      _hasSearched = true;
+      _lastQuery = label;
+      _aiResult = null;
+      _aiAvailabilityMessage = null;
+      _aiRecommendations = {};
+      _aiMatchedPros = [];
+    });
+
+    try {
+      final result = await _service.getNearbyProfessionals(
+        latitude: _userLat ?? 0,
+        longitude: _userLng ?? 0,
+        query: '',
+        city: _cityFilter,
+        minPrice: _minPrice,
+        maxPrice: maxPriceForRequest(_maxPrice),
+        minRating: _minRating,
+        verifiedOnly: _verifiedOnly,
+        gender: _genderFilter,
+        minExperience: _minExperience,
+        availableOnly: _availableOnly,
+        language: _languageFilter,
+        maxDistance: _maxDistance,
+      );
+
+      if (!mounted || requestId != _searchRequestId) return;
+
+      final List<dynamic> list = result['data'] is List ? result['data'] : [];
+      final meta = result['meta'] as Map<String, dynamic>? ?? {};
+      setState(() {
+        _isLoading = false;
+        _isFallback = meta['is_fallback'] == true;
+        _fallbackMessage = meta['fallback_message'] as String? ?? '';
+        _cityUnavailableMessage = meta['city_unavailable_message'] as String?;
+        _citySectionLabel =
+            (meta['nearby_cities_section'] ?? meta['other_cities_section'])
+                as String?;
+        _spellingCorrected = false;
+        _correctedQuery = '';
+        _results = _sortResults(list);
+        _emptySimilar = List<dynamic>.from(meta['similar_professionals'] ?? []);
+        _emptyNearby = List<dynamic>.from(meta['nearby_professionals'] ?? []);
+        _emptyPopular = List<dynamic>.from(meta['popular_professionals'] ?? []);
+        _emptyTrending = List<dynamic>.from(meta['trending_categories'] ?? []);
+      });
+    } catch (e) {
+      if (!mounted || requestId != _searchRequestId) return;
+      setState(() {
+        _isLoading = false;
+        _results = [];
+      });
+      AppHelpers.showError(
+        context,
+        AppLocalizations.of(context).searchFailedCheckConnection,
+      );
+    }
   }
 
   void _applySort(String value) {

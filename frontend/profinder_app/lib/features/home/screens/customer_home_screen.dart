@@ -38,6 +38,8 @@ import '../../../services/booking_service.dart';
 import '../../../services/favorites_store.dart';
 import '../../../shared/widgets/professional_card.dart';
 import '../../../shared/widgets/category_card.dart';
+import '../../../shared/widgets/featured_category_card.dart';
+import '../../../core/constants/category_style.dart';
 import '../../../shared/widgets/cta_banner.dart';
 import '../../../shared/widgets/announcement_banner.dart';
 import '../../../shared/widgets/display_ad_banner.dart';
@@ -486,7 +488,15 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     _loadAiQuota(),
   ]);
 
-  void _openSearch({int? categoryId, String? categoryName, String? query}) {
+  void _openSearch({
+    int? categoryId,
+    String? categoryName,
+    String? query,
+    bool? availableOnly,
+    bool? verifiedOnly,
+    double? minRating,
+    String? sortBy,
+  }) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -496,6 +506,10 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           initialCategoryId: categoryId,
           initialCategoryName: categoryName,
           initialQuery: query,
+          initialAvailableOnly: availableOnly,
+          initialVerifiedOnly: verifiedOnly,
+          initialMinRating: minRating,
+          initialSortBy: sortBy,
         ),
       ),
     ).then((_) {
@@ -631,6 +645,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                       const SliverToBoxAdapter(
                         child: DisplayAdBanner(placementSlot: 'homepage_masthead'),
                       ),
+                      SliverToBoxAdapter(child: _buildFilterChips()),
                       SliverToBoxAdapter(child: _buildAiRecommendationCard()),
                       SliverToBoxAdapter(child: _buildQuickActions()),
                       SliverToBoxAdapter(
@@ -648,6 +663,17 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                       ),
                       SliverToBoxAdapter(
                         child: _buildCategories(home.categories),
+                      ),
+
+                      SliverToBoxAdapter(
+                        child: _buildSectionHeader(
+                          title: t.homeFeaturedCategoriesSection,
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: _buildFeaturedCategories(
+                          home.featuredCategories,
+                        ),
                       ),
 
                       // ── Category quick-filter (only when the customer actively
@@ -957,6 +983,116 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                 Icons.tune_outlined,
                 size: 15,
                 color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChips() {
+    final t = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final filters = [
+      {
+        'label': t.homeTrendingLabel,
+        'icon': Icons.trending_up_rounded,
+        'action': () => _openSearch(sortBy: 'popular'),
+      },
+      {
+        'label': t.homeFilterAvailableNow,
+        'icon': Icons.flash_on_rounded,
+        'action': () => _openSearch(availableOnly: true),
+      },
+      {
+        'label': t.homeTopRatedLabel,
+        'icon': Icons.star_rounded,
+        'action': () => _openSearch(minRating: 4.0, sortBy: 'rating'),
+      },
+      {
+        'label': t.verified,
+        'icon': Icons.verified_rounded,
+        'action': () => _openSearch(verifiedOnly: true),
+      },
+      {
+        'label': t.homeNearbyLabel,
+        'icon': Icons.near_me_rounded,
+        'action': () => _openSearch(sortBy: 'distance'),
+      },
+    ];
+
+    return Container(
+      color: context.colors.background,
+      padding: const EdgeInsets.only(top: AppSizes.md, bottom: AppSizes.sm),
+      child: SizedBox(
+        height: 44,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          itemCount: filters.length,
+          separatorBuilder: (_, _) => const SizedBox(width: 10),
+          itemBuilder: (_, i) {
+            final f = filters[i];
+            return _chip(
+              label: f['label'] as String,
+              icon: f['icon'] as IconData,
+              onTap: f['action'] as VoidCallback,
+              isDark: isDark,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _chip({
+    required String label,
+    required IconData icon,
+    required VoidCallback onTap,
+    required bool isDark,
+    bool filled = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: filled ? context.colors.primary : context.colors.surface,
+          borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+          border: Border.all(
+            color: filled
+                ? context.colors.primary
+                : isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : context.colors.divider,
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: filled ? Colors.white : context.colors.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: AppFontSizes.secondary,
+                fontWeight: FontWeight.w600,
+                color: filled ? Colors.white : context.colors.textPrimary,
               ),
             ),
           ],
@@ -1445,7 +1581,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   // ═══════════════════════════════════════════════════════════
   Widget _buildSectionHeader({
     required String title,
-    required VoidCallback onSeeAll,
+    VoidCallback? onSeeAll,
   }) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 22, 16, 8),
@@ -1460,26 +1596,27 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
               color: context.colors.textPrimary,
             ),
           ),
-          GestureDetector(
-            onTap: onSeeAll,
-            child: Row(
-              children: [
-                Text(
-                  AppLocalizations.of(context).seeAll,
-                  style: TextStyle(
-                    fontSize: AppFontSizes.secondary,
-                    fontWeight: FontWeight.w600,
+          if (onSeeAll != null)
+            GestureDetector(
+              onTap: onSeeAll,
+              child: Row(
+                children: [
+                  Text(
+                    AppLocalizations.of(context).seeAll,
+                    style: TextStyle(
+                      fontSize: AppFontSizes.secondary,
+                      fontWeight: FontWeight.w600,
+                      color: context.colors.primary,
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 16,
                     color: context.colors.primary,
                   ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  size: 16,
-                  color: context.colors.primary,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -1500,6 +1637,39 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
         limit: 8,
         selectedId: _selectedCategory,
         onCategoryTap: _onCategoryTap,
+      ),
+    );
+  }
+
+  Widget _buildFeaturedCategories(List<dynamic> categories) {
+    final items = categories.take(6).toList();
+    if (items.isEmpty) return const SizedBox.shrink();
+    final gradients = CategoryStyles.featuredGradients;
+    return SizedBox(
+      height: 140,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: items.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 14),
+        itemBuilder: (_, i) {
+          final cat = items[i] as Map;
+          final style = CategoryStyles.forName(
+            cat['name']?.toString() ?? '',
+            i,
+          );
+          return FeaturedCategoryCard(
+            title: cat['name']?.toString() ?? '',
+            icon: style.icon,
+            gradient: gradients[i % gradients.length],
+            onTap: () => _openSearch(
+              categoryId: cat['id'] is int
+                  ? cat['id']
+                  : int.tryParse('${cat['id']}'),
+              categoryName: cat['name']?.toString(),
+            ),
+          );
+        },
       ),
     );
   }
