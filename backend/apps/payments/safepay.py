@@ -193,8 +193,8 @@ class SafepayGateway:
 
     def query_reporter_status(self, tracker: str) -> dict:
         """
-        Authoritative payment status inquiry via Safepay Reporter API v1.
-        Validates whether payment is in a terminal successful state and captured.
+        Authoritative payment status inquiry via Safepay Reporter API v1
+        with automatic fallback to Order API v1 for high resilience.
         """
         if tracker.startswith('track_mock_') or (not self.merchant_secret and self.allow_mock):
             return {
@@ -207,6 +207,16 @@ class SafepayGateway:
                 'raw': {'mock': True, 'state': 'COMPLETED'},
             }
 
+        SUCCESS_STATES = {
+            'TRACKER_ENDED',
+            'TRACKER_COMPLETED',
+            'COMPLETED',
+            'PAID',
+            'CAPTURED',
+            'SUCCESS',
+        }
+
+        # 1. Primary: Try Reporter API
         endpoint = f"{self.base_url}/reporter/api/v1/payments/{tracker}"
         headers = {
             "Accept": "application/json",
@@ -214,59 +224,71 @@ class SafepayGateway:
         }
 
         try:
-            resp = requests.get(endpoint, headers=headers, timeout=30)
-            resp.raise_for_status()
-            data = resp.json()
+            resp = requests.get(endpoint, headers=headers, timeout=15)
+            if resp.status_code == 200:
+                data = resp.json()
+                data_obj = data.get('data') if isinstance(data.get('data'), dict) else data
+                tracker_obj = data_obj.get('tracker') if isinstance(data_obj.get('tracker'), dict) else data_obj
 
-            data_obj = data.get('data') if isinstance(data.get('data'), dict) else data
-            tracker_obj = data_obj.get('tracker') if isinstance(data_obj.get('tracker'), dict) else data_obj
+                raw_state = (
+                    tracker_obj.get('state') or
+                    tracker_obj.get('status') or
+                    data_obj.get('state') or
+                    data_obj.get('status') or
+                    data.get('state') or
+                    data.get('status') or
+                    ''
+                )
+                state = str(raw_state).strip().upper()
+                captured = bool(tracker_obj.get('captured') or data_obj.get('captured') or (state in SUCCESS_STATES))
+                is_completed = (state in SUCCESS_STATES) and captured
+                amount = tracker_obj.get('amount') or data_obj.get('amount')
+                currency = tracker_obj.get('currency') or data_obj.get('currency', 'PKR')
 
-            # State can be on tracker_obj, data_obj, or top-level data
-            raw_state = (
-                tracker_obj.get('state') or
-                tracker_obj.get('status') or
-                data_obj.get('state') or
-                data_obj.get('status') or
-                data.get('state') or
-                data.get('status') or
-                ''
-            )
-            state = str(raw_state).strip().upper()
+                logger.info("Safepay Reporter query tracker %s resolved state: %s, captured: %s", tracker, state, captured)
+                return {
+                    'status': 'completed' if is_completed else state.lower(),
+                    'state': state,
+                    'captured': captured,
+                    'amount': amount,
+                    'currency': currency,
+                    'tracker': tracker,
+                    'raw': data,
+                }
+            else:
+                logger.warning("Safepay Reporter API returned %s for tracker %s, falling back to Order API", resp.status_code, tracker)
+        except Exception as exc:
+            logger.warning("Safepay Reporter API query error for tracker %s: %s, falling back to Order API", tracker, exc)
 
-            # Safepay terminal payment success states for one-time payment trackers:
-            # TRACKER_ENDED is the official Safepay Reporter API terminal success state.
-            SUCCESS_STATES = {
-                'TRACKER_ENDED',
-                'TRACKER_COMPLETED',
-                'COMPLETED',
-                'PAID',
-                'CAPTURED',
-                'SUCCESS',
-            }
+        # 2. Resilient Fallback: Order API /order/v1/{tracker}
+        order_endpoint = f"{self.base_url}/order/v1/{tracker}"
+        try:
+            resp = requests.get(order_endpoint, timeout=15)
+            if resp.status_code == 200:
+                data = resp.json()
+                order_data = data.get('data') or {}
+                state = str(order_data.get('state') or '').strip().upper()
+                transaction = order_data.get('transaction')
+                has_transaction = bool(transaction)
+                captured = (state in SUCCESS_STATES) or has_transaction
+                is_completed = (state in SUCCESS_STATES) or has_transaction
 
-            captured = bool(tracker_obj.get('captured') or data_obj.get('captured') or False)
-            if state in SUCCESS_STATES:
-                captured = True
-
-            is_completed = (state in SUCCESS_STATES) and captured
-
-            amount = tracker_obj.get('amount') or data_obj.get('amount')
-            currency = tracker_obj.get('currency') or data_obj.get('currency', 'PKR')
-
-            logger.info("Safepay Reporter query tracker %s resolved state: %s, captured: %s", tracker, state, captured)
-
-            return {
-                'status': 'completed' if is_completed else state.lower(),
-                'state': state,
-                'captured': captured,
-                'amount': amount,
-                'currency': currency,
-                'tracker': tracker,
-                'raw': data,
-            }
+                logger.info("Safepay Order API fallback tracker %s: state=%s, has_transaction=%s", tracker, state, has_transaction)
+                return {
+                    'status': 'completed' if is_completed else state.lower(),
+                    'state': state,
+                    'captured': captured,
+                    'amount': order_data.get('amount'),
+                    'currency': order_data.get('currency', 'PKR'),
+                    'tracker': tracker,
+                    'raw': data,
+                }
+            else:
+                logger.error("Safepay Order API fallback returned %s for tracker %s", resp.status_code, tracker)
+                resp.raise_for_status()
         except requests.RequestException as e:
-            logger.error("Safepay Reporter query failed for tracker %s: %s", tracker, str(e))
-            raise RuntimeError(f"Safepay Reporter query error: {str(e)}") from e
+            logger.error("Safepay verification query failed for tracker %s: %s", tracker, str(e))
+            raise RuntimeError(f"Safepay verification query error: {str(e)}") from e
 
     def verify_webhook_signature(
         self,
