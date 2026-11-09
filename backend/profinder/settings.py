@@ -496,10 +496,10 @@ SAFEPAY_WEBHOOK_SECRET = os.getenv('SAFEPAY_WEBHOOK_SECRET', '')
 
 if SAFEPAY_ENVIRONMENT == 'production':
     SAFEPAY_BASE_URL = 'https://api.getsafepay.com'
-    SAFEPAY_CHECKOUT_URL = 'https://getsafepay.com/components'
+    SAFEPAY_CHECKOUT_URL = os.getenv('SAFEPAY_CHECKOUT_URL', 'https://getsafepay.com/checkout/pay')
 else:
     SAFEPAY_BASE_URL = 'https://sandbox.api.getsafepay.com'
-    SAFEPAY_CHECKOUT_URL = 'https://sandbox.api.getsafepay.com/components'
+    SAFEPAY_CHECKOUT_URL = os.getenv('SAFEPAY_CHECKOUT_URL', 'https://sandbox.api.getsafepay.com/checkout/pay')
 
 SAFEPAY_ALLOW_MOCK_SUCCESS = os.getenv('SAFEPAY_ALLOW_MOCK_SUCCESS', 'True' if (DEBUG or TESTING or not SAFEPAY_API_KEY) else 'False').strip().lower() == 'true'
 

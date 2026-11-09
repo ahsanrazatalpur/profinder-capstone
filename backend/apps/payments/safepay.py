@@ -60,10 +60,10 @@ class SafepayGateway:
 
         if self.environment == 'production':
             self.base_url = 'https://api.getsafepay.com'
-            self.checkout_url = getattr(settings, 'SAFEPAY_CHECKOUT_URL', 'https://getsafepay.com/components')
+            self.checkout_url = getattr(settings, 'SAFEPAY_CHECKOUT_URL', 'https://getsafepay.com/checkout/pay')
         else:
             self.base_url = 'https://sandbox.api.getsafepay.com'
-            self.checkout_url = getattr(settings, 'SAFEPAY_CHECKOUT_URL', 'https://sandbox.api.getsafepay.com/components')
+            self.checkout_url = getattr(settings, 'SAFEPAY_CHECKOUT_URL', 'https://sandbox.api.getsafepay.com/checkout/pay')
 
         self.allow_mock = getattr(settings, 'SAFEPAY_ALLOW_MOCK_SUCCESS', False)
 
