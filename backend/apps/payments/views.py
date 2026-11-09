@@ -1004,10 +1004,18 @@ class SafepayVerifyPaymentView(APIView):
             logger.error("Reporter query error for payment %s: %s", payment.order_id, exc)
             return Response({'error': f'Failed to query Safepay Reporter API: {str(exc)}'}, status=status.HTTP_502_BAD_GATEWAY)
 
-        if reporter_res.get('status') == 'completed' and reporter_res.get('captured'):
+        SUCCESS_STATES = {'TRACKER_ENDED', 'TRACKER_COMPLETED', 'COMPLETED', 'PAID', 'CAPTURED', 'SUCCESS'}
+        reporter_state = str(reporter_res.get('state') or reporter_res.get('status') or '').strip().upper()
+        is_success = (
+            reporter_res.get('status') == 'completed' or
+            reporter_state in SUCCESS_STATES or
+            bool(reporter_res.get('captured'))
+        )
+
+        if is_success:
             fulfill_payment_entitlement(payment)
             payment.refresh_from_db()
-            logger.info("Safepay payment %s verified and entitlement fulfilled via verify-status.", payment.order_id)
+            logger.info("Safepay payment %s verified and entitlement fulfilled via verify-status (state: %s).", payment.order_id, reporter_state)
             return Response({
                 'status': 'completed',
                 'order_id': payment.order_id,
