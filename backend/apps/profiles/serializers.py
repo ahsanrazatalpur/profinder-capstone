@@ -24,9 +24,25 @@ class UserProfileSerializer(serializers.ModelSerializer):
     # PATCH ke liye write-only upload field
     photo     = serializers.ImageField(write_only=True, required=False)
 
+    working_days = serializers.SerializerMethodField()
+    custom_profession = serializers.SerializerMethodField()
+    custom_profession_approved = serializers.SerializerMethodField()
+
     class Meta:
         model  = UserProfile
         fields = ['id', 'full_name', 'photo_url', 'photo', 'phone', 'whatsapp_number', 'working_days', 'custom_profession', 'custom_profession_approved', 'gender', 'city', 'country', 'latitude', 'longitude']
+
+    def get_working_days(self, obj):
+        pp = getattr(obj.user, 'professionalprofile', None)
+        return pp.working_days if pp else ''
+
+    def get_custom_profession(self, obj):
+        pp = getattr(obj.user, 'professionalprofile', None)
+        return pp.custom_profession if pp else ''
+
+    def get_custom_profession_approved(self, obj):
+        pp = getattr(obj.user, 'professionalprofile', None)
+        return pp.custom_profession_approved if pp else False
 
     def get_photo_url(self, obj):
         if obj.photo_url:
