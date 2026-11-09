@@ -67,16 +67,18 @@ class SafepayGateway:
 
         self.allow_mock = getattr(settings, 'SAFEPAY_ALLOW_MOCK_SUCCESS', False)
 
-    def create_order(self, amount_paisas: int, currency: str = 'PKR', intent: str = None) -> dict:
+    def create_order(self, amount: int, currency: str = 'PKR', intent: str = None, **kwargs) -> dict:
         """
-        Creates an order with Safepay Orders v3 API.
-        amount_paisas: Amount in minor units (paisas), must be positive integer.
-        intent: Optional payment rail intent (e.g. 'RAAST' for Raast Dynamic QR & RTP,
-                'CYBERSOURCE' for Debit/Credit Cards, or None for all supported account rails).
+        Creates an order with Safepay Order v1 API.
+        amount: Amount in major currency units (e.g. 499 for Rs. 499 PKR).
+        intent: Optional payment rail intent (e.g. 'RAAST' or 'CYBERSOURCE').
         Returns dict containing 'tracker' and raw metadata.
         """
-        if not isinstance(amount_paisas, int) or amount_paisas <= 0:
-            raise ValueError(f"amount_paisas must be a positive integer, got: {amount_paisas}")
+        # Support amount or legacy amount_paisas keyword
+        actual_amount = amount if amount is not None else kwargs.get('amount_paisas', 0)
+        actual_amount = int(actual_amount)
+        if actual_amount <= 0:
+            raise ValueError(f"amount must be a positive integer, got: {actual_amount}")
 
         if not self.api_key and self.allow_mock:
             mock_tracker = f"track_mock_{uuid.uuid4().hex[:16]}"
@@ -85,13 +87,13 @@ class SafepayGateway:
                 'tracker': mock_tracker,
                 'token': mock_tracker,
                 'status': 'success',
-                'raw': {'mock': True, 'token': mock_tracker, 'amount': amount_paisas}
+                'raw': {'mock': True, 'token': mock_tracker, 'amount': actual_amount}
             }
 
         endpoint = f"{self.base_url}/order/v1/init"
         payload = {
             "client": self.api_key,
-            "amount": amount_paisas,
+            "amount": actual_amount,
             "currency": currency,
             "environment": self.environment,
         }

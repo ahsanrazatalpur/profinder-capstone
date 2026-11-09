@@ -829,13 +829,13 @@ class SafepayInitializeCheckoutView(APIView):
                 }, status=status.HTTP_200_OK)
 
             price = plan.price
-            amount_paisas = pkr_to_paisas(price)
+            amount_pkr = int(round(float(price)))
 
             payment_method = (request.data.get('payment_method') or 'all').strip().lower()
             intent = 'RAAST' if payment_method == 'raast' else ('CYBERSOURCE' if payment_method == 'card' else None)
 
             try:
-                order_result = gateway.create_order(amount_paisas=amount_paisas, currency='PKR', intent=intent)
+                order_result = gateway.create_order(amount=amount_pkr, currency='PKR', intent=intent)
                 tracker = order_result['tracker']
                 tbt = gateway.create_passport_token()
                 checkout_url = gateway.build_express_checkout_url(
@@ -907,13 +907,13 @@ class SafepayInitializeCheckoutView(APIView):
                 return Response({'error': 'Category not found.'}, status=status.HTTP_404_NOT_FOUND)
 
             price = pkg.price
-            amount_paisas = pkr_to_paisas(price)
+            amount_pkr = int(round(float(price)))
 
             payment_method = (request.data.get('payment_method') or 'all').strip().lower()
             intent = 'RAAST' if payment_method == 'raast' else ('CYBERSOURCE' if payment_method == 'card' else None)
 
             try:
-                order_result = gateway.create_order(amount_paisas=amount_paisas, currency='PKR', intent=intent)
+                order_result = gateway.create_order(amount=amount_pkr, currency='PKR', intent=intent)
                 tracker = order_result['tracker']
                 tbt = gateway.create_passport_token()
                 checkout_url = gateway.build_express_checkout_url(
