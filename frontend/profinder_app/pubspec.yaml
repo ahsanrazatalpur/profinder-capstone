@@ -87,3 +87,13 @@ flutter_launcher_icons:
     theme_color: "#2563EB"
   image_path: "assets/icon/icon.png"
   min_sdk_android: 21
+
+dependency_overrides:
+  audioplayers:
+    git:
+      url: https://github.com/bluefireteam/audioplayers.git
+      path: packages/audioplayers
+  audioplayers_android:
+    git:
+      url: https://github.com/bluefireteam/audioplayers.git
+      path: packages/audioplayers_android
