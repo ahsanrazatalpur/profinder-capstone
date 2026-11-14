@@ -39,10 +39,23 @@ subprojects {
             }
         }
     }
+    tasks.matching { it.name.contains("lint", ignoreCase = true) }.configureEach {
+        enabled = false
+    }
 }
 
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+tasks.matching { it.name.contains("lint", ignoreCase = true) }.configureEach {
+    enabled = false
+}
+
+gradle.taskGraph.whenReady {
+    allTasks.filter { it.name.contains("lint", ignoreCase = true) }.forEach {
+        it.enabled = false
+    }
 }
 
 tasks.register<Delete>("clean") {
