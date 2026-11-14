@@ -97,3 +97,8 @@ dependency_overrides:
     git:
       url: https://github.com/bluefireteam/audioplayers.git
       path: packages/audioplayers_android
+  audioplayers_android_exo:
+    git:
+      url: https://github.com/bluefireteam/audioplayers.git
+      path: packages/audioplayers_android_exo
+

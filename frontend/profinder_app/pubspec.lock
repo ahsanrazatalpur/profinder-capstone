@@ -52,12 +52,13 @@ packages:
     source: git
     version: "5.3.0"
   audioplayers_android_exo:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: audioplayers_android_exo
-      sha256: "508779595c3d66738d12755f284fad9e95e224266a3f0042f8b3c93218d9c921"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/audioplayers_android_exo"
+      ref: HEAD
+      resolved-ref: "917507301a90289ecd34809da9302fefb782a8f2"
+      url: "https://github.com/bluefireteam/audioplayers.git"
+    source: git
     version: "0.1.4"
   audioplayers_darwin:
     dependency: transitive
