@@ -77,12 +77,13 @@ packages:
     source: hosted
     version: "4.3.0"
   audioplayers_platform_interface:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: audioplayers_platform_interface
-      sha256: "765f6f0e6dca55cb471c9483fc77700564b3484d19198aca4ebb5147c6c85acb"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/audioplayers_platform_interface"
+      ref: HEAD
+      resolved-ref: "917507301a90289ecd34809da9302fefb782a8f2"
+      url: "https://github.com/bluefireteam/audioplayers.git"
+    source: git
     version: "7.2.0"
   audioplayers_web:
     dependency: transitive
