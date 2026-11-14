@@ -23,15 +23,15 @@ subprojects {
             if (androidExt != null) {
                 try {
                     val method = androidExt.javaClass.getMethod("setCompileSdkVersion", Int::class.javaPrimitiveType)
-                    method.invoke(androidExt, 35)
+                    method.invoke(androidExt, 36)
                 } catch (e1: Exception) {
                     try {
                         val method = androidExt.javaClass.getMethod("compileSdkVersion", Int::class.javaPrimitiveType)
-                        method.invoke(androidExt, 35)
+                        method.invoke(androidExt, 36)
                     } catch (e2: Exception) {
                         try {
                             val method = androidExt.javaClass.getMethod("setCompileSdk", Integer::class.java)
-                            method.invoke(androidExt, 35)
+                            method.invoke(androidExt, 36)
                         } catch (e3: Exception) {
                         }
                     }
